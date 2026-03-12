@@ -14,7 +14,7 @@ exports[`RegisterCustomerSelection stories snapshot > Checked story renders and 
       data-slot="card-header"
     >
       <div
-        class="leading-none font-semibold"
+        class="text-base font-semibold text-foreground"
         data-slot="card-title"
         tabindex="0"
       >
@@ -77,7 +77,7 @@ exports[`RegisterCustomerSelection stories snapshot > Default story renders and 
       data-slot="card-header"
     >
       <div
-        class="leading-none font-semibold"
+        class="text-base font-semibold text-foreground"
         data-slot="card-title"
         tabindex="0"
       >
@@ -140,7 +140,7 @@ exports[`RegisterCustomerSelection stories snapshot > WithCallback story renders
       data-slot="card-header"
     >
       <div
-        class="leading-none font-semibold"
+        class="text-base font-semibold text-foreground"
         data-slot="card-title"
         tabindex="0"
       >

@@ -139,8 +139,8 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 w-full">
                     {/* Mobile Navigation Accordion */}
                     <div className="lg:hidden">
                         <Card className="bg-muted/30">
@@ -148,9 +148,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                                 <h2 className="text-lg font-semibold text-foreground mb-4">{t('myAccount')}</h2>
                                 <nav className="space-y-1">
                                     <AccountNavList items={navigationItems} isMobile={true} />
-                                    <div className="mt-4 pt-4 border-t border-border">
-                                        <AccountNavList items={[logoutItem]} isMobile={true} />
-                                    </div>
+                                    <AccountNavList items={[logoutItem]} isMobile={true} />
                                 </nav>
                             </CardContent>
                         </Card>
@@ -162,9 +160,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                             <h2 className="text-lg font-semibold text-foreground">{t('myAccount')}</h2>
                             <nav className="space-y-1">
                                 <AccountNavList items={navigationItems} />
-                                <div className="mt-4 pt-4 border-t border-border">
-                                    <AccountNavList items={[logoutItem]} />
-                                </div>
+                                <AccountNavList items={[logoutItem]} />
                             </nav>
                         </div>
                     </div>

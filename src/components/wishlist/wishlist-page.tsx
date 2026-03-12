@@ -18,7 +18,7 @@
 import { type ReactElement, useEffect, useState, useCallback, useMemo } from 'react';
 import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { Heart } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
 import { WishlistListItem } from '@/components/wishlist/wishlist-list-item';
@@ -80,11 +80,11 @@ export function WishlistSkeleton(): ReactElement {
     return (
         <div className="space-y-6">
             {/* Header card skeleton */}
-            <Card className="p-6 gap-0">
-                <h1 className="text-2xl font-bold text-foreground" tabIndex={0}>
+            <Card className="px-6 py-3 gap-0 bg-card border-border">
+                <h1 className="text-lg font-semibold text-foreground mb-1" tabIndex={0}>
                     {t('navigation.wishlist')}
                 </h1>
-                <Skeleton className="h-4 w-48 mt-1" />
+                <Skeleton className="h-4 w-48" />
             </Card>
 
             {/* Items card skeleton */}
@@ -193,13 +193,15 @@ export function WishlistPageContent({ items, productsByProductId }: WishlistPage
     }, [visibleItems, productsByProductId, sortOption, filterOption]);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {/* Page Header Card */}
-            <Card className="p-6 gap-0">
-                <h1 className="text-2xl font-bold text-foreground" tabIndex={0}>
-                    {t('wishlist.pageTitle')}
-                </h1>
-                <p className="text-muted-foreground mt-1">{t('wishlist.pageSubtitle')}</p>
+            <Card className="bg-card border-border">
+                <CardContent className="px-6 py-3">
+                    <h1 className="text-lg font-semibold text-foreground mb-1" tabIndex={0}>
+                        {t('wishlist.pageTitle')}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">{t('wishlist.pageSubtitle')}</p>
+                </CardContent>
             </Card>
 
             {/* Saved Items Card */}

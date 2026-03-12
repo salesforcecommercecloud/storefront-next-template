@@ -125,7 +125,7 @@ describe('<AccountNavItem />', () => {
 
             const button = screen.getByRole('button', { name: 'Log Out' });
             expect(button).toHaveClass('w-full', 'px-3', 'py-2', 'text-left');
-            expect(button).toHaveClass('text-muted-foreground');
+            expect(button).toHaveClass('text-foreground');
         });
 
         test('logout button uses default POST method when method is not specified', () => {

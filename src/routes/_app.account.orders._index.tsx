@@ -120,7 +120,7 @@ export default function OrderListPage(): ReactElement {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             <OrderListHeader title={t('navigation.orderHistory')} subtitle={t('orders.subtitle')} />
             <Suspense fallback={<OrderListSkeleton />}>
                 <Await resolve={loaderData.ordersPromise} errorElement={<OrderListError />}>

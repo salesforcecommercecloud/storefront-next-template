@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
@@ -23,13 +23,15 @@ import { Skeleton } from '@/components/ui/skeleton';
  */
 export function AccountPaymentMethodsSkeleton(): ReactElement {
     return (
-        <div className="space-y-4">
+        <div className="space-y-5">
             {/* Page Header Skeleton */}
-            <Card className="px-6 pt-6 pb-6">
-                <div>
-                    <Skeleton className="h-8 w-48 mb-1" />
-                    <Skeleton className="h-4 w-96" />
-                </div>
+            <Card className="bg-card border-border">
+                <CardContent className="px-6 py-3">
+                    <div>
+                        <Skeleton className="h-6 w-48 mb-1" />
+                        <Skeleton className="h-4 w-96" />
+                    </div>
+                </CardContent>
             </Card>
 
             {/* Payment Methods Section Skeleton */}

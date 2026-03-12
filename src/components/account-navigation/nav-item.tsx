@@ -17,6 +17,7 @@ import type { ReactElement } from 'react';
 import { NavLink, Form } from 'react-router';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
 
 interface AccountNavItemProps {
     item: {
@@ -39,7 +40,7 @@ export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps):
     if (item.disabled) {
         return (
             <Button
-                className={`${isMobile ? mobileClasses : baseClasses} ${disabledClasses} text-muted-foreground`}
+                className={cn(isMobile ? mobileClasses : baseClasses, disabledClasses, 'text-muted-foreground')}
                 disabled
                 variant="ghost"
                 size="sm">
@@ -51,14 +52,15 @@ export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps):
 
     // If item has an action, render as a form (e.g., for logout)
     if (item.action) {
-        const containerClasses = isMobile ? mobileClasses : baseClasses;
         const activeClasses = isMobile
-            ? 'bg-transparent text-muted-foreground hover:text-foreground'
-            : 'text-muted-foreground hover:text-foreground hover:bg-muted/30';
+            ? 'bg-transparent text-foreground hover:text-foreground'
+            : 'text-foreground hover:text-foreground hover:bg-muted/30';
 
         return (
             <Form method={item.method || 'post'} action={item.action} className="w-full">
-                <button type="submit" className={`${containerClasses} ${activeClasses} cursor-pointer`}>
+                <button
+                    type="submit"
+                    className={cn(isMobile ? mobileClasses : baseClasses, activeClasses, 'cursor-pointer')}>
                     <Icon data-testid={`${item.label}-icon`} className="h-5 w-5" />
                     {item.label}
                 </button>
@@ -70,18 +72,18 @@ export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps):
         <NavLink
             key={item.path}
             to={item.path}
-            className={({ isActive }) => {
-                const containerClasses = isMobile ? mobileClasses : baseClasses;
-                const activeClasses = isActive
-                    ? isMobile
-                        ? 'bg-background text-foreground'
-                        : 'bg-muted/50 text-foreground'
-                    : isMobile
-                      ? 'bg-transparent text-muted-foreground hover:text-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/30';
-
-                return `${containerClasses} ${activeClasses}`;
-            }}>
+            className={({ isActive }) =>
+                cn(
+                    isMobile ? mobileClasses : baseClasses,
+                    isActive
+                        ? isMobile
+                            ? 'bg-background text-foreground'
+                            : 'bg-muted/50 text-foreground'
+                        : isMobile
+                          ? 'bg-transparent text-foreground hover:text-foreground'
+                          : 'text-foreground hover:text-foreground hover:bg-muted/30'
+                )
+            }>
             <Icon data-testid={`${item.label}-icon`} className="h-5 w-5" />
             {item.label}
         </NavLink>

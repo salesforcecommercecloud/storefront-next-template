@@ -16,7 +16,7 @@
 import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useRevalidator, useFetcher } from 'react-router';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PaymentMethodCard, type PaymentMethod } from './payment-method-card';
 import { RemovePaymentMethodDialog } from './remove-payment-method-dialog';
@@ -151,15 +151,15 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
     }, [paymentFetcher.state, paymentFetcher.data, addToast, t, revalidator]);
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-5">
             {/* Page Header */}
-            <Card className="px-6 pt-6 pb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-foreground mb-1" tabIndex={0}>
+            <Card className="bg-card border-border">
+                <CardContent className="px-6 py-3">
+                    <h1 className="text-lg font-semibold text-foreground mb-1" tabIndex={0}>
                         {t('navigation.paymentMethods')}
                     </h1>
                     <p className="text-sm text-muted-foreground">{t('paymentMethods.pageSubtitle')}</p>
-                </div>
+                </CardContent>
             </Card>
 
             {/* Payment Methods Section */}

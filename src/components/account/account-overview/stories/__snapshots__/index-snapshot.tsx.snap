@@ -2,23 +2,23 @@
 
 exports[`AccountOverview stories snapshot > Default story renders and matches snapshot 1`] = `
 <div
-  class="space-y-6"
+  class="space-y-5"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-6 py-3"
       data-slot="card-content"
     >
       <h1
-        class="text-3xl font-bold text-foreground mb-2"
+        class="text-lg font-semibold text-foreground mb-1"
       >
         Welcome back, John!
       </h1>
       <p
-        class="text-muted-foreground"
+        class="text-sm text-muted-foreground"
       >
         Manage your account, view orders, and discover personalized recommendations.
       </p>
@@ -321,23 +321,23 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
 
 exports[`AccountOverview stories snapshot > GuestUser story renders and matches snapshot 1`] = `
 <div
-  class="space-y-6"
+  class="space-y-5"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-6 py-3"
       data-slot="card-content"
     >
       <h1
-        class="text-3xl font-bold text-foreground mb-2"
+        class="text-lg font-semibold text-foreground mb-1"
       >
         Welcome back, there!
       </h1>
       <p
-        class="text-muted-foreground"
+        class="text-sm text-muted-foreground"
       >
         Manage your account, view orders, and discover personalized recommendations.
       </p>
@@ -640,22 +640,22 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
 
 exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and matches snapshot 1`] = `
 <div
-  class="space-y-6"
+  class="space-y-5"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-6 py-3"
       data-slot="card-content"
     >
       <div
-        class="bg-accent animate-pulse rounded-md h-9 w-64 mb-2"
+        class="bg-accent animate-pulse rounded-md h-6 w-64 mb-1"
         data-slot="skeleton"
       />
       <div
-        class="bg-accent animate-pulse rounded-md h-5 w-96 max-w-full"
+        class="bg-accent animate-pulse rounded-md h-4 w-96 max-w-full"
         data-slot="skeleton"
       />
     </div>
@@ -1436,20 +1436,20 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionLoading story rende
 
 exports[`AccountOverview stories snapshot > WelcomeSectionDefault story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+  class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
   data-slot="card"
 >
   <div
-    class="p-6"
+    class="px-6 py-3"
     data-slot="card-content"
   >
     <h1
-      class="text-3xl font-bold text-foreground mb-2"
+      class="text-lg font-semibold text-foreground mb-1"
     >
       Welcome back, John!
     </h1>
     <p
-      class="text-muted-foreground"
+      class="text-sm text-muted-foreground"
     >
       Manage your account, view orders, and discover personalized recommendations.
     </p>
@@ -1459,19 +1459,19 @@ exports[`AccountOverview stories snapshot > WelcomeSectionDefault story renders 
 
 exports[`AccountOverview stories snapshot > WelcomeSectionLoading story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+  class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
   data-slot="card"
 >
   <div
-    class="p-6"
+    class="px-6 py-3"
     data-slot="card-content"
   >
     <div
-      class="bg-accent animate-pulse rounded-md h-9 w-64 mb-2"
+      class="bg-accent animate-pulse rounded-md h-6 w-64 mb-1"
       data-slot="skeleton"
     />
     <div
-      class="bg-accent animate-pulse rounded-md h-5 w-96 max-w-full"
+      class="bg-accent animate-pulse rounded-md h-4 w-96 max-w-full"
       data-slot="skeleton"
     />
   </div>

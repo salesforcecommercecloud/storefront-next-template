@@ -1133,22 +1133,28 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
 exports[`OrderList stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-6"
+    class="space-y-5"
   >
     <div
-      class="p-6 m-0 border-t border-x border-order-border rounded-t-xl"
+      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+      data-slot="card"
     >
-      <h3
-        class="text-2xl tracking-tight text-left text-foreground font-semibold"
-        tabindex="0"
+      <div
+        class="px-6 py-3"
+        data-slot="card-content"
       >
-        Order History
-      </h3>
-      <p
-        class="text-sm font-medium leading-none text-left text-muted-foreground mt-1"
-      >
-        View and track your orders
-      </p>
+        <h3
+          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+          tabindex="0"
+        >
+          Order History
+        </h3>
+        <p
+          class="font-medium text-left text-sm text-muted-foreground"
+        >
+          View and track your orders
+        </p>
+      </div>
     </div>
     <div
       class="space-y-4 m-0 border-x border-t border-order-border"
@@ -2192,22 +2198,28 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
 exports[`OrderList stories snapshot > EmptyState story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-6"
+    class="space-y-5"
   >
     <div
-      class="p-6 m-0 border-t border-x border-order-border rounded-t-xl"
+      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+      data-slot="card"
     >
-      <h3
-        class="text-2xl tracking-tight text-left text-foreground font-semibold"
-        tabindex="0"
+      <div
+        class="px-6 py-3"
+        data-slot="card-content"
       >
-        Order History
-      </h3>
-      <p
-        class="text-sm font-medium leading-none text-left text-muted-foreground mt-1"
-      >
-        View and track your orders
-      </p>
+        <h3
+          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+          tabindex="0"
+        >
+          Order History
+        </h3>
+        <p
+          class="font-medium text-left text-sm text-muted-foreground"
+        >
+          View and track your orders
+        </p>
+      </div>
     </div>
     <div
       class="bg-card text-card-foreground flex flex-col gap-6 border py-6 border-order-border m-0 rounded-none shadow-none border-b-0"
@@ -2255,19 +2267,25 @@ exports[`OrderList stories snapshot > EmptyState story renders and matches snaps
 exports[`OrderList stories snapshot > HeaderWithSubtitle story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="p-6 m-0 border-t border-x border-order-border rounded-t-xl"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+    data-slot="card"
   >
-    <h3
-      class="text-2xl tracking-tight text-left text-foreground font-semibold"
-      tabindex="0"
+    <div
+      class="px-6 py-3"
+      data-slot="card-content"
     >
-      Order History
-    </h3>
-    <p
-      class="text-sm font-medium leading-none text-left text-muted-foreground mt-1"
-    >
-      View and track your orders
-    </p>
+      <h3
+        class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+        tabindex="0"
+      >
+        Order History
+      </h3>
+      <p
+        class="font-medium text-left text-sm text-muted-foreground"
+      >
+        View and track your orders
+      </p>
+    </div>
   </div>
 </div>
 `;
@@ -2275,14 +2293,20 @@ exports[`OrderList stories snapshot > HeaderWithSubtitle story renders and match
 exports[`OrderList stories snapshot > HeaderWithoutSubtitle story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="p-6 m-0 border-t border-x border-order-border rounded-t-xl"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+    data-slot="card"
   >
-    <h3
-      class="text-2xl tracking-tight text-left text-foreground font-semibold"
-      tabindex="0"
+    <div
+      class="px-6 py-3"
+      data-slot="card-content"
     >
-      My Orders
-    </h3>
+      <h3
+        class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+        tabindex="0"
+      >
+        My Orders
+      </h3>
+    </div>
   </div>
 </div>
 `;
@@ -2290,22 +2314,28 @@ exports[`OrderList stories snapshot > HeaderWithoutSubtitle story renders and ma
 exports[`OrderList stories snapshot > WithManyProducts story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-6"
+    class="space-y-5"
   >
     <div
-      class="p-6 m-0 border-t border-x border-order-border rounded-t-xl"
+      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+      data-slot="card"
     >
-      <h3
-        class="text-2xl tracking-tight text-left text-foreground font-semibold"
-        tabindex="0"
+      <div
+        class="px-6 py-3"
+        data-slot="card-content"
       >
-        Large Order
-      </h3>
-      <p
-        class="text-sm font-medium leading-none text-left text-muted-foreground mt-1"
-      >
-        Order with many items showing overflow
-      </p>
+        <h3
+          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+          tabindex="0"
+        >
+          Large Order
+        </h3>
+        <p
+          class="font-medium text-left text-sm text-muted-foreground"
+        >
+          Order with many items showing overflow
+        </p>
+      </div>
     </div>
     <div
       class="space-y-4 m-0 border-x border-t border-order-border"
@@ -2656,22 +2686,28 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
 exports[`OrderList stories snapshot > WithPickupLocation story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-6"
+    class="space-y-5"
   >
     <div
-      class="p-6 m-0 border-t border-x border-order-border rounded-t-xl"
+      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+      data-slot="card"
     >
-      <h3
-        class="text-2xl tracking-tight text-left text-foreground font-semibold"
-        tabindex="0"
+      <div
+        class="px-6 py-3"
+        data-slot="card-content"
       >
-        Orders with Pickup
-      </h3>
-      <p
-        class="text-sm font-medium leading-none text-left text-muted-foreground mt-1"
-      >
-        Orders ready for in-store pickup
-      </p>
+        <h3
+          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+          tabindex="0"
+        >
+          Orders with Pickup
+        </h3>
+        <p
+          class="font-medium text-left text-sm text-muted-foreground"
+        >
+          Orders ready for in-store pickup
+        </p>
+      </div>
     </div>
     <div
       class="space-y-4 m-0 border-x border-t border-order-border"
@@ -2906,22 +2942,28 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
 exports[`OrderList stories snapshot > WithProductImages story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-6"
+    class="space-y-5"
   >
     <div
-      class="p-6 m-0 border-t border-x border-order-border rounded-t-xl"
+      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+      data-slot="card"
     >
-      <h3
-        class="text-2xl tracking-tight text-left text-foreground font-semibold"
-        tabindex="0"
+      <div
+        class="px-6 py-3"
+        data-slot="card-content"
       >
-        Orders with Product Images
-      </h3>
-      <p
-        class="text-sm font-medium leading-none text-left text-muted-foreground mt-1"
-      >
-        Orders showing product thumbnails with alt text
-      </p>
+        <h3
+          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+          tabindex="0"
+        >
+          Orders with Product Images
+        </h3>
+        <p
+          class="font-medium text-left text-sm text-muted-foreground"
+        >
+          Orders showing product thumbnails with alt text
+        </p>
+      </div>
     </div>
     <div
       class="space-y-4 m-0 border-x border-t border-order-border"
@@ -3098,22 +3140,28 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
 exports[`OrderList stories snapshot > WithoutProductImages story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-6"
+    class="space-y-5"
   >
     <div
-      class="p-6 m-0 border-t border-x border-order-border rounded-t-xl"
+      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+      data-slot="card"
     >
-      <h3
-        class="text-2xl tracking-tight text-left text-foreground font-semibold"
-        tabindex="0"
+      <div
+        class="px-6 py-3"
+        data-slot="card-content"
       >
-        Orders Without Images
-      </h3>
-      <p
-        class="text-sm font-medium leading-none text-left text-muted-foreground mt-1"
-      >
-        Orders where product images are not available
-      </p>
+        <h3
+          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+          tabindex="0"
+        >
+          Orders Without Images
+        </h3>
+        <p
+          class="font-medium text-left text-sm text-muted-foreground"
+        >
+          Orders where product images are not available
+        </p>
+      </div>
     </div>
     <div
       class="space-y-4 m-0 border-x border-t border-order-border"

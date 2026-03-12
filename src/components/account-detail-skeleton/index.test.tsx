@@ -28,14 +28,14 @@ describe('AccountDetailSkeleton', () => {
         test('should have correct container classes', () => {
             const { container } = render(<AccountDetailSkeleton />);
 
-            const mainContainer = container.querySelector('.space-y-6');
+            const mainContainer = container.querySelector('.space-y-5');
             expect(mainContainer).toBeInTheDocument();
         });
 
         test('should render page header skeleton', () => {
             const { container } = render(<AccountDetailSkeleton />);
 
-            const titleSkeleton = container.querySelector('.h-8.w-40');
+            const titleSkeleton = container.querySelector('.h-6.w-40');
             expect(titleSkeleton).toBeInTheDocument();
         });
     });
@@ -53,7 +53,7 @@ describe('AccountDetailSkeleton', () => {
             const { container } = render(<AccountDetailSkeleton />);
 
             // Page title skeleton
-            expect(container.querySelector('.h-8.w-40')).toBeInTheDocument();
+            expect(container.querySelector('.h-6.w-40')).toBeInTheDocument();
             // Page subtitle skeleton
             expect(container.querySelector('.h-4.w-64')).toBeInTheDocument();
         });
@@ -90,7 +90,7 @@ describe('AccountDetailSkeleton', () => {
             expect(headerSkeleton).toBeInTheDocument();
 
             // Header separator
-            const separator = container.querySelector('.border-b.border-muted-foreground\\/20');
+            const separator = container.querySelector('.border-b.border-border');
             expect(separator).toBeInTheDocument();
         });
 
@@ -126,7 +126,7 @@ describe('AccountDetailSkeleton', () => {
             const { container } = render(<AccountDetailSkeleton />);
 
             // Password & Security header (w-36)
-            const passwordHeader = container.querySelectorAll('.h-6.w-36');
+            const passwordHeader = container.querySelectorAll('.h-5.w-36');
             expect(passwordHeader.length).toBeGreaterThanOrEqual(1);
         });
 
@@ -154,7 +154,7 @@ describe('AccountDetailSkeleton', () => {
         test('should have correct spacing', () => {
             const { container } = render(<AccountDetailSkeleton />);
 
-            expect(container.querySelector('.space-y-6')).toBeInTheDocument();
+            expect(container.querySelector('.space-y-5')).toBeInTheDocument();
             expect(container.querySelector('.gap-6')).toBeInTheDocument();
         });
 
@@ -224,7 +224,7 @@ describe('AccountDetailSkeleton', () => {
         test('should render separators after card headers', () => {
             const { container } = render(<AccountDetailSkeleton />);
 
-            const separators = container.querySelectorAll('.border-b.border-muted-foreground\\/20');
+            const separators = container.querySelectorAll('.border-b.border-border');
             // Profile and Password cards should have separators
             expect(separators.length).toBe(2);
         });
@@ -265,15 +265,15 @@ describe('AccountDetailSkeleton', () => {
         test('should render various skeleton sizes', () => {
             const { container } = render(<AccountDetailSkeleton />);
 
-            // Page title skeleton (larger)
-            expect(container.querySelector('.h-8.w-40')).toBeInTheDocument();
+            // Page title skeleton
+            expect(container.querySelector('.h-6.w-40')).toBeInTheDocument();
 
             // Page subtitle skeleton
             expect(container.querySelector('.h-4.w-64')).toBeInTheDocument();
 
             // Card header skeletons
-            expect(container.querySelector('.h-6.w-40')).toBeInTheDocument(); // Personal Information
-            expect(container.querySelector('.h-6.w-36')).toBeInTheDocument(); // Password & Security
+            expect(container.querySelector('.h-5.w-40')).toBeInTheDocument(); // Personal Information
+            expect(container.querySelector('.h-5.w-36')).toBeInTheDocument(); // Password & Security
 
             // Card description skeletons
             expect(container.querySelector('.h-4.w-56')).toBeInTheDocument();

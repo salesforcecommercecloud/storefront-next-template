@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement } from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import PreferredStore from './preferred-store';
 import AuthorizedPickupPeople from './authorized-pickup-people';
@@ -28,13 +28,15 @@ export default function StorePreferences(): ReactElement {
     const { t } = useTranslation('account');
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {/* Store Preferences Header */}
-            <Card className="p-6 gap-1">
-                <h1 className="text-2xl font-bold text-foreground" tabIndex={0}>
-                    {t('storePreferences.title')}
-                </h1>
-                <p className="text-muted-foreground">{t('storePreferences.subtitle')}</p>
+            <Card className="bg-card border-border">
+                <CardContent className="px-6 py-3">
+                    <h1 className="text-lg font-semibold text-foreground mb-1" tabIndex={0}>
+                        {t('storePreferences.title')}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">{t('storePreferences.subtitle')}</p>
+                </CardContent>
             </Card>
 
             <PreferredStore />

@@ -118,16 +118,18 @@ function OrderListEmpty({ message }: { message?: string }): ReactElement {
  */
 export function OrderListHeader({ title, subtitle }: { title: string; subtitle?: string }): ReactElement {
     return (
-        <div className="p-6 m-0 border-t border-x border-order-border rounded-t-xl">
-            <Typography variant="h3" className="text-foreground font-semibold" tabIndex={0}>
-                {title}
-            </Typography>
-            {subtitle && (
-                <Typography variant="small" as="p" className="text-muted-foreground mt-1">
-                    {subtitle}
+        <Card className="bg-card border-border">
+            <CardContent className="px-6 py-3">
+                <Typography variant="h3" className="text-lg font-semibold text-foreground mb-1" tabIndex={0}>
+                    {title}
                 </Typography>
-            )}
-        </div>
+                {subtitle && (
+                    <Typography variant="small" as="p" className="text-sm text-muted-foreground">
+                        {subtitle}
+                    </Typography>
+                )}
+            </CardContent>
+        </Card>
     );
 }
 
@@ -289,7 +291,7 @@ export function OrderList({
     onViewDetails,
 }: OrderListProps): ReactElement {
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             <OrderListHeader title={title} subtitle={subtitle} />
             <OrderListBody
                 orders={orders}

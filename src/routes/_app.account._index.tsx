@@ -261,14 +261,14 @@ function AccountDetailsContent({
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {/* Page Header Card */}
-            <Card>
-                <CardContent className="py-6">
-                    <h1 className="text-2xl font-bold text-foreground" tabIndex={0}>
+            <Card className="bg-card border-border">
+                <CardContent className="px-6 py-3">
+                    <h1 className="text-lg font-semibold text-foreground mb-1" tabIndex={0}>
                         {t('title')}
                     </h1>
-                    <p className="text-sm text-muted-foreground mt-1">{t('subtitle')}</p>
+                    <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
                 </CardContent>
             </Card>
 
@@ -280,36 +280,35 @@ function AccountDetailsContent({
                 editing={isEditingProfile}
                 onEdit={handleProfileEdit}
                 editVariant="outline"
-                showHeaderSeparator>
+                showHeaderSeparator
+                className="bg-card border-border">
                 <ToggleCardSummary>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.firstName')}</p>
-                            <p className="text-sm font-medium text-foreground">
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-foreground">{t('profile.firstName')}</p>
+                            <p className="text-sm text-foreground">
                                 {displayCustomer?.firstName || t('profile.notProvided')}
                             </p>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.lastName')}</p>
-                            <p className="text-sm font-medium text-foreground">
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-foreground">{t('profile.lastName')}</p>
+                            <p className="text-sm text-foreground">
                                 {displayCustomer?.lastName || t('profile.notProvided')}
                             </p>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.email')}</p>
-                            <p className="text-sm font-medium text-foreground">
-                                {userInfo.email || t('profile.notProvided')}
-                            </p>
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-foreground">{t('profile.email')}</p>
+                            <p className="text-sm text-foreground">{userInfo.email || t('profile.notProvided')}</p>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.phoneNumber')}</p>
-                            <p className="text-sm font-medium text-foreground">
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-foreground">{t('profile.phoneNumber')}</p>
+                            <p className="text-sm text-foreground">
                                 {userInfo.phoneNumber || t('profile.notProvided')}
                             </p>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.gender')}</p>
-                            <p className="text-sm font-medium text-foreground">
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-foreground">{t('profile.gender')}</p>
+                            <p className="text-sm text-foreground">
                                 {displayCustomer?.gender === 1
                                     ? t('profile.genderOptions.male')
                                     : displayCustomer?.gender === 2
@@ -317,9 +316,9 @@ function AccountDetailsContent({
                                       : t('profile.notProvided')}
                             </p>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.dateOfBirth')}</p>
-                            <p className="text-sm font-medium text-foreground">
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-foreground">{t('profile.dateOfBirth')}</p>
+                            <p className="text-sm text-foreground">
                                 {formatDateForLocale(displayCustomer?.birthday, i18n.language) ||
                                     t('profile.notProvided')}
                             </p>
@@ -362,14 +361,19 @@ function AccountDetailsContent({
                 title={t('password.title')}
                 description={t('password.description')}
                 editing={isEditingPassword}
-                showHeaderSeparator>
+                showHeaderSeparator
+                className="bg-card border-border">
                 <ToggleCardSummary>
                     <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('password.password')}</p>
-                            <p className="text-sm font-medium text-foreground">{t('password.hiddenPassword')}</p>
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-foreground">{t('password.password')}</p>
+                            <p className="text-sm text-foreground">{t('password.hiddenPassword')}</p>
                         </div>
-                        <Button variant="outline" size="sm" onClick={handlePasswordEdit}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handlePasswordEdit}
+                            className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('password.changePassword')}
                         </Button>
                     </div>

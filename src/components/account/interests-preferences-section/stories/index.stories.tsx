@@ -196,8 +196,8 @@ export const SelectShoppingPreference: Story = {
         const womensButton = canvas.getByRole('button', { name: /women's/i });
         await userEvent.click(womensButton);
 
-        // Verify Women's is now selected (has primary bg class)
-        await expect(womensButton).toHaveClass('bg-primary');
+        // Verify Women's is now selected (has foreground bg class in edit mode)
+        await expect(womensButton).toHaveClass('bg-foreground');
     },
 };
 

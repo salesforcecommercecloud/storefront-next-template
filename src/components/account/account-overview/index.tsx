@@ -52,12 +52,12 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
     const firstName = customer?.firstName || t('overview.defaultName');
 
     return (
-        <Card>
-            <CardContent className="p-6">
-                <h1 className="text-3xl font-bold text-foreground mb-2">
+        <Card className="bg-card border-border">
+            <CardContent className="px-6 py-3">
+                <h1 className="text-lg font-semibold text-foreground mb-1">
                     {t('overview.welcomeBack', { name: firstName })}
                 </h1>
-                <p className="text-muted-foreground">{t('overview.welcomeSubtitle')}</p>
+                <p className="text-sm text-muted-foreground">{t('overview.welcomeSubtitle')}</p>
             </CardContent>
         </Card>
     );
@@ -68,10 +68,10 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
  */
 export function WelcomeSectionSkeleton(): ReactElement {
     return (
-        <Card>
-            <CardContent className="p-6">
-                <Skeleton className="h-9 w-64 mb-2" />
-                <Skeleton className="h-5 w-96 max-w-full" />
+        <Card className="bg-card border-border">
+            <CardContent className="px-6 py-3">
+                <Skeleton className="h-6 w-64 mb-1" />
+                <Skeleton className="h-4 w-96 max-w-full" />
             </CardContent>
         </Card>
     );
@@ -213,7 +213,7 @@ export function CuratedForYouSectionSkeleton(): ReactElement {
  */
 export function AccountOverview({ customer }: AccountOverviewProps): ReactElement {
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             <WelcomeSection customer={customer} />
             <CuratedForYouSection />
             <QuickLinksSection />
@@ -226,7 +226,7 @@ export function AccountOverview({ customer }: AccountOverviewProps): ReactElemen
  */
 export function AccountOverviewSkeleton(): ReactElement {
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             <WelcomeSectionSkeleton />
             <CuratedForYouSectionSkeleton />
             <QuickLinksSectionSkeleton />

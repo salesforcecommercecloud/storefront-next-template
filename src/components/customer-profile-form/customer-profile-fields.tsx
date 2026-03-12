@@ -50,7 +50,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
     return (
         <div className="space-y-4">
             {/* First Name and Last Name Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* First Name Field */}
                 <FormField
                     control={form.control}
@@ -65,7 +65,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
                                     type="text"
                                     autoComplete="given-name"
                                     placeholder={t('profile.firstNamePlaceholder')}
-                                    className="rounded-md"
+                                    className="rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -88,7 +88,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
                                     type="text"
                                     autoComplete="family-name"
                                     placeholder={t('profile.lastNamePlaceholder')}
-                                    className="rounded-md"
+                                    className="rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -99,7 +99,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
             </div>
 
             {/* Email and Phone Row (email is read-only until SLAS email verification is available) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Email Field */}
                 <FormField
                     control={form.control}
@@ -113,7 +113,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
                                     autoComplete="email"
                                     readOnly
                                     tabIndex={-1}
-                                    className="rounded-md bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
+                                    className="rounded-sm bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
                                     {...field}
                                 />
                             </FormControl>
@@ -135,7 +135,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
                                     type="tel"
                                     autoComplete="tel"
                                     placeholder={t('profile.phonePlaceholder')}
-                                    className="rounded-md"
+                                    className="rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -146,7 +146,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
             </div>
 
             {/* Gender and Date of Birth Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Gender Field */}
                 <FormField
                     control={form.control}
@@ -156,7 +156,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
                             <FormLabel className="text-sm font-medium text-foreground">{t('profile.gender')}</FormLabel>
                             <FormControl>
                                 <NativeSelect
-                                    className="w-full rounded-md"
+                                    className="w-full rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                                     value={field.value || ''}
                                     onChange={field.onChange}
                                     onBlur={field.onBlur}
@@ -188,7 +188,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
                                 <Input
                                     type="date"
                                     autoComplete="bday"
-                                    className="rounded-md"
+                                    className="rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                                     aria-label={t('profile.dateOfBirth')}
                                     {...field}
                                 />
@@ -200,11 +200,8 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-2 justify-center">
-                <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground px-6">
+            <div className="flex gap-2 pt-2">
+                <Button type="submit" disabled={isSubmitting} className="rounded-sm">
                     {isSubmitting ? t('profile.savingButton') : t('profile.saveButton')}
                 </Button>
                 {onCancel && (
@@ -213,7 +210,7 @@ export function CustomerProfileFields({ form, updateFetcher, onCancel }: Custome
                         variant="outline"
                         onClick={onCancel}
                         disabled={isSubmitting}
-                        className="rounded-md px-6">
+                        className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                         {t('profile.cancelButton')}
                     </Button>
                 )}

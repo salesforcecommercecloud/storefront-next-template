@@ -24,7 +24,7 @@ exports[`CheckoutFormPage stories snapshot > ContactInfoStep story renders and m
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -216,7 +216,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -228,7 +228,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -268,7 +268,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -280,7 +280,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -333,7 +333,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -345,7 +345,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -392,7 +392,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -767,7 +767,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -779,7 +779,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -830,7 +830,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -1141,7 +1141,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -1153,7 +1153,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -1193,7 +1193,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -1484,7 +1484,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -1496,7 +1496,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -1536,7 +1536,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -1548,7 +1548,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -1601,7 +1601,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -1613,7 +1613,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -1660,7 +1660,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -2039,7 +2039,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -2051,7 +2051,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -2091,7 +2091,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -2103,7 +2103,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -2156,7 +2156,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -2168,7 +2168,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -2215,7 +2215,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -2566,7 +2566,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -2578,7 +2578,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -2618,7 +2618,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -2909,7 +2909,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -2921,7 +2921,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -2961,7 +2961,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -2973,7 +2973,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -3026,7 +3026,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -3222,7 +3222,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -3234,7 +3234,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -3274,7 +3274,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -3286,7 +3286,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -3339,7 +3339,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -3351,7 +3351,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -3398,7 +3398,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -3749,7 +3749,7 @@ exports[`CheckoutFormPage stories snapshot > ReviewOrderStep story renders and m
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -3761,7 +3761,7 @@ exports[`CheckoutFormPage stories snapshot > ReviewOrderStep story renders and m
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -3801,7 +3801,7 @@ exports[`CheckoutFormPage stories snapshot > ReviewOrderStep story renders and m
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -3813,7 +3813,7 @@ exports[`CheckoutFormPage stories snapshot > ReviewOrderStep story renders and m
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -3866,7 +3866,7 @@ exports[`CheckoutFormPage stories snapshot > ReviewOrderStep story renders and m
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -3878,7 +3878,7 @@ exports[`CheckoutFormPage stories snapshot > ReviewOrderStep story renders and m
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -3925,7 +3925,7 @@ exports[`CheckoutFormPage stories snapshot > ReviewOrderStep story renders and m
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -3937,7 +3937,7 @@ exports[`CheckoutFormPage stories snapshot > ReviewOrderStep story renders and m
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -4169,7 +4169,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -4181,7 +4181,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -4221,7 +4221,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -4512,7 +4512,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -4524,7 +4524,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -4564,7 +4564,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -4576,7 +4576,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -4629,7 +4629,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -5097,7 +5097,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -5109,7 +5109,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -5149,7 +5149,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -5161,7 +5161,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -5214,7 +5214,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -5682,7 +5682,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -5694,7 +5694,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -5734,7 +5734,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -5746,7 +5746,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -5799,7 +5799,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -5811,7 +5811,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
@@ -5858,7 +5858,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
               data-slot="card-header"
             >
               <div
-                class="leading-none font-semibold"
+                class="text-base font-semibold text-foreground"
                 data-slot="card-title"
                 tabindex="0"
               >
@@ -5870,7 +5870,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
               >
                 <button
                   aria-label="Edit"
-                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer font-bold"
+                  class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"

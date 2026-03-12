@@ -21,7 +21,7 @@ import { Plus } from 'lucide-react';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 // UI components
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -199,21 +199,23 @@ function AccountAddressesContent({
     const hasAddresses = addresses.length > 0;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {/* Page Header */}
-            <Card className="p-6">
-                <div className="flex items-start justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-foreground" tabIndex={0}>
-                            {t('navigation.addresses')}
-                        </h1>
-                        <p className="text-muted-foreground mt-1">{t('addresses.subtitle')}</p>
+            <Card className="bg-card border-border">
+                <CardContent className="px-6 py-3">
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <h1 className="text-lg font-semibold text-foreground mb-1" tabIndex={0}>
+                                {t('navigation.addresses')}
+                            </h1>
+                            <p className="text-sm text-muted-foreground">{t('addresses.subtitle')}</p>
+                        </div>
+                        <Button onClick={handleAdd} className="rounded-sm">
+                            <Plus className="w-4 h-4" />
+                            {t('addresses.addNewAddress')}
+                        </Button>
                     </div>
-                    <Button onClick={handleAdd}>
-                        <Plus className="w-4 h-4" />
-                        {t('addresses.addNewAddress')}
-                    </Button>
-                </div>
+                </CardContent>
             </Card>
 
             {/* Empty State */}
