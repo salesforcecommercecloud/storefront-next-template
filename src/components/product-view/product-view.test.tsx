@@ -481,7 +481,7 @@ describe('ProductView', () => {
                         socialShare: { enabled: false, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
                     },
                 },
-            } as any);
+            });
 
             const user = userEvent.setup();
             const router = createMemoryRouter(
@@ -523,7 +523,7 @@ describe('ProductView', () => {
                         socialShare: { enabled: true, providers: ['Email'] },
                     },
                 },
-            } as any);
+            });
 
             const user = userEvent.setup();
             const router = createMemoryRouter(

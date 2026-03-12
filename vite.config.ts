@@ -74,6 +74,12 @@ export default defineConfig(({ mode }) => {
                             const languageCode = localeMatch[1];
                             return `locales-${languageCode}`;
                         }
+
+                        // Split checkout components into separate chunk
+                        // Lazy loaded on /checkout route only
+                        if (id.includes('/src/components/checkout/') && !id.includes('.test.')) {
+                            return 'checkout-components';
+                        }
                     },
                 },
             },
