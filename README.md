@@ -148,6 +148,7 @@ src/
 - 🔍 [ESLint Configuration & TypeScript Enforcement](./README-ESLINT.md)
 - 🖼️ [Images](./docs/README-IMAGES.md)
 - ⚡ [Performance](./docs/README-PERFORMANCE.md)
+- 🔎 [SEO (Canonical URLs and Meta Tags)](./docs/README-SEO.md)
 - 🔌 [Adapter Pattern Implementation Guide](./docs/README-ADAPTER-PATTERN-GUIDE.md)
 - 📖 [Story Coverage & Code Quality Enforcement](./docs/README-STORY-COVERAGE.md)
 

@@ -28,7 +28,6 @@ import {
     Outlet,
     Scripts,
     ScrollRestoration,
-    /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
     useLocation,
     useMatches,
     useRevalidator,
@@ -87,6 +86,7 @@ import { initI18next } from '@/lib/i18next.client';
 import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
 import { initializeRegistry } from '@/lib/static-registry';
 import { currencyContext } from '@/lib/currency';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 
 // Adapters
 import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
@@ -157,6 +157,8 @@ export const loader = ({
     currency: string;
     correlationId: string;
     pageDesignerMode: 'EDIT' | 'PREVIEW' | undefined;
+    // Origin of the incoming request, used to build canonical URLs in the Layout
+    requestOrigin: string;
     // Return as function to prevent i18next instance serialization
     getI18next: () => i18n;
 } => {
@@ -193,6 +195,8 @@ export const loader = ({
     // Extract only non-sensitive fields for client - tokens stay server-side only
     const clientAuth = getPublicSessionData(session);
 
+    const requestOrigin = new URL(request.url).origin;
+
     return {
         appConfig,
         basketSnapshot,
@@ -201,6 +205,7 @@ export const loader = ({
         correlationId,
         maintenance,
         clientAuth,
+        requestOrigin,
         getI18next: () => i18next,
         pageDesignerMode: isDesignModeActive(request) ? 'EDIT' : isPreviewModeActive(request) ? 'PREVIEW' : undefined,
     };
@@ -220,10 +225,15 @@ export function Layout({ children }: PropsWithChildren) {
     const data = useRouteLoaderData<LoaderData>('root');
     const i18next = (typeof window === 'undefined' ? data?.getI18next?.() : i18nextOnClient) as i18n;
 
+    const location = useLocation();
+    const siteOrigin = data?.requestOrigin || (typeof window !== 'undefined' ? window.location.origin : '');
+    const canonicalUrl = siteOrigin ? buildCanonicalUrl(siteOrigin, location.pathname, location.search) : undefined;
+
     return (
         <html lang={i18next.language} dir={i18next.dir(i18next.language)}>
             <head>
                 <meta charSet="utf-8" />
+                {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
                 {appConfig?.links?.preconnect?.map((origin: string) => (
                     <link key={origin} rel="preconnect" href={origin} />
                 ))}
