@@ -107,30 +107,31 @@ describe('ChildProducts - BOPIS', () => {
     const mockSetSelectedBundleQuantity = vi.fn();
 
     // Helper to create default mock return value
-    const createDefaultSetsBundlesMock = (overrides: any = {}) => ({
-        comboProduct: {
-            childProducts: [
-                { id: 'child-1', name: 'Child 1', type: { item: true } },
-                { id: 'child-2', name: 'Child 2', type: { item: true } },
-            ],
-        },
-        childProductSelection: {},
-        selectedBundleQuantity: 1,
-        areAllChildProductsSelected: false,
-        hasUnorderableChildProducts: false,
-        handleChildProductValidation: mockHandleChildProductValidation,
-        setChildProductSelection: mockSetChildProductSelection,
-        setChildProductOrderability: mockSetChildProductOrderability,
-        setSelectedBundleQuantity: mockSetSelectedBundleQuantity,
-        selectedChildProductCount: 0,
-        totalChildProducts: 2,
-        isCompletelyOutOfStock: false,
-        productWithCalculatedInventory: { id: 'set-123' },
-        effectiveQuantity: 1,
-        bundleStockLevel: 10,
-        bundleOutOfStock: false,
-        ...overrides,
-    });
+    const createDefaultSetsBundlesMock = (overrides: any = {}) => {
+        const childProducts = [
+            { id: 'child-1', name: 'Child 1', type: { item: true } },
+            { id: 'child-2', name: 'Child 2', type: { item: true } },
+        ];
+        return {
+            comboProduct: { childProducts },
+            childProductSelection: {},
+            selectedBundleQuantity: 1,
+            areAllChildProductsSelected: false,
+            hasUnorderableChildProducts: false,
+            handleChildProductValidation: mockHandleChildProductValidation,
+            setChildProductSelection: mockSetChildProductSelection,
+            setChildProductOrderability: mockSetChildProductOrderability,
+            setSelectedBundleQuantity: mockSetSelectedBundleQuantity,
+            selectedChildProductCount: 0,
+            totalChildProducts: 2,
+            isCompletelyOutOfStock: false,
+            productWithCalculatedInventory: { id: 'set-123' },
+            effectiveQuantity: 1,
+            bundleStockLevel: 10,
+            bundleOutOfStock: false,
+            ...overrides,
+        };
+    };
 
     beforeEach(async () => {
         vi.clearAllMocks();

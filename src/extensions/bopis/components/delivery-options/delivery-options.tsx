@@ -111,6 +111,7 @@ export default function DeliveryOptions({
                 {!isInBasket && (
                     <>
                         <PickupOrDelivery
+                            instanceId={product.id}
                             value={selectedDeliveryOption}
                             onChange={handleDeliveryOptionChange}
                             isPickupDisabled={isStoreOutOfStock}

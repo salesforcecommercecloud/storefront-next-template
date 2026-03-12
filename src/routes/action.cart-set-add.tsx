@@ -15,7 +15,7 @@
  */
 import { data, type ActionFunctionArgs } from 'react-router';
 import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
@@ -37,9 +37,10 @@ async function addMultipleItemsToCart(
     error?: string;
 }> {
     const { t } = getTranslation();
-    const basketId = await ensureBasketId(context);
+    const basketResource = await getBasket(context);
+    const basket = basketResource.current;
 
-    if (!basketId) {
+    if (!basket) {
         // This state should never happen as it would indicate that the basket middleware is broken
         return {
             success: false,
@@ -63,7 +64,7 @@ async function addMultipleItemsToCart(
         // Add all items to basket in a single API call
         const { data: updatedBasket } = await clients.shopperBasketsV2.addItemToBasket({
             params: {
-                path: { basketId },
+                path: { basketId: basket.basketId as string },
             },
             body: productItems.map((item) => ({
                 productId: item.productId,

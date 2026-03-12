@@ -15,7 +15,7 @@
  */
 import { data, type ActionFunctionArgs } from 'react-router';
 import { ApiError, type ShopperBasketsV2, type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
@@ -43,9 +43,10 @@ async function addBundleToCart(
     error?: string;
 }> {
     const { t } = getTranslation();
-    const basketId = await ensureBasketId(context);
+    const basketResource = await getBasket(context);
+    const basket = basketResource.current;
 
-    if (!basketId) {
+    if (!basket) {
         // This state should never happen as it would indicate that the basket middleware is broken
         return {
             success: false,
@@ -74,7 +75,7 @@ async function addBundleToCart(
         // Add bundle to basket with bundled product items
         const { data: initialBasket } = await clients.shopperBasketsV2.addItemToBasket({
             params: {
-                path: { basketId },
+                path: { basketId: basket.basketId as string },
             },
             body: [
                 {
@@ -121,7 +122,7 @@ async function addBundleToCart(
 
                 await clients.shopperBasketsV2.updateItemsInBasket({
                     params: {
-                        path: { basketId },
+                        path: { basketId: basket.basketId as string },
                     },
                     body: itemsToUpdate,
                 });
@@ -129,7 +130,7 @@ async function addBundleToCart(
                 // Get the updated basket after child items update
                 const { data: refreshedBasket } = await clients.shopperBasketsV2.getBasket({
                     params: {
-                        path: { basketId },
+                        path: { basketId: basket.basketId as string },
                     },
                 });
                 updatedBasket = refreshedBasket;

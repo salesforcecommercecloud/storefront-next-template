@@ -16,7 +16,7 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { action } from './action.cart-bundle-add';
-import { ensureBasketId } from '@/middlewares/basket.server';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
@@ -88,7 +88,8 @@ describe('action.cart-bundle-add', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(ensureBasketId).mockResolvedValue(mockBasket.basketId);
+        vi.mocked(getBasket).mockResolvedValue({ current: mockBasket, snapshot: null } as any);
+        vi.mocked(updateBasketResource).mockImplementation(() => {});
         vi.mocked(createApiClients).mockReturnValue(mockClients as any);
         vi.mocked(getConfig).mockReturnValue(mockConfig as any);
     });

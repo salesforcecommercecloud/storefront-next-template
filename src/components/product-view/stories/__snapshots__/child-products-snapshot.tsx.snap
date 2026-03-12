@@ -477,7 +477,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               <label
                 class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
-                for="delivery-option"
+                for="delivery-option-womens-jewelry-bundleM"
               >
                 <button
                   aria-checked="false"
@@ -485,7 +485,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   data-radix-collection-item=""
                   data-slot="radio-group-item"
                   data-state="unchecked"
-                  id="delivery-option"
+                  id="delivery-option-womens-jewelry-bundleM"
                   role="radio"
                   tabindex="-1"
                   type="button"
@@ -520,7 +520,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               <label
                 class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
-                for="pickup-option"
+                for="pickup-option-womens-jewelry-bundleM"
               >
                 <button
                   aria-checked="false"
@@ -528,7 +528,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   data-radix-collection-item=""
                   data-slot="radio-group-item"
                   data-state="unchecked"
-                  id="pickup-option"
+                  id="pickup-option-womens-jewelry-bundleM"
                   role="radio"
                   tabindex="-1"
                   type="button"
@@ -955,7 +955,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="delivery-option"
+                    for="delivery-option-25518447M"
                   >
                     <button
                       aria-checked="false"
@@ -963,7 +963,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="delivery-option"
+                      id="delivery-option-25518447M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -998,7 +998,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="pickup-option"
+                    for="pickup-option-25518447M"
                   >
                     <button
                       aria-checked="false"
@@ -1006,7 +1006,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="pickup-option"
+                      id="pickup-option-25518447M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -1409,7 +1409,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="delivery-option"
+                    for="delivery-option-25518704M"
                   >
                     <button
                       aria-checked="false"
@@ -1417,7 +1417,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="delivery-option"
+                      id="delivery-option-25518704M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -1452,7 +1452,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="pickup-option"
+                    for="pickup-option-25518704M"
                   >
                     <button
                       aria-checked="false"
@@ -1460,7 +1460,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="pickup-option"
+                      id="pickup-option-25518704M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -2020,7 +2020,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="delivery-option"
+                    for="delivery-option-25772717M"
                   >
                     <button
                       aria-checked="false"
@@ -2028,7 +2028,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="delivery-option"
+                      id="delivery-option-25772717M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -2063,7 +2063,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="pickup-option"
+                    for="pickup-option-25772717M"
                   >
                     <button
                       aria-checked="false"
@@ -2071,7 +2071,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="pickup-option"
+                      id="pickup-option-25772717M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -2150,7 +2150,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               <label
                 class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
-                for="delivery-option"
+                for="delivery-option-winter-lookM"
               >
                 <button
                   aria-checked="false"
@@ -2158,7 +2158,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   data-radix-collection-item=""
                   data-slot="radio-group-item"
                   data-state="unchecked"
-                  id="delivery-option"
+                  id="delivery-option-winter-lookM"
                   role="radio"
                   tabindex="-1"
                   type="button"
@@ -2193,7 +2193,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               <label
                 class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
-                for="pickup-option"
+                for="pickup-option-winter-lookM"
               >
                 <button
                   aria-checked="false"
@@ -2201,7 +2201,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   data-radix-collection-item=""
                   data-slot="radio-group-item"
                   data-state="unchecked"
-                  id="pickup-option"
+                  id="pickup-option-winter-lookM"
                   role="radio"
                   tabindex="-1"
                   type="button"

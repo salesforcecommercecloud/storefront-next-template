@@ -155,9 +155,6 @@ export function useProductSetsBundles({
         childProducts?: ShopperProducts.schemas['Product'][];
     }
 
-    const comboProduct: NormalizedComboProduct =
-        isProductASet || isProductABundle ? normalizeSetBundleProduct(product) : ({} as NormalizedComboProduct);
-
     const [childProductOrderability, setChildProductOrderability] = useState<ChildProductOrderability>({});
     const [selectedBundleQuantity, setSelectedBundleQuantity] = useState(initialBundleQuantity);
     const childProductRefs = useRef<Record<string, globalThis.HTMLElement>>({});
@@ -180,6 +177,32 @@ export function useProductSetsBundles({
         },
         []
     );
+
+    // Bulk fetch child product inventory (handles enrichment internally)
+    const { enrichedSelections } = useBulkChildProductInventory({
+        childSelections: Object.values(childProductSelection),
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        inventoryId: selectedStoreInventoryId,
+    });
+
+    // Normalized product data with enriched child products (inventory/inventories for pickup orderability)
+    const comboProduct: NormalizedComboProduct = useMemo(() => {
+        const normalized =
+            isProductASet || isProductABundle ? normalizeSetBundleProduct(product) : { childProducts: [] };
+        const childProducts = normalized.childProducts || [];
+        const enrichedChildProducts = childProducts.map((childProduct) => {
+            const enriched = enrichedSelections.find((e) => e.product.id === childProduct.id);
+            if (enriched) {
+                return {
+                    ...childProduct,
+                    inventory: enriched.product.inventory || childProduct.inventory,
+                    inventories: enriched.product.inventories || childProduct.inventories,
+                };
+            }
+            return childProduct;
+        });
+        return { childProducts: enrichedChildProducts };
+    }, [product, isProductASet, isProductABundle, enrichedSelections]);
 
     // Validate all child products are selected and orderable
     const validateChildProducts = useCallback(() => {
@@ -264,13 +287,6 @@ export function useProductSetsBundles({
         return Object.values(childProductOrderability).some((orderability) => !orderability.isOrderable);
     }, [childProductOrderability]);
 
-    // Bulk fetch child product inventory (handles enrichment internally)
-    const { enrichedSelections } = useBulkChildProductInventory({
-        childSelections: Object.values(childProductSelection),
-        // @sfdc-extension-line SFDC_EXT_BOPIS
-        inventoryId: selectedStoreInventoryId,
-    });
-
     // Calculate inventory for sets/bundles by determining how many complete sets can be made
     // For sets: inventory = minimum of (childStockLevel / childQuantity) across all children
     // For bundles: uses bundle's own inventory (no calculation needed)
@@ -284,19 +300,7 @@ export function useProductSetsBundles({
             return product;
         }
 
-        // Update child products with enriched inventory when available
-        const updatedChildProducts = childProducts.map((childProduct) => {
-            const enriched = enrichedSelections.find((e) => e.product.id === childProduct.id);
-            if (enriched) {
-                return {
-                    ...childProduct,
-                    inventory: enriched.product.inventory || childProduct.inventory,
-                    inventories: enriched.product.inventories || childProduct.inventories,
-                };
-            }
-            return childProduct;
-        });
-
+        // Child products already have enriched inventory from comboProduct
         // For sets, calculate how many complete sets can be made from available child inventory
         // Formula: availableSets = Math.floor(childStockLevel / childQuantity)
         // The set is limited by whichever child runs out first (minimum across all children)
@@ -311,7 +315,7 @@ export function useProductSetsBundles({
             // @sfdc-extension-line SFDC_EXT_BOPIS
             let missingStoreInventory = false;
 
-            updatedChildProducts.forEach((childProduct) => {
+            childProducts.forEach((childProduct) => {
                 // Get user-selected quantity from childProductSelection, fall back to product definition quantity
                 const selectedChild = childProductSelection[childProduct.id];
                 const productQuantity = (childProduct as { quantity?: number }).quantity ?? 1;
@@ -381,7 +385,6 @@ export function useProductSetsBundles({
         isProductASet,
         isProductABundle,
         comboProduct.childProducts,
-        enrichedSelections,
         // @sfdc-extension-line SFDC_EXT_BOPIS
         selectedStoreInventoryId,
         childProductSelection,
@@ -501,7 +504,7 @@ export function useProductSetsBundles({
         selectedBundleQuantity,
         /** Refs to child product DOM elements for scrolling to validation errors */
         childProductRefs,
-        /** Normalized product data containing child products array */
+        /** Normalized product data containing child products with enriched inventory (for ChildProductCard - ensures pickup orderability) */
         comboProduct,
 
         // Actions

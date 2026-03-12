@@ -396,7 +396,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="delivery-option"
+                    for="delivery-option-061492183589M"
                   >
                     <button
                       aria-checked="false"
@@ -404,7 +404,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="delivery-option"
+                      id="delivery-option-061492183589M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -439,7 +439,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="pickup-option"
+                    for="pickup-option-061492183589M"
                   >
                     <button
                       aria-checked="false"
@@ -447,7 +447,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="pickup-option"
+                      id="pickup-option-061492183589M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -1072,7 +1072,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="delivery-option"
+                    for="delivery-option-061492183589M"
                   >
                     <button
                       aria-checked="false"
@@ -1080,7 +1080,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="delivery-option"
+                      id="delivery-option-061492183589M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -1115,7 +1115,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="pickup-option"
+                    for="pickup-option-061492183589M"
                   >
                     <button
                       aria-checked="false"
@@ -1123,7 +1123,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="pickup-option"
+                      id="pickup-option-061492183589M"
                       role="radio"
                       tabindex="-1"
                       type="button"

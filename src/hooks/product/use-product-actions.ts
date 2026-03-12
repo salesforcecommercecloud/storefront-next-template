@@ -130,23 +130,23 @@ export function useProductActions({
 
     // Check if pickup is selected for this product
     // Priority: existing basket item pickup store (basketPickupStore) OR pending pickup selection in context
+    // Pickup is stored by product.id (master) in DeliveryOptions; for variants, also check product.id
     const isPickupSelected = useMemo(() => {
-        // If basket item already has a pickup store, pickup is selected
         if (basketPickupStore) return true;
-        // Otherwise check if there's a pending pickup selection in context
-        return pickupContext?.pickupBasketItems?.has(productId) ?? false;
-    }, [basketPickupStore, pickupContext?.pickupBasketItems, productId]);
+        const items = pickupContext?.pickupBasketItems;
+        if (!items) return false;
+        return items.has(productId) || items.has(product.id);
+    }, [basketPickupStore, pickupContext?.pickupBasketItems, productId, product.id]);
 
     // Calculate store inventory ID based on delivery option
     // Priority: existing basket item pickup store (basketPickupStore) OR pending pickup selection in context
     const storeInventoryId = useMemo(() => {
         if (!isPickupSelected) return undefined;
-        // If basket item already has a pickup store, use its inventoryId
         if (basketPickupStore?.inventoryId) return basketPickupStore.inventoryId;
-        // Otherwise use inventoryId from pending pickup selection in context
-        const pickupInfo = pickupContext?.pickupBasketItems?.get(productId);
+        const pickupInfo =
+            pickupContext?.pickupBasketItems?.get(productId) ?? pickupContext?.pickupBasketItems?.get(product.id);
         return pickupInfo?.inventoryId;
-    }, [isPickupSelected, basketPickupStore, pickupContext?.pickupBasketItems, productId]);
+    }, [isPickupSelected, basketPickupStore, pickupContext?.pickupBasketItems, productId, product.id]);
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     // Inventory and stock calculations - considers delivery option, store/site inventory, and variant
@@ -320,6 +320,8 @@ export function useProductActions({
             return;
         }
         if (multipleItemsFetcher.data?.success && multipleItemsFetcher.data.basket) {
+            const basketData = multipleItemsFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
+            updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
             addToast(t('product:addedSetToCart'), 'success');
         } else if (multipleItemsFetcher.data?.success === false) {
@@ -336,6 +338,8 @@ export function useProductActions({
             return;
         }
         if (bundleFetcher.data?.success && bundleFetcher.data.basket) {
+            const basketData = bundleFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
+            updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
             addToast(t('product:addedBundleToCart'), 'success');
         } else if (bundleFetcher.data?.success === false) {
@@ -461,7 +465,10 @@ export function useProductActions({
         const price = productToAdd?.price;
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        const pickupInfo = pickupContext?.pickupBasketItems?.get(itemProductId ?? '');
+        // Pickup is stored by product.id (master) in DeliveryOptions; for variants, lookup by variant id may miss.
+        const pickupInfo =
+            pickupContext?.pickupBasketItems?.get(itemProductId ?? '') ??
+            (product.id !== itemProductId ? pickupContext?.pickupBasketItems?.get(product.id) : undefined);
         const storeId = pickupInfo?.storeId ?? null;
 
         // Validate pickup/delivery compatibility with existing basket items
@@ -632,7 +639,14 @@ export function useProductActions({
                 const productItems = productSelections.map((selection) => {
                     const selectionProductId = selection.variant?.productId || selection.product.id;
                     // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                    const pickupInfo = pickupContext?.pickupBasketItems?.get(selectionProductId);
+                    // Pickup can be stored by: (1) variant id, (2) master product id (per-child DeliveryOptions),
+                    // or (3) parent set product id (set-level DeliveryOptions). Try all.
+                    const pickupInfo =
+                        pickupContext?.pickupBasketItems?.get(selectionProductId) ??
+                        (selection.product.id !== selectionProductId
+                            ? pickupContext?.pickupBasketItems?.get(selection.product.id)
+                            : undefined) ??
+                        pickupContext?.pickupBasketItems?.get(product.id);
                     const inventoryId = pickupInfo?.inventoryId ?? null;
                     const storeId = pickupInfo?.storeId ?? null;
                     // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -667,6 +681,7 @@ export function useProductActions({
             }
         },
         [
+            product.id,
             isAddingToOrUpdatingCart,
             multipleItemsFetcher,
             addToast,
@@ -723,7 +738,7 @@ export function useProductActions({
 
                 // Track cart item add
                 void analytics.trackCartItemAdd({
-                    cartItems: [bundleItem, ...childSelections],
+                    cartItems: [bundleItem, ...childProductSelections],
                 });
             } catch {
                 setIsAddingToOrUpdatingCart(false);
