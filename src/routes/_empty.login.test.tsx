@@ -22,6 +22,7 @@ import { getAuth, authorizePasswordless, getPasswordLessAccessToken, updateAuth 
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
 import { mergeBasket } from '@/lib/api/basket';
+import { updateBasketResource } from '@/middlewares/basket.server';
 import { getAppOrigin, isAbsoluteURL, extractResponseError } from '@/lib/utils';
 
 vi.mock('@/middlewares/auth.server', () => ({
@@ -41,6 +42,10 @@ vi.mock('@/lib/api/auth/social-login', () => ({
 
 vi.mock('@/lib/api/basket', () => ({
     mergeBasket: vi.fn(),
+}));
+
+vi.mock('@/middlewares/basket.server', () => ({
+    updateBasketResource: vi.fn(),
 }));
 
 vi.mock('@/lib/utils', () => ({
@@ -100,13 +105,14 @@ vi.mock('@/lib/i18next', () => ({
 }));
 
 // Get mocked functions
+const mockGetPasswordLessAccessToken = vi.mocked(getPasswordLessAccessToken);
+const mockUpdateAuth = vi.mocked(updateAuth);
 const mockGetAuth = vi.mocked(getAuth);
 const mockLoginRegisteredUser = vi.mocked(loginRegisteredUser);
 const mockAuthorizeIDP = vi.mocked(authorizeIDP);
 const mockAuthorizePasswordless = vi.mocked(authorizePasswordless);
-const mockGetPasswordLessAccessToken = vi.mocked(getPasswordLessAccessToken);
-const mockUpdateAuth = vi.mocked(updateAuth);
 const mockMergeBasket = vi.mocked(mergeBasket);
+const mockUpdateBasketResource = vi.mocked(updateBasketResource);
 const mockGetAppOrigin = vi.mocked(getAppOrigin);
 const mockIsAbsoluteURL = vi.mocked(isAbsoluteURL);
 const mockExtractResponseError = vi.mocked(extractResponseError);
@@ -441,6 +447,8 @@ describe('Login Route', () => {
                 accessToken: 'test-token',
             });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            const mergedBasket = { basketId: 'basket-1' } as any;
+            mockMergeBasket.mockResolvedValue(mergedBasket);
 
             const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
@@ -470,6 +478,8 @@ describe('Login Route', () => {
                 email: 'test@example.com',
                 password: 'password123',
             });
+            expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
+            expect(mockUpdateBasketResource).toHaveBeenCalledWith(mockContext, mergedBasket);
         });
 
         it('should redirect to returnUrl on successful login', async () => {
@@ -479,6 +489,8 @@ describe('Login Route', () => {
                 accessToken: 'test-token',
             });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            const mergedBasket = { basketId: 'basket-1' } as any;
+            mockMergeBasket.mockResolvedValue(mergedBasket);
 
             const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
@@ -513,6 +525,8 @@ describe('Login Route', () => {
                 accessToken: 'test-token',
             });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            const mergedBasket = { basketId: 'basket-1' } as any;
+            mockMergeBasket.mockResolvedValue(mergedBasket);
 
             const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
@@ -542,6 +556,42 @@ describe('Login Route', () => {
             expect(result.redirectUrl).toContain('action=addToCart');
             expect(result.redirectUrl).toContain('actionParams=');
             expect(result).toHaveProperty('auth');
+        });
+
+        it('should continue login even if basket merge fails', async () => {
+            mockGetAuth.mockReturnValue({
+                userType: 'registered',
+                customerId: 'test-customer-123',
+                accessToken: 'test-token',
+            });
+            mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            mockMergeBasket.mockRejectedValue(new Error('merge failed'));
+
+            const formData = new URLSearchParams();
+            formData.append('email', 'test@example.com');
+            formData.append('password', 'password123');
+            formData.append('loginMode', 'password');
+
+            const mockRequest = new Request('http://localhost:5173/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
+            });
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const args: ActionFunctionArgs = {
+                request: mockRequest,
+                params: {},
+                context: mockContext,
+            } as any;
+
+            const result = await action(args);
+
+            expect(result).toHaveProperty('redirectUrl', '/');
+            expect(result).toHaveProperty('auth');
+            expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
+            expect(mockUpdateBasketResource).not.toHaveBeenCalled();
         });
 
         it('should return error on failed login', async () => {

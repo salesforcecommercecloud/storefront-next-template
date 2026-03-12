@@ -32,6 +32,7 @@ import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@/lib/i18next';
+import { updateBasketResource } from '@/middlewares/basket.server';
 
 // services
 import {
@@ -262,6 +263,18 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             if (!result.success) {
                 // Return generic error - don't expose specific login failure reasons
                 return { success: false, error: genericError };
+            }
+
+            // Login successful - merge basket on server before redirecting
+            try {
+                const mergedBasket = await mergeBasket(context);
+                if (mergedBasket) {
+                    updateBasketResource(context, mergedBasket);
+                }
+            } catch (error) {
+                // Log but don't block redirect - user can still access their registered basket
+                // eslint-disable-next-line no-console
+                console.error('[Standard Login] Failed to merge basket:', error);
             }
 
             // Login successful - redirect to returnUrl if provided, otherwise home
