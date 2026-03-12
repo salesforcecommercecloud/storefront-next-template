@@ -100,9 +100,16 @@ exports[`ProductTile stories snapshot > CustomAction story renders and matches s
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -119,9 +126,15 @@ exports[`ProductTile stories snapshot > CustomAction story renders and matches s
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -371,9 +384,16 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -390,9 +410,15 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -645,9 +671,15 @@ exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders 
                 >
                   <div
                     aria-label="Begonia Pink"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -664,9 +696,15 @@ exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders 
                 >
                   <div
                     aria-label="Grey Heather"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -933,9 +971,16 @@ exports[`ProductTile stories snapshot > PageDesignerBorderRadius story renders a
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -952,9 +997,15 @@ exports[`ProductTile stories snapshot > PageDesignerBorderRadius story renders a
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -1207,9 +1258,16 @@ exports[`ProductTile stories snapshot > PageDesignerFullCustomization story rend
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -1226,9 +1284,15 @@ exports[`ProductTile stories snapshot > PageDesignerFullCustomization story rend
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -1481,9 +1545,16 @@ exports[`ProductTile stories snapshot > PageDesignerHoverLift story renders and 
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -1500,9 +1571,15 @@ exports[`ProductTile stories snapshot > PageDesignerHoverLift story renders and 
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -1755,9 +1832,16 @@ exports[`ProductTile stories snapshot > PageDesignerHoverScale story renders and
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -1774,9 +1858,15 @@ exports[`ProductTile stories snapshot > PageDesignerHoverScale story renders and
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -2029,9 +2119,16 @@ exports[`ProductTile stories snapshot > PageDesignerHoverShadow story renders an
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -2048,9 +2145,15 @@ exports[`ProductTile stories snapshot > PageDesignerHoverShadow story renders an
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -2303,9 +2406,16 @@ exports[`ProductTile stories snapshot > PageDesignerImageCover story renders and
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -2322,9 +2432,15 @@ exports[`ProductTile stories snapshot > PageDesignerImageCover story renders and
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -2577,9 +2693,16 @@ exports[`ProductTile stories snapshot > PageDesignerPaddingMargin story renders 
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -2596,9 +2719,15 @@ exports[`ProductTile stories snapshot > PageDesignerPaddingMargin story renders 
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -2851,9 +2980,16 @@ exports[`ProductTile stories snapshot > PageDesignerShadowXL story renders and m
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -2870,9 +3006,15 @@ exports[`ProductTile stories snapshot > PageDesignerShadowXL story renders and m
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -3125,9 +3267,16 @@ exports[`ProductTile stories snapshot > PageDesignerTypography story renders and
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -3144,9 +3293,15 @@ exports[`ProductTile stories snapshot > PageDesignerTypography story renders and
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>
@@ -3415,9 +3570,16 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
                 >
                   <div
                     aria-label="Navy"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-color: navy; background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                    style="background-color: navy;"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
               <button
@@ -3434,9 +3596,15 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
                 >
                   <div
                     aria-label="Charcoal"
-                    class="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                    style="background-image: url("https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70");"
-                  />
+                    class="rounded-pill w-full h-full relative overflow-hidden"
+                  >
+                    <img
+                      alt=""
+                      class="absolute inset-0 w-full h-full object-cover rounded-pill"
+                      loading="lazy"
+                      src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
+                    />
+                  </div>
                 </div>
               </button>
             </div>

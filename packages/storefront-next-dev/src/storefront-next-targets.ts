@@ -28,6 +28,7 @@ import {
 import { buildMiddlewareRegistryPlugin } from './plugins/buildMiddlewareRegistry';
 import { platformEntryPlugin } from './plugins/platformEntry';
 import { workspacePlugin } from './plugins/workspace';
+import { componentLoadersPlugin } from './plugins/componentLoaders';
 
 /**
  * Configuration options for the Storefront Next Vite plugin.
@@ -128,6 +129,15 @@ export function storefrontNextTargets(config: StorefrontNextTargetsConfig = {}):
     // Add static registry plugin if enabled
     if (staticRegistry?.componentPath && staticRegistry?.registryPath) {
         plugins.push(staticRegistryPlugin(staticRegistry));
+
+        // Strip server-only `loader` exports from the client bundle and client-only `clientLoader` exports from the
+        // server bundle
+        plugins.push(
+            componentLoadersPlugin({
+                componentPath: staticRegistry.componentPath,
+                verbose: staticRegistry.verbose,
+            })
+        );
     }
 
     // Add event instrumentation validator plugin if not explicitly disabled

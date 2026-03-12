@@ -110,9 +110,10 @@ describe('storefrontNextTargets', () => {
                 registryPath: '/path/to/registry',
             },
         });
-        expect(targets.length).toBe(BASE_PLUGIN_COUNT + 1);
+        expect(targets.length).toBe(BASE_PLUGIN_COUNT + 2);
         const targetNames = targets.map((t) => t.name);
         expect(targetNames).toContain('storefrontnext:static-registry');
+        expect(targetNames).toContain('storefrontnext:component-loaders');
     });
 
     it('should not include staticRegistry when only componentPath is provided', () => {

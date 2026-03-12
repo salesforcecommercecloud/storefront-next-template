@@ -3,13 +3,14 @@ import fs from "fs-extra";
 import path$1, { dirname, join as join$1, relative, resolve as resolve$1 } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import { parse } from "@babel/parser";
-import { isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
+import { isArrayPattern, isClassDeclaration, isExportSpecifier, isFunctionDeclaration, isIdentifier, isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, isMemberExpression, isObjectPattern, isObjectProperty, isRestElement, isVariableDeclaration, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
 import { generate } from "@babel/generator";
 import traverseModule from "@babel/traverse";
 import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
 import fs$2, { existsSync as existsSync$1, readFileSync as readFileSync$1, unlinkSync } from "node:fs";
+import { deadCodeElimination, findReferencedIdentifiers } from "babel-dead-code-elimination";
 import express from "express";
 import { createRequestHandler } from "@react-router/express";
 import { pathToFileURL as pathToFileURL$1 } from "node:url";
@@ -311,7 +312,7 @@ const patchReactRouterPlugin = () => {
 
 //#endregion
 //#region src/extensibility/target-utils.ts
-const traverse = traverseModule.default || traverseModule;
+const traverse$1 = traverseModule.default || traverseModule;
 const TARGET_COMPONENT_TAG = "UITarget";
 const TARGET_PROVIDERS_TAG = "TargetProviders";
 const TARGET_ID_ATTRIBUTE = "targetId";
@@ -376,7 +377,7 @@ function runReplacementPass(ast, tagName, targetRegistry = null, contextProvider
 			if (replacedId) targetIdsReplaced.add(replacedId);
 		} else if (contextProviders) findAndReplaceProviders(pathToReplace, contextProviders);
 	};
-	traverse(ast, {
+	traverse$1(ast, {
 		VariableDeclaration(nodePath) {
 			const declarationPaths = nodePath.get("declarations");
 			const declarationsArray = Array.isArray(declarationPaths) ? declarationPaths : [declarationPaths];
@@ -429,7 +430,7 @@ function transformTargets(code, targetRegistry, contextProviders) {
 	});
 	if (code.includes(TARGET_COMPONENT_TAG)) {
 		const replacementImportStatements = buildReplacementImportStatements(runReplacementPass(ast, TARGET_COMPONENT_TAG, targetRegistry, null), targetRegistry);
-		traverse(ast, { ImportDeclaration(nodePath) {
+		traverse$1(ast, { ImportDeclaration(nodePath) {
 			if (nodePath.node.source.value.includes("@/targets/ui-target")) nodePath.replaceWith(jsxText(replacementImportStatements));
 		} });
 	}
@@ -437,7 +438,7 @@ function transformTargets(code, targetRegistry, contextProviders) {
 		const importStatements = /* @__PURE__ */ new Set();
 		for (const contextProvider of contextProviders) importStatements.add(`import ${contextProvider.componentName} from '@/${contextProvider.path.replace(".tsx", "")}';`);
 		const replacementImportStatements = Array.from(importStatements).join("\n");
-		traverse(ast, { ImportDeclaration(nodePath) {
+		traverse$1(ast, { ImportDeclaration(nodePath) {
 			if (nodePath.node.source.value.includes("@/targets/target-providers")) nodePath.replaceWith(jsxText(replacementImportStatements));
 		} });
 		runReplacementPass(ast, TARGET_PROVIDERS_TAG, null, contextProviders);
@@ -1253,6 +1254,242 @@ const workspacePlugin = () => {
 };
 
 //#endregion
+//#region src/plugins/componentLoaders.ts
+const traverse = traverseModule.default || traverseModule;
+const generate$1 = generate.default || generate;
+/**
+* Names of exports to strip per environment.
+*
+* - `loader` is server-only → strip from the **client** build
+* - `clientLoader` is client-only → strip from the **server** build
+*/
+const STRIP_FROM_CLIENT = ["loader"];
+const STRIP_FROM_SERVER = ["clientLoader"];
+/**
+* Determines which export names should be stripped for a given Vite environment.
+*/
+function getExportsToStrip(environmentName) {
+	if (environmentName === "client") return STRIP_FROM_CLIENT;
+	if (environmentName === "ssr") return STRIP_FROM_SERVER;
+	return [];
+}
+/**
+* Returns `true` when the source code contains at least one of the given export names as a quick pre-check before
+* running the full AST transform.
+*/
+function hasExportCandidate(code, names) {
+	return names.some((name) => code.includes(name));
+}
+/**
+* Checks whether the AST contains at least one class declaration decorated with `@Component(…)`.
+*/
+function hasComponentDecorator(ast) {
+	let found = false;
+	traverse(ast, { ClassDeclaration(path$2) {
+		const decorators = path$2.node.decorators;
+		if (!decorators) return;
+		for (const decorator of decorators) if (decorator.expression.type === "CallExpression" && isIdentifier(decorator.expression.callee) && decorator.expression.callee.name === "Component") {
+			found = true;
+			path$2.stop();
+			return;
+		}
+	} });
+	return found;
+}
+/**
+* Strips the specified named exports from the given source code using a
+* Babel AST transform.
+*
+* The transform handles the following patterns:
+*
+* 1. `export const loader = …;`
+* 2. `export function loader(…) {…}`
+* 3. `export class Loader {…}`
+* 4. `export { loader }` / `export { foo as loader }`
+* 5. `export { loader } from './loaders'`
+*
+* Destructured exports (`export const { loader } = …` or
+* `export const [loader] = …`) cannot be safely removed and will
+* throw an error if encountered (matching React Router behaviour).
+*
+* After removing an export, the transform also:
+* - Removes top-level property assignments to the stripped export
+*   (e.g. `clientLoader.hydrate = true`)
+* - Removes any import declarations that become unused as a result
+*
+* @see {@link https://github.com/remix-run/react-router/blob/main/packages/react-router-dev/vite/remove-exports.ts React Router remove-exports}
+* @returns The transformed source code, or `null` if nothing was changed.
+*/
+function stripExports(code, exportsToStrip, preParsedAst) {
+	const ast = preParsedAst ?? parse(code, {
+		sourceType: "module",
+		plugins: [
+			"typescript",
+			"jsx",
+			"decorators"
+		]
+	});
+	let changed = false;
+	const previouslyReferencedIdentifiers = findReferencedIdentifiers(ast);
+	const removedExportLocalNames = /* @__PURE__ */ new Set();
+	traverse(ast, { ExportNamedDeclaration(path$2) {
+		const { declaration, specifiers } = path$2.node;
+		if (declaration && isVariableDeclaration(declaration)) {
+			const remaining = declaration.declarations.filter((decl) => {
+				if (isIdentifier(decl.id) && exportsToStrip.includes(decl.id.name)) {
+					removedExportLocalNames.add(decl.id.name);
+					return false;
+				}
+				if (isArrayPattern(decl.id) || isObjectPattern(decl.id)) validateDestructuredExports(decl.id, exportsToStrip);
+				return true;
+			});
+			if (remaining.length < declaration.declarations.length) {
+				changed = true;
+				if (remaining.length === 0) {
+					removeLeadingEslintDisableComment(path$2);
+					path$2.remove();
+				} else declaration.declarations = remaining;
+			}
+			return;
+		}
+		if (declaration && isFunctionDeclaration(declaration)) {
+			if (declaration.id && exportsToStrip.includes(declaration.id.name)) {
+				changed = true;
+				removedExportLocalNames.add(declaration.id.name);
+				removeLeadingEslintDisableComment(path$2);
+				path$2.remove();
+				return;
+			}
+		}
+		if (declaration && isClassDeclaration(declaration)) {
+			if (declaration.id && exportsToStrip.includes(declaration.id.name)) {
+				changed = true;
+				removedExportLocalNames.add(declaration.id.name);
+				removeLeadingEslintDisableComment(path$2);
+				path$2.remove();
+				return;
+			}
+		}
+		if (specifiers.length > 0) {
+			const remaining = specifiers.filter((spec) => {
+				if (isExportSpecifier(spec)) {
+					const exportedName = isIdentifier(spec.exported) ? spec.exported.name : spec.exported.value;
+					if (exportsToStrip.includes(exportedName)) {
+						removedExportLocalNames.add(spec.local.name);
+						return false;
+					}
+				}
+				return true;
+			});
+			if (remaining.length < specifiers.length) {
+				changed = true;
+				if (remaining.length === 0) {
+					removeLeadingEslintDisableComment(path$2);
+					path$2.remove();
+				} else path$2.node.specifiers = remaining;
+			}
+		}
+	} });
+	if (changed) traverse(ast, { ExpressionStatement(path$2) {
+		if (!path$2.parentPath?.isProgram()) return;
+		if (path$2.node.expression.type === "AssignmentExpression") {
+			const left = path$2.node.expression.left;
+			if (isMemberExpression(left) && isIdentifier(left.object) && (exportsToStrip.includes(left.object.name) || removedExportLocalNames.has(left.object.name))) {
+				removeLeadingEslintDisableComment(path$2);
+				path$2.remove();
+			}
+		}
+	} });
+	if (changed) deadCodeElimination(ast, previouslyReferencedIdentifiers);
+	if (!changed) return null;
+	return generate$1(ast, { retainLines: true }, code).code;
+}
+/**
+* Validates that no destructured export patterns contain names that should
+* be stripped. Destructured exports cannot be safely removed, so we throw
+* an error instead (matching React Router behaviour).
+*/
+function validateDestructuredExports(id, exportsToStrip) {
+	if (isArrayPattern(id)) for (const element of id.elements) {
+		if (!element) continue;
+		if (isIdentifier(element) && exportsToStrip.includes(element.name)) throw new Error(`Cannot remove destructured export "${element.name}"`);
+		if (isRestElement(element) && isIdentifier(element.argument) && exportsToStrip.includes(element.argument.name)) throw new Error(`Cannot remove destructured export "${element.argument.name}"`);
+		if (isArrayPattern(element) || isObjectPattern(element)) validateDestructuredExports(element, exportsToStrip);
+	}
+	if (isObjectPattern(id)) for (const property of id.properties) {
+		if (!property) continue;
+		if (isObjectProperty(property) && isIdentifier(property.key)) {
+			if (isIdentifier(property.value) && exportsToStrip.includes(property.value.name)) throw new Error(`Cannot remove destructured export "${property.value.name}"`);
+			if (isArrayPattern(property.value) || isObjectPattern(property.value)) validateDestructuredExports(property.value, exportsToStrip);
+		}
+		if (isRestElement(property) && isIdentifier(property.argument) && exportsToStrip.includes(property.argument.name)) throw new Error(`Cannot remove destructured export "${property.argument.name}"`);
+	}
+}
+/**
+* Removes a leading `// eslint-disable-next-line …` comment that sits on
+* the line immediately before the given path.
+*/
+function removeLeadingEslintDisableComment(path$2) {
+	const leadingComments = path$2.node.leadingComments;
+	if (!leadingComments || leadingComments.length === 0) return;
+	const last = leadingComments[leadingComments.length - 1];
+	if (last.type === "CommentLine" && last.value.includes("eslint-disable")) leadingComments.pop();
+}
+/**
+* Vite plugin that strips environment-specific loader exports from
+* component modules.
+*
+* Following the React Router convention:
+* - `export const loader` → server-only, stripped from the **client** bundle
+* - `export const clientLoader` → client-only, stripped from the **server** bundle
+*
+* This ensures that server-only code (e.g. API calls, database access) is
+* never included in the client bundle, and vice versa.
+*
+* The plugin only processes files that:
+* 1. Are under the configured `componentPath` directory
+* 2. Contain a `@Component` decorator (i.e. are Page Designer components)
+* 3. Are not test or story files
+*/
+function componentLoadersPlugin(config = {}) {
+	const { componentPath = "src/components" } = config;
+	let isTestMode = false;
+	return {
+		name: "storefrontnext:component-loaders",
+		enforce: "pre",
+		configResolved(resolvedConfig) {
+			isTestMode = resolvedConfig.mode === "test";
+		},
+		transform(code, id) {
+			if (isTestMode) return null;
+			if (!id.includes(componentPath)) return null;
+			if (!/\.[mc]?[jt]sx?$/.test(id)) return null;
+			if (/\.(test|spec|stories)\.[jt]sx?$/.test(id)) return null;
+			const environmentName = this.environment?.name;
+			if (!environmentName) return null;
+			const exportsToStrip = getExportsToStrip(environmentName);
+			if (exportsToStrip.length === 0) return null;
+			if (!hasExportCandidate(code, exportsToStrip)) return null;
+			const ast = parse(code, {
+				sourceType: "module",
+				plugins: [
+					"typescript",
+					"jsx",
+					"decorators"
+				]
+			});
+			if (!hasComponentDecorator(ast)) return null;
+			const transformed = stripExports(code, exportsToStrip, ast);
+			if (!transformed) return null;
+			return {
+				code: transformed,
+				map: null
+			};
+		}
+	};
+}
+
+//#endregion
 //#region src/storefront-next-targets.ts
 /**
 * Storefront Next Vite plugin that powers the React Router RSC app.
@@ -1294,7 +1531,13 @@ function storefrontNextTargets(config = {}) {
 		watchConfigFilesPlugin(),
 		buildMiddlewareRegistryPlugin()
 	];
-	if (staticRegistry?.componentPath && staticRegistry?.registryPath) plugins.push(staticRegistryPlugin(staticRegistry));
+	if (staticRegistry?.componentPath && staticRegistry?.registryPath) {
+		plugins.push(staticRegistryPlugin(staticRegistry));
+		plugins.push(componentLoadersPlugin({
+			componentPath: staticRegistry.componentPath,
+			verbose: staticRegistry.verbose
+		}));
+	}
 	if (eventInstrumentationValidator !== false) plugins.push(eventInstrumentationValidatorPlugin(eventInstrumentationValidator));
 	if (readableChunkNames) plugins.push(readableChunkFileNamesPlugin());
 	return plugins;

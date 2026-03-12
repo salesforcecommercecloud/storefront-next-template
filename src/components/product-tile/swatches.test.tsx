@@ -181,12 +181,12 @@ describe('Swatches', () => {
         expect(swatchGroup).not.toBeInTheDocument();
     });
 
-    test('renders color swatches with background image styles', () => {
+    test('renders color swatch images', () => {
         const { container } = renderSwatches();
 
         // Color swatches should have background image divs
-        const swatchImage = container.querySelector('[aria-label="Navy"].bg-no-repeat');
+        const swatchImage = container.querySelector('[aria-label="Navy"].rounded-pill > img');
         expect(swatchImage).toBeInTheDocument();
-        expect(swatchImage).toHaveStyle({ backgroundImage: 'url(https://example.com/navy.jpg)' });
+        expect(swatchImage).toHaveAttribute('src', 'https://example.com/navy.jpg');
     });
 });

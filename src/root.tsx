@@ -104,7 +104,6 @@ import { HybridProxyNavigationInterceptor } from '@/extensions/hybrid-proxy/navi
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
 import { HYBRID_PROXY_CONFIG, isProxyPath } from '@/extensions/hybrid-proxy/config';
 import { TargetProviders } from '@/targets/target-providers';
-import { MAINTENANCE_ERROR } from './lib/api-clients';
 import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -262,7 +261,7 @@ export function Layout({ children }: PropsWithChildren) {
 export function ErrorBoundary({ error }: { error: unknown }) {
     // Handle maintenance mode errors
     // Error is serialized when crossing server->client boundary, so we check the string representation
-    if (error && error.toString().indexOf(MAINTENANCE_ERROR) >= 0) {
+    if (error && error.toString().indexOf('MAINTENANCE_ERROR') >= 0) {
         // Use React Router Navigate for smooth client-side navigation
         return <Navigate to="/maintenance" replace />;
     }

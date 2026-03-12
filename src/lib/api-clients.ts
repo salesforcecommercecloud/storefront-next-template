@@ -45,11 +45,6 @@ const getSlasClientSecret = (): string | undefined => {
 };
 
 /**
- * Identifier for a Maintenance error.
- */
-export const MAINTENANCE_ERROR = 'MAINTENANCE_ERROR';
-
-/**
  * Create Commerce API clients with authentication middleware.
  * On the server in production, API requests will directly target the B2C Commerce API endpoints to saves an extra hop.
  * On the server in development, and generally on the client, API requests will be proxied through the MRT proxy to

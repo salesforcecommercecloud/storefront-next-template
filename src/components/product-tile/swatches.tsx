@@ -73,13 +73,16 @@ const Swatches = ({
                             const content =
                                 swatch && id === 'color' ? (
                                     <div
-                                        className="bg-no-repeat bg-cover bg-center rounded-pill w-full h-full"
-                                        style={{
-                                            backgroundColor: valueName?.toLowerCase(),
-                                            backgroundImage: `url(${toImageUrl({ image: swatch, config })})`,
-                                        }}
-                                        aria-label={valueName}
-                                    />
+                                        className="rounded-pill w-full h-full relative overflow-hidden"
+                                        style={{ backgroundColor: valueName?.toLowerCase() }}
+                                        aria-label={valueName}>
+                                        <img
+                                            src={toImageUrl({ image: swatch, config })}
+                                            alt=""
+                                            loading="lazy"
+                                            className="absolute inset-0 w-full h-full object-cover rounded-pill"
+                                        />
+                                    </div>
                                 ) : (
                                     <span className="text-xs font-medium truncate">{valueName}</span>
                                 );
