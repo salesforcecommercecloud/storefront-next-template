@@ -39,14 +39,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const TEMPLATE_DIR = join(__dirname, '..');
+
+// Allow an explicit monorepo root to be passed as a CLI argument:
+//   node scripts/generate-eslint-config.js --monorepo-root /path/to/monorepo
+// Falls back to path-sniffing when not provided (mirror sync workflow context).
+const monorepoRootFlagIndex = process.argv.indexOf('--monorepo-root');
+const monorepoRootFromFlag = monorepoRootFlagIndex !== -1 ? resolve(process.argv[monorepoRootFlagIndex + 1]) : null;
+
 // In monorepo: template is at packages/template-retail-rsc-app/ (need to go up 2 levels)
 // In workflow: template is at mirror-repo/ (need to go up 1 level)
 // Try both paths and use whichever exists
 const monorepoRootOption1 = join(TEMPLATE_DIR, '../..'); // For monorepo
 const monorepoRootOption2 = join(TEMPLATE_DIR, '..'); // For workflow
-const MONOREPO_ROOT = existsSync(join(monorepoRootOption1, 'eslint.rules.js'))
-    ? monorepoRootOption1
-    : monorepoRootOption2;
+const MONOREPO_ROOT =
+    monorepoRootFromFlag ??
+    (existsSync(join(monorepoRootOption1, 'eslint.rules.js')) ? monorepoRootOption1 : monorepoRootOption2);
 
 const PARENT_ESLINT_CONFIG = join(MONOREPO_ROOT, 'eslint.config.js');
 const PARENT_ESLINT_RULES = join(MONOREPO_ROOT, 'eslint.rules.js');

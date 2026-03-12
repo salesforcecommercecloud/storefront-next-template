@@ -18,6 +18,7 @@ import type { RequestHandler } from 'express';
 import { createHybridProxyMiddleware } from '@/extensions/hybrid-proxy/server/middleware';
 /** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
 import { cookieCaptureMiddleware } from '@/extensions/hybrid-proxy/server/cookie-capture';
+/** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
 import config from '@/config/server';
 
 /**
