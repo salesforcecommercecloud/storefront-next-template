@@ -745,7 +745,7 @@
             "errorDescription": "Si è verificato un errore nel caricamento dello storico ordini. Riprovi più tardi.",
             "subtitle": "Visualizza e monitora i Suoi ordini",
             "tableHeaders": {
-                "orderNumber": "Numero ordine",
+                "orderNumber": "ID ordine",
                 "status": "Stato",
                 "method": "Metodo",
                 "amount": "Importo",

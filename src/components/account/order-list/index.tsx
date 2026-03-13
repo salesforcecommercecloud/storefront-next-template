@@ -97,7 +97,7 @@ function OrderListEmpty({ message }: { message?: string }): ReactElement {
     const { t } = useTranslation('account');
 
     return (
-        <Card className="border-order-border m-0 rounded-none shadow-none border-b-0">
+        <Card className="border-border m-0 rounded-none shadow-none border-b-0">
             <CardContent className="p-0">
                 <div className="py-4 space-y-4 flex flex-col items-center justify-center">
                     <Typography variant="h4" className="text-muted-foreground w-fit">
@@ -118,13 +118,11 @@ function OrderListEmpty({ message }: { message?: string }): ReactElement {
  */
 export function OrderListHeader({ title, subtitle }: { title: string; subtitle?: string }): ReactElement {
     return (
-        <Card className="bg-card border-border">
-            <CardContent className="px-6 py-3">
-                <h2
-                    className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1 tracking-tight"
-                    tabIndex={0}>
+        <Card className="bg-card border-border rounded-b-none border-b-0">
+            <CardContent className="px-5">
+                <Typography variant="h4" className="text-foreground mb-1.5" tabIndex={0}>
                     {title}
-                </h2>
+                </Typography>
                 {subtitle && (
                     <Typography variant="small" as="p" className="text-sm text-muted-foreground">
                         {subtitle}
@@ -182,7 +180,7 @@ export function OrderListBody({
             {orders.length === 0 ? (
                 <OrderListEmpty message={emptyMessage} />
             ) : (
-                <div className="space-y-4 m-0 border-x border-t border-order-border">
+                <div className="space-y-4 m-0 border-x border-t border-border rounded-t-none">
                     {orders.map((order) => (
                         <OrderListItem
                             key={order.orderNo}
@@ -193,7 +191,7 @@ export function OrderListBody({
                     ))}
                 </div>
             )}
-            <div className="p-6 m-0 border-b border-x border-order-border rounded-b-xl flex flex-row items-center w-full gap-4">
+            <div className="p-6 m-0 border-b border-x border-border rounded-b-xl flex flex-row items-center w-full gap-4">
                 <Typography
                     variant="small"
                     as="p"

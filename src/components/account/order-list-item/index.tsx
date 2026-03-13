@@ -112,32 +112,32 @@ const STATUS_CONFIG: Record<
     }
 > = {
     [OrderDisplayStatus.CREATED]: {
-        className: 'border-transparent bg-order-status-new text-order-status-new-foreground',
+        className: 'border-transparent bg-info text-info-foreground',
         icon: undefined,
         labelKey: 'orders.status.created',
     },
     [OrderDisplayStatus.NEW]: {
-        className: 'border-transparent bg-order-status-new text-order-status-new-foreground',
+        className: 'border-transparent bg-info text-info-foreground',
         icon: undefined,
         labelKey: 'orders.status.new',
     },
     [OrderDisplayStatus.FAILED]: {
-        className: 'border-transparent bg-order-status-cancelled text-order-status-cancelled-foreground',
+        className: 'border-transparent bg-destructive text-destructive-foreground',
         icon: X,
         labelKey: 'orders.status.failed',
     },
     [OrderDisplayStatus.FAILED_WITH_REOPEN]: {
-        className: 'border-transparent bg-order-status-warning text-order-status-warning-foreground',
+        className: 'border-transparent bg-warning text-warning-foreground',
         icon: undefined,
         labelKey: 'orders.status.failedWithReopen',
     },
     [OrderDisplayStatus.COMPLETED]: {
-        className: 'border-transparent bg-order-status-completed text-order-status-completed-foreground',
+        className: 'border-transparent bg-success text-success-foreground',
         icon: Check,
         labelKey: 'orders.status.completed',
     },
     [OrderDisplayStatus.CANCELLED]: {
-        className: 'border-transparent bg-order-status-cancelled text-order-status-cancelled-foreground',
+        className: 'border-transparent bg-destructive text-destructive-foreground',
         icon: X,
         labelKey: 'orders.status.cancelled',
     },
@@ -185,7 +185,9 @@ function OrderStatusBadge({ status, label }: { status: string; label?: string })
     const displayLabel = label ?? t(config.labelKey as StatusLabelKey);
 
     return (
-        <Badge data-testid="order-status-badge" className={cn('gap-1 font-semibold', config.className)}>
+        <Badge
+            data-testid="order-status-badge"
+            className={cn('gap-1 font-semibold rounded-none border-0 py-1', config.className)}>
             {Icon && <Icon className="size-3" />}
             {displayLabel}
         </Badge>
@@ -211,9 +213,11 @@ function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
                 )}
             </div>
             {item.quantity > 1 && (
-                <Badge className="absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground">
+                <span
+                    className="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+                    aria-label={`Quantity: ${item.quantity}`}>
                     {item.quantity}
-                </Badge>
+                </span>
             )}
         </div>
     );
@@ -240,7 +244,7 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
     const fullAddress = `${location.address}, ${location.city}, ${location.state} ${location.postalCode}`;
 
     return (
-        <Card className="bg-order-pickup border-order-pickup-border p-0">
+        <Card className="bg-muted border-border p-0">
             <CardContent className="p-4 space-y-2">
                 <div className="flex items-center gap-2">
                     <MapPin className="size-4 text-muted-foreground" />
@@ -329,20 +333,20 @@ export function OrderListItem({
             to={orderDetailsUrl}
             className={cn('block transition-opacity hover:opacity-95 m-0', className)}
             onClick={() => onViewDetails?.(order.orderNo)}>
-            <Card className="py-0 rounded-none border-0 border-order-border shadow-none">
-                <CardContent className="p-6 space-y-4 border-b border-order-border hover:bg-muted">
+            <Card className="py-0 rounded-none border-0 border-border shadow-none border-b border-separator hover:bg-transparent">
+                <CardContent className="p-6 space-y-4 border-b border-separator">
                     {/* Header: Order ID, Date, Total, Items + Status */}
-                    <div className="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted">
+                    <div className="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted">
                         <div className="flex flex-wrap gap-x-8 gap-y-2">
-                            <div>
+                            <div className="space-y-2">
                                 <Typography variant="muted" as="p" className="text-xs">
                                     {t('orders.tableHeaders.orderNumber')}
                                 </Typography>
                                 <Typography variant="small" as="p" className="text-foreground font-medium">
-                                    {order.orderNo}
+                                    {order.orderNo.startsWith('#') ? order.orderNo : `#${order.orderNo}`}
                                 </Typography>
                             </div>
-                            <div>
+                            <div className="space-y-2">
                                 <Typography variant="muted" as="p" className="text-xs">
                                     {t('orders.orderDate')}
                                 </Typography>
@@ -350,7 +354,7 @@ export function OrderListItem({
                                     {formatOrderDate(order.orderDate, i18n.language, invalidDateLabel)}
                                 </Typography>
                             </div>
-                            <div>
+                            <div className="space-y-2">
                                 <Typography variant="muted" as="p" className="text-xs">
                                     {t('orders.total')}
                                 </Typography>
@@ -358,11 +362,11 @@ export function OrderListItem({
                                     {formatCurrency(order.total, i18n.language, order.currency ?? siteCurrency)}
                                 </Typography>
                             </div>
-                            <div>
+                            <div className="space-y-2">
                                 <Typography variant="muted" as="p" className="text-xs">
                                     {t('orders.items')}
                                 </Typography>
-                                <Typography variant="small" as="p" className="text-foreground">
+                                <Typography variant="small" as="p" className="text-foreground font-semibold">
                                     {order.itemCount}
                                 </Typography>
                             </div>
@@ -390,7 +394,7 @@ export function OrderListItem({
                         <Typography
                             variant="small"
                             as="span"
-                            className="inline-flex items-center gap-1 text-primary hover:underline">
+                            className="inline-flex items-center gap-1 text-foreground hover:underline">
                             {t('orders.viewOrderDetails', 'View Order Details')}
                             <ChevronRight className="size-4" />
                         </Typography>

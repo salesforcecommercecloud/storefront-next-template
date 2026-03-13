@@ -793,7 +793,7 @@
             "address": "Address",
             "viewOrderDetails": "View Order Details",
             "tableHeaders": {
-                "orderNumber": "Order Number",
+                "orderNumber": "Order ID",
                 "status": "Status",
                 "method": "Method",
                 "amount": "Amount",

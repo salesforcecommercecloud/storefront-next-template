@@ -136,6 +136,9 @@
     --success: #000000;
     --success-foreground: #ffffff;
 
+    --info: #dbeafe;
+    --info-foreground: #1e40af;
+
     --border: rgba(0, 0, 0, 0.08);
     --input: #e8e8e8;
     --ring: #000000;
@@ -576,18 +579,6 @@ html.dark [data-theme='inverse'] {
     --brand-blue-500: oklch(0.59 0.2 264);
     --brand-blue-600: #2563eb;
     --brand-blue-700: #1d4ed8;
-    /* order status tokens (SCAPI statuses: created, new, failed, failed_with_reopen, completed, cancelled) */
-    --order-status-new: #dbeafe;  /* -blue-100 - for created/new */
-    --order-status-new-foreground: #1d4ed8; /* -blue-700 */
-    --order-status-warning: #fef9c3; /* -yellow-100 - for failed_with_reopen */
-    --order-status-warning-foreground: #a16207; /* -yellow-700 */
-    --order-status-completed: #16a34a;  /* -green-600 - for completed */
-    --order-status-completed-foreground: #ffffff; /* -white */
-    --order-status-cancelled: #fee2e2; /* -red-100 - for cancelled */
-    --order-status-cancelled-foreground: #b91c1c; /* -red-700 */
-    --order-border: #e5e7eb; /* -brand-gray-200 */
-    --order-pickup: #eff6ff; /* -blue-50 */
-    --order-pickup-border: #bfdbfe; /* -blue-200 */
 
     /* header & navigation */
     --header-background: var(--background);

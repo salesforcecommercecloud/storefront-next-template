@@ -175,7 +175,7 @@ describe('AccountOrders Page', () => {
     describe('Page Content', () => {
         test('renders Order History title', async () => {
             await renderAccountOrders();
-            expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Order History');
+            expect(screen.getByRole('heading', { level: 4 })).toHaveTextContent('Order History');
         });
 
         test('renders subtitle', async () => {
@@ -215,19 +215,19 @@ describe('AccountOrders Page', () => {
         test('renders created status badge', async () => {
             await renderAccountOrders();
             const createdBadge = screen.getByText('Created').closest('span');
-            expect(createdBadge).toHaveClass('bg-order-status-new');
+            expect(createdBadge).toHaveClass('bg-info');
         });
 
         test('renders new status badge', async () => {
             await renderAccountOrders();
             const newBadge = screen.getByText('New').closest('span');
-            expect(newBadge).toHaveClass('bg-order-status-new');
+            expect(newBadge).toHaveClass('bg-info');
         });
 
         test('renders completed status badge', async () => {
             await renderAccountOrders();
             const completedBadge = screen.getByText('Completed').closest('span');
-            expect(completedBadge).toHaveClass('bg-order-status-completed');
+            expect(completedBadge).toHaveClass('bg-success');
         });
     });
 

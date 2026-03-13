@@ -7,32 +7,36 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
   href="/account/orders/ORD-2024-004"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
-      class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+      class="p-6 space-y-4 border-b border-separator"
       data-slot="card-content"
     >
       <div
-        class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+        class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
       >
         <div
           class="flex flex-wrap gap-x-8 gap-y-2"
         >
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
-              Order Number
+              Order ID
             </p>
             <p
               class="text-sm leading-none text-left text-foreground font-medium"
             >
-              ORD-2024-004
+              #ORD-2024-004
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -44,7 +48,9 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
               8 Sept 2024
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -56,21 +62,23 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
               £95.92
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
               Items
             </p>
             <p
-              class="text-sm font-medium leading-none text-left text-foreground"
+              class="text-sm leading-none text-left text-foreground font-semibold"
             >
               2
             </p>
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-cancelled text-order-status-cancelled-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-destructive text-destructive-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -114,8 +122,8 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -134,8 +142,8 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 3"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             3
           </span>
@@ -145,7 +153,7 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
         class="pt-2"
       >
         <span
-          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
         >
           View Order Details
           <svg
@@ -179,32 +187,36 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
   href="/account/orders/ORD-2024-001"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
-      class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+      class="p-6 space-y-4 border-b border-separator"
       data-slot="card-content"
     >
       <div
-        class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+        class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
       >
         <div
           class="flex flex-wrap gap-x-8 gap-y-2"
         >
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
-              Order Number
+              Order ID
             </p>
             <p
               class="text-sm leading-none text-left text-foreground font-medium"
             >
-              ORD-2024-001
+              #ORD-2024-001
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -216,7 +228,9 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
               14 Sept 2024
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -228,21 +242,23 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
               £48.38
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
               Items
             </p>
             <p
-              class="text-sm font-medium leading-none text-left text-foreground"
+              class="text-sm leading-none text-left text-foreground font-semibold"
             >
               2
             </p>
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -280,8 +296,8 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -291,7 +307,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
         class="pt-2"
       >
         <span
-          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
         >
           View Order Details
           <svg
@@ -325,32 +341,36 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
   href="/account/orders/ORD-2024-003"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
-      class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+      class="p-6 space-y-4 border-b border-separator"
       data-slot="card-content"
     >
       <div
-        class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+        class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
       >
         <div
           class="flex flex-wrap gap-x-8 gap-y-2"
         >
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
-              Order Number
+              Order ID
             </p>
             <p
               class="text-sm leading-none text-left text-foreground font-medium"
             >
-              ORD-2024-003
+              #ORD-2024-003
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -362,7 +382,9 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               1 Sept 2024
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -374,21 +396,23 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               £405.00
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
               Items
             </p>
             <p
-              class="text-sm font-medium leading-none text-left text-foreground"
+              class="text-sm leading-none text-left text-foreground font-semibold"
             >
               18
             </p>
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -412,8 +436,8 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -460,8 +484,8 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -508,8 +532,8 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -556,8 +580,8 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -605,7 +629,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
         class="pt-2"
       >
         <span
-          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
         >
           View Order Details
           <svg
@@ -639,32 +663,36 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
   href="/account/orders/ORD-2024-002"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
-      class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+      class="p-6 space-y-4 border-b border-separator"
       data-slot="card-content"
     >
       <div
-        class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+        class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
       >
         <div
           class="flex flex-wrap gap-x-8 gap-y-2"
         >
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
-              Order Number
+              Order ID
             </p>
             <p
               class="text-sm leading-none text-left text-foreground font-medium"
             >
-              ORD-2024-002
+              #ORD-2024-002
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -676,7 +704,9 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
               12 Sept 2024
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -688,21 +718,23 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
               £43.00
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
               Items
             </p>
             <p
-              class="text-sm font-medium leading-none text-left text-foreground"
+              class="text-sm leading-none text-left text-foreground font-semibold"
             >
               1
             </p>
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -726,8 +758,8 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -737,7 +769,7 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
         class="pt-2"
       >
         <span
-          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
         >
           View Order Details
           <svg
@@ -771,32 +803,36 @@ exports[`OrderListItem stories snapshot > MixedImages story renders and matches 
   href="/account/orders/ORD-2024-008"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
-      class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+      class="p-6 space-y-4 border-b border-separator"
       data-slot="card-content"
     >
       <div
-        class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+        class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
       >
         <div
           class="flex flex-wrap gap-x-8 gap-y-2"
         >
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
-              Order Number
+              Order ID
             </p>
             <p
               class="text-sm leading-none text-left text-foreground font-medium"
             >
-              ORD-2024-008
+              #ORD-2024-008
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -808,7 +844,9 @@ exports[`OrderListItem stories snapshot > MixedImages story renders and matches 
               14 Sept 2024
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -820,21 +858,23 @@ exports[`OrderListItem stories snapshot > MixedImages story renders and matches 
               £48.38
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
               Items
             </p>
             <p
-              class="text-sm font-medium leading-none text-left text-foreground"
+              class="text-sm leading-none text-left text-foreground font-semibold"
             >
               4
             </p>
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -869,8 +909,8 @@ exports[`OrderListItem stories snapshot > MixedImages story renders and matches 
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -900,8 +940,8 @@ exports[`OrderListItem stories snapshot > MixedImages story renders and matches 
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 3"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             3
           </span>
@@ -911,7 +951,7 @@ exports[`OrderListItem stories snapshot > MixedImages story renders and matches 
         class="pt-2"
       >
         <span
-          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
         >
           View Order Details
           <svg
@@ -948,32 +988,36 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
     href="/account/orders/ORD-2024-001"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+      class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
       data-slot="card"
     >
       <div
-        class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+        class="p-6 space-y-4 border-b border-separator"
         data-slot="card-content"
       >
         <div
-          class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+          class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
         >
           <div
             class="flex flex-wrap gap-x-8 gap-y-2"
           >
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
-                Order Number
+                Order ID
               </p>
               <p
                 class="text-sm leading-none text-left text-foreground font-medium"
               >
-                ORD-2024-001
+                #ORD-2024-001
               </p>
             </div>
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
@@ -985,7 +1029,9 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 14 Sept 2024
               </p>
             </div>
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
@@ -997,21 +1043,23 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 £48.38
               </p>
             </div>
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
                 Items
               </p>
               <p
-                class="text-sm font-medium leading-none text-left text-foreground"
+                class="text-sm leading-none text-left text-foreground font-semibold"
               >
                 2
               </p>
             </div>
           </div>
           <span
-            class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+            class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
             data-slot="badge"
             data-testid="order-status-badge"
           >
@@ -1049,15 +1097,15 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               />
             </div>
             <span
-              class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-              data-slot="badge"
+              aria-label="Quantity: 2"
+              class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
             >
               2
             </span>
           </div>
         </div>
         <div
-          class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-order-pickup border-order-pickup-border p-0"
+          class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-muted border-border p-0"
           data-slot="card"
         >
           <div
@@ -1129,7 +1177,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
           class="pt-2"
         >
           <span
-            class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+            class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
           >
             View Order Details
             <svg
@@ -1160,32 +1208,36 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
     href="/account/orders/ORD-2024-002"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+      class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
       data-slot="card"
     >
       <div
-        class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+        class="p-6 space-y-4 border-b border-separator"
         data-slot="card-content"
       >
         <div
-          class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+          class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
         >
           <div
             class="flex flex-wrap gap-x-8 gap-y-2"
           >
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
-                Order Number
+                Order ID
               </p>
               <p
                 class="text-sm leading-none text-left text-foreground font-medium"
               >
-                ORD-2024-002
+                #ORD-2024-002
               </p>
             </div>
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
@@ -1197,7 +1249,9 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 12 Sept 2024
               </p>
             </div>
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
@@ -1209,21 +1263,23 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 £43.00
               </p>
             </div>
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
                 Items
               </p>
               <p
-                class="text-sm font-medium leading-none text-left text-foreground"
+                class="text-sm leading-none text-left text-foreground font-semibold"
               >
                 1
               </p>
             </div>
           </div>
           <span
-            class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+            class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
             data-slot="badge"
             data-testid="order-status-badge"
           >
@@ -1247,8 +1303,8 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               />
             </div>
             <span
-              class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-              data-slot="badge"
+              aria-label="Quantity: 2"
+              class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
             >
               2
             </span>
@@ -1258,7 +1314,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
           class="pt-2"
         >
           <span
-            class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+            class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
           >
             View Order Details
             <svg
@@ -1289,32 +1345,36 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
     href="/account/orders/ORD-2024-003"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+      class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
       data-slot="card"
     >
       <div
-        class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+        class="p-6 space-y-4 border-b border-separator"
         data-slot="card-content"
       >
         <div
-          class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+          class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
         >
           <div
             class="flex flex-wrap gap-x-8 gap-y-2"
           >
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
-                Order Number
+                Order ID
               </p>
               <p
                 class="text-sm leading-none text-left text-foreground font-medium"
               >
-                ORD-2024-003
+                #ORD-2024-003
               </p>
             </div>
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
@@ -1326,7 +1386,9 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 1 Sept 2024
               </p>
             </div>
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
@@ -1338,21 +1400,23 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 £405.00
               </p>
             </div>
-            <div>
+            <div
+              class="space-y-2"
+            >
               <p
                 class="text-muted-foreground text-left text-xs"
               >
                 Items
               </p>
               <p
-                class="text-sm font-medium leading-none text-left text-foreground"
+                class="text-sm leading-none text-left text-foreground font-semibold"
               >
                 18
               </p>
             </div>
           </div>
           <span
-            class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+            class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
             data-slot="badge"
             data-testid="order-status-badge"
           >
@@ -1376,8 +1440,8 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               />
             </div>
             <span
-              class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-              data-slot="badge"
+              aria-label="Quantity: 2"
+              class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
             >
               2
             </span>
@@ -1424,8 +1488,8 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               />
             </div>
             <span
-              class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-              data-slot="badge"
+              aria-label="Quantity: 2"
+              class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
             >
               2
             </span>
@@ -1472,8 +1536,8 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               />
             </div>
             <span
-              class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-              data-slot="badge"
+              aria-label="Quantity: 2"
+              class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
             >
               2
             </span>
@@ -1520,8 +1584,8 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
               />
             </div>
             <span
-              class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-              data-slot="badge"
+              aria-label="Quantity: 2"
+              class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
             >
               2
             </span>
@@ -1569,7 +1633,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
           class="pt-2"
         >
           <span
-            class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+            class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
           >
             View Order Details
             <svg
@@ -1604,32 +1668,36 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
   href="/account/orders/ORD-2024-005"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
-      class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+      class="p-6 space-y-4 border-b border-separator"
       data-slot="card-content"
     >
       <div
-        class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+        class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
       >
         <div
           class="flex flex-wrap gap-x-8 gap-y-2"
         >
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
-              Order Number
+              Order ID
             </p>
             <p
               class="text-sm leading-none text-left text-foreground font-medium"
             >
-              ORD-2024-005
+              #ORD-2024-005
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -1641,7 +1709,9 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
               10 Sept 2024
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -1653,21 +1723,23 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
               £54.00
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
               Items
             </p>
             <p
-              class="text-sm font-medium leading-none text-left text-foreground"
+              class="text-sm leading-none text-left text-foreground font-semibold"
             >
               4
             </p>
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -1691,8 +1763,8 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 3"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             3
           </span>
@@ -1711,8 +1783,8 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -1731,8 +1803,8 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 4"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             4
           </span>
@@ -1756,7 +1828,7 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
         class="pt-2"
       >
         <span
-          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
         >
           View Order Details
           <svg
@@ -1790,32 +1862,36 @@ exports[`OrderListItem stories snapshot > WithImageAlt story renders and matches
   href="/account/orders/ORD-2024-007"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
-      class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+      class="p-6 space-y-4 border-b border-separator"
       data-slot="card-content"
     >
       <div
-        class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+        class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
       >
         <div
           class="flex flex-wrap gap-x-8 gap-y-2"
         >
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
-              Order Number
+              Order ID
             </p>
             <p
               class="text-sm leading-none text-left text-foreground font-medium"
             >
-              ORD-2024-007
+              #ORD-2024-007
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -1827,7 +1903,9 @@ exports[`OrderListItem stories snapshot > WithImageAlt story renders and matches
               14 Sept 2024
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -1839,21 +1917,23 @@ exports[`OrderListItem stories snapshot > WithImageAlt story renders and matches
               £48.38
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
               Items
             </p>
             <p
-              class="text-sm font-medium leading-none text-left text-foreground"
+              class="text-sm leading-none text-left text-foreground font-semibold"
             >
               2
             </p>
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -1891,8 +1971,8 @@ exports[`OrderListItem stories snapshot > WithImageAlt story renders and matches
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -1902,7 +1982,7 @@ exports[`OrderListItem stories snapshot > WithImageAlt story renders and matches
         class="pt-2"
       >
         <span
-          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
         >
           View Order Details
           <svg
@@ -1936,32 +2016,36 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
   href="/account/orders/ORD-2024-001"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
-      class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+      class="p-6 space-y-4 border-b border-separator"
       data-slot="card-content"
     >
       <div
-        class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+        class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
       >
         <div
           class="flex flex-wrap gap-x-8 gap-y-2"
         >
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
-              Order Number
+              Order ID
             </p>
             <p
               class="text-sm leading-none text-left text-foreground font-medium"
             >
-              ORD-2024-001
+              #ORD-2024-001
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -1973,7 +2057,9 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
               14 Sept 2024
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -1985,21 +2071,23 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
               £48.38
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
               Items
             </p>
             <p
-              class="text-sm font-medium leading-none text-left text-foreground"
+              class="text-sm leading-none text-left text-foreground font-semibold"
             >
               2
             </p>
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -2037,15 +2125,15 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
         </div>
       </div>
       <div
-        class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-order-pickup border-order-pickup-border p-0"
+        class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-muted border-border p-0"
         data-slot="card"
       >
         <div
@@ -2117,7 +2205,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
         class="pt-2"
       >
         <span
-          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
         >
           View Order Details
           <svg
@@ -2151,32 +2239,36 @@ exports[`OrderListItem stories snapshot > WithoutImages story renders and matche
   href="/account/orders/ORD-2024-006"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 border-order-border shadow-none"
+    class="bg-card text-card-foreground flex flex-col gap-6 py-0 rounded-none border-0 shadow-none border-b border-separator hover:bg-transparent"
     data-slot="card"
   >
     <div
-      class="p-6 space-y-4 border-b border-order-border hover:bg-muted"
+      class="p-6 space-y-4 border-b border-separator"
       data-slot="card-content"
     >
       <div
-        class="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted"
+        class="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted"
       >
         <div
           class="flex flex-wrap gap-x-8 gap-y-2"
         >
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
-              Order Number
+              Order ID
             </p>
             <p
               class="text-sm leading-none text-left text-foreground font-medium"
             >
-              ORD-2024-006
+              #ORD-2024-006
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -2188,7 +2280,9 @@ exports[`OrderListItem stories snapshot > WithoutImages story renders and matche
               14 Sept 2024
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
@@ -2200,21 +2294,23 @@ exports[`OrderListItem stories snapshot > WithoutImages story renders and matche
               £48.38
             </p>
           </div>
-          <div>
+          <div
+            class="space-y-2"
+          >
             <p
               class="text-muted-foreground text-left text-xs"
             >
               Items
             </p>
             <p
-              class="text-sm font-medium leading-none text-left text-foreground"
+              class="text-sm leading-none text-left text-foreground font-semibold"
             >
               2
             </p>
           </div>
         </div>
         <span
-          class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold border-transparent bg-order-status-new text-order-status-new-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -2246,8 +2342,8 @@ exports[`OrderListItem stories snapshot > WithoutImages story renders and matche
             />
           </div>
           <span
-            class="rounded-full border font-medium whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
-            data-slot="badge"
+            aria-label="Quantity: 2"
+            class="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
           >
             2
           </span>
@@ -2257,7 +2353,7 @@ exports[`OrderListItem stories snapshot > WithoutImages story renders and matche
         class="pt-2"
       >
         <span
-          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-primary hover:underline"
+          class="text-sm font-medium leading-none text-left inline-flex items-center gap-1 text-foreground hover:underline"
         >
           View Order Details
           <svg

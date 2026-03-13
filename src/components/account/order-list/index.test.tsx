@@ -84,7 +84,7 @@ describe('OrderList Component', () => {
     describe('Header Rendering', () => {
         test('renders title', () => {
             renderOrderList({ title: 'My Orders' });
-            expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('My Orders');
+            expect(screen.getByRole('heading', { level: 4 })).toHaveTextContent('My Orders');
         });
 
         test('renders subtitle when provided', () => {
@@ -137,7 +137,7 @@ describe('OrderList Component', () => {
                 ],
             });
             const badge = screen.getByText('Completed').closest('span');
-            expect(badge).toHaveClass('bg-order-status-completed');
+            expect(badge).toHaveClass('bg-success');
         });
 
         test('renders cancelled status with destructive styling', () => {
@@ -155,7 +155,7 @@ describe('OrderList Component', () => {
                 ],
             });
             const badge = screen.getByText('Cancelled').closest('span');
-            expect(badge).toHaveClass('bg-order-status-cancelled');
+            expect(badge).toHaveClass('bg-destructive');
         });
 
         test('renders new status with pickup styling', () => {
@@ -173,7 +173,7 @@ describe('OrderList Component', () => {
                 ],
             });
             const badge = screen.getByText('New').closest('span');
-            expect(badge).toHaveClass('bg-order-status-new');
+            expect(badge).toHaveClass('bg-info');
         });
     });
 
@@ -264,7 +264,7 @@ describe('OrderList Component', () => {
 describe('OrderListHeader Component', () => {
     test('renders title', () => {
         render(<OrderListHeader title="My Orders" />);
-        expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('My Orders');
+        expect(screen.getByRole('heading', { level: 4 })).toHaveTextContent('My Orders');
     });
 
     test('renders subtitle when provided', () => {
@@ -279,7 +279,7 @@ describe('OrderListHeader Component', () => {
 
     test('title is focusable for accessibility', () => {
         render(<OrderListHeader title="My Orders" />);
-        const heading = screen.getByRole('heading', { level: 2 });
+        const heading = screen.getByRole('heading', { level: 4 });
         expect(heading).toHaveAttribute('tabindex', '0');
     });
 });
@@ -383,6 +383,6 @@ describe('OrderListBody Component', () => {
                 <OrderListBody orders={testOrders} />
             </CurrencyWrapper>
         );
-        expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
+        expect(screen.queryByRole('heading', { level: 4 })).not.toBeInTheDocument();
     });
 });
