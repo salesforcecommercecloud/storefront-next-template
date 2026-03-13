@@ -16,31 +16,38 @@
 'use client';
 
 import type { ReactElement } from 'react';
-import { Button } from '@/components/ui/button';
-import type { RefinementProps } from './types';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { Checkbox } from '@/components/ui/checkbox';
+import type { RefinementProps } from '../types';
 
-export default function RefineSize({
+export default function DefaultRefinement({
     values,
     attributeId,
     isFilterSelected,
     toggleFilter,
 }: RefinementProps): ReactElement {
     return (
-        <div className="flex flex-wrap gap-2 mt-2">
-            {values.map((value) => {
+        <div className="space-y-1 mt-2">
+            {values.map((value: ShopperSearch.schemas['ProductSearchRefinementValue'], idx) => {
+                const id = `refine-${attributeId}-${idx}`;
                 const isSelected = isFilterSelected(attributeId, value.value);
 
                 return (
-                    <Button
+                    <label
                         key={`${attributeId}:${value.value}`}
-                        variant="outline"
-                        onClick={() => toggleFilter(attributeId, value.value)}
-                        className={`${isSelected ? 'border-foreground/80' : ''}`}>
-                        {value.label || value.value}
+                        htmlFor={id}
+                        className="flex items-center p-2 rounded-md hover:bg-muted/30 cursor-pointer">
+                        <Checkbox
+                            id={id}
+                            checked={isSelected}
+                            onCheckedChange={() => toggleFilter(attributeId, value.value)}
+                            className="size-4"
+                        />
+                        <span className="ml-3 text-sm font-medium">{value.label || value.value}</span>
                         {value.hitCount !== undefined && (
                             <span className="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full">{value.hitCount}</span>
                         )}
-                    </Button>
+                    </label>
                 );
             })}
         </div>

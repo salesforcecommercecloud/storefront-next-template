@@ -15,10 +15,13 @@
  */
 'use client';
 
-import { type ReactElement, useCallback, useMemo } from 'react';
+import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useNavigation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Plus, Minus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Typography } from '@/components/typography';
 import type { FilterValue, RefinementProps } from './types';
 import RefineDefault from './refine-default';
 import RefineColor from './refine-color';
@@ -35,6 +38,7 @@ export default function CategoryRefinements({
     result: ShopperSearch.schemas['ProductSearchResult'];
     refine: string[];
 }): ReactElement {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const navigation = useNavigation();
@@ -59,18 +63,14 @@ export default function CategoryRefinements({
         ? new URLSearchParams(navigation.location.search).getAll('refine')
         : refine;
 
-    // Expand all sections, except category (attribute ID = cgid)
-    const expandedSections = useMemo(
-        () =>
-            effectiveRefines.reduce((acc: string[], entry: string) => {
-                const attributeId = entry.split('=')[0];
-                if (attributeId !== 'cgid') {
-                    acc.push(attributeId);
-                }
-                return acc;
-            }, []),
+    // Track which sections should be expanded (default open if has active filters)
+    const hasActiveFilter = useCallback(
+        (attributeId: string) => {
+            return effectiveRefines.some((r) => r.startsWith(`${attributeId}=`));
+        },
         [effectiveRefines]
     );
+
     const refinements = useMemo(() => result?.refinements || [], [result]);
 
     const toggleFilter = useCallback(
@@ -157,41 +157,68 @@ export default function CategoryRefinements({
     if (refinements.length === 0) {
         return (
             <div className="border rounded-md p-4">
-                <p className="text-muted-foreground text-sm">No filter options available.</p>
+                <p className="text-muted-foreground text-sm">{t('categoryRefinements:noFilterOptionsAvailable')}</p>
             </div>
         );
     }
 
     return (
-        <>
+        <div className={isPending ? 'pointer-events-none opacity-50 transition-opacity' : ''}>
             {/*  @sfdc-extension-line SFDC_EXT_BOPIS */}
             <RefineInventory isFilterSelected={isFilterSelected} toggleFilter={toggleFilter} />
 
-            {/* Accordion to display the available refinement categories */}
-            <Accordion
-                type="multiple"
-                defaultValue={expandedSections}
-                {...(isPending && { className: 'pointer-events-none opacity-50 transition-opacity' })}>
-                {refinements.map((refinement) => {
-                    const { values, attributeId, label } = refinement;
-                    if (!Array.isArray(values) || !values.length) {
-                        return null;
-                    }
+            {/* Individual collapsible sections for each refinement category */}
+            {refinements.map((refinement) => {
+                const { values, attributeId, label } = refinement;
+                if (!Array.isArray(values) || !values.length) {
+                    return null;
+                }
 
-                    return (
-                        <AccordionItem key={attributeId} value={attributeId}>
-                            <AccordionTrigger>{label}</AccordionTrigger>
-                            <AccordionContent>
-                                {renderFilterValues(
-                                    refinement as ShopperSearch.schemas['ProductSearchRefinement'] & {
-                                        values: FilterValue[];
-                                    }
-                                )}
-                            </AccordionContent>
-                        </AccordionItem>
-                    );
-                })}
-            </Accordion>
-        </>
+                return (
+                    <FilterSection
+                        key={attributeId}
+                        label={label || attributeId}
+                        defaultOpen={hasActiveFilter(attributeId) && attributeId !== 'cgid'}>
+                        {renderFilterValues(
+                            refinement as ShopperSearch.schemas['ProductSearchRefinement'] & {
+                                values: FilterValue[];
+                            }
+                        )}
+                    </FilterSection>
+                );
+            })}
+        </div>
+    );
+}
+
+/**
+ * Individual filter section with collapsible behavior.
+ * Shows Plus icon when collapsed, Minus when expanded.
+ */
+function FilterSection({
+    label,
+    defaultOpen = false,
+    children,
+}: {
+    label: string;
+    defaultOpen?: boolean;
+    children: ReactElement;
+}): ReactElement {
+    const [isOpen, setIsOpen] = useState(defaultOpen);
+
+    return (
+        <section>
+            <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border rounded-md mb-4">
+                <Typography variant="small" as="h3" className="leading-normal p-4 transition-colors hover:bg-muted/60">
+                    <CollapsibleTrigger className="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer">
+                        <Typography variant="small" as="span" className="font-medium">
+                            {label}
+                        </Typography>
+                        {isOpen ? <Minus className="size-4" /> : <Plus className="size-4" />}
+                    </CollapsibleTrigger>
+                </Typography>
+                <CollapsibleContent className="px-4 pb-4">{children}</CollapsibleContent>
+            </Collapsible>
+        </section>
     );
 }

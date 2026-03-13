@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import ActiveFilters from '../active-filters';
+import ActiveFilters from '..';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
@@ -117,7 +117,7 @@ The ActiveFilters component is used on:
 - Any filtered product list
 
 \`\`\`tsx
-import ActiveFilters from '../active-filters';
+import ActiveFilters from '@/components/category-refinements/active-filters';
 
 function CategoryPage({ searchResult }) {
   return <ActiveFilters result={searchResult} />;

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import RefineDefault from '../refine-default';
+import RefineDefault from '..';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import type { FilterValue } from '../types';
+import type { FilterValue } from '../../types';
 
 const REFINE_DEFAULT_HARNESS_ATTR = 'data-refine-default-harness';
 
@@ -101,7 +101,7 @@ The RefineDefault component is used within:
 - Default filtering for most attributes
 
 \`\`\`tsx
-import RefineDefault from '../refine-default';
+import RefineDefault from '@/components/category-refinements/refine-default';
 
 function DefaultFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
   return (

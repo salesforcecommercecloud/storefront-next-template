@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import RefinePrice from '../refine-price';
+import RefinePrice from '..';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
@@ -22,7 +22,7 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 // @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
-import type { FilterValue } from '../types';
+import type { FilterValue } from '../../types';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 const REFINE_PRICE_HARNESS_ATTR = 'data-refine-price-harness';
@@ -115,7 +115,7 @@ The RefinePrice component is used within:
 - Price-based filtering
 
 \`\`\`tsx
-import RefinePrice from '../refine-price';
+import RefinePrice from '@/components/category-refinements/refine-price';
 
 function PriceFilter({ values, attributeId, isFilterSelected, toggleFilter, result }) {
   return (

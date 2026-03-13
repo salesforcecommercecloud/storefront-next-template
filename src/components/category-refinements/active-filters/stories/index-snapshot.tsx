@@ -59,7 +59,7 @@ vi.mock('react-router', () => ({
 
 import { composeStories } from '@storybook/react-vite';
 
-import * as ActiveFiltersStories from './active-filters.stories';
+import * as ActiveFiltersStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 

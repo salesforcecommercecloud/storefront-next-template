@@ -18,7 +18,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import RefinePrice from './refine-price';
+import RefinePrice from './index';
 
 const mockToggleFilter = vi.fn();
 const mockResult = {

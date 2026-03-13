@@ -5,7 +5,9 @@
     },
     "categoryRefinements": {
         "appliedFilters": "Filtri attivi:",
-        "clearAll": "Cancella tutto"
+        "clearAll": "Cancella tutto",
+        "filtersButtonLabel": "Filtri",
+        "noFilterOptionsAvailable": "Nessuna opzione di filtro disponibile."
     },
     "common": {
         "loading": "Caricamento",

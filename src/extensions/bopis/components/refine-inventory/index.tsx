@@ -16,10 +16,12 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Typography } from '@/components/typography';
+import { Plus, Minus } from 'lucide-react';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 
 interface RefineInventoryProps {
@@ -94,48 +96,54 @@ export default function RefineInventory({ isFilterSelected, toggleFilter }: Refi
     };
 
     const storeLinkText = selectedStoreInfo?.name || t('storeInventoryFilter.selectStore');
+    const [isOpen, setIsOpen] = useState(true); // Default open to match previous behavior
 
     return (
-        <>
-            <Accordion type="multiple" defaultValue={['inventory']}>
-                <AccordionItem value="inventory" className="!border-b" data-testid="sf-store-inventory-filter">
-                    <AccordionTrigger>{t('storeInventoryFilter.heading')}</AccordionTrigger>
-                    <AccordionContent>
-                        <div className="flex items-start space-x-2 p-2 rounded-md hover:bg-muted/30">
-                            <Checkbox
-                                id="inventory-filter"
-                                checked={isChecked}
-                                onCheckedChange={handleCheckboxChange}
-                                aria-label={t('storeInventoryFilter.checkboxAriaLabel', { storeName: storeLinkText })}
-                                data-testid="sf-store-inventory-filter-checkbox"
-                                className="size-4"
-                            />
-                            <label
-                                htmlFor="inventory-filter"
-                                className="text-sm font-medium leading-none cursor-pointer">
-                                {t('storeInventoryFilter.label', { storeName: ' ' })}
-                                <span
-                                    className="underline cursor-pointer hover:opacity-70"
-                                    onClick={handleStoreNameClick}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
-                                            handleStoreNameClick(e);
-                                        }
-                                    }}
-                                    role="button"
-                                    tabIndex={0}
-                                    aria-label={
-                                        selectedStoreInfo
-                                            ? t('storeInventoryFilter.changeStore')
-                                            : t('storeInventoryFilter.selectStore')
-                                    }>
-                                    {storeLinkText}
-                                </span>
-                            </label>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </>
+        <Collapsible
+            open={isOpen}
+            onOpenChange={setIsOpen}
+            className="border border-border rounded-md mb-4"
+            data-testid="sf-store-inventory-filter">
+            <Typography variant="small" as="h3" className="leading-normal p-4 transition-colors hover:bg-muted/60">
+                <CollapsibleTrigger className="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer">
+                    <Typography variant="small" as="span" className="font-medium">
+                        {t('storeInventoryFilter.heading')}
+                    </Typography>
+                    {isOpen ? <Minus className="size-4" /> : <Plus className="size-4" />}
+                </CollapsibleTrigger>
+            </Typography>
+            <CollapsibleContent className="px-4 pb-4">
+                <div className="flex items-start space-x-2 p-2 rounded-md">
+                    <Checkbox
+                        id="inventory-filter"
+                        checked={isChecked}
+                        onCheckedChange={handleCheckboxChange}
+                        aria-label={t('storeInventoryFilter.checkboxAriaLabel', { storeName: storeLinkText })}
+                        data-testid="sf-store-inventory-filter-checkbox"
+                        className="size-4"
+                    />
+                    <label htmlFor="inventory-filter" className="text-sm font-medium leading-none cursor-pointer">
+                        {t('storeInventoryFilter.label', { storeName: ' ' })}
+                        <span
+                            className="underline cursor-pointer hover:opacity-70"
+                            onClick={handleStoreNameClick}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    handleStoreNameClick(e);
+                                }
+                            }}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={
+                                selectedStoreInfo
+                                    ? t('storeInventoryFilter.changeStore')
+                                    : t('storeInventoryFilter.selectStore')
+                            }>
+                            {storeLinkText}
+                        </span>
+                    </label>
+                </div>
+            </CollapsibleContent>
+        </Collapsible>
     );
 }

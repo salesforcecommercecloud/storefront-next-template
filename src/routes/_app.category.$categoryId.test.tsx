@@ -144,6 +144,10 @@ vi.mock('@/components/category-refinements/active-filters', () => ({
     default: () => <div data-testid="active-filters" />,
 }));
 
+vi.mock('@/components/category-refinements/filters-button', () => ({
+    default: () => <button data-testid="filters-button">Filters</button>,
+}));
+
 vi.mock('@/components/category-sorting', () => ({
     default: () => <div data-testid="category-sorting" />,
 }));
@@ -732,7 +736,11 @@ describe('CategoryPage', () => {
                 expect(screen.getByTestId('category-breadcrumbs')).toBeInTheDocument();
                 expect(screen.getByText('Electronics (25)')).toBeInTheDocument();
                 expect(screen.getByTestId('category-sorting')).toBeInTheDocument();
-                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
+                const filterButtons = screen.getAllByTestId('filters-button');
+                // Both mobile and desktop toggle buttons render in JSDOM; responsive visibility is controlled by CSS classes.
+                expect(filterButtons).toHaveLength(2);
+                expect(filterButtons[0].closest('div')).toHaveClass('lg:hidden');
+                expect(filterButtons[1].closest('div')).toHaveClass('hidden', 'lg:block');
                 expect(screen.getByTestId('product-grid')).toBeInTheDocument();
                 expect(screen.getByTestId('category-pagination')).toBeInTheDocument();
             });

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Fragment, Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
+import { Fragment, Suspense, use, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { type LoaderFunctionArgs, useLocation } from 'react-router';
 import { ApiError, type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCategory } from '@/lib/api/categories';
@@ -25,6 +25,7 @@ import { currencyContext } from '@/lib/currency';
 import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import CategoryPagination from '@/components/category-pagination';
 import ActiveFilters from '@/components/category-refinements/active-filters';
+import FiltersButton from '@/components/category-refinements/filters-button';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
@@ -218,6 +219,9 @@ export default function CategoryPage({
     loaderData: CategoryPageData;
 }) {
     const config = useConfig<AppConfig>();
+
+    // State for mobile filters panel
+    const [filtersOpen, setFiltersOpen] = useState(false);
     const limit = config.search.products.hits.limit;
 
     // Determine the maximum number of skeletons to display in the product grid
@@ -304,11 +308,24 @@ export default function CategoryPage({
                     <Region className="mb-8" page={page} regionId="plpTopFullWidth" />
 
                     <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="hidden lg:block w-64 flex-shrink-0">
-                            <CategoryRefinements result={searchResultCritical} refine={refine} />
+                        {/* Filters toggle button - mobile only (above panel) */}
+                        <div className="lg:hidden">
+                            <FiltersButton onClick={() => setFiltersOpen(!filtersOpen)} isActive={filtersOpen} />
                         </div>
 
+                        {/* Category Refinements - toggles visibility on left side */}
+                        {filtersOpen && (
+                            <div className="w-64 flex-shrink-0">
+                                <CategoryRefinements result={searchResultCritical} refine={refine} />
+                            </div>
+                        )}
+
                         <div className="flex-grow">
+                            {/* Filters toggle button - desktop only (inside content area) */}
+                            <div className="mb-4 hidden lg:block">
+                                <FiltersButton onClick={() => setFiltersOpen(!filtersOpen)} isActive={filtersOpen} />
+                            </div>
+
                             <ActiveFilters result={searchResultCritical} />
 
                             {/* plpTopContent */}
@@ -337,7 +354,6 @@ export default function CategoryPage({
                     </div>
                 </div>
             </div>
-            {/* Category JSON-LD Schema for SEO - separate Suspense to ensure it appears at the very top of body */}
             <Suspense fallback={null}>
                 <CategoryJsonLd categorySchemaPromise={categorySchema} />
             </Suspense>

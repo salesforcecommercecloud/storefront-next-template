@@ -16,30 +16,19 @@
 import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
 
-import * as RefinePriceStories from './refine-price.stories';
+import * as RefineSizeStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
-import { createMemoryRouter, RouterProvider } from 'react-router';
 
-const composed = composeStories(RefinePriceStories);
+const composed = composeStories(RefineSizeStories);
 
 afterEach(() => {
     cleanup();
 });
 
-describe('RefinePrice stories snapshot', () => {
+describe('RefineSize stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
-            const router = createMemoryRouter(
-                [
-                    {
-                        path: '/',
-                        element: <Story />,
-                    },
-                ],
-                { initialEntries: ['/'] }
-            );
-
-            const { container } = render(<RouterProvider router={router} />);
+            const { container } = render(<Story />);
             expect(container.firstChild).toMatchSnapshot();
         });
     }

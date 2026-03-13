@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import RefineCategory from '../refine-cgid';
+import RefineSize from '..';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import type { FilterValue } from '../types';
+import type { FilterValue } from '../../types';
 
-const REFINE_CGID_HARNESS_ATTR = 'data-refine-cgid-harness';
+const REFINE_SIZE_HARNESS_ATTR = 'data-refine-size-harness';
 
-function RefineCgidStoryHarness({ children }: { children: ReactNode }): ReactElement {
+function RefineSizeStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const logClick = useMemo(() => action('filter-category-clicked'), []);
-    const logHover = useMemo(() => action('filter-category-hovered'), []);
+    const logClick = useMemo(() => action('size-filter-clicked'), []);
+    const logHover = useMemo(() => action('size-filter-hovered'), []);
 
     useEffect(() => {
-        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${REFINE_CGID_HARNESS_ATTR}]`));
+        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${REFINE_SIZE_HARNESS_ATTR}]`));
 
         const handleClick = (event: MouseEvent) => {
             const button = (event.target as HTMLElement | null)?.closest('button');
@@ -38,7 +38,7 @@ function RefineCgidStoryHarness({ children }: { children: ReactNode }): ReactEle
             }
             const text = button.textContent?.trim() || '';
             if (text) {
-                logClick({ value: text });
+                logClick({ size: text });
             }
         };
 
@@ -53,7 +53,7 @@ function RefineCgidStoryHarness({ children }: { children: ReactNode }): ReactEle
             }
             const text = button.textContent?.trim() || '';
             if (text) {
-                logHover({ value: text });
+                logHover({ size: text });
             }
         };
 
@@ -66,43 +66,45 @@ function RefineCgidStoryHarness({ children }: { children: ReactNode }): ReactEle
     }, [logClick, logHover]);
 
     return (
-        <div ref={containerRef} {...{ [REFINE_CGID_HARNESS_ATTR]: 'true' }}>
+        <div ref={containerRef} {...{ [REFINE_SIZE_HARNESS_ATTR]: 'true' }}>
             {children}
         </div>
     );
 }
 
-const meta: Meta<typeof RefineCategory> = {
-    title: 'CATEGORY/Category Refinements/Refine Category',
-    component: RefineCategory,
+const meta: Meta<typeof RefineSize> = {
+    title: 'CATEGORY/Category Refinements/Refine Size',
+    component: RefineSize,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
         docs: {
             description: {
                 component: `
-A category refinement component that displays sub-category filter options as link-style buttons. Used for navigating between product categories.
+A size refinement component that displays size options as buttons. Users can select sizes to filter products.
 
 ## Features
 
-- **Link Buttons**: Each category is displayed as a link-style button
-- **Labels**: Text labels for each category option
-- **Selected State**: Visual indication via border styling for the active category
+- **Size Buttons**: Button-style size options
+- **Size Labels**: Text labels for each size
+- **Hit Counts**: Shows number of products for each size
+- **Selected State**: Visual indication of selected sizes
+- **Flex Wrap Layout**: Buttons wrap to multiple rows
 - **Action Logging**: Integrates with Storybook's ActionLogger to track user interactions
 
 ## Usage
 
-The RefineCategory component is used within:
+The RefineSize component is used within:
 - Category refinements accordion
 - Product filter sidebars
-- Category-based navigation
+- Size-based filtering
 
 \`\`\`tsx
-import RefineCategory from '../refine-cgid';
+import RefineSize from '@/components/category-refinements/refine-size';
 
-function CategoryFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
+function SizeFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
   return (
-    <RefineCategory
+    <RefineSize
       values={values}
       attributeId={attributeId}
       isFilterSelected={isFilterSelected}
@@ -116,25 +118,25 @@ function CategoryFilter({ values, attributeId, isFilterSelected, toggleFilter })
 
 | Prop | Type | Description |
 |------|------|-------------|
-| \`values\` | \`FilterValue[]\` | Array of filter values |
-| \`attributeId\` | \`string\` | The attribute ID (typically "cgid") |
+| \`values\` | \`FilterValue[]\` | Array of size filter values |
+| \`attributeId\` | \`string\` | The attribute ID (typically 'c_size') |
 | \`isFilterSelected\` | \`(attributeId: string, value: string) => boolean\` | Function to check if a filter is selected |
 | \`toggleFilter\` | \`(attributeId: string, value: string) => void\` | Function to toggle a filter |
 
 ## Behavior
 
-- **Clicking a button**: Navigates to the selected category
-- **Selected category**: Shown with a border highlight
-- **Single selection**: Only one category can be active at a time
+- **Clicking a size**: Toggles that size filter
+- **Selected sizes**: Show highlighted border
+- **Multiple selection**: Can select multiple sizes
                 `,
             },
         },
     },
     decorators: [
         (Story: React.ComponentType) => (
-            <RefineCgidStoryHarness>
+            <RefineSizeStoryHarness>
                 <Story />
-            </RefineCgidStoryHarness>
+            </RefineSizeStoryHarness>
         ),
     ],
 };
@@ -142,15 +144,23 @@ function CategoryFilter({ values, attributeId, isFilterSelected, toggleFilter })
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockCategoryValues: FilterValue[] = [
-    { value: 'mens', label: 'Mens', hitCount: 42 },
-    { value: 'womens', label: 'Womens', hitCount: 36 },
-    { value: 'electronics', label: 'Electronics', hitCount: 18 },
-    { value: 'accessories', label: 'Accessories', hitCount: 24 },
+const mockSizeValues: FilterValue[] = [
+    { value: '4', label: '4', hitCount: 31 },
+    { value: '6', label: '6', hitCount: 32 },
+    { value: '8', label: '8', hitCount: 32 },
+    { value: '10', label: '10', hitCount: 34 },
+    { value: '12', label: '12', hitCount: 31 },
+    { value: '14', label: '14', hitCount: 33 },
+    { value: '16', label: '16', hitCount: 32 },
+    { value: 'XS', label: 'XS', hitCount: 5 },
+    { value: 'S', label: 'S', hitCount: 8 },
+    { value: 'M', label: 'M', hitCount: 8 },
+    { value: 'L', label: 'L', hitCount: 6 },
+    { value: 'XL', label: 'XL', hitCount: 7 },
 ];
 
 const isFilterSelected = (attributeId: string, value: string) => {
-    return attributeId === 'cgid' && value === 'mens';
+    return attributeId === 'c_size' && value === 'M';
 };
 
 const toggleFilter = (attributeId: string, value: string) => {
@@ -161,8 +171,8 @@ const toggleFilter = (attributeId: string, value: string) => {
 
 export const Default: Story = {
     args: {
-        values: mockCategoryValues,
-        attributeId: 'cgid',
+        values: mockSizeValues,
+        attributeId: 'c_size',
         isFilterSelected,
         toggleFilter,
     },
@@ -170,19 +180,19 @@ export const Default: Story = {
         docs: {
             description: {
                 story: `
-The default RefineCategory shows category link buttons:
+The default RefineSize shows size buttons:
 
 ### Features:
-- **Link buttons**: Button elements styled as links for each category
-- **Labels**: Category names
-- **Hit counts**: Product counts per category
-- **Selected state**: "Mens" is selected with a border highlight
+- **Size buttons**: Button-style size options
+- **Size labels**: Text labels
+- **Hit counts**: Product counts for each size
+- **Selected state**: M is selected
 - **Action logging**: All clicks are logged
 
 ### Use Cases:
-- Category navigation
-- Sub-category filtering
-- Product category browsing
+- Standard size filtering
+- Multiple size options
+- Button-based selection
                 `,
             },
         },
@@ -192,21 +202,22 @@ The default RefineCategory shows category link buttons:
 
         await waitForStorybookReady(canvasElement);
 
-        // Test buttons are present
+        // Test size buttons are present
         const buttons = canvas.getAllByRole('button');
         await expect(buttons.length).toBeGreaterThan(0);
 
-        // Test clicking a category button
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
+        // Test clicking a size button
+        const mButton = buttons.find((btn) => btn.textContent?.includes('M'));
+        if (mButton) {
+            await userEvent.click(mButton);
         }
     },
 };
 
-export const NoSelectedCategory: Story = {
+export const NoSelectedSizes: Story = {
     args: {
-        values: mockCategoryValues,
-        attributeId: 'cgid',
+        values: mockSizeValues,
+        attributeId: 'c_size',
         isFilterSelected: () => false,
         toggleFilter,
     },
@@ -214,17 +225,17 @@ export const NoSelectedCategory: Story = {
         docs: {
             description: {
                 story: `
-RefineCategory with no selected category:
+RefineSize with no selected sizes:
 
 ### No Selection Features:
-- **All unselected**: No category is highlighted
+- **All unselected**: No sizes are selected
 - **Same functionality**: All features work the same
-- **Visual state**: No border highlights shown
+- **Visual state**: No highlighted borders
 
 ### Use Cases:
 - Initial state
-- Top-level category view
-- No category filter applied
+- After clearing filters
+- No size filter applied
                 `,
             },
         },
@@ -234,49 +245,8 @@ RefineCategory with no selected category:
 
         await waitForStorybookReady(canvasElement);
 
-        // Test buttons are present
+        // Test size buttons are present
         const buttons = canvas.getAllByRole('button');
         await expect(buttons.length).toBeGreaterThan(0);
-
-        // Test that category labels are rendered
-        await expect(canvas.getByText('Mens')).toBeInTheDocument();
-        await expect(canvas.getByText('Womens')).toBeInTheDocument();
-        await expect(canvas.getByText('Electronics')).toBeInTheDocument();
-        await expect(canvas.getByText('Accessories')).toBeInTheDocument();
-    },
-};
-
-export const SingleCategory: Story = {
-    args: {
-        values: [{ value: 'sale', label: 'Sale', hitCount: 10 }],
-        attributeId: 'cgid',
-        isFilterSelected: () => false,
-        toggleFilter,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-RefineCategory with a single category option:
-
-### Single Option Features:
-- **One button**: Only one category shown
-- **Minimal UI**: Clean single-option layout
-
-### Use Cases:
-- Leaf category with one sub-category
-- Narrow category tree
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        const buttons = canvas.getAllByRole('button');
-        await expect(buttons).toHaveLength(1);
-        await expect(canvas.getByText('Sale')).toBeInTheDocument();
     },
 };

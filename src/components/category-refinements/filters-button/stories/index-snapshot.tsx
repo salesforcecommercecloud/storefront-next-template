@@ -15,17 +15,16 @@
  */
 import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
-
-import * as RefineCgidStories from './refine-cgid.stories';
 import { render, cleanup } from '@testing-library/react';
+import * as FiltersButtonStories from './index.stories';
 
-const composed = composeStories(RefineCgidStories);
+const composed = composeStories(FiltersButtonStories);
 
 afterEach(() => {
     cleanup();
 });
 
-describe('RefineCategory stories snapshot', () => {
+describe('FiltersButton stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);

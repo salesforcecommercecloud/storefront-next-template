@@ -16,16 +16,16 @@
 import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
 
-import * as RefineSizeStories from './refine-size.stories';
+import * as RefineDefaultStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
 
-const composed = composeStories(RefineSizeStories);
+const composed = composeStories(RefineDefaultStories);
 
 afterEach(() => {
     cleanup();
 });
 
-describe('RefineSize stories snapshot', () => {
+describe('RefineDefault stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);

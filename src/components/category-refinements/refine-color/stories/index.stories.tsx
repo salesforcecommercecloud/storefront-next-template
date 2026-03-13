@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import RefineSize from '../refine-size';
+import RefineColor from '..';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import type { FilterValue } from '../types';
+import type { FilterValue } from '../../types';
 
-const REFINE_SIZE_HARNESS_ATTR = 'data-refine-size-harness';
+const REFINE_COLOR_HARNESS_ATTR = 'data-refine-color-harness';
 
-function RefineSizeStoryHarness({ children }: { children: ReactNode }): ReactElement {
+function RefineColorStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const logClick = useMemo(() => action('size-filter-clicked'), []);
-    const logHover = useMemo(() => action('size-filter-hovered'), []);
+    const logClick = useMemo(() => action('color-filter-clicked'), []);
+    const logHover = useMemo(() => action('color-filter-hovered'), []);
 
     useEffect(() => {
-        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${REFINE_SIZE_HARNESS_ATTR}]`));
+        const isInsideHarness = (element: Element | null) =>
+            Boolean(element?.closest(`[${REFINE_COLOR_HARNESS_ATTR}]`));
 
         const handleClick = (event: MouseEvent) => {
             const button = (event.target as HTMLElement | null)?.closest('button');
@@ -38,7 +39,7 @@ function RefineSizeStoryHarness({ children }: { children: ReactNode }): ReactEle
             }
             const text = button.textContent?.trim() || '';
             if (text) {
-                logClick({ size: text });
+                logClick({ color: text });
             }
         };
 
@@ -53,7 +54,7 @@ function RefineSizeStoryHarness({ children }: { children: ReactNode }): ReactEle
             }
             const text = button.textContent?.trim() || '';
             if (text) {
-                logHover({ size: text });
+                logHover({ color: text });
             }
         };
 
@@ -66,45 +67,45 @@ function RefineSizeStoryHarness({ children }: { children: ReactNode }): ReactEle
     }, [logClick, logHover]);
 
     return (
-        <div ref={containerRef} {...{ [REFINE_SIZE_HARNESS_ATTR]: 'true' }}>
+        <div ref={containerRef} {...{ [REFINE_COLOR_HARNESS_ATTR]: 'true' }}>
             {children}
         </div>
     );
 }
 
-const meta: Meta<typeof RefineSize> = {
-    title: 'CATEGORY/Category Refinements/Refine Size',
-    component: RefineSize,
+const meta: Meta<typeof RefineColor> = {
+    title: 'CATEGORY/Category Refinements/Refine Color',
+    component: RefineColor,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
         docs: {
             description: {
                 component: `
-A size refinement component that displays size options as buttons. Users can select sizes to filter products.
+A color refinement component that displays color options as swatches with color circles. Users can select colors to filter products.
 
 ## Features
 
-- **Size Buttons**: Button-style size options
-- **Size Labels**: Text labels for each size
-- **Hit Counts**: Shows number of products for each size
-- **Selected State**: Visual indication of selected sizes
-- **Flex Wrap Layout**: Buttons wrap to multiple rows
+- **Color Swatches**: Visual color circles for each color option
+- **Color Names**: Text labels for each color
+- **Hit Counts**: Shows number of products for each color
+- **Selected State**: Visual indication of selected colors
+- **Grid Layout**: 2-column grid layout
 - **Action Logging**: Integrates with Storybook's ActionLogger to track user interactions
 
 ## Usage
 
-The RefineSize component is used within:
+The RefineColor component is used within:
 - Category refinements accordion
 - Product filter sidebars
-- Size-based filtering
+- Color-based filtering
 
 \`\`\`tsx
-import RefineSize from '../refine-size';
+import RefineColor from '@/components/category-refinements/refine-color';
 
-function SizeFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
+function ColorFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
   return (
-    <RefineSize
+    <RefineColor
       values={values}
       attributeId={attributeId}
       isFilterSelected={isFilterSelected}
@@ -118,25 +119,25 @@ function SizeFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
 
 | Prop | Type | Description |
 |------|------|-------------|
-| \`values\` | \`FilterValue[]\` | Array of size filter values |
-| \`attributeId\` | \`string\` | The attribute ID (typically 'c_size') |
+| \`values\` | \`FilterValue[]\` | Array of color filter values |
+| \`attributeId\` | \`string\` | The attribute ID (typically 'c_refinementColor') |
 | \`isFilterSelected\` | \`(attributeId: string, value: string) => boolean\` | Function to check if a filter is selected |
 | \`toggleFilter\` | \`(attributeId: string, value: string) => void\` | Function to toggle a filter |
 
 ## Behavior
 
-- **Clicking a size**: Toggles that size filter
-- **Selected sizes**: Show highlighted border
-- **Multiple selection**: Can select multiple sizes
+- **Clicking a color**: Toggles that color filter
+- **Selected colors**: Show a checkmark indicator
+- **Color mapping**: Maps color names to hex values for display
                 `,
             },
         },
     },
     decorators: [
         (Story: React.ComponentType) => (
-            <RefineSizeStoryHarness>
+            <RefineColorStoryHarness>
                 <Story />
-            </RefineSizeStoryHarness>
+            </RefineColorStoryHarness>
         ),
     ],
 };
@@ -144,23 +145,17 @@ function SizeFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockSizeValues: FilterValue[] = [
-    { value: '4', label: '4', hitCount: 31 },
-    { value: '6', label: '6', hitCount: 32 },
-    { value: '8', label: '8', hitCount: 32 },
-    { value: '10', label: '10', hitCount: 34 },
-    { value: '12', label: '12', hitCount: 31 },
-    { value: '14', label: '14', hitCount: 33 },
-    { value: '16', label: '16', hitCount: 32 },
-    { value: 'XS', label: 'XS', hitCount: 5 },
-    { value: 'S', label: 'S', hitCount: 8 },
-    { value: 'M', label: 'M', hitCount: 8 },
-    { value: 'L', label: 'L', hitCount: 6 },
-    { value: 'XL', label: 'XL', hitCount: 7 },
+const mockColorValues: FilterValue[] = [
+    { value: 'Black', label: 'Black', hitCount: 43 },
+    { value: 'Blue', label: 'Blue', hitCount: 27 },
+    { value: 'Red', label: 'Red', hitCount: 1 },
+    { value: 'Green', label: 'Green', hitCount: 4 },
+    { value: 'White', label: 'White', hitCount: 30 },
+    { value: 'Brown', label: 'Brown', hitCount: 15 },
 ];
 
 const isFilterSelected = (attributeId: string, value: string) => {
-    return attributeId === 'c_size' && value === 'M';
+    return attributeId === 'c_refinementColor' && value === 'Black';
 };
 
 const toggleFilter = (attributeId: string, value: string) => {
@@ -171,8 +166,8 @@ const toggleFilter = (attributeId: string, value: string) => {
 
 export const Default: Story = {
     args: {
-        values: mockSizeValues,
-        attributeId: 'c_size',
+        values: mockColorValues,
+        attributeId: 'c_refinementColor',
         isFilterSelected,
         toggleFilter,
     },
@@ -180,19 +175,19 @@ export const Default: Story = {
         docs: {
             description: {
                 story: `
-The default RefineSize shows size buttons:
+The default RefineColor shows color swatches:
 
 ### Features:
-- **Size buttons**: Button-style size options
-- **Size labels**: Text labels
-- **Hit counts**: Product counts for each size
-- **Selected state**: M is selected
+- **Color swatches**: Visual color circles
+- **Color names**: Text labels
+- **Hit counts**: Product counts for each color
+- **Selected state**: Black is selected
 - **Action logging**: All clicks are logged
 
 ### Use Cases:
-- Standard size filtering
-- Multiple size options
-- Button-based selection
+- Standard color filtering
+- Multiple color options
+- Visual color selection
                 `,
             },
         },
@@ -202,22 +197,22 @@ The default RefineSize shows size buttons:
 
         await waitForStorybookReady(canvasElement);
 
-        // Test size buttons are present
+        // Test color buttons are present
         const buttons = canvas.getAllByRole('button');
         await expect(buttons.length).toBeGreaterThan(0);
 
-        // Test clicking a size button
-        const mButton = buttons.find((btn) => btn.textContent?.includes('M'));
-        if (mButton) {
-            await userEvent.click(mButton);
+        // Test clicking a color button
+        const blackButton = buttons.find((btn) => btn.textContent?.includes('Black'));
+        if (blackButton) {
+            await userEvent.click(blackButton);
         }
     },
 };
 
-export const NoSelectedSizes: Story = {
+export const NoSelectedColors: Story = {
     args: {
-        values: mockSizeValues,
-        attributeId: 'c_size',
+        values: mockColorValues,
+        attributeId: 'c_refinementColor',
         isFilterSelected: () => false,
         toggleFilter,
     },
@@ -225,17 +220,17 @@ export const NoSelectedSizes: Story = {
         docs: {
             description: {
                 story: `
-RefineSize with no selected sizes:
+RefineColor with no selected colors:
 
 ### No Selection Features:
-- **All unselected**: No sizes are selected
+- **All unselected**: No colors are selected
 - **Same functionality**: All features work the same
-- **Visual state**: No highlighted borders
+- **Visual state**: No checkmarks shown
 
 ### Use Cases:
 - Initial state
 - After clearing filters
-- No size filter applied
+- No color filter applied
                 `,
             },
         },
@@ -245,8 +240,54 @@ RefineSize with no selected sizes:
 
         await waitForStorybookReady(canvasElement);
 
-        // Test size buttons are present
+        // Test color buttons are present
         const buttons = canvas.getAllByRole('button');
         await expect(buttons.length).toBeGreaterThan(0);
+    },
+};
+
+export const ManyColors: Story = {
+    args: {
+        values: [
+            ...mockColorValues,
+            { value: 'Pink', label: 'Pink', hitCount: 3 },
+            { value: 'Purple', label: 'Purple', hitCount: 0 },
+            { value: 'Yellow', label: 'Yellow', hitCount: 0 },
+            { value: 'Orange', label: 'Orange', hitCount: 0 },
+            { value: 'Grey', label: 'Grey', hitCount: 13 },
+            { value: 'Navy', label: 'Navy', hitCount: 0 },
+        ],
+        attributeId: 'c_refinementColor',
+        isFilterSelected,
+        toggleFilter,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: `
+RefineColor with many color options:
+
+### Many Colors Features:
+- **Grid layout**: 2-column grid wraps colors
+- **All colors**: Shows all available colors
+- **Hit counts**: Some colors have 0 products
+- **Wrapping**: Colors wrap to multiple rows
+
+### Use Cases:
+- Extensive color options
+- Large color palettes
+- Comprehensive filtering
+                `,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Test many color buttons are present
+        const buttons = canvas.getAllByRole('button');
+        await expect(buttons.length).toBeGreaterThan(6);
     },
 };

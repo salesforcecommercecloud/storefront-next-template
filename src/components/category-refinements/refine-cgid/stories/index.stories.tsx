@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import RefineColor from '../refine-color';
+import RefineCategory from '..';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import type { FilterValue } from '../types';
+import type { FilterValue } from '../../types';
 
-const REFINE_COLOR_HARNESS_ATTR = 'data-refine-color-harness';
+const REFINE_CGID_HARNESS_ATTR = 'data-refine-cgid-harness';
 
-function RefineColorStoryHarness({ children }: { children: ReactNode }): ReactElement {
+function RefineCgidStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const logClick = useMemo(() => action('color-filter-clicked'), []);
-    const logHover = useMemo(() => action('color-filter-hovered'), []);
+    const logClick = useMemo(() => action('filter-category-clicked'), []);
+    const logHover = useMemo(() => action('filter-category-hovered'), []);
 
     useEffect(() => {
-        const isInsideHarness = (element: Element | null) =>
-            Boolean(element?.closest(`[${REFINE_COLOR_HARNESS_ATTR}]`));
+        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${REFINE_CGID_HARNESS_ATTR}]`));
 
         const handleClick = (event: MouseEvent) => {
             const button = (event.target as HTMLElement | null)?.closest('button');
@@ -39,7 +38,7 @@ function RefineColorStoryHarness({ children }: { children: ReactNode }): ReactEl
             }
             const text = button.textContent?.trim() || '';
             if (text) {
-                logClick({ color: text });
+                logClick({ value: text });
             }
         };
 
@@ -54,7 +53,7 @@ function RefineColorStoryHarness({ children }: { children: ReactNode }): ReactEl
             }
             const text = button.textContent?.trim() || '';
             if (text) {
-                logHover({ color: text });
+                logHover({ value: text });
             }
         };
 
@@ -67,45 +66,43 @@ function RefineColorStoryHarness({ children }: { children: ReactNode }): ReactEl
     }, [logClick, logHover]);
 
     return (
-        <div ref={containerRef} {...{ [REFINE_COLOR_HARNESS_ATTR]: 'true' }}>
+        <div ref={containerRef} {...{ [REFINE_CGID_HARNESS_ATTR]: 'true' }}>
             {children}
         </div>
     );
 }
 
-const meta: Meta<typeof RefineColor> = {
-    title: 'CATEGORY/Category Refinements/Refine Color',
-    component: RefineColor,
+const meta: Meta<typeof RefineCategory> = {
+    title: 'CATEGORY/Category Refinements/Refine Category',
+    component: RefineCategory,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
         docs: {
             description: {
                 component: `
-A color refinement component that displays color options as swatches with color circles. Users can select colors to filter products.
+A category refinement component that displays sub-category filter options as link-style buttons. Used for navigating between product categories.
 
 ## Features
 
-- **Color Swatches**: Visual color circles for each color option
-- **Color Names**: Text labels for each color
-- **Hit Counts**: Shows number of products for each color
-- **Selected State**: Visual indication of selected colors
-- **Grid Layout**: 2-column grid layout
+- **Link Buttons**: Each category is displayed as a link-style button
+- **Labels**: Text labels for each category option
+- **Selected State**: Visual indication via border styling for the active category
 - **Action Logging**: Integrates with Storybook's ActionLogger to track user interactions
 
 ## Usage
 
-The RefineColor component is used within:
+The RefineCategory component is used within:
 - Category refinements accordion
 - Product filter sidebars
-- Color-based filtering
+- Category-based navigation
 
 \`\`\`tsx
-import RefineColor from '../refine-color';
+import RefineCategory from '@/components/category-refinements/refine-cgid';
 
-function ColorFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
+function CategoryFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
   return (
-    <RefineColor
+    <RefineCategory
       values={values}
       attributeId={attributeId}
       isFilterSelected={isFilterSelected}
@@ -119,25 +116,25 @@ function ColorFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
 
 | Prop | Type | Description |
 |------|------|-------------|
-| \`values\` | \`FilterValue[]\` | Array of color filter values |
-| \`attributeId\` | \`string\` | The attribute ID (typically 'c_refinementColor') |
+| \`values\` | \`FilterValue[]\` | Array of filter values |
+| \`attributeId\` | \`string\` | The attribute ID (typically "cgid") |
 | \`isFilterSelected\` | \`(attributeId: string, value: string) => boolean\` | Function to check if a filter is selected |
 | \`toggleFilter\` | \`(attributeId: string, value: string) => void\` | Function to toggle a filter |
 
 ## Behavior
 
-- **Clicking a color**: Toggles that color filter
-- **Selected colors**: Show a checkmark indicator
-- **Color mapping**: Maps color names to hex values for display
+- **Clicking a button**: Navigates to the selected category
+- **Selected category**: Shown with a border highlight
+- **Single selection**: Only one category can be active at a time
                 `,
             },
         },
     },
     decorators: [
         (Story: React.ComponentType) => (
-            <RefineColorStoryHarness>
+            <RefineCgidStoryHarness>
                 <Story />
-            </RefineColorStoryHarness>
+            </RefineCgidStoryHarness>
         ),
     ],
 };
@@ -145,17 +142,15 @@ function ColorFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockColorValues: FilterValue[] = [
-    { value: 'Black', label: 'Black', hitCount: 43 },
-    { value: 'Blue', label: 'Blue', hitCount: 27 },
-    { value: 'Red', label: 'Red', hitCount: 1 },
-    { value: 'Green', label: 'Green', hitCount: 4 },
-    { value: 'White', label: 'White', hitCount: 30 },
-    { value: 'Brown', label: 'Brown', hitCount: 15 },
+const mockCategoryValues: FilterValue[] = [
+    { value: 'mens', label: 'Mens', hitCount: 42 },
+    { value: 'womens', label: 'Womens', hitCount: 36 },
+    { value: 'electronics', label: 'Electronics', hitCount: 18 },
+    { value: 'accessories', label: 'Accessories', hitCount: 24 },
 ];
 
 const isFilterSelected = (attributeId: string, value: string) => {
-    return attributeId === 'c_refinementColor' && value === 'Black';
+    return attributeId === 'cgid' && value === 'mens';
 };
 
 const toggleFilter = (attributeId: string, value: string) => {
@@ -166,8 +161,8 @@ const toggleFilter = (attributeId: string, value: string) => {
 
 export const Default: Story = {
     args: {
-        values: mockColorValues,
-        attributeId: 'c_refinementColor',
+        values: mockCategoryValues,
+        attributeId: 'cgid',
         isFilterSelected,
         toggleFilter,
     },
@@ -175,19 +170,19 @@ export const Default: Story = {
         docs: {
             description: {
                 story: `
-The default RefineColor shows color swatches:
+The default RefineCategory shows category link buttons:
 
 ### Features:
-- **Color swatches**: Visual color circles
-- **Color names**: Text labels
-- **Hit counts**: Product counts for each color
-- **Selected state**: Black is selected
+- **Link buttons**: Button elements styled as links for each category
+- **Labels**: Category names
+- **Hit counts**: Product counts per category
+- **Selected state**: "Mens" is selected with a border highlight
 - **Action logging**: All clicks are logged
 
 ### Use Cases:
-- Standard color filtering
-- Multiple color options
-- Visual color selection
+- Category navigation
+- Sub-category filtering
+- Product category browsing
                 `,
             },
         },
@@ -197,22 +192,21 @@ The default RefineColor shows color swatches:
 
         await waitForStorybookReady(canvasElement);
 
-        // Test color buttons are present
+        // Test buttons are present
         const buttons = canvas.getAllByRole('button');
         await expect(buttons.length).toBeGreaterThan(0);
 
-        // Test clicking a color button
-        const blackButton = buttons.find((btn) => btn.textContent?.includes('Black'));
-        if (blackButton) {
-            await userEvent.click(blackButton);
+        // Test clicking a category button
+        if (buttons.length > 0) {
+            await userEvent.click(buttons[0]);
         }
     },
 };
 
-export const NoSelectedColors: Story = {
+export const NoSelectedCategory: Story = {
     args: {
-        values: mockColorValues,
-        attributeId: 'c_refinementColor',
+        values: mockCategoryValues,
+        attributeId: 'cgid',
         isFilterSelected: () => false,
         toggleFilter,
     },
@@ -220,17 +214,17 @@ export const NoSelectedColors: Story = {
         docs: {
             description: {
                 story: `
-RefineColor with no selected colors:
+RefineCategory with no selected category:
 
 ### No Selection Features:
-- **All unselected**: No colors are selected
+- **All unselected**: No category is highlighted
 - **Same functionality**: All features work the same
-- **Visual state**: No checkmarks shown
+- **Visual state**: No border highlights shown
 
 ### Use Cases:
 - Initial state
-- After clearing filters
-- No color filter applied
+- Top-level category view
+- No category filter applied
                 `,
             },
         },
@@ -240,43 +234,38 @@ RefineColor with no selected colors:
 
         await waitForStorybookReady(canvasElement);
 
-        // Test color buttons are present
+        // Test buttons are present
         const buttons = canvas.getAllByRole('button');
         await expect(buttons.length).toBeGreaterThan(0);
+
+        // Test that category labels are rendered
+        await expect(canvas.getByText('Mens')).toBeInTheDocument();
+        await expect(canvas.getByText('Womens')).toBeInTheDocument();
+        await expect(canvas.getByText('Electronics')).toBeInTheDocument();
+        await expect(canvas.getByText('Accessories')).toBeInTheDocument();
     },
 };
 
-export const ManyColors: Story = {
+export const SingleCategory: Story = {
     args: {
-        values: [
-            ...mockColorValues,
-            { value: 'Pink', label: 'Pink', hitCount: 3 },
-            { value: 'Purple', label: 'Purple', hitCount: 0 },
-            { value: 'Yellow', label: 'Yellow', hitCount: 0 },
-            { value: 'Orange', label: 'Orange', hitCount: 0 },
-            { value: 'Grey', label: 'Grey', hitCount: 13 },
-            { value: 'Navy', label: 'Navy', hitCount: 0 },
-        ],
-        attributeId: 'c_refinementColor',
-        isFilterSelected,
+        values: [{ value: 'sale', label: 'Sale', hitCount: 10 }],
+        attributeId: 'cgid',
+        isFilterSelected: () => false,
         toggleFilter,
     },
     parameters: {
         docs: {
             description: {
                 story: `
-RefineColor with many color options:
+RefineCategory with a single category option:
 
-### Many Colors Features:
-- **Grid layout**: 2-column grid wraps colors
-- **All colors**: Shows all available colors
-- **Hit counts**: Some colors have 0 products
-- **Wrapping**: Colors wrap to multiple rows
+### Single Option Features:
+- **One button**: Only one category shown
+- **Minimal UI**: Clean single-option layout
 
 ### Use Cases:
-- Extensive color options
-- Large color palettes
-- Comprehensive filtering
+- Leaf category with one sub-category
+- Narrow category tree
                 `,
             },
         },
@@ -286,8 +275,8 @@ RefineColor with many color options:
 
         await waitForStorybookReady(canvasElement);
 
-        // Test many color buttons are present
         const buttons = canvas.getAllByRole('button');
-        await expect(buttons.length).toBeGreaterThan(6);
+        await expect(buttons).toHaveLength(1);
+        await expect(canvas.getByText('Sale')).toBeInTheDocument();
     },
 };

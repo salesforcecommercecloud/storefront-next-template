@@ -17,7 +17,7 @@
 
 import type { ReactElement } from 'react';
 import { Button } from '@/components/ui/button';
-import type { RefinementProps } from './types';
+import type { RefinementProps } from '../types';
 
 export default function RefineCategory({
     values,

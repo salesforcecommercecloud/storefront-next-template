@@ -3,36 +3,31 @@
 exports[`CategoryRefinements stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    data-orientation="vertical"
-    data-slot="accordion"
+    class=""
   >
     <div
-      class="border-b last:border-b-0 !border-b"
-      data-orientation="vertical"
-      data-slot="accordion-item"
+      class="border border-border rounded-md mb-4"
       data-state="open"
       data-testid="sf-store-inventory-filter"
     >
       <h3
-        class="flex"
-        data-orientation="vertical"
-        data-state="open"
+        class="text-sm font-medium text-left leading-normal p-4 transition-colors hover:bg-muted/60"
       >
         <button
-          aria-controls="radix-_r_1_"
+          aria-controls="radix-_r_0_"
           aria-expanded="true"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180"
-          data-orientation="vertical"
-          data-radix-collection-item=""
-          data-slot="accordion-trigger"
+          class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
           data-state="open"
-          id="radix-_r_0_"
           type="button"
         >
-          Shop by Availability
+          <span
+            class="text-sm leading-none text-left font-medium"
+          >
+            Shop by Availability
+          </span>
           <svg
             aria-hidden="true"
-            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
+            class="lucide lucide-minus size-4"
             fill="none"
             height="24"
             stroke="currentColor"
@@ -44,278 +39,253 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="m6 9 6 6 6-6"
+              d="M5 12h14"
             />
           </svg>
         </button>
       </h3>
       <div
-        aria-labelledby="radix-_r_0_"
-        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
-        data-orientation="vertical"
-        data-slot="accordion-content"
+        class="px-4 pb-4"
         data-state="open"
-        id="radix-_r_1_"
-        role="region"
-        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+        id="radix-_r_0_"
+        style="transition-duration: 0s; animation-name: none;"
       >
         <div
-          class="pt-0 pb-4"
+          class="flex items-start space-x-2 p-2 rounded-md"
         >
-          <div
-            class="flex items-start space-x-2 p-2 rounded-md hover:bg-muted/30"
+          <button
+            aria-checked="false"
+            aria-label="Filter Products by Store Availability at Select Store"
+            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 size-4"
+            data-slot="checkbox"
+            data-state="unchecked"
+            data-testid="sf-store-inventory-filter-checkbox"
+            id="inventory-filter"
+            role="checkbox"
+            type="button"
+            value="on"
+          />
+          <label
+            class="text-sm font-medium leading-none cursor-pointer"
+            for="inventory-filter"
           >
-            <button
-              aria-checked="false"
-              aria-label="Filter Products by Store Availability at Select Store"
-              class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 size-4"
-              data-slot="checkbox"
-              data-state="unchecked"
-              data-testid="sf-store-inventory-filter-checkbox"
-              id="inventory-filter"
-              role="checkbox"
-              type="button"
-              value="on"
-            />
-            <label
-              class="text-sm font-medium leading-none cursor-pointer"
-              for="inventory-filter"
+            In stock at  
+            <span
+              aria-label="Select Store"
+              class="underline cursor-pointer hover:opacity-70"
+              role="button"
+              tabindex="0"
             >
-              In stock at  
-              <span
-                aria-label="Select Store"
-                class="underline cursor-pointer hover:opacity-70"
-                role="button"
-                tabindex="0"
-              >
-                Select Store
-              </span>
-            </label>
-          </div>
+              Select Store
+            </span>
+          </label>
         </div>
       </div>
     </div>
-  </div>
-  <div
-    data-orientation="vertical"
-    data-slot="accordion"
-  >
-    <div
-      class="border-b last:border-b-0"
-      data-orientation="vertical"
-      data-slot="accordion-item"
-      data-state="closed"
-    >
-      <h3
-        class="flex"
-        data-orientation="vertical"
+    <section>
+      <div
+        class="border border-border rounded-md mb-4"
         data-state="closed"
       >
-        <button
-          aria-controls="radix-_r_3_"
-          aria-expanded="false"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180"
-          data-orientation="vertical"
-          data-radix-collection-item=""
-          data-slot="accordion-trigger"
+        <h3
+          class="text-sm font-medium text-left leading-normal p-4 transition-colors hover:bg-muted/60"
+        >
+          <button
+            aria-controls="radix-_r_1_"
+            aria-expanded="false"
+            class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+            data-state="closed"
+            type="button"
+          >
+            <span
+              class="text-sm leading-none text-left font-medium"
+            >
+              Category
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-plus size-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="M12 5v14"
+              />
+            </svg>
+          </button>
+        </h3>
+        <div
+          class="px-4 pb-4"
           data-state="closed"
+          hidden=""
+          id="radix-_r_1_"
+          style=""
+        />
+      </div>
+    </section>
+    <section>
+      <div
+        class="border border-border rounded-md mb-4"
+        data-state="closed"
+      >
+        <h3
+          class="text-sm font-medium text-left leading-normal p-4 transition-colors hover:bg-muted/60"
+        >
+          <button
+            aria-controls="radix-_r_2_"
+            aria-expanded="false"
+            class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+            data-state="closed"
+            type="button"
+          >
+            <span
+              class="text-sm leading-none text-left font-medium"
+            >
+              Colour
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-plus size-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="M12 5v14"
+              />
+            </svg>
+          </button>
+        </h3>
+        <div
+          class="px-4 pb-4"
+          data-state="closed"
+          hidden=""
           id="radix-_r_2_"
-          type="button"
-        >
-          Category
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="m6 9 6 6 6-6"
-            />
-          </svg>
-        </button>
-      </h3>
+          style=""
+        />
+      </div>
+    </section>
+    <section>
       <div
-        aria-labelledby="radix-_r_2_"
-        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
-        data-orientation="vertical"
-        data-slot="accordion-content"
-        data-state="closed"
-        hidden=""
-        id="radix-_r_3_"
-        role="region"
-        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-      />
-    </div>
-    <div
-      class="border-b last:border-b-0"
-      data-orientation="vertical"
-      data-slot="accordion-item"
-      data-state="closed"
-    >
-      <h3
-        class="flex"
-        data-orientation="vertical"
+        class="border border-border rounded-md mb-4"
         data-state="closed"
       >
-        <button
-          aria-controls="radix-_r_5_"
-          aria-expanded="false"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180"
-          data-orientation="vertical"
-          data-radix-collection-item=""
-          data-slot="accordion-trigger"
+        <h3
+          class="text-sm font-medium text-left leading-normal p-4 transition-colors hover:bg-muted/60"
+        >
+          <button
+            aria-controls="radix-_r_3_"
+            aria-expanded="false"
+            class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+            data-state="closed"
+            type="button"
+          >
+            <span
+              class="text-sm leading-none text-left font-medium"
+            >
+              Price
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-plus size-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="M12 5v14"
+              />
+            </svg>
+          </button>
+        </h3>
+        <div
+          class="px-4 pb-4"
           data-state="closed"
+          hidden=""
+          id="radix-_r_3_"
+          style=""
+        />
+      </div>
+    </section>
+    <section>
+      <div
+        class="border border-border rounded-md mb-4"
+        data-state="closed"
+      >
+        <h3
+          class="text-sm font-medium text-left leading-normal p-4 transition-colors hover:bg-muted/60"
+        >
+          <button
+            aria-controls="radix-_r_4_"
+            aria-expanded="false"
+            class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+            data-state="closed"
+            type="button"
+          >
+            <span
+              class="text-sm leading-none text-left font-medium"
+            >
+              By brand
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-plus size-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="M12 5v14"
+              />
+            </svg>
+          </button>
+        </h3>
+        <div
+          class="px-4 pb-4"
+          data-state="closed"
+          hidden=""
           id="radix-_r_4_"
-          type="button"
-        >
-          Colour
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="m6 9 6 6 6-6"
-            />
-          </svg>
-        </button>
-      </h3>
-      <div
-        aria-labelledby="radix-_r_4_"
-        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
-        data-orientation="vertical"
-        data-slot="accordion-content"
-        data-state="closed"
-        hidden=""
-        id="radix-_r_5_"
-        role="region"
-        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-      />
-    </div>
-    <div
-      class="border-b last:border-b-0"
-      data-orientation="vertical"
-      data-slot="accordion-item"
-      data-state="closed"
-    >
-      <h3
-        class="flex"
-        data-orientation="vertical"
-        data-state="closed"
-      >
-        <button
-          aria-controls="radix-_r_7_"
-          aria-expanded="false"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180"
-          data-orientation="vertical"
-          data-radix-collection-item=""
-          data-slot="accordion-trigger"
-          data-state="closed"
-          id="radix-_r_6_"
-          type="button"
-        >
-          Price
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="m6 9 6 6 6-6"
-            />
-          </svg>
-        </button>
-      </h3>
-      <div
-        aria-labelledby="radix-_r_6_"
-        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
-        data-orientation="vertical"
-        data-slot="accordion-content"
-        data-state="closed"
-        hidden=""
-        id="radix-_r_7_"
-        role="region"
-        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-      />
-    </div>
-    <div
-      class="border-b last:border-b-0"
-      data-orientation="vertical"
-      data-slot="accordion-item"
-      data-state="closed"
-    >
-      <h3
-        class="flex"
-        data-orientation="vertical"
-        data-state="closed"
-      >
-        <button
-          aria-controls="radix-_r_9_"
-          aria-expanded="false"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180"
-          data-orientation="vertical"
-          data-radix-collection-item=""
-          data-slot="accordion-trigger"
-          data-state="closed"
-          id="radix-_r_8_"
-          type="button"
-        >
-          By brand
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="m6 9 6 6 6-6"
-            />
-          </svg>
-        </button>
-      </h3>
-      <div
-        aria-labelledby="radix-_r_8_"
-        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
-        data-orientation="vertical"
-        data-slot="accordion-content"
-        data-state="closed"
-        hidden=""
-        id="radix-_r_9_"
-        role="region"
-        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-      />
-    </div>
+          style=""
+        />
+      </div>
+    </section>
   </div>
 </div>
 `;
@@ -337,36 +307,31 @@ exports[`CategoryRefinements stories snapshot > Empty story renders and matches 
 exports[`CategoryRefinements stories snapshot > Minimal story renders and matches snapshot 1`] = `
 <div>
   <div
-    data-orientation="vertical"
-    data-slot="accordion"
+    class=""
   >
     <div
-      class="border-b last:border-b-0 !border-b"
-      data-orientation="vertical"
-      data-slot="accordion-item"
+      class="border border-border rounded-md mb-4"
       data-state="open"
       data-testid="sf-store-inventory-filter"
     >
       <h3
-        class="flex"
-        data-orientation="vertical"
-        data-state="open"
+        class="text-sm font-medium text-left leading-normal p-4 transition-colors hover:bg-muted/60"
       >
         <button
-          aria-controls="radix-_r_b_"
+          aria-controls="radix-_r_5_"
           aria-expanded="true"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180"
-          data-orientation="vertical"
-          data-radix-collection-item=""
-          data-slot="accordion-trigger"
+          class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
           data-state="open"
-          id="radix-_r_a_"
           type="button"
         >
-          Shop by Availability
+          <span
+            class="text-sm leading-none text-left font-medium"
+          >
+            Shop by Availability
+          </span>
           <svg
             aria-hidden="true"
-            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
+            class="lucide lucide-minus size-4"
             fill="none"
             height="24"
             stroke="currentColor"
@@ -378,116 +343,100 @@ exports[`CategoryRefinements stories snapshot > Minimal story renders and matche
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="m6 9 6 6 6-6"
+              d="M5 12h14"
             />
           </svg>
         </button>
       </h3>
       <div
-        aria-labelledby="radix-_r_a_"
-        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
-        data-orientation="vertical"
-        data-slot="accordion-content"
+        class="px-4 pb-4"
         data-state="open"
-        id="radix-_r_b_"
-        role="region"
-        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+        id="radix-_r_5_"
+        style="transition-duration: 0s; animation-name: none;"
       >
         <div
-          class="pt-0 pb-4"
+          class="flex items-start space-x-2 p-2 rounded-md"
         >
-          <div
-            class="flex items-start space-x-2 p-2 rounded-md hover:bg-muted/30"
+          <button
+            aria-checked="false"
+            aria-label="Filter Products by Store Availability at Select Store"
+            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 size-4"
+            data-slot="checkbox"
+            data-state="unchecked"
+            data-testid="sf-store-inventory-filter-checkbox"
+            id="inventory-filter"
+            role="checkbox"
+            type="button"
+            value="on"
+          />
+          <label
+            class="text-sm font-medium leading-none cursor-pointer"
+            for="inventory-filter"
           >
-            <button
-              aria-checked="false"
-              aria-label="Filter Products by Store Availability at Select Store"
-              class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 size-4"
-              data-slot="checkbox"
-              data-state="unchecked"
-              data-testid="sf-store-inventory-filter-checkbox"
-              id="inventory-filter"
-              role="checkbox"
-              type="button"
-              value="on"
-            />
-            <label
-              class="text-sm font-medium leading-none cursor-pointer"
-              for="inventory-filter"
+            In stock at  
+            <span
+              aria-label="Select Store"
+              class="underline cursor-pointer hover:opacity-70"
+              role="button"
+              tabindex="0"
             >
-              In stock at  
-              <span
-                aria-label="Select Store"
-                class="underline cursor-pointer hover:opacity-70"
-                role="button"
-                tabindex="0"
-              >
-                Select Store
-              </span>
-            </label>
-          </div>
+              Select Store
+            </span>
+          </label>
         </div>
       </div>
     </div>
-  </div>
-  <div
-    data-orientation="vertical"
-    data-slot="accordion"
-  >
-    <div
-      class="border-b last:border-b-0"
-      data-orientation="vertical"
-      data-slot="accordion-item"
-      data-state="closed"
-    >
-      <h3
-        class="flex"
-        data-orientation="vertical"
+    <section>
+      <div
+        class="border border-border rounded-md mb-4"
         data-state="closed"
       >
-        <button
-          aria-controls="radix-_r_d_"
-          aria-expanded="false"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180"
-          data-orientation="vertical"
-          data-radix-collection-item=""
-          data-slot="accordion-trigger"
-          data-state="closed"
-          id="radix-_r_c_"
-          type="button"
+        <h3
+          class="text-sm font-medium text-left leading-normal p-4 transition-colors hover:bg-muted/60"
         >
-          Category
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
+          <button
+            aria-controls="radix-_r_6_"
+            aria-expanded="false"
+            class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+            data-state="closed"
+            type="button"
           >
-            <path
-              d="m6 9 6 6 6-6"
-            />
-          </svg>
-        </button>
-      </h3>
-      <div
-        aria-labelledby="radix-_r_c_"
-        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
-        data-orientation="vertical"
-        data-slot="accordion-content"
-        data-state="closed"
-        hidden=""
-        id="radix-_r_d_"
-        role="region"
-        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-      />
-    </div>
+            <span
+              class="text-sm leading-none text-left font-medium"
+            >
+              Category
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-plus size-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="M12 5v14"
+              />
+            </svg>
+          </button>
+        </h3>
+        <div
+          class="px-4 pb-4"
+          data-state="closed"
+          hidden=""
+          id="radix-_r_6_"
+          style=""
+        />
+      </div>
+    </section>
   </div>
 </div>
 `;

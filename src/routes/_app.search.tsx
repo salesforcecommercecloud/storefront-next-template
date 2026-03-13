@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Fragment, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { type LoaderFunctionArgs, useLocation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
@@ -22,6 +22,7 @@ import type { AppConfig } from '@/types/config';
 import { currencyContext } from '@/lib/currency';
 import CategoryPagination from '@/components/category-pagination';
 import ActiveFilters from '@/components/category-refinements/active-filters';
+import FiltersButton from '@/components/category-refinements/filters-button';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
@@ -90,6 +91,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
     const locale = currentSite.defaultLocale;
 
     const limit = config.search.products.hits.limit;
+
     const criticalCount = config.search.products.hits.critical ?? 2;
 
     const searchResultCritical = await fetchSearchProducts(context, {
@@ -129,6 +131,9 @@ export default function SearchPage({
     const { t } = useTranslation('search');
     const config = useConfig<AppConfig>();
     const limit = config.search.products.hits.limit;
+
+    // State for mobile filters panel
+    const [filtersOpen, setFiltersOpen] = useState(false);
 
     // Determine the maximum number of skeletons to display in the product grid
     // Out-of-the-box the idea is to not display more than 8 skeletons, i.e., two rows on a desktop device.
@@ -209,11 +214,24 @@ export default function SearchPage({
                     <Region className="mb-8" page={page} regionId="searchTopFullWidth" />
 
                     <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="hidden lg:block w-64 flex-shrink-0">
-                            <CategoryRefinements result={searchResultCritical} refine={refine} />
+                        {/* Filters toggle button - mobile only (above panel) */}
+                        <div className="lg:hidden">
+                            <FiltersButton onClick={() => setFiltersOpen(!filtersOpen)} isActive={filtersOpen} />
                         </div>
 
+                        {/* Category Refinements - toggles visibility on left side */}
+                        {filtersOpen && (
+                            <div className="w-64 flex-shrink-0">
+                                <CategoryRefinements result={searchResultCritical} refine={refine} />
+                            </div>
+                        )}
+
                         <div className="flex-grow">
+                            {/* Filters toggle button - desktop only (inside content area) */}
+                            <div className="mb-4 hidden lg:block">
+                                <FiltersButton onClick={() => setFiltersOpen(!filtersOpen)} isActive={filtersOpen} />
+                            </div>
+
                             <ActiveFilters result={searchResultCritical} />
 
                             {/* searchTopContent */}

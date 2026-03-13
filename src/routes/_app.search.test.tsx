@@ -135,11 +135,13 @@ vi.mock('@/components/category-refinements/active-filters', () => ({
     default: () => <div data-testid="active-filters" />,
 }));
 
+vi.mock('@/components/category-refinements/filters-button', () => ({
+    default: () => <button data-testid="filters-button">Filters</button>,
+}));
+
 vi.mock('@/components/category-sorting', () => ({
     default: () => <div data-testid="category-sorting" />,
 }));
-
-// Mock API functions
 vi.mock('@/lib/api/search', () => ({
     fetchSearchProducts: vi.fn(),
 }));
@@ -462,7 +464,8 @@ describe('SearchPage', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
+                const filterButtons = screen.getAllByTestId('filters-button');
+                expect(filterButtons).toHaveLength(2);
                 expect(screen.getByTestId('category-sorting')).toBeInTheDocument();
             });
         });
