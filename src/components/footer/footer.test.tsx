@@ -65,8 +65,6 @@ describe('Footer', () => {
         expect(screen.getByText(t('footer:sections.about'))).toBeInTheDocument();
         // Newsletter title now appears as h2 in prominent section
         expect(screen.getByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).toBeInTheDocument();
-        // @sfdc-extension-line SFDC_EXT_INTERNAL_THEME_SWITCHER
-        expect(screen.getByText(t('footer:sections.switchThemes'))).toBeInTheDocument();
     });
 
     test('renders Shop section with category links', async () => {
@@ -147,28 +145,13 @@ describe('Footer', () => {
         expect(screen.getByRole('button', { name: t('footer:newsletter.subscribeButton') })).toBeInTheDocument();
     });
 
-    test('renders all selectors, Theme (if installed), Locale and Currency Switcher', () => {
+    test('renders all selectors, Locale and Currency Switcher', () => {
         renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
-        // Check for ThemeSwitcher select and options
+        // Check for Locale and Currency switchers
         const selectors = screen.getAllByRole('combobox');
-        let expectedLength = 2;
-        // @sfdc-extension-line SFDC_EXT_INTERNAL_THEME_SWITCHER
-        expectedLength += 2; // Theme switcher now has 2 selectors (family and mode)
-        expect(selectors).toHaveLength(expectedLength);
+        expect(selectors).toHaveLength(2);
     });
-
-    // @sfdc-extension-block-start SFDC_EXT_INTERNAL_THEME_SWITCHER
-    test('renders ThemeSwitcher component with theme family and mode options', () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
-        // Theme family options
-        expect(screen.getByRole('option', { name: t('themeSwitcher:marketStreet') })).toBeInTheDocument();
-        expect(screen.getByRole('option', { name: t('themeSwitcher:foundations') })).toBeInTheDocument();
-        // Theme mode options
-        expect(screen.getByRole('option', { name: t('themeSwitcher:lightTheme') })).toBeInTheDocument();
-        expect(screen.getByRole('option', { name: t('themeSwitcher:darkTheme') })).toBeInTheDocument();
-    });
-    // @sfdc-extension-block-end SFDC_EXT_INTERNAL_THEME_SWITCHER
 
     test('renders LocaleSwitcher component with locale options', () => {
         renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);

@@ -79,1249 +79,7 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                 </h3>
                 <ul
                   class="space-y-2"
-                >
-                  <li>
-                    <h3
-                      class="text-lg font-semibold my-4"
-                    >
-                      Switch Themes
-                    </h3>
-                    <div
-                      class="flex items-center gap-2"
-                    >
-                      <div
-                        class="space-y-2"
-                      >
-                        <div>
-                          <label
-                            class="block text-sm font-medium mb-1"
-                            for="_r_d_"
-                          >
-                            Theme
-                          </label>
-                          <div
-                            class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                            data-slot="native-select-wrapper"
-                          >
-                            <select
-                              aria-label="Theme family switcher"
-                              class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                              data-size="default"
-                              data-slot="native-select"
-                              id="_r_d_"
-                            >
-                              <option
-                                value="market-street"
-                              >
-                                Market Street
-                              </option>
-                              <option
-                                value="foundations"
-                              >
-                                Foundations
-                              </option>
-                            </select>
-                            <svg
-                              aria-hidden="true"
-                              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                              data-slot="native-select-icon"
-                              fill="none"
-                              height="24"
-                              stroke="currentColor"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              viewBox="0 0 24 24"
-                              width="24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="m6 9 6 6 6-6"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                        <div>
-                          <label
-                            class="block text-sm font-medium mb-1"
-                            for="_r_c_"
-                          >
-                            Mode
-                          </label>
-                          <div
-                            class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                            data-slot="native-select-wrapper"
-                          >
-                            <select
-                              aria-label="Theme mode switcher"
-                              class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                              data-size="default"
-                              data-slot="native-select"
-                              id="_r_c_"
-                            >
-                              <option
-                                value="light"
-                              >
-                                Light
-                              </option>
-                              <option
-                                value="dark"
-                              >
-                                Dark
-                              </option>
-                            </select>
-                            <svg
-                              aria-hidden="true"
-                              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                              data-slot="native-select-icon"
-                              fill="none"
-                              height="24"
-                              stroke="currentColor"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              viewBox="0 0 24 24"
-                              width="24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="m6 9 6 6 6-6"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3
-                  class="text-sm font-semibold mb-4"
-                >
-                  Help
-                </h3>
-                <ul
-                  class="space-y-2"
-                >
-                  <li>
-                    <a
-                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      href="/contact"
-                    >
-                      Contact Us
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      href="/shipping"
-                    >
-                      Shipping
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      href="/orders"
-                    >
-                      Order Status
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      href="/login"
-                    >
-                      Sign in or create account
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3
-                  class="text-sm font-semibold mb-4"
-                >
-                  About
-                </h3>
-                <ul
-                  class="space-y-2"
-                >
-                  <li>
-                    <a
-                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      href="/store-locator"
-                    >
-                      Store Locator
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      href="/about-us"
-                    >
-                      About Us
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div
-              class="mt-12 pt-8 border-t border-border/60"
-            >
-              <div
-                class="flex flex-col gap-6"
-              >
-                <div
-                  class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-                >
-                  <div
-                    class="flex items-center gap-6"
-                  >
-                    <div
-                      class="flex items-center gap-2"
-                    >
-                      <a
-                        href="/"
-                      >
-                        <img
-                          alt="Market Street"
-                          class="h-4 w-auto"
-                          src="/images/logo.svg"
-                        />
-                      </a>
-                    </div>
-                    <div
-                      class="flex items-center gap-4 text-sm text-muted-foreground"
-                    >
-                      <a
-                        class="hover:text-foreground transition-colors"
-                        href="/accessibility"
-                      >
-                        Accessibility Statement
-                      </a>
-                      <a
-                        class="hover:text-foreground transition-colors"
-                        href="/privacy"
-                      >
-                        Privacy Policy
-                      </a>
-                      <a
-                        class="hover:text-foreground transition-colors"
-                        href="/privacy-choices"
-                      >
-                        Your Privacy Choices
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center gap-4"
-                  >
-                    <a
-                      aria-label="Youtube"
-                      class="text-muted-foreground hover:text-foreground transition-colors"
-                      href="https://youtube.com/channel/UCSTGHqzR1Q9yAVbiS3dAFHg"
-                    >
-                      <svg
-                        class="w-5 h-5"
-                        fill="currentColor"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <title>
-                          YouTube
-                        </title>
-                        <path
-                          d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
-                        />
-                      </svg>
-                    </a>
-                    <a
-                      aria-label="Instagram"
-                      class="text-muted-foreground hover:text-foreground transition-colors"
-                      href="https://instagram.com/commercecloud"
-                    >
-                      <svg
-                        class="w-5 h-5"
-                        fill="currentColor"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <title>
-                          Instagram
-                        </title>
-                        <path
-                          d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"
-                        />
-                      </svg>
-                    </a>
-                    <a
-                      aria-label="X"
-                      class="text-muted-foreground hover:text-foreground transition-colors"
-                      href="https://x.com/CommerceCloud"
-                    >
-                      <svg
-                        class="w-5 h-5"
-                        fill="currentColor"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <title>
-                          X
-                        </title>
-                        <path
-                          d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"
-                        />
-                      </svg>
-                    </a>
-                    <a
-                      aria-label="Facebook"
-                      class="text-muted-foreground hover:text-foreground transition-colors"
-                      href="https://facebook.com/CommerceCloud/"
-                    >
-                      <svg
-                        class="w-5 h-5"
-                        fill="currentColor"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <title>
-                          Facebook
-                        </title>
-                        <path
-                          d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"
-                        />
-                      </svg>
-                    </a>
-                  </div>
-                </div>
-                <div
-                  class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground"
-                >
-                  <div>
-                    © 
-                    2026
-                     
-                    Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
-                  </div>
-                  <div
-                    class="flex items-center gap-4"
-                  >
-                    <div
-                      class="*:not-first:mt-2"
-                    >
-                      <div
-                        class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                        data-slot="native-select-wrapper"
-                      >
-                        <select
-                          aria-label="Language selector"
-                          class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                          data-size="default"
-                          data-slot="native-select"
-                          id="_r_e_"
-                        >
-                          <option
-                            value="it-IT"
-                          >
-                            Italian (Italy)
-                          </option>
-                          <option
-                            value="en-GB"
-                          >
-                            English (UK)
-                          </option>
-                        </select>
-                        <svg
-                          aria-hidden="true"
-                          class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                          data-slot="native-select-icon"
-                          fill="none"
-                          height="24"
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          viewBox="0 0 24 24"
-                          width="24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="m6 9 6 6 6-6"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                    <div>
-                      <div
-                        class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                        data-slot="native-select-wrapper"
-                      >
-                        <select
-                          aria-label="Currency switcher"
-                          class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                          data-size="default"
-                          data-slot="native-select"
-                          id="_r_f_"
-                        >
-                          <option
-                            value="EUR"
-                          >
-                            Euro (€)
-                          </option>
-                          <option
-                            value="GBP"
-                          >
-                            British Pound (£)
-                          </option>
-                        </select>
-                        <svg
-                          aria-hidden="true"
-                          class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                          data-slot="native-select-icon"
-                          fill="none"
-                          height="24"
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          viewBox="0 0 24 24"
-                          width="24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="m6 9 6 6 6-6"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/privacy"
-                    >
-                      Privacy Policy
-                    </a>
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/terms"
-                    >
-                      Terms of Use
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Footer stories snapshot > Default story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="min-h-[60vh] flex flex-col"
-  >
-    <div
-      class="flex-1"
-    />
-    <footer
-      class="mt-auto"
-    >
-      <div
-        class="bg-primary text-primary-foreground py-12 md:py-16"
-      >
-        <div
-          class="container mx-auto px-4"
-        >
-          <div
-            class="max-w-2xl mx-auto text-center"
-          >
-            <h2
-              class="text-2xl md:text-3xl font-bold mb-3"
-            >
-              Join Our Community
-            </h2>
-            <p
-              class="text-base md:text-lg mb-6 opacity-90"
-            >
-              Be the first to discover new arrivals, exclusive offers, and style inspiration.
-            </p>
-            <div
-              class="flex justify-center"
-            >
-              <form
-                class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
-              >
-                <input
-                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
-                  data-slot="input"
-                  placeholder="Your email"
-                  type="email"
                 />
-                <button
-                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
-                  data-size="lg"
-                  data-slot="button"
-                  data-variant="secondary"
-                  type="submit"
-                >
-                  Subscribe
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-footer-background py-12"
-      >
-        <div
-          class="container mx-auto px-4 text-footer-foreground"
-        >
-          <div
-            class="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12"
-          >
-            <div>
-              <h3
-                class="text-sm font-semibold mb-4"
-              >
-                Shop
-              </h3>
-              <ul
-                class="space-y-2"
-              >
-                <li>
-                  <h3
-                    class="text-lg font-semibold my-4"
-                  >
-                    Switch Themes
-                  </h3>
-                  <div
-                    class="flex items-center gap-2"
-                  >
-                    <div
-                      class="space-y-2"
-                    >
-                      <div>
-                        <label
-                          class="block text-sm font-medium mb-1"
-                          for="_r_1_"
-                        >
-                          Theme
-                        </label>
-                        <div
-                          class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                          data-slot="native-select-wrapper"
-                        >
-                          <select
-                            aria-label="Theme family switcher"
-                            class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                            data-size="default"
-                            data-slot="native-select"
-                            id="_r_1_"
-                          >
-                            <option
-                              value="market-street"
-                            >
-                              Market Street
-                            </option>
-                            <option
-                              value="foundations"
-                            >
-                              Foundations
-                            </option>
-                          </select>
-                          <svg
-                            aria-hidden="true"
-                            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                            data-slot="native-select-icon"
-                            fill="none"
-                            height="24"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="m6 9 6 6 6-6"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                      <div>
-                        <label
-                          class="block text-sm font-medium mb-1"
-                          for="_r_0_"
-                        >
-                          Mode
-                        </label>
-                        <div
-                          class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                          data-slot="native-select-wrapper"
-                        >
-                          <select
-                            aria-label="Theme mode switcher"
-                            class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                            data-size="default"
-                            data-slot="native-select"
-                            id="_r_0_"
-                          >
-                            <option
-                              value="light"
-                            >
-                              Light
-                            </option>
-                            <option
-                              value="dark"
-                            >
-                              Dark
-                            </option>
-                          </select>
-                          <svg
-                            aria-hidden="true"
-                            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                            data-slot="native-select-icon"
-                            fill="none"
-                            height="24"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="m6 9 6 6 6-6"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3
-                class="text-sm font-semibold mb-4"
-              >
-                Help
-              </h3>
-              <ul
-                class="space-y-2"
-              >
-                <li>
-                  <a
-                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    href="/contact"
-                  >
-                    Contact Us
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    href="/shipping"
-                  >
-                    Shipping
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    href="/orders"
-                  >
-                    Order Status
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    href="/login"
-                  >
-                    Sign in or create account
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3
-                class="text-sm font-semibold mb-4"
-              >
-                About
-              </h3>
-              <ul
-                class="space-y-2"
-              >
-                <li>
-                  <a
-                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    href="/store-locator"
-                  >
-                    Store Locator
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    href="/about-us"
-                  >
-                    About Us
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div
-            class="mt-12 pt-8 border-t border-border/60"
-          >
-            <div
-              class="flex flex-col gap-6"
-            >
-              <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-              >
-                <div
-                  class="flex items-center gap-6"
-                >
-                  <div
-                    class="flex items-center gap-2"
-                  >
-                    <a
-                      href="/"
-                    >
-                      <img
-                        alt="Market Street"
-                        class="h-4 w-auto"
-                        src="/images/logo.svg"
-                      />
-                    </a>
-                  </div>
-                  <div
-                    class="flex items-center gap-4 text-sm text-muted-foreground"
-                  >
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/accessibility"
-                    >
-                      Accessibility Statement
-                    </a>
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/privacy"
-                    >
-                      Privacy Policy
-                    </a>
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/privacy-choices"
-                    >
-                      Your Privacy Choices
-                    </a>
-                  </div>
-                </div>
-                <div
-                  class="flex items-center gap-4"
-                >
-                  <a
-                    aria-label="Youtube"
-                    class="text-muted-foreground hover:text-foreground transition-colors"
-                    href="https://youtube.com/channel/UCSTGHqzR1Q9yAVbiS3dAFHg"
-                  >
-                    <svg
-                      class="w-5 h-5"
-                      fill="currentColor"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <title>
-                        YouTube
-                      </title>
-                      <path
-                        d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
-                      />
-                    </svg>
-                  </a>
-                  <a
-                    aria-label="Instagram"
-                    class="text-muted-foreground hover:text-foreground transition-colors"
-                    href="https://instagram.com/commercecloud"
-                  >
-                    <svg
-                      class="w-5 h-5"
-                      fill="currentColor"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <title>
-                        Instagram
-                      </title>
-                      <path
-                        d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"
-                      />
-                    </svg>
-                  </a>
-                  <a
-                    aria-label="X"
-                    class="text-muted-foreground hover:text-foreground transition-colors"
-                    href="https://x.com/CommerceCloud"
-                  >
-                    <svg
-                      class="w-5 h-5"
-                      fill="currentColor"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <title>
-                        X
-                      </title>
-                      <path
-                        d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"
-                      />
-                    </svg>
-                  </a>
-                  <a
-                    aria-label="Facebook"
-                    class="text-muted-foreground hover:text-foreground transition-colors"
-                    href="https://facebook.com/CommerceCloud/"
-                  >
-                    <svg
-                      class="w-5 h-5"
-                      fill="currentColor"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <title>
-                        Facebook
-                      </title>
-                      <path
-                        d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"
-                      />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-              <div
-                class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground"
-              >
-                <div>
-                  © 
-                  2026
-                   
-                  Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
-                </div>
-                <div
-                  class="flex items-center gap-4"
-                >
-                  <div
-                    class="*:not-first:mt-2"
-                  >
-                    <div
-                      class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                      data-slot="native-select-wrapper"
-                    >
-                      <select
-                        aria-label="Language selector"
-                        class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                        data-size="default"
-                        data-slot="native-select"
-                        id="_r_2_"
-                      >
-                        <option
-                          value="it-IT"
-                        >
-                          Italian (Italy)
-                        </option>
-                        <option
-                          value="en-GB"
-                        >
-                          English (UK)
-                        </option>
-                      </select>
-                      <svg
-                        aria-hidden="true"
-                        class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                        data-slot="native-select-icon"
-                        fill="none"
-                        height="24"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="m6 9 6 6 6-6"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <div>
-                    <div
-                      class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                      data-slot="native-select-wrapper"
-                    >
-                      <select
-                        aria-label="Currency switcher"
-                        class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                        data-size="default"
-                        data-slot="native-select"
-                        id="_r_3_"
-                      >
-                        <option
-                          value="EUR"
-                        >
-                          Euro (€)
-                        </option>
-                        <option
-                          value="GBP"
-                        >
-                          British Pound (£)
-                        </option>
-                      </select>
-                      <svg
-                        aria-hidden="true"
-                        class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                        data-slot="native-select-icon"
-                        fill="none"
-                        height="24"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="m6 9 6 6 6-6"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <a
-                    class="hover:text-foreground transition-colors"
-                    href="/privacy"
-                  >
-                    Privacy Policy
-                  </a>
-                  <a
-                    class="hover:text-foreground transition-colors"
-                    href="/terms"
-                  >
-                    Terms of Use
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  </div>
-</div>
-`;
-
-exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="min-h-[60vh] flex flex-col"
-  >
-    <div
-      class="flex-1"
-    />
-    <div
-      class="min-h-screen flex flex-col"
-    >
-      <main
-        class="flex-1 container mx-auto px-4 py-16 space-y-4"
-      >
-        <p>
-          Sample content section 
-          1
-        </p>
-        <p>
-          Sample content section 
-          2
-        </p>
-        <p>
-          Sample content section 
-          3
-        </p>
-        <p>
-          Sample content section 
-          4
-        </p>
-        <p>
-          Sample content section 
-          5
-        </p>
-        <p>
-          Sample content section 
-          6
-        </p>
-        <p>
-          Sample content section 
-          7
-        </p>
-        <p>
-          Sample content section 
-          8
-        </p>
-        <p>
-          Sample content section 
-          9
-        </p>
-        <p>
-          Sample content section 
-          10
-        </p>
-        <p>
-          Sample content section 
-          11
-        </p>
-        <p>
-          Sample content section 
-          12
-        </p>
-        <p>
-          Sample content section 
-          13
-        </p>
-        <p>
-          Sample content section 
-          14
-        </p>
-        <p>
-          Sample content section 
-          15
-        </p>
-        <p>
-          Sample content section 
-          16
-        </p>
-        <p>
-          Sample content section 
-          17
-        </p>
-        <p>
-          Sample content section 
-          18
-        </p>
-        <p>
-          Sample content section 
-          19
-        </p>
-        <p>
-          Sample content section 
-          20
-        </p>
-      </main>
-      <footer
-        class="mt-auto"
-      >
-        <div
-          class="bg-primary text-primary-foreground py-12 md:py-16"
-        >
-          <div
-            class="container mx-auto px-4"
-          >
-            <div
-              class="max-w-2xl mx-auto text-center"
-            >
-              <h2
-                class="text-2xl md:text-3xl font-bold mb-3"
-              >
-                Join Our Community
-              </h2>
-              <p
-                class="text-base md:text-lg mb-6 opacity-90"
-              >
-                Be the first to discover new arrivals, exclusive offers, and style inspiration.
-              </p>
-              <div
-                class="flex justify-center"
-              >
-                <form
-                  class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
-                >
-                  <input
-                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
-                    data-slot="input"
-                    placeholder="Your email"
-                    type="email"
-                  />
-                  <button
-                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
-                    data-size="lg"
-                    data-slot="button"
-                    data-variant="secondary"
-                    type="submit"
-                  >
-                    Subscribe
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="bg-footer-background py-12"
-        >
-          <div
-            class="container mx-auto px-4 text-footer-foreground"
-          >
-            <div
-              class="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12"
-            >
-              <div>
-                <h3
-                  class="text-sm font-semibold mb-4"
-                >
-                  Shop
-                </h3>
-                <ul
-                  class="space-y-2"
-                >
-                  <li>
-                    <h3
-                      class="text-lg font-semibold my-4"
-                    >
-                      Switch Themes
-                    </h3>
-                    <div
-                      class="flex items-center gap-2"
-                    >
-                      <div
-                        class="space-y-2"
-                      >
-                        <div>
-                          <label
-                            class="block text-sm font-medium mb-1"
-                            for="_r_5_"
-                          >
-                            Theme
-                          </label>
-                          <div
-                            class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                            data-slot="native-select-wrapper"
-                          >
-                            <select
-                              aria-label="Theme family switcher"
-                              class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                              data-size="default"
-                              data-slot="native-select"
-                              id="_r_5_"
-                            >
-                              <option
-                                value="market-street"
-                              >
-                                Market Street
-                              </option>
-                              <option
-                                value="foundations"
-                              >
-                                Foundations
-                              </option>
-                            </select>
-                            <svg
-                              aria-hidden="true"
-                              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                              data-slot="native-select-icon"
-                              fill="none"
-                              height="24"
-                              stroke="currentColor"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              viewBox="0 0 24 24"
-                              width="24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="m6 9 6 6 6-6"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                        <div>
-                          <label
-                            class="block text-sm font-medium mb-1"
-                            for="_r_4_"
-                          >
-                            Mode
-                          </label>
-                          <div
-                            class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                            data-slot="native-select-wrapper"
-                          >
-                            <select
-                              aria-label="Theme mode switcher"
-                              class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                              data-size="default"
-                              data-slot="native-select"
-                              id="_r_4_"
-                            >
-                              <option
-                                value="light"
-                              >
-                                Light
-                              </option>
-                              <option
-                                value="dark"
-                              >
-                                Dark
-                              </option>
-                            </select>
-                            <svg
-                              aria-hidden="true"
-                              class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                              data-slot="native-select-icon"
-                              fill="none"
-                              height="24"
-                              stroke="currentColor"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              viewBox="0 0 24 24"
-                              width="24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="m6 9 6 6 6-6"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
               </div>
               <div>
                 <h3
@@ -1655,7 +413,7 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
 </div>
 `;
 
-exports[`Footer stories snapshot > MobileView story renders and matches snapshot 1`] = `
+exports[`Footer stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
     class="min-h-[60vh] flex flex-col"
@@ -1728,121 +486,7 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
               </h3>
               <ul
                 class="space-y-2"
-              >
-                <li>
-                  <h3
-                    class="text-lg font-semibold my-4"
-                  >
-                    Switch Themes
-                  </h3>
-                  <div
-                    class="flex items-center gap-2"
-                  >
-                    <div
-                      class="space-y-2"
-                    >
-                      <div>
-                        <label
-                          class="block text-sm font-medium mb-1"
-                          for="_r_9_"
-                        >
-                          Theme
-                        </label>
-                        <div
-                          class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                          data-slot="native-select-wrapper"
-                        >
-                          <select
-                            aria-label="Theme family switcher"
-                            class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                            data-size="default"
-                            data-slot="native-select"
-                            id="_r_9_"
-                          >
-                            <option
-                              value="market-street"
-                            >
-                              Market Street
-                            </option>
-                            <option
-                              value="foundations"
-                            >
-                              Foundations
-                            </option>
-                          </select>
-                          <svg
-                            aria-hidden="true"
-                            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                            data-slot="native-select-icon"
-                            fill="none"
-                            height="24"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="m6 9 6 6 6-6"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                      <div>
-                        <label
-                          class="block text-sm font-medium mb-1"
-                          for="_r_8_"
-                        >
-                          Mode
-                        </label>
-                        <div
-                          class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
-                          data-slot="native-select-wrapper"
-                        >
-                          <select
-                            aria-label="Theme mode switcher"
-                            class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                            data-size="default"
-                            data-slot="native-select"
-                            id="_r_8_"
-                          >
-                            <option
-                              value="light"
-                            >
-                              Light
-                            </option>
-                            <option
-                              value="dark"
-                            >
-                              Dark
-                            </option>
-                          </select>
-                          <svg
-                            aria-hidden="true"
-                            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
-                            data-slot="native-select-icon"
-                            fill="none"
-                            height="24"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="m6 9 6 6 6-6"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              </ul>
+              />
             </div>
             <div>
               <h3
@@ -2076,7 +720,7 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                         class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                         data-size="default"
                         data-slot="native-select"
-                        id="_r_a_"
+                        id="_r_0_"
                       >
                         <option
                           value="it-IT"
@@ -2119,7 +763,907 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                         class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                         data-size="default"
                         data-slot="native-select"
-                        id="_r_b_"
+                        id="_r_1_"
+                      >
+                        <option
+                          value="EUR"
+                        >
+                          Euro (€)
+                        </option>
+                        <option
+                          value="GBP"
+                        >
+                          British Pound (£)
+                        </option>
+                      </select>
+                      <svg
+                        aria-hidden="true"
+                        class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
+                        data-slot="native-select-icon"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="m6 9 6 6 6-6"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/privacy"
+                  >
+                    Privacy Policy
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/terms"
+                  >
+                    Terms of Use
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+`;
+
+exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-[60vh] flex flex-col"
+  >
+    <div
+      class="flex-1"
+    />
+    <div
+      class="min-h-screen flex flex-col"
+    >
+      <main
+        class="flex-1 container mx-auto px-4 py-16 space-y-4"
+      >
+        <p>
+          Sample content section 
+          1
+        </p>
+        <p>
+          Sample content section 
+          2
+        </p>
+        <p>
+          Sample content section 
+          3
+        </p>
+        <p>
+          Sample content section 
+          4
+        </p>
+        <p>
+          Sample content section 
+          5
+        </p>
+        <p>
+          Sample content section 
+          6
+        </p>
+        <p>
+          Sample content section 
+          7
+        </p>
+        <p>
+          Sample content section 
+          8
+        </p>
+        <p>
+          Sample content section 
+          9
+        </p>
+        <p>
+          Sample content section 
+          10
+        </p>
+        <p>
+          Sample content section 
+          11
+        </p>
+        <p>
+          Sample content section 
+          12
+        </p>
+        <p>
+          Sample content section 
+          13
+        </p>
+        <p>
+          Sample content section 
+          14
+        </p>
+        <p>
+          Sample content section 
+          15
+        </p>
+        <p>
+          Sample content section 
+          16
+        </p>
+        <p>
+          Sample content section 
+          17
+        </p>
+        <p>
+          Sample content section 
+          18
+        </p>
+        <p>
+          Sample content section 
+          19
+        </p>
+        <p>
+          Sample content section 
+          20
+        </p>
+      </main>
+      <footer
+        class="mt-auto"
+      >
+        <div
+          class="bg-primary text-primary-foreground py-12 md:py-16"
+        >
+          <div
+            class="container mx-auto px-4"
+          >
+            <div
+              class="max-w-2xl mx-auto text-center"
+            >
+              <h2
+                class="text-2xl md:text-3xl font-bold mb-3"
+              >
+                Join Our Community
+              </h2>
+              <p
+                class="text-base md:text-lg mb-6 opacity-90"
+              >
+                Be the first to discover new arrivals, exclusive offers, and style inspiration.
+              </p>
+              <div
+                class="flex justify-center"
+              >
+                <form
+                  class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
+                >
+                  <input
+                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
+                    data-slot="input"
+                    placeholder="Your email"
+                    type="email"
+                  />
+                  <button
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
+                    data-size="lg"
+                    data-slot="button"
+                    data-variant="secondary"
+                    type="submit"
+                  >
+                    Subscribe
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-footer-background py-12"
+        >
+          <div
+            class="container mx-auto px-4 text-footer-foreground"
+          >
+            <div
+              class="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12"
+            >
+              <div>
+                <h3
+                  class="text-sm font-semibold mb-4"
+                >
+                  Shop
+                </h3>
+                <ul
+                  class="space-y-2"
+                />
+              </div>
+              <div>
+                <h3
+                  class="text-sm font-semibold mb-4"
+                >
+                  Help
+                </h3>
+                <ul
+                  class="space-y-2"
+                >
+                  <li>
+                    <a
+                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      href="/contact"
+                    >
+                      Contact Us
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      href="/shipping"
+                    >
+                      Shipping
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      href="/orders"
+                    >
+                      Order Status
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      href="/login"
+                    >
+                      Sign in or create account
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h3
+                  class="text-sm font-semibold mb-4"
+                >
+                  About
+                </h3>
+                <ul
+                  class="space-y-2"
+                >
+                  <li>
+                    <a
+                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      href="/store-locator"
+                    >
+                      Store Locator
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      href="/about-us"
+                    >
+                      About Us
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div
+              class="mt-12 pt-8 border-t border-border/60"
+            >
+              <div
+                class="flex flex-col gap-6"
+              >
+                <div
+                  class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                >
+                  <div
+                    class="flex items-center gap-6"
+                  >
+                    <div
+                      class="flex items-center gap-2"
+                    >
+                      <a
+                        href="/"
+                      >
+                        <img
+                          alt="Market Street"
+                          class="h-4 w-auto"
+                          src="/images/logo.svg"
+                        />
+                      </a>
+                    </div>
+                    <div
+                      class="flex items-center gap-4 text-sm text-muted-foreground"
+                    >
+                      <a
+                        class="hover:text-foreground transition-colors"
+                        href="/accessibility"
+                      >
+                        Accessibility Statement
+                      </a>
+                      <a
+                        class="hover:text-foreground transition-colors"
+                        href="/privacy"
+                      >
+                        Privacy Policy
+                      </a>
+                      <a
+                        class="hover:text-foreground transition-colors"
+                        href="/privacy-choices"
+                      >
+                        Your Privacy Choices
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-4"
+                  >
+                    <a
+                      aria-label="Youtube"
+                      class="text-muted-foreground hover:text-foreground transition-colors"
+                      href="https://youtube.com/channel/UCSTGHqzR1Q9yAVbiS3dAFHg"
+                    >
+                      <svg
+                        class="w-5 h-5"
+                        fill="currentColor"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <title>
+                          YouTube
+                        </title>
+                        <path
+                          d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
+                        />
+                      </svg>
+                    </a>
+                    <a
+                      aria-label="Instagram"
+                      class="text-muted-foreground hover:text-foreground transition-colors"
+                      href="https://instagram.com/commercecloud"
+                    >
+                      <svg
+                        class="w-5 h-5"
+                        fill="currentColor"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <title>
+                          Instagram
+                        </title>
+                        <path
+                          d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"
+                        />
+                      </svg>
+                    </a>
+                    <a
+                      aria-label="X"
+                      class="text-muted-foreground hover:text-foreground transition-colors"
+                      href="https://x.com/CommerceCloud"
+                    >
+                      <svg
+                        class="w-5 h-5"
+                        fill="currentColor"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <title>
+                          X
+                        </title>
+                        <path
+                          d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"
+                        />
+                      </svg>
+                    </a>
+                    <a
+                      aria-label="Facebook"
+                      class="text-muted-foreground hover:text-foreground transition-colors"
+                      href="https://facebook.com/CommerceCloud/"
+                    >
+                      <svg
+                        class="w-5 h-5"
+                        fill="currentColor"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <title>
+                          Facebook
+                        </title>
+                        <path
+                          d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground"
+                >
+                  <div>
+                    © 
+                    2026
+                     
+                    Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
+                  </div>
+                  <div
+                    class="flex items-center gap-4"
+                  >
+                    <div
+                      class="*:not-first:mt-2"
+                    >
+                      <div
+                        class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
+                        data-slot="native-select-wrapper"
+                      >
+                        <select
+                          aria-label="Language selector"
+                          class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                          data-size="default"
+                          data-slot="native-select"
+                          id="_r_2_"
+                        >
+                          <option
+                            value="it-IT"
+                          >
+                            Italian (Italy)
+                          </option>
+                          <option
+                            value="en-GB"
+                          >
+                            English (UK)
+                          </option>
+                        </select>
+                        <svg
+                          aria-hidden="true"
+                          class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
+                          data-slot="native-select-icon"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="m6 9 6 6 6-6"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
+                        data-slot="native-select-wrapper"
+                      >
+                        <select
+                          aria-label="Currency switcher"
+                          class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                          data-size="default"
+                          data-slot="native-select"
+                          id="_r_3_"
+                        >
+                          <option
+                            value="EUR"
+                          >
+                            Euro (€)
+                          </option>
+                          <option
+                            value="GBP"
+                          >
+                            British Pound (£)
+                          </option>
+                        </select>
+                        <svg
+                          aria-hidden="true"
+                          class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
+                          data-slot="native-select-icon"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="m6 9 6 6 6-6"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/privacy"
+                    >
+                      Privacy Policy
+                    </a>
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/terms"
+                    >
+                      Terms of Use
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Footer stories snapshot > MobileView story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-[60vh] flex flex-col"
+  >
+    <div
+      class="flex-1"
+    />
+    <footer
+      class="mt-auto"
+    >
+      <div
+        class="bg-primary text-primary-foreground py-12 md:py-16"
+      >
+        <div
+          class="container mx-auto px-4"
+        >
+          <div
+            class="max-w-2xl mx-auto text-center"
+          >
+            <h2
+              class="text-2xl md:text-3xl font-bold mb-3"
+            >
+              Join Our Community
+            </h2>
+            <p
+              class="text-base md:text-lg mb-6 opacity-90"
+            >
+              Be the first to discover new arrivals, exclusive offers, and style inspiration.
+            </p>
+            <div
+              class="flex justify-center"
+            >
+              <form
+                class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
+              >
+                <input
+                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
+                  data-slot="input"
+                  placeholder="Your email"
+                  type="email"
+                />
+                <button
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
+                  data-size="lg"
+                  data-slot="button"
+                  data-variant="secondary"
+                  type="submit"
+                >
+                  Subscribe
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-footer-background py-12"
+      >
+        <div
+          class="container mx-auto px-4 text-footer-foreground"
+        >
+          <div
+            class="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12"
+          >
+            <div>
+              <h3
+                class="text-sm font-semibold mb-4"
+              >
+                Shop
+              </h3>
+              <ul
+                class="space-y-2"
+              />
+            </div>
+            <div>
+              <h3
+                class="text-sm font-semibold mb-4"
+              >
+                Help
+              </h3>
+              <ul
+                class="space-y-2"
+              >
+                <li>
+                  <a
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    href="/contact"
+                  >
+                    Contact Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    href="/shipping"
+                  >
+                    Shipping
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    href="/orders"
+                  >
+                    Order Status
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    href="/login"
+                  >
+                    Sign in or create account
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3
+                class="text-sm font-semibold mb-4"
+              >
+                About
+              </h3>
+              <ul
+                class="space-y-2"
+              >
+                <li>
+                  <a
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    href="/store-locator"
+                  >
+                    Store Locator
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    href="/about-us"
+                  >
+                    About Us
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="mt-12 pt-8 border-t border-border/60"
+          >
+            <div
+              class="flex flex-col gap-6"
+            >
+              <div
+                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+              >
+                <div
+                  class="flex items-center gap-6"
+                >
+                  <div
+                    class="flex items-center gap-2"
+                  >
+                    <a
+                      href="/"
+                    >
+                      <img
+                        alt="Market Street"
+                        class="h-4 w-auto"
+                        src="/images/logo.svg"
+                      />
+                    </a>
+                  </div>
+                  <div
+                    class="flex items-center gap-4 text-sm text-muted-foreground"
+                  >
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/accessibility"
+                    >
+                      Accessibility Statement
+                    </a>
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/privacy"
+                    >
+                      Privacy Policy
+                    </a>
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/privacy-choices"
+                    >
+                      Your Privacy Choices
+                    </a>
+                  </div>
+                </div>
+                <div
+                  class="flex items-center gap-4"
+                >
+                  <a
+                    aria-label="Youtube"
+                    class="text-muted-foreground hover:text-foreground transition-colors"
+                    href="https://youtube.com/channel/UCSTGHqzR1Q9yAVbiS3dAFHg"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="currentColor"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        YouTube
+                      </title>
+                      <path
+                        d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
+                      />
+                    </svg>
+                  </a>
+                  <a
+                    aria-label="Instagram"
+                    class="text-muted-foreground hover:text-foreground transition-colors"
+                    href="https://instagram.com/commercecloud"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="currentColor"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Instagram
+                      </title>
+                      <path
+                        d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"
+                      />
+                    </svg>
+                  </a>
+                  <a
+                    aria-label="X"
+                    class="text-muted-foreground hover:text-foreground transition-colors"
+                    href="https://x.com/CommerceCloud"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="currentColor"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        X
+                      </title>
+                      <path
+                        d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"
+                      />
+                    </svg>
+                  </a>
+                  <a
+                    aria-label="Facebook"
+                    class="text-muted-foreground hover:text-foreground transition-colors"
+                    href="https://facebook.com/CommerceCloud/"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="currentColor"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Facebook
+                      </title>
+                      <path
+                        d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"
+                      />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              <div
+                class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground"
+              >
+                <div>
+                  © 
+                  2026
+                   
+                  Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
+                </div>
+                <div
+                  class="flex items-center gap-4"
+                >
+                  <div
+                    class="*:not-first:mt-2"
+                  >
+                    <div
+                      class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
+                      data-slot="native-select-wrapper"
+                    >
+                      <select
+                        aria-label="Language selector"
+                        class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                        data-size="default"
+                        data-slot="native-select"
+                        id="_r_4_"
+                      >
+                        <option
+                          value="it-IT"
+                        >
+                          Italian (Italy)
+                        </option>
+                        <option
+                          value="en-GB"
+                        >
+                          English (UK)
+                        </option>
+                      </select>
+                      <svg
+                        aria-hidden="true"
+                        class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
+                        data-slot="native-select-icon"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="m6 9 6 6 6-6"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
+                      data-slot="native-select-wrapper"
+                    >
+                      <select
+                        aria-label="Currency switcher"
+                        class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                        data-size="default"
+                        data-slot="native-select"
+                        id="_r_5_"
                       >
                         <option
                           value="EUR"
