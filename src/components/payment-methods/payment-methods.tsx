@@ -155,7 +155,9 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
             {/* Page Header */}
             <Card className="bg-card border-border">
                 <CardContent className="px-6 py-3">
-                    <h1 className="text-lg font-semibold text-foreground mb-1" tabIndex={0}>
+                    <h1
+                        className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
+                        tabIndex={0}>
                         {t('navigation.paymentMethods')}
                     </h1>
                     <p className="text-sm text-muted-foreground">{t('paymentMethods.pageSubtitle')}</p>

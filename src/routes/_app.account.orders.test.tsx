@@ -175,7 +175,7 @@ describe('AccountOrders Page', () => {
     describe('Page Content', () => {
         test('renders Order History title', async () => {
             await renderAccountOrders();
-            expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent('Order History');
+            expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Order History');
         });
 
         test('renders subtitle', async () => {

@@ -68,12 +68,16 @@ import type { TFunction } from 'i18next';
  * <CustomerProfileForm />
  * ```
  */
+const PROFILE_FORM_ID = 'customer-profile-form';
+
 export const CustomerProfileForm = ({
     initialData,
     updateFetcher,
     onSuccess,
     onError,
     onCancel,
+    hideActions = false,
+    formId = PROFILE_FORM_ID,
 }: CustomerProfileFormProps) => {
     const { t } = useTranslation('account');
     // Cast t to generic TFunction since schema uses full namespace:key format (account:profile.validation.*)
@@ -180,11 +184,12 @@ export const CustomerProfileForm = ({
     return (
         <div className="w-full">
             <Form {...form}>
-                <form onSubmit={(e) => void handleSubmit(e)} data-testid="customer-profile-form">
+                <form id={formId} onSubmit={(e) => void handleSubmit(e)} data-testid="customer-profile-form">
                     <CustomerProfileFields
                         form={form}
                         updateFetcher={updateFetcher}
                         onCancel={onCancel ? handleCancel : undefined}
+                        hideActions={hideActions}
                     />
                 </form>
             </Form>

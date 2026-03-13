@@ -84,6 +84,8 @@ export interface ProductRecommendationsProps {
     recommenderType?: 'recommender' | 'zone';
     products?: Product[];
     args?: Record<string, unknown>;
+    /** Optional className for the carousel title (e.g. smaller text on account overview). */
+    titleClassName?: string;
 }
 
 /**
@@ -112,6 +114,7 @@ export default function ProductRecommendations({
     recommenderType: recommenderTypeProp,
     products: productsProp,
     args,
+    titleClassName,
 }: ProductRecommendationsProps): ReactElement | null {
     const { getRecommendations, getZoneRecommendations, recommendations, isLoading, error } = useRecommenders(true);
     const currency = useCurrency();
@@ -239,7 +242,11 @@ export default function ProductRecommendations({
     // Products are already in ProductSearchHit format from the hook enrichment
     return (
         <div>
-            <ProductCarousel products={productRecs} title={recommendations.displayMessage || recommender.title} />
+            <ProductCarousel
+                products={productRecs}
+                title={recommendations.displayMessage || recommender.title}
+                titleClassName={titleClassName}
+            />
         </div>
     );
 }

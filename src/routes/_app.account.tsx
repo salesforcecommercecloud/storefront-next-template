@@ -96,6 +96,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                 path: '/account',
                 icon: User,
                 label: t('navigation.accountDetails'),
+                end: true,
             },
             {
                 path: '/account/wishlist',
@@ -140,33 +141,35 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
     return (
         <div className="min-h-screen bg-background">
             <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 w-full">
-                    {/* Mobile Navigation Accordion */}
-                    <div className="lg:hidden">
-                        <Card className="bg-muted/30">
-                            <CardContent className="p-4">
-                                <h2 className="text-lg font-semibold text-foreground mb-4">{t('myAccount')}</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 w-full">
+                    {/* Nav column: mobile accordion + desktop sidebar (one cell so sidebar stays left of content) */}
+                    <div className="w-full lg:w-fit">
+                        {/* Mobile Navigation Accordion */}
+                        <div className="lg:hidden">
+                            <Card className="bg-muted/30">
+                                <CardContent className="p-4">
+                                    <h2 className="text-lg font-semibold text-foreground mb-4">{t('myAccount')}</h2>
+                                    <nav className="space-y-1">
+                                        <AccountNavList items={navigationItems} isMobile={true} />
+                                        <AccountNavList items={[logoutItem]} isMobile={true} />
+                                    </nav>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        {/* Desktop Sidebar Navigation */}
+                        <div className="hidden lg:block">
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-semibold text-foreground">{t('myAccount')}</h2>
                                 <nav className="space-y-1">
-                                    <AccountNavList items={navigationItems} isMobile={true} />
-                                    <AccountNavList items={[logoutItem]} isMobile={true} />
+                                    <AccountNavList items={navigationItems} />
+                                    <AccountNavList items={[logoutItem]} />
                                 </nav>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    {/* Desktop Sidebar Navigation */}
-                    <div className="hidden lg:block lg:col-span-1">
-                        <div className="space-y-4">
-                            <h2 className="text-lg font-semibold text-foreground">{t('myAccount')}</h2>
-                            <nav className="space-y-1">
-                                <AccountNavList items={navigationItems} />
-                                <AccountNavList items={[logoutItem]} />
-                            </nav>
+                            </div>
                         </div>
                     </div>
 
                     {/* Main Content - Child routes render here */}
-                    <div className="lg:col-span-3">
+                    <div className="min-w-0">
                         <Outlet context={outletContext} />
                     </div>
                 </div>

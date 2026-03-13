@@ -13,7 +13,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
       data-slot="card-content"
     >
       <h1
-        class="text-lg font-semibold text-foreground mb-1"
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
       >
         Welcome back, John!
       </h1>
@@ -42,7 +42,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
       data-slot="card-content"
     >
       <h2
-        class="text-xl font-semibold text-foreground mb-4"
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4"
       >
         Quick Links
       </h2>
@@ -332,7 +332,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
       data-slot="card-content"
     >
       <h1
-        class="text-lg font-semibold text-foreground mb-1"
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
       >
         Welcome back, there!
       </h1>
@@ -361,7 +361,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
       data-slot="card-content"
     >
       <h2
-        class="text-xl font-semibold text-foreground mb-4"
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4"
       >
         Quick Links
       </h2>
@@ -1057,7 +1057,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
     data-slot="card-content"
   >
     <h2
-      class="text-xl font-semibold text-foreground mb-4"
+      class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4"
     >
       Quick Links
     </h2>
@@ -1444,7 +1444,7 @@ exports[`AccountOverview stories snapshot > WelcomeSectionDefault story renders 
     data-slot="card-content"
   >
     <h1
-      class="text-lg font-semibold text-foreground mb-1"
+      class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
     >
       Welcome back, John!
     </h1>

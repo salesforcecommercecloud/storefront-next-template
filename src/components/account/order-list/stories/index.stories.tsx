@@ -191,7 +191,7 @@ export const Default: Story = {
         const canvas = within(canvasElement);
 
         // Check title is rendered
-        const heading = canvas.getByRole('heading', { level: 3 });
+        const heading = canvas.getByRole('heading', { level: 2 });
         await expect(heading).toHaveTextContent('Order History');
 
         // Check subtitle is rendered
@@ -347,7 +347,7 @@ export const HeaderWithSubtitle: StoryObj<typeof OrderListHeader> = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(canvas.getByRole('heading', { level: 3 })).toHaveTextContent('Order History');
+        await expect(canvas.getByRole('heading', { level: 2 })).toHaveTextContent('Order History');
         await expect(canvas.getByText('View and track your orders')).toBeInTheDocument();
     },
 };
@@ -358,7 +358,7 @@ export const HeaderWithoutSubtitle: StoryObj<typeof OrderListHeader> = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(canvas.getByRole('heading', { level: 3 })).toHaveTextContent('My Orders');
+        await expect(canvas.getByRole('heading', { level: 2 })).toHaveTextContent('My Orders');
     },
 };
 

@@ -120,9 +120,11 @@ export function OrderListHeader({ title, subtitle }: { title: string; subtitle?:
     return (
         <Card className="bg-card border-border">
             <CardContent className="px-6 py-3">
-                <Typography variant="h3" className="text-lg font-semibold text-foreground mb-1" tabIndex={0}>
+                <h2
+                    className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1 tracking-tight"
+                    tabIndex={0}>
                     {title}
-                </Typography>
+                </h2>
                 {subtitle && (
                     <Typography variant="small" as="p" className="text-sm text-muted-foreground">
                         {subtitle}

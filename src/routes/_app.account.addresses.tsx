@@ -205,7 +205,9 @@ function AccountAddressesContent({
                 <CardContent className="px-6 py-3">
                     <div className="flex items-start justify-between">
                         <div>
-                            <h1 className="text-lg font-semibold text-foreground mb-1" tabIndex={0}>
+                            <h1
+                                className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
+                                tabIndex={0}>
                                 {t('navigation.addresses')}
                             </h1>
                             <p className="text-sm text-muted-foreground">{t('addresses.subtitle')}</p>

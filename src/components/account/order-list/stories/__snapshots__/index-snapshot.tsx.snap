@@ -1143,12 +1143,12 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
         class="px-6 py-3"
         data-slot="card-content"
       >
-        <h3
-          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+        <h2
+          class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1 tracking-tight"
           tabindex="0"
         >
           Order History
-        </h3>
+        </h2>
         <p
           class="font-medium text-left text-sm text-muted-foreground"
         >
@@ -2208,12 +2208,12 @@ exports[`OrderList stories snapshot > EmptyState story renders and matches snaps
         class="px-6 py-3"
         data-slot="card-content"
       >
-        <h3
-          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+        <h2
+          class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1 tracking-tight"
           tabindex="0"
         >
           Order History
-        </h3>
+        </h2>
         <p
           class="font-medium text-left text-sm text-muted-foreground"
         >
@@ -2274,12 +2274,12 @@ exports[`OrderList stories snapshot > HeaderWithSubtitle story renders and match
       class="px-6 py-3"
       data-slot="card-content"
     >
-      <h3
-        class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+      <h2
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1 tracking-tight"
         tabindex="0"
       >
         Order History
-      </h3>
+      </h2>
       <p
         class="font-medium text-left text-sm text-muted-foreground"
       >
@@ -2300,12 +2300,12 @@ exports[`OrderList stories snapshot > HeaderWithoutSubtitle story renders and ma
       class="px-6 py-3"
       data-slot="card-content"
     >
-      <h3
-        class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+      <h2
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1 tracking-tight"
         tabindex="0"
       >
         My Orders
-      </h3>
+      </h2>
     </div>
   </div>
 </div>
@@ -2324,12 +2324,12 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
         class="px-6 py-3"
         data-slot="card-content"
       >
-        <h3
-          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+        <h2
+          class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1 tracking-tight"
           tabindex="0"
         >
           Large Order
-        </h3>
+        </h2>
         <p
           class="font-medium text-left text-sm text-muted-foreground"
         >
@@ -2696,12 +2696,12 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
         class="px-6 py-3"
         data-slot="card-content"
       >
-        <h3
-          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+        <h2
+          class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1 tracking-tight"
           tabindex="0"
         >
           Orders with Pickup
-        </h3>
+        </h2>
         <p
           class="font-medium text-left text-sm text-muted-foreground"
         >
@@ -2952,12 +2952,12 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
         class="px-6 py-3"
         data-slot="card-content"
       >
-        <h3
-          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+        <h2
+          class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1 tracking-tight"
           tabindex="0"
         >
           Orders with Product Images
-        </h3>
+        </h2>
         <p
           class="font-medium text-left text-sm text-muted-foreground"
         >
@@ -3150,12 +3150,12 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
         class="px-6 py-3"
         data-slot="card-content"
       >
-        <h3
-          class="tracking-tight text-left text-lg font-semibold text-foreground mb-1"
+        <h2
+          class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1 tracking-tight"
           tabindex="0"
         >
           Orders Without Images
-        </h3>
+        </h2>
         <p
           class="font-medium text-left text-sm text-muted-foreground"
         >

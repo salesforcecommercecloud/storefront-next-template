@@ -33,7 +33,7 @@ interface AccountNavItemProps {
 
 export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps): ReactElement {
     const Icon = item.icon;
-    const baseClasses = 'w-full px-3 py-2 text-left font-medium rounded-md flex items-center gap-2';
+    const baseClasses = 'w-full px-3 py-2 text-left text-sm font-medium rounded-md flex items-center gap-2';
     const mobileClasses = `${baseClasses} border`;
     const disabledClasses = 'opacity-50 cursor-not-allowed pointer-events-none';
 
@@ -72,6 +72,7 @@ export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps):
         <NavLink
             key={item.path}
             to={item.path}
+            end={item.end ?? false}
             className={({ isActive }) =>
                 cn(
                     isMobile ? mobileClasses : baseClasses,

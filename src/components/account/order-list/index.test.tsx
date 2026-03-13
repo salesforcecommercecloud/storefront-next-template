@@ -84,7 +84,7 @@ describe('OrderList Component', () => {
     describe('Header Rendering', () => {
         test('renders title', () => {
             renderOrderList({ title: 'My Orders' });
-            expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent('My Orders');
+            expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('My Orders');
         });
 
         test('renders subtitle when provided', () => {
@@ -264,7 +264,7 @@ describe('OrderList Component', () => {
 describe('OrderListHeader Component', () => {
     test('renders title', () => {
         render(<OrderListHeader title="My Orders" />);
-        expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent('My Orders');
+        expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('My Orders');
     });
 
     test('renders subtitle when provided', () => {
@@ -279,7 +279,7 @@ describe('OrderListHeader Component', () => {
 
     test('title is focusable for accessibility', () => {
         render(<OrderListHeader title="My Orders" />);
-        const heading = screen.getByRole('heading', { level: 3 });
+        const heading = screen.getByRole('heading', { level: 2 });
         expect(heading).toHaveAttribute('tabindex', '0');
     });
 });
@@ -383,6 +383,6 @@ describe('OrderListBody Component', () => {
                 <OrderListBody orders={testOrders} />
             </CurrencyWrapper>
         );
-        expect(screen.queryByRole('heading', { level: 3 })).not.toBeInTheDocument();
+        expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
     });
 });
