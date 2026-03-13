@@ -101,7 +101,9 @@ export default function CartQuantityPicker({
 
     return (
         <div className={className}>
-            <Label htmlFor="quantity" className="text-sm text-muted-foreground mb-2 block text-right">
+            <Label
+                htmlFor="quantity"
+                className="text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right">
                 {tQuantity('quantity')}
             </Label>
             <QuantityPicker

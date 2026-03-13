@@ -93,7 +93,7 @@ export default function QuantityPicker({
             <button
                 onClick={handleDecrement}
                 disabled={disabled || isDecrementDisabled}
-                className="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label={tQuantity('decreaseQuantityForProduct', { productName: productName || tCommon('product') })}
                 data-testid="quantity-decrement">
                 −
@@ -113,7 +113,7 @@ export default function QuantityPicker({
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
                 className={cn(
-                    'w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed',
+                    'w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed',
                     '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                 )}
                 aria-label={tQuantity('quantity')}
@@ -123,7 +123,7 @@ export default function QuantityPicker({
             <button
                 onClick={handleIncrement}
                 disabled={disabled || isIncrementDisabled}
-                className="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label={tQuantity('increaseQuantityForProduct', { productName: productName || tCommon('product') })}
                 data-testid="quantity-increment">
                 +

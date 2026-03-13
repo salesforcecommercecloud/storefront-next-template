@@ -163,7 +163,13 @@ export const getPriceData = (product: Product, opts: { quantity?: number } = {})
         // Calculate per-unit discounted price
         const itemQuantity = basketItem.quantity ?? 1;
         const currentPrice = itemQuantity > 0 ? discountedPrice / itemQuantity : unitPrice;
-        const listPrice = basePrice;
+
+        // Check tieredPrices for the real list price (same logic as PDP path)
+        const tieredPrices = product?.tieredPrices || [];
+        const maxTieredPrice = tieredPrices.length
+            ? Math.max(...tieredPrices.map((item) => item.price || 0))
+            : undefined;
+        const listPrice = maxTieredPrice && maxTieredPrice > basePrice ? maxTieredPrice : basePrice;
         const isOnSale = currentPrice < listPrice;
 
         return {

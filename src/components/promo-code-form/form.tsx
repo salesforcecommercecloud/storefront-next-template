@@ -147,9 +147,9 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                 collapsible
                 value={isOpen ? PROMO_CODE_FORM_VAL : ''}
                 onValueChange={(value) => setIsOpen(value === PROMO_CODE_FORM_VAL)}
-                className="mb-3">
+                className="mb-0">
                 <AccordionItem value={PROMO_CODE_FORM_VAL}>
-                    <AccordionTrigger onClick={() => form.reset()} className="py-2">
+                    <AccordionTrigger onClick={() => form.reset()} className="py-0">
                         <span className="flex-1 text-left text-sm font-medium">{t('promoCode.accordionTitle')}</span>
                     </AccordionTrigger>
                     <AccordionContent className="px-0 py-0">

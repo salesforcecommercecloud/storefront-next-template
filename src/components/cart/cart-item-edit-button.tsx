@@ -62,7 +62,7 @@ export function CartItemEditButton({ product, className = '' }: CartItemEditButt
         <>
             <Button
                 variant="link"
-                className={`text-xs md:text-sm hover:text-primary/80 hover:no-underline h-auto p-0 ${className ?? ''}`}
+                className={`text-xs hover:text-primary/80 hover:no-underline h-auto p-0 ${className ?? ''}`}
                 aria-label={`${t('edit')} ${product.productName ?? ''}`}
                 data-testid={`edit-item-${product.itemId}`}
                 onClick={() => setIsOpen(true)}>

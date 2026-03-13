@@ -262,6 +262,11 @@
     --brand-gray-800: #424242;
     --brand-gray-900: #212121;
 
+    /* cart & mini-cart tokens */
+    --cart-summary-px: 1rem;
+    --cart-free-price: #16a34a;
+    --cart-free-price-size: 1.125rem;
+
     /* font overrides */
     --font-sans: 'Sen', -apple-system, 'system-ui', 'Helvetica Neue', Arial, sans-serif;
     --text-lg: 0.875rem;

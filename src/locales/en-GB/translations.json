@@ -306,7 +306,7 @@
             "signIn": "Sign In"
         },
         "summary": {
-            "orderSummary": "Summary",
+            "orderSummary": "Order Summary",
             "showOrderSummary": "Show order summary",
             "subtotal": "Subtotal",
             "shipping": "Shipping",
@@ -326,7 +326,7 @@
             "applying": "Applying...",
             "remove": "Remove",
             "removing": "Removing...",
-            "accordionTitle": "Enter a Promotion Code",
+            "accordionTitle": "Do you have a promo code?",
             "successMessage": "Promotion was applied.",
             "errorMessage": "Check the code and try again. The promotion can already be applied or it has expired.",
             "removeSuccessMessage": "Promotion was removed.",
@@ -1304,7 +1304,8 @@
         "loading": "Loading...",
         "viewCart": "View Cart",
         "delivery": "Delivery",
-        "saved": "Saved {{amount}}"
+        "saved": "Saved {{amount}}",
+        "free": "Free"
     },
     "trackingConsent": {
         "title": "Tracking Consent",

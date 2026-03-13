@@ -48,9 +48,9 @@ export default function PickupOrDeliveryDropdown({
                 <button
                     type="button"
                     className={cn(
-                        'mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-medium text-foreground flex items-center justify-center gap-2 hover:bg-accent transition-colors'
+                        'mb-1 w-fit px-2 rounded-pill border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors'
                     )}>
-                    {isPickup ? <Store className="mr-1 size-4" /> : <ShoppingCart className="mr-1 size-4" />}
+                    {isPickup ? <Store className="size-3" /> : <ShoppingCart className="size-3" />}
                     <span>{text}</span>
                 </button>
             </DropdownMenuTrigger>

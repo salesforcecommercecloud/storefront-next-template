@@ -10,7 +10,7 @@ exports[`PromoCallout Snapshots > Default snapshot 1`] = `
         class="items-center gap-2"
       >
         <span
-          class="line-clamp-2 text-sm text-success font-medium"
+          class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
         >
           Buy one get one 50% off
         </span>
@@ -30,7 +30,7 @@ exports[`PromoCallout Snapshots > HtmlContent snapshot 1`] = `
         class="items-center gap-2"
       >
         <span
-          class="line-clamp-2 text-sm text-success font-medium"
+          class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
         >
           <strong>
             Flash Sale!

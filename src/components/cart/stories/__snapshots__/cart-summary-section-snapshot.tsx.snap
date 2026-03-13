@@ -3,26 +3,29 @@
 exports[`CartSummarySection stories snapshot > DesktopEmptyCart story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -53,7 +56,7 @@ exports[`CartSummarySection stories snapshot > DesktopEmptyCart story renders an
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -117,7 +120,7 @@ exports[`CartSummarySection stories snapshot > DesktopEmptyCart story renders an
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -156,8 +159,14 @@ exports[`CartSummarySection stories snapshot > DesktopEmptyCart story renders an
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -174,12 +183,6 @@ exports[`CartSummarySection stories snapshot > DesktopEmptyCart story renders an
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>
@@ -190,26 +193,29 @@ exports[`CartSummarySection stories snapshot > DesktopEmptyCart story renders an
 exports[`CartSummarySection stories snapshot > DesktopMultipleItems story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -240,7 +246,7 @@ exports[`CartSummarySection stories snapshot > DesktopMultipleItems story render
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -304,7 +310,7 @@ exports[`CartSummarySection stories snapshot > DesktopMultipleItems story render
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -345,8 +351,14 @@ exports[`CartSummarySection stories snapshot > DesktopMultipleItems story render
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -363,12 +375,6 @@ exports[`CartSummarySection stories snapshot > DesktopMultipleItems story render
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>
@@ -379,26 +385,29 @@ exports[`CartSummarySection stories snapshot > DesktopMultipleItems story render
 exports[`CartSummarySection stories snapshot > DesktopWithItems story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -429,7 +438,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -493,7 +502,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -534,8 +543,14 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -552,12 +567,6 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>
@@ -578,26 +587,29 @@ exports[`CartSummarySection stories snapshot > MobileEmptyCart story renders and
       </p>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
       data-slot="card"
     >
       <div
-        class="p-6"
+        class="px-[var(--cart-summary-px)]"
         data-slot="card-content"
       >
         <div
-          class="space-y-5"
+          class="space-y-4"
           data-testid="sf-order-summary"
         >
-          <h3
-            class="text-xl font-semibold tracking-tight text-left"
+          <h2
+            class="tracking-tight text-left text-base font-semibold text-foreground"
             id="order-summary-heading"
           >
-            Summary
-          </h3>
+            Order Summary
+          </h2>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
             aria-labelledby="order-summary-heading"
-            class="space-y-4"
+            class="space-y-2"
             role="region"
           >
             <div
@@ -628,7 +640,7 @@ exports[`CartSummarySection stories snapshot > MobileEmptyCart story renders and
                     type="button"
                   >
                     <span
-                      class="flex-1 text-left text-base text-primary"
+                      class="flex-1 text-left text-sm text-primary"
                     >
                       <svg
                         aria-hidden="true"
@@ -692,7 +704,7 @@ exports[`CartSummarySection stories snapshot > MobileEmptyCart story renders and
               </div>
             </div>
             <div
-              class="space-y-4 text-sm"
+              class="space-y-2 text-sm"
             >
               <div
                 class="flex justify-between items-center"
@@ -731,8 +743,14 @@ exports[`CartSummarySection stories snapshot > MobileEmptyCart story renders and
                 </span>
               </div>
             </div>
+            <hr
+              class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+            />
+            <hr
+              class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+            />
             <div
-              class="space-y-4 w-full text-sm"
+              class="space-y-2 w-full text-sm pt-2"
             >
               <div
                 class="flex w-full justify-between items-center"
@@ -749,12 +767,6 @@ exports[`CartSummarySection stories snapshot > MobileEmptyCart story renders and
                 </span>
               </div>
             </div>
-            <div
-              class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-              data-orientation="horizontal"
-              data-slot="separator"
-              role="none"
-            />
           </div>
         </div>
       </div>
@@ -776,26 +788,29 @@ exports[`CartSummarySection stories snapshot > MobileMultipleItems story renders
       </p>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
       data-slot="card"
     >
       <div
-        class="p-6"
+        class="px-[var(--cart-summary-px)]"
         data-slot="card-content"
       >
         <div
-          class="space-y-5"
+          class="space-y-4"
           data-testid="sf-order-summary"
         >
-          <h3
-            class="text-xl font-semibold tracking-tight text-left"
+          <h2
+            class="tracking-tight text-left text-base font-semibold text-foreground"
             id="order-summary-heading"
           >
-            Summary
-          </h3>
+            Order Summary
+          </h2>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
             aria-labelledby="order-summary-heading"
-            class="space-y-4"
+            class="space-y-2"
             role="region"
           >
             <div
@@ -826,7 +841,7 @@ exports[`CartSummarySection stories snapshot > MobileMultipleItems story renders
                     type="button"
                   >
                     <span
-                      class="flex-1 text-left text-base text-primary"
+                      class="flex-1 text-left text-sm text-primary"
                     >
                       <svg
                         aria-hidden="true"
@@ -890,7 +905,7 @@ exports[`CartSummarySection stories snapshot > MobileMultipleItems story renders
               </div>
             </div>
             <div
-              class="space-y-4 text-sm"
+              class="space-y-2 text-sm"
             >
               <div
                 class="flex justify-between items-center"
@@ -931,8 +946,14 @@ exports[`CartSummarySection stories snapshot > MobileMultipleItems story renders
                 </span>
               </div>
             </div>
+            <hr
+              class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+            />
+            <hr
+              class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+            />
             <div
-              class="space-y-4 w-full text-sm"
+              class="space-y-2 w-full text-sm pt-2"
             >
               <div
                 class="flex w-full justify-between items-center"
@@ -949,12 +970,6 @@ exports[`CartSummarySection stories snapshot > MobileMultipleItems story renders
                 </span>
               </div>
             </div>
-            <div
-              class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-              data-orientation="horizontal"
-              data-slot="separator"
-              role="none"
-            />
           </div>
         </div>
       </div>
@@ -976,26 +991,29 @@ exports[`CartSummarySection stories snapshot > MobileWithItems story renders and
       </p>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
       data-slot="card"
     >
       <div
-        class="p-6"
+        class="px-[var(--cart-summary-px)]"
         data-slot="card-content"
       >
         <div
-          class="space-y-5"
+          class="space-y-4"
           data-testid="sf-order-summary"
         >
-          <h3
-            class="text-xl font-semibold tracking-tight text-left"
+          <h2
+            class="tracking-tight text-left text-base font-semibold text-foreground"
             id="order-summary-heading"
           >
-            Summary
-          </h3>
+            Order Summary
+          </h2>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
             aria-labelledby="order-summary-heading"
-            class="space-y-4"
+            class="space-y-2"
             role="region"
           >
             <div
@@ -1026,7 +1044,7 @@ exports[`CartSummarySection stories snapshot > MobileWithItems story renders and
                     type="button"
                   >
                     <span
-                      class="flex-1 text-left text-base text-primary"
+                      class="flex-1 text-left text-sm text-primary"
                     >
                       <svg
                         aria-hidden="true"
@@ -1090,7 +1108,7 @@ exports[`CartSummarySection stories snapshot > MobileWithItems story renders and
               </div>
             </div>
             <div
-              class="space-y-4 text-sm"
+              class="space-y-2 text-sm"
             >
               <div
                 class="flex justify-between items-center"
@@ -1131,8 +1149,14 @@ exports[`CartSummarySection stories snapshot > MobileWithItems story renders and
                 </span>
               </div>
             </div>
+            <hr
+              class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+            />
+            <hr
+              class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+            />
             <div
-              class="space-y-4 w-full text-sm"
+              class="space-y-2 w-full text-sm pt-2"
             >
               <div
                 class="flex w-full justify-between items-center"
@@ -1149,12 +1173,6 @@ exports[`CartSummarySection stories snapshot > MobileWithItems story renders and
                 </span>
               </div>
             </div>
-            <div
-              class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-              data-orientation="horizontal"
-              data-slot="separator"
-              role="none"
-            />
           </div>
         </div>
       </div>
@@ -1166,26 +1184,29 @@ exports[`CartSummarySection stories snapshot > MobileWithItems story renders and
 exports[`CartSummarySection stories snapshot > TabletView story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -1216,7 +1237,7 @@ exports[`CartSummarySection stories snapshot > TabletView story renders and matc
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -1280,7 +1301,7 @@ exports[`CartSummarySection stories snapshot > TabletView story renders and matc
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -1321,8 +1342,14 @@ exports[`CartSummarySection stories snapshot > TabletView story renders and matc
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -1339,12 +1366,6 @@ exports[`CartSummarySection stories snapshot > TabletView story renders and matc
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>
@@ -1355,26 +1376,29 @@ exports[`CartSummarySection stories snapshot > TabletView story renders and matc
 exports[`CartSummarySection stories snapshot > WithoutProductMap story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -1405,7 +1429,7 @@ exports[`CartSummarySection stories snapshot > WithoutProductMap story renders a
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -1469,7 +1493,7 @@ exports[`CartSummarySection stories snapshot > WithoutProductMap story renders a
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -1510,8 +1534,14 @@ exports[`CartSummarySection stories snapshot > WithoutProductMap story renders a
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -1528,12 +1558,6 @@ exports[`CartSummarySection stories snapshot > WithoutProductMap story renders a
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>

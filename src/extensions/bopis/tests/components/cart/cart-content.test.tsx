@@ -302,12 +302,13 @@ describe('CartContent', () => {
             });
 
             // Verify delivery option components are rendered for each item
-            expect(screen.getByTestId('cart-delivery-option-item-1')).toBeInTheDocument();
-            expect(screen.getByTestId('cart-delivery-option-item-2')).toBeInTheDocument();
+            // Each delivery option renders twice (mobile + desktop), so we use getAllByTestId
+            expect(screen.getAllByTestId('cart-delivery-option-item-1').length).toBeGreaterThanOrEqual(1);
+            expect(screen.getAllByTestId('cart-delivery-option-item-2').length).toBeGreaterThanOrEqual(1);
 
             // Verify they display the correct product IDs
-            expect(screen.getByText('Delivery Option for product-1')).toBeInTheDocument();
-            expect(screen.getByText('Delivery Option for product-2')).toBeInTheDocument();
+            expect(screen.getAllByText('Delivery Option for product-1').length).toBeGreaterThanOrEqual(1);
+            expect(screen.getAllByText('Delivery Option for product-2').length).toBeGreaterThanOrEqual(1);
         });
 
         test('renders delivery option for items without itemId using productId', () => {
@@ -326,8 +327,9 @@ describe('CartContent', () => {
             });
 
             // Should render for both items (one uses productId as key)
-            expect(screen.getByTestId('cart-delivery-option-product-1')).toBeInTheDocument();
-            expect(screen.getByTestId('cart-delivery-option-item-2')).toBeInTheDocument();
+            // Each delivery option renders twice (mobile + desktop), so we use getAllByTestId
+            expect(screen.getAllByTestId('cart-delivery-option-product-1').length).toBeGreaterThanOrEqual(1);
+            expect(screen.getAllByTestId('cart-delivery-option-item-2').length).toBeGreaterThanOrEqual(1);
         });
 
         test('delivery actions receives correct product data', () => {
@@ -340,8 +342,9 @@ describe('CartContent', () => {
             // Verify delivery option components are rendered with correct product IDs
             // The mock component displays "Delivery Option for {productId}", so we can verify
             // the product data was passed correctly by checking the displayed text
-            expect(screen.getByText('Delivery Option for product-1')).toBeInTheDocument();
-            expect(screen.getByText('Delivery Option for product-2')).toBeInTheDocument();
+            // Each delivery option renders twice (mobile + desktop), so we use getAllByText
+            expect(screen.getAllByText('Delivery Option for product-1').length).toBeGreaterThanOrEqual(1);
+            expect(screen.getAllByText('Delivery Option for product-2').length).toBeGreaterThanOrEqual(1);
         });
 
         test('renders delivery option for both pickup and delivery items', () => {
@@ -369,8 +372,9 @@ describe('CartContent', () => {
             });
 
             // Both items should have delivery option dropdowns
-            expect(screen.getByTestId('cart-delivery-option-item-1')).toBeInTheDocument();
-            expect(screen.getByTestId('cart-delivery-option-item-2')).toBeInTheDocument();
+            // Each delivery option renders twice (mobile + desktop), so we use getAllByTestId
+            expect(screen.getAllByTestId('cart-delivery-option-item-1').length).toBeGreaterThanOrEqual(1);
+            expect(screen.getAllByTestId('cart-delivery-option-item-2').length).toBeGreaterThanOrEqual(1);
         });
     });
 });

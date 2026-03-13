@@ -287,7 +287,7 @@
             "signIn": "Accedi"
         },
         "summary": {
-            "orderSummary": "Riepilogo",
+            "orderSummary": "Riepilogo ordine",
             "showOrderSummary": "Mostra riepilogo ordine",
             "subtotal": "Subtotale",
             "shipping": "Spedizione",
@@ -307,7 +307,7 @@
             "applying": "Applicazione in corso...",
             "remove": "Rimuovi",
             "removing": "Rimozione in corso...",
-            "accordionTitle": "Inserisca un codice promozionale",
+            "accordionTitle": "Hai un codice promozionale?",
             "successMessage": "Promozione applicata con successo!",
             "errorMessage": "Controlli il codice e riprovi, potrebbe essere già applicato o la promozione potrebbe essere scaduta.",
             "removeSuccessMessage": "Promozione rimossa con successo!",
@@ -1144,7 +1144,8 @@
         "loading": "Caricamento in corso...",
         "viewCart": "Visualizza carrello",
         "delivery": "Consegna",
-        "saved": "Risparmiato {{amount}}"
+        "saved": "Risparmiato {{amount}}",
+        "free": "Gratuito"
     },
     "trackingConsent": {
         "title": "Consenso al tracciamento",

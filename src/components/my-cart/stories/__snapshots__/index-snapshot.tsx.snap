@@ -221,10 +221,10 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                   class="flex-1 space-y-1 min-w-0"
                 >
                   <div
-                    class="mb-4 flex items-start gap-2 min-w-0"
+                    class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                   >
                     <h2
-                      class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                      class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                     >
                       <a
                         class="text-foreground hover:text-primary block break-words"
@@ -237,7 +237,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                   </div>
                   <div>
                     <div
-                      class="text-sm text-muted-foreground"
+                      class="text-xs text-muted-foreground"
                     >
                       Qty:
                        
@@ -290,10 +290,10 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                   class="flex-1 space-y-1 min-w-0"
                 >
                   <div
-                    class="mb-4 flex items-start gap-2 min-w-0"
+                    class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                   >
                     <h2
-                      class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                      class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                     >
                       <a
                         class="text-foreground hover:text-primary block break-words"
@@ -306,7 +306,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                   </div>
                   <div>
                     <div
-                      class="text-sm text-muted-foreground"
+                      class="text-xs text-muted-foreground"
                     >
                       Qty:
                        

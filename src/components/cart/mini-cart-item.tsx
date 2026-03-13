@@ -38,12 +38,11 @@ import { getDisplayVariationValues } from '@/lib/product-utils';
 import { useCurrency } from '@/providers/currency';
 import { toImageUrl } from '@/lib/dynamic-image';
 import ProductPrice from '@/components/product-price';
-import PromoCallout from '@/components/product-price/promo-callout';
 import { Typography } from '@/components/typography';
 import QuantityPicker from '@/components/quantity-picker/quantity-picker';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { formatCurrency } from '@/lib/currency';
+import { ProductItemPromotions } from '@/components/product-item';
 import { ShoppingCart } from 'lucide-react';
 
 /**
@@ -102,7 +101,7 @@ interface MiniCartItemProps {
  */
 export default function MiniCartItem({ product, onRemove, bonusProductSlot }: MiniCartItemProps): ReactElement {
     const config = useConfig<AppConfig>();
-    const { t: tMiniCart, i18n } = useTranslation('miniCart');
+    const { t: tMiniCart } = useTranslation('miniCart');
     const { t: tRemoveItem } = useTranslation('removeItem');
     const currency = useCurrency();
     const productAltFallback = tMiniCart('productAltFallback') || 'Product';
@@ -169,22 +168,23 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                     <div className="min-w-0">
                         {productUrl ? (
                             <Link to={productUrl} className="hover:underline">
-                                <h3 className="text-base font-semibold text-foreground line-clamp-2">
+                                <Typography as="h3" variant="small" className="text-foreground line-clamp-2">
                                     {product.productName}
-                                </h3>
+                                </Typography>
                             </Link>
                         ) : (
-                            <h3 className="text-base font-semibold text-foreground line-clamp-2">
+                            <Typography as="h3" variant="small" className="text-foreground line-clamp-2">
                                 {product.productName}
-                            </h3>
+                            </Typography>
                         )}
                         {Object.keys(displayVariationValues).length > 0 && (
                             <div className="mt-1 space-y-0.5">
                                 {Object.entries(displayVariationValues).map(([name, value]) => (
                                     <Typography
                                         key={name}
-                                        variant="body-small"
-                                        className="text-muted-foreground inline-block w-full">
+                                        as="span"
+                                        variant="muted"
+                                        className="text-xs text-muted-foreground inline-block w-full">
                                         <span>{name}: </span>
                                         <span>{value}</span>
                                     </Typography>
@@ -192,7 +192,7 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                             </div>
                         )}
                     </div>
-                    <Badge variant="outline" className="shrink-0 gap-1 text-xs">
+                    <Badge className="shrink-0 gap-1 text-xs rounded-pill bg-muted text-foreground border-0">
                         <ShoppingCart className="w-3 h-3" />
                         {tMiniCart('delivery')}
                     </Badge>
@@ -207,32 +207,24 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                         type="unit"
                         labelForA11y={product.productName || productAltFallback}
                         currentPriceProps={{
-                            className: 'text-base font-semibold text-foreground',
+                            className: 'text-sm text-foreground',
                         }}
                         listPriceProps={{
-                            className: 'text-base',
+                            className: 'text-sm',
                         }}
                         promoCalloutProps={{
-                            className: 'hidden',
+                            className:
+                                'bg-muted text-foreground border-0 text-xs font-medium rounded-pill inline-block mt-1 mx-0',
                         }}
                     />
-                    {(() => {
-                        const discount = product.priceAdjustments?.reduce((acc, adj) => acc + (adj.price ?? 0), 0) ?? 0;
-                        return discount < 0 ? (
-                            <Badge className="mt-1 bg-primary/10 text-primary border-transparent text-xs">
-                                {tMiniCart('saved', {
-                                    amount: formatCurrency(discount, i18n.language, currency),
-                                })}
-                            </Badge>
-                        ) : null;
-                    })()}
+                    <ProductItemPromotions productItem={product} />
                 </div>
 
                 {/* Quantity Picker */}
                 <div className="mb-2 flex items-center gap-2">
                     <Label
                         htmlFor={`quantity-${product.itemId}`}
-                        className="text-sm font-normal text-foreground shrink-0">
+                        className="text-xs font-normal text-muted-foreground shrink-0">
                         {tMiniCart('quantityLabel')}
                     </Label>
                     <QuantityPicker
@@ -243,15 +235,12 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                     />
                 </div>
 
-                {/* Show promotional message after quantity */}
-                <PromoCallout product={product} className="text-sm text-primary mb-2" />
-
                 {/* Bonus Product Selection Card */}
                 {bonusProductSlot && <div className="mt-3">{bonusProductSlot}</div>}
 
                 <button
                     onClick={onRemove}
-                    className="text-sm text-primary hover:underline text-left"
+                    className="text-xs text-primary hover:underline text-left"
                     type="button"
                     aria-label={tMiniCart('removeItemAriaLabel')}>
                     {tRemoveItem('button')}

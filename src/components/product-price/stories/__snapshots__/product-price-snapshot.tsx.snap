@@ -46,7 +46,7 @@ exports[`ProductPrice stories snapshot > OnSale story renders and matches snapsh
      
     <span
       aria-label="List price: $99.99"
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+      class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
     >
       $99.99
     </span>
@@ -83,7 +83,7 @@ exports[`ProductPrice stories snapshot > PriceRange story renders and matches sn
      
     <span
       aria-label="List price: £320.00"
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+      class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
     >
       £320.00
     </span>
@@ -120,7 +120,7 @@ exports[`ProductPrice stories snapshot > WithCustomPromoCalloutStyling story ren
      
     <span
       aria-label="List price: $99.99"
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+      class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
     >
       $99.99
     </span>
@@ -136,7 +136,7 @@ exports[`ProductPrice stories snapshot > WithCustomPromoCalloutStyling story ren
     class="items-center gap-2 text-sm text-muted-foreground"
   >
     <span
-      class="line-clamp-2 text-sm text-success font-medium"
+      class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
     >
       Get 20% off of this item.
     </span>
@@ -166,7 +166,7 @@ exports[`ProductPrice stories snapshot > WithPromoCallout story renders and matc
      
     <span
       aria-label="List price: $99.99"
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+      class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
     >
       $99.99
     </span>
@@ -182,7 +182,7 @@ exports[`ProductPrice stories snapshot > WithPromoCallout story renders and matc
     class="items-center gap-2"
   >
     <span
-      class="line-clamp-2 text-sm text-success font-medium"
+      class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
     >
       Get 20% off of this item.
     </span>

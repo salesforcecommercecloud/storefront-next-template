@@ -177,7 +177,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
             {/* Footer */}
             {basket && basket.productItems && basket.productItems.length > 0 && (
                 <SheetFooter className="px-6 py-6 border-t flex-col gap-3 sm:flex-col">
-                    <Button asChild className="w-full h-12 text-base font-semibold rounded-md" size="lg">
+                    <Button asChild className="w-full h-12 text-sm font-semibold rounded-md" size="lg">
                         <Link to="/checkout" onClick={onClose}>
                             {t('checkout')}{' '}
                             {basket?.orderTotal
@@ -189,7 +189,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     </Button>
                     <Button
                         variant="secondary"
-                        className="w-full h-12 text-base font-normal rounded-md"
+                        className="w-full h-12 text-sm font-normal rounded-md"
                         size="lg"
                         onClick={onClose}>
                         {t('continueShopping')}
@@ -198,7 +198,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                         <Button
                             asChild
                             variant="ghost"
-                            className="w-full h-12 text-base font-normal rounded-md"
+                            className="w-full h-12 text-sm font-normal rounded-md"
                             size="lg">
                             <Link to="/cart" onClick={onClose}>
                                 {tMiniCart('viewCart')}

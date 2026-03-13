@@ -251,7 +251,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -501,7 +501,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -751,7 +751,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -1001,7 +1001,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -1251,7 +1251,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -1501,7 +1501,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -1751,7 +1751,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -2001,7 +2001,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -2363,7 +2363,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -2613,7 +2613,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -2863,7 +2863,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -3113,7 +3113,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -3363,7 +3363,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -3613,7 +3613,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -3863,7 +3863,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -4113,7 +4113,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -4468,7 +4468,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -4718,7 +4718,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -4968,7 +4968,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -5218,7 +5218,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -5468,7 +5468,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -5718,7 +5718,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -5968,7 +5968,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>
@@ -6218,7 +6218,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                        
                       <span
                         aria-label="List price: £67.99"
-                        class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+                        class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
                       >
                         £67.99
                       </span>

@@ -415,7 +415,7 @@ describe('OrderSummary', () => {
     test('renders separator when promo code form is not shown', () => {
         renderWithProviders(<OrderSummary basket={mockBasket} showPromoCodeForm={false} />);
 
-        const separator = document.querySelector('.shrink-0.bg-border');
+        const separator = document.querySelector('hr.border-border');
         expect(separator).toBeInTheDocument();
     });
 

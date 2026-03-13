@@ -248,7 +248,7 @@ export default function BonusProductSelection({
                                                 {item.productName}
                                             </p>
                                             <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                                                <Badge className="bg-primary text-primary-foreground font-semibold text-xs">
+                                                <Badge className="bg-primary text-primary-foreground font-semibold text-xs rounded-pill">
                                                     {t('cart:bonusProducts.freeBadge')}
                                                 </Badge>
                                                 {(() => {

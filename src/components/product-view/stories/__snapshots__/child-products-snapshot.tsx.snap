@@ -429,7 +429,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
           >
             <button
               aria-label="Decrement Quantity for Turquoise Jewelry Bundle"
-              class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="quantity-decrement"
               disabled=""
             >
@@ -437,7 +437,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             </button>
             <input
               aria-label="Quantity:"
-              class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               min="1"
               step="1"
               type="number"
@@ -445,7 +445,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             />
             <button
               aria-label="Increment Quantity for Turquoise Jewelry Bundle"
-              class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="quantity-increment"
             >
               +
@@ -648,7 +648,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
              
             <span
               aria-label="List price from £159.00"
-              class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+              class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
             >
               £159.00
             </span>
@@ -665,7 +665,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               $10 off product set
             </span>
@@ -901,7 +901,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             >
               <button
                 aria-label="Decrement Quantity for Quilted Jacket"
-                class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
                 disabled=""
               >
@@ -909,7 +909,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               </button>
               <input
                 aria-label="Quantity:"
-                class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -917,7 +917,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Quilted Jacket"
-                class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
               >
                 +
@@ -1100,7 +1100,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               $10 off product set
             </span>
@@ -1355,7 +1355,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             >
               <button
                 aria-label="Decrement Quantity for Pull On Pant"
-                class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
                 disabled=""
               >
@@ -1363,7 +1363,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               </button>
               <input
                 aria-label="Quantity:"
-                class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -1371,7 +1371,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Pull On Pant"
-                class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
               >
                 +
@@ -1554,7 +1554,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               $10 off product set
             </span>
@@ -1966,7 +1966,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             >
               <button
                 aria-label="Decrement Quantity for Zerrick"
-                class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
                 disabled=""
               >
@@ -1974,7 +1974,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               </button>
               <input
                 aria-label="Quantity:"
-                class="w-10 text-center text-sm text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -1982,7 +1982,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Zerrick"
-                class="px-3 py-2 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
               >
                 +

@@ -9,7 +9,7 @@ exports[`PromoCodeForm stories snapshot > Default story renders and matches snap
       class="w-full"
     >
       <div
-        class="mb-3"
+        class="mb-0"
         data-orientation="vertical"
         data-slot="accordion"
       >
@@ -27,7 +27,7 @@ exports[`PromoCodeForm stories snapshot > Default story renders and matches snap
             <button
               aria-controls="radix-_r_1_"
               aria-expanded="false"
-              class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-2"
+              class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
               data-orientation="vertical"
               data-radix-collection-item=""
               data-slot="accordion-trigger"
@@ -38,7 +38,7 @@ exports[`PromoCodeForm stories snapshot > Default story renders and matches snap
               <span
                 class="flex-1 text-left text-sm font-medium"
               >
-                Enter a Promotion Code
+                Do you have a promo code?
               </span>
               <svg
                 aria-hidden="true"
@@ -86,7 +86,7 @@ exports[`PromoCodeForm stories snapshot > Expanded story renders and matches sna
       class="w-full"
     >
       <div
-        class="mb-3"
+        class="mb-0"
         data-orientation="vertical"
         data-slot="accordion"
       >
@@ -104,7 +104,7 @@ exports[`PromoCodeForm stories snapshot > Expanded story renders and matches sna
             <button
               aria-controls="radix-_r_7_"
               aria-expanded="false"
-              class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-2"
+              class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
               data-orientation="vertical"
               data-radix-collection-item=""
               data-slot="accordion-trigger"
@@ -115,7 +115,7 @@ exports[`PromoCodeForm stories snapshot > Expanded story renders and matches sna
               <span
                 class="flex-1 text-left text-sm font-medium"
               >
-                Enter a Promotion Code
+                Do you have a promo code?
               </span>
               <svg
                 aria-hidden="true"
@@ -163,7 +163,7 @@ exports[`PromoCodeForm stories snapshot > WithCustomBasketId story renders and m
       class="w-full"
     >
       <div
-        class="mb-3"
+        class="mb-0"
         data-orientation="vertical"
         data-slot="accordion"
       >
@@ -181,7 +181,7 @@ exports[`PromoCodeForm stories snapshot > WithCustomBasketId story renders and m
             <button
               aria-controls="radix-_r_5_"
               aria-expanded="false"
-              class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-2"
+              class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
               data-orientation="vertical"
               data-radix-collection-item=""
               data-slot="accordion-trigger"
@@ -192,7 +192,7 @@ exports[`PromoCodeForm stories snapshot > WithCustomBasketId story renders and m
               <span
                 class="flex-1 text-left text-sm font-medium"
               >
-                Enter a Promotion Code
+                Do you have a promo code?
               </span>
               <svg
                 aria-hidden="true"
@@ -240,7 +240,7 @@ exports[`PromoCodeForm stories snapshot > WithoutBasketId story renders and matc
       class="w-full"
     >
       <div
-        class="mb-3"
+        class="mb-0"
         data-orientation="vertical"
         data-slot="accordion"
       >
@@ -258,7 +258,7 @@ exports[`PromoCodeForm stories snapshot > WithoutBasketId story renders and matc
             <button
               aria-controls="radix-_r_3_"
               aria-expanded="false"
-              class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-2"
+              class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
               data-orientation="vertical"
               data-radix-collection-item=""
               data-slot="accordion-trigger"
@@ -269,7 +269,7 @@ exports[`PromoCodeForm stories snapshot > WithoutBasketId story renders and matc
               <span
                 class="flex-1 text-left text-sm font-medium"
               >
-                Enter a Promotion Code
+                Do you have a promo code?
               </span>
               <svg
                 aria-hidden="true"

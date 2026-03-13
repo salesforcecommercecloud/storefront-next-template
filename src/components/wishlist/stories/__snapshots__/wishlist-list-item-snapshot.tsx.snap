@@ -98,7 +98,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
            
           <span
             aria-label="List price from $500.00"
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
           >
             $500.00
           </span>
@@ -114,7 +114,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
           class="items-center gap-2"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             50% off for Salesforce employees
           </span>
@@ -229,7 +229,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
            
           <span
             aria-label="List price from $500.00"
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
           >
             $500.00
           </span>
@@ -245,7 +245,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
           class="items-center gap-2"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             50% off for Salesforce employees
           </span>
@@ -417,7 +417,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
            
           <span
             aria-label="List price: $99.99"
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
           >
             $99.99
           </span>
@@ -433,7 +433,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
           class="items-center gap-2"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             50% off for Salesforce employees
           </span>
@@ -523,7 +523,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
            
           <span
             aria-label="List price: $99.99"
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
           >
             $99.99
           </span>
@@ -539,7 +539,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
           class="items-center gap-2"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             50% off for Salesforce employees
           </span>

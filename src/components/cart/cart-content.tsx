@@ -27,7 +27,6 @@ import { CartItemEditButton } from '@/components/cart/cart-item-edit-button';
 import CartEmpty from './cart-empty';
 import CartTitle from './cart-title';
 import OrderSummary from '@/components/order-summary';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
 const LazyBonusProductModal = lazy(() =>
     import('@/components/bonus-product-modal').then((m) => ({ default: m.BonusProductModal }))
@@ -79,7 +78,6 @@ export default function CartContent({
     bonusProductsById,
     promotions,
 }: CartContentProps): ReactElement {
-    const { t } = useTranslation('cart');
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const { t: tBopis } = useTranslation('extBopis');
 
@@ -178,23 +176,16 @@ export default function CartContent({
             <div className="max-w-7xl mx-auto px-6">
                 <CartTitle basket={basket} />
 
-                {/* Mobile Order Summary Accordion - visible only on mobile */}
+                {/* Mobile Order Summary - visible only on mobile */}
                 <div className="md:hidden mb-3">
-                    <Accordion type="single" collapsible className="border rounded-md bg-card px-5 py=3">
-                        <AccordionItem value="order-summary">
-                            <AccordionTrigger className="text-xl">{t('summary.showOrderSummary')}</AccordionTrigger>
-                            <AccordionContent>
-                                <OrderSummary
-                                    basket={basket}
-                                    showCartItems={false}
-                                    isEstimate={true}
-                                    productsByItemId={productsByItemId}
-                                    showPromoCodeForm={true}
-                                    showCheckoutAction={true}
-                                />
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
+                    <OrderSummary
+                        basket={basket}
+                        showCartItems={false}
+                        isEstimate={true}
+                        productsByItemId={productsByItemId}
+                        showPromoCodeForm={true}
+                        showCheckoutAction={true}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">

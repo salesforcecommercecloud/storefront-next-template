@@ -211,7 +211,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -460,7 +460,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
              
             <span
               aria-label="List price: £320.00"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £320.00
             </span>
@@ -786,7 +786,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
              
             <span
               aria-label="List price from £31.36"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £31.36
             </span>
@@ -803,7 +803,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               Buy one Long Center Seam Skirt and get 2 tops
             </span>
@@ -1125,7 +1125,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               25% off.
             </span>
@@ -1548,7 +1548,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -1874,7 +1874,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
              
             <span
               aria-label="List price from £31.36"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £31.36
             </span>
@@ -1891,7 +1891,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               Buy one Long Center Seam Skirt and get 2 tops
             </span>
@@ -2213,7 +2213,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               25% off.
             </span>
@@ -2449,7 +2449,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -2698,7 +2698,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
              
             <span
               aria-label="List price: £320.00"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £320.00
             </span>
@@ -3024,7 +3024,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
              
             <span
               aria-label="List price from £31.36"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £31.36
             </span>
@@ -3041,7 +3041,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               Buy one Long Center Seam Skirt and get 2 tops
             </span>
@@ -3363,7 +3363,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               25% off.
             </span>
@@ -3786,7 +3786,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -4112,7 +4112,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
              
             <span
               aria-label="List price from £31.36"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £31.36
             </span>
@@ -4129,7 +4129,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               Buy one Long Center Seam Skirt and get 2 tops
             </span>
@@ -4451,7 +4451,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               25% off.
             </span>
@@ -4709,7 +4709,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -4940,7 +4940,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -5822,7 +5822,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -6053,7 +6053,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -6935,7 +6935,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -7166,7 +7166,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -8048,7 +8048,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -8279,7 +8279,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -9161,7 +9161,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -9392,7 +9392,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -10070,7 +10070,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -10319,7 +10319,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
              
             <span
               aria-label="List price: £320.00"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £320.00
             </span>
@@ -10645,7 +10645,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
              
             <span
               aria-label="List price from £31.36"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £31.36
             </span>
@@ -10662,7 +10662,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               Buy one Long Center Seam Skirt and get 2 tops
             </span>
@@ -10984,7 +10984,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               25% off.
             </span>
@@ -11407,7 +11407,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -11733,7 +11733,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
              
             <span
               aria-label="List price from £31.36"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £31.36
             </span>
@@ -11750,7 +11750,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               Buy one Long Center Seam Skirt and get 2 tops
             </span>
@@ -12072,7 +12072,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="items-center gap-2 text-xs text-green-600 mt-1"
           >
             <span
-              class="line-clamp-2 text-sm text-success font-medium"
+              class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
             >
               25% off.
             </span>
@@ -12308,7 +12308,7 @@ exports[`ProductGrid stories snapshot > SingleProductCritical story renders and 
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>
@@ -12552,7 +12552,7 @@ exports[`ProductGrid stories snapshot > SingleProductNonCritical story renders a
              
             <span
               aria-label="List price: £67.99"
-              class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+              class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
             >
               £67.99
             </span>

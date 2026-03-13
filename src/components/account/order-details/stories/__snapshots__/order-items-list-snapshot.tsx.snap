@@ -23,10 +23,10 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
         class="min-w-0 flex-1 space-y-1"
       >
         <div
-          class="mb-4 flex items-start gap-2 min-w-0"
+          class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
           >
             <a
               class="text-foreground hover:text-primary block break-words"
@@ -40,7 +40,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
         </div>
         <div>
           <div
-            class="text-sm text-muted-foreground space-y-1 mb-1"
+            class="text-xs text-muted-foreground space-y-1 mb-1"
           >
             <div>
               Size
@@ -84,7 +84,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
            
           <span
             aria-label="List price: £185.97"
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
           >
             £185.97
           </span>
@@ -142,10 +142,10 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
         class="min-w-0 flex-1 space-y-1"
       >
         <div
-          class="mb-4 flex items-start gap-2 min-w-0"
+          class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
           >
             <a
               class="text-foreground hover:text-primary block break-words"
@@ -217,10 +217,10 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
         class="min-w-0 flex-1 space-y-1"
       >
         <div
-          class="mb-4 flex items-start gap-2 min-w-0"
+          class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
           >
             <a
               class="text-foreground hover:text-primary block break-words"

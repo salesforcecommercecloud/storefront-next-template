@@ -263,7 +263,7 @@ exports[`ProductTile stories snapshot > CustomAction story renders and matches s
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -547,7 +547,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -830,7 +830,7 @@ exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders 
            
           <span
             aria-label="List price from £31.36"
-            class="[&:not(:first-child)]:mt-6 text-left text-muted-foreground text-sm leading-none line-through"
+            class="font-medium text-left text-muted-foreground text-sm leading-none line-through"
           >
             £31.36
           </span>
@@ -847,7 +847,7 @@ exports[`ProductTile stories snapshot > MasterProductWithSwatches story renders 
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             Buy one Long Center Seam Skirt and get 2 tops
           </span>
@@ -1134,7 +1134,7 @@ exports[`ProductTile stories snapshot > PageDesignerBorderRadius story renders a
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -1421,7 +1421,7 @@ exports[`ProductTile stories snapshot > PageDesignerFullCustomization story rend
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -1708,7 +1708,7 @@ exports[`ProductTile stories snapshot > PageDesignerHoverLift story renders and 
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -1995,7 +1995,7 @@ exports[`ProductTile stories snapshot > PageDesignerHoverScale story renders and
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -2282,7 +2282,7 @@ exports[`ProductTile stories snapshot > PageDesignerHoverShadow story renders an
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -2569,7 +2569,7 @@ exports[`ProductTile stories snapshot > PageDesignerImageCover story renders and
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -2856,7 +2856,7 @@ exports[`ProductTile stories snapshot > PageDesignerPaddingMargin story renders 
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -3143,7 +3143,7 @@ exports[`ProductTile stories snapshot > PageDesignerShadowXL story renders and m
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -3430,7 +3430,7 @@ exports[`ProductTile stories snapshot > PageDesignerTypography story renders and
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>
@@ -3733,7 +3733,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           class="items-center gap-2 text-xs text-green-600 mt-1"
         >
           <span
-            class="line-clamp-2 text-sm text-success font-medium"
+            class="line-clamp-2 text-[inherit] text-success font-medium mx-2"
           >
             25% off.
           </span>

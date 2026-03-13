@@ -25,7 +25,6 @@ import { Link } from 'react-router';
 import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
-import PromoPopover from '@/components/promo-popover';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
@@ -33,6 +32,7 @@ import { Typography } from '@/components/typography';
 import CartQuantityPicker from '@/components/cart/cart-quantity-picker';
 import BundledProductItems from './bundled-product-items';
 import ProductPrice from '../product-price';
+import { getPriceData } from '../product-price/utils';
 // TODO: uncomment after integrate gift basket api
 // import { Checkbox } from '@/components/ui/checkbox';
 // import { Label } from '@/components/ui/label';
@@ -125,13 +125,17 @@ export function ProductItemVariantName({ productItem }: { productItem: EnrichedP
 
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
     return (
-        <div className="mb-4 flex items-start gap-2 min-w-0">
+        <div className="mb-2 md:mb-4 flex items-start gap-2 min-w-0">
             {isBonusProduct && (
-                <Badge variant="default" role="status" aria-label={tProduct('bonusProductAriaLabel')}>
+                <Badge
+                    variant="default"
+                    className="rounded-pill"
+                    role="status"
+                    aria-label={tProduct('bonusProductAriaLabel')}>
                     {tProduct('bonusProduct')}
                 </Badge>
             )}
-            <Typography variant="h2" className="text-xl min-w-0 flex-1 leading-tight">
+            <Typography variant="h2" className="text-sm md:text-base font-medium min-w-0 flex-1 leading-tight">
                 <Link
                     to={createProductUrl(productId)}
                     className="text-foreground hover:text-primary block break-words"
@@ -155,46 +159,31 @@ export function ProductItemVariantName({ productItem }: { productItem: EnrichedP
 export function ProductItemVariantAttributes({
     productItem,
     displayVariant = 'default',
-    promotions,
+    promotions: _promotions,
 }: {
     productItem: EnrichedProductItem;
     displayVariant?: 'default' | 'summary';
     promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
 }): ReactElement {
-    const { t, i18n } = useTranslation('cart');
-    const currency = useCurrency();
+    const { t } = useTranslation('cart');
     // Memoize expensive calculations
     const displayVariationValues = useMemo(
         () => getDisplayVariationValues(productItem?.variationAttributes, productItem?.variationValues),
         [productItem?.variationAttributes, productItem?.variationValues]
     );
 
-    const productPromotions = useMemo(
-        () =>
-            (productItem.priceAdjustments
-                ?.map((adjustment) => (adjustment.promotionId ? promotions?.[adjustment.promotionId] : undefined))
-                .filter(Boolean) as ShopperPromotions.schemas['Promotion'][]) || [],
-        [productItem.priceAdjustments, promotions]
-    );
-
-    const hasPromotions = productPromotions.length > 0;
-    const hasItemDiscount =
-        productItem.priceAfterItemDiscount !== undefined &&
-        productItem.priceAfterItemDiscount > 0 &&
-        productItem.priceAfterItemDiscount !== productItem.price;
-    const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
     return (
         <div>
             {/* Quantity - only show in summary variant */}
             {displayVariant === 'summary' && (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs text-muted-foreground">
                     {t('attributes.quantity')} {productItem.quantity || 1}
                 </div>
             )}
 
             {/* Variation Attributes */}
             {Object.keys(displayVariationValues).length > 0 && (
-                <div className="text-sm text-muted-foreground space-y-1 mb-1">
+                <div className="text-xs text-muted-foreground space-y-1 mb-1">
                     {Object.entries(displayVariationValues).map(([name, value]) => (
                         <div key={name}>
                             {name}: {value}
@@ -203,38 +192,33 @@ export function ProductItemVariantAttributes({
                 </div>
             )}
 
-            {/* Promotions Info */}
-            {(hasPromotions || hasItemDiscount) && !isBonusProduct && (
-                <div className="flex items-center gap-2 mb-1 ">
-                    <span className="text-sm text-muted-foreground">
-                        {t('attributes.promotions')}{' '}
-                        <span className="text-success font-medium">
-                            {hasItemDiscount &&
-                                formatCurrency(
-                                    productItem?.priceAdjustments?.reduce((acc, adj) => acc + (adj.price ?? 0), 0) ?? 0,
-                                    i18n.language,
-                                    currency
-                                )}
-                        </span>
-                    </span>
-                    <div className="flex items-center">
-                        <PromoPopover>
-                            <div className="space-y-2">
-                                {productPromotions.map((promotion) => (
-                                    <div
-                                        key={promotion.id}
-                                        className="text-sm"
-                                        // the data comes from BM, which assuming it is safe to use
-                                        // eslint-disable-next-line react/no-danger
-                                        dangerouslySetInnerHTML={{ __html: promotion.calloutMsg || '' }}
-                                    />
-                                ))}
-                            </div>
-                        </PromoPopover>
-                    </div>
-                </div>
-            )}
+            {/* Promotions Info - shown in summary variant only, moved to right column for default */}
+            {displayVariant === 'summary' && <ProductItemPromotions productItem={productItem} />}
         </div>
+    );
+}
+
+/**
+ * ProductItemPromotions component that displays promotion info for a product item
+ */
+export function ProductItemPromotions({ productItem }: { productItem: EnrichedProductItem }): ReactElement | null {
+    const { t: tMiniCart, i18n } = useTranslation('miniCart');
+    const currency = useCurrency();
+
+    const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
+    if (isBonusProduct) return null;
+
+    const { listPrice, currentPrice } = getPriceData(productItem);
+    if (!listPrice) return null;
+    const discount = (listPrice - currentPrice) * (productItem?.quantity ?? 1);
+    if (discount <= 0) return null;
+
+    return (
+        <Badge className="bg-muted text-foreground border-0 text-xs font-medium rounded-pill">
+            {tMiniCart('saved', {
+                amount: formatCurrency(discount, i18n.language, currency),
+            })}
+        </Badge>
     );
 }
 
@@ -289,7 +273,7 @@ function ProductItem({
     const isItemFetcherLoading = useItemFetcherLoading(productItem?.itemId);
     // Get currency from context (automatically derived from locale)
     const currency = useCurrency();
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     // Check if this is a bonus product
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
@@ -353,15 +337,17 @@ function ProductItem({
             <Card className="p-0 border border-none shadow-none">
                 <CardContent className="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden">
                     <div className="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0">
-                        <div className="flex-shrink-0 flex items-center justify-center">
+                        <div className="flex-shrink-0 flex items-start justify-center">
                             {/* Product Image */}
                             <ProductItemVariantImage productItem={productItem} className="md:w-32 w-16" />
                         </div>
 
                         {/* Product Details */}
                         <div className="flex-1 space-y-3 min-w-0">
-                            <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0">
+                            <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0">
                                 <div className="min-w-0">
+                                    {/* Delivery badge - mobile only, top-right next to name */}
+                                    <div className="md:hidden float-right ml-2">{deliveryActions?.(productItem)}</div>
                                     <ProductItemVariantName productItem={productItem} />
                                     {productItem.bundledProducts && (
                                         <BundledProductItems bundledProducts={productItem.bundledProducts} />
@@ -372,85 +358,46 @@ function ProductItem({
                                         promotions={promotions}
                                     />
 
-                                    <Typography variant="product-description" className="break-words">
+                                    <Typography
+                                        variant="product-description"
+                                        className="text-xs break-words hidden md:block">
                                         {productItem?.shortDescription}
                                     </Typography>
-
-                                    <div className="min-w-0">
-                                        {!isAutoBonusProduct && primaryAction && (
-                                            <div data-testid="mobile-primary-action">{primaryAction(productItem)}</div>
-                                        )}
-                                        {!isAutoBonusProduct && secondaryActions && secondaryActions(productItem)}
-                                    </div>
                                 </div>
-                                <div className="text-right md:hidden" data-testid="mobile-product-price">
-                                    <div className="font-semibold text-base">
-                                        <ProductPrice
-                                            type="total"
-                                            product={productItem as ShopperProducts.schemas['Product']}
-                                            quantity={productItem.quantity ?? 1}
-                                            currency={currency}
-                                            labelForA11y={productItem?.productName}
-                                            className="text-card-foreground text-right font-semibold text-sm leading-none relative"
-                                            currentPriceProps={{
-                                                className:
-                                                    'text-card-foreground text-right font-semibold text-sm leading-none relative',
-                                            }}
-                                            listPriceProps={{
-                                                className:
-                                                    'text-muted-foreground text-right text-xs leading-none relative',
-                                            }}
-                                            promoCalloutProps={{
-                                                className: 'text-sm text-muted-foreground',
-                                            }}
-                                        />
-                                    </div>
-                                    {(productItem.quantity ?? 1) > 1 && (
-                                        <div className="text-muted-foreground text-sm">
-                                            {formatCurrency(
-                                                (productItem.priceAfterItemDiscount ?? productItem.price ?? 0) /
-                                                    (productItem.quantity ?? 1),
-                                                i18n.language,
-                                                currency
-                                            )}{' '}
-                                            each
-                                        </div>
-                                    )}
-                                </div>
+                                <div className="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2">
+                                    {/* Delivery Actions - desktop only */}
+                                    <div className="hidden md:block">{deliveryActions?.(productItem)}</div>
 
-                                <div className="grid gap-4 justify-items-end flex-shrink-0">
-                                    {/* Delivery Actions */}
-                                    {deliveryActions?.(productItem)}
-
-                                    {/* Quantity Display/Selector */}
-                                    <CartQuantityPicker
-                                        value={String(productItem.quantity)}
-                                        itemId={productItem.itemId || ''}
-                                        stockLevel={productItem.inventory?.ats}
-                                        max={isBonusProduct ? maxBonusQuantity : undefined}
-                                        disabled={isAutoBonusProduct}
-                                    />
-                                    <div className="self-end">
-                                        <div className="text-right hidden md:block" data-testid="desktop-product-price">
+                                    <div className="md:self-end">
+                                        <div className="md:text-right" data-testid="desktop-product-price">
                                             <div className="font-semibold text-base">
-                                                <ProductPrice
-                                                    type="total"
-                                                    product={productItem as ShopperProducts.schemas['Product']}
-                                                    quantity={productItem.quantity ?? 1}
-                                                    currency={currency}
-                                                    labelForA11y={productItem?.productName}
-                                                    currentPriceProps={{
-                                                        className:
-                                                            'text-card-foreground text-lg text-right font-semibold leading-none relative',
-                                                    }}
-                                                    listPriceProps={{
-                                                        className:
-                                                            'text-muted-foreground text-right text-sm leading-none relative',
-                                                    }}
-                                                    promoCalloutProps={{
-                                                        className: 'text-sm text-muted-foreground',
-                                                    }}
-                                                />
+                                                {(productItem.priceAfterItemDiscount ?? productItem.price ?? 0) ===
+                                                0 ? (
+                                                    <span className="text-[var(--cart-free-price)] text-[length:var(--cart-free-price-size)] font-semibold">
+                                                        {t('miniCart:free')}
+                                                    </span>
+                                                ) : (
+                                                    <ProductPrice
+                                                        type="total"
+                                                        product={productItem as ShopperProducts.schemas['Product']}
+                                                        quantity={productItem.quantity ?? 1}
+                                                        currency={currency}
+                                                        labelForA11y={productItem?.productName}
+                                                        className="flex flex-row md:flex-col items-baseline md:items-end gap-2 md:gap-0"
+                                                        currentPriceProps={{
+                                                            className:
+                                                                'text-card-foreground text-lg md:text-right font-semibold leading-none relative',
+                                                        }}
+                                                        listPriceProps={{
+                                                            className:
+                                                                'text-muted-foreground md:text-right text-sm leading-none relative',
+                                                        }}
+                                                        promoCalloutProps={{
+                                                            className:
+                                                                'bg-muted text-foreground border-0 text-xs font-medium rounded-pill inline-block mt-3 mx-0',
+                                                        }}
+                                                    />
+                                                )}
                                             </div>
                                             {(productItem.quantity ?? 1) > 1 && (
                                                 <div className="text-muted-foreground text-sm">
@@ -475,6 +422,25 @@ function ProductItem({
                                         {/*    </a>*/}
                                         {/*</div>*/}
                                     </div>
+
+                                    {/* Promotions Info */}
+                                    <ProductItemPromotions productItem={productItem} />
+
+                                    {/* Quantity Display/Selector */}
+                                    <CartQuantityPicker
+                                        value={String(productItem.quantity)}
+                                        itemId={productItem.itemId || ''}
+                                        stockLevel={productItem.inventory?.ats}
+                                        max={isBonusProduct ? maxBonusQuantity : undefined}
+                                        disabled={isAutoBonusProduct}
+                                    />
+                                </div>
+                                {/* Actions - at bottom on mobile, in left column on desktop */}
+                                <div className="min-w-0 md:col-start-1 md:row-start-2">
+                                    {!isAutoBonusProduct && primaryAction && (
+                                        <div data-testid="mobile-primary-action">{primaryAction(productItem)}</div>
+                                    )}
+                                    {!isAutoBonusProduct && secondaryActions && secondaryActions(productItem)}
                                 </div>
                             </div>
 
