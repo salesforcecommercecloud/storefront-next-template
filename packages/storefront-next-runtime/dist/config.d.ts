@@ -2,7 +2,7 @@ import { n as Site, r as Url, t as Locale } from "./types.js";
 import { n as DefineConfigOptions, r as defineConfig, t as BaseConfig } from "./schema.js";
 import * as react0 from "react";
 import { ReactNode } from "react";
-import * as react_jsx_runtime0 from "react/jsx-runtime";
+import * as react_jsx_runtime1 from "react/jsx-runtime";
 import * as react_router0 from "react-router";
 import { MiddlewareFunction, RouterContextProvider } from "react-router";
 
@@ -67,7 +67,7 @@ interface ConfigProviderProps {
 declare function ConfigProvider({
   config,
   children
-}: ConfigProviderProps): react_jsx_runtime0.JSX.Element;
+}: ConfigProviderProps): react_jsx_runtime1.JSX.Element;
 //#endregion
 //#region src/config/middleware.d.ts
 /**

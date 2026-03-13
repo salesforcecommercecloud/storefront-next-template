@@ -34,7 +34,9 @@ export default function RecentSearches({
         <div className="p-6">
             {recentSearches.length > 0 && (
                 <div>
-                    <div className="text-sm font-semibold text-foreground mb-2">{t('suggestions.recentSearches')}</div>
+                    <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
+                        {t('suggestions.recentSearches')}
+                    </div>
                     <div className="-mx-6">
                         {recentSearches.map((recentSearch) => (
                             <button
@@ -43,14 +45,14 @@ export default function RecentSearches({
                                 onMouseDown={() => {
                                     closeAndNavigate(searchUrlBuilder(recentSearch));
                                 }}
-                                className="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal">
+                                className="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground">
                                 {recentSearch}
                             </button>
                         ))}
                         <button
                             type="button"
                             onMouseDown={clearRecentSearches}
-                            className="w-full text-left px-12 py-2 hover:bg-accent text-primary text-base font-normal">
+                            className="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground">
                             {t('suggestions.clearRecentSearches')}
                         </button>
                     </div>

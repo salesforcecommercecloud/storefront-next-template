@@ -49,11 +49,11 @@ const DidYouMean = ({ suggestion, searchPhrase, onLinkClick }: DidYouMeanProps) 
 
     return (
         <div className="mb-2">
-            <p className="text-base text-foreground pl-12">
+            <p className="text-base text-header-foreground pl-12">
                 {t('suggestions.didYouMean')}{' '}
                 <Link
                     to={suggestion.link}
-                    className="text-foreground hover:text-foreground/80 font-medium"
+                    className="text-header-foreground hover:text-header-foreground/80 font-medium"
                     onMouseDown={handleClickSearchSuggestion}>
                     {suggestion.name}?
                 </Link>
@@ -115,7 +115,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
 
                 {hasCategories && (
                     <div className="mb-2">
-                        <div className="text-sm text-muted-foreground font-light mb-1 pl-12 ">
+                        <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
                             {t('suggestions.categories')}
                         </div>
                         <SuggestionsList
@@ -128,7 +128,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
 
                 {hasProducts && (
                     <div className="mb-2">
-                        <div className="text-sm text-muted-foreground font-light mb-1 pl-12 ">
+                        <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
                             {t('suggestions.products')}
                         </div>
                         <SuggestionsList
@@ -141,7 +141,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
 
                 {hasPopularSearches && (
                     <div className="mb-2">
-                        <div className="text-sm text-muted-foreground font-light mb-1 pl-12 ">
+                        <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
                             {t('suggestions.popularSearches')}
                         </div>
                         <SuggestionsList
@@ -166,7 +166,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
 
                     {hasCategories && (
                         <div className="mb-2">
-                            <div className="text-sm text-muted-foreground font-light mb-1 pl-12 ">
+                            <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
                                 {t('suggestions.categories')}
                             </div>
                             <SuggestionsList
@@ -179,7 +179,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
 
                     {hasPopularSearches && (
                         <div className="mb-2">
-                            <div className="text-sm text-muted-foreground font-light mb-1 pl-12 ">
+                            <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
                                 {t('suggestions.popularSearches')}
                             </div>
                             <SuggestionsList
@@ -207,7 +207,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
                         <div className="text-center w-full">
                             <Link
                                 to={searchUrlBuilder(searchSuggestions?.searchPhrase || '')}
-                                className="text-foreground hover:text-foreground/80 font-medium text-base"
+                                className="text-header-foreground hover:text-header-foreground/80 font-medium text-sm"
                                 onMouseDown={() =>
                                     handleLinkClick(searchUrlBuilder(searchSuggestions?.searchPhrase || ''))
                                 }>

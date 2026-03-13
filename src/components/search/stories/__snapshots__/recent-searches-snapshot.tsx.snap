@@ -7,7 +7,7 @@ exports[`RecentSearches stories snapshot > Default story renders and matches sna
   >
     <div>
       <div
-        class="text-sm font-semibold text-foreground mb-2"
+        class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
       >
         Recent Searches
       </div>
@@ -15,25 +15,25 @@ exports[`RecentSearches stories snapshot > Default story renders and matches sna
         class="-mx-6"
       >
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           shoes
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           boots
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           sneakers
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-primary text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           Clear recent searches
@@ -59,7 +59,7 @@ exports[`RecentSearches stories snapshot > ManySearches story renders and matche
   >
     <div>
       <div
-        class="text-sm font-semibold text-foreground mb-2"
+        class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
       >
         Recent Searches
       </div>
@@ -67,55 +67,55 @@ exports[`RecentSearches stories snapshot > ManySearches story renders and matche
         class="-mx-6"
       >
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           shoes
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           boots
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           sneakers
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           sandals
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           flip flops
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           running shoes
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           hiking boots
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           dress shoes
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-primary text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           Clear recent searches
@@ -133,7 +133,7 @@ exports[`RecentSearches stories snapshot > SingleSearch story renders and matche
   >
     <div>
       <div
-        class="text-sm font-semibold text-foreground mb-2"
+        class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
       >
         Recent Searches
       </div>
@@ -141,13 +141,13 @@ exports[`RecentSearches stories snapshot > SingleSearch story renders and matche
         class="-mx-6"
       >
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           laptop
         </button>
         <button
-          class="w-full text-left px-12 py-2 hover:bg-accent text-primary text-base font-normal"
+          class="w-full text-left px-12 py-2 hover:bg-accent text-sm font-medium text-header-foreground"
           type="button"
         >
           Clear recent searches

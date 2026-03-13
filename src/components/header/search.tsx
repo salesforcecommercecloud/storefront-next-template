@@ -161,7 +161,7 @@ export default function SearchBar(): ReactElement {
                             ref={inputRef}
                             type="text"
                             placeholder={t('searchPlaceholder')}
-                            className="w-full pl-10"
+                            className="w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground"
                             onChange={handleInputChange}
                             onFocus={shouldOpenPopover}
                             onBlur={() => setShowSuggestions(false)}
