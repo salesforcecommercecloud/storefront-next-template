@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { use } from 'react';
+import { use, useLayoutEffect } from 'react';
 import type { ActionFunctionArgs } from 'react-router';
 import { loader, type CheckoutPageData } from '@/lib/checkout-loaders';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
@@ -21,7 +21,7 @@ import CheckoutFormPage from '@/components/checkout/checkout-form-page';
 import CheckoutProvider from '@/components/checkout/utils/checkout-context';
 import { CheckoutErrorBoundary } from '@/components/checkout-error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
-import BasketProvider from '@/providers/basket';
+import { useBasketUpdater } from '@/providers/basket';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 import GoogleCloudApiProvider from '@/providers/google-cloud-api';
@@ -98,6 +98,15 @@ function CheckoutView({
         storesByStoreId,
     },
 }: RouteComponentProps<CheckoutPageData>) {
+    // Imperatively update root BasketProvider with loader basket
+    // This ensures cart badge and other components see the updated basket
+    const updateBasket = useBasketUpdater();
+    useLayoutEffect(() => {
+        if (basket?.basketId) {
+            updateBasket(basket);
+        }
+    }, [basket, updateBasket]);
+
     // Block rendering if basket is not available
     if (!basket?.basketId) {
         return <CheckoutSkeleton />;
@@ -107,17 +116,15 @@ function CheckoutView({
     const shippingMethodsMapData = shippingMethodsMap ? use(shippingMethodsMap) : {};
 
     const content = (
-        <BasketProvider basket={basket}>
-            <CheckoutProvider
-                customerProfile={customerProfileData ?? undefined}
-                shippingDefaultSet={shippingDefaultSet ?? Promise.resolve(undefined)}>
-                <CheckoutFormPage
-                    shippingMethodsMap={shippingMethodsMapData}
-                    productMapPromise={productMap}
-                    promotionsPromise={promotions}
-                />
-            </CheckoutProvider>
-        </BasketProvider>
+        <CheckoutProvider
+            customerProfile={customerProfileData ?? undefined}
+            shippingDefaultSet={shippingDefaultSet ?? Promise.resolve(undefined)}>
+            <CheckoutFormPage
+                shippingMethodsMap={shippingMethodsMapData}
+                productMapPromise={productMap}
+                promotionsPromise={promotions}
+            />
+        </CheckoutProvider>
     );
 
     let finalContent = content;
