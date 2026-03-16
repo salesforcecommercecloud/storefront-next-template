@@ -548,7 +548,8 @@
             "toggleLabel": "Show Order Summary"
         },
         "myCart": {
-            "title": "My Cart"
+            "title": "My Cart",
+            "saved": "Saved {{amount}}"
         },
         "placeOrder": {
             "button": "Place Order",

@@ -21,44 +21,18 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
         <button
           aria-controls="radix-«x»"
           aria-expanded="false"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-6"
+          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 md:py-5"
           data-orientation="vertical"
           data-radix-collection-item=""
           data-slot="accordion-trigger"
           data-state="closed"
+          data-testid="my-cart-toggle"
           id="radix-«x»"
           type="button"
         >
           <span
-            class="flex-1 text-left text-lg font-bold text-primary"
+            class="text-base md:text-lg font-semibold text-foreground"
           >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-shopping-cart inline mr-2 w-5 h-5"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="8"
-                cy="21"
-                r="1"
-              />
-              <circle
-                cx="19"
-                cy="21"
-                r="1"
-              />
-              <path
-                d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
-              />
-            </svg>
             My Cart
              (
             4
@@ -120,44 +94,18 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
         <button
           aria-controls="radix-«x»"
           aria-expanded="true"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-6"
+          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 md:py-5"
           data-orientation="vertical"
           data-radix-collection-item=""
           data-slot="accordion-trigger"
           data-state="open"
+          data-testid="my-cart-toggle"
           id="radix-«x»"
           type="button"
         >
           <span
-            class="flex-1 text-left text-lg font-bold text-primary"
+            class="text-base md:text-lg font-semibold text-foreground"
           >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-shopping-cart inline mr-2 w-5 h-5"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="8"
-                cy="21"
-                r="1"
-              />
-              <circle
-                cx="19"
-                cy="21"
-                r="1"
-              />
-              <path
-                d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
-              />
-            </svg>
             My Cart
              (
             4
@@ -193,64 +141,53 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
         style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
       >
         <div
-          class="pt-0 px-0 pb-6"
+          class="pt-0 px-0 pb-0"
         >
           <div
-            class="space-y-5"
+            class="flex flex-col gap-6 md:gap-10"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 shadow-sm px-4 py-3 md:px-6 md:py-4 border border-border rounded-lg"
               data-slot="card"
+              data-testid="my-cart-item-701642868279M"
             >
               <div
-                class="grid md:grid-cols-[112px_1fr] grid-cols-[72px_1fr] gap-4"
-                data-testid="sf-product-item-summary-701642868279M"
+                class="flex gap-3 md:gap-4"
               >
                 <div
-                  class="flex items-center justify-center"
+                  class="flex-shrink-0"
                 >
                   <div
-                    class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+                    class="w-16 h-16 md:w-24 md:h-24 bg-muted rounded-lg overflow-hidden flex items-center justify-center"
                   >
                     <div
-                      class="w-full h-full bg-muted rounded"
+                      class="w-full h-full bg-muted"
                     />
                   </div>
                 </div>
                 <div
-                  class="flex-1 space-y-1 min-w-0"
+                  class="flex-1 min-w-0"
+                >
+                  <a
+                    class="text-sm md:text-base font-semibold text-foreground hover:text-primary block mb-1 md:mb-2"
+                    href="/product/701642868279M"
+                  >
+                    Button Front Jacket
+                  </a>
+                  <div
+                    class="space-y-0.5 md:space-y-1 text-xs md:text-sm text-muted-foreground"
+                  />
+                </div>
+                <div
+                  class="flex-shrink-0 text-right"
                 >
                   <div
-                    class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
-                  >
-                    <h2
-                      class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
-                    >
-                      <a
-                        class="text-foreground hover:text-primary block break-words"
-                        href="#"
-                        title="Button Front Jacket"
-                      >
-                        Button Front Jacket
-                      </a>
-                    </h2>
-                  </div>
-                  <div>
-                    <div
-                      class="text-xs text-muted-foreground"
-                    >
-                      Qty:
-                       
-                      1
-                    </div>
-                  </div>
-                  <div
-                    class="items-center gap-2 text-sm"
+                    class="items-center gap-2"
                   >
                     <span
                       aria-label="Current price: £39.67"
                       aria-live="polite"
-                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                      class="[&:not(:first-child)]:mt-6 text-left text-sm md:text-base font-semibold text-foreground"
                     >
                       £39.67
                     </span>
@@ -268,58 +205,47 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
               </div>
             </div>
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 shadow-sm px-4 py-3 md:px-6 md:py-4 border border-border rounded-lg"
               data-slot="card"
+              data-testid="my-cart-item-883360520599M"
             >
               <div
-                class="grid md:grid-cols-[112px_1fr] grid-cols-[72px_1fr] gap-4"
-                data-testid="sf-product-item-summary-883360520599M"
+                class="flex gap-3 md:gap-4"
               >
                 <div
-                  class="flex items-center justify-center"
+                  class="flex-shrink-0"
                 >
                   <div
-                    class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+                    class="w-16 h-16 md:w-24 md:h-24 bg-muted rounded-lg overflow-hidden flex items-center justify-center"
                   >
                     <div
-                      class="w-full h-full bg-muted rounded"
+                      class="w-full h-full bg-muted"
                     />
                   </div>
                 </div>
                 <div
-                  class="flex-1 space-y-1 min-w-0"
+                  class="flex-1 min-w-0"
+                >
+                  <a
+                    class="text-sm md:text-base font-semibold text-foreground hover:text-primary block mb-1 md:mb-2"
+                    href="/product/883360520599M"
+                  >
+                    Casual To Dressy Trousers
+                  </a>
+                  <div
+                    class="space-y-0.5 md:space-y-1 text-xs md:text-sm text-muted-foreground"
+                  />
+                </div>
+                <div
+                  class="flex-shrink-0 text-right"
                 >
                   <div
-                    class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
-                  >
-                    <h2
-                      class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
-                    >
-                      <a
-                        class="text-foreground hover:text-primary block break-words"
-                        href="#"
-                        title="Casual To Dressy Trousers"
-                      >
-                        Casual To Dressy Trousers
-                      </a>
-                    </h2>
-                  </div>
-                  <div>
-                    <div
-                      class="text-xs text-muted-foreground"
-                    >
-                      Qty:
-                       
-                      3
-                    </div>
-                  </div>
-                  <div
-                    class="items-center gap-2 text-sm"
+                    class="items-center gap-2"
                   >
                     <span
                       aria-label="Current price: £124.80"
                       aria-live="polite"
-                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
+                      class="[&:not(:first-child)]:mt-6 text-left text-sm md:text-base font-semibold text-foreground"
                     >
                       £124.80
                     </span>
@@ -365,44 +291,18 @@ exports[`MyCart stories snapshot > SingleItem story renders and matches snapshot
         <button
           aria-controls="radix-«x»"
           aria-expanded="false"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-6"
+          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 md:py-5"
           data-orientation="vertical"
           data-radix-collection-item=""
           data-slot="accordion-trigger"
           data-state="closed"
+          data-testid="my-cart-toggle"
           id="radix-«x»"
           type="button"
         >
           <span
-            class="flex-1 text-left text-lg font-bold text-primary"
+            class="text-base md:text-lg font-semibold text-foreground"
           >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-shopping-cart inline mr-2 w-5 h-5"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="8"
-                cy="21"
-                r="1"
-              />
-              <circle
-                cx="19"
-                cy="21"
-                r="1"
-              />
-              <path
-                d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
-              />
-            </svg>
             My Cart
              (
             1

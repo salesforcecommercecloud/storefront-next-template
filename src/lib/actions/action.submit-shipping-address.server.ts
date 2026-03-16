@@ -110,24 +110,6 @@ export async function action(formData: FormData, context: RouterContextProvider)
             },
         });
         updatedBasket = data;
-
-        // sfdc-extension-line SFDC_EXT_MULTISHIP
-        updatedBasket = await assignProductsToDefaultShipment(updatedBasket, context);
-
-        // Update local basket state with API response
-        // For shipping address updates, the API should preserve existing basket data
-        updateBasketResource(context, updatedBasket);
-
-        // Save address to customer profile for registered users (if address is new)
-        const auth = getAuth(context);
-        if (auth?.customerId) {
-            const customer = await getCurrentCustomer(context);
-            const existingAddresses = customer?.addresses ?? [];
-            const existingKeys = new Set(existingAddresses.map((addr) => getAddressKey(addr)));
-            if (!existingKeys.has(getAddressKey(addressDataWithExtras))) {
-                await saveShippingAddressToCustomer(context, auth.customerId, addressDataWithExtras);
-            }
-        }
     } catch (error) {
         let errorMessage = t('errors:checkout.addressValidationFailed');
         if (error instanceof ApiError) {
@@ -150,9 +132,42 @@ export async function action(formData: FormData, context: RouterContextProvider)
         );
     }
 
-    // Fetch shipping methods for the updated basket (now that we have an address)
-    // This prevents the "flash" of no shipping options when advancing to the shipping step
-    const shippingMethodsMap = await fetchShippingMethodsMapForBasket(context, updatedBasket);
+    // sfdc-extension-line SFDC_EXT_MULTISHIP
+    try {
+        updatedBasket = await assignProductsToDefaultShipment(updatedBasket, context);
+    } catch {
+        // Best-effort: keep basket with address update; multiship assignment can be retried on next load
+    }
+
+    // Update local basket state with API response
+    updateBasketResource(context, updatedBasket);
+
+    // Save address to customer profile for registered users (if address is new) — best-effort
+    try {
+        const auth = getAuth(context);
+        if (auth?.customerId) {
+            const customer = await getCurrentCustomer(context);
+            const existingAddresses = customer?.addresses ?? [];
+            const existingKeys = new Set(existingAddresses.map((addr) => getAddressKey(addr)));
+            if (!existingKeys.has(getAddressKey(addressDataWithExtras))) {
+                await saveShippingAddressToCustomer(context, auth.customerId, addressDataWithExtras);
+            }
+        }
+    } catch {
+        // Non-blocking: address was saved to basket; profile save can be retried later
+    }
+
+    // Fetch shipping methods for the updated basket (now that we have an address). This prevents a
+    // "flash" of no shipping options when advancing to the shipping step. Wrapped in try/catch so
+    // that a failure here (e.g. SCAPI error) does not fail the whole action: we still return 200
+    // with the updated basket and an empty map; the client can then get options from loader
+    // revalidation, and the user is not stuck on a 500.
+    let shippingMethodsMap: Awaited<ReturnType<typeof fetchShippingMethodsMapForBasket>> = {};
+    try {
+        shippingMethodsMap = await fetchShippingMethodsMapForBasket(context, updatedBasket);
+    } catch {
+        // Non-fatal: return success with empty map; revalidation may still provide shipping methods
+    }
 
     // Return success data with updated basket and shipping methods for client-side state update
     return Response.json({

@@ -215,7 +215,7 @@ async function fetchPromotionsForBasket(
 ): Promise<Record<string, ShopperPromotions.schemas['Promotion']>> {
     const promotionIds = new Set<string>();
 
-    // Extract promotion IDs from product items
+    // Extract promotion IDs from product items (top-level and shipment-level; SCAPI may only set priceAdjustments on shipment items)
     productItems.forEach((productItem) => {
         if (productItem.priceAdjustments?.length) {
             productItem.priceAdjustments.forEach((adjustment) => {
@@ -225,6 +225,19 @@ async function fetchPromotionsForBasket(
             });
         }
     });
+    if (basket?.shipments?.length) {
+        basket.shipments.forEach((shipment) => {
+            shipment.productItems?.forEach((productItem) => {
+                if (productItem.priceAdjustments?.length) {
+                    productItem.priceAdjustments.forEach((adjustment) => {
+                        if (adjustment.promotionId) {
+                            promotionIds.add(adjustment.promotionId);
+                        }
+                    });
+                }
+            });
+        });
+    }
 
     // Extract promotion IDs from shipping items
     if (basket?.shippingItems?.length) {

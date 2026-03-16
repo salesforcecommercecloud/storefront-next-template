@@ -554,8 +554,10 @@ export default function CheckoutFormPage({
                         <UITarget targetId="checkout.mainContent.after" />
                     </div>
 
-                    {/* Order Summary Sidebar */}
-                    <div className="hidden lg:block lg:col-span-1">
+                    {/* Order Summary Sidebar - scrolls independently when content exceeds viewport */}
+                    <div
+                        className="hidden lg:block lg:col-span-1 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto"
+                        data-testid="checkout-order-summary-sidebar">
                         <UITarget targetId="checkout.sidebar.before" />
                         <div className="sticky top-8 space-y-6">
                             {/* Order Summary */}

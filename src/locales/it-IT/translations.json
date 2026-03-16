@@ -536,7 +536,8 @@
             "toggleLabel": "Mostra riepilogo ordine"
         },
         "myCart": {
-            "title": "Il mio carrello"
+            "title": "Il mio carrello",
+            "saved": "Risparmiato {{amount}}"
         },
         "placeOrder": {
             "button": "Effettua ordine",
