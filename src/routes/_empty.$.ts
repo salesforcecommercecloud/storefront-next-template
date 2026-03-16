@@ -96,7 +96,10 @@ function getActionHandler(pathname: string, context: Readonly<RouterContextProvi
         return handlePasswordlessCallback;
     }
 
-    if (pathname === extractPathname(config.features.resetPassword.callbackUri)) {
+    if (
+        config.features.resetPassword.callbackUri &&
+        pathname === extractPathname(config.features.resetPassword.callbackUri)
+    ) {
         return handleResetPasswordCallback;
     }
 

@@ -214,6 +214,7 @@
             "basketQuotaExceeded": "Maximum number of baskets exceeded. Use your existing basket.",
             "paymentFailed": "Payment failed. Check your payment information and try again.",
             "paymentInformationRequired": "Payment information is required to complete your order.",
+            "unableToLoadCustomerProfile": "Unable to load your profile. Please refresh the page and try again.",
             "inventoryUnavailable": "Some items in your cart are no longer available. Review your cart.",
             "invalidOrderData": "Invalid order data. Check your checkout information and try again.",
             "shippingAddressRequired": "Shipping address is required to continue.",

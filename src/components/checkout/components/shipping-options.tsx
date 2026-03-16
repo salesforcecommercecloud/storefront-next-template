@@ -67,7 +67,7 @@ export default function ShippingOptions({
                 )
                 .map((method) => ({
                     id: method.id,
-                    name: method.name,
+                    name: method.name ?? '',
                     description: method.description,
                     price: method.price,
                     estimatedArrivalTime: method.estimatedArrivalTime,

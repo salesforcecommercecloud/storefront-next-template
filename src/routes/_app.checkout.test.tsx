@@ -15,6 +15,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { type LoaderFunctionArgs, type ClientLoaderFunctionArgs, MemoryRouter } from 'react-router';
+import { createLoaderArgs } from '@/lib/test-utils';
 import { render, screen } from '@testing-library/react';
 import type React from 'react';
 
@@ -116,11 +117,7 @@ describe('Checkout Route SSR', () => {
 
             const mockRequest = new Request('http://localhost/checkout');
             const mockContext = { set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
+            const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             const result = await mockLoader(args);
 
@@ -133,11 +130,7 @@ describe('Checkout Route SSR', () => {
 
             const mockRequest = new Request('http://localhost/checkout');
             const mockContext = { set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
+            const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             try {
                 await mockLoader(args);
@@ -201,11 +194,7 @@ describe('Checkout Route SSR', () => {
 
             const mockRequest = new Request('http://localhost/checkout');
             const mockContext = { set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
+            const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             const result = await mockLoader(args);
 
@@ -250,11 +239,7 @@ describe('Checkout Route SSR', () => {
 
             const mockRequest = new Request('http://localhost/checkout');
             const mockContext = { set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
+            const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             try {
                 await mockLoader(args);
@@ -274,11 +259,7 @@ describe('Checkout Route SSR', () => {
             malformedRequest.headers.set('Cookie', 'malformed-cookie-data');
 
             const mockContext = { set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: malformedRequest,
-                params: {},
-                context: mockContext,
-            } as any;
+            const args = createLoaderArgs(malformedRequest, mockContext, { unstable_pattern: '/checkout' });
 
             const result = await mockLoader(args);
             expect(result).toEqual(mockResult);

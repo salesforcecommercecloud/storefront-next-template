@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ActionFunctionArgs } from 'react-router';
 import { action } from './action.update-marketing-consent';
-import { createTestContext } from '@/lib/test-utils';
+import { createActionArgs, createTestContext } from '@/lib/test-utils';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 const mockUpdateSubscriptionsBulk = vi.fn();
@@ -60,14 +59,9 @@ describe('action.update-marketing-consent', () => {
     describe('method and validation', () => {
         it('returns 405 for non-POST requests', async () => {
             const request = createJsonRequest([], 'GET');
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response).toBeInstanceOf(Response);
             expect(response.status).toBe(405);
             const json = await response.json();
@@ -77,14 +71,9 @@ describe('action.update-marketing-consent', () => {
 
         it('returns 400 when updates is empty', async () => {
             const request = createJsonRequest([]);
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(400);
             const json = await response.json();
             expect(json).toEqual({ success: false, error: 'updates is required and must not be empty' });
@@ -97,13 +86,9 @@ describe('action.update-marketing-consent', () => {
                 contactPointValue: validBody.contactPointValue,
                 status: validBody.status,
             });
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(400);
             expect(await response.json()).toEqual({ success: false, error: 'subscriptionId is required' });
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
@@ -116,13 +101,9 @@ describe('action.update-marketing-consent', () => {
                 contactPointValue: validBody.contactPointValue,
                 status: validBody.status,
             });
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(400);
             expect(await response.json()).toEqual({ success: false, error: 'subscriptionId is required' });
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
@@ -135,13 +116,9 @@ describe('action.update-marketing-consent', () => {
                 contactPointValue: validBody.contactPointValue,
                 status: validBody.status,
             });
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(400);
             const json = await response.json();
             expect(json.success).toBe(false);
@@ -155,13 +132,9 @@ describe('action.update-marketing-consent', () => {
                 channel: validBody.channel,
                 status: validBody.status,
             });
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(400);
             expect(await response.json()).toEqual({ success: false, error: 'contactPointValue is required' });
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
@@ -174,13 +147,9 @@ describe('action.update-marketing-consent', () => {
                 contactPointValue: '   ',
                 status: validBody.status,
             });
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(400);
             expect(await response.json()).toEqual({ success: false, error: 'contactPointValue is required' });
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
@@ -193,13 +162,9 @@ describe('action.update-marketing-consent', () => {
                 contactPointValue: validBody.contactPointValue,
                 status: 'invalid',
             });
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(400);
             const json = await response.json();
             expect(json.success).toBe(false);
@@ -211,14 +176,9 @@ describe('action.update-marketing-consent', () => {
     describe('success', () => {
         it('calls updateSubscriptionsBulk and returns 200 with success true', async () => {
             const request = createJsonRequest(validBody);
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(200);
             const json = await response.json();
             expect(json).toEqual({ success: true });
@@ -241,14 +201,9 @@ describe('action.update-marketing-consent', () => {
                 contactPointValue: '  +15551234567  ',
                 status: 'opt_out',
             });
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-
-            await action(args);
+            await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
 
             expect(mockUpdateSubscriptionsBulk).toHaveBeenCalledWith(mockContext, [
                 {
@@ -266,14 +221,9 @@ describe('action.update-marketing-consent', () => {
                 channel: 'whatsapp',
                 contactPointValue: '+15559876543',
             });
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(200);
             expect(mockUpdateSubscriptionsBulk).toHaveBeenCalledWith(mockContext, [
                 {
@@ -291,14 +241,9 @@ describe('action.update-marketing-consent', () => {
                 { subscriptionId: 'b', channel: 'sms', contactPointValue: '+1', status: 'opt_out' },
             ];
             const request = createJsonRequest(updates);
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(200);
             expect(mockUpdateSubscriptionsBulk).toHaveBeenCalledTimes(1);
             expect(mockUpdateSubscriptionsBulk).toHaveBeenCalledWith(mockContext, [
@@ -332,14 +277,9 @@ describe('action.update-marketing-consent', () => {
                 { subscriptionId: 'sub-1', channel: 'email', contactPointValue: 'a@b.com', status: 'opt_in' },
                 { subscriptionId: 'sub-2', channel: 'sms', contactPointValue: 'invalid', status: 'opt_out' },
             ]);
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(207);
             const json = await response.json();
             expect(json).toEqual({
@@ -375,14 +315,9 @@ describe('action.update-marketing-consent', () => {
                 { subscriptionId: 'sub-1', channel: 'email', contactPointValue: 'bad', status: 'opt_in' },
                 { subscriptionId: 'sub-2', channel: 'sms', contactPointValue: 'invalid', status: 'opt_out' },
             ]);
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(500);
             const json = await response.json();
             expect(json).toEqual({
@@ -407,14 +342,9 @@ describe('action.update-marketing-consent', () => {
             mockUpdateSubscriptionsBulk.mockRejectedValueOnce(apiError);
 
             const request = createJsonRequest(validBody);
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(403);
             const json = await response.json();
             expect(json.success).toBe(false);
@@ -425,14 +355,9 @@ describe('action.update-marketing-consent', () => {
             mockUpdateSubscriptionsBulk.mockRejectedValueOnce(new Error('Network error'));
 
             const request = createJsonRequest(validBody);
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/update-marketing-consent',
-            };
-
-            const response = await action(args);
+            const response = await action(
+                createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
+            );
             expect(response.status).toBe(500);
             const json = await response.json();
             expect(json.success).toBe(false);

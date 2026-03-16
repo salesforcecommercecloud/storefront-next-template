@@ -15,7 +15,7 @@
  */
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { createCookie, RouterContextProvider } from 'react-router';
-import { createTestContext } from '@/lib/test-utils';
+import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getCookieConfig } from '@/lib/cookie-utils';
 import createBasketMiddleware, {
@@ -47,7 +47,7 @@ describe('basket.server middleware', () => {
     let mockContext: ReturnType<typeof createTestContext>;
     let mockNext: ReturnType<typeof vi.fn>;
     const createArgs = (request: Request, context: Readonly<RouterContextProvider>) =>
-        ({ request, context, params: {}, unstable_pattern: '' }) as any;
+        createLoaderArgs(request, context, { unstable_pattern: '' });
 
     beforeEach(() => {
         vi.clearAllMocks();

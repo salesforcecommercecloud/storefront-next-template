@@ -61,7 +61,7 @@ const __dirname = dirname(__filename);
 const packageDir = join(__dirname, '..');
 
 // Baseline error count - update this when fixing TypeScript errors
-const BASELINE_ERROR_COUNT = 540;
+const BASELINE_ERROR_COUNT = 390;
 
 /**
  * Run a command and capture its output

@@ -18,10 +18,10 @@ import 'reflect-metadata';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { type LoaderFunctionArgs, MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router';
 import type { ShopperExperience, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import SearchPage, { loader, type SearchPageData, SearchPageMetadata } from './_app.search';
-import { createTestContext } from '@/lib/test-utils';
+import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
@@ -251,12 +251,9 @@ describe('SearchPage', () => {
 
     describe('loader', () => {
         test('should fetch search data and page with correct parameters', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/search?q=shoes&offset=0'),
-                context: mockContext,
-                params: {},
+            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes&offset=0'), mockContext, {
                 unstable_pattern: '/search',
-            };
+            });
 
             const result = await loader(args);
 
@@ -283,14 +280,13 @@ describe('SearchPage', () => {
         });
 
         test('should handle query parameters correctly', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request(
+            const args = createLoaderArgs(
+                new Request(
                     'https://example.com/search?q=boots&offset=20&sort=price-low-to-high&refine=color:red&refine=size:10'
                 ),
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/search',
-            };
+                mockContext,
+                { unstable_pattern: '/search' }
+            );
 
             await loader(args);
 

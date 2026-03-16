@@ -54,6 +54,7 @@ const createLoaderArgs = (url: string, context = TEST_CONTEXT) =>
         request: new Request(url),
         context,
         params: {},
+        unstable_pattern: '/',
     }) as LoaderFunctionArgs;
 
 const createMockPage = (regions: any[] = []): ShopperExperience.schemas['Page'] =>

@@ -180,6 +180,7 @@ describe('reset-password', () => {
                     request: mockRequest,
                     context: mockContext,
                     params: {},
+                    unstable_pattern: '/reset-password-callback',
                 });
 
                 expect(result).toEqual({
@@ -247,6 +248,7 @@ describe('reset-password', () => {
                     request: mockRequest,
                     context: mockContext,
                     params: {},
+                    unstable_pattern: '/reset-password-callback',
                 });
 
                 expect(result.success).toBe(true);
@@ -286,6 +288,7 @@ describe('reset-password', () => {
                     request: mockRequest,
                     context: mockContext,
                     params: {},
+                    unstable_pattern: '/reset-password-callback',
                 });
 
                 expect(result).toEqual({
@@ -318,6 +321,7 @@ describe('reset-password', () => {
                     request: mockRequest,
                     context: mockContext,
                     params: {},
+                    unstable_pattern: '/reset-password-callback',
                 });
 
                 expect(result).toEqual({
@@ -350,6 +354,7 @@ describe('reset-password', () => {
                     request: mockRequest,
                     context: mockContext,
                     params: {},
+                    unstable_pattern: '/reset-password-callback',
                 });
 
                 expect(result).toEqual({
@@ -379,6 +384,7 @@ describe('reset-password', () => {
                     request: mockRequest,
                     context: mockContext,
                     params: {},
+                    unstable_pattern: '/reset-password-callback',
                 });
 
                 expect(result).toEqual({
@@ -407,6 +413,7 @@ describe('reset-password', () => {
                     request: mockRequest,
                     context: mockContext,
                     params: {},
+                    unstable_pattern: '/reset-password-callback',
                 });
 
                 expect(result.success).toBe(false);
@@ -447,6 +454,7 @@ describe('reset-password', () => {
                     request: mockRequest,
                     context: mockContext,
                     params: {},
+                    unstable_pattern: '/reset-password-callback',
                 });
 
                 expect(result.success).toBe(false);
@@ -484,6 +492,7 @@ describe('reset-password', () => {
                     request: mockRequest,
                     context: mockContext,
                     params: {},
+                    unstable_pattern: '/reset-password-callback',
                 });
 
                 expect(result.success).toBe(false);
@@ -506,6 +515,7 @@ describe('reset-password', () => {
                 request: mockRequest,
                 context: mockContext,
                 params: {},
+                unstable_pattern: '/reset-password-landing',
             });
 
             expect(mockRedirect).toHaveBeenCalledWith('/reset-password?token=valid-token&email=test%40example.com');
@@ -523,6 +533,7 @@ describe('reset-password', () => {
                 request: mockRequest,
                 context: mockContext,
                 params: {},
+                unstable_pattern: '/reset-password-landing',
             });
 
             expect(mockRedirect).toHaveBeenCalledWith('/reset-password?token=&email=test%40example.com');
@@ -540,6 +551,7 @@ describe('reset-password', () => {
                 request: mockRequest,
                 context: mockContext,
                 params: {},
+                unstable_pattern: '/reset-password-landing',
             });
 
             expect(mockRedirect).toHaveBeenCalledWith('/reset-password?token=valid-token&email=');
@@ -557,6 +569,7 @@ describe('reset-password', () => {
                 request: mockRequest,
                 context: mockContext,
                 params: {},
+                unstable_pattern: '/reset-password-landing',
             });
 
             expect(mockRedirect).toHaveBeenCalledWith('/reset-password?token=&email=');
@@ -574,6 +587,7 @@ describe('reset-password', () => {
                 request: mockRequest,
                 context: mockContext,
                 params: {},
+                unstable_pattern: '/reset-password-landing',
             });
 
             // The parameters should be properly encoded

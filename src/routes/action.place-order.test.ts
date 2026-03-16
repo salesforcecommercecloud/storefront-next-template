@@ -70,7 +70,12 @@ describe('action.place-order action', () => {
         vi.mocked(getBasket).mockResolvedValue({ current: undefined } as any);
 
         const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
-        const response = await action({ request, context: mockContext, params: {} } as ActionFunctionArgs);
+        const response = await action({
+            request,
+            context: mockContext,
+            params: {},
+            unstable_pattern: '/action/place-order',
+        } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
         expect(response.status).toBe(400);
@@ -90,7 +95,12 @@ describe('action.place-order action', () => {
         } as any);
 
         const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
-        const response = await action({ request, context: mockContext, params: {} } as ActionFunctionArgs);
+        const response = await action({
+            request,
+            context: mockContext,
+            params: {},
+            unstable_pattern: '/action/place-order',
+        } as ActionFunctionArgs);
 
         expect(response.status).toBe(400);
         const body = await parsePlaceOrderResponse(response);
@@ -120,7 +130,12 @@ describe('action.place-order action', () => {
         } as any);
 
         const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
-        const response = await action({ request, context: mockContext, params: {} } as ActionFunctionArgs);
+        const response = await action({
+            request,
+            context: mockContext,
+            params: {},
+            unstable_pattern: '/action/place-order',
+        } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
         expect(response.status).toBe(400);
@@ -147,7 +162,12 @@ describe('action.place-order action', () => {
         } as any);
 
         const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
-        const response = await action({ request, context: mockContext, params: {} } as ActionFunctionArgs);
+        const response = await action({
+            request,
+            context: mockContext,
+            params: {},
+            unstable_pattern: '/action/place-order',
+        } as ActionFunctionArgs);
 
         expect(response.status).toBe(400);
         const body = await parsePlaceOrderResponse(response);
@@ -209,7 +229,12 @@ describe('action.place-order action', () => {
             shouldCreateAccount: 'false',
             savePaymentToProfile: 'true',
         });
-        const response = await action({ request, context: mockContext, params: {} } as ActionFunctionArgs);
+        const response = await action({
+            request,
+            context: mockContext,
+            params: {},
+            unstable_pattern: '/action/place-order',
+        } as ActionFunctionArgs);
 
         expect(response).toBeInstanceOf(Response);
         expect(response.status).toBe(302);

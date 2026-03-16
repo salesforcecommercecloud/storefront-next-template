@@ -66,7 +66,7 @@ export default function ContactInfo({
     const schema = useMemo(() => createContactInfoSchema(t), [t]);
     const contactFormError = getCheckoutDisplayError(actionData, 'contactInfo');
 
-    const form = useForm<ContactInfoData>({
+    const form = useForm<ContactInfoData, void, ContactInfoData>({
         resolver: zodResolver(schema),
         defaultValues: {
             email: cart?.customerInfo?.email || customerContactInfo.email || '',
@@ -91,14 +91,12 @@ export default function ContactInfo({
     }
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
-    const stepTitle: ReactNode = (
-        <span className="text-lg font-semibold text-foreground">{t('contactInfo.title')}</span>
-    );
+    const stepTitle = <span className="text-lg font-semibold text-foreground">{t('contactInfo.title')}</span>;
 
     return (
         <ToggleCard
             id="contact-info"
-            title={stepTitle}
+            title={stepTitle as ReactNode}
             editing={isEditing}
             onEdit={onEdit}
             editLabel={t('common.edit')}
@@ -207,7 +205,7 @@ export default function ContactInfo({
                     {/* Show phone number for guest users only */}
                     {!customerProfile && cart?.customerInfo?.phone && (
                         <Typography variant="p" className="font-medium">
-                            {cart.customerInfo.phone}
+                            {String(cart.customerInfo.phone ?? '')}
                         </Typography>
                     )}
 

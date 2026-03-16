@@ -194,6 +194,7 @@
             "basketQuotaExceeded": "Numero massimo di carrelli superato. Utilizzi il Suo carrello esistente.",
             "paymentFailed": "Pagamento non riuscito. Controlli le Sue informazioni di pagamento e riprovi.",
             "paymentInformationRequired": "Le informazioni di pagamento sono necessarie per completare l'ordine.",
+            "unableToLoadCustomerProfile": "Impossibile caricare il Suo profilo. Aggiorni la pagina e riprovi.",
             "inventoryUnavailable": "Alcuni articoli nel Suo carrello non sono più disponibili. Riveda il Suo carrello.",
             "invalidOrderData": "Dati dell'ordine non validi. Controlli le informazioni di checkout e riprovi.",
             "shippingAddressRequired": "L'indirizzo di spedizione è necessario per continuare.",

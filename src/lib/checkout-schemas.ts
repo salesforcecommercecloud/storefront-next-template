@@ -16,6 +16,9 @@
 import { z } from 'zod';
 import type { TFunction } from 'i18next';
 
+/** Accept any TFunction for schema factories (namespace branding differs by usage) */
+type SchemaTFunction = TFunction | ((key: string) => string);
+
 /**
  * Checkout validation schemas using factory functions to prevent i18next race conditions.
  *
@@ -30,7 +33,7 @@ import type { TFunction } from 'i18next';
  */
 
 // Contact Info Schema Factory
-export const createContactInfoSchema = (t: TFunction) => {
+export const createContactInfoSchema = (t: SchemaTFunction) => {
     return z.object({
         email: z.string().min(1, t('checkout:contactInfo.emailRequired')).email(t('checkout:contactInfo.emailInvalid')),
         countryCode: z
@@ -49,7 +52,7 @@ export const createContactInfoSchema = (t: TFunction) => {
 };
 
 // Shipping Address Schema Factory
-export const createShippingAddressSchema = (t: TFunction) => {
+export const createShippingAddressSchema = (t: SchemaTFunction) => {
     return z.object({
         firstName: z.string().min(1, t('checkout:shippingAddress.firstNameRequired')),
         lastName: z.string().min(1, t('checkout:shippingAddress.lastNameRequired')),
@@ -63,14 +66,14 @@ export const createShippingAddressSchema = (t: TFunction) => {
 };
 
 // Shipping Options Schema Factory
-export const createShippingOptionsSchema = (t: TFunction) => {
+export const createShippingOptionsSchema = (t: SchemaTFunction) => {
     return z.object({
         shippingMethodId: z.string().min(1, t('checkout:shippingOptions.selectRequired')),
     });
 };
 
 // Payment Schema Factory with conditional billing validation
-export const createPaymentSchema = (t: TFunction) => {
+export const createPaymentSchema = (t: SchemaTFunction) => {
     return z
         .object({
             cardNumber: z.string().optional(),
@@ -232,7 +235,7 @@ export const createPaymentSchema = (t: TFunction) => {
             // If billing is NOT same as shipping, require billing address fields and add per-field errors with custom messages.
             // Use fallbacks so Zod never gets a falsy message (which would show "Invalid input") and so we never show the raw key.
             const msg = (key: string, fallback: string) => {
-                const value = t(key) as string;
+                const value = t(key);
                 if (typeof value !== 'string' || !value.trim()) return fallback;
                 if (value === key || value.includes(':')) return fallback;
                 return value;

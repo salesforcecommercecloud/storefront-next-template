@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { LoaderFunctionArgs } from 'react-router';
 import { loader } from './resource.basket-products';
-import { createTestContext } from '@/lib/test-utils';
+import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 
 // Mock getBasket
 vi.mock('@/middlewares/basket.server', () => ({
@@ -79,16 +78,15 @@ describe('resource.basket-products', () => {
         vi.clearAllMocks();
     });
 
-    const createLoaderArgs = (): LoaderFunctionArgs => ({
-        params: {},
-        context: mockContext,
-        request: new Request('http://localhost/resource/basket-products'),
-    });
+    const getLoaderArgs = () =>
+        createLoaderArgs(new Request('http://localhost/resource/basket-products'), mockContext, {
+            unstable_pattern: '/resource/basket-products',
+        });
 
     it('should return empty object when basket is undefined', async () => {
         vi.mocked(getBasket).mockResolvedValue({ current: undefined } as any);
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({});
         expect(mockGetProducts).not.toHaveBeenCalled();
@@ -99,7 +97,7 @@ describe('resource.basket-products', () => {
             current: { basketId: 'basket-123', productItems: [] },
         } as any);
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({});
         expect(mockGetProducts).not.toHaveBeenCalled();
@@ -116,7 +114,7 @@ describe('resource.basket-products', () => {
             },
         } as any);
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({});
         expect(mockGetProducts).not.toHaveBeenCalled();
@@ -139,7 +137,7 @@ describe('resource.basket-products', () => {
             },
         });
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({
             'product-1': mockProduct1,
@@ -172,7 +170,7 @@ describe('resource.basket-products', () => {
 
         mockGetProducts.mockRejectedValue(new Error('API Error'));
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({});
     });
@@ -189,7 +187,7 @@ describe('resource.basket-products', () => {
             data: { data: null },
         });
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({});
     });
@@ -212,7 +210,7 @@ describe('resource.basket-products', () => {
             },
         });
 
-        await loader(createLoaderArgs());
+        await loader(getLoaderArgs());
 
         // Should only request product-1
         expect(mockGetProducts).toHaveBeenCalledWith(

@@ -126,6 +126,16 @@ export async function action({ request, context }: ActionFunctionArgs) {
             if (customerId) {
                 try {
                     const customerProfile = await getCustomerProfileForCheckout(context, customerId);
+                    if (!customerProfile) {
+                        return Response.json(
+                            {
+                                success: false,
+                                error: t('errors:api.unableToLoadCustomerProfile'),
+                                step: 'placeOrder',
+                            },
+                            { status: 400 }
+                        );
+                    }
                     const savedPaymentMethods = getPaymentMethodsFromCustomer(customerProfile);
 
                     if (savedPaymentMethods.length > 0) {

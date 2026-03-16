@@ -111,12 +111,12 @@ describe('MiniCartItem', () => {
     it('renders variation attributes', () => {
         renderWithRouter(<MiniCartItem product={mockProduct} />);
         expect(
-            screen.getByText((content, element) => {
+            screen.getByText((_content, element) => {
                 return element?.textContent === 'Color: Grey';
             })
         ).toBeInTheDocument();
         expect(
-            screen.getByText((content, element) => {
+            screen.getByText((_content, element) => {
                 return element?.textContent === 'Size: XL';
             })
         ).toBeInTheDocument();
@@ -194,7 +194,7 @@ describe('MiniCartItem', () => {
         };
         renderWithRouter(<MiniCartItem product={productWithOnlyColor} />);
         expect(
-            screen.getByText((content, element) => {
+            screen.getByText((_content, element) => {
                 return (
                     element?.textContent === 'Color: Blue' &&
                     element?.className?.includes('inline-block') &&
@@ -203,7 +203,7 @@ describe('MiniCartItem', () => {
             })
         ).toBeInTheDocument();
         expect(
-            screen.queryByText((content, element) => {
+            screen.queryByText((_content, element) => {
                 return element?.textContent?.includes('Size:') || false;
             })
         ).not.toBeInTheDocument();
@@ -225,7 +225,7 @@ describe('MiniCartItem', () => {
         };
         renderWithRouter(<MiniCartItem product={productWithOnlySize} />);
         expect(
-            screen.getByText((content, element) => {
+            screen.getByText((_content, element) => {
                 return (
                     element?.textContent === 'Size: M' &&
                     element?.className?.includes('inline-block') &&
@@ -234,7 +234,7 @@ describe('MiniCartItem', () => {
             })
         ).toBeInTheDocument();
         expect(
-            screen.queryByText((content, element) => {
+            screen.queryByText((_content, element) => {
                 return element?.textContent?.includes('Color:') || false;
             })
         ).not.toBeInTheDocument();

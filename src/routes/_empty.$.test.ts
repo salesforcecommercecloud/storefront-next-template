@@ -18,7 +18,7 @@ import { loader, action } from './_empty.$';
 import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/passwordless-login';
 import { handleSocialLoginLanding } from '@/lib/api/auth/social-login';
 import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password';
-import type { LoaderFunctionArgs, ActionFunctionArgs } from 'react-router';
+import { createActionArgs, createLoaderArgs } from '@/lib/test-utils/loader-action-args';
 
 // Mock passwordless-login handlers
 vi.mock('@/lib/passwordless-login', () => ({
@@ -78,12 +78,11 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             });
             mockPasswordlessLanding.mockResolvedValue(mockResponse);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('http://localhost/passwordless-login-landing?token=test'),
-                params: {},
-                context: mockContext,
-            };
-
+            const args = createLoaderArgs(
+                new Request('http://localhost/passwordless-login-landing?token=test'),
+                mockContext,
+                { unstable_pattern: '*' }
+            );
             const result = await loader(args);
 
             expect(mockPasswordlessLanding).toHaveBeenCalledWith(args);
@@ -97,12 +96,11 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             });
             mockResetPasswordLanding.mockResolvedValue(mockResponse);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('http://localhost/reset-password-landing?token=test&email=test@example.com'),
-                params: {},
-                context: mockContext,
-            };
-
+            const args = createLoaderArgs(
+                new Request('http://localhost/reset-password-landing?token=test&email=test@example.com'),
+                mockContext,
+                { unstable_pattern: '*' }
+            );
             const result = await loader(args);
 
             expect(mockResetPasswordLanding).toHaveBeenCalledWith(args);
@@ -116,12 +114,11 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             });
             mockSocialLoginCallback.mockResolvedValue(mockResponse);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('http://localhost/social-callback?code=auth_code_123&usid=user_session_id'),
-                params: {},
-                context: mockContext,
-            };
-
+            const args = createLoaderArgs(
+                new Request('http://localhost/social-callback?code=auth_code_123&usid=user_session_id'),
+                mockContext,
+                { unstable_pattern: '*' }
+            );
             const result = await loader(args);
 
             expect(mockSocialLoginCallback).toHaveBeenCalledWith(args);
@@ -129,11 +126,9 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
         });
 
         it('should throw 404 for unmatched paths', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request('http://localhost/unknown-path'),
-                params: {},
-                context: mockContext,
-            };
+            const args = createLoaderArgs(new Request('http://localhost/unknown-path'), mockContext, {
+                unstable_pattern: '*',
+            });
 
             try {
                 await loader(args);
@@ -151,14 +146,11 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const mockResult = { success: true, data: {} };
             mockPasswordlessCallback.mockResolvedValue(mockResult);
 
-            const args: ActionFunctionArgs = {
-                request: new Request('http://localhost/passwordless-login-callback', {
-                    method: 'POST',
-                }),
-                params: {},
-                context: mockContext,
-            };
-
+            const args = createActionArgs(
+                new Request('http://localhost/passwordless-login-callback', { method: 'POST' }),
+                mockContext,
+                { unstable_pattern: '*' }
+            );
             const result = await action(args);
 
             expect(mockPasswordlessCallback).toHaveBeenCalledWith(args);
@@ -169,14 +161,11 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const mockResult = { success: true, result: {} };
             mockResetPasswordCallback.mockResolvedValue(mockResult);
 
-            const args: ActionFunctionArgs = {
-                request: new Request('http://localhost/reset-password-callback', {
-                    method: 'POST',
-                }),
-                params: {},
-                context: mockContext,
-            };
-
+            const args = createActionArgs(
+                new Request('http://localhost/reset-password-callback', { method: 'POST' }),
+                mockContext,
+                { unstable_pattern: '*' }
+            );
             const result = await action(args);
 
             expect(mockResetPasswordCallback).toHaveBeenCalledWith(args);
@@ -184,13 +173,11 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
         });
 
         it('should throw 405 for unmatched paths', async () => {
-            const args: ActionFunctionArgs = {
-                request: new Request('http://localhost/unknown-path', {
-                    method: 'POST',
-                }),
-                params: {},
-                context: mockContext,
-            };
+            const args = createActionArgs(
+                new Request('http://localhost/unknown-path', { method: 'POST' }),
+                mockContext,
+                { unstable_pattern: '*' }
+            );
 
             try {
                 await action(args);
@@ -206,11 +193,11 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
     describe('getHandler (indirectly tested)', () => {
         it('should correctly route based on pathname from config', async () => {
             // Test that the handler correctly identifies routes from config
-            const loaderArgs: LoaderFunctionArgs = {
-                request: new Request('http://localhost/passwordless-login-landing'),
-                params: {},
-                context: mockContext,
-            };
+            const loaderArgs = createLoaderArgs(
+                new Request('http://localhost/passwordless-login-landing'),
+                mockContext,
+                { unstable_pattern: '*' }
+            );
 
             mockPasswordlessLanding.mockResolvedValue(new Response(null, { status: 302 }));
             await loader(loaderArgs);
@@ -219,11 +206,9 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
         });
 
         it('should return null for paths not in config', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request('http://localhost/some-random-path'),
-                params: {},
-                context: mockContext,
-            };
+            const args = createLoaderArgs(new Request('http://localhost/some-random-path'), mockContext, {
+                unstable_pattern: '*',
+            });
 
             try {
                 await loader(args);
@@ -264,12 +249,11 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             });
             mockSocialLoginCallback.mockResolvedValue(mockResponse);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('http://localhost/social-callback?code=auth_code_123'),
-                params: {},
-                context: mockContext,
-            };
-
+            const args = createLoaderArgs(
+                new Request('http://localhost/social-callback?code=auth_code_123'),
+                mockContext,
+                { unstable_pattern: '*' }
+            );
             const result = await loader(args);
 
             expect(mockSocialLoginCallback).toHaveBeenCalledWith(args);
@@ -302,12 +286,11 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             });
             mockPasswordlessLanding.mockResolvedValue(mockResponse);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('http://localhost/passwordless-login-landing?token=test'),
-                params: {},
-                context: mockContext,
-            };
-
+            const args = createLoaderArgs(
+                new Request('http://localhost/passwordless-login-landing?token=test'),
+                mockContext,
+                { unstable_pattern: '*' }
+            );
             const result = await loader(args);
 
             expect(mockPasswordlessLanding).toHaveBeenCalledWith(args);
@@ -337,14 +320,11 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const mockResult = { success: true, result: {} };
             mockResetPasswordCallback.mockResolvedValue(mockResult);
 
-            const args: ActionFunctionArgs = {
-                request: new Request('http://localhost/reset-password-callback', {
-                    method: 'POST',
-                }),
-                params: {},
-                context: mockContext,
-            };
-
+            const args = createActionArgs(
+                new Request('http://localhost/reset-password-callback', { method: 'POST' }),
+                mockContext,
+                { unstable_pattern: '*' }
+            );
             const result = await action(args);
 
             expect(mockResetPasswordCallback).toHaveBeenCalledWith(args);

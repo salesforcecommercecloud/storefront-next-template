@@ -16,7 +16,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
 import { modeDetectionMiddlewareServer, modeDetectionContext, type ModeDetectionContext } from './mode-detection';
-import { createTestContext } from '@/lib/test-utils';
+import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 
 vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
     isDesignModeActive: vi.fn(),
@@ -54,7 +54,7 @@ describe('modeDetectionMiddleware', () => {
             mockNext.mockResolvedValue(expectedResponse);
 
             const result = await modeDetectionMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '*' },
+                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '*' }),
                 mockNext
             );
 
@@ -67,7 +67,7 @@ describe('modeDetectionMiddleware', () => {
             isPreviewModeActive.mockReturnValue(false);
 
             await modeDetectionMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '*' },
+                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '*' }),
                 mockNext
             );
 
@@ -86,7 +86,7 @@ describe('modeDetectionMiddleware', () => {
             isPreviewModeActive.mockReturnValue(true);
 
             await modeDetectionMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '*' },
+                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '*' }),
                 mockNext
             );
 
@@ -105,7 +105,7 @@ describe('modeDetectionMiddleware', () => {
             isPreviewModeActive.mockReturnValue(false);
 
             await modeDetectionMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '*' },
+                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '*' }),
                 mockNext
             );
 
@@ -132,7 +132,7 @@ describe('modeDetectionMiddleware', () => {
             });
 
             await modeDetectionMiddlewareServer(
-                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '*' },
+                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '*' }),
                 mockNext
             );
 
