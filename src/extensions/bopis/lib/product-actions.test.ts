@@ -18,6 +18,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isSelectedDeliveryOptionValid } from './product-actions';
 import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mocks__/basket';
 import { getTranslation } from '@/lib/i18next';
+import type { ToastType } from '@/components/toast';
 
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(),
@@ -36,10 +37,10 @@ beforeEach(() => {
 });
 
 describe('isSelectedDeliveryOptionValid', () => {
-    let mockAddToast: ReturnType<typeof vi.fn>;
+    let mockAddToast: (message: string, type: ToastType) => void;
 
     beforeEach(() => {
-        mockAddToast = vi.fn();
+        mockAddToast = vi.fn() as unknown as (message: string, type: ToastType) => void;
     });
 
     it('should return true when basket is undefined', () => {

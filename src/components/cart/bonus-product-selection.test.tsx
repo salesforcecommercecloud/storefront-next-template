@@ -89,14 +89,14 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 }));
 
 // Mock useRuleBasedBonusProducts
-const mockUseRuleBasedBonusProducts = vi.fn(() => ({
-    products: [],
+const mockUseRuleBasedBonusProducts = vi.fn((_args?: any) => ({
+    products: [] as Array<{ productId?: string; id?: string; productName?: string; image?: any }>,
     isLoading: false,
     error: undefined,
     total: 0,
 }));
 vi.mock('@/hooks/use-rule-based-bonus-products', () => ({
-    useRuleBasedBonusProducts: (...args: any[]) => mockUseRuleBasedBonusProducts(...args),
+    useRuleBasedBonusProducts: (args: any) => mockUseRuleBasedBonusProducts(args),
 }));
 
 // Mock carousel components

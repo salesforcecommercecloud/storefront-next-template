@@ -116,7 +116,7 @@ describe('Checkout Route SSR', () => {
             mockUniversalServerLoader.mockResolvedValue(mockResult);
 
             const mockRequest = new Request('http://localhost/checkout');
-            const mockContext = { set: vi.fn() };
+            const mockContext = { set: vi.fn(), get: vi.fn() } as any;
             const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             const result = await mockLoader(args);
@@ -129,7 +129,7 @@ describe('Checkout Route SSR', () => {
             mockUniversalServerLoader.mockRejectedValue(new Error('Server error'));
 
             const mockRequest = new Request('http://localhost/checkout');
-            const mockContext = { set: vi.fn() };
+            const mockContext = { set: vi.fn(), get: vi.fn() } as any;
             const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             try {
@@ -193,7 +193,7 @@ describe('Checkout Route SSR', () => {
             mockUniversalServerLoader.mockResolvedValue(serverResult);
 
             const mockRequest = new Request('http://localhost/checkout');
-            const mockContext = { set: vi.fn() };
+            const mockContext = { set: vi.fn(), get: vi.fn() } as any;
             const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             const result = await mockLoader(args);
@@ -238,7 +238,7 @@ describe('Checkout Route SSR', () => {
             mockUniversalServerLoader.mockRejectedValue(new Error('Network failure'));
 
             const mockRequest = new Request('http://localhost/checkout');
-            const mockContext = { set: vi.fn() };
+            const mockContext = { set: vi.fn(), get: vi.fn() } as any;
             const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             try {
@@ -258,7 +258,7 @@ describe('Checkout Route SSR', () => {
             const malformedRequest = new Request('http://localhost/checkout');
             malformedRequest.headers.set('Cookie', 'malformed-cookie-data');
 
-            const mockContext = { set: vi.fn() };
+            const mockContext = { set: vi.fn(), get: vi.fn() } as any;
             const args = createLoaderArgs(malformedRequest, mockContext, { unstable_pattern: '/checkout' });
 
             const result = await mockLoader(args);
@@ -335,7 +335,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: Promise.resolve(null),
                 shippingMethodsMap: Promise.resolve({}),
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(
@@ -364,7 +364,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: Promise.resolve(mockCustomerProfile),
                 shippingMethodsMap: Promise.resolve({}),
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(
@@ -391,7 +391,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: Promise.resolve(null),
                 shippingMethodsMap: Promise.resolve(mockShippingMethodsMap),
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(
@@ -452,7 +452,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: undefined,
                 shippingMethodsMap: Promise.resolve({}),
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(
@@ -472,7 +472,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: Promise.resolve(null),
                 shippingMethodsMap: undefined,
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(
@@ -492,7 +492,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: undefined,
                 shippingMethodsMap: undefined,
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(

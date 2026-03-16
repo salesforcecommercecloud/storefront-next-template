@@ -38,7 +38,7 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should transform empty data correctly', () => {
-        const emptyData: ShopperSearch.schemas['SuggestionResult'] = {};
+        const emptyData = {} as unknown as ShopperSearch.schemas['SuggestionResult'];
 
         const { result } = renderHook(() => useTransformSearchSuggestions(emptyData));
 
@@ -51,8 +51,9 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should transform category suggestions correctly', () => {
-        const data: ShopperSearch.schemas['SuggestionResult'] = {
+        const data = {
             categorySuggestions: {
+                suggestedTerms: [],
                 categories: [
                     {
                         id: 'cat1',
@@ -70,7 +71,7 @@ describe('useTransformSearchSuggestions', () => {
                     },
                 ],
             },
-        };
+        } as unknown as ShopperSearch.schemas['SuggestionResult'];
 
         const { result } = renderHook(() => useTransformSearchSuggestions(data));
 
@@ -93,8 +94,9 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should transform product suggestions correctly', () => {
-        const data: ShopperSearch.schemas['SuggestionResult'] = {
+        const data = {
             productSuggestions: {
+                suggestedTerms: [],
                 products: [
                     {
                         productId: 'prod1',
@@ -109,10 +111,10 @@ describe('useTransformSearchSuggestions', () => {
                         productId: 'prod2',
                         productName: 'Samsung Galaxy',
                         // No image, price, currency
-                    },
+                    } as any,
                 ],
             },
-        };
+        } as unknown as ShopperSearch.schemas['SuggestionResult'];
 
         const { result } = renderHook(() => useTransformSearchSuggestions(data));
 
@@ -137,8 +139,9 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should transform phrase suggestions correctly', () => {
-        const data: ShopperSearch.schemas['SuggestionResult'] = {
+        const data = {
             productSuggestions: {
+                suggestedTerms: [],
                 suggestedPhrases: [
                     {
                         phrase: 'iphone case',
@@ -151,10 +154,10 @@ describe('useTransformSearchSuggestions', () => {
                     {
                         phrase: 'bluetooth headphones',
                         // No exactMatch
-                    },
+                    } as any,
                 ],
             },
-        };
+        } as unknown as ShopperSearch.schemas['SuggestionResult'];
 
         const { result } = renderHook(() => useTransformSearchSuggestions(data));
 
@@ -194,6 +197,7 @@ describe('useTransformSearchSuggestions', () => {
         const completeData: ShopperSearch.schemas['SuggestionResult'] = {
             searchPhrase: 'phone',
             categorySuggestions: {
+                suggestedTerms: [],
                 categories: [
                     {
                         id: 'electronics',
@@ -206,6 +210,7 @@ describe('useTransformSearchSuggestions', () => {
                 ],
             },
             productSuggestions: {
+                suggestedTerms: [],
                 products: [
                     {
                         productId: 'iphone15',
@@ -261,8 +266,9 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should handle missing or empty names/phrases gracefully', () => {
-        const dataWithEmptyNames: ShopperSearch.schemas['SuggestionResult'] = {
+        const dataWithEmptyNames = {
             categorySuggestions: {
+                suggestedTerms: [],
                 categories: [
                     {
                         id: 'cat1',
@@ -275,11 +281,12 @@ describe('useTransformSearchSuggestions', () => {
                 ],
             },
             productSuggestions: {
+                suggestedTerms: [],
                 products: [
                     {
                         productId: 'prod1',
                         productName: '',
-                    },
+                    } as any,
                     {
                         productId: 'prod2',
                         // No productName property
@@ -296,7 +303,7 @@ describe('useTransformSearchSuggestions', () => {
                     } as any,
                 ],
             },
-        };
+        } as unknown as ShopperSearch.schemas['SuggestionResult'];
 
         const { result } = renderHook(() => useTransformSearchSuggestions(dataWithEmptyNames));
 
@@ -381,8 +388,9 @@ describe('useTransformSearchSuggestions', () => {
     it('should call searchUrlBuilder for phrase suggestions', () => {
         const mockSearchUrlBuilder = vi.mocked(searchUrlBuilder);
 
-        const data: ShopperSearch.schemas['SuggestionResult'] = {
+        const data = {
             productSuggestions: {
+                suggestedTerms: [],
                 suggestedPhrases: [
                     {
                         phrase: 'test phrase',
@@ -390,7 +398,7 @@ describe('useTransformSearchSuggestions', () => {
                     },
                 ],
             },
-        };
+        } as unknown as ShopperSearch.schemas['SuggestionResult'];
 
         renderHook(() => useTransformSearchSuggestions(data));
 
@@ -398,15 +406,17 @@ describe('useTransformSearchSuggestions', () => {
     });
 
     it('should handle data with nested empty objects', () => {
-        const dataWithEmptyObjects: ShopperSearch.schemas['SuggestionResult'] = {
+        const dataWithEmptyObjects = {
             categorySuggestions: {
+                suggestedTerms: [],
                 categories: [],
             },
             productSuggestions: {
+                suggestedTerms: [],
                 products: [],
                 suggestedPhrases: [],
             },
-        };
+        } as unknown as ShopperSearch.schemas['SuggestionResult'];
 
         const { result } = renderHook(() => useTransformSearchSuggestions(dataWithEmptyObjects));
 
@@ -436,7 +446,7 @@ describe('useTransformSearchSuggestions', () => {
 
             const { result } = renderHook(() => useTransformSearchSuggestions(dataWithEinstein));
 
-            expect(result.current.popularSearchSuggestions).toEqual([
+            expect(result.current?.popularSearchSuggestions).toEqual([
                 {
                     type: 'popular',
                     name: 'popular search 1',
@@ -451,7 +461,7 @@ describe('useTransformSearchSuggestions', () => {
                 },
             ]);
 
-            expect(result.current.recentSearchSuggestions).toEqual([
+            expect(result.current?.recentSearchSuggestions).toEqual([
                 {
                     type: 'recent',
                     name: 'recent search 1',
@@ -478,8 +488,8 @@ describe('useTransformSearchSuggestions', () => {
 
             const { result } = renderHook(() => useTransformSearchSuggestions(dataWithEmptyEinstein));
 
-            expect(result.current.popularSearchSuggestions).toBeUndefined();
-            expect(result.current.recentSearchSuggestions).toBeUndefined();
+            expect(result.current?.popularSearchSuggestions).toBeUndefined();
+            expect(result.current?.recentSearchSuggestions).toBeUndefined();
         });
 
         it('should handle missing Einstein suggestions', () => {
@@ -489,8 +499,8 @@ describe('useTransformSearchSuggestions', () => {
 
             const { result } = renderHook(() => useTransformSearchSuggestions(dataWithoutEinstein));
 
-            expect(result.current.popularSearchSuggestions).toBeUndefined();
-            expect(result.current.recentSearchSuggestions).toBeUndefined();
+            expect(result.current?.popularSearchSuggestions).toBeUndefined();
+            expect(result.current?.recentSearchSuggestions).toBeUndefined();
         });
 
         it('should handle Einstein suggestions with empty phrases', () => {
@@ -510,7 +520,7 @@ describe('useTransformSearchSuggestions', () => {
 
             const { result } = renderHook(() => useTransformSearchSuggestions(dataWithEmptyPhrases));
 
-            expect(result.current.popularSearchSuggestions).toEqual([
+            expect(result.current?.popularSearchSuggestions).toEqual([
                 {
                     type: 'popular',
                     name: '',
@@ -525,7 +535,7 @@ describe('useTransformSearchSuggestions', () => {
                 },
             ]);
 
-            expect(result.current.recentSearchSuggestions).toEqual([
+            expect(result.current?.recentSearchSuggestions).toEqual([
                 {
                     type: 'recent',
                     name: '',
@@ -552,7 +562,7 @@ describe('useTransformSearchSuggestions', () => {
 
             const { result } = renderHook(() => useTransformSearchSuggestions(dataWithOnlyPopular));
 
-            expect(result.current.popularSearchSuggestions).toEqual([
+            expect(result.current?.popularSearchSuggestions).toEqual([
                 {
                     type: 'popular',
                     name: 'popular search',
@@ -560,7 +570,7 @@ describe('useTransformSearchSuggestions', () => {
                     exactMatch: false,
                 },
             ]);
-            expect(result.current.recentSearchSuggestions).toBeUndefined();
+            expect(result.current?.recentSearchSuggestions).toBeUndefined();
         });
 
         it('should only include Einstein suggestions when arrays have content - recent only', () => {
@@ -574,8 +584,8 @@ describe('useTransformSearchSuggestions', () => {
 
             const { result } = renderHook(() => useTransformSearchSuggestions(dataWithOnlyRecent));
 
-            expect(result.current.popularSearchSuggestions).toBeUndefined();
-            expect(result.current.recentSearchSuggestions).toEqual([
+            expect(result.current?.popularSearchSuggestions).toBeUndefined();
+            expect(result.current?.recentSearchSuggestions).toEqual([
                 {
                     type: 'recent',
                     name: 'recent search',

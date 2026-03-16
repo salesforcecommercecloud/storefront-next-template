@@ -196,9 +196,9 @@ describe('pageLoader', () => {
 
             expect(result).toHaveProperty('id', 'mock-page');
             expect(result).toHaveProperty('componentData');
-            expect(Object.keys(result.componentData)).toEqual(['hero-1', 'footer-1']);
-            await expect(result.componentData['hero-1']).resolves.toEqual(heroData);
-            await expect(result.componentData['footer-1']).resolves.toEqual(footerData);
+            expect(Object.keys(result.componentData ?? {})).toEqual(['hero-1', 'footer-1']);
+            await expect(result.componentData?.['hero-1']).resolves.toEqual(heroData);
+            await expect(result.componentData?.['footer-1']).resolves.toEqual(footerData);
         });
 
         test('server loader receives componentData and context', async () => {
@@ -212,7 +212,7 @@ describe('pageLoader', () => {
             mockedFetchPage.mockResolvedValue(mockPage);
 
             const result = await fetchPageWithComponentData(args, { pageId: MOCK_PAGE_ID });
-            const componentData = await result.componentData['hero-1'];
+            const componentData = await result.componentData?.['hero-1'];
 
             // eslint-disable-next-line @typescript-eslint/unbound-method
             expect(mockedRegistry.callLoader).toHaveBeenCalledWith(
@@ -238,7 +238,7 @@ describe('pageLoader', () => {
 
             const result = await fetchPageWithComponentData(args, { pageId: MOCK_PAGE_ID });
 
-            await expect(result.componentData['failing-component']).rejects.toThrow('Server loader failed');
+            await expect(result.componentData?.['failing-component']).rejects.toThrow('Server loader failed');
         });
 
         test('handles regions with null/undefined components gracefully', async () => {
@@ -285,12 +285,13 @@ describe('pageLoader', () => {
 
             const result = await fetchPageWithComponentData(args, { pageId: MOCK_PAGE_ID });
 
-            expect(Object.keys(result.componentData)).toEqual(['hero-1', 'banner-1', 'footer-1']);
+            const componentData = result.componentData as Record<string, Promise<unknown>>;
+            expect(Object.keys(componentData)).toEqual(['hero-1', 'banner-1', 'footer-1']);
 
             const results = await Promise.all([
-                result.componentData['hero-1'],
-                result.componentData['banner-1'],
-                result.componentData['footer-1'],
+                componentData['hero-1'],
+                componentData['banner-1'],
+                componentData['footer-1'],
             ]);
 
             expect(results).toEqual([heroData, bannerData, footerData]);

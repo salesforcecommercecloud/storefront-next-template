@@ -26,14 +26,14 @@ import { useSearchSuggestions } from '@/hooks/use-search-suggestions';
 import { useTransformSearchSuggestions } from '@/hooks/use-transform-search-suggestions';
 
 // Mock the hooks
-const mockRefetch = vi.fn();
+const mockRefetch = vi.fn<() => Promise<void>>();
 const mockNavigate = vi.fn();
 
 const mockSuggestionsData = {
     categorySuggestions: [{ name: 'Electronics', link: '/category/electronics' }],
     productSuggestions: [{ name: 'iPhone', link: '/product/iphone', price: 999 }],
     phraseSuggestions: [],
-};
+} as any;
 
 vi.mock('@/hooks/use-search-suggestions', () => ({
     useSearchSuggestions: vi.fn(),
@@ -88,9 +88,9 @@ describe('SearchBar Component', () => {
         // Use vi.spyOn to mock useNavigate while keeping real router exports
         vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
         mockUseSearchSuggestions.mockReturnValue({
-            data: null,
+            data: undefined,
             refetch: mockRefetch,
-        });
+        } as any);
         mockUseTransformSearchSuggestions.mockReturnValue(null);
         vi.clearAllTimers();
         vi.useFakeTimers();
@@ -136,7 +136,7 @@ describe('SearchBar Component', () => {
             let capturedQuery = '';
             mockUseSearchSuggestions.mockImplementation(({ q }: { q: string }) => {
                 capturedQuery = q;
-                return { data: null, refetch: mockRefetch };
+                return { data: undefined, refetch: mockRefetch } as any;
             });
 
             renderWithRouter(<SearchBar />);
@@ -149,9 +149,10 @@ describe('SearchBar Component', () => {
 
         it('should update aria-expanded when query length changes', () => {
             mockUseTransformSearchSuggestions.mockReturnValue({
-                categorySuggestions: [{ name: 'Test Category' }],
+                categorySuggestions: [{ name: 'Test Category', link: '/category/test', type: 'category' }],
                 productSuggestions: [],
-            });
+                searchPhrase: undefined,
+            } as any);
 
             renderWithRouter(<SearchBar />);
 
@@ -169,9 +170,10 @@ describe('SearchBar Component', () => {
 
         it('should handle input focus', () => {
             mockUseTransformSearchSuggestions.mockReturnValue({
-                categorySuggestions: [{ name: 'Test Category' }],
+                categorySuggestions: [{ name: 'Test Category', link: '/category/test', type: 'category' }],
                 productSuggestions: [],
-            });
+                searchPhrase: undefined,
+            } as any);
 
             renderWithRouter(<SearchBar />);
 
@@ -191,15 +193,16 @@ describe('SearchBar Component', () => {
             // Mock suggestions to be available
             mockUseSearchSuggestions.mockReturnValue({
                 data: mockSuggestionsData,
+                isLoading: false,
                 refetch: mockRefetch,
             });
 
             mockUseTransformSearchSuggestions.mockReturnValue({
                 categorySuggestions: [{ name: 'Electronics', link: '/category/electronics', type: 'category' }],
-                productSuggestions: [{ name: 'iPhone', link: '/product/iphone', price: 999 }],
+                productSuggestions: [{ name: 'iPhone', link: '/product/iphone', type: 'product', price: 999 }],
                 phraseSuggestions: [],
                 searchPhrase: 'phone',
-            });
+            } as any);
 
             renderWithRouter(<SearchBar />);
 
@@ -276,9 +279,10 @@ describe('SearchBar Component', () => {
     describe('Suggestions Functionality', () => {
         it('should call closeAndNavigate when suggestion is clicked', () => {
             mockUseTransformSearchSuggestions.mockReturnValue({
-                categorySuggestions: [{ name: 'Test Category' }],
+                categorySuggestions: [{ name: 'Test Category', link: '/category/test', type: 'category' }],
                 productSuggestions: [],
-            });
+                searchPhrase: undefined,
+            } as any);
 
             renderWithRouter(<SearchBar />);
 
@@ -298,7 +302,7 @@ describe('SearchBar Component', () => {
                 fireEvent.click(suggestionItem);
 
                 expect(mockNavigate).toHaveBeenCalledWith('/test-link');
-                expect(searchInput.value).toBe('');
+                expect((searchInput as HTMLInputElement).value).toBe('');
             }
         });
 
@@ -306,14 +310,15 @@ describe('SearchBar Component', () => {
             // Mock suggestions data to ensure hasSuggestions is true
             const mockSuggestions = { suggestions: [{ value: 'test' }] };
             mockUseSearchSuggestions.mockReturnValue({
-                data: mockSuggestions,
+                data: mockSuggestions as any,
                 refetch: mockRefetch,
-            });
+            } as any);
 
             mockUseTransformSearchSuggestions.mockReturnValue({
-                categorySuggestions: [{ name: 'Test Category' }],
+                categorySuggestions: [{ name: 'Test Category', link: '/category/test', type: 'category' }],
                 productSuggestions: [],
-            });
+                searchPhrase: undefined,
+            } as any);
 
             renderWithRouter(<SearchBar />);
 
@@ -340,7 +345,7 @@ describe('SearchBar Component', () => {
             // - inputRef.current.value = '' - lines 85-87
             // - navigate(link) - line 88
             expect(mockNavigate).toHaveBeenCalledWith('/test-link');
-            expect(searchInput.value).toBe('');
+            expect((searchInput as HTMLInputElement).value).toBe('');
         });
 
         it('should show "No suggestions found" when no suggestions available', () => {
@@ -359,7 +364,7 @@ describe('SearchBar Component', () => {
     describe('Debounced Search', () => {
         it('should debounce refetch calls', () => {
             mockUseSearchSuggestions.mockImplementation(() => {
-                return { data: null, refetch: mockRefetch };
+                return { data: undefined, refetch: mockRefetch } as any;
             });
 
             renderWithRouter(<SearchBar />);
@@ -420,7 +425,8 @@ describe('SearchBar Component', () => {
             mockUseTransformSearchSuggestions.mockReturnValue({
                 categorySuggestions: [],
                 productSuggestions: [],
-            });
+                searchPhrase: undefined,
+            } as any);
 
             renderWithRouter(<SearchBar />);
 
@@ -432,9 +438,10 @@ describe('SearchBar Component', () => {
 
         it('should handle suggestions with only categories', () => {
             mockUseTransformSearchSuggestions.mockReturnValue({
-                categorySuggestions: [{ name: 'Electronics' }],
+                categorySuggestions: [{ name: 'Electronics', link: '/category/electronics', type: 'category' }],
                 productSuggestions: [],
-            });
+                searchPhrase: undefined,
+            } as any);
 
             renderWithRouter(<SearchBar />);
 
@@ -447,8 +454,9 @@ describe('SearchBar Component', () => {
         it('should handle suggestions with only products', () => {
             mockUseTransformSearchSuggestions.mockReturnValue({
                 categorySuggestions: [],
-                productSuggestions: [{ name: 'iPhone' }],
-            });
+                productSuggestions: [{ name: 'iPhone', link: '/product/iphone', type: 'product' }],
+                searchPhrase: undefined,
+            } as any);
 
             renderWithRouter(<SearchBar />);
 
@@ -481,9 +489,9 @@ describe('SearchBar Component', () => {
         it('should update refs when query or refetch changes', () => {
             const newMockRefetch = vi.fn();
             mockUseSearchSuggestions.mockReturnValue({
-                data: null,
+                data: undefined,
                 refetch: newMockRefetch,
-            });
+            } as any);
 
             renderWithRouter(<SearchBar />);
 
@@ -497,14 +505,15 @@ describe('SearchBar Component', () => {
         it('should handle useEffect suggestions state management', () => {
             // Test to cover line 112: setShowSuggestions(!!hasSuggestions)
             mockUseSearchSuggestions.mockReturnValue({
-                data: { suggestions: [{ value: 'test' }] },
+                data: { suggestions: [{ value: 'test' }] } as any,
                 refetch: mockRefetch,
-            });
+            } as any);
 
             mockUseTransformSearchSuggestions.mockReturnValue({
-                categorySuggestions: [{ name: 'Test Category' }],
+                categorySuggestions: [{ name: 'Test Category', link: '/category/test', type: 'category' }],
                 productSuggestions: [],
-            });
+                searchPhrase: undefined,
+            } as any);
 
             renderWithRouter(<SearchBar />);
 

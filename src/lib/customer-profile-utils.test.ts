@@ -31,6 +31,8 @@ describe('Checkout Prefill Utilities', () => {
                     lastName: 'Doe',
                     phoneHome: '555-1234',
                 },
+                addresses: [],
+                paymentInstruments: [],
             };
 
             const result = getContactInfoFromCustomer(customerProfile);
@@ -48,6 +50,8 @@ describe('Checkout Prefill Utilities', () => {
                 customer: {
                     email: 'jane@example.com',
                 },
+                addresses: [],
+                paymentInstruments: [],
             };
 
             const result = getContactInfoFromCustomer(customerProfile);
@@ -116,6 +120,7 @@ describe('Checkout Prefill Utilities', () => {
                     countryCode: 'US',
                     phone: '555-1234',
                 },
+                paymentInstruments: [],
             };
 
             const result = getShippingAddressFromCustomer(customerProfile);
@@ -172,6 +177,7 @@ describe('Checkout Prefill Utilities', () => {
                     countryCode: 'US',
                     phone: '555-1234',
                 },
+                paymentInstruments: [],
             };
 
             const result = getShippingAddressFromCustomer(customerProfile);
@@ -216,6 +222,7 @@ describe('Checkout Prefill Utilities', () => {
                     countryCode: 'US',
                     phone: '555-9876',
                 },
+                paymentInstruments: [],
             };
 
             const result = getShippingAddressFromCustomer(customerProfile);
@@ -234,7 +241,7 @@ describe('Checkout Prefill Utilities', () => {
         });
 
         it('should return empty object when no addresses', () => {
-            const customerProfile = { addresses: [] };
+            const customerProfile = { addresses: [], paymentInstruments: [] };
             const result = getShippingAddressFromCustomer(customerProfile);
             expect(result).toEqual({});
         });
@@ -243,6 +250,7 @@ describe('Checkout Prefill Utilities', () => {
     describe('getPaymentMethodsFromCustomer', () => {
         it('should format payment methods with card type and expiration', () => {
             const customerProfile = {
+                addresses: [],
                 paymentInstruments: [
                     {
                         paymentInstrumentId: 'card_123',
@@ -294,13 +302,14 @@ describe('Checkout Prefill Utilities', () => {
         });
 
         it('should handle missing payment methods', () => {
-            const customerProfile = { paymentInstruments: [] };
+            const customerProfile = { addresses: [], paymentInstruments: [] };
             const result = getPaymentMethodsFromCustomer(customerProfile);
             expect(result).toEqual([]);
         });
 
         it('should include all payment methods regardless of type', () => {
             const customerProfile = {
+                addresses: [],
                 paymentInstruments: [
                     {
                         paymentInstrumentId: 'card_123',

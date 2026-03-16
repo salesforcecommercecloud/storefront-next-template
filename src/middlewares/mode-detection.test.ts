@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
 import { modeDetectionMiddlewareServer, modeDetectionContext, type ModeDetectionContext } from './mode-detection';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
@@ -24,8 +24,8 @@ vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
 }));
 
 describe('modeDetectionMiddleware', () => {
-    let mockContext: RouterContextProvider;
-    let mockNext: ReturnType<typeof vi.fn>;
+    let mockContext: Readonly<RouterContextProvider>;
+    let mockNext: Mock<() => Promise<Response>>;
     let mockRequest: Request;
     let isDesignModeActive: ReturnType<typeof vi.fn>;
     let isPreviewModeActive: ReturnType<typeof vi.fn>;
@@ -33,7 +33,7 @@ describe('modeDetectionMiddleware', () => {
     beforeEach(async () => {
         vi.clearAllMocks();
         mockContext = createTestContext();
-        mockNext = vi.fn().mockResolvedValue(new Response('test'));
+        mockNext = vi.fn<() => Promise<Response>>().mockResolvedValue(new Response('test'));
         mockRequest = new Request('https://example.com/test');
 
         const modeModule = await import('@salesforce/storefront-next-runtime/design/mode');
@@ -125,7 +125,6 @@ describe('modeDetectionMiddleware', () => {
 
             let contextDuringNext: ModeDetectionContext | null = null;
 
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             mockNext.mockImplementation(() => {
                 contextDuringNext = mockContext.get(modeDetectionContext);
                 return Promise.resolve(new Response('test'));

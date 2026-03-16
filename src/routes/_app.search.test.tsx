@@ -311,6 +311,7 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
             };
 
             render(
@@ -347,6 +348,7 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
             };
 
             render(
@@ -372,6 +374,7 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage([]), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
             };
 
             render(
@@ -395,6 +398,7 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
             };
 
             render(
@@ -418,6 +422,7 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
             };
 
             render(
@@ -449,6 +454,7 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
             };
 
             render(
@@ -482,6 +488,7 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
             };
 
             render(
@@ -518,6 +525,7 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
             };
 
             render(

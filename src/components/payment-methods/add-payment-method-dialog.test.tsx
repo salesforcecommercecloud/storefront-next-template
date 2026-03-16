@@ -47,6 +47,7 @@ describe('AddPaymentMethodDialog', () => {
     const defaultProps = {
         open: true,
         onOpenChange: vi.fn(),
+        onSubmitForm: vi.fn(),
         addresses: mockAddresses,
     };
 
@@ -88,7 +89,7 @@ describe('AddPaymentMethodDialog', () => {
         const user = userEvent.setup();
         const onSubmit = vi.fn();
 
-        render(<AddPaymentMethodDialog {...defaultProps} onSubmit={onSubmit} />);
+        render(<AddPaymentMethodDialog {...defaultProps} onSubmitForm={onSubmit} />);
 
         await user.click(screen.getByText(t('account:paymentMethods.save')));
 

@@ -116,6 +116,8 @@ describe('Guest User Registration', () => {
             const testOrderInfo = {
                 customerInfo: {
                     email: 'guest@example.com',
+                    firstName: undefined as string | undefined,
+                    lastName: undefined as string | undefined,
                 },
                 shippingAddress: {
                     firstName: 'Jane',
@@ -181,7 +183,8 @@ describe('Guest User Registration', () => {
             const orderInfo = {
                 shippingAddress: {
                     address1: '123 Main St',
-                    // No firstName/lastName
+                    firstName: undefined as string | undefined,
+                    lastName: undefined as string | undefined,
                 },
                 customerInfo: {
                     firstName: 'Customer',
@@ -202,9 +205,13 @@ describe('Guest User Registration', () => {
             const orderInfo = {
                 shippingAddress: {
                     address1: '123 Main St',
+                    firstName: undefined as string | undefined,
+                    lastName: undefined as string | undefined,
                 },
                 customerInfo: {
                     email: 'test@example.com',
+                    firstName: undefined as string | undefined,
+                    lastName: undefined as string | undefined,
                 },
             };
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
 import { correlationMiddleware } from './correlation.server';
 import { correlationContext, generateCorrelationId } from '@/lib/correlation';
@@ -28,14 +28,14 @@ vi.mock('@/lib/correlation', async (importOriginal) => {
 });
 
 describe('middlewares/correlation.server.ts', () => {
-    let mockContext: RouterContextProvider;
-    let mockNext: ReturnType<typeof vi.fn>;
+    let mockContext: Readonly<RouterContextProvider>;
+    let mockNext: Mock<() => Promise<Response>>;
     let mockRequest: Request;
 
     beforeEach(() => {
         vi.clearAllMocks();
         mockContext = createTestContext();
-        mockNext = vi.fn().mockResolvedValue(new Response('test'));
+        mockNext = vi.fn<() => Promise<Response>>().mockResolvedValue(new Response('test'));
         mockRequest = new Request('https://example.com/test');
     });
 
@@ -80,7 +80,6 @@ describe('middlewares/correlation.server.ts', () => {
         it('should set correlation ID before calling next()', async () => {
             let correlationIdDuringNext: string | undefined;
 
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             mockNext.mockImplementation(() => {
                 correlationIdDuringNext = mockContext.get(correlationContext);
                 return Promise.resolve(new Response('test'));
