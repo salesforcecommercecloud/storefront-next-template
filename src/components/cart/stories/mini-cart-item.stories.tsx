@@ -19,7 +19,8 @@ import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { Check, Truck, X } from 'lucide-react';
+import { Check, ShoppingCart, Store, Truck, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -787,6 +788,80 @@ Empty cart state within the mini cart sheet. Shows:
         const progressBar = await canvas.findByRole('progressbar', { name: /free shipping/i });
         await expect(progressBar).toBeInTheDocument();
         await expect(progressBar).toHaveAttribute('aria-valuenow', '0');
+    },
+};
+
+export const WithDeliveryBadge: Story = {
+    render: () => (
+        <MiniCartShell>
+            <div className="relative">
+                <div className="absolute top-0 right-0 z-10">
+                    <Badge className="shrink-0 gap-1 text-xs rounded-pill bg-muted text-foreground border-0">
+                        <ShoppingCart className="w-3 h-3" />
+                        Delivery
+                    </Badge>
+                </div>
+                <MiniCartItem product={mockProduct} onRemove={action('remove-clicked')} />
+            </div>
+        </MiniCartShell>
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: `
+Mini cart item with a **Delivery** fulfillment badge. Shows:
+- ShoppingCart icon with "Delivery" label
+- Badge positioned in the top-right of the item
+- Indicates the item will be shipped to the customer's address
+                `,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        const productName = await canvas.findByText('Product Name');
+        await expect(productName).toBeInTheDocument();
+
+        const deliveryBadge = await canvas.findByText('Delivery');
+        await expect(deliveryBadge).toBeInTheDocument();
+    },
+};
+
+export const WithPickupBadge: Story = {
+    render: () => (
+        <MiniCartShell>
+            <div className="relative">
+                <div className="absolute top-0 right-0 z-10">
+                    <Badge className="shrink-0 gap-1 text-xs rounded-pill bg-muted text-foreground border-0">
+                        <Store className="w-3 h-3" />
+                        Pick Up
+                    </Badge>
+                </div>
+                <MiniCartItem product={mockProduct} onRemove={action('remove-clicked')} />
+            </div>
+        </MiniCartShell>
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: `
+Mini cart item with a **Pick Up** fulfillment badge. Shows:
+- Store icon with "Pick Up" label
+- Badge positioned in the top-right of the item
+- Indicates the item is set for in-store pickup (BOPIS)
+                `,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        const productName = await canvas.findByText('Product Name');
+        await expect(productName).toBeInTheDocument();
+
+        const pickupBadge = await canvas.findByText('Pick Up');
+        await expect(pickupBadge).toBeInTheDocument();
     },
 };
 

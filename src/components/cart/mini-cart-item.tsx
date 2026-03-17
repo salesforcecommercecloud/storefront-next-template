@@ -41,9 +41,7 @@ import ProductPrice from '@/components/product-price';
 import { Typography } from '@/components/typography';
 import QuantityPicker from '@/components/quantity-picker/quantity-picker';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { ProductItemPromotions } from '@/components/product-item';
-import { ShoppingCart } from 'lucide-react';
 
 /**
  * Basket item data enriched with product details for mini cart display
@@ -192,10 +190,6 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                             </div>
                         )}
                     </div>
-                    <Badge className="shrink-0 gap-1 text-xs rounded-pill bg-muted text-foreground border-0">
-                        <ShoppingCart className="w-3 h-3" />
-                        {tMiniCart('delivery')}
-                    </Badge>
                 </div>
 
                 {/* Price + Savings */}
