@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RegionWrapper stories snapshot > Default story renders and matches snapshot 1`] = `
+<div>
+  <div>
+    Child Content
+  </div>
+</div>
+`;
+
+exports[`RegionWrapper stories snapshot > WithMultipleChildren story renders and matches snapshot 1`] = `
+<div>
+  <div>
+    Child 1
+  </div>
+  <div>
+    Child 2
+  </div>
+  <div>
+    Child 3
+  </div>
+</div>
+`;

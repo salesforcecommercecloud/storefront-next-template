@@ -1,0 +1,83 @@
+/**
+ * Copyright 2026 Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { vi, expect, test, describe, afterEach } from 'vitest';
+import type React from 'react';
+
+// Mock react-router to avoid nested Router issues
+vi.mock('react-router', () => ({
+    createContext: vi.fn().mockImplementation(() => ({})),
+    useFetcher: () => ({
+        data: null,
+        state: 'idle',
+
+        submit: () => {},
+        Form: (props: React.PropsWithChildren<Record<string, unknown>>) => <form {...props}>{props.children}</form>,
+    }),
+    useFetchers: () => [],
+
+    useNavigate: () => () => {},
+    useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
+    useNavigation: () => ({
+        state: 'idle',
+        location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
+    }),
+    useSearchParams: () => [new URLSearchParams(), vi.fn()],
+    Link: (props: React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>) => {
+        const { to, href, children, ...rest } = props ?? {};
+        return (
+            <a href={to ?? href} {...rest}>
+                {children}
+            </a>
+        );
+    },
+    createMemoryRouter: vi.fn().mockImplementation((routes: Array<{ path: string; element: unknown }>) => ({
+        routes: routes || [],
+        navigate: vi.fn(),
+        state: { location: { pathname: '/', search: '', hash: '', state: null } },
+    })),
+    RouterProvider: ({ router }: { router?: { routes?: Array<{ element?: unknown }> } }) => {
+        if (!router || !router.routes) {
+            return <div />;
+        }
+        return <div>{router.routes[0]?.element || null}</div>;
+    },
+    useInRouterContext: () => false,
+}));
+
+import { composeStories } from '@storybook/react-vite';
+
+import * as ActiveFiltersStories from './active-filters.stories';
+import { render, cleanup } from '@testing-library/react';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
+
+const composed = composeStories(ActiveFiltersStories);
+
+afterEach(() => {
+    cleanup();
+});
+
+describe('ActiveFilters stories snapshot', () => {
+    for (const [storyName, Story] of Object.entries(composed)) {
+        test(`${storyName} story renders and matches snapshot`, () => {
+            const { container } = render(
+                <AllProvidersWrapper>
+                    <Story />
+                </AllProvidersWrapper>
+            );
+            expect(container.firstChild).toMatchSnapshot();
+        });
+    }
+});

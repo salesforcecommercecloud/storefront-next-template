@@ -1,0 +1,20 @@
+{
+    "configs": [
+        {
+            "name": "API Client ID",
+            "key": "PUBLIC__app__commerce__api__clientId"
+        },
+        {
+            "name": "API Organization ID",
+            "key": "PUBLIC__app__commerce__api__organizationId"
+        },
+        {
+            "name": "API Short Code",
+            "key": "PUBLIC__app__commerce__api__shortCode"
+        },
+        {
+            "name": "API Site ID",
+            "key": "PUBLIC__app__commerce__api__siteId"
+        }
+    ]
+}
