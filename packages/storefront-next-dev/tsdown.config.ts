@@ -68,6 +68,7 @@ export default defineConfig([
         clean: false,
         hash: false,
         minify: true,
+        sourcemap: true,
     },
     // 3b. MRT streamingHandler build
     {
@@ -97,6 +98,7 @@ export default defineConfig([
         clean: false,
         hash: false,
         minify: true,
+        sourcemap: true,
     },
     // 4. React Router preset config
     {

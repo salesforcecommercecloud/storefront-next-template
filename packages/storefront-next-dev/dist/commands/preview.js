@@ -13,6 +13,8 @@ import { pathToFileURL } from "url";
 * Start the preview server with production build
 */
 async function preview(options = {}) {
+	process.setSourceMapsEnabled(true);
+	process.env.NODE_OPTIONS = [process.env.NODE_OPTIONS, "--enable-source-maps"].filter(Boolean).join(" ");
 	const startTime = Date.now();
 	const projectDir = path.resolve(options.projectDirectory || process.cwd());
 	const port = options.port || 3e3;

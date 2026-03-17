@@ -238,9 +238,14 @@ async function createSSRHandler(
             patchedBuild = patchReactRouterBuild(build, bundleId);
         }
 
+        // When source maps are enabled (via MRT's enable_source_maps toggle or local preview),
+        // use 'development' mode so React Router sends unsanitized errors to the browser.
+        const sourceMapsEnabled = process.env.NODE_OPTIONS?.includes('--enable-source-maps');
+        const requestHandlerMode = sourceMapsEnabled ? 'development' : process.env.NODE_ENV;
+
         return createRequestHandler({
             build: patchedBuild,
-            mode: process.env.NODE_ENV,
+            mode: requestHandlerMode,
         });
     } else {
         throw new Error('Invalid server configuration: no vite or build provided');

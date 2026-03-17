@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from "url";
 import { parse } from "@babel/parser";
 import { isArrayPattern, isClassDeclaration, isExportSpecifier, isFunctionDeclaration, isIdentifier, isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, isMemberExpression, isObjectPattern, isObjectProperty, isRestElement, isVariableDeclaration, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
 import { generate } from "@babel/generator";
-import _traverse from "@babel/traverse";
+import traverseModule from "@babel/traverse";
 import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
@@ -233,10 +233,16 @@ const managedRuntimeBundlePlugin = () => {
 		await fs.outputFile(loaderPath, "// This file is intentionally empty");
 		const prebuiltMrtEntryPath = path$1.resolve(__dirname$1, `./mrt/${mrtEntryFile}`);
 		await fs.copy(prebuiltMrtEntryPath, mrtEntryPath);
+		const prebuiltMrtEntryMapPath = `${prebuiltMrtEntryPath}.map`;
+		if (await fs.pathExists(prebuiltMrtEntryMapPath)) await fs.copy(prebuiltMrtEntryMapPath, `${mrtEntryPath}.map`);
 		const mrtDir = path$1.resolve(__dirname$1, "./mrt");
 		if (await fs.pathExists(mrtDir)) {
 			const files = await fs.readdir(mrtDir);
-			for (const file of files) if (file.startsWith("sfnext-server-") && file.endsWith(".mjs")) await fs.copy(path$1.join(mrtDir, file), path$1.resolve(buildDirectory, file));
+			for (const file of files) if (file.startsWith("sfnext-server-") && file.endsWith(".mjs")) {
+				await fs.copy(path$1.join(mrtDir, file), path$1.resolve(buildDirectory, file));
+				const mapFile = `${file}.map`;
+				if (files.includes(mapFile)) await fs.copy(path$1.join(mrtDir, mapFile), path$1.resolve(buildDirectory, mapFile));
+			}
 		}
 		const packageJsonPath = path$1.resolve(resolvedConfig.root, "package.json");
 		const buildPackageJsonPath = path$1.resolve(buildDirectory, "package.json");
@@ -314,7 +320,7 @@ const patchReactRouterPlugin = () => {
 
 //#endregion
 //#region src/extensibility/target-utils.ts
-const traverse$1 = _traverse.default || _traverse;
+const traverse$1 = traverseModule.default || traverseModule;
 const TARGET_COMPONENT_TAG = "UITarget";
 const TARGET_PROVIDERS_TAG = "TargetProviders";
 const TARGET_ID_ATTRIBUTE = "targetId";
@@ -1257,7 +1263,7 @@ const workspacePlugin = () => {
 
 //#endregion
 //#region src/plugins/componentLoaders.ts
-const traverse = _traverse.default || _traverse;
+const traverse = traverseModule.default || traverseModule;
 const generate$1 = generate.default || generate;
 /**
 * Names of exports to strip per environment.
@@ -2330,9 +2336,10 @@ async function createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatch
 	} else if (build) {
 		let patchedBuild = build;
 		if (enableAssetUrlPatching) patchedBuild = patchReactRouterBuild(build, bundleId);
+		const requestHandlerMode = process.env.NODE_OPTIONS?.includes("--enable-source-maps") ? "development" : process.env.NODE_ENV;
 		return createRequestHandler({
 			build: patchedBuild,
-			mode: process.env.NODE_ENV
+			mode: requestHandlerMode
 		});
 	} else throw new Error("Invalid server configuration: no vite or build provided");
 }

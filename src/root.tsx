@@ -298,27 +298,87 @@ export function ErrorBoundary({ error }: { error: unknown }) {
         return <Navigate to="/maintenance" replace />;
     }
 
-    let message = 'Oops!';
+    let title = 'Something went wrong';
+    let status: number | undefined;
     let details: string | undefined;
     let stack: string | undefined;
 
     if (isRouteErrorResponse(error)) {
-        message = error.status === 404 ? '404' : 'Error';
+        status = error.status;
+        title = error.status === 404 ? 'Page not found' : 'Something went wrong';
         details = error.status === 404 ? 'The requested page could not be found.' : error.statusText;
-    } else if (import.meta.env.DEV && error && error instanceof Error) {
+    } else if (error instanceof Error) {
         details = error.message;
         stack = error.stack;
+    } else if (typeof error === 'string') {
+        details = error;
     }
 
     return (
-        <main className="pt-16 p-4 container mx-auto">
-            <h1>{message}</h1>
-            <p>{details || 'An unexpected error occurred.'}</p>
-            {stack && (
-                <pre className="w-full p-4 overflow-x-auto">
-                    <code>{stack}</code>
-                </pre>
-            )}
+        <main className="flex items-center justify-center min-h-[60vh] p-4">
+            <div className="w-full max-w-2xl">
+                {/* Error header */}
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+                    <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 mt-0.5 rounded-full bg-destructive/20 p-2">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="size-5 text-destructive">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                        </div>
+                        <div>
+                            {status && <p className="text-sm font-medium text-destructive/70 mb-1">{status}</p>}
+                            <h1 className="text-xl font-semibold text-destructive">{title}</h1>
+                            {details && <p className="mt-1.5 text-sm text-foreground/80">Error: {details}</p>}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Stack trace */}
+                {stack && (
+                    <div className="mt-4 border border-border rounded-lg bg-muted/30">
+                        <div className="flex items-center px-4 py-3 border-b border-border">
+                            <h2 className="text-sm font-semibold text-foreground">Stack Trace</h2>
+                        </div>
+                        <pre className="p-4 overflow-auto max-h-80 text-xs leading-relaxed text-foreground/90 font-mono">
+                            <code>{stack}</code>
+                        </pre>
+                        <div className="px-4 py-3 border-t border-border">
+                            <p className="text-xs text-muted-foreground">
+                                To disable stack traces in production, turn off <strong>Enable Source Maps</strong> in
+                                your Managed Runtime environment.{' '}
+                                <a
+                                    href="https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/debugging.html#debug-on-managed-runtime"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="underline hover:no-underline">
+                                    Learn more
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* No stack trace - fallback message */}
+                {!stack && (
+                    <div className="mt-4 border border-border rounded-lg bg-muted/30 px-6 py-4">
+                        <p className="text-sm text-muted-foreground">
+                            {details
+                                ? 'If this problem persists, please contact support.'
+                                : 'An unexpected error occurred. Please try again later.'}
+                        </p>
+                    </div>
+                )}
+            </div>
         </main>
     );
 }

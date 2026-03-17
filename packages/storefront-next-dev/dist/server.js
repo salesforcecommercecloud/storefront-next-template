@@ -414,9 +414,10 @@ async function createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatch
 	} else if (build) {
 		let patchedBuild = build;
 		if (enableAssetUrlPatching) patchedBuild = patchReactRouterBuild(build, bundleId);
+		const requestHandlerMode = process.env.NODE_OPTIONS?.includes("--enable-source-maps") ? "development" : process.env.NODE_ENV;
 		return createRequestHandler({
 			build: patchedBuild,
-			mode: process.env.NODE_ENV
+			mode: requestHandlerMode
 		});
 	} else throw new Error("Invalid server configuration: no vite or build provided");
 }

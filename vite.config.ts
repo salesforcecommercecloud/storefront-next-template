@@ -59,7 +59,7 @@ export default defineConfig(({ mode }) => {
 
     return {
         build: {
-            sourcemap: 'hidden',
+            sourcemap: true,
             rollupOptions: {
                 external: ['_local'],
                 output: {

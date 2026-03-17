@@ -49,6 +49,7 @@ const buildMrtConfig = (_buildDirectory, _projectDirectory) => {
 			`${ssrEntryPoint}.{js,mjs,cjs}.map`,
 			"!static/**/*",
 			"sfnext-server-*.mjs",
+			"sfnext-server-*.mjs.map",
 			"!**/*.stories.tsx",
 			"!**/*.stories.ts",
 			"!**/*-snapshot.tsx",

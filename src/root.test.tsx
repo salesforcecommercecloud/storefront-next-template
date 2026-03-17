@@ -278,8 +278,8 @@ describe('root.tsx', () => {
 
                 const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Oops!')).toBeInTheDocument();
-                expect(getByText('Test error')).toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText('Error: Test error')).toBeInTheDocument();
 
                 const stackElement = getByText(stackText);
                 expect(stackElement).toBeInTheDocument();
@@ -292,8 +292,7 @@ describe('root.tsx', () => {
 
                 const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Oops!')).toBeInTheDocument();
-                expect(getByText('An unexpected error occurred.')).toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
 
                 const stackElement = getByText(stackText);
                 expect(stackElement).toBeInTheDocument();
@@ -310,7 +309,8 @@ describe('root.tsx', () => {
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
                 expect(getByText('404')).toBeInTheDocument();
-                expect(getByText('The requested page could not be found.')).toBeInTheDocument();
+                expect(getByText('Page not found')).toBeInTheDocument();
+                expect(getByText(/The requested page could not be found/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -324,8 +324,9 @@ describe('root.tsx', () => {
                 };
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Error')).toBeInTheDocument();
-                expect(getByText('Internal Server Error')).toBeInTheDocument();
+                expect(getByText('500')).toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText(/Internal Server Error/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -345,22 +346,18 @@ describe('root.tsx', () => {
 
             it('should render normal error with message', () => {
                 const error = new Error('Test error');
-                const { container, getByText } = render(<ErrorBoundary error={error} />);
+                error.stack = undefined;
+                const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Oops!')).toBeInTheDocument();
-                expect(getByText('An unexpected error occurred.')).toBeInTheDocument();
-                expect(container.querySelector('pre')).not.toBeInTheDocument();
-                expect(container.querySelector('code')).not.toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText('Error: Test error')).toBeInTheDocument();
             });
 
             it('should render normal error without message', () => {
                 const error = new Error('');
-                const { container, getByText } = render(<ErrorBoundary error={error} />);
+                const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Oops!')).toBeInTheDocument();
-                expect(getByText('An unexpected error occurred.')).toBeInTheDocument();
-                expect(container.querySelector('pre')).not.toBeInTheDocument();
-                expect(container.querySelector('code')).not.toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
             });
 
             it('should render predefined 404 error message for route errors with 404 status', () => {
@@ -373,7 +370,8 @@ describe('root.tsx', () => {
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
                 expect(getByText('404')).toBeInTheDocument();
-                expect(getByText('The requested page could not be found.')).toBeInTheDocument();
+                expect(getByText('Page not found')).toBeInTheDocument();
+                expect(getByText(/The requested page could not be found/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -387,8 +385,9 @@ describe('root.tsx', () => {
                 };
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Error')).toBeInTheDocument();
-                expect(getByText('Internal Server Error')).toBeInTheDocument();
+                expect(getByText('500')).toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText(/Internal Server Error/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });

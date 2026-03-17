@@ -40,6 +40,12 @@ export interface ServeOptions {
  * Start the preview server with production build
  */
 export async function preview(options: ServeOptions = {}): Promise<void> {
+    // Enable source maps for readable stack traces in production builds.
+    // Must be called before importing the build module so V8 processes sourceMappingURL comments.
+    // Also set NODE_OPTIONS so the server can detect source maps are enabled and unsanitize errors.
+    process.setSourceMapsEnabled(true);
+    process.env.NODE_OPTIONS = [process.env.NODE_OPTIONS, '--enable-source-maps'].filter(Boolean).join(' ');
+
     const startTime = Date.now();
     const projectDir = path.resolve(options.projectDirectory || process.cwd());
     const port = options.port || 3000;
