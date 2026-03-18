@@ -1,6 +1,7 @@
 {
     "name": "template-retail-rsc-app",
     "version": "0.3.0-dev",
+    "description": "Production-ready React storefront template for Salesforce Commerce Cloud.",
     "private": true,
     "type": "module",
     "scripts": {

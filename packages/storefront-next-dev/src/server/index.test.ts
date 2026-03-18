@@ -24,6 +24,7 @@ vi.mock('express', () => {
     const mockExpressApp = {
         disable: vi.fn().mockReturnThis(),
         use: vi.fn().mockReturnThis(),
+        get: vi.fn().mockReturnThis(),
         all: vi.fn().mockReturnThis(),
     };
     return {
@@ -67,6 +68,11 @@ vi.mock('./utils', () => ({
     patchReactRouterBuild: vi.fn(),
 }));
 
+vi.mock('./handlers/health-check', () => ({
+    createHealthCheckHandler: vi.fn(() => vi.fn()),
+    HEALTH_ENDPOINT_PATH: '/sfdc-health',
+}));
+
 vi.mock('vite', () => ({
     isRunnableDevEnvironment: vi.fn(),
 }));
@@ -100,6 +106,7 @@ describe('server/index', () => {
     let mockExpressApp: {
         disable: ReturnType<typeof vi.fn>;
         use: ReturnType<typeof vi.fn>;
+        get: ReturnType<typeof vi.fn>;
         all: ReturnType<typeof vi.fn>;
     };
 

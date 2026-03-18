@@ -44,6 +44,7 @@ const buildMrtConfig = (_buildDirectory, _projectDirectory) => {
 	return {
 		ssrOnly: [
 			"server/**/*",
+			"**/*.json",
 			"loader.js",
 			`${ssrEntryPoint}.{js,mjs,cjs}`,
 			`${ssrEntryPoint}.{js,mjs,cjs}.map`,

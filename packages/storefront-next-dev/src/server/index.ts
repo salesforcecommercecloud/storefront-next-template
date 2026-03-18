@@ -30,6 +30,7 @@ import { createHostHeaderMiddleware } from './middleware/host-header';
 import { patchReactRouterBuild } from './utils';
 import { ServerModeFeatureMap, type ServerMode, type ServerModeFeatures } from './modes';
 import { getBundlePath } from '../utils/paths';
+import { createHealthCheckHandler, HEALTH_ENDPOINT_PATH } from './handlers/health-check';
 
 /** Relative path to the middleware registry TypeScript source (development). Must match appDirectory + server dir + filename used by buildMiddlewareRegistry plugin. */
 const RELATIVE_MIDDLEWARE_REGISTRY_SOURCE = 'src/server/middleware-registry.ts';
@@ -47,6 +48,8 @@ const RELATIVE_MIDDLEWARE_REGISTRY_BUILT_BASES: readonly [string, string] = [
 const RELATIVE_MIDDLEWARE_REGISTRY_BUILT_PATHS: readonly string[] = RELATIVE_MIDDLEWARE_REGISTRY_BUILT_BASES.flatMap(
     (base) => MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS.map((ext) => `${base}${ext}`)
 );
+
+const DEFAULT_BUNDLE_ID = 'local';
 
 export interface ServerOptions extends Partial<ServerModeFeatures> {
     /** Server mode: development (with Vite), preview (preview), or production (minimal) */
@@ -102,11 +105,13 @@ export async function createServer(options: ServerOptions): Promise<Express> {
     const config = providedConfig ?? loadConfigFromEnv();
 
     // Load bundle ID from environment
-    const bundleId = process.env.BUNDLE_ID ?? 'local';
+    const bundleId = process.env.BUNDLE_ID ?? DEFAULT_BUNDLE_ID;
 
     // Create Express app
     const app = express();
     app.disable('x-powered-by');
+
+    app.get(HEALTH_ENDPOINT_PATH, createHealthCheckHandler({ projectDirectory, bundleId }));
 
     // Apply middleware based on mode
     if (enableLogging) {

@@ -1,4 +1,4 @@
-import { c as warn, r as info } from "./logger.js";
+import { c as warn, r as info, t as debug } from "./logger.js";
 import path from "path";
 import chalk from "chalk";
 import express from "express";
@@ -339,6 +339,72 @@ const ServerModeFeatureMap = {
 };
 
 //#endregion
+//#region src/server/handlers/health-check.ts
+const DEFAULT_HEALTH_DESCRIPTION = "storefront-next-dev server health";
+const PACKAGE_JSON_NAME = "package.json";
+const RUNTIME_PACKAGE_NAME = "@salesforce/storefront-next-runtime";
+const DEV_PACKAGE_NAME = "@salesforce/storefront-next-dev";
+const BUILD_FOLDER_NAME = "build";
+const LOCAL_BUNDLE_ID = "local";
+const HEALTH_ENDPOINT_PATH = "/sfdc-health";
+/**
+* Reads a package.json file and returns selected metadata.
+*
+* @param path - Absolute path to a package.json file
+* @returns Parsed metadata, or null if missing/unreadable
+*
+* @example
+* ```ts
+* const metadata = readPackageMetadata('/app/package.json');
+* console.log(metadata?.version);
+* ```
+*/
+function readPackageMetadata(path$1) {
+	if (!existsSync(path$1)) return null;
+	try {
+		return JSON.parse(readFileSync(path$1, "utf8"));
+	} catch (error) {
+		debug(`Health check: failed to parse package.json at ${path$1}`, error);
+		return null;
+	}
+}
+/**
+* Creates an Express handler that returns Health+JSON for the project.
+*
+* @param options - Handler options
+* @returns Express request handler for the health endpoint
+*
+* @example
+* ```ts
+* app.get(HEALTH_ENDPOINT_PATH, createHealthCheckHandler({
+*     projectDirectory: process.cwd(),
+*     bundleId: LOCAL_BUNDLE_ID,
+* }));
+* ```
+*/
+function createHealthCheckHandler(options) {
+	const { projectDirectory, bundleId } = options;
+	const projectPackage = readPackageMetadata(bundleId === LOCAL_BUNDLE_ID ? resolve(projectDirectory, PACKAGE_JSON_NAME) : resolve(projectDirectory, BUILD_FOLDER_NAME, PACKAGE_JSON_NAME));
+	const allDependencies = {
+		...projectPackage?.dependencies,
+		...projectPackage?.devDependencies
+	};
+	const devVersion = allDependencies?.[DEV_PACKAGE_NAME];
+	const runtimeVersion = allDependencies?.[RUNTIME_PACKAGE_NAME];
+	const notes = [devVersion ? `Built using ${DEV_PACKAGE_NAME}@${devVersion}.` : null, runtimeVersion ? `Running ${RUNTIME_PACKAGE_NAME}@${runtimeVersion}.` : null].filter(Boolean);
+	return (_req, res) => {
+		const healthResponse = {
+			status: "pass",
+			version: projectPackage?.version,
+			bundleId,
+			description: projectPackage?.description ?? DEFAULT_HEALTH_DESCRIPTION,
+			notes: notes.length > 0 ? notes : void 0
+		};
+		res.status(200).type("application/health+json").json(healthResponse);
+	};
+}
+
+//#endregion
 //#region src/server/index.ts
 /** Relative path to the middleware registry TypeScript source (development). Must match appDirectory + server dir + filename used by buildMiddlewareRegistry plugin. */
 const RELATIVE_MIDDLEWARE_REGISTRY_SOURCE = "src/server/middleware-registry.ts";
@@ -350,6 +416,7 @@ const MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS = [
 ];
 /** All paths to try when loading the built middlewares (base + extension). */
 const RELATIVE_MIDDLEWARE_REGISTRY_BUILT_PATHS = ["bld/server/middleware-registry", "build/server/middleware-registry"].flatMap((base) => MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS.map((ext) => `${base}${ext}`));
+const DEFAULT_BUNDLE_ID = "local";
 /**
 * Create a unified Express server for development, preview, or production mode
 */
@@ -358,9 +425,13 @@ async function createServer(options) {
 	if (mode === "development" && !vite) throw new Error("Vite dev server instance is required for development mode");
 	if ((mode === "preview" || mode === "production") && !build) throw new Error("React Router server build is required for preview/production mode");
 	const config = providedConfig ?? loadConfigFromEnv();
-	const bundleId = process.env.BUNDLE_ID ?? "local";
+	const bundleId = process.env.BUNDLE_ID ?? DEFAULT_BUNDLE_ID;
 	const app = express();
 	app.disable("x-powered-by");
+	app.get(HEALTH_ENDPOINT_PATH, createHealthCheckHandler({
+		projectDirectory,
+		bundleId
+	}));
 	if (enableLogging) app.use(createLoggingMiddleware());
 	if (enableCompression && !streaming) app.use(createCompressionMiddleware());
 	if (enableStaticServing && build) {

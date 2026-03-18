@@ -53,6 +53,7 @@ export const buildMrtConfig = (_buildDirectory: string, _projectDirectory?: stri
 
     const ssrOnly = [
         'server/**/*', // All server-side code
+        '**/*.json', // All JSON files including the package.json file
         'loader.js', // SSR entry point
         `${ssrEntryPoint}.{js,mjs,cjs}`, // SSR entry point (supports CJS and ESM formats)
         `${ssrEntryPoint}.{js,mjs,cjs}.map`, // SSR source maps
