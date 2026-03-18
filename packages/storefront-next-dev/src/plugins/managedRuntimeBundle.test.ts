@@ -148,6 +148,43 @@ describe('managedRuntimeBundlePlugin', () => {
             expect(config.environments.ssr.resolve.noExternal).toBe(true);
         });
 
+        it('should return rollupOptions with onLog handler', () => {
+            const plugin = managedRuntimeBundlePlugin();
+            const config = callHook(plugin.config, { mode: 'production' });
+
+            expect(config.build.rollupOptions.onLog).toBeDefined();
+            expect(typeof config.build.rollupOptions.onLog).toBe('function');
+        });
+
+        it('should suppress SOURCEMAP_ERROR warnings about resolving original location', () => {
+            const plugin = managedRuntimeBundlePlugin();
+            const config = callHook(plugin.config, { mode: 'production' });
+            const defaultHandler = vi.fn();
+
+            config.build.rollupOptions.onLog(
+                'warn',
+                {
+                    code: 'SOURCEMAP_ERROR',
+                    message:
+                        "Error when using sourcemap for reporting an error: Can't resolve original location of error.",
+                },
+                defaultHandler
+            );
+
+            expect(defaultHandler).not.toHaveBeenCalled();
+        });
+
+        it('should pass through non-SOURCEMAP_ERROR warnings to defaultHandler', () => {
+            const plugin = managedRuntimeBundlePlugin();
+            const config = callHook(plugin.config, { mode: 'production' });
+            const defaultHandler = vi.fn();
+            const log = { code: 'CIRCULAR_DEPENDENCY', message: 'Circular dependency detected' };
+
+            config.build.rollupOptions.onLog('warn', log, defaultHandler);
+
+            expect(defaultHandler).toHaveBeenCalledWith('warn', log);
+        });
+
         it('should return experimental renderBuiltUrl configuration', () => {
             const plugin = managedRuntimeBundlePlugin();
             const config = callHook(plugin.config, { mode: 'production' });

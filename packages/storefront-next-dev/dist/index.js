@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from "url";
 import { parse } from "@babel/parser";
 import { isArrayPattern, isClassDeclaration, isExportSpecifier, isFunctionDeclaration, isIdentifier, isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, isMemberExpression, isObjectPattern, isObjectProperty, isRestElement, isVariableDeclaration, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
 import { generate } from "@babel/generator";
-import traverseModule from "@babel/traverse";
+import _traverse from "@babel/traverse";
 import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
@@ -255,6 +255,10 @@ const managedRuntimeBundlePlugin = () => {
 		apply: "build",
 		config({ mode }) {
 			return {
+				build: { rollupOptions: { onLog(level, log, defaultHandler) {
+					if (log.code === "SOURCEMAP_ERROR" && log.message.includes("resolve original location")) return;
+					defaultHandler(level, log);
+				} } },
 				environments: { ssr: { resolve: { noExternal: true } } },
 				experimental: { renderBuiltUrl(filename, { type }) {
 					if (mode !== "preview" && (type === "asset" || type === "public")) return { runtime: `(typeof window !== 'undefined' ? window._BUNDLE_PATH : ('/mobify/bundle/'+(process.env.BUNDLE_ID??'local')+'/client/')) + ${JSON.stringify(filename)}` };
@@ -320,7 +324,7 @@ const patchReactRouterPlugin = () => {
 
 //#endregion
 //#region src/extensibility/target-utils.ts
-const traverse$1 = traverseModule.default || traverseModule;
+const traverse$1 = _traverse.default || _traverse;
 const TARGET_COMPONENT_TAG = "UITarget";
 const TARGET_PROVIDERS_TAG = "TargetProviders";
 const TARGET_ID_ATTRIBUTE = "targetId";
@@ -1263,7 +1267,7 @@ const workspacePlugin = () => {
 
 //#endregion
 //#region src/plugins/componentLoaders.ts
-const traverse = traverseModule.default || traverseModule;
+const traverse = _traverse.default || _traverse;
 const generate$1 = generate.default || generate;
 /**
 * Names of exports to strip per environment.

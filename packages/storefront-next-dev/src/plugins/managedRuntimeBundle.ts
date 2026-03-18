@@ -98,6 +98,27 @@ export const managedRuntimeBundlePlugin = (): Plugin => {
         apply: 'build',
         config({ mode }) {
             return {
+                build: {
+                    rollupOptions: {
+                        // Suppress benign sourcemap warnings emitted by Rollup during
+                        // the transform phase. These occur when Rollup tries to trace a
+                        // warning's location back through the sourcemap chain but the
+                        // intermediate sourcemaps (from TypeScript, Tailwind, etc.)
+                        // don't map position (1:0). The warnings are purely cosmetic —
+                        // actual sourcemaps in the build output are unaffected.
+                        //
+                        // This is the same approach used by @vitejs/plugin-react (PR #369)
+                        // and @react-router/dev's RSC plugin.
+                        // See: https://github.com/vitejs/vite-plugin-react/pull/369
+                        // See: https://github.com/vitejs/vite/issues/15012
+                        onLog(level, log, defaultHandler) {
+                            if (log.code === 'SOURCEMAP_ERROR' && log.message.includes('resolve original location')) {
+                                return;
+                            }
+                            defaultHandler(level, log);
+                        },
+                    },
+                },
                 environments: {
                     ssr: {
                         resolve: {
