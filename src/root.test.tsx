@@ -26,6 +26,7 @@ let App: typeof AppComponent;
 let ErrorBoundary: typeof RootErrorBoundary;
 let Layout: typeof RootLayout;
 let loader: typeof RootLoader;
+let meta: Awaited<typeof import('./root')>['meta'];
 const defaultClientAuth: PublicSessionData = {
     customerId: 'test-customer',
     userType: 'registered',
@@ -157,6 +158,7 @@ beforeAll(async () => {
     ErrorBoundary = rootModule.ErrorBoundary;
     Layout = rootModule.Layout;
     loader = rootModule.loader;
+    meta = rootModule.meta;
 });
 
 function createLoaderContext(options: Parameters<typeof createTestContext>[0] = {}) {
@@ -885,6 +887,34 @@ describe('root.tsx', () => {
             const { clientMiddleware } = await import('./root');
             expect(Array.isArray(clientMiddleware)).toBe(true);
             expect(clientMiddleware.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe('meta function', () => {
+        function buildMetaArgs(loaderData: any) {
+            return {
+                data: loaderData,
+                loaderData,
+                location: { pathname: '/', search: '', hash: '', state: null, key: 'default' },
+                matches: [] as any,
+                params: {},
+            } as Parameters<typeof meta>[0];
+        }
+
+        it('returns seoMeta from loaderData when present', () => {
+            const seoMeta = [{ tagName: 'link', rel: 'canonical', href: 'https://example.com/' }];
+            const result = meta(buildMetaArgs({ seoMeta }));
+            expect(result).toEqual(seoMeta);
+        });
+
+        it('returns empty array when loaderData is undefined', () => {
+            const result = meta(buildMetaArgs(undefined));
+            expect(result).toEqual([]);
+        });
+
+        it('returns empty array when seoMeta is not in loaderData', () => {
+            const result = meta(buildMetaArgs({}));
+            expect(result).toEqual([]);
         });
     });
 });
