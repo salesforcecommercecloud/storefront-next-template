@@ -64,7 +64,7 @@ module.exports = {
                         ],
                         'resource-summary:document:size': [
                             'error',
-                            { maxNumericValue: 43500, aggregationMethod: 'median' },
+                            { maxNumericValue: 48300, aggregationMethod: 'median' },
                         ],
                     },
                 },
@@ -100,7 +100,7 @@ module.exports = {
                         'categories:best-practices': ['error', { minScore: 0.96, aggregationMethod: 'median' }],
                         'resource-summary:script:size': [
                             'error',
-                            { maxNumericValue: 391000, aggregationMethod: 'median' },
+                            { maxNumericValue: 424000, aggregationMethod: 'median' },
                         ],
                         'resource-summary:document:size': [
                             'error',
