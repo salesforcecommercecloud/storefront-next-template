@@ -39,6 +39,7 @@ import { Input } from '@/components/ui/input';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { accountDestructiveButtonClasses, accountDestructiveIconHoverClasses } from '@/lib/account-action-styles';
 
 const AUTHORIZED_PERSON_FORM_NS = 'account' as const;
 const MODAL_VALIDATION_PREFIX = 'storePreferences.authorizedPickupPeople.modal' as const;
@@ -272,6 +273,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                             type="button"
                                             variant="ghost"
                                             size="icon-sm"
+                                            className="cursor-pointer hover:bg-muted/80"
                                             onClick={() => openEdit(person)}
                                             aria-label={t('storePreferences.authorizedPickupPeople.edit')}>
                                             <Pencil className="size-4" aria-hidden />
@@ -282,7 +284,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                             size="icon-sm"
                                             onClick={() => handleDeleteClick(person)}
                                             aria-label={t('storePreferences.authorizedPickupPeople.delete')}
-                                            className="text-muted-foreground hover:bg-account-action-destructive/10 hover:text-account-action-destructive">
+                                            className={accountDestructiveIconHoverClasses}>
                                             <Trash2 className="size-4" aria-hidden />
                                         </Button>
                                     </div>
@@ -317,9 +319,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                         <AlertDialogCancel>
                             {t('storePreferences.authorizedPickupPeople.deleteConfirmCancel')}
                         </AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDeleteConfirm}
-                            className="bg-account-action-destructive text-account-action-destructive-foreground hover:bg-account-action-destructive/90">
+                        <AlertDialogAction onClick={handleDeleteConfirm} className={accountDestructiveButtonClasses}>
                             {t('storePreferences.authorizedPickupPeople.deleteConfirmRemove')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -359,7 +359,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-account-action-destructive" />
                                         </FormItem>
                                     )}
                                 />
@@ -379,7 +379,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-account-action-destructive" />
                                         </FormItem>
                                     )}
                                 />
@@ -401,7 +401,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-account-action-destructive" />
                                     </FormItem>
                                 )}
                             />
@@ -435,7 +435,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                                 </NativeSelect>
                                             </div>
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-account-action-destructive" />
                                     </FormItem>
                                 )}
                             />

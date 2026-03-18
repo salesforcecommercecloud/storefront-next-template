@@ -20,6 +20,7 @@ import { AlertTriangle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { accountDestructiveButtonClasses } from '@/lib/account-action-styles';
 import { getCardIcon } from '@/lib/card-icon-utils';
 import { getCardTypeDisplay } from '@/lib/payment-utils';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
@@ -117,7 +118,7 @@ export function RemovePaymentMethodDialog({
                     <Button variant="outline" onClick={handleClose} disabled={isLoading}>
                         {t('paymentMethods.cancel')}
                     </Button>
-                    <Button variant="accountDestructive" onClick={handleConfirm} disabled={isLoading}>
+                    <Button className={accountDestructiveButtonClasses} onClick={handleConfirm} disabled={isLoading}>
                         {t('paymentMethods.remove')}
                     </Button>
                 </div>
