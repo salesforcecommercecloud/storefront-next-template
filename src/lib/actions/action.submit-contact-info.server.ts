@@ -20,6 +20,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { createContactInfoSchema, parseContactInfoFromFormData } from '@/lib/checkout-schemas';
 import { customerLookup } from '@/lib/api/customer';
+import { updateBillingAddressForBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
 
 /**
@@ -48,8 +49,8 @@ export async function action(formData: FormData, context: RouterContextProvider)
     // Use validated data
     const { email, countryCode, phone } = result.data;
 
-    // Combine country code and phone number
-    const fullPhone = countryCode && phone ? `${countryCode}${phone}` : phone;
+    // Combine country code and phone number with space separator
+    const fullPhone = countryCode && phone ? `${countryCode} ${phone}` : phone;
 
     // Perform customer lookup first to determine if user is registered or guest
     let customerLookupResult = null;
@@ -78,7 +79,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         );
     }
 
-    // Always update basket with customer email and phone (required for order placement)
+    // Always update basket with customer email (required for order placement)
     let updatedBasket;
     try {
         const clients = createApiClients(context);
@@ -90,7 +91,6 @@ export async function action(formData: FormData, context: RouterContextProvider)
             },
             body: {
                 email,
-                ...(fullPhone && { phone: fullPhone }),
             },
         });
 
@@ -100,7 +100,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         updateBasketResource(context, updatedBasket);
     } catch (error) {
         // Try to extract a more specific error message
-        let errorMessage = t('checkout.contactInfo.saveError');
+        let errorMessage: string = t('checkout.contactInfo.saveError');
 
         if (error instanceof ApiError) {
             try {
@@ -129,7 +129,19 @@ export async function action(formData: FormData, context: RouterContextProvider)
         );
     }
 
-    // Return success data as JSON with updated basket for direct context updates
+    // Save phone to billing address so it persists for payment step
+    if (fullPhone && updatedBasket) {
+        try {
+            const existingBilling = updatedBasket.billingAddress ?? {};
+            const billingWithPhone = { ...existingBilling, phone: fullPhone };
+            const billingBasket = await updateBillingAddressForBasket(context, basketId, billingWithPhone);
+            updatedBasket = { ...updatedBasket, billingAddress: billingBasket.billingAddress };
+            updateBasketResource(context, updatedBasket);
+        } catch {
+            // Non-blocking: phone on billing is supplemental
+        }
+    }
+
     return Response.json({
         success: true,
         step: 'contactInfo',

@@ -34,6 +34,30 @@ import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 
+const formatPhoneInput = (value: string): string => {
+    const digits = value.replace(/\D/g, '');
+    const limited = digits.slice(0, 10);
+
+    if (limited.length >= 7) {
+        return `(${limited.slice(0, 3)}) ${limited.slice(3, 6)}-${limited.slice(6)}`;
+    } else if (limited.length >= 4) {
+        return `(${limited.slice(0, 3)}) ${limited.slice(3)}`;
+    } else if (limited.length > 0) {
+        return `(${limited}`;
+    }
+    return limited;
+};
+
+const formatPhoneDisplay = (phone: string, countryCode = '+1'): string => {
+    const digits = phone.replace(/\D/g, '');
+    const local = digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits.slice(0, 10);
+
+    if (local.length === 10) {
+        return `${countryCode} (${local.slice(0, 3)}) ${local.slice(3, 6)}-${local.slice(6)}`;
+    }
+    return phone;
+};
+
 interface ContactInfoProps {
     onSubmit: (data: ContactInfoData) => void;
     isLoading: boolean;
@@ -60,8 +84,10 @@ export default function ContactInfo({
     const { shipmentDistribution } = useCheckoutContext();
     const { t } = useTranslation('checkout');
 
-    // Get auto-populated contact info from customer profile
     const customerContactInfo = getContactInfoFromCustomer(customerProfile);
+    const summaryPhone = String(
+        customerContactInfo.phone || cart?.billingAddress?.phone || cart?.customerInfo?.phone || ''
+    );
 
     const schema = useMemo(() => createContactInfoSchema(t), [t]);
     const contactFormError = getCheckoutDisplayError(actionData, 'contactInfo');
@@ -70,10 +96,22 @@ export default function ContactInfo({
         resolver: zodResolver(schema),
         defaultValues: {
             email: cart?.customerInfo?.email || customerContactInfo.email || '',
-            countryCode: '',
-            phone: cart?.customerInfo?.phone || customerContactInfo.phone || '',
+            countryCode: '+1',
+            phone: String(cart?.billingAddress?.phone || cart?.customerInfo?.phone || customerContactInfo.phone || ''),
         },
     });
+
+    const countryCodeOptions = useMemo(
+        () =>
+            getCommonPhoneCountryCodes()
+                .filter((c, i, arr) => arr.findIndex((x) => x.dialingCode === c.dialingCode) === i)
+                .map((c) => (
+                    <option key={c.dialingCode} value={c.dialingCode}>
+                        {c.dialingCode}
+                    </option>
+                )),
+        []
+    );
 
     const handleFormSubmit = (data: ContactInfoData) => {
         onSubmit(data);
@@ -82,7 +120,6 @@ export default function ContactInfo({
     let nextStepButtonLabel = isLoading ? t('contactInfo.saving') : t('contactInfo.continue');
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    // Check if there are pickup items to determine button label
     const hasPickupItems = shipmentDistribution.hasPickupItems;
 
     const { t: tBopis } = useTranslation('extBopis');
@@ -91,7 +128,9 @@ export default function ContactInfo({
     }
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
-    const stepTitle = <span className="text-lg font-semibold text-foreground">{t('contactInfo.title')}</span>;
+    const stepTitle = (
+        <span className="text-2xl font-bold tracking-[-0.6px] text-card-foreground">{t('contactInfo.title')}</span>
+    );
 
     return (
         <ToggleCard
@@ -100,10 +139,15 @@ export default function ContactInfo({
             editing={isEditing}
             onEdit={onEdit}
             editLabel={t('common.edit')}
+            disableEdit={!!customerProfile}
+            showHeaderSeparator
             isLoading={isLoading}>
             <ToggleCardEdit>
                 <Form {...form}>
-                    <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
+                    <form
+                        onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
+                        className="flex flex-col gap-4 pt-2"
+                        noValidate>
                         {contactFormError && <CheckoutErrorBanner message={contactFormError} />}
 
                         <FormField
@@ -111,115 +155,88 @@ export default function ContactInfo({
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold">
-                                        {t('contactInfo.emailLabel')}
-                                    </FormLabel>
+                                    <FormLabel>{t('contactInfo.emailLabel')}*</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="email"
                                             placeholder={t('contactInfo.emailPlaceholder')}
                                             autoComplete="email"
                                             autoFocus={isEditing}
-                                            className="h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
                                             {...field}
                                         />
                                     </FormControl>
-                                    <FormMessage className="text-xl font-bold" />
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
 
-                        {/* Phone field - only show for guest users */}
-                        {!customerProfile && (
-                            <div className="flex gap-2">
-                                <FormField
-                                    control={form.control}
-                                    name="countryCode"
-                                    render={({ field }) => (
-                                        <FormItem className="w-24">
-                                            <FormControl>
-                                                <NativeSelect
-                                                    aria-label={t('contactInfo.countryCodeLabel')}
-                                                    value={field.value}
-                                                    onChange={(e) => field.onChange(e.target.value)}
-                                                    className="h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background">
-                                                    <option value="" disabled>
-                                                        +1
-                                                    </option>
-                                                    {getCommonPhoneCountryCodes().map((phoneCountry) => (
-                                                        <option
-                                                            key={`${phoneCountry.dialingCode}-${phoneCountry.countryName}`}
-                                                            value={phoneCountry.dialingCode}>
-                                                            {phoneCountry.dialingCode}
-                                                        </option>
-                                                    ))}
-                                                </NativeSelect>
-                                            </FormControl>
-                                            <FormMessage className="text-xl font-bold" />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="phone"
-                                    render={({ field }) => (
-                                        <FormItem className="flex-1">
-                                            <FormControl>
-                                                <Input
-                                                    type="tel"
-                                                    aria-label={t('contactInfo.phoneLabel')}
-                                                    placeholder={t('contactInfo.phonePlaceholder')}
-                                                    autoComplete="tel-national"
-                                                    className="h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="text-xl font-bold" />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        )}
-
-                        <div className="flex justify-end pt-4">
-                            <Button
-                                type="submit"
-                                disabled={isLoading || !form.formState.isValid}
-                                size="lg"
-                                className="min-w-56 h-12 text-base font-semibold">
-                                {nextStepButtonLabel}
-                            </Button>
+                        <div className="flex items-start gap-2">
+                            <FormField
+                                control={form.control}
+                                name="countryCode"
+                                render={({ field }) => (
+                                    <FormItem className="w-20">
+                                        <FormLabel>{t('contactInfo.countryCodeLabel')}</FormLabel>
+                                        <FormControl>
+                                            <NativeSelect
+                                                aria-label={t('contactInfo.countryCodeLabel')}
+                                                value={field.value}
+                                                onChange={(e) => field.onChange(e.target.value)}>
+                                                {countryCodeOptions}
+                                            </NativeSelect>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="phone"
+                                render={({ field }) => (
+                                    <FormItem className="flex-1">
+                                        <FormLabel>{t('contactInfo.phoneLabel')}*</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="tel"
+                                                inputMode="numeric"
+                                                placeholder={t('contactInfo.phonePlaceholder')}
+                                                autoComplete="tel-national"
+                                                maxLength={14}
+                                                {...field}
+                                                onChange={(e) => {
+                                                    field.onChange(formatPhoneInput(e.target.value));
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
+
+                        <Button type="submit" disabled={isLoading} className="w-full">
+                            {nextStepButtonLabel}
+                        </Button>
                     </form>
                 </Form>
             </ToggleCardEdit>
 
             <ToggleCardSummary>
-                <div className="space-y-2">
-                    <Typography variant="small" className="text-muted-foreground">
-                        {cart?.customerInfo?.email ||
+                <div className="text-sm font-normal leading-5 text-foreground">
+                    <p>
+                        {customerContactInfo.email ||
+                            cart?.customerInfo?.email ||
                             (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('checkoutEmail')) ||
                             t('contactInfo.notProvided')}
-                    </Typography>
+                    </p>
+                    {summaryPhone && <p>{formatPhoneDisplay(summaryPhone)}</p>}
 
-                    {/* Show phone number for guest users only */}
-                    {!customerProfile && cart?.customerInfo?.phone && (
-                        <Typography variant="p" className="font-medium">
-                            {String(cart.customerInfo.phone ?? '')}
-                        </Typography>
-                    )}
-
-                    {loginSuggestion.shouldSuggestLogin && (
+                    {!customerProfile && loginSuggestion.shouldSuggestLogin && (
                         <Typography variant="small" className="text-accent-foreground">
                             {t('contactInfo.loginSuggestion')}
                             <a href="/login" className="underline hover:no-underline">
                                 {t('contactInfo.loginSuggestionLink')}
                             </a>
-                        </Typography>
-                    )}
-                    {loginSuggestion.isCurrentUser && (
-                        <Typography variant="small" className="text-success-foreground">
-                            {t('contactInfo.usingRegisteredAccount')}
                         </Typography>
                     )}
                 </div>

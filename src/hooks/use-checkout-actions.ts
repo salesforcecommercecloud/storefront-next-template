@@ -168,7 +168,7 @@ export function useCheckoutActions(options?: {
     /**
      * Submits contact information to the contact info action.
      *
-     * @param data - Contact form data containing email
+     * @param data - Contact form data containing email and phone
      */
     const submitContactInfo = (data: ContactInfoData) => {
         // Prevent concurrent submissions
@@ -183,6 +183,8 @@ export function useCheckoutActions(options?: {
         const formData = new FormData();
         formData.append('intent', CHECKOUT_ACTION_INTENTS.CONTACT_INFO);
         formData.append('email', data.email);
+        if (data.phone) formData.append('phone', data.phone);
+        if (data.countryCode) formData.append('countryCode', data.countryCode);
 
         void contactFetcher.submit(formData, {
             method: 'post',

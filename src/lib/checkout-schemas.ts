@@ -44,9 +44,9 @@ export const createContactInfoSchema = (t: SchemaTFunction) => {
             }),
         phone: z
             .string()
-            .optional()
-            .refine((val) => !val || val.length >= 10, {
-                message: 'Phone number must be at least 10 digits',
+            .min(1, t('checkout:contactInfo.phoneRequired'))
+            .refine((val) => val.replace(/\D/g, '').length >= 10, {
+                message: String(t('checkout:contactInfo.phoneInvalid')),
             }),
     });
 };
