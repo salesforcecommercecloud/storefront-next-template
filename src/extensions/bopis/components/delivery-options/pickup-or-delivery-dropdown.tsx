@@ -43,7 +43,7 @@ export default function PickupOrDeliveryDropdown({
         : t('deliveryOptions.pickupOrDelivery.delivery');
 
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
                 <button
                     type="button"

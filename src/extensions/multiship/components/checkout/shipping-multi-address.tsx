@@ -443,12 +443,11 @@ export default function ShippingMultiAddress({
                                     </div>
 
                                     <div className="flex flex-col gap-2">
-                                        <Typography
-                                            variant="small"
-                                            className="text-sm font-medium text-foreground"
-                                            id={`delivery-address-label-${productItem?.itemId || index}`}>
+                                        <label
+                                            htmlFor={`delivery-address-select-${productItem?.itemId || index}`}
+                                            className="text-sm font-medium text-foreground">
                                             {tMultiship('checkout.deliveryAddressLabel')}*
-                                        </Typography>
+                                        </label>
 
                                         <NativeSelect
                                             className="w-full h-9 text-sm"
