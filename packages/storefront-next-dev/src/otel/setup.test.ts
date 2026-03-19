@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
-import { SERVICE_NAME, initTelemetry } from './setup';
 
 type SDKTracer = ReturnType<typeof NodeTracerProvider.prototype.getTracer>;
 
@@ -26,7 +25,8 @@ type SDKTracer = ReturnType<typeof NodeTracerProvider.prototype.getTracer>;
 // - Global OTel state registration (register()) is suppressed to avoid test pollution
 
 describe('SERVICE_NAME', () => {
-    it('is storefront-next', () => {
+    it('is storefront-next', async () => {
+        const { SERVICE_NAME } = await import('./setup');
         expect(SERVICE_NAME).toBe('storefront-next');
     });
 });
@@ -34,8 +34,13 @@ describe('SERVICE_NAME', () => {
 describe('initTelemetry', () => {
     const stubTracer = {} as unknown as SDKTracer;
 
-    afterEach(() => {
+    // Reset the module registry before each test so that the module-level
+    // `cachedTracer` starts fresh — no test-only reset function needed.
+    beforeEach(() => {
         vi.restoreAllMocks();
+        vi.resetModules();
+        // Clean up the process-global undici registration flag
+        delete (globalThis as Record<symbol, boolean>)[Symbol.for('sfnext.otel.undici_registered')];
     });
 
     function spyOnProvider() {
@@ -47,37 +52,59 @@ describe('initTelemetry', () => {
         return { registerSpy, addSpanProcessorSpy, getTracerSpy };
     }
 
-    it('adds a SimpleSpanProcessor (wrapping a ConsoleSpanExporter) to the provider', () => {
+    it('adds a SimpleSpanProcessor wrapping an MrtConsoleSpanExporter to the provider', async () => {
         const { addSpanProcessorSpy } = spyOnProvider();
 
+        const { initTelemetry } = await import('./setup');
         initTelemetry();
 
         expect(addSpanProcessorSpy).toHaveBeenCalledWith(expect.any(SimpleSpanProcessor));
+        // Dynamically import to avoid circular issues; verify the processor
+        // wraps our custom MRT exporter via the class name.
+        const { MrtConsoleSpanExporter } = await import('./mrt-console-span-exporter');
+        const processor = addSpanProcessorSpy.mock.calls[0][0] as unknown as Record<string, unknown>;
+        // eslint-disable-next-line @typescript-eslint/dot-notation
+        expect(processor['_exporter']).toBeInstanceOf(MrtConsoleSpanExporter);
     });
 
-    it('registers the provider', () => {
+    it('registers the provider', async () => {
         const { registerSpy } = spyOnProvider();
 
+        const { initTelemetry } = await import('./setup');
         initTelemetry();
 
         expect(registerSpy).toHaveBeenCalledOnce();
     });
 
-    it('returns the tracer obtained directly from provider.getTracer(SERVICE_NAME)', () => {
+    it('returns the tracer obtained directly from provider.getTracer(SERVICE_NAME)', async () => {
         const { getTracerSpy } = spyOnProvider();
 
+        const { initTelemetry, SERVICE_NAME } = await import('./setup');
         const result = initTelemetry();
 
         expect(getTracerSpy).toHaveBeenCalledWith(SERVICE_NAME);
         expect(result).toBe(stubTracer);
     });
 
-    it('returns null and logs an error if initialization throws', () => {
+    it('returns the same tracer on subsequent calls (idempotent)', async () => {
+        const { registerSpy } = spyOnProvider();
+
+        const { initTelemetry } = await import('./setup');
+        const first = initTelemetry();
+        const second = initTelemetry();
+
+        expect(first).toBe(second);
+        // Provider constructor should only be called once
+        expect(registerSpy).toHaveBeenCalledOnce();
+    });
+
+    it('returns null and logs an error if initialization throws', async () => {
         vi.spyOn(NodeTracerProvider.prototype, 'register').mockImplementation(() => {
             throw new Error('provider error');
         });
         const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
 
+        const { initTelemetry } = await import('./setup');
         const result = initTelemetry();
 
         expect(result).toBeNull();

@@ -30,10 +30,12 @@
  * after the response is sent would hold the Lambda open unnecessarily, increasing
  * cost and cold-start latency.
  *
- * Instead, we write spans synchronously to stdout via ConsoleSpanExporter. MRT's
- * infrastructure collects stdout from every invocation and forwards the log stream
- * to downstream analytics systems. Telemetry reaches those systems without any
- * in-process agent or network connection from the Lambda function itself.
+ * Instead, we write spans synchronously to stdout via MrtConsoleSpanExporter — a
+ * subclass of ConsoleSpanExporter that outputs structured JSON matching the format
+ * MRT's log infrastructure expects. MRT collects stdout from every invocation and
+ * forwards the log stream to downstream analytics systems. Telemetry reaches those
+ * systems without any in-process agent or network connection from the Lambda
+ * function itself.
  *
  * SimpleSpanProcessor is used (instead of BatchSpanProcessor) for the same reason:
  * immediate, synchronous export with no in-memory queue that could be lost if the
@@ -51,9 +53,12 @@
 
 import type { Tracer } from '@opentelemetry/api';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
-import { ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { MrtConsoleSpanExporter } from './mrt-console-span-exporter';
 import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
+import { registerInstrumentations } from '@opentelemetry/instrumentation';
+import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
 
 export const SERVICE_NAME = 'storefront-next';
 
@@ -73,17 +78,51 @@ export const SERVICE_NAME = 'storefront-next';
  * Getting the tracer directly from the provider bypasses the global registry
  * entirely, guaranteeing the tracer uses our configured span processors.
  */
+let cachedTracer: Tracer | null = null;
+
+// In the Vite SSR module runner, setup.ts may be loaded by two different module
+// instances (the Express server and the SSR bundle) — each with its own
+// `cachedTracer`. UndiciInstrumentation hooks into process-global
+// diagnostics_channel events, so registering it twice causes duplicate spans
+// for every fetch. This process-global flag ensures it is registered only once.
+const UNDICI_REGISTERED_KEY = Symbol.for('sfnext.otel.undici_registered');
+
 export function initTelemetry(): Tracer | null {
+    if (cachedTracer) return cachedTracer;
     try {
         const provider = new NodeTracerProvider({
             resource: new Resource({ [ATTR_SERVICE_NAME]: SERVICE_NAME }),
         });
 
-        provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
+        provider.addSpanProcessor(new SimpleSpanProcessor(new MrtConsoleSpanExporter()));
         provider.register();
 
-        return provider.getTracer(SERVICE_NAME);
+        // Guard against double-registration across Vite module boundaries.
+        // See comment above UNDICI_REGISTERED_KEY.
+        if (!(globalThis as Record<symbol, boolean>)[UNDICI_REGISTERED_KEY]) {
+            (globalThis as Record<symbol, boolean>)[UNDICI_REGISTERED_KEY] = true;
+            registerInstrumentations({
+                tracerProvider: provider,
+                instrumentations: [
+                    new UndiciInstrumentation({
+                        requestHook(span, request) {
+                            try {
+                                const method = request.method.toUpperCase();
+                                const url = `${request.origin}${request.path}`;
+                                span.updateName(`${method} ${url}`);
+                            } catch {
+                                // Non-fatal — default span name is acceptable
+                            }
+                        },
+                    }),
+                ],
+            });
+        }
+
+        cachedTracer = provider.getTracer(SERVICE_NAME);
+        return cachedTracer;
     } catch (error) {
+        // eslint-disable-next-line no-console -- intentional: surface init failures visibly
         console.error('[otel] Failed to initialize OpenTelemetry:', error);
         return null;
     }

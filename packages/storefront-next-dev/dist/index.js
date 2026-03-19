@@ -22,6 +22,14 @@ import compression from "compression";
 import zlib from "node:zlib";
 import morgan from "morgan";
 import { minimatch } from "minimatch";
+import { SpanStatusCode, context, trace } from "@opentelemetry/api";
+import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
+import { ConsoleSpanExporter, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { ExportResultCode, hrTimeToTimeStamp } from "@opentelemetry/core";
+import { Resource } from "@opentelemetry/resources";
+import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
+import { registerInstrumentations } from "@opentelemetry/instrumentation";
+import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 import { access, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { execSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -2271,6 +2279,159 @@ const ServerModeFeatureMap = {
 };
 
 //#endregion
+//#region src/otel/mrt-console-span-exporter.ts
+var MrtConsoleSpanExporter = class extends ConsoleSpanExporter {
+	export(spans, resultCallback) {
+		for (const span of spans) try {
+			const ctx = span.spanContext();
+			const spanData = {
+				traceId: ctx.traceId,
+				parentId: span.parentSpanId,
+				name: span.name,
+				id: ctx.spanId,
+				kind: span.kind,
+				timestamp: hrTimeToTimeStamp(span.startTime),
+				duration: span.duration,
+				attributes: span.attributes,
+				status: span.status,
+				events: span.events,
+				links: span.links,
+				start_time: span.startTime,
+				end_time: span.endTime,
+				forwardTrace: process.env.SFNEXT_OTEL_ENABLED === "true"
+			};
+			console.info(JSON.stringify(spanData));
+		} catch {}
+		resultCallback({ code: ExportResultCode.SUCCESS });
+	}
+};
+
+//#endregion
+//#region src/otel/setup.ts
+const SERVICE_NAME = "storefront-next";
+/**
+* Initializes OpenTelemetry and returns a Tracer from the provider directly.
+*
+* Returns the tracer via `provider.getTracer()` instead of the global
+* `trace.getTracer()` API. In the Vite SSR module runner, the built
+* dist/entry/server.js and the externalized @opentelemetry/sdk-trace-node
+* resolve @opentelemetry/api to different module instances (different paths
+* through pnpm's strict node_modules). Each instance has its own
+* ProxyTracerProvider singleton, so `provider.register()` sets the delegate
+* on sdk-trace-node's API instance while our code's `trace.getTracer()`
+* reads from a separate API instance with no delegate — returning a tracer
+* backed by a bare BasicTracerProvider with NoopSpanProcessor.
+*
+* Getting the tracer directly from the provider bypasses the global registry
+* entirely, guaranteeing the tracer uses our configured span processors.
+*/
+let cachedTracer = null;
+const UNDICI_REGISTERED_KEY = Symbol.for("sfnext.otel.undici_registered");
+function initTelemetry() {
+	if (cachedTracer) return cachedTracer;
+	try {
+		const provider = new NodeTracerProvider({ resource: new Resource({ [ATTR_SERVICE_NAME]: SERVICE_NAME }) });
+		provider.addSpanProcessor(new SimpleSpanProcessor(new MrtConsoleSpanExporter()));
+		provider.register();
+		if (!globalThis[UNDICI_REGISTERED_KEY]) {
+			globalThis[UNDICI_REGISTERED_KEY] = true;
+			registerInstrumentations({
+				tracerProvider: provider,
+				instrumentations: [new UndiciInstrumentation({ requestHook(span, request) {
+					try {
+						const method = request.method.toUpperCase();
+						const url = `${request.origin}${request.path}`;
+						span.updateName(`${method} ${url}`);
+					} catch {}
+				} })]
+			});
+		}
+		cachedTracer = provider.getTracer(SERVICE_NAME);
+		return cachedTracer;
+	} catch (error) {
+		console.error("[otel] Failed to initialize OpenTelemetry:", error);
+		return null;
+	}
+}
+
+//#endregion
+//#region src/otel/express/middleware.ts
+function createOtelExpressMiddleware() {
+	const maybeTracer = initTelemetry();
+	if (!maybeTracer) return (_req, _res, next) => next();
+	const tracer = maybeTracer;
+	return (req, res, next) => {
+		try {
+			const url = new URL(req.originalUrl || req.url, "http://localhost").pathname;
+			const method = req.method;
+			tracer.startActiveSpan(`[sfnext] server ${method} ${url}`, { attributes: {
+				"http.request.method": method,
+				"url.path": url
+			} }, (serverSpan) => {
+				try {
+					const spanContext = trace.getSpan(context.active())?.spanContext();
+					if (spanContext) {
+						const flags = spanContext.traceFlags.toString(16).padStart(2, "0");
+						const traceparent = `00-${spanContext.traceId}-${spanContext.spanId}-${flags}`;
+						res.setHeader("traceparent", traceparent);
+					}
+				} catch {}
+				const serverCtx = context.active();
+				const startTime = performance.now();
+				let streamingSpan = null;
+				let ttfbMs = 0;
+				let ended = false;
+				function recordTTFB() {
+					if (streamingSpan) return;
+					try {
+						ttfbMs = Math.round(performance.now() - startTime);
+						serverSpan.setAttribute("sfnext.ttfb_ms", ttfbMs);
+						streamingSpan = tracer.startSpan(`[sfnext] response streaming ${method} ${url}`, { attributes: {
+							"http.request.method": method,
+							"url.path": url,
+							"sfnext.ttfb_ms": ttfbMs
+						} }, serverCtx);
+					} catch {}
+				}
+				const origWriteHead = res.writeHead.bind(res);
+				res.writeHead = ((...args) => {
+					recordTTFB();
+					return origWriteHead(...args);
+				});
+				const origWrite = res.write.bind(res);
+				res.write = ((...args) => {
+					recordTTFB();
+					return origWrite(...args);
+				});
+				function endSpans() {
+					if (ended) return;
+					ended = true;
+					try {
+						const totalMs = Math.round(performance.now() - startTime);
+						const statusCode = res.statusCode;
+						if (streamingSpan) {
+							streamingSpan.setAttribute("http.streaming_duration_ms", totalMs - ttfbMs);
+							streamingSpan.setAttribute("http.response.status_code", statusCode);
+							if (statusCode >= 500) streamingSpan.setStatus({ code: SpanStatusCode.ERROR });
+							streamingSpan.end();
+						}
+						serverSpan.setAttribute("http.response.status_code", statusCode);
+						serverSpan.setAttribute("http.total_duration_ms", totalMs);
+						if (statusCode >= 500) serverSpan.setStatus({ code: SpanStatusCode.ERROR });
+						serverSpan.end();
+					} catch {}
+				}
+				res.once("close", endSpans);
+				res.once("finish", endSpans);
+				next();
+			});
+		} catch {
+			next();
+		}
+	};
+}
+
+//#endregion
 //#region src/server/handlers/health-check.ts
 const DEFAULT_HEALTH_DESCRIPTION = "storefront-next-dev server health";
 const PACKAGE_JSON_NAME = "package.json";
@@ -2360,6 +2521,7 @@ async function createServer(options) {
 	const bundleId = process.env.BUNDLE_ID ?? DEFAULT_BUNDLE_ID;
 	const app = express();
 	app.disable("x-powered-by");
+	if (process.env.SFNEXT_OTEL_ENABLED === "true") app.use(createOtelExpressMiddleware());
 	app.get(HEALTH_ENDPOINT_PATH, createHealthCheckHandler({
 		projectDirectory,
 		bundleId

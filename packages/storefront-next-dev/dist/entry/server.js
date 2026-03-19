@@ -2,8 +2,39 @@ import { SpanStatusCode } from "@opentelemetry/api";
 import { ATTR_HTTP_REQUEST_METHOD, ATTR_SERVICE_NAME, ATTR_URL_PATH } from "@opentelemetry/semantic-conventions";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { ConsoleSpanExporter, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { ExportResultCode, hrTimeToTimeStamp } from "@opentelemetry/core";
 import { Resource } from "@opentelemetry/resources";
+import { registerInstrumentations } from "@opentelemetry/instrumentation";
+import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 
+//#region src/otel/mrt-console-span-exporter.ts
+var MrtConsoleSpanExporter = class extends ConsoleSpanExporter {
+	export(spans, resultCallback) {
+		for (const span of spans) try {
+			const ctx = span.spanContext();
+			const spanData = {
+				traceId: ctx.traceId,
+				parentId: span.parentSpanId,
+				name: span.name,
+				id: ctx.spanId,
+				kind: span.kind,
+				timestamp: hrTimeToTimeStamp(span.startTime),
+				duration: span.duration,
+				attributes: span.attributes,
+				status: span.status,
+				events: span.events,
+				links: span.links,
+				start_time: span.startTime,
+				end_time: span.endTime,
+				forwardTrace: process.env.SFNEXT_OTEL_ENABLED === "true"
+			};
+			console.info(JSON.stringify(spanData));
+		} catch {}
+		resultCallback({ code: ExportResultCode.SUCCESS });
+	}
+};
+
+//#endregion
 //#region src/otel/setup.ts
 const SERVICE_NAME = "storefront-next";
 /**
@@ -22,12 +53,29 @@ const SERVICE_NAME = "storefront-next";
 * Getting the tracer directly from the provider bypasses the global registry
 * entirely, guaranteeing the tracer uses our configured span processors.
 */
+let cachedTracer = null;
+const UNDICI_REGISTERED_KEY = Symbol.for("sfnext.otel.undici_registered");
 function initTelemetry() {
+	if (cachedTracer) return cachedTracer;
 	try {
 		const provider = new NodeTracerProvider({ resource: new Resource({ [ATTR_SERVICE_NAME]: SERVICE_NAME }) });
-		provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
+		provider.addSpanProcessor(new SimpleSpanProcessor(new MrtConsoleSpanExporter()));
 		provider.register();
-		return provider.getTracer(SERVICE_NAME);
+		if (!globalThis[UNDICI_REGISTERED_KEY]) {
+			globalThis[UNDICI_REGISTERED_KEY] = true;
+			registerInstrumentations({
+				tracerProvider: provider,
+				instrumentations: [new UndiciInstrumentation({ requestHook(span, request) {
+					try {
+						const method = request.method.toUpperCase();
+						const url = `${request.origin}${request.path}`;
+						span.updateName(`${method} ${url}`);
+					} catch {}
+				} })]
+			});
+		}
+		cachedTracer = provider.getTracer(SERVICE_NAME);
+		return cachedTracer;
 	} catch (error) {
 		console.error("[otel] Failed to initialize OpenTelemetry:", error);
 		return null;
@@ -35,7 +83,7 @@ function initTelemetry() {
 }
 
 //#endregion
-//#region src/otel/instrumentation.ts
+//#region src/otel/react-router/instrumentation.ts
 const tracer = process.env.SFNEXT_OTEL_ENABLED === "true" ? initTelemetry() : null;
 /**
 * Runs `handle` inside an active OTel span, recording errors and ending the span.
@@ -46,20 +94,26 @@ async function traced(spanName, attributes, handle) {
 		await handle();
 		return;
 	}
-	await tracer.startActiveSpan(spanName, { attributes }, async (span) => {
-		try {
-			const result = await handle();
-			if (result.status === "error" && result.error) {
-				span.setStatus({
-					code: SpanStatusCode.ERROR,
-					message: result.error.message
-				});
-				span.recordException(result.error);
+	let handled = false;
+	try {
+		await tracer.startActiveSpan(spanName, { attributes }, async (span) => {
+			try {
+				handled = true;
+				const result = await handle();
+				if (result.status === "error" && result.error) {
+					span.setStatus({
+						code: SpanStatusCode.ERROR,
+						message: result.error.message
+					});
+					span.recordException(result.error);
+				}
+			} finally {
+				span.end();
 			}
-		} finally {
-			span.end();
-		}
-	});
+		});
+	} catch {
+		if (!handled) await handle();
+	}
 }
 /**
 * HTTP attributes common to all spans.
@@ -68,15 +122,16 @@ async function traced(spanName, attributes, handle) {
 * unstable_InstrumentationHandlerResult.
 */
 function httpAttributes(request) {
-	return {
-		[ATTR_HTTP_REQUEST_METHOD]: request.method,
-		[ATTR_URL_PATH]: new URL(request.url).pathname
-	};
+	const attrs = { [ATTR_HTTP_REQUEST_METHOD]: request.method };
+	try {
+		attrs[ATTR_URL_PATH] = new URL(request.url).pathname;
+	} catch {}
+	return attrs;
 }
 const platformInstrumentation = {
 	handler(handler) {
 		handler.instrument({ async request(handleRequest, { request }) {
-			await traced("request", httpAttributes(request), handleRequest);
+			await traced("react-router ssr", httpAttributes(request), handleRequest);
 		} });
 	},
 	route(route) {
@@ -88,13 +143,13 @@ const platformInstrumentation = {
 		}
 		route.instrument({
 			async loader(handleLoader, { unstable_pattern }) {
-				await traced("loader", routeAttributes(unstable_pattern), handleLoader);
+				await traced(`loader (${route.id})`, routeAttributes(unstable_pattern), handleLoader);
 			},
 			async action(handleAction, { unstable_pattern }) {
-				await traced("action", routeAttributes(unstable_pattern), handleAction);
+				await traced(`action (${route.id})`, routeAttributes(unstable_pattern), handleAction);
 			},
 			async middleware(handleMiddleware, { unstable_pattern }) {
-				await traced("middleware", routeAttributes(unstable_pattern), handleMiddleware);
+				await traced(`middleware (${route.id})`, routeAttributes(unstable_pattern), handleMiddleware);
 			}
 		});
 	}

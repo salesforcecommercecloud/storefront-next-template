@@ -33,7 +33,7 @@
  */
 
 import type { ServerEntryModule } from 'react-router';
-import { platformInstrumentation } from '../otel/instrumentation';
+import { platformInstrumentation } from '../otel/react-router/instrumentation';
 
 /**
  * Composes a server entry module with platform-level features.

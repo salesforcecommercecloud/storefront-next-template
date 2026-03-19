@@ -30,6 +30,7 @@ import { createHostHeaderMiddleware } from './middleware/host-header';
 import { patchReactRouterBuild } from './utils';
 import { ServerModeFeatureMap, type ServerMode, type ServerModeFeatures } from './modes';
 import { getBundlePath } from '../utils/paths';
+import { createOtelExpressMiddleware } from '../otel/express/middleware';
 import { createHealthCheckHandler, HEALTH_ENDPOINT_PATH } from './handlers/health-check';
 
 /** Relative path to the middleware registry TypeScript source (development). Must match appDirectory + server dir + filename used by buildMiddlewareRegistry plugin. */
@@ -110,6 +111,11 @@ export async function createServer(options: ServerOptions): Promise<Express> {
     // Create Express app
     const app = express();
     app.disable('x-powered-by');
+
+    // OTel server + streaming spans — must be first to wrap the entire request lifecycle
+    if (process.env.SFNEXT_OTEL_ENABLED === 'true') {
+        app.use(createOtelExpressMiddleware());
+    }
 
     app.get(HEALTH_ENDPOINT_PATH, createHealthCheckHandler({ projectDirectory, bundleId }));
 

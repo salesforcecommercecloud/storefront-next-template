@@ -15,7 +15,7 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('../otel/instrumentation', () => ({
+vi.mock('../otel/react-router/instrumentation', () => ({
     platformInstrumentation: { handler: vi.fn(), route: vi.fn() },
 }));
 
