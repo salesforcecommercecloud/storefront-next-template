@@ -15,6 +15,7 @@
  */
 import type { DataStrategyResult, MiddlewareFunction } from 'react-router';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 /**
  * Client-side middleware that intercepts navigation to legacy routes and forces a full page navigation.
@@ -101,7 +102,7 @@ const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResu
         return next();
     }
 
-    const config = context.get(appConfigContext);
+    const config = context.get(appConfigContext) as AppConfig | undefined;
     const enabled = config?.hybrid?.enabled ?? false;
     const legacyRoutes = config?.hybrid?.legacyRoutes;
 

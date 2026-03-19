@@ -2019,5 +2019,135 @@ describe('auth middleware (server)', () => {
             );
             expect(deleteCalls.length).toBeGreaterThan(0);
         });
+
+        it.each([
+            {
+                userType: 'guest' as const,
+                refreshTokenCookie: 'cc-nx-g',
+                isb: 'uido:slas::upn:Guest::uidn:Guest User::gcid:token-guest-id::chid:RefArchGlobal',
+                expectedCustomerId: 'token-guest-id',
+            },
+            {
+                userType: 'registered' as const,
+                refreshTokenCookie: 'cc-nx',
+                isb: 'uido:ecom::upn:user@example.com::uidn:Test User::gcid:guest-id::rcid:registered-id::chid:RefArchGlobal',
+                expectedCustomerId: 'registered-id',
+            },
+        ])(
+            'should derive customerId from isb claim for $userType user and trigger cookie update on mismatch',
+            async ({ refreshTokenCookie, isb, expectedCustomerId }) => {
+                const now = Math.floor(Date.now() / 1000);
+                const exp = now + 1800;
+                const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb }))}.signature`;
+
+                mockParseAllCookies.mockReturnValue({
+                    [refreshTokenCookie]: 'refresh-token',
+                    'cc-at': mockAccessToken,
+                    customerId: 'stale-cookie-customer-id',
+                });
+
+                const request = new Request('https://example.com/test');
+                const context = new RouterContextProvider();
+                const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+                vi.spyOn(context, 'get').mockImplementation((key) => {
+                    if (key === performanceTimerContext) return mockPerformanceTimer;
+                    if (key === appConfigContext) return mockConfig;
+                    return storage;
+                });
+
+                vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                    if (typeof value === 'object' && value instanceof Map) {
+                        value.forEach((v, k) => storage.set(k, v));
+                    }
+                });
+
+                const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+                mockCreateCookie.mockReturnValue({ serialize: mockSerialize });
+
+                const mockResponse = new Response('OK');
+                const next = vi.fn().mockResolvedValue(mockResponse);
+
+                await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+
+                expect(storage.get('customerId')).toBe(expectedCustomerId);
+                expect(mockSerialize).toHaveBeenCalled();
+            }
+        );
+
+        it('should not trigger cookie update when token customerId matches cookie', async () => {
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const isb = 'uido:slas::upn:Guest::uidn:Guest User::gcid:same-customer-id::chid:RefArchGlobal';
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb }))}.signature`;
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+                customerId: 'same-customer-id',
+            });
+
+            const request = new Request('https://example.com/test');
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+            mockCreateCookie.mockReturnValue({ serialize: mockSerialize });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+
+            expect(storage.get('customerId')).toBe('same-customer-id');
+            expect(mockSerialize).not.toHaveBeenCalled();
+        });
+
+        it('should fall back to cookie customerId when isb claim is missing from token', async () => {
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+                customerId: 'cookie-customer-id',
+            });
+
+            const request = new Request('https://example.com/test');
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+
+            expect(storage.get('customerId')).toBe('cookie-customer-id');
+        });
     });
 });

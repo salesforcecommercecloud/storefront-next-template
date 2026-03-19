@@ -172,20 +172,22 @@ export const updateAuthStorageDataByTokenResponse = (
     storage.set('accessToken', tokenResponse?.access_token);
     storage.set('refreshToken', tokenResponse?.refresh_token);
 
+    // Decode access token once for expiry and customer ID extraction
+    const claims = tokenResponse?.access_token ? getSLASAccessTokenClaims(tokenResponse.access_token) : null;
+
     // Get expiry from JWT token itself (source of truth) rather than calculating from expires_in
-    // This decodes once during storage and allows fast numeric comparison at runtime
-    const accessTokenExpiryValue = tokenResponse?.access_token
-        ? getSLASAccessTokenClaims(tokenResponse.access_token).expiry
-        : null;
-    storage.set('accessTokenExpiry', accessTokenExpiryValue ?? now + Number(tokenResponse?.expires_in) * 1_000);
+    storage.set('accessTokenExpiry', claims?.expiry ?? now + Number(tokenResponse?.expires_in) * 1_000);
 
     // Get final refresh token expiry (with environment override if configured)
     const apiResponseExpirySeconds = Number(tokenResponse?.refresh_token_expires_in);
     const refreshTokenExpirySeconds = getRefreshTokenExpiry(apiResponseExpirySeconds, userType, appConfig);
     storage.set('refreshTokenExpiry', now + refreshTokenExpirySeconds * 1_000);
 
-    // Store customer info if available (for registered users)
-    if (tokenResponse?.customer_id) {
+    // Extract customer ID from access token isb claim (source of truth for hybrid storefronts)
+    const customerId = claims ? getCustomerIdFromClaims(claims, userType ?? 'guest') : null;
+    if (customerId) {
+        storage.set('customerId', customerId);
+    } else if (tokenResponse?.customer_id) {
         storage.set('customerId', tokenResponse.customer_id);
     }
 
@@ -377,16 +379,48 @@ export interface SLASAccessTokenClaims {
     expiry: number | null;
     /** Tracking consent value as TrackingConsent enum, or null if token has no dnt claim */
     trackingConsent: TrackingConsent | null;
+    /** Guest customer ID extracted from the isb claim, or null if not present */
+    gcid: string | null;
+    /** Registered customer ID extracted from the isb claim, or null if not present */
+    rcid: string | null;
+}
+
+/**
+ * Parse the `isb` (identity subject) claim from a SLAS access token payload.
+ * The isb claim is a `::` delimited string of key:value pairs containing customer identity info.
+ *
+ * Guest format:    `uido:slas::upn:Guest::uidn:Guest User::gcid:<id>::chid:<channel>`
+ * Registered format: `uido:ecom::upn:<email>::uidn:<name>::gcid:<id>::rcid:<id>::chid:<channel>`
+ *
+ * @param isb - Raw isb claim string from the token payload
+ * @returns Object with gcid and rcid values, or null for each if not found
+ */
+function parseIsbClaim(isb: unknown): { gcid: string | null; rcid: string | null } {
+    if (typeof isb !== 'string' || !isb) {
+        return { gcid: null, rcid: null };
+    }
+
+    let gcid: string | null = null;
+    let rcid: string | null = null;
+
+    const parts = isb.split('::');
+    for (const part of parts) {
+        if (part.startsWith('gcid:')) {
+            gcid = part.slice(5);
+        } else if (part.startsWith('rcid:')) {
+            rcid = part.slice(5);
+        }
+    }
+
+    return { gcid, rcid };
 }
 
 /**
  * Extract claims from a SLAS access token payload.
  * Decodes the token once and returns multiple claims for efficiency.
  *
- * We're only reading dnt (as trackingConsent) and exp claims for now, but we can add more claims here if needed.
- *
  * @param token - SLAS access token string
- * @returns Object containing extracted claims (expiry, trackingConsent, etc.)
+ * @returns Object containing extracted claims (expiry, trackingConsent, gcid, rcid)
  */
 export function getSLASAccessTokenClaims(token: string): SLASAccessTokenClaims {
     try {
@@ -398,13 +432,31 @@ export function getSLASAccessTokenClaims(token: string): SLASAccessTokenClaims {
         if (typeof dntValue === 'boolean') {
             trackingConsent = booleanToTrackingConsent(dntValue);
         } else if (typeof dntValue === 'string') {
-            // Handle string 'true'/'1' or 'false'/'0' from token
             const boolValue = dntValue === 'true' || dntValue === '1';
             trackingConsent = booleanToTrackingConsent(boolValue);
         }
 
-        return { expiry, trackingConsent };
+        const { gcid, rcid } = parseIsbClaim(payload.isb);
+
+        return { expiry, trackingConsent, gcid, rcid };
     } catch {
-        return { expiry: null, trackingConsent: null };
+        return { expiry: null, trackingConsent: null, gcid: null, rcid: null };
     }
+}
+
+/**
+ * Select the correct customer ID from decoded token claims based on user type.
+ *
+ * - Guest users: use gcid (guest customer ID)
+ * - Registered users: prefer rcid (registered customer ID), fall back to gcid
+ *
+ * @param claims - Decoded SLAS access token claims containing gcid and rcid
+ * @param userType - Whether the shopper is a guest or registered user
+ * @returns The appropriate customer ID, or null if not available
+ */
+export function getCustomerIdFromClaims(
+    claims: SLASAccessTokenClaims,
+    userType: 'guest' | 'registered'
+): string | null {
+    return userType === 'registered' ? (claims.rcid ?? claims.gcid) : claims.gcid;
 }

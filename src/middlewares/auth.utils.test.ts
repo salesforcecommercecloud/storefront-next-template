@@ -20,6 +20,7 @@ import {
     MAX_REGISTERED_REFRESH_TOKEN_EXPIRY,
     decodeSLASAccessToken,
     getSLASAccessTokenClaims,
+    getCustomerIdFromClaims,
     isTrackingConsentEnabled,
     getPublicSessionData,
 } from './auth.utils';
@@ -300,14 +301,12 @@ describe('auth.utils', () => {
                 expect(claims.trackingConsent).toBeNull();
             });
 
-            it('should return null for invalid token', () => {
+            it('should return null for all claims for invalid token', () => {
                 const claims1 = getSLASAccessTokenClaims('invalid.token');
                 const claims2 = getSLASAccessTokenClaims('');
 
-                expect(claims1.expiry).toBeNull();
-                expect(claims1.trackingConsent).toBeNull();
-                expect(claims2.expiry).toBeNull();
-                expect(claims2.trackingConsent).toBeNull();
+                expect(claims1).toEqual({ expiry: null, trackingConsent: null, gcid: null, rcid: null });
+                expect(claims2).toEqual({ expiry: null, trackingConsent: null, gcid: null, rcid: null });
             });
 
             it('should handle exp as 0', () => {
@@ -383,6 +382,82 @@ describe('auth.utils', () => {
                 const claims = getSLASAccessTokenClaims(token);
 
                 expect(claims.trackingConsent).toBeNull();
+            });
+
+            it.each([
+                {
+                    desc: 'guest (gcid only)',
+                    isb: 'uido:slas::upn:Guest::uidn:Guest User::gcid:abxHg0w0xGkXoRxKdIwqYYkrk1::chid:RefArchGlobal',
+                    expectedGcid: 'abxHg0w0xGkXoRxKdIwqYYkrk1',
+                    expectedRcid: null,
+                },
+                {
+                    desc: 'registered (gcid + rcid)',
+                    isb: 'uido:ecom::upn:user@example.com::uidn:Test User::gcid:abxHg0w0xGkXoRxKdIwqYYkrk1::rcid:abwuhGmbgXkHkRlehKlaYYlrxG::chid:RefArchGlobal',
+                    expectedGcid: 'abxHg0w0xGkXoRxKdIwqYYkrk1',
+                    expectedRcid: 'abwuhGmbgXkHkRlehKlaYYlrxG',
+                },
+            ])('should extract customer IDs from $desc isb claim', ({ isb, expectedGcid, expectedRcid }) => {
+                const token = createTestToken({ exp: 1234567890, isb });
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.gcid).toBe(expectedGcid);
+                expect(claims.rcid).toBe(expectedRcid);
+            });
+
+            it.each([
+                { desc: 'missing', payload: { exp: 1234567890 } },
+                { desc: 'not a string', payload: { exp: 1234567890, isb: 12345 } },
+                { desc: 'empty string', payload: { exp: 1234567890, isb: '' } },
+            ])('should return null gcid and rcid when isb claim is $desc', ({ payload }) => {
+                const token = createTestToken(payload);
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.gcid).toBeNull();
+                expect(claims.rcid).toBeNull();
+            });
+        });
+
+        describe('getCustomerIdFromClaims', () => {
+            it.each([
+                {
+                    desc: 'gcid for guest user',
+                    userType: 'guest' as const,
+                    gcid: 'guest-id',
+                    rcid: null,
+                    expected: 'guest-id',
+                },
+                {
+                    desc: 'rcid for registered user',
+                    userType: 'registered' as const,
+                    gcid: 'guest-id',
+                    rcid: 'reg-id',
+                    expected: 'reg-id',
+                },
+                {
+                    desc: 'gcid fallback for registered when rcid is null',
+                    userType: 'registered' as const,
+                    gcid: 'guest-id',
+                    rcid: null,
+                    expected: 'guest-id',
+                },
+                {
+                    desc: 'null for guest when gcid is null',
+                    userType: 'guest' as const,
+                    gcid: null,
+                    rcid: null,
+                    expected: null,
+                },
+                {
+                    desc: 'null for registered when both null',
+                    userType: 'registered' as const,
+                    gcid: null,
+                    rcid: null,
+                    expected: null,
+                },
+            ])('should return $desc', ({ userType, gcid, rcid, expected }) => {
+                const claims = { expiry: 1234567890000, trackingConsent: null, gcid, rcid };
+                expect(getCustomerIdFromClaims(claims, userType)).toBe(expected);
             });
         });
     });

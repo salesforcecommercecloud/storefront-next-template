@@ -30,6 +30,7 @@ import {
     updateAuthStorageData,
     updateStorageAndCache,
     getSLASAccessTokenClaims,
+    getCustomerIdFromClaims,
     isTrackingConsentEnabled,
     AUTH_TOKEN_INVALID_ERROR,
     COOKIE_REFRESH_TOKEN_GUEST,
@@ -526,6 +527,8 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
 
     // Track if we need to delete the tracking consent cookie due to mismatch
     let hasTrackingConsentMismatch = false;
+    // Track if customer ID from access token differs from cookie (hybrid storefront session change)
+    let hasCustomerIdMismatch = false;
 
     // Create cookie instances for serialization (Set-Cookie headers)
     const refreshTokenGuestCookie = createCookie<string>(COOKIE_REFRESH_TOKEN_GUEST, cookieConfig, context);
@@ -580,25 +583,38 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     // This decodes once during middleware initialization for fast numeric comparison later
     const authData: Partial<AuthStorageData> = {};
     if (refreshToken) authData.refreshToken = refreshToken;
+
+    // Decode access token claims once for expiry, tracking consent, and customer ID
+    const claims = accessToken ? getSLASAccessTokenClaims(accessToken) : null;
     if (accessToken) {
         authData.accessToken = accessToken;
-        // Extract claims from JWT (source of truth) - decode once for efficiency
-        const claims = getSLASAccessTokenClaims(accessToken);
-        if (claims.expiry) authData.accessTokenExpiry = claims.expiry;
+        if (claims?.expiry) authData.accessTokenExpiry = claims.expiry;
 
         // Validate tracking consent value from token matches cookie - if they differ, mark cookie for deletion
         // Only validate if tracking consent feature is enabled
-        if (isTrackingConsentEnabled(context) && claims.trackingConsent !== null && trackingConsent !== undefined) {
-            if (claims.trackingConsent !== trackingConsent) {
-                // Tracking consent values differ - mark for deletion by not including trackingConsent in authData
-                // This will cause the cookie to be deleted in the response section
+        if (isTrackingConsentEnabled(context) && claims?.trackingConsent !== null && trackingConsent !== undefined) {
+            if (claims?.trackingConsent !== trackingConsent) {
                 trackingConsent = undefined;
                 hasTrackingConsentMismatch = true;
             }
         }
     }
     if (usid) authData.usid = usid;
-    if (customerId) authData.customerId = customerId;
+    // Derive customer ID from access token isb claim (source of truth for hybrid storefronts)
+    // Falls back to cookie value if token is absent or claim cannot be parsed
+    if (claims) {
+        const tokenCustomerId = getCustomerIdFromClaims(claims, userType);
+        if (tokenCustomerId) {
+            authData.customerId = tokenCustomerId;
+            if (tokenCustomerId !== customerId) {
+                hasCustomerIdMismatch = true;
+            }
+        } else if (customerId) {
+            authData.customerId = customerId;
+        }
+    } else if (customerId) {
+        authData.customerId = customerId;
+    }
     if (encUserId) authData.encUserId = encUserId;
     // Add IDP access token for social login (if present)
     if (idpAccessToken) authData.idpAccessToken = idpAccessToken;
@@ -616,9 +632,9 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         Object.entries(authData) as [keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]][]
     );
 
-    // Mark storage as updated if tracking consent mismatch was detected
-    // This ensures the response section runs and deletes the invalid cookie
-    if (hasTrackingConsentMismatch) {
+    // Mark storage as updated if tracking consent or customer ID mismatch was detected
+    // This ensures the response section runs and writes corrected cookies
+    if (hasTrackingConsentMismatch || hasCustomerIdMismatch) {
         authStorage.set('isUpdated', true);
     }
 
@@ -804,15 +820,18 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         }
 
         // Set customerId cookie with refresh token expiry (same as refresh token)
+        // Falls back to access token expiry when refresh token expiry is unavailable
+        // (e.g., when only a customer ID mismatch triggered the update, not a token refresh)
         const customerIdValue = authStorage.get('customerId');
-        if (customerIdValue && typeof customerIdValue === 'string' && refreshTokenExpiryValue) {
+        const customerIdCookieExpiry = refreshTokenExpiryValue ?? accessTokenExpiryValue;
+        if (customerIdValue && typeof customerIdValue === 'string' && customerIdCookieExpiry) {
             response.headers.append(
                 'Set-Cookie',
                 await customerIdCookie.serialize(
                     customerIdValue,
                     getCookieConfig(
                         {
-                            expires: new Date(refreshTokenExpiryValue),
+                            expires: new Date(customerIdCookieExpiry),
                         },
                         context
                     )
