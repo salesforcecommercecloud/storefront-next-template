@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { Link } from '@/components/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
@@ -22,27 +21,12 @@ import OrderItemsList, { type ProductDataById } from '@/components/account/order
 import OrderSummary from '@/components/order-summary';
 import ShippingAddressDisplay from '@/components/checkout/components/shipping-address-display';
 
-const BACK_LINK_PREFIX = '< ';
-
-const SHIPMENT_RECIPIENT_SEPARATOR = ' → ';
-
 export type { ProductDataById };
 
 export type OrderDetailsProps = {
     order: ShopperOrders.schemas['Order'];
     productsById: ProductDataById;
 };
-
-function getShipmentRecipientName(shipment: ShopperOrders.schemas['Shipment']): string {
-    const addr = shipment.shippingAddress;
-    if (addr?.firstName || addr?.lastName) {
-        return [addr.firstName, addr.lastName].filter(Boolean).join(' ');
-    }
-    if (addr?.fullName) {
-        return addr.fullName;
-    }
-    return '';
-}
 
 type ProductItem = ShopperOrders.schemas['ProductItem'];
 
@@ -68,33 +52,52 @@ function getOrderStatusLabel(status: string | undefined, t: ReturnType<typeof us
     }
 }
 
+type PaymentMethodDisplay = { id: string; label: string };
+
+function getPaymentMethodDisplays(
+    order: ShopperOrders.schemas['Order'],
+    t: ReturnType<typeof useTranslation>['t']
+): PaymentMethodDisplay[] {
+    const instruments = order.paymentInstruments ?? [];
+    return instruments.flatMap((instrument, index) => {
+        const card = instrument.paymentCard;
+        if (!card?.numberLastDigits) return [];
+        const id = instrument.paymentInstrumentId ?? `payment-${index}`;
+        const cardType = card.cardType ?? 'Card';
+        const label = t('orders.paymentMethodEndingIn', {
+            cardType,
+            lastDigits: card.numberLastDigits,
+        });
+        return [{ id, label }];
+    });
+}
+
 export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactElement {
     const { t } = useTranslation('account');
     const shipments = order.shipments ?? [];
     const productItems = order.productItems ?? [];
     const orderStatusLabel = getOrderStatusLabel(order.status, t);
     const itemsByShipmentId = groupProductItemsByShipmentId(productItems);
+    const paymentMethodDisplays = getPaymentMethodDisplays(order, t);
 
     return (
         <div data-section="order-details">
-            {/* Back to Order History */}
-            <Link
-                to="/account/orders"
-                className="inline-block text-sm text-muted-foreground hover:text-foreground mb-5">
-                {BACK_LINK_PREFIX}
-                {t('orders.backToOrderHistory')}
-            </Link>
-
             {/* Single bordered container for the whole order details component */}
             <Card className="rounded-none">
                 <CardContent className="px-6 pt-0 pb-6 space-y-6">
                     {/* Order Details header */}
                     <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
                         <div>
-                            <h1 className="text-2xl font-bold">{t('orders.orderDetailsPageTitle')}</h1>
-                            <p className="mt-1 text-base font-medium text-muted-foreground">
-                                {t('orders.orderDetailsTitle')}
-                                <span> #{order.orderNo}</span>
+                            <h1 className="text-xl font-bold">{t('orders.orderDetailsPageTitle')}</h1>
+                            <p
+                                className="mt-1 flex items-center text-base font-medium text-muted-foreground"
+                                data-testid="order-number">
+                                <span
+                                    className="inline-flex size-4 shrink-0 items-center justify-center leading-none"
+                                    aria-hidden="true">
+                                    #
+                                </span>
+                                <span>{order.orderNo}</span>
                             </p>
                         </div>
                         <span
@@ -114,25 +117,16 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                     {shipments.map((shipment, idx) => {
                                         const sid = shipment.shipmentId ?? `ship-${idx}`;
                                         const items = itemsByShipmentId[sid] ?? [];
-                                        const recipientName = getShipmentRecipientName(shipment);
                                         return (
                                             <div
                                                 key={sid}
                                                 data-shipment-id={sid}
                                                 className={idx > 0 ? 'border-t border-muted-foreground/20' : ''}>
                                                 <div className="px-3 py-2 bg-muted rounded-none">
-                                                    <p className="text-sm">
-                                                        <span className="font-medium">
-                                                            {t('orders.shipmentNumber', {
-                                                                n: String(idx + 1),
-                                                            })}
-                                                        </span>
-                                                        {recipientName && (
-                                                            <span className="text-xs text-muted-foreground">
-                                                                {SHIPMENT_RECIPIENT_SEPARATOR}
-                                                                {recipientName}
-                                                            </span>
-                                                        )}
+                                                    <p className="text-sm font-medium">
+                                                        {t('orders.shipmentNumber', {
+                                                            n: String(idx + 1),
+                                                        })}
                                                     </p>
                                                 </div>
                                                 <div className="p-3">
@@ -146,7 +140,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                                 className="rounded-none min-h-[4rem] p-0 bg-card"
                                                                 data-card="tracking-number">
                                                                 <CardContent className="p-3">
-                                                                    <p className="text-xs font-semibold text-muted-foreground">
+                                                                    <p className="text-xs font-semibold text-foreground">
                                                                         {t('orders.trackingNumber')}
                                                                     </p>
                                                                     <p className="mt-2 text-sm font-medium text-foreground break-all">
@@ -160,7 +154,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                                 className="rounded-none min-h-[4rem] p-0 bg-card"
                                                                 data-card="shipping-address">
                                                                 <CardContent className="p-3">
-                                                                    <p className="text-xs font-semibold text-muted-foreground">
+                                                                    <p className="text-xs font-semibold text-foreground">
                                                                         {t('orders.shippingAddress')}
                                                                     </p>
                                                                     <div className="mt-2">
@@ -188,6 +182,22 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold">{t('orders.orderSummary')}</h3>
                             <OrderSummary basket={order} showCartItems={false} showHeading={false} />
+                            {paymentMethodDisplays.length > 0 && (
+                                <div className="space-y-1.5">
+                                    <p className="text-xs font-semibold text-foreground">{t('orders.paymentMethod')}</p>
+                                    <Card
+                                        className="rounded-none p-0 bg-card border border-border"
+                                        data-card="payment-method">
+                                        <CardContent className="p-3 py-2">
+                                            <ul className="text-sm font-medium text-muted-foreground space-y-1 list-none">
+                                                {paymentMethodDisplays.map(({ id, label }) => (
+                                                    <li key={id}>{label}</li>
+                                                ))}
+                                            </ul>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </CardContent>

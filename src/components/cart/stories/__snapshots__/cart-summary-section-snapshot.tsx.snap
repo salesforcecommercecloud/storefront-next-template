@@ -162,9 +162,6 @@ exports[`CartSummarySection stories snapshot > DesktopEmptyCart story renders an
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <div
             class="space-y-2 w-full text-sm pt-2"
           >
@@ -354,9 +351,6 @@ exports[`CartSummarySection stories snapshot > DesktopMultipleItems story render
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <div
             class="space-y-2 w-full text-sm pt-2"
           >
@@ -543,9 +537,6 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
               </span>
             </div>
           </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
@@ -743,9 +734,6 @@ exports[`CartSummarySection stories snapshot > MobileEmptyCart story renders and
                 </span>
               </div>
             </div>
-            <hr
-              class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-            />
             <hr
               class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
             />
@@ -949,9 +937,6 @@ exports[`CartSummarySection stories snapshot > MobileMultipleItems story renders
             <hr
               class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
             />
-            <hr
-              class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-            />
             <div
               class="space-y-2 w-full text-sm pt-2"
             >
@@ -1152,9 +1137,6 @@ exports[`CartSummarySection stories snapshot > MobileWithItems story renders and
             <hr
               class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
             />
-            <hr
-              class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-            />
             <div
               class="space-y-2 w-full text-sm pt-2"
             >
@@ -1345,9 +1327,6 @@ exports[`CartSummarySection stories snapshot > TabletView story renders and matc
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <div
             class="space-y-2 w-full text-sm pt-2"
           >
@@ -1534,9 +1513,6 @@ exports[`CartSummarySection stories snapshot > WithoutProductMap story renders a
               </span>
             </div>
           </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />

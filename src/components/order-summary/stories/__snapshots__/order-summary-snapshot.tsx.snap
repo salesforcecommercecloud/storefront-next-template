@@ -164,9 +164,6 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <div
             class="space-y-2 w-full text-sm pt-2"
           >
@@ -351,9 +348,6 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
               </span>
             </div>
           </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
@@ -543,9 +537,6 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
               </span>
             </div>
           </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
@@ -964,9 +955,6 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <div
             class="space-y-2 w-full text-sm pt-2"
           >
@@ -1053,9 +1041,6 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
               </span>
             </div>
           </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
@@ -1722,9 +1707,6 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <div
             class="space-y-2 w-full text-sm pt-2"
           >
@@ -1902,9 +1884,6 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
               </span>
             </div>
           </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />

@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense } from 'react';
-import { Await, type LoaderFunctionArgs, redirect, useLoaderData } from 'react-router';
+import { Await, type LoaderFunctionArgs, redirect, useLoaderData, useParams } from 'react-router';
 import { Link } from '@/components/link';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
+import { ChevronLeft } from 'lucide-react';
 import OrderDetails, { type ProductDataById } from '@/components/account/order-details';
 import OrderSkeleton from '@/components/order-skeleton';
 import { useTranslation } from 'react-i18next';
@@ -82,9 +91,37 @@ export function ErrorBoundary() {
 
 /** Order details at /account/orders/:orderNo – uses OrderDetails component. */
 export default function OrderDetailsPage(): ReactElement {
+    const { orderNo } = useParams();
     const loaderData = useLoaderData<OrderDetailsPageLoaderData>();
+    const { t } = useTranslation('account');
+
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8 pt-0 pb-8">
+            <Breadcrumb className="mb-5">
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link to="/account">{t('myAccount')}</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link to="/account/orders">{t('navigation.orderHistory')}</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>{orderNo ? `#${orderNo}` : ''}</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+            <Link
+                to="/account/orders"
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-5">
+                <ChevronLeft className="size-3.5 shrink-0" aria-hidden />
+                {t('orders.backToOrderHistory')}
+            </Link>
             <Suspense fallback={<OrderSkeleton />}>
                 <Await
                     resolve={loaderData.orderData}

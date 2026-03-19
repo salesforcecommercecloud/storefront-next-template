@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { OrderDetails } from './index';
@@ -91,14 +91,14 @@ describe('OrderDetails', () => {
     test('renders order details section', () => {
         renderOrderDetails();
         expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: /back to order history/i })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(t('account:orders.orderDetailsPageTitle'));
+        expect(document.querySelector('[data-section="order-details"]')).toBeInTheDocument();
     });
 
     test('renders page title and order number', () => {
         renderOrderDetails();
         expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(t('account:orders.orderDetailsPageTitle'));
-        expect(screen.getByText(t('account:orders.orderDetailsTitle'))).toBeInTheDocument();
-        expect(screen.getByText(/INO001/)).toBeInTheDocument();
+        expect(screen.getByText('INO001')).toBeInTheDocument();
     });
 
     test('renders status label from order.status (new, shipped, delivered)', () => {
@@ -134,13 +134,6 @@ describe('OrderDetails', () => {
         expect(screen.getByText('cancelled')).toBeInTheDocument();
     });
 
-    test('renders back to order history link with correct text and href', () => {
-        renderOrderDetails();
-        const link = screen.getByRole('link', { name: /back to order history/i });
-        expect(link).toHaveAttribute('href', '/account/orders');
-        expect(link).toHaveTextContent(new RegExp(t('account:orders.backToOrderHistory')));
-    });
-
     test('renders Items Ordered heading', () => {
         renderOrderDetails();
         expect(screen.getByRole('heading', { level: 2, name: t('account:orders.itemsOrdered') })).toBeInTheDocument();
@@ -159,44 +152,10 @@ describe('OrderDetails', () => {
         expect(screen.getByText(/71\.38/)).toBeInTheDocument();
     });
 
-    test('renders Shipment 1 with recipient name (Shipment 1 → Name)', () => {
+    test('renders Shipment 1 header', () => {
         renderOrderDetails();
         const shipmentLabel = t('account:orders.shipmentNumber', { n: '1' });
-        const recipientName = defaultOrder.shipments?.[0]?.shippingAddress?.fullName ?? '';
-        const shipmentHeaderParagraph = screen.getByText((_, element) => {
-            const text = element?.textContent ?? '';
-            return (
-                element?.tagName === 'P' &&
-                text.includes(shipmentLabel) &&
-                text.includes(recipientName) &&
-                text.includes('→')
-            );
-        });
-        expect(shipmentHeaderParagraph).toBeInTheDocument();
-    });
-
-    test('renders recipient name from fullName when firstName and lastName are absent', () => {
-        const orderWithFullNameOnly = {
-            ...defaultOrder,
-            shipments: [
-                {
-                    shipmentId: 'me',
-                    shippingAddress: {
-                        fullName: 'Acme Corp',
-                        address1: '1 Main St',
-                        city: 'Seattle',
-                        countryCode: 'US',
-                        postalCode: '98101',
-                        stateCode: 'WA',
-                    },
-                },
-            ],
-            productItems: defaultOrder.productItems,
-        };
-        renderOrderDetails(orderWithFullNameOnly as ShopperOrders.schemas['Order']);
-        const shipmentSection = document.querySelector('[data-shipment-id="me"]');
-        expect(shipmentSection).toHaveTextContent('Acme Corp');
-        expect(shipmentSection).toHaveTextContent('→');
+        expect(screen.getByText(shipmentLabel)).toBeInTheDocument();
     });
 
     test('renders product name from order items', () => {
@@ -277,8 +236,8 @@ describe('OrderDetails', () => {
         renderOrderDetails(orderWithMultipleShipments as ShopperOrders.schemas['Order']);
         expect(screen.getByText(t('account:orders.shipmentNumber', { n: '1' }))).toBeInTheDocument();
         expect(screen.getByText(t('account:orders.shipmentNumber', { n: '2' }))).toBeInTheDocument();
-        expect(screen.getAllByText(/Alice Smith/)).toHaveLength(2); // header + shipping address
-        expect(screen.getAllByText(/Bob Jones/)).toHaveLength(2); // header + shipping address
+        expect(screen.getAllByText(/Alice Smith/)).toHaveLength(1); // shipping address card
+        expect(screen.getAllByText(/Bob Jones/)).toHaveLength(1); // shipping address card
         expect(screen.getByText('Product for Alice')).toBeInTheDocument();
         expect(screen.getByText('Product for Bob')).toBeInTheDocument();
         const listItems = screen.getAllByRole('listitem');
@@ -319,5 +278,85 @@ describe('OrderDetails', () => {
         renderOrderDetails(orderWithoutTrackingOrAddress as unknown as ShopperOrders.schemas['Order']);
         expect(screen.queryByText('1234567890')).not.toBeInTheDocument();
         expect(screen.queryByText(t('account:orders.shippingAddress'))).not.toBeInTheDocument();
+    });
+
+    test('renders Payment Method section with single card (cardType and last digits)', () => {
+        const orderWithPayment = {
+            ...defaultOrder,
+            paymentInstruments: [
+                {
+                    paymentInstrumentId: 'pay-1',
+                    paymentCard: { cardType: 'Visa', numberLastDigits: '5678' },
+                },
+            ],
+        };
+        renderOrderDetails(orderWithPayment as ShopperOrders.schemas['Order']);
+        expect(screen.getByText(t('account:orders.paymentMethod'))).toBeInTheDocument();
+        const paymentMethodCard = document.querySelector('[data-card="payment-method"]');
+        expect(paymentMethodCard).toBeInTheDocument();
+        const expectedLabel = t('account:orders.paymentMethodEndingIn', {
+            cardType: 'Visa',
+            lastDigits: '5678',
+        });
+        expect(within(paymentMethodCard as HTMLElement).getByText(expectedLabel)).toBeInTheDocument();
+    });
+
+    test('renders Payment Method section with multiple payment methods', () => {
+        const orderWithMultiplePayments = {
+            ...defaultOrder,
+            paymentInstruments: [
+                {
+                    paymentInstrumentId: 'pay-1',
+                    paymentCard: { cardType: 'Visa', numberLastDigits: '1234' },
+                },
+                {
+                    paymentInstrumentId: 'pay-2',
+                    paymentCard: { cardType: 'Mastercard', numberLastDigits: '9999' },
+                },
+            ],
+        };
+        renderOrderDetails(orderWithMultiplePayments as ShopperOrders.schemas['Order']);
+        expect(screen.getByText(t('account:orders.paymentMethod'))).toBeInTheDocument();
+        const paymentMethodCard = document.querySelector('[data-card="payment-method"]');
+        expect(paymentMethodCard).toBeInTheDocument();
+        const visaLabel = t('account:orders.paymentMethodEndingIn', {
+            cardType: 'Visa',
+            lastDigits: '1234',
+        });
+        const mcLabel = t('account:orders.paymentMethodEndingIn', {
+            cardType: 'Mastercard',
+            lastDigits: '9999',
+        });
+        const listItems = within(paymentMethodCard as HTMLElement).getAllByRole('listitem');
+        expect(listItems).toHaveLength(2);
+        expect(listItems[0]).toHaveTextContent(visaLabel);
+        expect(listItems[1]).toHaveTextContent(mcLabel);
+    });
+
+    test('does not show Payment Method section when instrument has no card details', () => {
+        const orderWithMethodIdOnly = {
+            ...defaultOrder,
+            paymentInstruments: [
+                {
+                    paymentInstrumentId: 'pay-1',
+                    paymentMethodId: 'CREDIT_CARD',
+                    paymentCard: {},
+                },
+            ],
+        };
+        renderOrderDetails(orderWithMethodIdOnly as ShopperOrders.schemas['Order']);
+        expect(screen.queryByText(t('account:orders.paymentMethod'))).not.toBeInTheDocument();
+        expect(document.querySelector('[data-card="payment-method"]')).not.toBeInTheDocument();
+    });
+
+    test('does not show Payment Method section when order has no payment instruments', () => {
+        renderOrderDetails();
+        expect(screen.queryByText(t('account:orders.paymentMethod'))).not.toBeInTheDocument();
+        expect(document.querySelector('[data-card="payment-method"]')).not.toBeInTheDocument();
+    });
+
+    test('does not show Payment Method section when paymentInstruments is empty array', () => {
+        renderOrderDetails({ ...defaultOrder, paymentInstruments: [] } as ShopperOrders.schemas['Order']);
+        expect(screen.queryByText(t('account:orders.paymentMethod'))).not.toBeInTheDocument();
     });
 });

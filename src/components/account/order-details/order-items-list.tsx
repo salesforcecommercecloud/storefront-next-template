@@ -62,8 +62,13 @@ export function OrderItemsList({ items, productsById }: OrderItemsListProps): Re
                 const enrichedItem: EnrichedProductItem = { ...productData, ...item } as EnrichedProductItem;
                 return (
                     <li key={productKey} data-testid="order-item">
-                        <div className="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center">
-                            <ProductItemVariantImage productItem={enrichedItem} className="h-24 w-24 rounded-none" />
+                        <div className="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center">
+                            <Link to={`/product/${item.productId}`} className="flex-shrink-0 block">
+                                <ProductItemVariantImage
+                                    productItem={enrichedItem}
+                                    className="h-24 w-24 rounded-none"
+                                />
+                            </Link>
                             <div className="min-w-0 flex-1 space-y-1">
                                 <ProductItemVariantName productItem={enrichedItem} />
                                 <ProductItemVariantAttributes productItem={enrichedItem} />

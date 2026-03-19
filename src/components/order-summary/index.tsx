@@ -300,7 +300,7 @@ export default function OrderSummary({
                         </div>
 
                         {/* Promo Code Form */}
-                        <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />
+                        {showPromoCodeForm && <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />}
                         <UITarget targetId="orderSummary.promoCode.before" />
                         <UITarget targetId="orderSummary.promoCode">
                             {showPromoCodeForm ? <PromoCodeForm basket={basket} /> : null}

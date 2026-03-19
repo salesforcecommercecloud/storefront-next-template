@@ -830,7 +830,9 @@
             "productPlaceholderInitial": "Item",
             "quantityLabel": "Qty: {{count}}",
             "trackingNumber": "Tracking Number",
-            "shippingAddress": "Shipping Address"
+            "shippingAddress": "Shipping Address",
+            "paymentMethod": "Payment Method",
+            "paymentMethodEndingIn": "{{cardType}} Ending in {{lastDigits}}"
         },
         "addresses": {
             "subtitle": "Manage your shipping addresses",

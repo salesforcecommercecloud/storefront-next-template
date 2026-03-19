@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { getTranslation } from '@/lib/i18next';
@@ -187,7 +187,7 @@ describe('Order Details Route (_app.account.orders.$orderNo)', () => {
             const errorSection = screen.getByTestId('order-not-found');
             expect(errorSection).toHaveTextContent(t('account:orders.orderNotFound'));
             expect(errorSection).toHaveTextContent(t('account:orders.orderNotFoundDescription'));
-            const backLink = screen.getByRole('link', {
+            const backLink = within(errorSection).getByRole('link', {
                 name: t('account:orders.backToOrderHistory'),
             });
             expect(backLink).toHaveAttribute('href', '/global/en-GB/account/orders');
