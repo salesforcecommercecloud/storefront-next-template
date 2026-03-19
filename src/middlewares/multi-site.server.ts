@@ -27,6 +27,9 @@ import type { AppConfig } from '@/types/config';
 export const multiSiteMiddleware: MiddlewareFunction<Response> = async (args, next) => {
     const config = getConfig<AppConfig>(args.context);
     const sites = config.commerce.sites;
+    if (!sites.length) {
+        throw new Error('No sites found.');
+    }
     const defaultSiteId = config.defaultSiteId;
     const siteAliasMap = config.siteAliasMap;
     const localeAliasMap = config.localeAliasMap;
