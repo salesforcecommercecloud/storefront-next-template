@@ -62,21 +62,8 @@ export default defineConfig<Config>(
             // MRT deployment settings (server-only, set via MRT_PROJECT and MRT_TARGET env vars)
             defaultMrtProject: '',
             defaultMrtTarget: '',
-            ssrOnly: ['loader.js', 'ssr.js', '!static/**/*'],
-            ssrShared: [
-                'static/**/*',
-                '**/*.css',
-                '**/*.png',
-                '**/*.jpg',
-                '**/*.jpeg',
-                '**/*.gif',
-                '**/*.svg',
-                '**/*.ico',
-                '**/*.woff',
-                '**/*.woff2',
-                '**/*.ttf',
-                '**/*.eot',
-            ],
+            ssrOnly: [],
+            ssrShared: [],
             ssrParameters: {
                 ssrFunctionNodeVersion: '24.x',
             },

@@ -63,7 +63,7 @@ export async function createBundleCommand(options: CreateBundleOptions): Promise
     const message = options.message ?? getDefaultMessage(options.projectDirectory);
 
     // Build SSR configuration for MRT bundle
-    const config = buildMrtConfig(buildDirectory, options.projectDirectory);
+    const config = await buildMrtConfig(buildDirectory, options.projectDirectory);
 
     info(`Creating bundle for project: ${projectSlug}`);
     info(`Build directory: ${buildDirectory}`);

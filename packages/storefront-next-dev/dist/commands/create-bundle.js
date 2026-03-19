@@ -24,7 +24,7 @@ async function createBundleCommand(options) {
 	const outputDirectory = options.outputDirectory ?? path.join(options.projectDirectory, ".bundle");
 	await fs.ensureDir(outputDirectory);
 	const message = options.message ?? getDefaultMessage(options.projectDirectory);
-	const config = buildMrtConfig(buildDirectory, options.projectDirectory);
+	const config = await buildMrtConfig(buildDirectory, options.projectDirectory);
 	info(`Creating bundle for project: ${projectSlug}`);
 	info(`Build directory: ${buildDirectory}`);
 	info(`Output directory: ${outputDirectory}`);

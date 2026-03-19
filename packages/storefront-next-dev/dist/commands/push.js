@@ -73,7 +73,7 @@ var Push = class Push extends MrtCommand {
 		if (GENERATE_AND_DEPLOY_CARTRIDGE_ON_MRT_PUSH) await this.generateAndDeployCartridge(projectDirectory);
 		if (target) process.env.DEPLOY_TARGET = target;
 		this.requireMrtCredentials();
-		const config = buildMrtConfig(buildDirectory, projectDirectory);
+		const config = await buildMrtConfig(buildDirectory, projectDirectory);
 		const message = flags.message ?? getDefaultMessage(projectDirectory);
 		this.log(`Creating bundle for project: ${projectSlug}`);
 		if (target) this.log(`Target environment: ${target}`);

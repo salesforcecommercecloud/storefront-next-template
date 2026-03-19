@@ -137,7 +137,7 @@ export default class Push extends MrtCommand<typeof Push> {
         this.requireMrtCredentials();
 
         // Build SSR configuration for MRT bundle
-        const config = buildMrtConfig(buildDirectory, projectDirectory);
+        const config = await buildMrtConfig(buildDirectory, projectDirectory);
 
         // Set default message
         const message = flags.message ?? getDefaultMessage(projectDirectory);
