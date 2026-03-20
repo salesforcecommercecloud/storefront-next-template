@@ -42,6 +42,7 @@ export function useToast() {
 
         const sonnerOptions = {
             duration,
+            ...((toastOptions.action || toastOptions.cancel) && { closeButton: false as const }),
             ...(toastOptions.action && {
                 action: {
                     label: toastOptions.action.label,
@@ -58,14 +59,6 @@ export function useToast() {
                 description: toastOptions.description,
             }),
         };
-
-        // If no action provided, add default Close action button
-        if (!toastOptions.action && !toastOptions.cancel) {
-            sonnerOptions.action = {
-                label: 'Close',
-                onClick: () => toast.dismiss(),
-            };
-        }
 
         switch (type) {
             case 'success':

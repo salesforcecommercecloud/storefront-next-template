@@ -15,11 +15,11 @@
  */
 'use client';
 
-import { type PropsWithChildren, type ReactElement, useState, useEffect, useMemo, useCallback, memo } from 'react';
+import { type PropsWithChildren, type ReactElement, useEffect, useMemo, useCallback, memo } from 'react';
 import { useFetcher } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 import { Link } from '@/components/link';
-import { useBasket } from '@/providers/basket';
+import { useBasket, useMiniCart } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -243,13 +243,12 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
  * ```
  */
 export default function CartSheet({ children }: PropsWithChildren): ReactElement {
-    // As this component gets loaded on demand, it immediately gets displayed open
-    const [open, setOpen] = useState<boolean>(true);
+    const { miniCartOpen, setMiniCartOpen } = useMiniCart();
 
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={miniCartOpen} onOpenChange={setMiniCartOpen}>
             <SheetTrigger asChild>{children}</SheetTrigger>
-            {open && <CartSheetPanel onClose={() => setOpen(false)} />}
+            {miniCartOpen && <CartSheetPanel onClose={() => setMiniCartOpen(false)} />}
         </Sheet>
     );
 }

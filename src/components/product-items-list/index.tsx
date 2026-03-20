@@ -258,7 +258,13 @@ export default function ProductItemsList({
                 return <Card key={productItem.itemId || `item-${index}`}>{currentProductItem}</Card>;
             }
 
-            return <div key={productItem.itemId || `item-${index}`}>{currentProductItem}</div>;
+            return (
+                <div
+                    key={productItem.itemId || `item-${index}`}
+                    className="border-b border-muted-foreground/10 last:border-b-0">
+                    {currentProductItem}
+                </div>
+            );
         });
         // Intentionally exclude primaryAction and secondaryActions from dependencies
         // to prevent re-computation when parent components re-render with new function references

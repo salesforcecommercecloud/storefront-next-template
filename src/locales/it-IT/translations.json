@@ -285,6 +285,9 @@
     "_NOTICE_product": "Le traduzioni dei prodotti sono state spostate in product.json come namespace separato. Usa t('product:key') per accedervi.",
     "cart": {
         "title": "Carrello",
+        "delivery": {
+            "heading": "Consegna - {{deliveryCount}} di {{totalCount}} articoli"
+        },
         "itemCount": {
             "zero": "Il Mio Carrello (0 articoli)",
             "one": "Il Mio Carrello (1 articolo)",

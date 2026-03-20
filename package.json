@@ -221,7 +221,7 @@
             },
             {
                 "name": "assets/\\(locales\\)-*-index.*.js",
-                "limit": "62 kB",
+                "limit": "63 kB",
                 "comment": "Locales chunks (all locale translations, includes checkout registration strings)"
             },
             {

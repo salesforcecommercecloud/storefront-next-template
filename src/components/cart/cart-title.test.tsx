@@ -22,7 +22,6 @@ const { t } = getTranslation();
 // Components
 import CartTitle from './cart-title';
 
-// Utils
 describe('CartTitle', () => {
     const mockBasket = {
         basketId: 'test-basket-id',
@@ -33,76 +32,69 @@ describe('CartTitle', () => {
         ],
     };
 
-    test('renders correct title for zero items', () => {
+    test('renders correct heading for zero items', () => {
         const emptyBasket = { ...mockBasket, productItems: [] };
-        render(<CartTitle basket={emptyBasket} />);
+        render(<CartTitle basket={emptyBasket} deliveryCount={0} />);
 
-        expect(screen.getByText(t('cart:itemCount.zero'))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:delivery.heading', { deliveryCount: 0, totalCount: 0 }))).toBeInTheDocument();
     });
 
-    test('renders correct title for one item', () => {
+    test('renders correct heading for one item', () => {
         const singleItemBasket = { ...mockBasket, productItems: [{ itemId: 'item-1', quantity: 1 }] };
-        render(<CartTitle basket={singleItemBasket} />);
+        render(<CartTitle basket={singleItemBasket} deliveryCount={1} />);
 
-        expect(screen.getByText(t('cart:itemCount.one'))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:delivery.heading', { deliveryCount: 1, totalCount: 1 }))).toBeInTheDocument();
     });
 
-    test('renders correct title for multiple items', () => {
-        render(<CartTitle basket={mockBasket} />);
+    test('renders correct heading for multiple items', () => {
+        render(<CartTitle basket={mockBasket} deliveryCount={3} />);
 
-        // Total items: 2 + 1 + 3 = 6
-        expect(screen.getByText(t('cart:itemCount.other', { count: 6 }))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:delivery.heading', { deliveryCount: 3, totalCount: 3 }))).toBeInTheDocument();
     });
 
     test('handles basket with undefined productItems', () => {
         const basketWithoutItems = { basketId: 'test-basket-id' };
-        render(<CartTitle basket={basketWithoutItems as { basketId: string }} />);
+        render(<CartTitle basket={basketWithoutItems as { basketId: string }} deliveryCount={0} />);
 
-        expect(screen.getByText(t('cart:itemCount.zero'))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:delivery.heading', { deliveryCount: 0, totalCount: 0 }))).toBeInTheDocument();
     });
 
     test('handles basket with null productItems', () => {
         const basketWithNullItems = { basketId: 'test-basket-id', productItems: undefined };
-        render(<CartTitle basket={basketWithNullItems} />);
+        render(<CartTitle basket={basketWithNullItems} deliveryCount={0} />);
 
-        expect(screen.getByText(t('cart:itemCount.zero'))).toBeInTheDocument();
-    });
-
-    test('handles items with undefined quantity', () => {
-        const basketWithUndefinedQuantity = {
-            ...mockBasket,
-            productItems: [
-                { itemId: 'item-1', quantity: 2 },
-                { itemId: 'item-2' }, // no quantity
-                { itemId: 'item-3', quantity: 3 },
-            ],
-        };
-        render(<CartTitle basket={basketWithUndefinedQuantity} />);
-
-        // Total items: 2 + 0 + 3 = 5
-        expect(screen.getByText(t('cart:itemCount.other', { count: 5 }))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:delivery.heading', { deliveryCount: 0, totalCount: 0 }))).toBeInTheDocument();
     });
 
     test('renders with correct heading level', () => {
-        render(<CartTitle basket={mockBasket} />);
+        render(<CartTitle basket={mockBasket} deliveryCount={3} />);
 
-        const heading = screen.getByRole('heading', { level: 1 });
+        const heading = screen.getByRole('heading', { level: 2 });
         expect(heading).toBeInTheDocument();
     });
 
-    test('calculates total items correctly with mixed quantities', () => {
-        const mixedQuantityBasket = {
+    test('renders delivery count different from total count', () => {
+        render(<CartTitle basket={mockBasket} deliveryCount={2} />);
+
+        expect(screen.getByText(t('cart:delivery.heading', { deliveryCount: 2, totalCount: 3 }))).toBeInTheDocument();
+    });
+
+    test('renders shipping address when available', () => {
+        const basketWithAddress = {
             ...mockBasket,
-            productItems: [
-                { itemId: 'item-1', quantity: 0 },
-                { itemId: 'item-2', quantity: 1 },
-                { itemId: 'item-3', quantity: 10 },
-                { itemId: 'item-4' }, // undefined quantity
+            shipments: [
+                {
+                    shippingAddress: {
+                        address1: '123 Main St',
+                        city: 'San Francisco',
+                        stateCode: 'CA',
+                        postalCode: '94105',
+                    },
+                },
             ],
         };
-        render(<CartTitle basket={mixedQuantityBasket} />);
+        render(<CartTitle basket={basketWithAddress as typeof mockBasket} deliveryCount={3} />);
 
-        // Total items: 0 + 1 + 10 + 0 = 11
-        expect(screen.getByText(t('cart:itemCount.other', { count: 11 }))).toBeInTheDocument();
+        expect(screen.getByText('123 Main St, San Francisco, CA, 94105')).toBeInTheDocument();
     });
 });

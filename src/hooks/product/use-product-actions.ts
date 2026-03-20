@@ -28,7 +28,7 @@ import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
 import { isSelectedDeliveryOptionValid } from '@/extensions/bopis/lib/product-actions';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
-import { useBasket, useBasketUpdater } from '@/providers/basket';
+import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
@@ -109,6 +109,7 @@ export function useProductActions({
 
     // Get basket data for update operations
     const basket = useBasket();
+    const { setMiniCartOpen } = useMiniCart();
     const basketProductItems = basket?.productItems || [];
 
     // Toast notifications
@@ -299,9 +300,10 @@ export function useProductActions({
             updateBasket(basketData);
 
             setIsAddingToOrUpdatingCart(false);
-            // Only show toast for add to cart action, not edit cart
+            // Only show toast and open mini cart for add to cart action, not edit cart
             if (!itemId) {
                 addToast(t('product:addedToCart', { productName: product.name || 'product' }), 'success');
+                setMiniCartOpen(true);
             }
         } else if (cartFetcher.data?.success === false) {
             // Show error toast for both add and edit mode
@@ -325,6 +327,7 @@ export function useProductActions({
             updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
             addToast(t('product:addedSetToCart'), 'success');
+            setMiniCartOpen(true);
         } else if (multipleItemsFetcher.data?.success === false) {
             addToast(t('product:failedToAddItemsToCart', { error: multipleItemsFetcher.data.error }), 'error');
             setIsAddingToOrUpdatingCart(false);
@@ -343,6 +346,7 @@ export function useProductActions({
             updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
             addToast(t('product:addedBundleToCart'), 'success');
+            setMiniCartOpen(true);
         } else if (bundleFetcher.data?.success === false) {
             addToast(t('product:failedToAddBundleToCart', { error: bundleFetcher.data.error }), 'error');
             setIsAddingToOrUpdatingCart(false);

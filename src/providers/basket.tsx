@@ -58,6 +58,8 @@ const BasketContext = createContext<BasketProviderValue>({
 });
 type BasketUpdater = {
     setBasket: (next: BasketProviderValue) => void;
+    miniCartOpen: boolean;
+    setMiniCartOpen: (open: boolean) => void;
 };
 
 const BasketUpdaterContext = createContext<BasketUpdater | undefined>(undefined);
@@ -136,7 +138,9 @@ const BasketProvider = (
         }));
     }, [basket, snapshot]);
 
-    const updaterValue = useMemo(() => ({ setBasket }), [setBasket]);
+    const [miniCartOpen, setMiniCartOpen] = useState(false);
+
+    const updaterValue = useMemo(() => ({ setBasket, miniCartOpen, setMiniCartOpen }), [setBasket, miniCartOpen]);
 
     return (
         <BasketUpdaterContext.Provider value={updaterValue}>
@@ -231,6 +235,15 @@ export const useBasketReset = (): (() => void) => {
             error: null,
         });
     }, [updater]);
+};
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useMiniCart = () => {
+    const updater = useContext(BasketUpdaterContext);
+    return {
+        miniCartOpen: updater?.miniCartOpen ?? false,
+        setMiniCartOpen: updater?.setMiniCartOpen ?? (Function.prototype as (open: boolean) => void),
+    };
 };
 
 export default BasketProvider;

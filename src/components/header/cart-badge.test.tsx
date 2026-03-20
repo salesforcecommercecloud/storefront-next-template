@@ -22,6 +22,7 @@ import { useBasketSnapshot } from '@/providers/basket';
 
 vi.mock('@/providers/basket', () => ({
     useBasketSnapshot: vi.fn(),
+    useMiniCart: () => ({ miniCartOpen: false, setMiniCartOpen: vi.fn() }),
 }));
 
 vi.mock('react-i18next', () => ({

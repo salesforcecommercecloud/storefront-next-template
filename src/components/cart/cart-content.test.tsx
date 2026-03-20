@@ -114,8 +114,8 @@ describe('CartContent', () => {
         expect(screen.getByTestId('sf-cart-container')).toBeInTheDocument();
         expect(screen.queryByTestId('sf-cart-empty')).not.toBeInTheDocument();
 
-        // Verify cart title is rendered (it's an h1 with "My Cart (3 items)" text)
-        expect(screen.getByText('My Cart (3 items)')).toBeInTheDocument();
+        // Verify breadcrumb navigation is rendered
+        expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
 
         // Verify product items are rendered (they have individual test IDs)
         expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();

@@ -8,7 +8,9 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
     <div
       class="space-y-4"
     >
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -168,7 +170,9 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
           </div>
         </div>
       </div>
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -347,7 +351,9 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
     <div
       class="space-y-4"
     >
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -525,7 +531,9 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
           </div>
         </div>
       </div>
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -722,7 +730,9 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
     <div
       class="space-y-5"
     >
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="grid md:grid-cols-[112px_1fr] grid-cols-[72px_1fr] gap-4"
           data-testid="sf-product-item-summary-061492183589M"
@@ -800,7 +810,9 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
           </div>
         </div>
       </div>
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="grid md:grid-cols-[112px_1fr] grid-cols-[72px_1fr] gap-4"
           data-testid="sf-product-item-summary-061492183589M"
@@ -891,7 +903,9 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
     <div
       class="space-y-4"
     >
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -1067,7 +1081,9 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
           </div>
         </div>
       </div>
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"

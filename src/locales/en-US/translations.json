@@ -305,6 +305,9 @@
     "_NOTICE_product": "Product translations have been moved to product.json as a separate namespace. Use t('product:key') to access them.",
     "cart": {
         "title": "Cart",
+        "delivery": {
+            "heading": "Delivery - {{deliveryCount}} out of {{totalCount}} items"
+        },
         "itemCount": {
             "zero": "Cart (0 items)",
             "one": "Cart (1 item)",

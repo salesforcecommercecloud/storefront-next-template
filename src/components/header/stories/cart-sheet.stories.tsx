@@ -20,7 +20,7 @@ import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { SITE_PREFIX } from '@storybook/test-utils';
 import { Button } from '@/components/ui/button';
-import BasketProvider from '@/providers/basket';
+import BasketProvider, { useMiniCart } from '@/providers/basket';
 import emptyBasket from '@/components/__mocks__/empty-basket';
 import emptyBasketSnapshot from '@/components/__mocks__/empty-basket-snapshot';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
@@ -97,6 +97,14 @@ function CartSheetStoryHarness({ children }: { children: ReactNode }): ReactElem
     return <div ref={containerRef}>{children}</div>;
 }
 
+function CartSheetWithState({ children }: { children: ReactNode }): ReactElement {
+    const { setMiniCartOpen } = useMiniCart();
+    useEffect(() => {
+        setMiniCartOpen(true);
+    }, [setMiniCartOpen]);
+    return <CartSheet>{children}</CartSheet>;
+}
+
 const meta: Meta<typeof CartSheet> = {
     title: 'LAYOUT/Header/Cart Sheet',
     component: CartSheet,
@@ -150,9 +158,9 @@ export const Empty: Story = {
         ),
     ],
     render: () => (
-        <CartSheet>
+        <CartSheetWithState>
             <Button variant="ghost">Open Cart</Button>
-        </CartSheet>
+        </CartSheetWithState>
     ),
     parameters: {
         snapshot: false, // Skip snapshot test - Radix UI Sheet with empty state causes infinite loop in test environment
@@ -192,9 +200,9 @@ export const WithItems: Story = {
         ),
     ],
     render: () => (
-        <CartSheet>
+        <CartSheetWithState>
             <Button variant="ghost">Open Cart</Button>
-        </CartSheet>
+        </CartSheetWithState>
     ),
     parameters: {
         docs: {
@@ -242,9 +250,9 @@ export const Interactive: Story = {
         ),
     ],
     render: () => (
-        <CartSheet>
+        <CartSheetWithState>
             <Button variant="ghost">Open Cart</Button>
-        </CartSheet>
+        </CartSheetWithState>
     ),
     parameters: {
         docs: {
@@ -313,9 +321,9 @@ export const WithViewCartButton: Story = {
         },
     ],
     render: () => (
-        <CartSheet>
+        <CartSheetWithState>
             <Button variant="ghost">Open Cart</Button>
-        </CartSheet>
+        </CartSheetWithState>
     ),
     parameters: {
         docs: {

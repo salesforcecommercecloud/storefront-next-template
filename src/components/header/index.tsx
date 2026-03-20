@@ -43,7 +43,9 @@ export default function Header({ children, beforeHeader }: HeaderProps): ReactEl
         validateShopperAgentConfig(config.commerceAgent);
     const updateHeaderHeight = useCallback(() => {
         if (headerRef.current) {
-            headerRef.current.style.setProperty('--header-height', `${headerRef.current.offsetHeight}px`);
+            const height = `${headerRef.current.offsetHeight}px`;
+            headerRef.current.style.setProperty('--header-height', height);
+            document.documentElement.style.setProperty('--header-height', height);
         }
     }, []);
 

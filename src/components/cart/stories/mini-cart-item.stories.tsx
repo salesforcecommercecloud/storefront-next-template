@@ -234,6 +234,7 @@ function MiniCartShell({
                                     quantity: 1,
                                 })),
                             }}
+                            deliveryCount={itemCount}
                         />
                     </div>
                     <button
@@ -413,8 +414,8 @@ Mini cart item within the cart sheet context showing:
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
 
-        // Verify cart title (CartTitle renders "My Cart (1 item)")
-        const cartTitle = await canvas.findByText(/My Cart \(1 item\)/);
+        // Verify cart title (CartTitle renders "Delivery - 1 out of 1 items")
+        const cartTitle = await canvas.findByText(/Delivery - 1 out of 1 items/);
         await expect(cartTitle).toBeInTheDocument();
 
         // Verify close button
@@ -765,7 +766,7 @@ Empty cart state within the mini cart sheet. Shows:
         const canvas = within(canvasElement);
 
         // Verify cart title shows 0 items
-        const cartTitle = await canvas.findByText(/My Cart \(0 items\)/);
+        const cartTitle = await canvas.findByText(/Delivery - 0 out of 0 items/);
         await expect(cartTitle).toBeInTheDocument();
 
         // Verify close button

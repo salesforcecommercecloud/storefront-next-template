@@ -226,10 +226,9 @@ This component is typically used at the top of cart pages to provide users with 
 
         await waitForStorybookReady(canvasElement);
 
-        // Verify cart title with zero quantity items displays correctly
-        const cartTitle = await canvas.findByText('My Cart (0 items)');
-        await expect(cartTitle).toBeInTheDocument();
-        await expect(cartTitle.tagName.toLowerCase()).toBe('h1');
+        // Verify delivery heading is rendered
+        const heading = await canvas.findByRole('heading', { level: 2 });
+        await expect(heading).toBeInTheDocument();
     },
     decorators: [
         (Story: React.ComponentType) => (
@@ -246,17 +245,13 @@ type Story = StoryObj<typeof meta>;
 export const EmptyCart: Story = {
     args: {
         basket: emptyBasket,
+        deliveryCount: 0,
     },
     parameters: {
         docs: {
             description: {
                 story: `
-Empty cart state showing zero items. This demonstrates:
-
-- "My Cart (0 items)" text display
-- Proper handling of empty productItems array
-- Zero count pluralization
-- Clean, minimal appearance for empty state
+Empty cart delivery header showing zero items.
                 `,
             },
         },
@@ -266,10 +261,8 @@ Empty cart state showing zero items. This demonstrates:
 
         await waitForStorybookReady(canvasElement);
 
-        // Verify empty cart title displays correctly
-        const cartTitle = await canvas.findByText('My Cart (0 items)');
-        await expect(cartTitle).toBeInTheDocument();
-        void expect(cartTitle.tagName.toLowerCase()).toBe('h1');
+        const heading = await canvas.findByRole('heading', { level: 2 });
+        await expect(heading).toBeInTheDocument();
     },
 };
 
@@ -281,11 +274,11 @@ export const SingleAndMultipleItems: Story = {
         <div className="flex flex-col gap-8">
             <div>
                 <p className="text-sm text-muted-foreground mb-2">Single item:</p>
-                <CartTitle basket={basketWithOneItem} />
+                <CartTitle basket={basketWithOneItem} deliveryCount={1} />
             </div>
             <div>
                 <p className="text-sm text-muted-foreground mb-2">Multiple items:</p>
-                <CartTitle basket={basketWithMultipleItems} />
+                <CartTitle basket={basketWithMultipleItems} deliveryCount={3} />
             </div>
         </div>
     ),
@@ -293,7 +286,7 @@ export const SingleAndMultipleItems: Story = {
         docs: {
             description: {
                 story: `
-Single item ("My Cart (1 item)") and multiple items ("My Cart (X items)") - demonstrates pluralization for both states.
+Single item and multiple items - demonstrates delivery heading with different counts.
                 `,
             },
         },
@@ -303,9 +296,8 @@ Single item ("My Cart (1 item)") and multiple items ("My Cart (X items)") - demo
 
         await waitForStorybookReady(canvasElement);
 
-        await expect(canvas.getByText('My Cart (1 item)')).toBeInTheDocument();
-        const multiTitle = canvas.getByText(/My Cart \(\d+ items\)/);
-        await expect(multiTitle).toBeInTheDocument();
+        const headings = await canvas.findAllByRole('heading', { level: 2 });
+        await expect(headings.length).toBe(2);
     },
 };
 
@@ -316,21 +308,17 @@ export const LargeItemCount: Story = {
             productItems: [
                 {
                     ...basketWithOneItem.productItems[0],
-                    quantity: 99, // Large quantity
+                    quantity: 99,
                 },
             ],
         },
+        deliveryCount: 1,
     },
     parameters: {
         docs: {
             description: {
                 story: `
-Cart with a large item count. This shows:
-
-- "My Cart (99 items)" text display
-- Proper handling of large numbers
-- Correct pluralization for high quantities
-- Typography scaling with longer text
+Delivery header with a large item count basket.
                 `,
             },
         },
@@ -340,9 +328,7 @@ Cart with a large item count. This shows:
 
         await waitForStorybookReady(canvasElement);
 
-        // Verify cart title with large item count displays correctly
-        const cartTitle = await canvas.findByText('My Cart (99 items)');
-        await expect(cartTitle).toBeInTheDocument();
-        void expect(cartTitle.tagName.toLowerCase()).toBe('h1');
+        const heading = await canvas.findByRole('heading', { level: 2 });
+        await expect(heading).toBeInTheDocument();
     },
 };

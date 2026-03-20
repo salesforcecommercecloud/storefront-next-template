@@ -27,6 +27,15 @@ import { CartItemEditButton } from '@/components/cart/cart-item-edit-button';
 import CartEmpty from './cart-empty';
 import CartTitle from './cart-title';
 import OrderSummary from '@/components/order-summary';
+import { Link } from '@/components/link';
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
 const LazyBonusProductModal = lazy(() =>
     import('@/components/bonus-product-modal').then((m) => ({ default: m.BonusProductModal }))
@@ -78,6 +87,8 @@ export default function CartContent({
     bonusProductsById,
     promotions,
 }: CartContentProps): ReactElement {
+    const { t } = useTranslation('cart');
+    const { t: tHeader } = useTranslation('header');
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const { t: tBopis } = useTranslation('extBopis');
 
@@ -174,7 +185,19 @@ export default function CartContent({
     return (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
             <div className="max-w-7xl mx-auto px-6">
-                <CartTitle basket={basket} />
+                <Breadcrumb className="mb-6">
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link to="/">{tHeader('logoAlt')}</Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>{t('title')}</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
 
                 {/* Mobile Order Summary - visible only on mobile */}
                 <div className="md:hidden mb-3">
@@ -210,7 +233,8 @@ export default function CartContent({
                         {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
                         {/* Show delivery items if any exist */}
                         {deliveryItems.length > 0 && (
-                            <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
+                            <div className="md:p-8 p-3 border border-muted-foreground/10 rounded-lg shadow-sm mb-3">
+                                <CartTitle basket={basket} deliveryCount={deliveryItems.length} />
                                 {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                                 {pickupItems.length > 0 && (
                                     <h2 className="text-lg font-semibold mb-4">

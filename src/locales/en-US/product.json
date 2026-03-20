@@ -113,7 +113,7 @@
     "selectOptionsAbove": "Select options above",
     "bonusProduct": "Bonus Product",
     "bonusProductAriaLabel": "This item is a free bonus product",
-    "addedToCart": "Added {{productName}} to cart.",
+    "addedToCart": "{{productName}} added to cart",
     "updatedCart": "Updated {{productName}} in cart.",
     "addedSetToCart": "Added product set to cart.",
     "addedBundleToCart": "Added product bundle to cart.",
