@@ -18,9 +18,13 @@
 
 import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { useProductContent } from '@/hooks/product-content/use-product-content';
 import { useProductView } from '@/providers/product-view';
 import CollapsibleSection from '@/components/collapsible-section';
+import { openShopperAgentAndSendMessage } from '@/components/shopper-agent';
+import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import FaqQuestionItem from './faq-question-item';
 
 /**
@@ -31,18 +35,25 @@ const AI_BADGE_CLASSES =
     'inline-flex items-center justify-center rounded px-3 py-1 text-xs font-medium min-w-10 bg-muted text-foreground';
 
 /**
- * Ask assistant FAQ section for PDP. Fetches questions from the product content adapter,
- * renders a collapsible section with "Ask assistant" + AI badge and a list of clickable
- * question boxes (sparkle icon, question, chevron). Each box is fully clickable with
- * a greyer border on hover.
+ * Ask assistant FAQ section for PDP. Only shown when the shopper agent is enabled and configured.
+ * Fetches questions from the product content adapter and renders a collapsible section with
+ * "Ask assistant" + AI badge and clickable question rows (sparkle icon, question, chevron).
  */
 export default function Faq(): ReactElement | null {
     const { t } = useTranslation('product');
+    const config = useConfig<AppConfig>();
     const { product } = useProductView();
     const { adapter, isEnabled } = useProductContent();
     const [questions, setQuestions] = useState<string[]>([]);
+    const showShopperAgent =
+        (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
+        validateShopperAgentConfig(config.commerceAgent);
 
     useEffect(() => {
+        if (!showShopperAgent) {
+            setQuestions([]);
+            return;
+        }
         if (!isEnabled || !adapter?.getFaqQuestions) return;
         let cancelled = false;
         void (async () => {
@@ -58,15 +69,18 @@ export default function Faq(): ReactElement | null {
         return () => {
             cancelled = true;
         };
-    }, [adapter, isEnabled, product.id]);
+    }, [adapter, isEnabled, product.id, showShopperAgent]);
+
+    if (!showShopperAgent) {
+        return null;
+    }
 
     if (questions.length === 0) {
         return null;
     }
 
     const handleQuestionClick = (question: string) => {
-        // Placeholder for future assistant/chat integration
-        void question;
+        openShopperAgentAndSendMessage(question);
     };
 
     return (
@@ -76,11 +90,15 @@ export default function Faq(): ReactElement | null {
             defaultOpen={true}
             className="mt-4">
             <div className="flex flex-col gap-2">
-                {questions.map((question, index) => {
-                    // Index keys: list order is fixed per load; question strings may repeat.
-                    // eslint-disable-next-line react/no-array-index-key -- stable ordered FAQ from adapter
-                    return <FaqQuestionItem key={index} question={question} onClick={handleQuestionClick} />;
-                })}
+                {questions.map((question, index) => (
+                    <FaqQuestionItem
+                        // eslint-disable-next-line react/no-array-index-key -- adapter order is stable per load; index keeps keys aligned with list order (duplicate question text allowed)
+                        key={index}
+                        question={question}
+                        onClick={handleQuestionClick}
+                        ariaLabel={t('faqQuestionSendToAssistantAriaLabel', { question })}
+                    />
+                ))}
             </div>
         </CollapsibleSection>
     );

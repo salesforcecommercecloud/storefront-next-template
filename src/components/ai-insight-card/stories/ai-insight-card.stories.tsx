@@ -26,7 +26,7 @@ const meta: Meta<typeof AiInsightCard> = {
             description: {
                 component: `
 AiInsightCard has two variants: variant="review" for AI review summary (with rating) in the Customer Reviews section;
-variant="shoppingAssistant" for the personal assistant card on the search page (dark card, optional onActionClick).
+variant="shoppingAssistant" for the shopper agent card on the search page (dark card, optional onActionClick).
                 `,
             },
         },

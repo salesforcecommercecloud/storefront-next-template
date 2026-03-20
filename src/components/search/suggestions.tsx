@@ -28,8 +28,8 @@ interface SuggestionsProps {
     recentSearches: string[];
     closeAndNavigate: (link: string) => void;
     clearRecentSearches: () => void;
-    showPersonalAssistant?: boolean;
-    onPersonalAssistantClick?: () => void;
+    showShopperAgent?: boolean;
+    onShopperAgentClick?: () => void;
 }
 
 export default function Suggestions({
@@ -37,8 +37,8 @@ export default function Suggestions({
     recentSearches,
     closeAndNavigate,
     clearRecentSearches,
-    showPersonalAssistant = false,
-    onPersonalAssistantClick,
+    showShopperAgent = false,
+    onShopperAgentClick,
 }: SuggestionsProps) {
     const { t } = useTranslation('search');
     const hasCategories = Boolean(searchSuggestions?.categorySuggestions?.length);
@@ -57,17 +57,17 @@ export default function Suggestions({
                     clearRecentSearches={clearRecentSearches}
                 />
             )}
-            {showPersonalAssistant && onPersonalAssistantClick && (
+            {showShopperAgent && onShopperAgentClick && (
                 <div
                     className="w-full min-w-0 border-t border-border shrink-0 overflow-visible pt-3 pb-3 pl-[4.5rem] pr-8"
-                    data-testid="search-personal-assistant">
+                    data-testid="search-shopper-agent">
                     <Suspense fallback={null}>
                         <AiInsightCard
                             variant="shoppingAssistant"
                             compact
-                            title={t('personalAssistant.title')}
-                            description={t('personalAssistant.description')}
-                            onActionClick={onPersonalAssistantClick}
+                            title={t('shopperAgent.title')}
+                            description={t('shopperAgent.description')}
+                            onActionClick={onShopperAgentClick}
                         />
                     </Suspense>
                 </div>

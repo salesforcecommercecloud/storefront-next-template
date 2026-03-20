@@ -18,13 +18,30 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { ConfigProvider, createAppConfig, deepMerge } from '@salesforce/storefront-next-runtime/config';
 import { CurrencyProvider } from '@/providers/currency';
 import ProductContentProvider from '@/providers/product-content';
 import ProductViewProvider from '@/providers/product-view';
-import { mockConfig } from '@/test-utils/config';
+import { mockBuildConfig } from '@/test-utils/config';
 import Faq from '../index';
 import type { ReactElement } from 'react';
+
+/** FAQ only mounts when shopper agent is enabled and passes validation (matches unit test fixtures). */
+const faqStoryConfig = createAppConfig(
+    deepMerge(mockBuildConfig, {
+        app: {
+            commerceAgent: {
+                enabled: 'true' as const,
+                embeddedServiceName: 'storybook_service',
+                embeddedServiceEndpoint: 'https://test.my.site.com/ESWtest',
+                scriptSourceUrl: 'https://test.my.site.com/ESWtest/assets/js/bootstrap.min.js',
+                scrt2Url: 'https://test.salesforce-scrt.com',
+                salesforceOrgId: '00Dxx0000000000',
+                siteId: 'RefArch',
+            },
+        },
+    })
+);
 
 const mockProduct = {
     id: 'storybook-product',
@@ -35,7 +52,7 @@ const mockProduct = {
 function FaqWrapper(): ReactElement {
     const inRouter = useInRouterContext();
     const content = (
-        <ConfigProvider config={mockConfig}>
+        <ConfigProvider config={faqStoryConfig}>
             <CurrencyProvider value="USD">
                 <ProductContentProvider>
                     <ProductViewProvider product={mockProduct} mode="add">

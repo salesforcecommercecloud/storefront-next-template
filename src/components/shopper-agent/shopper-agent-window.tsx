@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import { useEffect, useState } from 'react';
-import { getAndClearPendingOpen, launchChat, type ShopperAgentConfig } from './shopper-agent.utils';
+import {
+    getAndClearPendingOpen,
+    launchChat,
+    notifyEmbeddedMessagingFirstBotMessageSent,
+    type ShopperAgentConfig,
+} from './shopper-agent.utils';
 
 /** Prevents multiple simultaneous inits of Embedded Messaging when multiple instances mount. */
 let initGuard = false;
@@ -307,14 +312,27 @@ export function ShopperAgentWindow({
             }
         };
 
+        /**
+         * Fires after the first bot message in the conversation (e.g. welcome). Used to send a queued
+         * initial shopper message so it appears after that message; see openShopperAgentAndSendMessage.
+         */
+        const handleEmbeddedMessagingFirstBotMessageSent = () => {
+            notifyEmbeddedMessagingFirstBotMessageSent();
+        };
+
         // Set up event listeners for messaging lifecycle events
         window.addEventListener('onEmbeddedMessagingReady', handleEmbeddedMessagingReady);
         window.addEventListener('onEmbeddedMessagingWindowMaximized', handleEmbeddedMessagingWindowMaximized);
+        window.addEventListener('onEmbeddedMessagingFirstBotMessageSent', handleEmbeddedMessagingFirstBotMessageSent);
 
         // Cleanup function to remove event listeners on unmount
         return () => {
             window.removeEventListener('onEmbeddedMessagingReady', handleEmbeddedMessagingReady);
             window.removeEventListener('onEmbeddedMessagingWindowMaximized', handleEmbeddedMessagingWindowMaximized);
+            window.removeEventListener(
+                'onEmbeddedMessagingFirstBotMessageSent',
+                handleEmbeddedMessagingFirstBotMessageSent
+            );
         };
     }, [siteId, locale, currency, userId, domainUrl, onReady]);
 

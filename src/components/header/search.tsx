@@ -26,7 +26,7 @@ import { useTransformSearchSuggestions } from '@/hooks/use-transform-search-sugg
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getSessionJSONItem, setSessionJSONItem, clearSessionJSONItem } from '@/lib/utils';
-import { launchChat } from '@/components/shopper-agent';
+import { openShopperAgentAndSendMessage } from '@/components/shopper-agent';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 
 const RECENT_SEARCH_LIMIT = 5;
@@ -150,18 +150,19 @@ export default function SearchBar(): ReactElement {
         setShowSuggestions(false);
     }, []);
 
-    const showPersonalAssistant =
+    const showShopperAgent =
         (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
         validateShopperAgentConfig(config.commerceAgent);
 
-    const onPersonalAssistantClick = useCallback(() => {
+    const onShopperAgentClick = useCallback(() => {
+        const searchText = inputRef.current?.value?.trim() ?? query.trim();
         setShowSuggestions(false);
         setQuery('');
         if (inputRef.current) {
             inputRef.current.value = '';
         }
-        launchChat();
-    }, []);
+        openShopperAgentAndSendMessage(searchText);
+    }, [query]);
 
     useEffect(() => {
         shouldOpenPopover();
@@ -204,8 +205,8 @@ export default function SearchBar(): ReactElement {
                     recentSearches={getSessionJSONItem<string[]>(RECENT_SEARCH_KEY) || []}
                     closeAndNavigate={closeAndNavigate}
                     clearRecentSearches={clearRecentSearches}
-                    showPersonalAssistant={showPersonalAssistant}
-                    onPersonalAssistantClick={onPersonalAssistantClick}
+                    showShopperAgent={showShopperAgent}
+                    onShopperAgentClick={onShopperAgentClick}
                 />
             </PopoverContent>
         </Popover>

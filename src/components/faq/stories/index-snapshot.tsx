@@ -17,7 +17,7 @@ import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
 // eslint-disable-next-line import/no-namespace
 import * as FaqStories from './index.stories';
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup, screen } from '@testing-library/react';
 
 const composed = composeStories(FaqStories);
 
@@ -29,8 +29,8 @@ describe('Faq stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, async () => {
             const { container } = render(<Story />);
-            // Faq loads questions async; allow a brief moment for content to resolve
-            await new Promise((r) => setTimeout(r, 100));
+            // Product content mock uses 300ms delay; wait like the Storybook play test
+            await screen.findByText('Ask assistant', {}, { timeout: 5000 });
             expect(container.firstChild).toMatchSnapshot();
         });
     }

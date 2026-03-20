@@ -20,11 +20,46 @@ export const SHOPPER_AGENT_LOAD_EVENT = 'shopper-agent:load';
 /** Set when user clicked Open chat before utilAPI was ready; cleared when we open on ready. */
 let pendingOpenWhenReady = false;
 
+/**
+ * When set, {@link sendTextMessage} is invoked when Embedded Messaging fires `onEmbeddedMessagingFirstBotMessageSent`.
+ * After the session is marked ready, further opens with initial text (search, PDP FAQ, etc.) send immediately instead of this queue.
+ */
+let pendingSearchMessageAfterFirstBot: string | null = null;
+
+/**
+ * After Embedded Messaging has fired `onEmbeddedMessagingFirstBotMessageSent` once, the event often does not fire
+ * again in the same conversation — so further opens with initial text send immediately instead of waiting on this queue.
+ */
+let isEmbeddedMessagingConversationReadyForAutoSend = false;
+
 /** Returns true if launch was requested before ready and clears the flag. Used by ShopperAgentWindow to open chat once ready. */
 export function getAndClearPendingOpen(): boolean {
     const value = pendingOpenWhenReady;
     pendingOpenWhenReady = false;
     return value;
+}
+/**
+ * Invoked from {@link ShopperAgentWindow} when Embedded Messaging dispatches
+ * `onEmbeddedMessagingFirstBotMessageSent` — after the first bot/welcome message in a conversation.
+ */
+export function notifyEmbeddedMessagingFirstBotMessageSent(): void {
+    isEmbeddedMessagingConversationReadyForAutoSend = true;
+    if (!pendingSearchMessageAfterFirstBot) {
+        return;
+    }
+    const msg = pendingSearchMessageAfterFirstBot;
+    pendingSearchMessageAfterFirstBot = null;
+    sendTextMessage(msg);
+}
+
+/**
+ * Resets module state for tests.
+ * @internal
+ */
+export function resetShopperAgentSessionStateForTests(): void {
+    pendingOpenWhenReady = false;
+    pendingSearchMessageAfterFirstBot = null;
+    isEmbeddedMessagingConversationReadyForAutoSend = false;
 }
 
 /** Allowed Salesforce hostname suffixes; subdomains (e.g. *.salesforce.com) are allowed via .${domain} check. */
@@ -154,12 +189,42 @@ const onClient = typeof window !== 'undefined';
 const LAUNCH_DELAY_MS = 150;
 
 /**
+ * Opens the shopper agent and optionally sends initial FAQ (or other) text: with an empty message, only {@link launchChat}.
+ * With text: once the first-bot event has fired, {@link launchChat} then {@link sendTextMessage} run immediately;
+ * otherwise the text is queued for `onEmbeddedMessagingFirstBotMessageSent`.
+ *
+ * Use from PDP “Ask assistant” FAQ questions, or any entry that prefills chat with a question string.
+ */
+export function openShopperAgentAndSendMessage(message: string): void {
+    if (!onClient) {
+        return;
+    }
+
+    const trimmedMsg = message.trim();
+    launchChat();
+
+    if (!trimmedMsg) {
+        return;
+    }
+
+    if (isEmbeddedMessagingConversationReadyForAutoSend) {
+        sendTextMessage(trimmedMsg);
+        return;
+    }
+
+    pendingSearchMessageAfterFirstBot = trimmedMsg;
+}
+
+/**
  * Launch the chat using the embedded service bootstrap API.
  *
  * When the floating chat button is hidden (hideChatButtonOnLoad=true), this first
  * shows the button via utilAPI.showChatButton() then launches the chat. A short
  * delay is only applied when opening from the "pending ready" path (user clicked
  * before script was ready), so the widget has time to create the button DOM.
+ *
+ * Pending initial message (if any) is sent from {@link notifyEmbeddedMessagingFirstBotMessageSent};
+ * see {@link openShopperAgentAndSendMessage}.
  *
  * @param options.fromPendingReady - True when called from the embedded messaging ready
  *   callback after a prior click; enables a short delay to avoid "Default chat button isn't present".

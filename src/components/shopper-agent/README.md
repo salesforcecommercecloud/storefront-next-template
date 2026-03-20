@@ -1,6 +1,6 @@
 # Shopper Agent (Embedded Messaging)
 
-Integrates **Salesforce Embedded Messaging** (Agentforce) so shoppers can open a chat window from the storefront. The agent chunk and embedded service script are deferred via `requestIdleCallback` so they do not block the main thread during hydration; if the user clicks **Open chat** before the first idle, the chunk loads on demand and the scheduled idle callback is cancelled. Use the **Open chat** button or `useShopperAgent().actions.open()` to launch the window.
+Integrates **Salesforce Embedded Messaging** (Agentforce) so shoppers can open a chat window from the storefront. The agent chunk and embedded service script are deferred via `requestIdleCallback` so they do not block the main thread during hydration; if the user clicks **Open chat** before the first idle, the chunk loads on demand and the scheduled idle callback is cancelled.
 
 ## Configuration
 
@@ -24,14 +24,17 @@ Set one environment variable with the full config as a JSON string.
 - **Root layout**  
   The app mounts `<ShopperAgent />` when `appConfig.commerceAgent?.enabled` is `'true'` or `true` (string or boolean). No extra wiring needed if config is set.
 
-- **Open chat from code**  
-  `import { useShopperAgent } from '@/components/shopper-agent';`  
-  `const { actions } = useShopperAgent();`  
-  `actions.open();`  
-  Or use `launchChat()` / `openShopperAgent()` from `@/components/shopper-agent`.
+- **Open chat only**  
+  `launchChat()` or `openShopperAgent()` from `@/components/shopper-agent`.
+
+- **Open shopper agent and send an initial message**  
+  `openShopperAgentAndSendMessage(text)` — launches the window and sends `text` (e.g. header search text or a PDP FAQ question), or queues it until Embedded Messaging fires `onEmbeddedMessagingFirstBotMessageSent`, then sends.
+
+- **PDP “Ask assistant” FAQ**  
+  When the shopper agent is enabled and config validates, each FAQ question row opens the agent and sends that question as the first shopper message.
 
 - **Accessibility**  
-  Use an `aria-label` (e.g. “Open chat”) on the button that opens the chat. The home page “Open chat” button uses the `home.openChat` translation key.
+  Use an `aria-label` (e.g. “Open chat”) on controls that only open the widget. The header search card and PDP FAQ rows use translated labels where applicable.
 
 ## References
 

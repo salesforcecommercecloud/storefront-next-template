@@ -30,8 +30,8 @@
     },
     "search": {
         "results": "Search Results for",
-        "personalAssistant": {
-            "title": "Shop with your Personal Assistant",
+        "shopperAgent": {
+            "title": "Shop with your Shopper Agent",
             "description": "I can help you find the perfect piece for your space. Shop with me."
         },
         "suggestions": {

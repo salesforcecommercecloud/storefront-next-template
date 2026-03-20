@@ -117,10 +117,14 @@ function ShopperAgent({ commerceAgentConfiguration, locale, currency, userId }: 
 
 export default ShopperAgent;
 
-// Re-export the hook and utilities for convenience
-// eslint-disable-next-line react-refresh/only-export-components -- barrel re-exports
-export { useShopperAgent } from './use-shopper-agent';
-// eslint-disable-next-line react-refresh/only-export-components -- barrel re-exports
-export { launchChat, sendTextMessage, openShopperAgent } from './shopper-agent.utils';
+/* eslint-disable react-refresh/only-export-components -- default component plus intentional util barrel re-exports */
+export {
+    launchChat,
+    sendTextMessage,
+    openShopperAgent,
+    openShopperAgentAndSendMessage,
+    notifyEmbeddedMessagingFirstBotMessageSent,
+} from './shopper-agent.utils';
 
 export type { ShopperAgentConfig } from './shopper-agent.utils';
+/* eslint-enable react-refresh/only-export-components */

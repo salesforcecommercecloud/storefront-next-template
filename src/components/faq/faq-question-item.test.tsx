@@ -45,4 +45,9 @@ describe('FaqQuestionItem', () => {
         const button = container.querySelector('button.custom-class');
         expect(button).toBeInTheDocument();
     });
+
+    it('uses aria-label when provided', () => {
+        render(<FaqQuestionItem question="Short" ariaLabel="Open shopper agent and ask: Short" />);
+        expect(screen.getByRole('button', { name: 'Open shopper agent and ask: Short' })).toBeInTheDocument();
+    });
 });

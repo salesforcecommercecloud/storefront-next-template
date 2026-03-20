@@ -92,6 +92,7 @@
     "clearPhotoFilter": "Clear photo filter",
     "writeReviewButton": "Write a Review",
     "askAssistant": "Ask assistant",
+    "faqQuestionSendToAssistantAriaLabel": "Open shopper agent and ask: {{question}}",
     "materials": "Materials",
     "usageInstructions": "Usage Instructions",
     "specifications": "Specifications",

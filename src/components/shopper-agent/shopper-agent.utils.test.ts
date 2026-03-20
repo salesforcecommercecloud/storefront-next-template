@@ -21,6 +21,9 @@ import {
     launchChat,
     sendTextMessage,
     openShopperAgent,
+    openShopperAgentAndSendMessage,
+    notifyEmbeddedMessagingFirstBotMessageSent,
+    resetShopperAgentSessionStateForTests,
     type ShopperAgentConfig,
 } from './shopper-agent.utils';
 
@@ -146,6 +149,7 @@ describe('launchChat', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        resetShopperAgentSessionStateForTests();
     });
 
     afterEach(() => {
@@ -233,8 +237,144 @@ describe('sendTextMessage', () => {
     });
 });
 
+describe('openShopperAgentAndSendMessage', () => {
+    const originalBootstrap = window.embeddedservice_bootstrap;
+
+    beforeEach(() => {
+        resetShopperAgentSessionStateForTests();
+        vi.clearAllMocks();
+    });
+
+    afterEach(() => {
+        (window as Window & { embeddedservice_bootstrap?: unknown }).embeddedservice_bootstrap = originalBootstrap;
+    });
+
+    test('empty or whitespace-only query only launches chat (no sendTextMessage)', () => {
+        const launchChatFn = vi.fn().mockResolvedValue(undefined);
+        const sendTextMessageFn = vi.fn().mockResolvedValue(undefined);
+        (window as Window & { embeddedservice_bootstrap?: unknown }).embeddedservice_bootstrap = {
+            init: stubBootstrapInit,
+            utilAPI: {
+                launchChat: launchChatFn,
+                sendTextMessage: sendTextMessageFn,
+            },
+            settings: { language: 'en' },
+        };
+
+        openShopperAgentAndSendMessage('   ');
+
+        expect(launchChatFn).toHaveBeenCalledTimes(1);
+        expect(sendTextMessageFn).not.toHaveBeenCalled();
+    });
+
+    test('first query sends after onEmbeddedMessagingFirstBotMessageSent (simulated)', () => {
+        const sendTextMessageFn = vi.fn().mockResolvedValue(undefined);
+        const launchChatFn = vi.fn().mockResolvedValue(undefined);
+        (window as Window & { embeddedservice_bootstrap?: unknown }).embeddedservice_bootstrap = {
+            init: stubBootstrapInit,
+            utilAPI: {
+                launchChat: launchChatFn,
+                sendTextMessage: sendTextMessageFn,
+            },
+            settings: { language: 'en' },
+        };
+
+        openShopperAgentAndSendMessage('running shoes');
+
+        expect(launchChatFn).toHaveBeenCalledTimes(1);
+        expect(sendTextMessageFn).not.toHaveBeenCalled();
+
+        notifyEmbeddedMessagingFirstBotMessageSent();
+
+        expect(sendTextMessageFn).toHaveBeenCalledWith('running shoes');
+    });
+
+    test('does not send queued message until first-bot event (no timer fallback)', async () => {
+        const sendTextMessageFn = vi.fn().mockResolvedValue(undefined);
+        const launchChatFn = vi.fn().mockResolvedValue(undefined);
+        (window as Window & { embeddedservice_bootstrap?: unknown }).embeddedservice_bootstrap = {
+            init: stubBootstrapInit,
+            utilAPI: {
+                launchChat: launchChatFn,
+                sendTextMessage: sendTextMessageFn,
+            },
+            settings: { language: 'en' },
+        };
+
+        vi.useFakeTimers();
+        try {
+            openShopperAgentAndSendMessage('late shoes');
+
+            expect(launchChatFn).toHaveBeenCalledTimes(1);
+            expect(sendTextMessageFn).not.toHaveBeenCalled();
+
+            await vi.advanceTimersByTimeAsync(60_000);
+
+            expect(sendTextMessageFn).not.toHaveBeenCalled();
+
+            notifyEmbeddedMessagingFirstBotMessageSent();
+
+            expect(sendTextMessageFn).toHaveBeenCalledWith('late shoes');
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    test('second search sends immediately after first-bot was seen (no queue, no notify)', () => {
+        const sendTextMessageFn = vi.fn().mockResolvedValue(undefined);
+        const launchChatFn = vi.fn().mockResolvedValue(undefined);
+        (window as Window & { embeddedservice_bootstrap?: unknown }).embeddedservice_bootstrap = {
+            init: stubBootstrapInit,
+            utilAPI: {
+                launchChat: launchChatFn,
+                sendTextMessage: sendTextMessageFn,
+            },
+            settings: { language: 'en' },
+        };
+
+        openShopperAgentAndSendMessage('first');
+        notifyEmbeddedMessagingFirstBotMessageSent();
+        expect(sendTextMessageFn).toHaveBeenCalledWith('first');
+
+        expect(launchChatFn).toHaveBeenCalledTimes(1);
+        sendTextMessageFn.mockClear();
+        launchChatFn.mockClear();
+
+        openShopperAgentAndSendMessage('second');
+
+        expect(launchChatFn).toHaveBeenCalledTimes(1);
+        expect(sendTextMessageFn).toHaveBeenCalledWith('second');
+    });
+
+    test('sends PDP FAQ-style question after first-bot event', () => {
+        const sendTextMessageFn = vi.fn().mockResolvedValue(undefined);
+        const launchChatFn = vi.fn().mockResolvedValue(undefined);
+        (window as Window & { embeddedservice_bootstrap?: unknown }).embeddedservice_bootstrap = {
+            init: stubBootstrapInit,
+            utilAPI: {
+                launchChat: launchChatFn,
+                sendTextMessage: sendTextMessageFn,
+            },
+            settings: { language: 'en' },
+        };
+
+        openShopperAgentAndSendMessage('What sizes does this come in?');
+
+        expect(launchChatFn).toHaveBeenCalledTimes(1);
+        expect(sendTextMessageFn).not.toHaveBeenCalled();
+
+        notifyEmbeddedMessagingFirstBotMessageSent();
+
+        expect(sendTextMessageFn).toHaveBeenCalledWith('What sizes does this come in?');
+    });
+});
+
 describe('openShopperAgent', () => {
     const originalBootstrap = window.embeddedservice_bootstrap;
+
+    beforeEach(() => {
+        resetShopperAgentSessionStateForTests();
+    });
 
     afterEach(() => {
         (window as Window & { embeddedservice_bootstrap?: unknown }).embeddedservice_bootstrap = originalBootstrap;

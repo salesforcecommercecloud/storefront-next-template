@@ -16,7 +16,37 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import Faq from './index';
+
+const { mockOpenShopperAgentAndSendMessage, mockUseConfig } = vi.hoisted(() => ({
+    mockOpenShopperAgentAndSendMessage: vi.fn(),
+    mockUseConfig: vi.fn(),
+}));
+
+vi.mock('@/components/shopper-agent', () => ({
+    openShopperAgentAndSendMessage: mockOpenShopperAgentAndSendMessage,
+}));
+
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
+        '@salesforce/storefront-next-runtime/config'
+    );
+    return {
+        ...actual,
+        useConfig: () => mockUseConfig(),
+    };
+});
+
+const validCommerceAgent = {
+    enabled: 'true' as const,
+    embeddedServiceName: 'test_service',
+    embeddedServiceEndpoint: 'https://test.my.site.com/ESWtest',
+    scriptSourceUrl: 'https://test.my.site.com/ESWtest/assets/js/bootstrap.min.js',
+    scrt2Url: 'https://test.salesforce-scrt.com',
+    salesforceOrgId: '00Dxx0000000000',
+    siteId: 'RefArch',
+};
 
 const mockQuestions = {
     questions: [
@@ -47,6 +77,7 @@ describe('Faq', () => {
             isEnabled: true,
         });
         mockGetFaqQuestions.mockResolvedValue(mockQuestions);
+        mockUseConfig.mockReturnValue({ commerceAgent: validCommerceAgent });
     });
 
     it('renders Ask assistant section with questions after data loads', async () => {
@@ -92,5 +123,32 @@ describe('Faq', () => {
         await waitFor(() => {
             expect(mockGetFaqQuestions).toHaveBeenCalledWith('test-product-id');
         });
+    });
+
+    it('opens shopper agent with the FAQ question when commerce agent is enabled', async () => {
+        const user = userEvent.setup();
+        render(<Faq />);
+
+        const button = await screen.findByRole('button', {
+            name: /Open shopper agent and ask: What sizes does this come in\?/,
+        });
+        await user.click(button);
+
+        expect(mockOpenShopperAgentAndSendMessage).toHaveBeenCalledTimes(1);
+        expect(mockOpenShopperAgentAndSendMessage).toHaveBeenCalledWith('What sizes does this come in?');
+    });
+
+    it('renders nothing when commerce agent is disabled (FAQ is agent-only)', async () => {
+        mockUseConfig.mockReturnValue({
+            commerceAgent: { ...validCommerceAgent, enabled: 'false' },
+        });
+        const { container } = render(<Faq />);
+
+        await waitFor(() => {
+            expect(container.firstChild).toBeNull();
+        });
+
+        expect(mockGetFaqQuestions).not.toHaveBeenCalled();
+        expect(mockOpenShopperAgentAndSendMessage).not.toHaveBeenCalled();
     });
 });

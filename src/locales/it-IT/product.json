@@ -27,6 +27,7 @@
     "outOfStockLabel": "Esaurito",
     "selectAllOptions": "Selezioni tutte le opzioni sopra",
     "askAssistant": "Chiedi all'assistente",
+    "faqQuestionSendToAssistantAriaLabel": "Apri lo Shopper Agent e chiedi: {{question}}",
     "description": "Descrizione",
     "addingToCart": "Aggiunta al carrello in corso...",
     "addToCart": "Aggiungi al carrello",

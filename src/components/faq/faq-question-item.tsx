@@ -24,6 +24,8 @@ export interface FaqQuestionItemProps {
     question: string;
     /** Optional click handler when the entire box is clicked */
     onClick?: (question: string) => void;
+    /** Optional accessible label (e.g. when opening chat with this question) */
+    ariaLabel?: string;
     /** Optional additional class names */
     className?: string;
 }
@@ -32,11 +34,17 @@ export interface FaqQuestionItemProps {
  * A single clickable FAQ question row with sparkle icon, question text, and chevron.
  * The entire box is clickable; border becomes more prominent on hover.
  */
-export default function FaqQuestionItem({ question, onClick, className }: FaqQuestionItemProps): ReactElement {
+export default function FaqQuestionItem({
+    question,
+    onClick,
+    ariaLabel,
+    className,
+}: FaqQuestionItemProps): ReactElement {
     return (
         <button
             type="button"
             onClick={() => onClick?.(question)}
+            aria-label={ariaLabel}
             className={cn(
                 'flex w-full cursor-pointer items-center gap-3 rounded-md border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors',
                 'hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground',
