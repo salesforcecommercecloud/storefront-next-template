@@ -52,16 +52,18 @@ function createReactComponentDesignDecorator(Component) {
 const LazyDesignRegion = lazy(() => import("./DesignRegion.js").then((module) => ({ default: module.DesignRegion })));
 function createReactRegionDesignDecorator(Region) {
 	return function DesignDecoratedRegion(props) {
-		const { designMetadata, children,...componentProps } = props;
+		const { designMetadata, children, className,...componentProps } = props;
 		const { isDesignMode } = usePageDesignerMode();
 		return isDesignMode ? /* @__PURE__ */ jsx(LazyDesignRegion, {
 			designMetadata,
+			className,
 			children: /* @__PURE__ */ jsx(Region, {
 				...componentProps,
 				children
 			})
 		}) : /* @__PURE__ */ jsx(Region, {
 			...componentProps,
+			className,
 			children
 		});
 	};

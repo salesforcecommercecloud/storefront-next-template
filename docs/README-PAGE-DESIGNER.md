@@ -511,6 +511,160 @@ export function loader(args) {
 
 ---
 
+
+### Layout & Styling with className
+
+The `Region` component supports `className` prop for applying layout styles (flex, grid, spacing) to region content. This works consistently in both runtime and Page Designer design mode.
+
+#### How className Works
+
+**In Runtime Mode:**
+- `className` is applied to the region's content wrapper
+- Layout classes control how child components are arranged
+
+**In Design Mode (Page Designer):**
+- `className` is applied to the `.pd-design__frame` content container
+- Layout classes work the same as runtime
+- Page Designer decorator wrappers use `display: contents` to stay transparent to layout
+
+#### Basic Usage
+
+```tsx
+// Horizontal flex layout
+<Region
+    page={loaderData.page}
+    regionId="categories"
+    className="flex gap-4 overflow-x-auto"
+/>
+
+// Grid layout
+<Region
+    page={loaderData.page}
+    regionId="products"
+    className="grid grid-cols-2 md:grid-cols-4 gap-6"
+/>
+
+// Vertical stack with spacing
+<Region
+    page={loaderData.page}
+    regionId="main"
+    className="space-y-8"
+/>
+```
+
+#### Common Layout Patterns
+
+**Horizontal Scroll Container:**
+```tsx
+<Region
+    page={loaderData.page}
+    regionId="featured"
+    className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+/>
+```
+
+**Responsive Grid:**
+```tsx
+<Region
+    page={loaderData.page}
+    regionId="grid"
+    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+/>
+```
+
+**Centered Content:**
+```tsx
+<Region
+    page={loaderData.page}
+    regionId="hero"
+    className="flex flex-col items-center justify-center min-h-[400px]"
+/>
+```
+
+#### When to Use className
+
+Use `className` on `Region` when:
+- ✅ The region itself needs layout properties (flex, grid, spacing)
+- ✅ Child components should be direct flex/grid items
+- ✅ Layout is consistent regardless of which components are inside
+
+Do **NOT** use `className` when:
+- ❌ Only one component will ever be in the region (put styles on the component)
+- ❌ Different component types need different layouts (handle in component logic)
+- ❌ Applying decorative styles (colors, borders, etc.) - wrap Region in a styled div
+
+#### Layout with Parent Containers
+
+If you need to control the region wrapper itself (padding, background, borders), wrap the Region:
+
+```tsx
+<div className="bg-muted/50 py-12 md:py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Region
+            page={loaderData.page}
+            regionId="categories"
+            className="flex gap-4 overflow-x-auto"
+        />
+    </div>
+</div>
+```
+
+Structure:
+- **Outer wrapper**: Background, padding, theming
+- **Container**: Max-width, horizontal padding
+- **Region className**: Layout of child components
+
+#### Design Mode Behavior
+
+In Page Designer design mode, the DOM structure includes decorator wrappers:
+
+```html
+<!-- Runtime -->
+<div class="flex gap-4">
+  <PopularCategory />
+  <PopularCategory />
+</div>
+
+<!-- Design Mode -->
+<div class="pd-design__region">
+  <div class="pd-design__frame flex gap-4">  <!-- className applied here -->
+    <div class="pd-design__component">
+      <PopularCategory />
+    </div>
+    <div class="pd-design__component">
+      <PopularCategory />
+    </div>
+  </div>
+</div>
+```
+
+The `.pd-design__frame` wrapper has `display: contents` in CSS, making it transparent to layout so child components become direct flex/grid items of the parent container.
+
+#### Troubleshooting Layout Issues
+
+**Problem:** Components stack vertically in design mode but render horizontally at runtime
+
+**Solution:** Pass `className` to the Region:
+```tsx
+// Before (broken in design mode)
+<div className="flex gap-4">
+    <Region page={page} regionId="items" />
+</div>
+
+// After (works in both modes)
+<Region page={page} regionId="items" className="flex gap-4" />
+```
+
+**Problem:** Layout classes not applying
+
+**Cause:** Conflicting specificity or missing CSS
+**Solution:** 
+- Check that Tailwind classes are valid
+- Use browser DevTools to inspect computed styles
+- Verify className is reaching `.pd-design__frame` in design mode
+
+---
+
 ## Component Development
 
 ### Component Module Contract

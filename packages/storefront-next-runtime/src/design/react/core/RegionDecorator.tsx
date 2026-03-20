@@ -25,15 +25,17 @@ export function createReactRegionDesignDecorator<TProps>(
     Region: React.ComponentType<TProps>
 ): (props: RegionDecoratorProps<TProps>) => React.JSX.Element {
     return function DesignDecoratedRegion(props: RegionDecoratorProps<TProps>) {
-        const { designMetadata, children, ...componentProps } = props;
+        const { designMetadata, children, className, ...componentProps } = props;
         const { isDesignMode } = usePageDesignerMode();
 
         return isDesignMode ? (
-            <LazyDesignRegion designMetadata={designMetadata}>
+            <LazyDesignRegion designMetadata={designMetadata} className={className}>
                 <Region {...(componentProps as unknown as TProps)}>{children}</Region>
             </LazyDesignRegion>
         ) : (
-            <Region {...(componentProps as unknown as TProps)}>{children}</Region>
+            <Region {...(componentProps as unknown as TProps)} className={className}>
+                {children}
+            </Region>
         );
     };
 }

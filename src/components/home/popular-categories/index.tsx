@@ -217,7 +217,7 @@ function CategoryGridContent({
         <>
             <CategorySectionHeader />
             <CategoryScrollContainer ariaLabel="Step into Elegance">
-                <Region regionId="categories" component={component} />
+                <Region regionId="categories" component={component} className="flex gap-4 md:gap-6" />
             </CategoryScrollContainer>
         </>
     );

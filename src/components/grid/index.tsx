@@ -289,7 +289,13 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
             return (
                 <ComponentElement ref={ref} className={classes} style={gridStyles} data-slot="grid" {...props}>
                     {regionIds.map((regionId) => (
-                        <Region key={regionId} regionId={regionId} component={component} errorElement={null} />
+                        <Region
+                            key={regionId}
+                            regionId={regionId}
+                            component={component}
+                            errorElement={null}
+                            className={classes}
+                        />
                     ))}
                 </ComponentElement>
             );

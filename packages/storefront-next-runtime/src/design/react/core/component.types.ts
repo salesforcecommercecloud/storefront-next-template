@@ -101,5 +101,6 @@ export type ComponentDecoratorProps<TProps> = React.PropsWithChildren<
 export type RegionDecoratorProps<TProps> = React.PropsWithChildren<
     {
         designMetadata?: RegionDesignMetadata;
+        className?: string;
     } & TProps
 >;

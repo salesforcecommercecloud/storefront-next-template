@@ -35,7 +35,10 @@ export interface RegionRendererProps extends React.HTMLAttributes<HTMLDivElement
  * Base region renderer component that handles the actual DOM structure
  * This is the component that gets decorated in design mode
  */
-function RegionRenderer({ children, designMetadata: _designMetadata }: RegionRendererProps) {
+function RegionRenderer({ children, designMetadata: _designMetadata, className }: RegionRendererProps) {
+    if (className) {
+        return <div className={className}>{children}</div>;
+    }
     return <>{children}</>;
 }
 

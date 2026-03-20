@@ -76,18 +76,17 @@ function renderRegionContent(
     className: string | undefined,
     rest: HTMLAttributes<HTMLDivElement>
 ) {
-    const content = (
-        <RegionWrapper region={region} designMetadata={getDesignMetadata(regionId, metadata)} {...rest}>
+    return (
+        <RegionWrapper
+            region={region}
+            designMetadata={getDesignMetadata(regionId, metadata)}
+            className={className}
+            {...rest}>
             {region.components?.map(
                 (comp) => comp.id && <Component key={comp.id} component={comp as ComponentType} regionId={region.id} />
             )}
         </RegionWrapper>
     );
-
-    if (className) {
-        return <div className={className}>{content}</div>;
-    }
-    return content;
 }
 
 /**

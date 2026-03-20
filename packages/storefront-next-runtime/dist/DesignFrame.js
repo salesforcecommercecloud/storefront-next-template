@@ -125,7 +125,7 @@ const DesignOverlay = () => {
 
 //#endregion
 //#region src/design/react/components/DesignFrame.tsx
-const DesignFrame = ({ componentId, children, name, parentId, regionId, localized = false, showFrame = false, showToolbox = true, isMoveable = true }) => {
+const DesignFrame = ({ componentId, children, name, parentId, regionId, localized = false, showFrame = false, showToolbox = true, isMoveable = true, className }) => {
 	const componentType = useComponentType(componentId ?? "");
 	const { deleteComponent } = useDesignState();
 	const labels = useLabels();
@@ -145,7 +145,11 @@ const DesignFrame = ({ componentId, children, name, parentId, regionId, localize
 	]);
 	const stopPropagation = (event) => event.stopPropagation();
 	return /* @__PURE__ */ jsxs("div", {
-		className: ["pd-design__frame", showFrame && "pd-design__frame--visible"].filter(Boolean).join(" "),
+		className: [
+			"pd-design__frame",
+			showFrame && "pd-design__frame--visible",
+			className
+		].filter(Boolean).join(" "),
 		ref: nodeRef,
 		children: [
 			showFrame && /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx("div", { className: "pd-design__frame--x" }), /* @__PURE__ */ jsx("div", { className: "pd-design__frame--y" })] }),

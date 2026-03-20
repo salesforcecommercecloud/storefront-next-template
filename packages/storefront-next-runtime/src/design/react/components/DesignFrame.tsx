@@ -31,6 +31,7 @@ export const DesignFrame = ({
     showFrame = false,
     showToolbox = true,
     isMoveable = true,
+    className,
 }: React.PropsWithChildren<{
     componentId?: string;
     name: string;
@@ -40,6 +41,7 @@ export const DesignFrame = ({
     showToolbox?: boolean;
     showFrame?: boolean;
     isMoveable?: boolean;
+    className?: string;
 }>): React.JSX.Element => {
     const componentType = useComponentType(componentId ?? '');
     const { deleteComponent } = useDesignState();
@@ -65,7 +67,7 @@ export const DesignFrame = ({
 
     const stopPropagation = (event: React.MouseEvent) => event.stopPropagation();
 
-    const classes = ['pd-design__frame', showFrame && 'pd-design__frame--visible'].filter(Boolean).join(' ');
+    const classes = ['pd-design__frame', showFrame && 'pd-design__frame--visible', className].filter(Boolean).join(' ');
 
     // TODO: For the frame label, when there is not enough space above the component to display it, we
     // need to display it inside the container instead.

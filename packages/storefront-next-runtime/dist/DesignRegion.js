@@ -26,7 +26,7 @@ function useRegionDecoratorClasses({ regionId, componentTypeInclusions, componen
 //#endregion
 //#region src/design/react/components/DesignRegion.tsx
 function DesignRegion(props) {
-	const { designMetadata, children } = props;
+	const { designMetadata, children, className } = props;
 	const { name, id = "", componentIds = [], componentTypeInclusions = [], componentTypeExclusions = [] } = designMetadata ?? {};
 	const nodeRef = React.useRef(null);
 	const classes = useRegionDecoratorClasses({
@@ -70,6 +70,7 @@ function DesignRegion(props) {
 			localized: true,
 			showFrame,
 			showToolbox: false,
+			className,
 			children: /* @__PURE__ */ jsx(RegionContext.Provider, {
 				value: context,
 				children

@@ -362,7 +362,7 @@ importers:
         version: 4.4.0(@types/aws-lambda@8.10.159)(@types/body-parser@1.19.6)(@types/cors@2.8.19)(@types/express@4.17.23)(body-parser@1.20.3)(express@4.21.2)(http-errors@2.0.0)(reflect-metadata@0.2.2)
       '@oclif/core':
         specifier: ^4.2.10
-        version: 4.10.0
+        version: 4.10.1
       '@oclif/plugin-help':
         specifier: ^6.2.36
         version: 6.2.38
@@ -401,7 +401,7 @@ importers:
         version: 7.12.0(express@4.21.2)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)
       '@salesforce/b2c-tooling-sdk':
         specifier: ^0.9.0
-        version: 0.9.0(@oclif/core@4.10.0)(typescript@5.9.3)
+        version: 0.9.0(@oclif/core@4.10.1)(typescript@5.9.3)
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
@@ -474,7 +474,7 @@ importers:
     devDependencies:
       '@oclif/test':
         specifier: ^4.1.15
-        version: 4.1.16(@oclif/core@4.10.0)
+        version: 4.1.16(@oclif/core@4.10.1)
       '@react-router/dev':
         specifier: 7.12.0
         version: 7.12.0(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(tsx@4.21.0)(typescript@5.9.3)(vite@7.1.7(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.21.0))
@@ -2002,8 +2002,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@oclif/core@4.10.0':
-    resolution: {integrity: sha512-T52mrztDvj7RXiURdA+6vd1B4yeYVpHF6DH/RshqEwIA6R63dhe4YoIBYWJi0H3LhCQTUTL84uWadrJAImu/vg==}
+  '@oclif/core@4.10.1':
+    resolution: {integrity: sha512-SeT6K9arGKh6IJ585gC+ueCS9xZfbsO+k6UEjVO6H3vElrOEWOWLI0KYnSl0rmg6MOXqM5fSiqIQZtDeJuIXlw==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-help@6.2.38':
@@ -8077,14 +8077,14 @@ packages:
   tldts-core@6.1.86:
     resolution: {integrity: sha512-Je6p7pkk+KMzMv2XXKmAE3McmolOQFdxkKw0R8EYNr7sELW46JqnNeTX8ybPiQgvg1ymCoF8LXs5fzFaZvJPTA==}
 
-  tldts-core@7.0.26:
-    resolution: {integrity: sha512-5WJ2SqFsv4G2Dwi7ZFVRnz6b2H1od39QME1lc2y5Ew3eWiZMAeqOAfWpRP9jHvhUl881406QtZTODvjttJs+ew==}
+  tldts-core@7.0.27:
+    resolution: {integrity: sha512-YQ7uPjgWUibIK6DW5lrKujGwUKhLevU4hcGbP5O6TcIUb+oTjJYJVWPS4nZsIHrEEEG6myk/oqAJUEQmpZrHsg==}
 
   tldts-icann@6.1.86:
     resolution: {integrity: sha512-NFxmRT2lAEMcCOBgeZ0NuM0zsK/xgmNajnY6n4S1mwAKocft2s2ise1O3nQxrH3c+uY6hgHUV9GGNVp7tUE4Sg==}
 
-  tldts@7.0.26:
-    resolution: {integrity: sha512-WiGwQjr0qYdNNG8KpMKlSvpxz652lqa3Rd+/hSaDcY4Uo6SKWZq2LAF+hsAhUewTtYhXlorBKgNF3Kk8hnjGoQ==}
+  tldts@7.0.27:
+    resolution: {integrity: sha512-I4FZcVFcqCRuT0ph6dCDpPuO4Xgzvh+spkcTr1gK7peIvxWauoloVO0vuy1FQnijT63ss6AsHB6+OIM4aXHbPg==}
     hasBin: true
 
   tmp@0.0.33:
@@ -10277,7 +10277,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
 
-  '@oclif/core@4.10.0':
+  '@oclif/core@4.10.1':
     dependencies:
       ansi-escapes: 4.3.2
       ansis: 3.17.0
@@ -10300,12 +10300,12 @@ snapshots:
 
   '@oclif/plugin-help@6.2.38':
     dependencies:
-      '@oclif/core': 4.10.0
+      '@oclif/core': 4.10.1
 
   '@oclif/plugin-not-found@3.2.75(@types/node@24.12.0)':
     dependencies:
       '@inquirer/prompts': 7.10.1(@types/node@24.12.0)
-      '@oclif/core': 4.10.0
+      '@oclif/core': 4.10.1
       ansis: 3.17.0
       fast-levenshtein: 3.0.0
     transitivePeerDependencies:
@@ -10313,7 +10313,7 @@ snapshots:
 
   '@oclif/plugin-plugins@5.4.59':
     dependencies:
-      '@oclif/core': 4.10.0
+      '@oclif/core': 4.10.1
       ansis: 3.17.0
       debug: 4.4.3(supports-color@10.2.2)
       npm: 10.9.7
@@ -10327,9 +10327,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@oclif/test@4.1.16(@oclif/core@4.10.0)':
+  '@oclif/test@4.1.16(@oclif/core@4.10.1)':
     dependencies:
-      '@oclif/core': 4.10.0
+      '@oclif/core': 4.10.1
       ansis: 3.17.0
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
@@ -11290,7 +11290,7 @@ snapshots:
 
   '@rtsao/scc@1.1.0': {}
 
-  '@salesforce/b2c-tooling-sdk@0.9.0(@oclif/core@4.10.0)(typescript@5.9.3)':
+  '@salesforce/b2c-tooling-sdk@0.9.0(@oclif/core@4.10.1)(typescript@5.9.3)':
     dependencies:
       applicationinsights: 2.9.8
       archiver: 7.0.1
@@ -11310,7 +11310,7 @@ snapshots:
       undici: 7.19.2
       xml2js: 0.6.2
     optionalDependencies:
-      '@oclif/core': 4.10.0
+      '@oclif/core': 4.10.1
     transitivePeerDependencies:
       - applicationinsights-native-metrics
       - bare-abort-controller
@@ -17236,15 +17236,15 @@ snapshots:
 
   tldts-core@6.1.86: {}
 
-  tldts-core@7.0.26: {}
+  tldts-core@7.0.27: {}
 
   tldts-icann@6.1.86:
     dependencies:
       tldts-core: 6.1.86
 
-  tldts@7.0.26:
+  tldts@7.0.27:
     dependencies:
-      tldts-core: 7.0.26
+      tldts-core: 7.0.27
 
   tmp@0.0.33:
     dependencies:
@@ -17266,7 +17266,7 @@ snapshots:
 
   tough-cookie@6.0.1:
     dependencies:
-      tldts: 7.0.26
+      tldts: 7.0.27
 
   tr46@0.0.3: {}
 

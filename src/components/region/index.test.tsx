@@ -34,9 +34,11 @@ vi.mock('./component', () => ({
 // Mock the RegionWrapper to capture designMetadata
 let capturedDesignMetadata: any = null;
 vi.mock('./region-wrapper', () => ({
-    RegionWrapper: ({ designMetadata, children }: any) => {
+    RegionWrapper: ({ designMetadata, children, className }: any) => {
         capturedDesignMetadata = designMetadata;
-        // In non-design mode, RegionWrapper just returns children (Fragment)
+        if (className) {
+            return <div className={className}>{children}</div>;
+        }
         return <>{children}</>;
     },
 }));
@@ -217,40 +219,50 @@ describe('Region', () => {
         });
     });
 
-    it('renders page region without className wrapper when not provided', async () => {
-        const { container } = render(<Region page={mockPage} regionId="test-region" />);
-
-        await waitFor(() => {
-            expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
-        });
-
-        // No wrapper div with className should exist
-        expect(container.querySelector('.custom-class')).not.toBeInTheDocument();
-    });
-
-    it('wraps region content in a div with className when provided', async () => {
-        const { container } = render(<Region page={mockPage} regionId="test-region" className="custom-class" />);
-
-        await waitFor(() => {
-            expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
-        });
-
-        // A wrapper div with the className should exist and contain the components
-        const wrapper = container.querySelector('.custom-class');
-        expect(wrapper).toBeInTheDocument();
-        expect(wrapper?.tagName).toBe('DIV');
-        expect(wrapper?.querySelector('[data-testid="component-component-1"]')).toBeInTheDocument();
-    });
-
-    it('does not render className wrapper when region is not found', async () => {
+    it('passes className props to the page region', async () => {
         const { container } = render(
-            <Region page={mockPage} regionId="non-existent" className="should-not-render" errorElement={<div />} />
+            <Region
+                page={mockPage}
+                regionId="test-region"
+                data-custom="test-value"
+                aria-label="Test Region"
+                className="test-class"
+            />
         );
 
         await waitFor(() => {
-            // errorElement should be rendered, not the className wrapper
-            expect(container.querySelector('.should-not-render')).not.toBeInTheDocument();
+            expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
         });
+
+        const pageWrapper = container.querySelector('.test-class');
+        expect(pageWrapper).toBeInTheDocument();
+        expect(pageWrapper?.tagName).toBe('DIV');
+    });
+
+    it('passes className props to the component region', async () => {
+        const mockComponent = {
+            id: 'grid-component',
+            typeId: 'grid',
+            regions: [mockRegion],
+        } as ComponentType;
+
+        const { container } = render(
+            <Region
+                component={mockComponent}
+                regionId="test-region"
+                data-custom="test-value"
+                aria-label="Test Region"
+                className="test-class"
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('component-component-1')).toBeInTheDocument();
+        });
+
+        const componentWrapper = container.querySelector('.test-class');
+        expect(componentWrapper).toBeInTheDocument();
+        expect(componentWrapper?.tagName).toBe('DIV');
     });
 
     it('uses component id as key for mapping in page region', () => {

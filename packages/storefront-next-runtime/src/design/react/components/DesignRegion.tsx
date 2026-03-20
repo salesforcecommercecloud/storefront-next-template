@@ -25,7 +25,7 @@ import { useDesignState } from '../hooks/useDesignState';
 import { isComponentTypeAllowedInRegion } from '../utils/regionUtils';
 
 export function DesignRegion(props: RegionDecoratorProps<unknown>): React.JSX.Element {
-    const { designMetadata, children } = props;
+    const { designMetadata, children, className } = props;
     const {
         name,
         id = '',
@@ -80,7 +80,8 @@ export function DesignRegion(props: RegionDecoratorProps<unknown>): React.JSX.El
                 regionId={id}
                 localized
                 showFrame={showFrame}
-                showToolbox={false}>
+                showToolbox={false}
+                className={className}>
                 <RegionContext.Provider value={context}>{children}</RegionContext.Provider>
             </DesignFrame>
         </div>
