@@ -16,10 +16,11 @@
 
 'use client';
 
-import { useMemo, useState, type ChangeEvent } from 'react';
+import { useMemo, useState, type ChangeEvent, type ComponentProps } from 'react';
+import { Slot } from '@radix-ui/react-slot';
 import { type UseFormReturn, type FieldValues, type Path } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormMessage, useFormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { COUNTRY_CODES } from '@/components/customer-address-form/constants';
@@ -27,6 +28,25 @@ import AddressSuggestionDropdown, { type AddressSuggestion } from '@/components/
 import { MIN_INPUT_LENGTH, useAutocompleteSuggestions } from '@/hooks/use-autocomplete-suggestions';
 import { processAddressSuggestion } from '@/lib/address-suggestions';
 import { UITarget } from '@/targets/ui-target';
+
+/**
+ * Control slot for address inputs: sets `aria-describedby` only when a validation message exists.
+ * Stock `FormControl` always references `formDescriptionId` even when no `FormDescription` is rendered,
+ * which breaks strict a11y checks. Use this (or {@link AddressFormFields}) for checkout address UIs.
+ */
+export function AddressFormControl({ ...props }: ComponentProps<typeof Slot>) {
+    const { error, formItemId, formMessageId } = useFormField();
+
+    return (
+        <Slot
+            data-slot="form-control"
+            id={formItemId}
+            aria-describedby={error ? formMessageId : undefined}
+            aria-invalid={!!error}
+            {...props}
+        />
+    );
+}
 
 /**
  * Base address field names that the form must support
@@ -237,7 +257,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                 className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
                                 {t('addressForm.firstNameLabel')}
                             </FormLabel>
-                            <FormControl>
+                            <AddressFormControl>
                                 <Input
                                     placeholder={
                                         labelsAsPlaceholders
@@ -249,7 +269,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     className="h-12 text-base border-2 focus:border-primary transition-colors"
                                     {...field}
                                 />
-                            </FormControl>
+                            </AddressFormControl>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -264,7 +284,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                 className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
                                 {t('addressForm.lastNameLabel')}
                             </FormLabel>
-                            <FormControl>
+                            <AddressFormControl>
                                 <Input
                                     placeholder={
                                         labelsAsPlaceholders
@@ -275,7 +295,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     className="h-12 text-base border-2 focus:border-primary transition-colors"
                                     {...field}
                                 />
-                            </FormControl>
+                            </AddressFormControl>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -296,7 +316,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     }>
                                     {t('addressForm.countryLabel')}
                                 </FormLabel>
-                                <FormControl>
+                                <AddressFormControl>
                                     <NativeSelect
                                         className="h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
                                         autoComplete={getAutoComplete('country')}
@@ -311,7 +331,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                             </NativeSelectOption>
                                         ))}
                                     </NativeSelect>
-                                </FormControl>
+                                </AddressFormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -330,7 +350,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                 className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
                                 {t('addressForm.addressLabel')}
                             </FormLabel>
-                            <FormControl>
+                            <AddressFormControl>
                                 <Input
                                     placeholder={
                                         labelsAsPlaceholders
@@ -343,7 +363,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     {...field}
                                     onChange={(e) => handleAddressInputChange(e, field.onChange)}
                                 />
-                            </FormControl>
+                            </AddressFormControl>
                             {renderAddressAutocomplete()}
                             <FormMessage />
                         </FormItem>
@@ -362,14 +382,14 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                 className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
                                 {t('addressForm.address2Label')}
                             </FormLabel>
-                            <FormControl>
+                            <AddressFormControl>
                                 <Input
                                     placeholder={t('addressForm.address2Placeholder')}
                                     autoComplete={getAutoComplete('address-line2')}
                                     className="h-12 text-base border-2 focus:border-primary transition-colors"
                                     {...field}
                                 />
-                            </FormControl>
+                            </AddressFormControl>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -394,14 +414,14 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     }>
                                     {postalLabel}
                                 </FormLabel>
-                                <FormControl>
+                                <AddressFormControl>
                                     <Input
                                         placeholder={labelsAsPlaceholders ? `${postalLabel}*` : postalPlaceholder}
                                         autoComplete={getAutoComplete('postal-code')}
                                         className="h-12 text-base border-2 focus:border-primary transition-colors"
                                         {...field}
                                     />
-                                </FormControl>
+                                </AddressFormControl>
                                 <FormMessage />
                             </FormItem>
                         );
@@ -417,7 +437,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                 className={labelsAsPlaceholders ? 'sr-only' : 'text-base font-medium text-foreground'}>
                                 {t('addressForm.cityLabel')}
                             </FormLabel>
-                            <FormControl>
+                            <AddressFormControl>
                                 <Input
                                     placeholder={
                                         labelsAsPlaceholders
@@ -428,7 +448,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     className="h-12 text-base border-2 focus:border-primary transition-colors"
                                     {...field}
                                 />
-                            </FormControl>
+                            </AddressFormControl>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -454,7 +474,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     }>
                                     {stateLabel}
                                 </FormLabel>
-                                <FormControl>
+                                <AddressFormControl>
                                     {stateOptions.length > 0 ? (
                                         <NativeSelect
                                             className="h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
@@ -480,7 +500,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                             {...field}
                                         />
                                     )}
-                                </FormControl>
+                                </AddressFormControl>
                                 <FormMessage />
                             </FormItem>
                         );
@@ -498,7 +518,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                             <FormLabel className="text-base font-medium text-foreground">
                                 {t('addressForm.phoneLabel')}
                             </FormLabel>
-                            <FormControl>
+                            <AddressFormControl>
                                 <Input
                                     type="tel"
                                     placeholder={t('addressForm.phonePlaceholder')}
@@ -506,7 +526,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     className="h-12 text-base border-2 focus:border-primary transition-colors"
                                     {...field}
                                 />
-                            </FormControl>
+                            </AddressFormControl>
                             <FormMessage />
                         </FormItem>
                     )}

@@ -30,9 +30,9 @@ import {
     DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { AddressModalFormFields } from './address-modal-form-fields';
+import { AddressFormFields, AddressFormControl } from '@/components/address-form-fields';
 import { createShippingAddressSchema } from '@/lib/checkout-schemas';
 import { usPostalCodeRegex, canadianPostalCodeRegex } from '@/components/customer-address-form/constants';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
@@ -118,8 +118,8 @@ export interface AddressModalProps {
  * Address modal for adding a new shipping address during checkout.
  *
  * Supports both single-address checkout and multi-address (multiship) scenarios
- * through configurable props. Uses checkout-local AddressModalFormFields for
- * consistent address entry with Google Maps autocomplete support.
+ * through configurable props. Uses shared {@link AddressFormFields} for address entry
+ * with Google Maps autocomplete support.
  */
 export function AddressModal({
     open,
@@ -246,7 +246,7 @@ export function AddressModal({
                                     name="addressId"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormControl>
+                                            <AddressFormControl>
                                                 <Input
                                                     type="text"
                                                     maxLength={256}
@@ -254,13 +254,13 @@ export function AddressModal({
                                                     className="h-12 text-base border-2 focus:border-primary transition-colors"
                                                     {...field}
                                                 />
-                                            </FormControl>
+                                            </AddressFormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
                             )}
-                            <AddressModalFormFields<Partial<ShopperCustomers.schemas['CustomerAddress']>>
+                            <AddressFormFields<Partial<ShopperCustomers.schemas['CustomerAddress']>>
                                 form={form}
                                 showPhone={showPhone}
                                 showCountry={showCountry}

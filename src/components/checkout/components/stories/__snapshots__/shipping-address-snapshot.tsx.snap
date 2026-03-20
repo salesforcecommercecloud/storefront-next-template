@@ -102,7 +102,6 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
                 First Name
               </label>
               <input
-                aria-describedby="_r_0_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -126,7 +125,6 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
                 Last Name
               </label>
               <input
-                aria-describedby="_r_1_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -154,7 +152,6 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
                 Address Line 1
               </label>
               <input
-                aria-describedby="_r_2_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -182,7 +179,6 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_3_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -210,7 +206,6 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
                 Zip Code
               </label>
               <input
-                aria-describedby="_r_4_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -234,7 +229,6 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
                 City
               </label>
               <input
-                aria-describedby="_r_5_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -262,7 +256,6 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_6_-form-item-description"
                   aria-invalid="false"
                   aria-label="State"
                   autocomplete="shipping address-level1"
@@ -619,7 +612,6 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
               Phone Number
             </label>
             <input
-              aria-describedby="_r_7_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -753,7 +745,6 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 First Name
               </label>
               <input
-                aria-describedby="_r_1q_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -777,7 +768,6 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 Last Name
               </label>
               <input
-                aria-describedby="_r_1r_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -805,7 +795,6 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 Address Line 1
               </label>
               <input
-                aria-describedby="_r_1s_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -833,7 +822,6 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_1t_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -861,7 +849,6 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 Zip Code
               </label>
               <input
-                aria-describedby="_r_1u_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -885,7 +872,6 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 City
               </label>
               <input
-                aria-describedby="_r_1v_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -913,7 +899,6 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_20_-form-item-description"
                   aria-invalid="false"
                   aria-label="State"
                   autocomplete="shipping address-level1"
@@ -1270,7 +1255,6 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
               Phone Number
             </label>
             <input
-              aria-describedby="_r_21_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -1354,7 +1338,6 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 First Name
               </label>
               <input
-                aria-describedby="_r_m_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -1378,7 +1361,6 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 Last Name
               </label>
               <input
-                aria-describedby="_r_n_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -1406,7 +1388,6 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 Address Line 1
               </label>
               <input
-                aria-describedby="_r_o_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -1434,7 +1415,6 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_p_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -1462,7 +1442,6 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 Zip Code
               </label>
               <input
-                aria-describedby="_r_q_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -1486,7 +1465,6 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 City
               </label>
               <input
-                aria-describedby="_r_r_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -1514,7 +1492,6 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_s_-form-item-description"
                   aria-invalid="false"
                   aria-label="State"
                   autocomplete="shipping address-level1"
@@ -1871,7 +1848,6 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
               Phone Number
             </label>
             <input
-              aria-describedby="_r_t_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -1967,7 +1943,6 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 First Name
               </label>
               <input
-                aria-describedby="_r_b_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -1991,7 +1966,6 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 Last Name
               </label>
               <input
-                aria-describedby="_r_c_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2019,7 +1993,6 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 Address Line 1
               </label>
               <input
-                aria-describedby="_r_d_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2047,7 +2020,6 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_e_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2075,7 +2047,6 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 Zip Code
               </label>
               <input
-                aria-describedby="_r_f_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2099,7 +2070,6 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 City
               </label>
               <input
-                aria-describedby="_r_g_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2127,7 +2097,6 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_h_-form-item-description"
                   aria-invalid="false"
                   aria-label="State"
                   autocomplete="shipping address-level1"
@@ -2484,7 +2453,6 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
               Phone Number
             </label>
             <input
-              aria-describedby="_r_i_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2575,7 +2543,6 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 First Name
               </label>
               <input
-                aria-describedby="_r_14_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2599,7 +2566,6 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 Last Name
               </label>
               <input
-                aria-describedby="_r_15_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2627,7 +2593,6 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 Address Line 1
               </label>
               <input
-                aria-describedby="_r_16_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2655,7 +2620,6 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_17_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2683,7 +2647,6 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 Zip Code
               </label>
               <input
-                aria-describedby="_r_18_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2707,7 +2670,6 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 City
               </label>
               <input
-                aria-describedby="_r_19_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -2735,7 +2697,6 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_1a_-form-item-description"
                   aria-invalid="false"
                   aria-label="State"
                   autocomplete="shipping address-level1"
@@ -3092,7 +3053,6 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
               Phone Number
             </label>
             <input
-              aria-describedby="_r_1b_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -3208,7 +3168,6 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 First Name
               </label>
               <input
-                aria-describedby="_r_1f_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping given-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -3232,7 +3191,6 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 Last Name
               </label>
               <input
-                aria-describedby="_r_1g_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping family-name"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -3260,7 +3218,6 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 Address Line 1
               </label>
               <input
-                aria-describedby="_r_1h_-form-item-description"
                 aria-invalid="false"
                 autocomplete="off"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -3288,7 +3245,6 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 Address Line 2
               </label>
               <input
-                aria-describedby="_r_1i_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -3316,7 +3272,6 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 Zip Code
               </label>
               <input
-                aria-describedby="_r_1j_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping postal-code"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -3340,7 +3295,6 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 City
               </label>
               <input
-                aria-describedby="_r_1k_-form-item-description"
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
@@ -3368,7 +3322,6 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_1l_-form-item-description"
                   aria-invalid="false"
                   aria-label="State"
                   autocomplete="shipping address-level1"
@@ -3725,7 +3678,6 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
               Phone Number
             </label>
             <input
-              aria-describedby="_r_1m_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
