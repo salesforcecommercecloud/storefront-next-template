@@ -239,7 +239,7 @@ describe('ProductInfo', () => {
 
             renderProductInfo({ product: inStockProduct });
 
-            expect(screen.getByText(t('product:inStockCount', { count: 10 }))).toBeInTheDocument();
+            expect(screen.getByText(t('product:inStockCount', { stockDisplay: 10 }))).toBeInTheDocument();
         });
 
         test('should display pre-order inventory message when product is preorderable', () => {

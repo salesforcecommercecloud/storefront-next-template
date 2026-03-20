@@ -47,13 +47,11 @@ const colorValues: DecoratedVariationAttributeValue[] = [
         value: 'blue',
         name: 'Blue',
         href: '/product/test?color=blue',
-        swatch: null,
     },
     {
         value: 'black',
         name: 'Black',
         href: '/product/test?color=black',
-        swatch: null,
     },
 ];
 
@@ -181,9 +179,9 @@ describe('ProductTileSwatches', () => {
         expect(img).toHaveAttribute('src', 'https://example.com/navy.jpg');
     });
 
-    test('does not render swatch image when swatch is null', () => {
+    test('does not render swatch image when swatch is absent', () => {
         renderSwatches({
-            colorValues: [{ value: 'blue', name: 'Blue', href: '/product/test?color=blue', swatch: null }],
+            colorValues: [{ value: 'blue', name: 'Blue', href: '/product/test?color=blue' }],
             totalColorCount: 1,
             maxSwatches: 1,
         });

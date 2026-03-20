@@ -9,6 +9,7 @@ exports[`Hero stories snapshot > Default story renders and matches snapshot 1`] 
       alt="Hero background"
       class="absolute inset-0 w-full h-full object-cover"
       fetchpriority="high"
+      src="https://via.placeholder.com/1920x1080"
       style="object-position: 50% 50%;"
     />
     <div
@@ -60,6 +61,7 @@ exports[`Hero stories snapshot > WithoutSubtitle story renders and matches snaps
       alt="Hero background"
       class="absolute inset-0 w-full h-full object-cover"
       fetchpriority="high"
+      src="https://via.placeholder.com/1920x1080"
       style="object-position: 50% 50%;"
     />
     <div

@@ -15,10 +15,12 @@
  */
 
 import { useEffect, useCallback, useRef } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useProductFetcher } from '@/hooks/product/use-product-fetcher';
 import { useModalStateReset } from '@/hooks/use-modal-state-reset';
+
+type Product = ShopperProducts.schemas['Product'];
 
 /**
  * Hook to handle state reset when productId changes mid-session
@@ -34,9 +36,9 @@ export function useProductIdChangeHandler({
     hasUserChangedAttributesRef,
 }: {
     productId: string;
-    currentProduct: ShopperProductsTypes.Product | null;
+    currentProduct: Product | null;
     prevProductIdRef: React.MutableRefObject<string | undefined>;
-    setCurrentProduct: (product: ShopperProductsTypes.Product | null) => void;
+    setCurrentProduct: (product: Product | null) => void;
     setVariationValues: (values: Record<string, string>) => void;
     setIsLockedToVariant: (locked: boolean) => void;
     hasUserChangedAttributesRef: React.MutableRefObject<boolean>;
@@ -63,8 +65,6 @@ export function useProductIdChangeHandler({
     }, [productId]);
 }
 
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-
 /**
  * Composite hook that manages product data loading and processing for bonus product modal
  *
@@ -88,15 +88,15 @@ export function useBonusProductData({
     open: boolean;
     productId: string;
     fetcher: ScapiFetcher<ShopperProducts.schemas['Product']>;
-    currentProduct: ShopperProductsTypes.Product | null;
+    currentProduct: Product | null;
     setIsLockedToVariant: (locked: boolean) => void;
-    setCurrentProduct: (product: ShopperProductsTypes.Product | null) => void;
+    setCurrentProduct: (product: Product | null) => void;
     setVariationValues: (values: Record<string, string>) => void;
     hasUserChangedAttributesRef: React.MutableRefObject<boolean>;
 }) {
     // Track if we've processed the initial fetcher data to prevent re-processing
     const hasProcessedInitialDataRef = useRef(false);
-    const lastFetcherDataRef = useRef<ShopperProductsTypes.Product | null>(null);
+    const lastFetcherDataRef = useRef<Product | null>(null);
     const prevProductIdRef = useRef<string | undefined>(productId);
 
     // Handle productId changes mid-session (specific to bonus modal)
@@ -123,7 +123,7 @@ export function useBonusProductData({
 
     // Handler for when product data is received
     const handleDataReceived = useCallback(
-        (loadedProduct: ShopperProductsTypes.Product) => {
+        (loadedProduct: Product) => {
             // Skip if we've already processed this exact data object
             if (lastFetcherDataRef.current === loadedProduct) {
                 return;

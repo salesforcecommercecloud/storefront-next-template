@@ -208,9 +208,10 @@ This component doesn't accept any props - it's configured via environment variab
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof SocialLoginButtons>;
 
 export const Default: Story = {
+    render: () => <SocialLoginButtons />,
     parameters: {
         socialProviders: ['Apple', 'Google'],
         docs: {
@@ -263,6 +264,7 @@ The default SocialLoginButtons shows Apple and Google login options:
 };
 
 export const SingleProvider: Story = {
+    render: () => <SocialLoginButtons />,
     parameters: {
         socialProviders: ['Google'],
         docs: {
@@ -299,6 +301,7 @@ This story shows a single social login provider (Google only):
 };
 
 export const MultipleProviders: Story = {
+    render: () => <SocialLoginButtons />,
     parameters: {
         socialProviders: ['Apple', 'Google', 'Facebook', 'Microsoft'],
         docs: {
@@ -345,6 +348,7 @@ This story demonstrates multiple social login providers:
 };
 
 export const NoProviders: Story = {
+    render: () => <SocialLoginButtons />,
     parameters: {
         socialProviders: [],
         docs: {
@@ -490,6 +494,7 @@ This story shows SocialLoginButtons integrated into a complete login form:
 };
 
 export const CustomProvider: Story = {
+    render: () => <SocialLoginButtons />,
     parameters: {
         socialProviders: ['GitHub', 'Discord', 'Twitter'],
         docs: {

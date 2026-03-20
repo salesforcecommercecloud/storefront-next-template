@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { MiddlewareFunction } from 'react-router';
+import type { DataStrategyResult, MiddlewareFunction } from 'react-router';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 
 /**

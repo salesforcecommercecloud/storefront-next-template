@@ -96,7 +96,7 @@ export const Default: Story = {
         <Hero
             title="Welcome to Our Store"
             subtitle="Discover amazing products for your everyday needs"
-            imageUrl="https://via.placeholder.com/1920x1080"
+            imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
             imageAlt="Hero background"
             ctaText="Shop Now"
             ctaLink="/category/all"
@@ -128,7 +128,7 @@ export const WithoutSubtitle: Story = {
     render: () => (
         <Hero
             title="Simple Hero"
-            imageUrl="https://via.placeholder.com/1920x1080"
+            imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
             imageAlt="Hero background"
             ctaText="Explore"
             ctaLink="/explore"

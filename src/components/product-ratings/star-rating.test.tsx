@@ -464,7 +464,7 @@ describe('StarRating', () => {
 
         test('merges starClassName with the size class', () => {
             const { container } = render(
-                <StarRating rating={3} reviewCount={10} starSize="md" starClassName="custom-color" />
+                <StarRating rating={3} reviewCount={10} starSize="lg" starClassName="custom-color" />
             );
             const firstStar = container.querySelector('[role="group"] svg');
             expect(firstStar?.getAttribute('class')).toContain('custom-color');

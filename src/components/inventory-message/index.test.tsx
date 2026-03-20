@@ -121,7 +121,7 @@ describe('InventoryMessage', () => {
     });
 
     it('uses variant inventory when currentVariant is provided', () => {
-        const variant: ShopperProducts.schemas['Variant'] = {
+        const variant = {
             productId: 'test-product',
             variationValues: {},
             inventory: {
@@ -131,7 +131,7 @@ describe('InventoryMessage', () => {
                 backorderable: true,
                 preorderable: false,
             },
-        };
+        } as unknown as ShopperProducts.schemas['Variant'];
 
         render(<InventoryMessage product={baseProduct} currentVariant={variant} />);
 
@@ -237,7 +237,7 @@ describe('InventoryMessage', () => {
         });
 
         it('uses custom getInventoryStatus function with variant when provided', () => {
-            const variant: ShopperProducts.schemas['Variant'] = {
+            const variant = {
                 productId: 'test-product',
                 variationValues: {},
                 inventory: {
@@ -247,7 +247,7 @@ describe('InventoryMessage', () => {
                     backorderable: true,
                     preorderable: false,
                 },
-            };
+            } as unknown as ShopperProducts.schemas['Variant'];
 
             const customGetInventoryStatus = vi.fn().mockReturnValue('back-order');
 

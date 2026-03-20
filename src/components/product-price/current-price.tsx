@@ -21,7 +21,7 @@ import { formatCurrency } from '@/lib/currency';
 interface CurrentPriceProps {
     labelForA11y?: string;
     price: number;
-    as?: 'span' | 'div' | 'p';
+    as?: 'span' | 'div' | 'p' | 'h3';
     isRange?: boolean;
     /** When set with isRange, display as "min – max" price range */
     maxPrice?: number;

@@ -104,21 +104,27 @@ function getInventoryStatus(
     return InventoryStatus.OUT_OF_STOCK;
 }
 
+type InventoryStatusInfo = { message: string; className: string };
+
 /**
  * Gets the appropriate message and styling for inventory status.
  *
  * Uses semantic status tokens for consistent theming.
  */
-function getInventoryMessage(status: InventoryStatusType, t: TFunction, stockLevel?: number | string) {
+function getInventoryMessage(
+    status: InventoryStatusType,
+    t: TFunction<'product'>,
+    stockDisplay?: number | string
+): InventoryStatusInfo {
     switch (status) {
         case InventoryStatus.IN_STOCK:
             return {
-                message: stockLevel != null ? t('inStockCount', { count: stockLevel }) : t('inStock'),
+                message: stockDisplay != null ? t('inStockCount', { stockDisplay }) : t('inStock'),
                 className: 'text-status-positive',
             };
         case InventoryStatus.LOW_STOCK:
             return {
-                message: stockLevel != null ? t('lowStockCount', { count: stockLevel }) : t('lowStock'),
+                message: stockDisplay != null ? t('lowStockCount', { stockDisplay }) : t('lowStock'),
                 className: 'text-status-warning',
             };
         case InventoryStatus.PRE_ORDER:

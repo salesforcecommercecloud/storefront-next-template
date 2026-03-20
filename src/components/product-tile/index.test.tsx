@@ -197,7 +197,10 @@ describe('ProductTile — rendering', () => {
         const { getProductBadges } = await import('@/lib/product-badges');
         vi.mocked(getProductBadges).mockReturnValueOnce({
             hasBadges: true,
-            badges: [{ label: 'Sale' }, { label: 'New' }],
+            badges: [
+                { label: 'Sale', propertyName: 'c_isSale', color: 'orange' },
+                { label: 'New', propertyName: 'c_isNew', color: 'green' },
+            ],
         });
         renderTile();
         expect(screen.getByText('Sale')).toBeInTheDocument();

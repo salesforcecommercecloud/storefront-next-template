@@ -50,7 +50,6 @@ export function useStoreLocatorForm() {
     const formSchema = useMemo(() => createFormSchema(t), [t]);
 
     const form = useForm<FormSearchParams>({
-        // @ts-expect-error - zodResolver type mismatch with zod version
         resolver: zodResolver(formSchema),
         defaultValues,
     });
