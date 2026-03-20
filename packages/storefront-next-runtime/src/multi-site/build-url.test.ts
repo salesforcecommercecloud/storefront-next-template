@@ -21,6 +21,7 @@ import {
     decomposeUrl,
     resolvePrefix,
     sanitizePrefix,
+    stripPathPrefix,
 } from './build-url';
 
 describe('parseSearchConfig', () => {
@@ -145,6 +146,37 @@ describe('sanitizePrefix', () => {
 
     it('returns pathname unchanged when resolvedPrefix is empty', () => {
         expect(sanitizePrefix('/product/123', '')).toBe('/product/123');
+    });
+});
+
+describe('stripPathPrefix', () => {
+    it('strips /:siteId/:localeId prefix', () => {
+        expect(stripPathPrefix('/global/en-GB/checkout', '/:siteId/:localeId')).toBe('/checkout');
+        expect(stripPathPrefix('/us/en-US/product/123', '/:siteId/:localeId')).toBe('/product/123');
+        expect(stripPathPrefix('/global/it-IT/category/womens', '/:siteId/:localeId')).toBe('/category/womens');
+    });
+
+    it('strips /:localeId prefix', () => {
+        expect(stripPathPrefix('/en-GB/checkout', '/:localeId')).toBe('/checkout');
+        expect(stripPathPrefix('/en-US/product/123', '/:localeId')).toBe('/product/123');
+    });
+
+    it('strips /:siteId prefix', () => {
+        expect(stripPathPrefix('/global/checkout', '/:siteId')).toBe('/checkout');
+    });
+
+    it('returns pathname unchanged when it has fewer segments than the prefix', () => {
+        expect(stripPathPrefix('/checkout', '/:siteId/:localeId')).toBe('/checkout');
+        expect(stripPathPrefix('/', '/:siteId/:localeId')).toBe('/');
+    });
+
+    it('returns pathname unchanged when prefix is empty', () => {
+        expect(stripPathPrefix('/checkout', '')).toBe('/checkout');
+        expect(stripPathPrefix('/global/en-GB/checkout', '')).toBe('/global/en-GB/checkout');
+    });
+
+    it('returns "/" when pathname equals the prefix exactly', () => {
+        expect(stripPathPrefix('/global/en-GB', '/:siteId/:localeId')).toBe('/');
     });
 });
 

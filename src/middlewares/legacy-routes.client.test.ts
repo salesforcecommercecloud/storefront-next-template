@@ -306,6 +306,53 @@ describe('legacyRoutesMiddleware', () => {
         });
     });
 
+    describe('multisite prefix stripping', () => {
+        beforeEach(() => {
+            vi.stubGlobal('window', { location: { href: '' } } as Window & typeof globalThis);
+
+            vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
+                if (contextKey === appConfigContext) {
+                    return {
+                        hybrid: {
+                            enabled: true,
+                            legacyRoutes: ['/checkout', '/account/orders', '/product/:id'],
+                        },
+                        url: {
+                            prefix: '/:siteId/:localeId',
+                        },
+                    } as unknown as AppConfig;
+                }
+                return undefined;
+            });
+        });
+
+        test('should redirect when multisite-prefixed URL matches a bare legacy route', () => {
+            const request = new Request('https://example.com/global/en-GB/checkout');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toContain('redirected=1');
+        });
+
+        test('should redirect for parameterized legacy routes with multisite prefix', () => {
+            const request = new Request('https://example.com/global/en-GB/product/123');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toContain('redirected=1');
+        });
+
+        test('should not redirect for non-legacy multisite routes', async () => {
+            const request = new Request('https://example.com/global/en-GB/category/womens');
+
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).toHaveBeenCalledOnce();
+        });
+    });
+
     describe('client-side parameterized route matching', () => {
         beforeEach(() => {
             vi.stubGlobal('window', { location: { href: '' } } as Window & typeof globalThis);

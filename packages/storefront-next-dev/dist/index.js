@@ -1690,7 +1690,7 @@ function hybridProxyPlugin(options) {
 	console.log(`[Hybrid Proxy] Target origin: ${options.targetOrigin}`);
 	console.log(`[Hybrid Proxy] Routing rules: ${options.routingRules.slice(0, 100)}...`);
 	const locale = options.locale || "default";
-	console.log(`[Hybrid Proxy] Path transformation: /path → /s/${options.siteId}/${locale}/path`);
+	console.log(`[Hybrid Proxy] Path transformation: / → /s/${options.siteId}, /path → /s/${options.siteId}/${locale}/path`);
 	const targetOriginPattern = new RegExp(escapeRegExp(options.targetOrigin), "g");
 	const proxy = httpProxy.createProxyServer({
 		changeOrigin: true,
@@ -1702,7 +1702,13 @@ function hybridProxyPlugin(options) {
 		const pathname = url.pathname;
 		if (!pathname.startsWith("/s/") && !pathname.startsWith("/on/demandware.")) {
 			const originalPath = proxyReq.path;
-			proxyReq.path = `/s/${options.siteId}/${locale}${pathname}${url.search}`;
+			/**
+			* "/" maps to the SFRA/SiteGenesis site root — no locale in the path
+			* This would simply proxy to SFCC hostname (eg.: https://zzrf-001.dx.commercecloud.salesforce.com/s/{siteId}/{locale}/) which is not a valid storefront URL.
+			* We need to rewrite the path to /s/{siteId} so that it can be proxied to the correct SFCC URL.
+			*/
+			if (pathname === "/") proxyReq.path = `/s/${options.siteId}${url.search}`;
+			else proxyReq.path = `/s/${options.siteId}/${locale}${pathname}${url.search}`;
 			console.log(`[Hybrid Proxy] Path rewrite: ${originalPath} → ${proxyReq.path}`);
 		}
 	});

@@ -91,6 +91,22 @@ declare function applyUrlConfig(options: {
  */
 declare function resolvePrefix(prefix: string, params: Record<string, string>): string;
 /**
+ * Strips the URL prefix segments from a pathname based on a prefix pattern.
+ * Since all routes are configured with the prefix baked in, segment counting is sufficient.
+ *
+ * @param pathname - Full pathname (e.g. '/global/en-GB/checkout')
+ * @param prefixPattern - URL prefix pattern from config (e.g. '/:siteId/:localeId')
+ * @returns Pathname with prefix stripped (e.g. '/checkout'), or original if
+ *          the pathname has fewer segments than the prefix
+ *
+ * @example
+ * stripPathPrefix('/global/en-GB/checkout', '/:siteId/:localeId') // → '/checkout'
+ * stripPathPrefix('/checkout', '/:siteId/:localeId')              // → '/checkout' (fewer segments → unchanged)
+ * stripPathPrefix('/checkout', '')                                 // → '/checkout' (no prefix configured)
+ * stripPathPrefix('/', '/:siteId/:localeId')                      // → '/'
+ */
+declare function stripPathPrefix(pathname: string, prefixPattern: string): string;
+/**
  * Sanitize a resolved prefix from a pathname if present.
  * sanitizePrefix('/global/en-GB/product/123', '/global/en-GB') → '/product/123'
  * sanitizePrefix('/product/123', '/global/en-GB') → '/product/123'   (no-op)
@@ -159,5 +175,5 @@ declare function createMultiSiteMiddleware(config: MultiSiteConfig): MiddlewareF
  */
 declare const requestToLocaleMap: WeakMap<Request, string>;
 //#endregion
-export { type DetectionConfig, type Locale, type MultiSiteConfig, type MultiSiteContext, type Site, SiteProvider, applyUrlConfig, buildUrl, createMultiSiteMiddleware, getMultiSiteCookies, multiSiteContext, requestToLocaleMap, resolvePrefix, sanitizePrefix, useSite };
+export { type DetectionConfig, type Locale, type MultiSiteConfig, type MultiSiteContext, type Site, SiteProvider, applyUrlConfig, buildUrl, createMultiSiteMiddleware, getMultiSiteCookies, multiSiteContext, requestToLocaleMap, resolvePrefix, sanitizePrefix, stripPathPrefix, useSite };
 //# sourceMappingURL=multi-site.d.ts.map

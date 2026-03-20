@@ -15,7 +15,7 @@
  */
 export { SiteProvider, useSite } from './site-context';
 export { applyUrlConfig } from './apply-url-config';
-export { buildUrl, resolvePrefix, sanitizePrefix } from './build-url';
+export { buildUrl, resolvePrefix, sanitizePrefix, stripPathPrefix } from './build-url';
 
 export { createMultiSiteMiddleware, multiSiteContext, getMultiSiteCookies } from './middleware';
 export { requestToLocaleMap } from './cookies';

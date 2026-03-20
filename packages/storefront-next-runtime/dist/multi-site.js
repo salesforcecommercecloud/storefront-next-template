@@ -75,6 +75,28 @@ function resolvePrefix(prefix, params) {
 	return resolved;
 }
 /**
+* Strips the URL prefix segments from a pathname based on a prefix pattern.
+* Since all routes are configured with the prefix baked in, segment counting is sufficient.
+*
+* @param pathname - Full pathname (e.g. '/global/en-GB/checkout')
+* @param prefixPattern - URL prefix pattern from config (e.g. '/:siteId/:localeId')
+* @returns Pathname with prefix stripped (e.g. '/checkout'), or original if
+*          the pathname has fewer segments than the prefix
+*
+* @example
+* stripPathPrefix('/global/en-GB/checkout', '/:siteId/:localeId') // → '/checkout'
+* stripPathPrefix('/checkout', '/:siteId/:localeId')              // → '/checkout' (fewer segments → unchanged)
+* stripPathPrefix('/checkout', '')                                 // → '/checkout' (no prefix configured)
+* stripPathPrefix('/', '/:siteId/:localeId')                      // → '/'
+*/
+function stripPathPrefix(pathname, prefixPattern) {
+	if (!prefixPattern) return pathname;
+	const prefixSegmentCount = prefixPattern.split("/").filter(Boolean).length;
+	const pathSegments = pathname.split("/").filter(Boolean);
+	if (pathSegments.length <= prefixSegmentCount) return pathSegments.length === prefixSegmentCount ? "/" : pathname;
+	return `/${pathSegments.slice(prefixSegmentCount).join("/")}`;
+}
+/**
 * Sanitize a resolved prefix from a pathname if present.
 * sanitizePrefix('/global/en-GB/product/123', '/global/en-GB') → '/product/123'
 * sanitizePrefix('/product/123', '/global/en-GB') → '/product/123'   (no-op)
@@ -391,5 +413,5 @@ function createMultiSiteMiddleware(config) {
 }
 
 //#endregion
-export { SiteProvider, applyUrlConfig, buildUrl, createMultiSiteMiddleware, getMultiSiteCookies, multiSiteContext, requestToLocaleMap, resolvePrefix, sanitizePrefix, useSite };
+export { SiteProvider, applyUrlConfig, buildUrl, createMultiSiteMiddleware, getMultiSiteCookies, multiSiteContext, requestToLocaleMap, resolvePrefix, sanitizePrefix, stripPathPrefix, useSite };
 //# sourceMappingURL=multi-site.js.map
