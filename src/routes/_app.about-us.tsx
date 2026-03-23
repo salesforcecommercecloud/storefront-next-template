@@ -26,6 +26,7 @@ import {
 import ContentCard from '@/components/content-card';
 import Contact from '@/components/contact';
 import { Typography } from '@/components/typography';
+import { SeoMeta } from '@/components/seo-meta';
 import { PageType } from '@/lib/decorators/page-type';
 import { useTranslation } from 'react-i18next';
 import visionImage from '/images/hero-02.webp';
@@ -52,6 +53,12 @@ export default function AboutUs(): ReactElement {
 
     return (
         <div className="pb-8">
+            <SeoMeta
+                title={t('title', { defaultValue: 'About Us' })}
+                description={t('meta.description', {
+                    defaultValue: 'Learn more about our story, mission, and the team behind the store.',
+                })}
+            />
             <div className="max-w-screen-2xl mx-auto px-4 pb-6">
                 {/* Breadcrumb */}
                 <Breadcrumb className="mb-2.5">

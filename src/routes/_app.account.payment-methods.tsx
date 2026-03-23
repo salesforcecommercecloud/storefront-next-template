@@ -17,6 +17,8 @@ import { type ReactElement, Suspense } from 'react';
 import { useOutletContext, Await } from 'react-router';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { AccountPaymentMethodsSkeleton, PaymentMethods } from '@/components/payment-methods';
+import { SeoMeta } from '@/components/seo-meta';
+import { useTranslation } from 'react-i18next';
 
 type AccountLayoutContext = {
     customer: Promise<ShopperCustomers.schemas['Customer'] | null>;
@@ -26,13 +28,17 @@ type AccountLayoutContext = {
  * Payment methods page route
  */
 export default function PaymentMethodsRoute(): ReactElement {
+    const { t } = useTranslation('account');
     const { customer: customerPromise } = useOutletContext<AccountLayoutContext>();
 
     return (
-        <Suspense fallback={<AccountPaymentMethodsSkeleton />}>
-            <Await resolve={customerPromise}>
-                {(customer: ShopperCustomers.schemas['Customer'] | null) => <PaymentMethods customer={customer} />}
-            </Await>
-        </Suspense>
+        <>
+            <SeoMeta title={t('meta.paymentMethodsTitle', { defaultValue: 'Payment Methods' })} noIndex />
+            <Suspense fallback={<AccountPaymentMethodsSkeleton />}>
+                <Await resolve={customerPromise}>
+                    {(customer: ShopperCustomers.schemas['Customer'] | null) => <PaymentMethods customer={customer} />}
+                </Await>
+            </Suspense>
+        </>
     );
 }

@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import AddressCard from '@/components/address-card';
 import { AccountAddressesSkeleton } from '@/components/account-addresses-skeleton';
+import { SeoMeta } from '@/components/seo-meta';
 import { CustomerAddressForm, type CustomerAddressFormData } from '@/components/customer-address-form';
 import { RemoveAddressConfirmationDialog } from '@/components/remove-address-confirmation-dialog';
 import { useToast } from '@/components/toast';
@@ -352,16 +353,20 @@ function AccountAddressesContent({
  * Shows a skeleton while the customer data is being loaded.
  */
 export default function AccountAddresses(): ReactElement {
+    const { t } = useTranslation('account');
     // Get customer data from parent layout context
     const { customer: customerPromise } = useOutletContext<AccountLayoutContext>();
 
     return (
-        <Suspense fallback={<AccountAddressesSkeleton />}>
-            <Await resolve={customerPromise}>
-                {(customer: ShopperCustomers.schemas['Customer'] | null) => (
-                    <AccountAddressesContent customer={customer} />
-                )}
-            </Await>
-        </Suspense>
+        <>
+            <SeoMeta title={t('meta.addressesTitle', { defaultValue: 'Addresses' })} noIndex />
+            <Suspense fallback={<AccountAddressesSkeleton />}>
+                <Await resolve={customerPromise}>
+                    {(customer: ShopperCustomers.schemas['Customer'] | null) => (
+                        <AccountAddressesContent customer={customer} />
+                    )}
+                </Await>
+            </Suspense>
+        </>
     );
 }

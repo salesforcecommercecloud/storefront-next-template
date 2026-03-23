@@ -36,6 +36,7 @@ import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
 import { JsonLd } from '@/components/json-ld';
+import { SeoMeta } from '@/components/seo-meta';
 import { generateCategorySchema } from '@/utils/category-schema';
 import {
     getInitialFiltersOpen,
@@ -313,6 +314,10 @@ export default function CategoryPage({
 
     return (
         <Fragment>
+            <SeoMeta
+                title={category.name || category.id}
+                description={category.pageDescription || category.description}
+            />
             <div className="pb-16">
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="mb-4">

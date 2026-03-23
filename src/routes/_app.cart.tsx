@@ -42,6 +42,8 @@ import { currencyContext } from '@/lib/currency';
 // Components
 import CartSkeleton from '@/components/cart/cart-skeleton';
 import CartContent from '@/components/cart/cart-content';
+import { SeoMeta } from '@/components/seo-meta';
+import { useTranslation } from 'react-i18next';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores';
@@ -331,6 +333,7 @@ export const loader: LoaderFunction = ({ context }: LoaderFunctionArgs): CartPag
  * @returns JSX element representing the cart page
  */
 export default function Cart(): ReactElement {
+    const { t } = useTranslation('cart');
     const pageData = useLoaderData<CartPageData>();
     const content = (
         <Await resolve={pageData.basketDataPromise}>
@@ -367,14 +370,22 @@ export default function Cart(): ReactElement {
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     return (
-        <Suspense
-            fallback={
-                <CartSkeleton
-                    isRegistered={false}
-                    productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0}
-                />
-            }>
-            {finalContent}
-        </Suspense>
+        <>
+            <SeoMeta
+                title={t('meta.title', { defaultValue: 'Cart' })}
+                description={t('meta.description', {
+                    defaultValue: 'Review the items in your shopping cart and proceed to checkout.',
+                })}
+            />
+            <Suspense
+                fallback={
+                    <CartSkeleton
+                        isRegistered={false}
+                        productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0}
+                    />
+                }>
+                {finalContent}
+            </Suspense>
+        </>
     );
 }

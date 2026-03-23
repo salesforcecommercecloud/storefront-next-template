@@ -16,6 +16,8 @@
 import { type ReactElement, Suspense } from 'react';
 import { useOutletContext, Await } from 'react-router';
 import { AccountOverview, AccountOverviewSkeleton } from '@/components/account/account-overview';
+import { SeoMeta } from '@/components/seo-meta';
+import { useTranslation } from 'react-i18next';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 type Customer = ShopperCustomers.schemas['Customer'];
@@ -33,13 +35,17 @@ type AccountLayoutContext = {
  * - Quick Links to key account sections
  */
 export default function AccountOverviewRoute(): ReactElement {
+    const { t } = useTranslation('account');
     const { customer: customerPromise } = useOutletContext<AccountLayoutContext>();
 
     return (
-        <Suspense fallback={<AccountOverviewSkeleton />}>
-            <Await resolve={customerPromise}>
-                {(customer: Customer | null) => <AccountOverview customer={customer} />}
-            </Await>
-        </Suspense>
+        <>
+            <SeoMeta title={t('meta.overviewTitle', { defaultValue: 'Account Overview' })} noIndex />
+            <Suspense fallback={<AccountOverviewSkeleton />}>
+                <Await resolve={customerPromise}>
+                    {(customer: Customer | null) => <AccountOverview customer={customer} />}
+                </Await>
+            </Suspense>
+        </>
     );
 }

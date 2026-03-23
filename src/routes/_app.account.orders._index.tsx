@@ -27,6 +27,7 @@ import {
 } from '@/lib/api/order';
 import { Card, CardContent } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
+import { SeoMeta } from '@/components/seo-meta';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { getAuth } from '@/middlewares/auth.server';
 
@@ -123,6 +124,7 @@ export default function OrderListPage(): ReactElement {
 
     return (
         <div className="order-history-page text-sm space-y-0">
+            <SeoMeta title={t('meta.orderHistoryTitle', { defaultValue: 'Order History' })} noIndex />
             <OrderListHeader title={t('navigation.orderHistory')} subtitle={t('orders.subtitle')} />
             <Suspense fallback={<OrderListSkeleton />}>
                 <Await resolve={loaderData.ordersPromise} errorElement={<OrderListError />}>

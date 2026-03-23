@@ -11,6 +11,7 @@
         "noFilterOptionsAvailable": "Nessuna opzione di filtro disponibile."
     },
     "common": {
+        "defaultSiteName": "Negozio NextGen PWA Kit",
         "loading": "Caricamento",
         "loadingMore": "Caricamento in corso...",
         "product": "il prodotto",

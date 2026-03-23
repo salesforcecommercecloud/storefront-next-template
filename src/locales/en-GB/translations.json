@@ -11,6 +11,7 @@
         "noFilterOptionsAvailable": "No filter options available."
     },
     "common": {
+        "defaultSiteName": "NextGen PWA Kit Store",
         "loading": "Loading",
         "loadingMore": "Loading more...",
         "product": "the product",

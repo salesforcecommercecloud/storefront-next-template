@@ -37,6 +37,7 @@ import type {
 import { getCardTypeDisplay } from '@/lib/payment-utils';
 import { getDisplayVariationValues } from '@/lib/product-utils';
 import OrderSkeleton from '@/components/order-skeleton';
+import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import { toImageUrl } from '@/lib/dynamic-image';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -539,9 +540,14 @@ export default function OrderConfirmationPage({
 }: {
     loaderData: CheckoutConfirmationLoaderData;
 }): ReactElement {
+    const { t } = useTranslation('checkout');
+
     return (
-        <Suspense fallback={<OrderSkeleton />}>
-            <Await resolve={loaderData.orderData}>{(data) => <OrderConfirmationContent {...data} />}</Await>
-        </Suspense>
+        <>
+            <SeoMeta title={t('meta.confirmationTitle', { defaultValue: 'Order Confirmation' })} noIndex />
+            <Suspense fallback={<OrderSkeleton />}>
+                <Await resolve={loaderData.orderData}>{(data) => <OrderConfirmationContent {...data} />}</Await>
+            </Suspense>
+        </>
     );
 }

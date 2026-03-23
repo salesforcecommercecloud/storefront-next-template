@@ -27,6 +27,7 @@ import { useToast } from '@/components/toast';
 import type { ShopperConsents, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
+import { SeoMeta } from '@/components/seo-meta';
 import { useAuth } from '@/providers/auth';
 import CustomerPreferencesProvider from '@/providers/customer-preferences';
 import { useTranslation } from 'react-i18next';
@@ -456,6 +457,7 @@ function AccountDetailsContent({
  */
 export default function AccountDetails(): ReactElement {
     const { customer: customerPromise, subscriptions: subscriptionsPromise } = useOutletContext<AccountLayoutContext>();
+    const { t } = useTranslation('account');
 
     // Stable promise reference so Await does not reset (unmount children) on every re-render.
     const dataPromise = useMemo(
@@ -464,13 +466,16 @@ export default function AccountDetails(): ReactElement {
     );
 
     return (
-        <Suspense fallback={<AccountDetailSkeleton />}>
-            <Await resolve={dataPromise}>
-                {([customer, subscriptions]: [
-                    Customer | null,
-                    ShopperConsents.schemas['ConsentSubscriptionResponse'] | null,
-                ]) => <AccountDetailsContent customer={customer} subscriptions={subscriptions} />}
-            </Await>
-        </Suspense>
+        <>
+            <SeoMeta title={t('meta.accountDetailsTitle', { defaultValue: 'Account Details' })} noIndex />
+            <Suspense fallback={<AccountDetailSkeleton />}>
+                <Await resolve={dataPromise}>
+                    {([customer, subscriptions]: [
+                        Customer | null,
+                        ShopperConsents.schemas['ConsentSubscriptionResponse'] | null,
+                    ]) => <AccountDetailsContent customer={customer} subscriptions={subscriptions} />}
+                </Await>
+            </Suspense>
+        </>
     );
 }

@@ -286,9 +286,7 @@ export function Layout({ children }: PropsWithChildren) {
                     }}
                 />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <meta name="description" content="Welcome to our web store for high performers!" />
                 <link rel="icon" type="image/x-icon" href={favicon} />
-                <title>NextGen PWA Kit Store</title>
                 <Meta />
                 <Links />
             </head>

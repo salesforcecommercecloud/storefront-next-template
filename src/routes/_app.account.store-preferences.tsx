@@ -16,6 +16,8 @@
 import { type ReactElement } from 'react';
 import { type LoaderFunctionArgs } from 'react-router';
 import StorePreferences from '@/components/store-preferences';
+import { SeoMeta } from '@/components/seo-meta';
+import { useTranslation } from 'react-i18next';
 import { getTranslation } from '@/lib/i18next';
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 import { createApiClients } from '@/lib/api-clients';
@@ -66,5 +68,11 @@ export async function loader({ context }: LoaderFunctionArgs) {
  * Store Preferences route – renders at /account/store-preferences.
  */
 export default function AccountStorePreferencesRoute(): ReactElement {
-    return <StorePreferences />;
+    const { t } = useTranslation('account');
+    return (
+        <>
+            <SeoMeta title={t('meta.storePreferencesTitle', { defaultValue: 'Store Preferences' })} noIndex />
+            <StorePreferences />
+        </>
+    );
 }

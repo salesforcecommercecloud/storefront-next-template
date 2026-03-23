@@ -19,6 +19,8 @@ import { type ShopperCustomers, type ShopperProducts, ApiError } from '@salesfor
 import { getAuth } from '@/middlewares/auth.server';
 import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist';
 import { WishlistPageContent, WishlistSkeleton } from '@/components/wishlist/wishlist-page';
+import { SeoMeta } from '@/components/seo-meta';
+import { useTranslation } from 'react-i18next';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -113,13 +115,17 @@ export default function AccountWishlist({
 }: {
     loaderData: Awaited<ReturnType<typeof loader>>;
 }): ReactElement {
+    const { t } = useTranslation('account');
     return (
-        <Suspense fallback={<WishlistSkeleton />}>
-            <Await resolve={loaderData.productsByProductId}>
-                {(productsByProductId) => (
-                    <WishlistPageContent items={loaderData.items} productsByProductId={productsByProductId} />
-                )}
-            </Await>
-        </Suspense>
+        <>
+            <SeoMeta title={t('meta.wishlistTitle', { defaultValue: 'Wishlist' })} noIndex />
+            <Suspense fallback={<WishlistSkeleton />}>
+                <Await resolve={loaderData.productsByProductId}>
+                    {(productsByProductId) => (
+                        <WishlistPageContent items={loaderData.items} productsByProductId={productsByProductId} />
+                    )}
+                </Await>
+            </Suspense>
+        </>
     );
 }

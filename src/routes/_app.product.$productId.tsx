@@ -39,6 +39,7 @@ import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
 import { JsonLd } from '@/components/json-ld';
+import { SeoMeta } from '@/components/seo-meta';
 import { generateProductSchema } from '@/utils/product-schema';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
@@ -306,6 +307,10 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
     const analytics = useAnalytics();
     const lastTrackedProductIdRef = useRef<string | null>(null);
 
+    const primaryImage =
+        productData.imageGroups?.find((g) => g.viewType === 'large')?.images?.[0]?.link ??
+        productData.imageGroups?.[0]?.images?.[0]?.link;
+
     // Track product view on mount and whenever productData changes
     useEffect(() => {
         // Only track if we haven't already tracked this product
@@ -365,6 +370,14 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
         <ProductProvider product={productData}>
             <ProductContentProvider>
                 <ProductReviewsProvider>
+                    <SeoMeta
+                        title={productData.name}
+                        description={productData.pageDescription || productData.shortDescription}
+                        twitter={{
+                            cardType: 'summary_large_image',
+                            image: primaryImage,
+                        }}
+                    />
                     <div className="min-h-screen bg-background">
                         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 lg:pb-8">
                             {renderPageContent(loaderData.page)}

@@ -34,6 +34,7 @@ import hero03 from '/images/hero-03.webp';
 import hero04 from '/images/hero-04.webp';
 import HeroCarousel, { HeroCarouselSkeleton, type HeroSlide } from '@/components/hero-carousel';
 import { ProductCarouselSkeleton, ProductCarouselWithSuspense } from '@/components/product-carousel';
+import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 
 @PageType({
@@ -134,6 +135,11 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
 
     return (
         <div className="pb-16 -mt-8">
+            <SeoMeta
+                rawTitle
+                title={t('meta.title', { defaultValue: 'NextGen PWA Kit Store' })}
+                description={t('meta.description', { defaultValue: 'Welcome to our web store for high performers!' })}
+            />
             {/* Header Banner Region - Region component handles its own Suspense internally */}
             <div>
                 <Region

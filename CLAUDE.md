@@ -293,17 +293,34 @@ See `src/extensions/README.md` for details.
 
 ## Key Documentation
 
-- [AGENTS.md](./AGENTS.md) - Quick reference for AI coding agents
-- [README.md](./README.md) - Main project documentation
-- [docs/README-DATA.md](./docs/README-DATA.md) - Data fetching with adapters
-- [docs/README-AUTH.md](./docs/README-AUTH.md) - Authentication patterns
-- [docs/README-I18N.md](./docs/README-I18N.md) - Internationalization
-- [docs/README-MULTI-SITE.md](./docs/README-MULTI-SITE.md) - Multi-site & locale URL routing
-- [docs/README-TESTS.md](./docs/README-TESTS.md) - Testing strategy
-- [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) - UI and styling (Tailwind, shadcn, design tokens)
-- [docs/README-ADAPTER-PATTERN-GUIDE.md](./docs/README-ADAPTER-PATTERN-GUIDE.md) - Adapter implementation guide
-- [docs/README-CONFIG.md](./docs/README-CONFIG.md) - Configuration system
-- [.storybook/README-STORYBOOK.md](./.storybook/README-STORYBOOK.md) - Storybook patterns
+- [AGENTS.md](./AGENTS.md) — Quick reference for AI coding agents
+- [README.md](./README.md) — Main project documentation
+
+**Architecture & Patterns:**
+- [docs/README-DATA.md](./docs/README-DATA.md) — Data fetching with adapters
+- [docs/README-ADAPTER-PATTERN-GUIDE.md](./docs/README-ADAPTER-PATTERN-GUIDE.md) — Adapter implementation guide
+- [docs/README-CONFIG.md](./docs/README-CONFIG.md) — Configuration system
+- [docs/README-CONFIG-OPTIONS.md](./docs/README-CONFIG-OPTIONS.md) — Configuration options reference
+- [docs/README-AUTH.md](./docs/README-AUTH.md) — Authentication patterns
+- [docs/README-I18N.md](./docs/README-I18N.md) — Internationalization
+- [docs/README-MULTI-SITE.md](./docs/README-MULTI-SITE.md) — Multi-site and locale URL routing
+
+**UI & Frontend:**
+- [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) — UI and styling (Tailwind, shadcn, design tokens)
+- [docs/README-IMAGES.md](./docs/README-IMAGES.md) — Image rendering and alt text strategy
+- [docs/README-SEO.md](./docs/README-SEO.md) — SEO: page titles, meta tags, canonical URLs
+- [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) — Performance monitoring and optimization
+- [README-PAGE-DESIGNER.md](./README-PAGE-DESIGNER.md) — Page Designer component development
+
+**Testing & Quality:**
+- [docs/README-TESTS.md](./docs/README-TESTS.md) — Testing strategy and patterns
+- [docs/README-ESLINT.md](./docs/README-ESLINT.md) — ESLint configuration and TypeScript enforcement
+- [docs/README-STORY-COVERAGE.md](./docs/README-STORY-COVERAGE.md) — Story coverage and code quality enforcement
+- [.storybook/README-STORYBOOK.md](./.storybook/README-STORYBOOK.md) — Storybook setup and best practices
+
+**Development:**
+- [docs/README-HYBRID-PROXY.md](./docs/README-HYBRID-PROXY.md) — Hybrid proxy for local development
+- [src/extensions/README.md](./src/extensions/README.md) — Extensions system
 
 ## Common Workflows
 

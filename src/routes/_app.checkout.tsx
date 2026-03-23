@@ -17,6 +17,8 @@ import { use, useLayoutEffect } from 'react';
 import type { ActionFunctionArgs } from 'react-router';
 import { loader, type CheckoutPageData } from '@/lib/checkout-loaders';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
+import { SeoMeta } from '@/components/seo-meta';
+import { useTranslation } from 'react-i18next';
 import CheckoutFormPage from '@/components/checkout/checkout-form-page';
 import CheckoutProvider from '@/components/checkout/utils/checkout-context';
 import { CheckoutErrorBoundary } from '@/components/checkout-error-boundary';
@@ -99,6 +101,7 @@ function CheckoutView({
         storesByStoreId,
     },
 }: RouteComponentProps<CheckoutPageData>) {
+    const { t } = useTranslation('checkout');
     // Imperatively update root BasketProvider with loader basket
     // This ensures cart badge and other components see the updated basket
     const updateBasket = useBasketUpdater();
@@ -118,16 +121,19 @@ function CheckoutView({
     const shippingMethodsMapData = shippingMethodsMap ? use(shippingMethodsMap) : {};
 
     const content = (
-        <CheckoutProvider
-            customerProfile={customerProfileData ?? undefined}
-            shippingDefaultSet={shippingDefaultSet ?? Promise.resolve(undefined)}>
-            <CheckoutFormPage
-                shippingMethodsMap={shippingMethodsMapData}
-                productMapPromise={productMap}
-                promotionsPromise={promotions}
-                showToast={addToast}
-            />
-        </CheckoutProvider>
+        <>
+            <SeoMeta title={t('meta.title', { defaultValue: 'Checkout' })} noIndex />
+            <CheckoutProvider
+                customerProfile={customerProfileData ?? undefined}
+                shippingDefaultSet={shippingDefaultSet ?? Promise.resolve(undefined)}>
+                <CheckoutFormPage
+                    shippingMethodsMap={shippingMethodsMapData}
+                    productMapPromise={productMap}
+                    promotionsPromise={promotions}
+                    showToast={addToast}
+                />
+            </CheckoutProvider>
+        </>
     );
 
     let finalContent = content;

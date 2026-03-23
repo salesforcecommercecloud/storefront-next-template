@@ -33,6 +33,7 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
+import { SeoMeta } from '@/components/seo-meta';
 import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
 import {
     getInitialFiltersOpen,
@@ -231,6 +232,22 @@ export default function SearchPage({
 
     return (
         <Fragment>
+            <SeoMeta
+                title={
+                    searchTerm
+                        ? t('titleWithQuery', { query: searchTerm, defaultValue: `Results for "${searchTerm}"` })
+                        : t('title', { defaultValue: 'Search' })
+                }
+                description={
+                    searchTerm
+                        ? t('meta.descriptionWithQuery', {
+                              query: searchTerm,
+                              count: searchResultCritical.total,
+                              defaultValue: `${searchResultCritical.total} results for "${searchTerm}"`,
+                          })
+                        : t('meta.description', { defaultValue: 'Search our store for products' })
+                }
+            />
             <div className="pb-16">
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

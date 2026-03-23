@@ -1,6 +1,6 @@
 # SEO
 
-This document covers the SEO features built into the storefront template: canonical URLs and meta tags
+This document covers the SEO features built into the storefront template: page titles and meta tags, canonical URLs, and indexing control.
 
 ## Canonical URLs
 
@@ -61,3 +61,144 @@ it('preserves view param', () => {
 ```
 
 **When NOT to add a parameter:** If the parameter doesn't change the page's primary content (e.g., UI preferences stored in cookies, modal triggers, analytics flags), it should not be in the allowlist. Keeping the allowlist minimal produces the cleanest canonical URLs.
+
+## Page Titles and Meta Tags (`SeoMeta`)
+
+Each route renders a `<SeoMeta>` component that sets the page `<title>`, `<meta name="description">`, and optional Twitter Card tags. The component is defined in [`src/components/seo-meta/index.tsx`](../src/components/seo-meta/index.tsx) and uses React 19 document metadata hoisting, which means tags rendered anywhere in the component tree are automatically hoisted to `<head>` and deduplicated. This works with streaming/Suspense — tags are sent when data resolves.
+
+### Basic Usage
+
+```tsx
+import { SeoMeta } from '@/components/seo-meta';
+
+// Standard page — site name is appended automatically
+// Renders: <title>Classic Jacket | NextGen PWA Kit Store</title>
+<SeoMeta
+    title="Classic Jacket"
+    description="A premium leather jacket with a tailored fit."
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | — | Page title. Rendered as `{title} \| {siteName}` by default. When omitted, the site name alone is used. |
+| `rawTitle` | `boolean` | `false` | Render `title` exactly as given — **no** ` \| {siteName}` suffix. See [Title Modes](#title-modes) below. |
+| `description` | `string` | — | Meta description |
+| `noIndex` | `boolean` | `false` | Adds `<meta name="robots" content="noindex">` |
+| `siteName` | `string` | `t('common:defaultSiteName')` | Override the site name used in the title suffix |
+| `twitter` | `object` | — | Twitter Card metadata (`cardType`, `image`) |
+
+### Title Modes
+
+`SeoMeta` supports two title modes via the `title` and `rawTitle` props:
+
+| Mode | Props | `<title>` output | When to use |
+|------|-------|------------------|-------------|
+| **Suffixed** (default) | `title="My Page"` | `My Page \| NextGen PWA Kit Store` | Most pages — product, category, search, account, etc. |
+| **Raw** | `rawTitle title="My Page"` | `My Page` | Pages needing full control — e.g., the homepage passes the store name directly and doesn't want it doubled. |
+| **Fallback** | *(no title)* | `NextGen PWA Kit Store` | Bare minimum — only the site name. |
+
+**Examples:**
+
+```tsx
+// Suffixed (default) — most pages use this
+<SeoMeta title="Classic Jacket" />
+// → <title>Classic Jacket | NextGen PWA Kit Store</title>
+
+// Raw — homepage or any page needing exact title control
+<SeoMeta rawTitle title="NextGen PWA Kit Store — Shop the Latest" />
+// → <title>NextGen PWA Kit Store — Shop the Latest</title>
+
+// Fallback — no title provided
+<SeoMeta />
+// → <title>NextGen PWA Kit Store</title>
+```
+
+### Changing the Site Name
+
+The site name appended to page titles (e.g. `" | NextGen PWA Kit Store"`) is pulled from the `common.defaultSiteName` translation key. To change it, update the value in each locale's `translations.json`:
+
+```json
+// src/locales/en-US/translations.json
+{
+    "common": {
+        "defaultSiteName": "Your Store Name"
+    }
+}
+```
+
+You can also override it per-route via the `siteName` prop:
+
+```tsx
+<SeoMeta title="Sale" siteName="My Outlet Store" />
+// Renders: "Sale | My Outlet Store"
+```
+
+### Route Patterns
+
+The template uses two patterns depending on whether a page is public or auth-protected:
+
+**Public pages** — Include both title and description for search engine visibility:
+
+```tsx
+<SeoMeta
+    title={t('meta.title', { defaultValue: 'About Us' })}
+    description={t('meta.description', { defaultValue: 'Learn more about our story.' })}
+/>
+```
+
+**Auth-protected / transactional pages** — Include title (for browser tab UX) but no description, with `noIndex` to prevent indexing:
+
+```tsx
+<SeoMeta title={t('meta.title', { defaultValue: 'Order History' })} noIndex />
+```
+
+### Adding Meta Tags to a New Page
+
+1. Import `SeoMeta` and render it inside your route component:
+
+```tsx
+import { SeoMeta } from '@/components/seo-meta';
+
+export default function MyNewPage() {
+    const { t } = useTranslation('myPage');
+
+    return (
+        <>
+            <SeoMeta
+                title={t('meta.title', { defaultValue: 'My Page' })}
+                description={t('meta.description', { defaultValue: 'Description of my page.' })}
+            />
+            {/* page content */}
+        </>
+    );
+}
+```
+
+2. All title and description strings use i18n with `defaultValue` fallbacks. To localize them, add the corresponding keys to your translation files (e.g. `meta.title`, `meta.description` within the page's i18n namespace).
+
+### Where `SeoMeta` is Used
+
+| Route | Title | Description | noIndex |
+|-------|-------|-------------|---------|
+| `/` (Home) | Store name (raw) | Welcome message | — |
+| `/category/:id` | Category name | Category page/general description | — |
+| `/product/:id` | Product name | Product page/short description | — |
+| `/search` | Search query | Result count + query | — |
+| `/about-us` | About Us | Store mission description | — |
+| `/login` | Sign In | Sign in prompt | — |
+| `/cart` | Cart | Cart review prompt | — |
+| `/checkout` | Checkout | — | Yes |
+| `/order-confirmation/:orderNo` | Order Confirmation | — | Yes |
+| `/account/*` (all sub-pages) | Page-specific title | — | Yes |
+
+### Why Some Pages Use `noIndex`
+
+Pages behind authentication (account, wishlist, orders) and transactional pages (checkout, order confirmation) use `noIndex` because:
+
+- **Crawlers can't access them** — they'll see a login redirect or empty state, not useful content.
+- **Content is session-specific** — a checkout page with no basket or someone else's order confirmation has no value in search results.
+
+If your implementation exposes any of these pages publicly (e.g., shared wishlists), remove `noIndex` from those routes.

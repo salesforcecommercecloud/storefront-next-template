@@ -30,6 +30,7 @@ import { Typography } from '@/components/typography';
 import { ChevronLeft } from 'lucide-react';
 import OrderDetails, { type ProductDataById } from '@/components/account/order-details';
 import OrderSkeleton from '@/components/order-skeleton';
+import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchOrderWithProducts } from '@/lib/api/order';
@@ -91,12 +92,13 @@ export function ErrorBoundary() {
 
 /** Order details at /account/orders/:orderNo – uses OrderDetails component. */
 export default function OrderDetailsPage(): ReactElement {
+    const { t } = useTranslation('account');
     const { orderNo } = useParams();
     const loaderData = useLoaderData<OrderDetailsPageLoaderData>();
-    const { t } = useTranslation('account');
 
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-0 pb-8">
+            <SeoMeta title={t('meta.orderDetailsTitle', { defaultValue: 'Order Details' })} noIndex />
             <Breadcrumb className="mb-5">
                 <BreadcrumbList>
                     <BreadcrumbItem>

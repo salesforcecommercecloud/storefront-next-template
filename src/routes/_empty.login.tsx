@@ -23,6 +23,7 @@ import {
 } from 'react-router';
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
+import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
@@ -392,6 +393,12 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
 
     return (
         <>
+            <SeoMeta
+                title={t('meta.title', { defaultValue: 'Sign In' })}
+                description={t('meta.description', {
+                    defaultValue: 'Sign in to your account to view orders, manage your wishlist, and more.',
+                })}
+            />
             <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8">
                     <div>

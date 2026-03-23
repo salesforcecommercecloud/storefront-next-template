@@ -219,18 +219,11 @@ describe('root.tsx', () => {
             expect(html).toBeInTheDocument();
             expect(html).toHaveAttribute('lang', 'en-US');
 
-            const title = document.querySelector('title');
-            expect(title).toBeInTheDocument();
-            expect(title?.textContent).toBe('NextGen PWA Kit Store');
-
             const charset = document.head.querySelector('meta[charset="utf-8"]');
             const viewport = document.head.querySelector('meta[name="viewport"]');
-            const description = document.head.querySelector('meta[name="description"]');
             expect(charset).toBeInTheDocument();
             expect(viewport).toBeInTheDocument();
-            expect(description).toBeInTheDocument();
             expect(viewport).toHaveAttribute('content', 'width=device-width, initial-scale=1');
-            expect(description).toHaveAttribute('content', 'Welcome to our web store for high performers!');
 
             const favicon = document.querySelector('link[rel="icon"]');
             expect(favicon).toBeInTheDocument();
