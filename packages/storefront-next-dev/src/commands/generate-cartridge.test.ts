@@ -17,6 +17,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import GenerateCartridge from './generate-cartridge';
 import fs from 'fs-extra';
 import { generateMetadata } from '../cartridge-services/generate-cartridge';
+import { validateCartridgeMetadata } from '../cartridge-services/validate-cartridge';
 
 // Mock dependencies
 vi.mock('fs-extra', () => ({
@@ -28,6 +29,18 @@ vi.mock('fs-extra', () => ({
 
 vi.mock('../cartridge-services/generate-cartridge', () => ({
     generateMetadata: vi.fn(() => Promise.resolve()),
+}));
+
+vi.mock('../cartridge-services/validate-cartridge', () => ({
+    validateCartridgeMetadata: vi.fn(() =>
+        Promise.resolve({
+            results: [],
+            totalFiles: 0,
+            validFiles: 0,
+            totalErrors: 0,
+            skippedFiles: [],
+        })
+    ),
 }));
 
 describe('generate-cartridge command', () => {
@@ -120,5 +133,92 @@ describe('generate-cartridge command', () => {
         await cmd.run();
 
         expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('generated successfully'));
+    });
+
+    it('should run validation after generation', async () => {
+        const cmd = new GenerateCartridge([], {} as never);
+
+        vi.spyOn(cmd as any, 'parse').mockResolvedValue({
+            flags: {
+                'project-directory': '/test/project',
+            },
+            args: {},
+            argv: [],
+            raw: [],
+            metadata: {},
+        });
+        vi.spyOn(cmd, 'log').mockImplementation(() => {});
+
+        await cmd.run();
+
+        expect(validateCartridgeMetadata).toHaveBeenCalledWith(expect.stringContaining('app_storefrontnext_base'));
+    });
+
+    it('should display validation errors at root path without location', async () => {
+        (validateCartridgeMetadata as ReturnType<typeof vi.fn>).mockResolvedValue({
+            results: [
+                {
+                    valid: false,
+                    filePath: '/test/project/cartridges/bad.json',
+                    schemaType: null,
+                    errors: [{ path: '/', message: 'invalid format' }],
+                },
+            ],
+            totalFiles: 1,
+            validFiles: 0,
+            totalErrors: 1,
+            skippedFiles: [],
+        });
+
+        const cmd = new GenerateCartridge([], {} as never);
+        vi.spyOn(cmd as any, 'parse').mockResolvedValue({
+            flags: { 'project-directory': '/test/project' },
+            args: {},
+            argv: [],
+            raw: [],
+            metadata: {},
+        });
+        const logSpy = vi.spyOn(cmd, 'log').mockImplementation(() => {});
+        vi.spyOn(cmd, 'error').mockImplementation((msg) => {
+            throw new Error(msg as string);
+        });
+
+        await expect(cmd.run()).rejects.toThrow('Generated metadata has validation errors');
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('invalid format'));
+    });
+
+    it('should error when validation finds errors', async () => {
+        (validateCartridgeMetadata as ReturnType<typeof vi.fn>).mockResolvedValue({
+            results: [
+                {
+                    valid: false,
+                    filePath: '/test/project/cartridges/bad.json',
+                    schemaType: 'componenttype',
+                    errors: [{ path: '/name', message: 'is required' }],
+                },
+            ],
+            totalFiles: 1,
+            validFiles: 0,
+            totalErrors: 1,
+            skippedFiles: [],
+        });
+
+        const cmd = new GenerateCartridge([], {} as never);
+
+        vi.spyOn(cmd as any, 'parse').mockResolvedValue({
+            flags: {
+                'project-directory': '/test/project',
+            },
+            args: {},
+            argv: [],
+            raw: [],
+            metadata: {},
+        });
+        vi.spyOn(cmd, 'log').mockImplementation(() => {});
+        vi.spyOn(cmd, 'error').mockImplementation((msg) => {
+            throw new Error(msg as string);
+        });
+
+        await expect(cmd.run()).rejects.toThrow('Generated metadata has validation errors');
     });
 });

@@ -23,10 +23,6 @@ import { useProduct } from '@/providers/product-context';
 import { useCurrency } from '@/providers/currency';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
-import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
-
-// Get unique recommender values for enum
-const EINSTEIN_RECOMMENDER_VALUES = Array.from(new Set(Object.values(EINSTEIN_RECOMMENDERS))) as string[];
 
 /**
  * Configuration for a single recommender
@@ -50,7 +46,15 @@ export class ProductRecommendationsMetadata {
         name: 'Recommender Name',
         description: 'Unique identifier for the Einstein recommender',
         type: 'enum',
-        values: EINSTEIN_RECOMMENDER_VALUES,
+        // Values must be inline literals for the AST parser in generate-cartridge.
+        values: [
+            'pdp-similar-items',
+            'viewed-recently-einstein',
+            'product-to-product-einstein',
+            'complete-the-set',
+            'home-top-revenue-for-category',
+            'products-in-all-categories',
+        ],
         required: true,
     })
     recommenderName?: string;

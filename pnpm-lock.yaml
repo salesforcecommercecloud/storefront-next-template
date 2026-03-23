@@ -400,8 +400,8 @@ importers:
         specifier: 7.12.0
         version: 7.12.0(express@4.21.2)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)
       '@salesforce/b2c-tooling-sdk':
-        specifier: ^0.9.0
-        version: 0.9.0(@oclif/core@4.10.2)(typescript@5.9.3)
+        specifier: ^0.11.0
+        version: 0.11.0(@oclif/core@4.10.2)(typescript@5.9.3)
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
@@ -3031,8 +3031,8 @@ packages:
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
 
-  '@salesforce/b2c-tooling-sdk@0.9.0':
-    resolution: {integrity: sha512-hnXBY2BVuHjh8VvGV5QZnqumtfclJIMbFbQ5C3+J564OsOoZiCVfFf3L5DyOwEMAin0MXEWpuEBbTNi8MskUTA==}
+  '@salesforce/b2c-tooling-sdk@0.11.0':
+    resolution: {integrity: sha512-v5dcJzCQNM/6NAwa0ieneHIBZa67YG57L0VwXWLbQAvQEzqgjn9kul++FsToJ8C1866TnUeJtmNHVHaT/dgFAw==}
     engines: {node: '>=22.16.0'}
     peerDependencies:
       '@oclif/core': ^4
@@ -6383,6 +6383,9 @@ packages:
   jsonfile@6.2.0:
     resolution: {integrity: sha512-FGuPw30AdOIUTRMC2OMRtQV+jkVj2cfPqSeWXv1NEAJ1qZ5zb1X6z1mFhbfOB/iy3ssJCD+3KuZ8r8C3uVFlAg==}
 
+  jsonschema@1.5.0:
+    resolution: {integrity: sha512-K+A9hhqbn0f3pJX17Q/7H6yQfD/5OXgdrR5UE12gMXCiN9D5Xq2o5mddV2QEcX/bjla99ASsAAQUyMCCRWAEhw==}
+
   jsx-ast-utils@3.3.5:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
     engines: {node: '>=4.0'}
@@ -8018,8 +8021,8 @@ packages:
   tailwindcss@4.1.13:
     resolution: {integrity: sha512-i+zidfmTqtwquj4hMEwdjshYYgMbOrPzb9a0M3ZgNa0JMoZeFC6bxZvO8yr8ozS6ix2SDz0+mvryPeBs2TFE+w==}
 
-  tapable@2.3.1:
-    resolution: {integrity: sha512-b+u3CEM6FjDHru+nhUSjDofpWSBp2rINziJWgApm72wwGasQ/wKXftZe4tI2Y5HPv6OpzXSZHOFq87H4vfsgsw==}
+  tapable@2.3.2:
+    resolution: {integrity: sha512-1MOpMXuhGzGL5TTCZFItxCc0AARf1EZFQkGqMm7ERKj8+Hgr5oLvJOVFcC+lRmR8hCe2S3jC4T5D7Vg/d7/fhA==}
     engines: {node: '>=6'}
 
   tar-fs@3.1.2:
@@ -11302,16 +11305,16 @@ snapshots:
 
   '@rtsao/scc@1.1.0': {}
 
-  '@salesforce/b2c-tooling-sdk@0.9.0(@oclif/core@4.10.2)(typescript@5.9.3)':
+  '@salesforce/b2c-tooling-sdk@0.11.0(@oclif/core@4.10.2)(typescript@5.9.3)':
     dependencies:
       applicationinsights: 2.9.8
-      archiver: 7.0.1
       chokidar: 5.0.0
       cliui: 9.0.1
       ejs: 3.1.10
       fuse.js: 7.1.0
       glob: 13.0.0
       i18next: 25.7.4(typescript@5.9.3)
+      jsonschema: 1.5.0
       jszip: 3.10.1
       minimatch: 10.1.1
       open: 11.0.0
@@ -11319,6 +11322,7 @@ snapshots:
       pino: 10.1.0
       pino-pretty: 13.1.2
       protobufjs: 7.5.4
+      tar-fs: 3.1.2
       undici: 7.19.2
       xml2js: 0.6.2
     optionalDependencies:
@@ -13327,7 +13331,7 @@ snapshots:
   enhanced-resolve@5.20.1:
     dependencies:
       graceful-fs: 4.2.11
-      tapable: 2.3.1
+      tapable: 2.3.2
 
   enquirer@2.4.1:
     dependencies:
@@ -15463,6 +15467,8 @@ snapshots:
     optionalDependencies:
       graceful-fs: 4.2.11
 
+  jsonschema@1.5.0: {}
+
   jsx-ast-utils@3.3.5:
     dependencies:
       array-includes: 3.1.9
@@ -17171,7 +17177,7 @@ snapshots:
 
   tailwindcss@4.1.13: {}
 
-  tapable@2.3.1: {}
+  tapable@2.3.2: {}
 
   tar-fs@3.1.2:
     dependencies:

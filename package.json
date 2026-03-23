@@ -13,6 +13,7 @@
         "deploy:cartridge": "sfnext deploy-cartridge",
         "deploy:cartridge:clean": "sfnext deploy-cartridge --delete",
         "generate:cartridge": "sfnext generate-cartridge",
+        "validate:cartridge": "sfnext validate-cartridge",
         "generate:eslint": "node scripts/generate-eslint-config.js",
         "locales:aggregate-extensions": "node scripts/aggregate-extension-locales.js",
         "start": "sfnext preview",

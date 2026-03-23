@@ -18,19 +18,18 @@ import { Command } from '@oclif/core';
 import path from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { generateMetadata } from '../cartridge-services/generate-cartridge';
-import { validateCartridgeMetadata } from '../cartridge-services/validate-cartridge';
 import { CARTRIDGES_BASE_DIR, SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR } from '../config';
 import { commonFlags } from '../flags';
+import { validateCartridgeMetadata } from '../cartridge-services/validate-cartridge';
 
 /**
- * Generate cartridge metadata command.
+ * Validate cartridge metadata command.
  *
- * Scans the project for decorated components and generates Page Designer
- * metadata files in the cartridge directory.
+ * Validates all Page Designer metadata JSON files in the cartridge
+ * directory against their metadefinition schemas.
  */
-export default class Generate extends Command {
-    static description = 'Generate Page Designer component metadata from decorated components';
+export default class ValidateCartridge extends Command {
+    static description = 'Validate Page Designer metadata JSON files against schemas';
 
     static examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> -d ./my-project'];
 
@@ -39,32 +38,29 @@ export default class Generate extends Command {
     };
 
     async run(): Promise<void> {
-        const { flags } = await this.parse(Generate);
+        const { flags } = await this.parse(ValidateCartridge);
         const projectDirectory = flags['project-directory'];
 
-        // Validate project directory exists
         if (!fs.existsSync(projectDirectory)) {
             this.error(`Project directory doesn't exist: ${projectDirectory}`);
         }
 
-        // Full path where metadata files are generated
         const metadataDir = path.join(projectDirectory, CARTRIDGES_BASE_DIR, SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR);
 
-        // Ensure the full metadata directory path exists
         if (!fs.existsSync(metadataDir)) {
-            this.log(`Creating metadata directory: ${metadataDir}`);
-            fs.mkdirSync(metadataDir, { recursive: true });
+            this.error(
+                `Metadata directory doesn't exist: ${metadataDir}\nRun "sfnext generate-cartridge" first to generate metadata files.`
+            );
         }
 
-        this.log('Generating Page Designer metadata...');
-
-        await generateMetadata(projectDirectory, metadataDir);
-
-        this.log('Page Designer metadata generated successfully!\n');
-
-        this.log('Validating generated metadata...\n');
+        this.log('Validating Page Designer metadata...\n');
 
         const summary = await validateCartridgeMetadata(metadataDir);
+
+        if (summary.totalFiles === 0) {
+            this.warn('No metadata files found to validate.');
+            return;
+        }
 
         for (const skipped of summary.skippedFiles) {
             this.warn(`Skipping unrecognized file: ${skipped}`);
@@ -88,7 +84,7 @@ export default class Generate extends Command {
         this.log(`\n${summary.validFiles}/${summary.totalFiles} file(s) valid, ${summary.totalErrors} error(s)`);
 
         if (summary.totalErrors > 0) {
-            this.error('Generated metadata has validation errors', { exit: 1 });
+            this.error('Validation failed', { exit: 1 });
         }
     }
 }

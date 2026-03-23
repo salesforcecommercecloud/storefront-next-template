@@ -142,6 +142,7 @@ export default defineConfig([
             'commands/create-bundle': 'src/commands/create-bundle.ts',
             'commands/generate-cartridge': 'src/commands/generate-cartridge.ts',
             'commands/deploy-cartridge': 'src/commands/deploy-cartridge.ts',
+            'commands/validate-cartridge': 'src/commands/validate-cartridge.ts',
             // Extensions commands
             'commands/extensions/list': 'src/commands/extensions/list.ts',
             'commands/extensions/install': 'src/commands/extensions/install.ts',
