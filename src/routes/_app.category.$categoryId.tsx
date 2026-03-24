@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Fragment, Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation } from 'react-router';
+import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
 import { ApiError, type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCategory } from '@/lib/api/categories';
 import { fetchSearchProducts } from '@/lib/api/search';
@@ -30,6 +30,7 @@ import FiltersButton from '@/components/category-refinements/filters-button';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
+import QuickFilters from '@/components/quick-filters';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
@@ -75,7 +76,7 @@ type CategoryPageData = {
     category: ShopperProducts.schemas['Category'];
     searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    page: Promise<PageWithComponentData>;
+    page: Promise<PageWithComponentData | null>;
     categoryId: string;
     refine: string[];
     currency: string;
@@ -110,7 +111,9 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
 
     let categoryData: ShopperProducts.schemas['Category'] | undefined;
     try {
-        categoryData = await fetchCategory(context, categoryId, 0);
+        // Fetch one level of child categories so quick filters can render direct subcategories
+        // (e.g. suits/shorts/pants) from category.categories instead of falling back to refinements.
+        categoryData = await fetchCategory(context, categoryId, 1);
     } catch (e) {
         // Category data is considered critical, i.e., if the related SCAPI request fails, out-of-the-box we either
         // throw a `Response` with all the available information from the underlying `ApiError`, or we fall back to
@@ -126,9 +129,12 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
         throw new Response('Internal Server Error', { status: 500 });
     }
 
-    // Remove eventually existing category refinements (attribute ID = cgid)
+    // Keep non-category refinements and apply exactly one category refinement.
+    // If URL already contains a cgid refine (e.g. from quick filters), honor it.
+    // Otherwise default to the category id from the route path.
     const effectiveRefine = refine.filter((r) => !r.startsWith('cgid='));
-    effectiveRefine.push(`cgid=${categoryId}`);
+    const selectedCgidRefine = refine.find((r) => r.startsWith('cgid='));
+    effectiveRefine.push(selectedCgidRefine ?? `cgid=${categoryId}`);
 
     const criticalCount = config.search.products.hits.critical ?? 2;
     const searchResultCritical = await fetchSearchProducts(context, {
@@ -256,6 +262,7 @@ export default function CategoryPage({
     const lastTrackedDataRef = useRef<string | null>(null);
 
     const location = useLocation();
+    const navigation = useNavigation();
     const searchWithoutFiltersParam = useMemo(() => getSearchWithoutFiltersParam(location.search), [location.search]);
     const pageIdentity = `${categoryId}-${currency}-${locale}`;
     const analyticsKey = `${pageIdentity}-${searchWithoutFiltersParam}-${location.hash}`;
@@ -264,6 +271,17 @@ export default function CategoryPage({
         () => new URLSearchParams(location.search).getAll('refine').length,
         [location.search]
     );
+    const isProductGridLoading = useMemo(() => {
+        if (navigation.state === 'idle' || !navigation.location) {
+            return false;
+        }
+        const currentRefines = new URLSearchParams(location.search).getAll('refine');
+        const nextRefines = new URLSearchParams(navigation.location.search).getAll('refine');
+        return (
+            currentRefines.length !== nextRefines.length ||
+            currentRefines.some((currentRefine, index) => currentRefine !== nextRefines[index])
+        );
+    }, [location.search, navigation.location, navigation.state]);
 
     const nonCriticalPromise = useMemo(
         () => searchResultNonCritical.then((r) => r.hits ?? []),
@@ -338,14 +356,15 @@ export default function CategoryPage({
                     {/* plpTopFullWidth */}
                     <Region className="mb-8" page={page} regionId="plpTopFullWidth" />
 
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        {/* Filters toggle button - mobile only (above panel) */}
-                        <div className="lg:hidden">
+                    <div className="flex flex-col lg:flex-row gap-2">
+                        {/* Filters toggle button + Quick Filters - mobile only (above panel) */}
+                        <div className="lg:hidden mb-4 flex flex-col items-start gap-2">
                             <FiltersButton
                                 onClick={toggleFiltersOpen}
                                 isActive={filtersOpen}
                                 selectedFiltersCount={selectedFiltersCount}
                             />
+                            <QuickFilters category={category} />
                         </div>
 
                         {/* Category Refinements - toggles visibility on left side */}
@@ -356,13 +375,14 @@ export default function CategoryPage({
                         )}
 
                         <div className="flex-grow">
-                            {/* Filters toggle button - desktop only (inside content area) */}
-                            <div className="mb-4 hidden lg:block">
+                            {/* Filters toggle button + Quick Filters - desktop only (inside content area) */}
+                            <div className="mb-4 hidden lg:flex lg:items-center lg:gap-4">
                                 <FiltersButton
                                     onClick={toggleFiltersOpen}
                                     isActive={filtersOpen}
                                     selectedFiltersCount={selectedFiltersCount}
                                 />
+                                <QuickFilters category={category} />
                             </div>
 
                             <ActiveFilters result={searchResultCritical} />
@@ -376,6 +396,7 @@ export default function CategoryPage({
                                 nonCritical={nonCriticalPromise}
                                 nonCriticalCount={nonCriticalCount}
                                 hasRefinementsPanel={filtersOpen}
+                                isLoading={isProductGridLoading}
                                 handleProductClick={handleProductClick}
                                 topCategoryName={
                                     category.parentCategoryTree?.find((p) => p.id !== 'root')?.name ?? category.name

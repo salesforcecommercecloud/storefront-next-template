@@ -4,7 +4,7 @@
         "remove": "Rimuovi"
     },
     "categoryRefinements": {
-        "appliedFilters": "Filtri attivi:",
+        "appliedFilters": "Filtri applicati:",
         "clearAll": "Cancella tutto",
         "filtersButtonLabel": "Filtri",
         "filtersButtonLabelWithCount": "{{label}}, {{count}} selezionati",

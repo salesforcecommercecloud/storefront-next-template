@@ -37,6 +37,14 @@ import { ConfigWrapper } from '@/test-utils/context-provider';
 import { generateCategorySchema } from '@/utils/category-schema';
 import { useAnalytics } from '@/hooks/use-analytics';
 
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    return {
+        ...actual,
+        useNavigation: () => ({ state: 'idle', location: undefined }),
+    };
+});
+
 type CategoryPageData = Awaited<ReturnType<typeof loader>>;
 
 // Mock data
@@ -160,6 +168,10 @@ vi.mock('@/components/category-refinements/filters-button', () => ({
 
 vi.mock('@/components/category-sorting', () => ({
     default: () => <div data-testid="category-sorting" />,
+}));
+
+vi.mock('@/components/quick-filters', () => ({
+    default: () => <div data-testid="quick-filters" />,
 }));
 
 vi.mock('@/components/json-ld', () => ({
@@ -298,7 +310,7 @@ describe('CategoryPage', () => {
 
             const result = await loader(args);
 
-            expect(fetchCategory).toHaveBeenCalledWith(mockContext, 'electronics', 0);
+            expect(fetchCategory).toHaveBeenCalledWith(mockContext, 'electronics', 1);
             expect(fetchSearchProducts).toHaveBeenCalledWith(mockContext, {
                 limit: 2,
                 offset: 0,
@@ -344,7 +356,7 @@ describe('CategoryPage', () => {
             );
         });
 
-        test('should strip existing cgid refinements and replace with route categoryId', async () => {
+        test('should honor existing cgid refinement from query params', async () => {
             const args: LoaderFunctionArgs = {
                 request: new Request(
                     'https://example.com/category/electronics?refine=cgid%3Dwomens&refine=color%3Dblue'
@@ -356,14 +368,14 @@ describe('CategoryPage', () => {
 
             const result = await loader(args);
 
-            // The old cgid=womens should be removed and replaced with cgid=electronics
+            // Existing cgid should be preserved so quick-filter category selection is respected.
             expect(fetchSearchProducts).toHaveBeenCalledWith(
                 mockContext,
                 expect.objectContaining({
-                    refine: ['color=blue', 'cgid=electronics'],
+                    refine: ['color=blue', 'cgid=womens'],
                 })
             );
-            expect(result.refine).toEqual(['color=blue', 'cgid=electronics']);
+            expect(result.refine).toEqual(['color=blue', 'cgid=womens']);
         });
 
         test('should return effectiveRefine as refine in loader result', async () => {
@@ -853,7 +865,13 @@ describe('CategoryPage', () => {
                 // Both mobile and desktop toggle buttons render in JSDOM; responsive visibility is controlled by CSS classes.
                 expect(filterButtons).toHaveLength(2);
                 expect(filterButtons[0].closest('div')).toHaveClass('lg:hidden');
-                expect(filterButtons[1].closest('div')).toHaveClass('hidden', 'lg:block');
+                expect(filterButtons[1].closest('div')).toHaveClass(
+                    'mb-4',
+                    'hidden',
+                    'lg:flex',
+                    'lg:items-center',
+                    'lg:gap-4'
+                );
                 expect(screen.getByTestId('product-grid')).toBeInTheDocument();
                 expect(screen.getByTestId('category-pagination')).toBeInTheDocument();
             });

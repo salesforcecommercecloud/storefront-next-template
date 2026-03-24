@@ -41,10 +41,6 @@ vi.mock('./refine-price', () => ({
     default: () => <div>price refinement</div>,
 }));
 
-vi.mock('@/components/category-refinements/refine-cgid', () => ({
-    default: () => <div>category refinement</div>,
-}));
-
 const renderComponent = ({
     result,
     refine = [],
@@ -87,6 +83,26 @@ const createProductSearchResult = (
 });
 
 describe('CategoryRefinements accessibility headings', () => {
+    test('does not render cgid category refinement in side filters', () => {
+        const result = createProductSearchResult([
+            {
+                attributeId: 'cgid',
+                label: 'Category',
+                values: [{ value: 'womens-clothing', label: 'Womens Clothing', hitCount: 12 }],
+            },
+            {
+                attributeId: 'c_refinementColor',
+                label: 'Color',
+                values: [{ value: 'black', label: 'Black', hitCount: 10 }],
+            },
+        ]);
+
+        renderComponent({ result });
+
+        expect(screen.queryByRole('heading', { level: 3, name: 'Category' })).not.toBeInTheDocument();
+        expect(screen.getByRole('heading', { level: 3, name: 'Color' })).toBeInTheDocument();
+    });
+
     test('renders semantic section heading that wraps the trigger button', () => {
         const result = createProductSearchResult([
             {

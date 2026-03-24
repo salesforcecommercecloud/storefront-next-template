@@ -78,6 +78,7 @@ interface RenderOptions {
     hasRefinementsPanel?: boolean;
     handleProductClick?: (p: ProductHit) => void;
     topCategoryName?: string;
+    isLoading?: boolean;
     // @sfdc-extension-line SFDC_EXT_BOPIS
     showPickupAvailable?: boolean;
 }
@@ -89,6 +90,7 @@ const renderGrid = ({
     hasRefinementsPanel,
     handleProductClick,
     topCategoryName,
+    isLoading,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     showPickupAvailable,
 }: RenderOptions = {}) => {
@@ -106,6 +108,7 @@ const renderGrid = ({
                                 hasRefinementsPanel={hasRefinementsPanel}
                                 handleProductClick={handleProductClick}
                                 topCategoryName={topCategoryName}
+                                isLoading={isLoading}
                                 // @sfdc-extension-line SFDC_EXT_BOPIS
                                 showPickupAvailable={showPickupAvailable}
                             />
@@ -234,6 +237,12 @@ describe('ProductGrid — mixed critical and non-critical', () => {
         await act(() => renderGrid({ critical: [p1], nonCritical: Promise.resolve([p2]) }));
 
         expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+    });
+
+    test('shows loading overlay while a refinement navigation is pending', () => {
+        renderGrid({ critical: [p1, p2], nonCriticalCount: 2, isLoading: true });
+
+        expect(screen.getByTestId('product-grid-loading-state')).toBeInTheDocument();
     });
 });
 

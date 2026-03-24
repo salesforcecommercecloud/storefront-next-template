@@ -21,6 +21,7 @@ import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import DynamicImageProvider from '@/providers/dynamic-image';
 import { ProductTile, ProductTileProvider } from '@/components/product-tile';
 import { ProductTileSkeleton } from '@/components/category-skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type ProductSearchHit = ShopperSearch.schemas['ProductSearchHit'];
 
@@ -95,6 +96,23 @@ function NonCriticalContent({
     );
 }
 
+function ProductGridSkeleton({ count = 8 }: { count?: number }) {
+    return (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8">
+            {Array.from({ length: count }, (_, index) => (
+                <div key={`grid-skeleton-${index}`} className="space-y-3">
+                    <Skeleton className="aspect-square w-full" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-2/3" />
+                        <Skeleton className="h-5 w-20" />
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
 /**
  * ProductGrid wraps all tiles in a shared context provider to reduce hydration overhead. Instead of each tile
  * initializing its own hooks (navigate, config, translation, currency), the provider initializes them once and shares
@@ -111,6 +129,7 @@ export default function ProductGrid({
     hasRefinementsPanel = true,
     handleProductClick,
     topCategoryName,
+    isLoading = false,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     showPickupAvailable: showPickupAvailableProp,
 }: {
@@ -120,6 +139,7 @@ export default function ProductGrid({
     hasRefinementsPanel?: boolean;
     handleProductClick?: (product: ProductSearchHit) => void;
     topCategoryName?: string;
+    isLoading?: boolean;
     // @sfdc-extension-line SFDC_EXT_BOPIS
     showPickupAvailable?: boolean;
 }): ReactElement {
@@ -138,6 +158,17 @@ export default function ProductGrid({
     const pickupFromUrl = useShowPickupAvailable();
     const showPickupAvailable = showPickupAvailableProp ?? pickupFromUrl;
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    const loadingSkeletonCount = Math.max(criticalData.length + nonCriticalCount, 4);
+
+    if (isLoading) {
+        return (
+            <ProductTileProvider>
+                <div data-testid="product-grid-loading-state" aria-busy>
+                    <ProductGridSkeleton count={loadingSkeletonCount} />
+                </div>
+            </ProductTileProvider>
+        );
+    }
 
     return (
         <ProductTileProvider>

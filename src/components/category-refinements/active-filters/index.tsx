@@ -92,6 +92,9 @@ export default function CategoryFilters({
 
             const attributeId = refine.substring(0, separatorIndex);
             const value = refine.substring(separatorIndex + 1);
+            // Category selection is represented by quick filters, so keep cgid in URL for behavior
+            // and clear-all, but hide it from applied-filter chips.
+            if (attributeId === 'cgid') continue;
 
             const valueLabel = getValueLabel(
                 attributeId,
@@ -163,7 +166,7 @@ export default function CategoryFilters({
                     <Button
                         key={`${attributeId}:${value}`}
                         variant="outline"
-                        className="cursor-pointer"
+                        className="cursor-pointer bg-muted hover:bg-muted-hover"
                         onClick={() => void removeFilter(attributeId, value)}>
                         <span className="mr-1">{valueLabel}</span>
                         <Close className="size-3" />

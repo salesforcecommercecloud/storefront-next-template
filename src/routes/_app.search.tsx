@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation } from 'react-router';
+import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
@@ -72,7 +72,7 @@ export type SearchPageData = {
     searchTerm: string;
     searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    page: Promise<PageWithComponentData>;
+    page: Promise<PageWithComponentData | null>;
     refine: string[];
     currency: string;
     locale: string;
@@ -176,6 +176,7 @@ export default function SearchPage({
     const lastTrackedSearchRef = useRef<string | null>(null);
 
     const location = useLocation();
+    const navigation = useNavigation();
     const searchWithoutFiltersParam = useMemo(() => getSearchWithoutFiltersParam(location.search), [location.search]);
     const pageIdentity = `${currency}-${locale}`;
     const analyticsKey = `${pageIdentity}-${searchWithoutFiltersParam}-${location.hash}`;
@@ -184,6 +185,17 @@ export default function SearchPage({
         () => new URLSearchParams(location.search).getAll('refine').length,
         [location.search]
     );
+    const isProductGridLoading = useMemo(() => {
+        if (navigation.state === 'idle' || !navigation.location) {
+            return false;
+        }
+        const currentRefines = new URLSearchParams(location.search).getAll('refine');
+        const nextRefines = new URLSearchParams(navigation.location.search).getAll('refine');
+        return (
+            currentRefines.length !== nextRefines.length ||
+            currentRefines.some((currentRefine, index) => currentRefine !== nextRefines[index])
+        );
+    }, [location.search, navigation.location, navigation.state]);
 
     const nonCriticalPromise = useMemo(
         () => searchResultNonCritical.then((r) => r.hits ?? []),
@@ -305,6 +317,7 @@ export default function SearchPage({
                                 nonCritical={nonCriticalPromise}
                                 nonCriticalCount={nonCriticalCount}
                                 hasRefinementsPanel={filtersOpen}
+                                isLoading={isProductGridLoading}
                                 handleProductClick={handleProductClick}
                             />
 

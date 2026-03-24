@@ -31,7 +31,6 @@ import RefineSize from './refine-size';
 import RefinePrice from './refine-price';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import RefineInventory from '@/extensions/bopis/components/refine-inventory';
-import RefineCategory from '@/components/category-refinements/refine-cgid';
 
 export default function CategoryRefinements({
     result,
@@ -73,7 +72,11 @@ export default function CategoryRefinements({
         [effectiveRefines]
     );
 
-    const refinements = useMemo(() => result?.refinements || [], [result]);
+    // Category (`cgid`) selection is handled by QuickFilters, not the side filters panel.
+    const refinements = useMemo(
+        () => (result?.refinements || []).filter((refinement) => refinement.attributeId !== 'cgid'),
+        [result]
+    );
 
     const toggleFilter = useCallback(
         (attributeId: string, value: string) => {
@@ -82,13 +85,7 @@ export default function CategoryRefinements({
             const refinePair = `${attributeId}=${value}`;
 
             let nextRefines: string[];
-            let pathname: string | undefined;
-
-            if (attributeId === 'cgid') {
-                // Navigate to the new category while preserving non-cgid refinements
-                nextRefines = refines.filter((r) => !r.startsWith('cgid='));
-                pathname = `/category/${value}`;
-            } else if (refines.includes(refinePair)) {
+            if (refines.includes(refinePair)) {
                 // Remove this refinement
                 nextRefines = refines.filter((r) => r !== refinePair);
             } else {
@@ -114,7 +111,7 @@ export default function CategoryRefinements({
             const nextSearch = `?${params.toString()}`;
 
             void navigate({
-                pathname: pathname ?? location.pathname,
+                pathname: location.pathname,
                 search: nextSearch,
             });
         },
@@ -148,8 +145,6 @@ export default function CategoryRefinements({
                 return <RefineSize {...refinementProps} />;
             case 'price':
                 return <RefinePrice {...refinementProps} result={result} />;
-            case 'cgid':
-                return <RefineCategory {...refinementProps} />;
             default:
                 return <RefineDefault {...refinementProps} />;
         }
@@ -185,7 +180,7 @@ export default function CategoryRefinements({
                     <FilterSection
                         key={attributeId}
                         label={label || attributeId}
-                        defaultOpen={hasActiveFilter(attributeId) && attributeId !== 'cgid'}>
+                        defaultOpen={hasActiveFilter(attributeId)}>
                         {renderFilterValues(
                             refinement as ShopperSearch.schemas['ProductSearchRefinement'] & {
                                 values: FilterValue[];

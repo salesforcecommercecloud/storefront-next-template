@@ -30,6 +30,14 @@ import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
 import { ConfigWrapper } from '@/test-utils/context-provider';
 
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    return {
+        ...actual,
+        useNavigation: () => ({ state: 'idle', location: undefined }),
+    };
+});
+
 // Mock data
 const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
     hits: [
