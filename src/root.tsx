@@ -348,7 +348,7 @@ export function ErrorBoundary({ error }: { error: unknown }) {
                         <div>
                             {status && <p className="text-sm font-medium text-destructive/70 mb-1">{status}</p>}
                             <h1 className="text-xl font-semibold text-destructive">{title}</h1>
-                            {details && <p className="mt-1.5 text-sm text-foreground/80">Error: {details}</p>}
+                            {details && <p className="mt-1.5 text-sm text-foreground/80 break-all">Error: {details}</p>}
                         </div>
                     </div>
                 </div>
