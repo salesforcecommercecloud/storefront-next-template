@@ -15,7 +15,7 @@
  */
 'use client';
 
-import { useEffect, lazy, Suspense, use, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, lazy, Suspense, use, useRef, useState, type FormEvent } from 'react';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket } from '@/providers/basket';
 import { useCheckoutActions, type PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
@@ -71,6 +71,8 @@ interface GuestAccountCreationProps {
     onSaved: (shouldCreate: boolean) => void;
     savePaymentToProfile?: boolean;
     showToast?: (message: string, type: 'success' | 'error', options?: { duration?: number }) => void;
+    /** When true, hide create-account-at-place-order (e.g. shopper chose "Checkout as guest" on passwordless OTP modal). */
+    hideCreateAccountOption?: boolean;
 }
 
 function GuestAccountCreation({
@@ -79,6 +81,7 @@ function GuestAccountCreation({
     onSaved,
     savePaymentToProfile,
     showToast,
+    hideCreateAccountOption = false,
 }: GuestAccountCreationProps) {
     const isRegisteredUser = Boolean(customerProfile?.customer?.customerId);
 
@@ -88,6 +91,11 @@ function GuestAccountCreation({
 
     // If user was already registered before checkout, don't show
     if (isRegisteredUser && !justRegistered) {
+        return null;
+    }
+
+    // Guest chose to skip passwordless OTP — treat like guest checkout but without create-account checkbox
+    if (hideCreateAccountOption && !justRegistered) {
         return null;
     }
 
@@ -156,7 +164,7 @@ export default function CheckoutFormPage({
 
     // Use basket from provider (managed by middleware)
     const cart = useBasket();
-    const { step, STEPS, goToStep, editingStep, shipmentDistribution } = useCheckoutContext();
+    const { step, STEPS, goToStep, editingStep, shipmentDistribution, exitEditMode } = useCheckoutContext();
     const customerProfile = useCustomerProfile();
     const isRegisteredUser = Boolean(customerProfile?.customer?.customerId);
 
@@ -166,6 +174,8 @@ export default function CheckoutFormPage({
         options: null,
     });
     const otpFlowActiveRef = useRef(false);
+    const [hideCreateAccountAfterSkippedPasswordlessOtp, setHideCreateAccountAfterSkippedPasswordlessOtp] =
+        useState(false);
 
     // Checkout actions hook with all fetchers and submission handlers
     const {
@@ -182,6 +192,23 @@ export default function CheckoutFormPage({
         isSubmitting,
         handleCreateAccountPreferenceChange,
     } = useCheckoutActions({ paymentSubmissionRef, otpFlowActiveRef });
+
+    /**
+     * Shopper closed passwordless OTP via "Checkout as guest" — do not verify OTP / sign in.
+     * Unblock contact step and hide place-order create-account checkbox for this checkout session.
+     */
+    const handleRegisteredUserChoseGuest = useCallback(() => {
+        setHideCreateAccountAfterSkippedPasswordlessOtp(true);
+        otpFlowActiveRef.current = false;
+        if (contactFetcher.state === 'idle' && contactFetcher.data?.success === true) {
+            exitEditMode();
+        }
+    }, [contactFetcher.state, contactFetcher.data, exitEditMode]);
+
+    /** After successful OTP verification at contact, restore create-account UI if still applicable */
+    const handlePasswordlessOtpVerifiedAtContact = useCallback(() => {
+        setHideCreateAccountAfterSkippedPasswordlessOtp(false);
+    }, []);
 
     let showAddressAndOptions = true;
 
@@ -479,6 +506,9 @@ export default function CheckoutFormPage({
                                         isLoading={isSubmitting('contact')}
                                         actionData={contactFetcher.data}
                                         otpFlowActiveRef={otpFlowActiveRef}
+                                        onRegisteredUserChoseGuest={handleRegisteredUserChoseGuest}
+                                        onPasswordlessOtpVerified={handlePasswordlessOtpVerifiedAtContact}
+                                        suppressRegisteredEmailLoginHints={hideCreateAccountAfterSkippedPasswordlessOtp}
                                         {...contactInfoState}
                                     />
                                 )}
@@ -554,6 +584,7 @@ export default function CheckoutFormPage({
                                                     paymentSubmissionRef.current.options?.savePaymentToProfile
                                                 }
                                                 showToast={showToast}
+                                                hideCreateAccountOption={hideCreateAccountAfterSkippedPasswordlessOtp}
                                             />
                                         </UITarget>
                                         <UITarget targetId="checkout.createAccount.after" />

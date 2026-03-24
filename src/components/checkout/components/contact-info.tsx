@@ -47,6 +47,10 @@ interface ContactInfoProps {
     isLoading: boolean;
     actionData?: CheckoutActionData;
     onRegisteredUserChoseGuest?: (isGuest: boolean) => void;
+    /** Called when shopper completes passwordless OTP at contact (sign-in). Resets UI that was applied for "checkout as guest" skip. */
+    onPasswordlessOtpVerified?: () => void;
+    /** When true, hide login hints in summary (used after "Checkout as guest" on passwordless OTP — treat as plain guest UX). */
+    suppressRegisteredEmailLoginHints?: boolean;
     /** When set, kept in sync so checkout does not advance from contact while OTP modal is open or authorize in flight. */
     otpFlowActiveRef?: OtpFlowActiveRef;
     // Step state managed by container
@@ -59,7 +63,9 @@ export default function ContactInfo({
     onSubmit,
     isLoading,
     actionData,
-    onRegisteredUserChoseGuest: _onRegisteredUserChoseGuest,
+    onRegisteredUserChoseGuest,
+    onPasswordlessOtpVerified,
+    suppressRegisteredEmailLoginHints = false,
     otpFlowActiveRef,
     isCompleted: _isCompleted,
     isEditing,
@@ -123,7 +129,9 @@ export default function ContactInfo({
             // Set immediately so "Continue" submit that follows blur does not advance to shipping before OTP modal
             if (otpFlowActiveRef) otpFlowActiveRef.current = true;
         },
-        [form, passwordlessEmailFetcher, authorizePasswordlessEmailPath, otpFlowActiveRef]
+        // Ref is stable; .current is mutated intentionally — omit from deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
+        [form, passwordlessEmailFetcher, authorizePasswordlessEmailPath]
     );
 
     // When authorize (blur) succeeds, open OTP modal so user can enter the code
@@ -136,13 +144,19 @@ export default function ContactInfo({
         // eslint-disable-next-line react-hooks/exhaustive-deps -- only open modal when state/data from last submit
     }, [passwordlessEmailFetcher.state, passwordlessEmailFetcher.data?.success, passwordlessEmailFetcher.data?.email]);
 
-    const handleOtpSuccess = useCallback(() => {
-        otpSuccessRevalidatingRef.current = true;
-        void revalidator.revalidate();
-        // Clear immediately so useCheckoutActions can exit contact step (ref sync effect runs next render)
-        if (otpFlowActiveRef) otpFlowActiveRef.current = false;
-        setIsOtpOpen(false);
-    }, [revalidator, otpFlowActiveRef]);
+    const handleOtpSuccess = useCallback(
+        () => {
+            onPasswordlessOtpVerified?.();
+            otpSuccessRevalidatingRef.current = true;
+            void revalidator.revalidate();
+            // Clear immediately so useCheckoutActions can exit contact step (ref sync effect runs next render)
+            if (otpFlowActiveRef) otpFlowActiveRef.current = false;
+            setIsOtpOpen(false);
+        },
+        // Ref is stable; .current is mutated intentionally — omit from deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
+        [onPasswordlessOtpVerified, revalidator]
+    );
 
     // After OTP login, revalidate runs the checkout loader (prefill). When it finishes, clear edit
     // mode so the step advances to computedStep (e.g. REVIEW_ORDER) and summary view shows.
@@ -163,6 +177,15 @@ export default function ContactInfo({
         return Promise.resolve();
     }, [form, otpModalEmail, passwordlessEmailFetcher, authorizePasswordlessEmailPath]);
 
+    /**
+     * Checkout only: close OTP without calling verify-otp — shopper stays a guest (no SLAS session from OTP).
+     * Parent unblocks contact step and hides place-order create-account checkbox for this session.
+     */
+    const handleCheckoutAsGuestFromOtp = useCallback(() => {
+        lastEmailSentRef.current = null;
+        onRegisteredUserChoseGuest?.(true);
+    }, [onRegisteredUserChoseGuest]);
+
     let nextStepButtonLabel = isLoading ? t('contactInfo.saving') : t('contactInfo.continue');
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -182,11 +205,16 @@ export default function ContactInfo({
         passwordlessEmailFetcher.state === 'submitting' || passwordlessEmailFetcher.state === 'loading';
 
     // Keep parent ref in sync so checkout does not advance to shipping while OTP modal is open or authorize in flight
-    useEffect(() => {
-        if (otpFlowActiveRef) {
-            otpFlowActiveRef.current = isSendingOtp || isOtpOpen;
-        }
-    }, [otpFlowActiveRef, isSendingOtp, isOtpOpen]);
+    useEffect(
+        () => {
+            if (otpFlowActiveRef) {
+                otpFlowActiveRef.current = isSendingOtp || isOtpOpen;
+            }
+        },
+        // Ref is stable; .current is mutated intentionally — omit from deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
+        [isSendingOtp, isOtpOpen]
+    );
 
     const otpLength = (appConfig?.auth as { otpLength?: number } | undefined)?.otpLength ?? 6;
 
@@ -337,7 +365,7 @@ export default function ContactInfo({
                             </Typography>
                         )}
 
-                        {loginSuggestion.shouldSuggestLogin && (
+                        {loginSuggestion.shouldSuggestLogin && !suppressRegisteredEmailLoginHints && (
                             <Typography variant="small" className="text-accent-foreground">
                                 {t('contactInfo.loginSuggestion')}
                                 <a href="/login" className="underline hover:no-underline">
@@ -361,6 +389,7 @@ export default function ContactInfo({
                         onClose={() => setIsOtpOpen(false)}
                         email={otpModalEmail}
                         onSuccess={handleOtpSuccess}
+                        onCheckoutAsGuest={onRegisteredUserChoseGuest ? handleCheckoutAsGuestFromOtp : undefined}
                         onResendCode={handleResendOtp}
                         otpLength={otpLength}
                     />

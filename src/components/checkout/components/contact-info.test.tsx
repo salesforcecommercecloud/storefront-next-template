@@ -543,4 +543,61 @@ describe('ContactInfo Integration Tests', () => {
             });
         });
     });
+
+    describe('Passwordless OTP guest UX (summary)', () => {
+        test('hides login suggestion when suppressRegisteredEmailLoginHints is true', async () => {
+            useLoginSuggestion.mockReturnValue({
+                shouldSuggestLogin: true,
+                isCurrentUser: false,
+                message: 'Suggest login',
+            });
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    customerInfo: { email: 'registered@example.com', customerId: null },
+                })
+            );
+
+            renderWithRouter(
+                <ContactInfo
+                    {...createDefaultProps({
+                        isEditing: false,
+                        isCompleted: true,
+                        suppressRegisteredEmailLoginHints: true,
+                    })}
+                />
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('registered@example.com')).toBeInTheDocument();
+            });
+            expect(screen.queryByText(/have an account/i)).not.toBeInTheDocument();
+        });
+
+        test('shows login suggestion when suppressRegisteredEmailLoginHints is false and lookup suggests login', async () => {
+            useLoginSuggestion.mockReturnValue({
+                shouldSuggestLogin: true,
+                isCurrentUser: false,
+                message: 'Suggest login',
+            });
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    customerInfo: { email: 'registered@example.com', customerId: null },
+                })
+            );
+
+            renderWithRouter(
+                <ContactInfo
+                    {...createDefaultProps({
+                        isEditing: false,
+                        isCompleted: true,
+                        suppressRegisteredEmailLoginHints: false,
+                    })}
+                />
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText(/have an account/i)).toBeInTheDocument();
+            });
+        });
+    });
 });
