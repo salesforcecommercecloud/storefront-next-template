@@ -462,10 +462,13 @@
             "phonePlaceholder": "(000) 000-0000"
         },
         "shippingOptions": {
-            "title": "Opzioni di spedizione",
+            "title": "Metodo di spedizione",
+            "giftWrappingLabel": "Invia come regalo (confezione regalo)",
+            "giftWrappingDescription": "Può attivare o disattivare le opzioni regalo in qualsiasi momento.",
             "selectRequired": "Selezioni un metodo di spedizione",
             "saving": "Salvataggio in corso...",
             "continue": "Continua al pagamento",
+            "completePreviousSteps": "Completa i passaggi precedenti per continuare",
             "enterAddressFirst": "Inserisca il Suo indirizzo di spedizione per visualizzare i metodi di spedizione disponibili.",
             "arrives": "Arrivo: {{estimatedArrivalTime}}",
             "priceAndMethod": "{{price}} | {{methodName}}",

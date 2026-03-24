@@ -264,7 +264,7 @@ exports[`ToggleCard stories snapshot > Disabled story renders and matches snapsh
 <div>
   <div
     aria-disabled="true"
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-0"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm relative gap-0 py-4"
     data-slot="card"
   >
     <div
@@ -800,7 +800,7 @@ exports[`ToggleCard stories snapshot > StaticView story renders and matches snap
 <div>
   <div
     aria-disabled="true"
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-0"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm relative gap-0 py-4"
     data-slot="card"
   >
     <div

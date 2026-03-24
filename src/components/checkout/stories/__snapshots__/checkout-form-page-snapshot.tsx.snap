@@ -337,7 +337,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                 data-slot="card-title"
                 tabindex="0"
               >
-                ✓. Shipping Options
+                ✓. Shipping Method
               </div>
               <div
                 class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
@@ -1605,7 +1605,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                 data-slot="card-title"
                 tabindex="0"
               >
-                ✓. Shipping Options
+                ✓. Shipping Method
               </div>
               <div
                 class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
@@ -2160,7 +2160,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                 data-slot="card-title"
                 tabindex="0"
               >
-                ✓. Shipping Options
+                ✓. Shipping Method
               </div>
               <div
                 class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
@@ -3030,7 +3030,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
                 data-slot="card-title"
                 tabindex="0"
               >
-                3. Shipping Options
+                3. Shipping Method
               </div>
               <div
                 class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
@@ -3343,7 +3343,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                 data-slot="card-title"
                 tabindex="0"
               >
-                ✓. Shipping Options
+                ✓. Shipping Method
               </div>
               <div
                 class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
@@ -3870,7 +3870,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
                 data-slot="card-title"
                 tabindex="0"
               >
-                ✓. Shipping Options
+                ✓. Shipping Method
               </div>
               <div
                 class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
@@ -4633,7 +4633,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                 data-slot="card-title"
                 tabindex="0"
               >
-                3. Shipping Options
+                3. Shipping Method
               </div>
               <div
                 class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
@@ -5218,7 +5218,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                 data-slot="card-title"
                 tabindex="0"
               >
-                3. Shipping Options
+                3. Shipping Method
               </div>
               <div
                 class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
@@ -5803,7 +5803,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
                 data-slot="card-title"
                 tabindex="0"
               >
-                ✓. Shipping Options
+                ✓. Shipping Method
               </div>
               <div
                 class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"

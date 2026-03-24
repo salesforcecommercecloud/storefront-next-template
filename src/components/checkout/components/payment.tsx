@@ -39,6 +39,7 @@ import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 import CreditCardOptionIcon from '@/components/icons/credit-card-option-icon';
+import { cn } from '@/lib/utils';
 
 interface PaymentProps {
     onSubmit: (data: PaymentData) => void;
@@ -402,7 +403,7 @@ export default function Payment({
             onEdit={onEdit}
             editLabel={t('payment.changeLabel')}
             isLoading={isLoading}
-            className="border-border bg-card rounded-[var(--radius)] shadow-sm py-4 gap-1.5">
+            className={cn('border-border bg-card rounded-[var(--radius)] shadow-sm py-4', !disabled && 'gap-1.5')}>
             <ToggleCardEdit>
                 <Form {...form}>
                     <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">

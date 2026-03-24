@@ -642,11 +642,10 @@ export const CompletedState: Story = {
 
         // Test CompletedState story: Verify summary view without form inputs
         const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
 
         // In completed state, there should be no form inputs (summary view only)
         void expect(inputs.length).toBe(0);
-        void expect(buttons.length).toBeGreaterThan(0); // May have edit buttons
+        // Change button is only visible when basket has an address; with no address we may have 0 buttons
 
         // Summary shows address when basket has one; with mock basket undefined it may be empty
         // Verify completed state visual presentation

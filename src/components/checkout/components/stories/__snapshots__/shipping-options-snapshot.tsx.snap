@@ -3,39 +3,30 @@
 exports[`ShippingOptions stories snapshot > CompletedState story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    aria-disabled="true"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm relative gap-0 py-4"
     data-slot="card"
     data-testid="sf-toggle-card-shipping-options"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
-        class="text-base font-semibold text-foreground"
+        class="text-base font-semibold text-muted-foreground"
         data-slot="card-title"
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
         >
-          Shipping Options
+          Shipping Method
         </span>
       </div>
       <div
         class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
         data-slot="card-action"
-      >
-        <button
-          aria-label="Edit"
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
-          data-size="sm"
-          data-slot="button"
-          data-variant="link"
-        >
-          Edit
-        </button>
-      </div>
+      />
     </div>
     <div
       class="px-6"
@@ -43,12 +34,12 @@ exports[`ShippingOptions stories snapshot > CompletedState story renders and mat
       data-testid="sf-toggle-card-shipping-options-content"
     >
       <div
-        class="space-y-2"
+        class="space-y-1.5"
       >
         <p
-          class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
+          class="text-sm text-muted-foreground"
         >
-          Enter your shipping address to view available shipping methods.
+          Complete previous steps to continue
         </p>
       </div>
     </div>
@@ -64,7 +55,7 @@ exports[`ShippingOptions stories snapshot > Default story renders and matches sn
     data-testid="sf-toggle-card-shipping-options"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -73,9 +64,9 @@ exports[`ShippingOptions stories snapshot > Default story renders and matches sn
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
         >
-          Shipping Options
+          Shipping Method
         </span>
       </div>
       <div
@@ -89,22 +80,17 @@ exports[`ShippingOptions stories snapshot > Default story renders and matches sn
       data-testid="sf-toggle-card-shipping-options-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4"
         method="post"
       >
         <div
-          class="space-y-4"
+          class="flex flex-col gap-4"
         >
-          <label
-            class="text-sm font-medium text-foreground"
-          >
-            Shipping Options
-          </label>
           <div
-            class="flex items-center justify-center p-8 border-2 border-dashed border-muted rounded-lg"
+            class="flex justify-center rounded-lg border-2 border-dashed border-muted p-8"
           >
             <div
-              class="text-center space-y-2"
+              class="space-y-2 text-center"
             >
               <p
                 class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
@@ -120,17 +106,17 @@ exports[`ShippingOptions stories snapshot > Default story renders and matches sn
           </div>
         </div>
         <div
-          class="flex justify-end"
+          class="w-full pt-2"
         >
           <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-48"
-            data-size="lg"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
             data-slot="button"
             data-variant="default"
             disabled=""
             type="submit"
           >
-            No shipping methods available
+            Continue to Payment
           </button>
         </div>
       </form>
@@ -141,39 +127,30 @@ exports[`ShippingOptions stories snapshot > Default story renders and matches sn
 
 exports[`ShippingOptions stories snapshot > DesktopView story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+  aria-disabled="true"
+  class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm relative gap-0 py-4"
   data-slot="card"
   data-testid="sf-toggle-card-shipping-options"
 >
   <div
-    class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+    class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
     data-slot="card-header"
   >
     <div
-      class="text-base font-semibold text-foreground"
+      class="text-base font-semibold text-muted-foreground"
       data-slot="card-title"
       tabindex="0"
     >
       <span
-        class="text-lg font-semibold text-foreground"
+        class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
       >
-        Shipping Options
+        Shipping Method
       </span>
     </div>
     <div
       class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
       data-slot="card-action"
-    >
-      <button
-        aria-label="Edit"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
-        data-size="sm"
-        data-slot="button"
-        data-variant="link"
-      >
-        Edit
-      </button>
-    </div>
+    />
   </div>
   <div
     class="px-6"
@@ -181,12 +158,12 @@ exports[`ShippingOptions stories snapshot > DesktopView story renders and matche
     data-testid="sf-toggle-card-shipping-options-content"
   >
     <div
-      class="space-y-2"
+      class="space-y-1.5"
     >
       <p
-        class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
+        class="text-sm text-muted-foreground"
       >
-        Enter your shipping address to view available shipping methods.
+        Complete previous steps to continue
       </p>
     </div>
   </div>
@@ -196,39 +173,30 @@ exports[`ShippingOptions stories snapshot > DesktopView story renders and matche
 exports[`ShippingOptions stories snapshot > DisabledState story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    aria-disabled="true"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm relative gap-0 py-4"
     data-slot="card"
     data-testid="sf-toggle-card-shipping-options"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
-        class="text-base font-semibold text-foreground"
+        class="text-base font-semibold text-muted-foreground"
         data-slot="card-title"
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
         >
-          Shipping Options
+          Shipping Method
         </span>
       </div>
       <div
         class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
         data-slot="card-action"
-      >
-        <button
-          aria-label="Edit"
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
-          data-size="sm"
-          data-slot="button"
-          data-variant="link"
-        >
-          Edit
-        </button>
-      </div>
+      />
     </div>
     <div
       class="px-6"
@@ -236,12 +204,12 @@ exports[`ShippingOptions stories snapshot > DisabledState story renders and matc
       data-testid="sf-toggle-card-shipping-options-content"
     >
       <div
-        class="space-y-2"
+        class="space-y-1.5"
       >
         <p
-          class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
+          class="text-sm text-muted-foreground"
         >
-          Enter your shipping address to view available shipping methods.
+          Complete previous steps to continue
         </p>
       </div>
     </div>
@@ -257,7 +225,7 @@ exports[`ShippingOptions stories snapshot > LoadingState story renders and match
     data-testid="sf-toggle-card-shipping-options"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -266,9 +234,9 @@ exports[`ShippingOptions stories snapshot > LoadingState story renders and match
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
         >
-          Shipping Options
+          Shipping Method
         </span>
       </div>
       <div
@@ -282,22 +250,17 @@ exports[`ShippingOptions stories snapshot > LoadingState story renders and match
       data-testid="sf-toggle-card-shipping-options-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4"
         method="post"
       >
         <div
-          class="space-y-4"
+          class="flex flex-col gap-4"
         >
-          <label
-            class="text-sm font-medium text-foreground"
-          >
-            Shipping Options
-          </label>
           <div
-            class="flex items-center justify-center p-8 border-2 border-dashed border-muted rounded-lg"
+            class="flex justify-center rounded-lg border-2 border-dashed border-muted p-8"
           >
             <div
-              class="text-center space-y-2"
+              class="space-y-2 text-center"
             >
               <p
                 class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
@@ -313,11 +276,11 @@ exports[`ShippingOptions stories snapshot > LoadingState story renders and match
           </div>
         </div>
         <div
-          class="flex justify-end"
+          class="w-full pt-2"
         >
           <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-48"
-            data-size="lg"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
             data-slot="button"
             data-variant="default"
             disabled=""
@@ -351,7 +314,7 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
     data-testid="sf-toggle-card-shipping-options"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -360,9 +323,9 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
         >
-          Shipping Options
+          Shipping Method
         </span>
       </div>
       <div
@@ -376,152 +339,176 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
       data-testid="sf-toggle-card-shipping-options-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4"
         method="post"
       >
         <div
-          class="space-y-4"
+          class="flex flex-col gap-4"
         >
-          <label
-            class="text-sm font-medium text-foreground"
-          >
-            Shipping Options
-          </label>
           <div
-            aria-label="Shipping Options"
+            aria-label="Shipping Method"
             aria-required="true"
-            class="grid gap-3"
+            class="flex flex-col gap-4"
             data-slot="radio-group"
             dir="ltr"
             role="radiogroup"
             style="outline: none;"
             tabindex="0"
           >
-            <div
-              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+            <label
+              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              for="standard"
             >
-              <button
-                aria-checked="true"
-                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 w-5 h-5"
-                data-radix-collection-item=""
-                data-slot="radio-group-item"
-                data-state="checked"
-                id="standard"
-                role="radio"
-                tabindex="0"
-                type="button"
-                value="standard"
+              <div
+                class="flex items-center gap-2"
               >
-                <span
-                  class="relative flex items-center justify-center"
-                  data-slot="radio-group-indicator"
+                <button
+                  aria-checked="true"
+                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                  data-radix-collection-item=""
+                  data-slot="radio-group-item"
                   data-state="checked"
+                  id="standard"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                  value="standard"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                    fill="none"
-                    height="24"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <span
+                    class="relative flex items-center justify-center"
+                    data-slot="radio-group-indicator"
+                    data-state="checked"
                   >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                    />
-                  </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <input
+                  aria-hidden="true"
+                  checked=""
+                  name="shippingMethodId"
+                  required=""
+                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                  tabindex="-1"
+                  type="radio"
+                  value="standard"
+                />
+                <span
+                  class="flex-1 text-sm font-medium leading-none"
+                >
+                  Standard Shipping
                 </span>
-              </button>
-              <input
-                aria-hidden="true"
-                checked=""
-                name="shippingMethodId"
-                required=""
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                tabindex="-1"
-                type="radio"
-                value="standard"
-              />
-              <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
-                data-slot="label"
-                for="standard"
-              >
-                <div
-                  class="space-y-1"
+                <span
+                  class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    $9.99 | Standard Shipping
-                  </p>
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    5-7 business days
-                  </p>
-                </div>
-              </label>
-            </div>
-            <div
-              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                  $9.99
+                </span>
+              </div>
+              <span
+                class="pl-6 text-sm text-muted-foreground"
+              >
+                5-7 business days
+              </span>
+            </label>
+            <label
+              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              for="express"
             >
-              <button
-                aria-checked="false"
-                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 w-5 h-5"
-                data-radix-collection-item=""
-                data-slot="radio-group-item"
-                data-state="unchecked"
-                id="express"
-                role="radio"
-                tabindex="-1"
-                type="button"
-                value="express"
-              />
-              <input
-                aria-hidden="true"
-                name="shippingMethodId"
-                required=""
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                tabindex="-1"
-                type="radio"
-                value="express"
-              />
-              <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
-                data-slot="label"
-                for="express"
+              <div
+                class="flex items-center gap-2"
               >
-                <div
-                  class="space-y-1"
+                <button
+                  aria-checked="false"
+                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                  data-radix-collection-item=""
+                  data-slot="radio-group-item"
+                  data-state="unchecked"
+                  id="express"
+                  role="radio"
+                  tabindex="-1"
+                  type="button"
+                  value="express"
+                />
+                <input
+                  aria-hidden="true"
+                  name="shippingMethodId"
+                  required=""
+                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                  tabindex="-1"
+                  type="radio"
+                  value="express"
+                />
+                <span
+                  class="flex-1 text-sm font-medium leading-none"
                 >
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    $19.99 | Express Shipping
-                  </p>
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    2-3 business days
-                  </p>
-                </div>
-              </label>
-            </div>
+                  Express Shipping
+                </span>
+                <span
+                  class="shrink-0 text-sm font-semibold leading-none"
+                >
+                  $19.99
+                </span>
+              </div>
+              <span
+                class="pl-6 text-sm text-muted-foreground"
+              >
+                2-3 business days
+              </span>
+            </label>
           </div>
         </div>
         <div
-          class="flex justify-end"
+          class="flex items-center gap-2 rounded-lg border border-border-subtle p-4"
         >
           <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-48"
-            data-size="lg"
+            aria-checked="false"
+            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+            data-slot="checkbox"
+            data-state="unchecked"
+            id="shipping-options-gift-wrapping"
+            role="checkbox"
+            type="button"
+            value="true"
+          />
+          <input
+            aria-hidden="true"
+            name="giftWrapping"
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="true"
+          />
+          <label
+            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 cursor-pointer"
+            data-slot="label"
+            for="shipping-options-gift-wrapping"
+          >
+            Send as a gift (gift wrapping)
+          </label>
+        </div>
+        <div
+          class="w-full pt-2"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
             data-slot="button"
             data-variant="default"
             type="submit"
@@ -543,7 +530,7 @@ exports[`ShippingOptions stories snapshot > NoShippingMethods story renders and 
     data-testid="sf-toggle-card-shipping-options"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -552,9 +539,9 @@ exports[`ShippingOptions stories snapshot > NoShippingMethods story renders and 
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
         >
-          Shipping Options
+          Shipping Method
         </span>
       </div>
       <div
@@ -568,22 +555,17 @@ exports[`ShippingOptions stories snapshot > NoShippingMethods story renders and 
       data-testid="sf-toggle-card-shipping-options-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4"
         method="post"
       >
         <div
-          class="space-y-4"
+          class="flex flex-col gap-4"
         >
-          <label
-            class="text-sm font-medium text-foreground"
-          >
-            Shipping Options
-          </label>
           <div
-            class="flex items-center justify-center p-8 border-2 border-dashed border-muted rounded-lg"
+            class="flex justify-center rounded-lg border-2 border-dashed border-muted p-8"
           >
             <div
-              class="text-center space-y-2"
+              class="space-y-2 text-center"
             >
               <p
                 class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
@@ -599,17 +581,17 @@ exports[`ShippingOptions stories snapshot > NoShippingMethods story renders and 
           </div>
         </div>
         <div
-          class="flex justify-end"
+          class="w-full pt-2"
         >
           <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-48"
-            data-size="lg"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
             data-slot="button"
             data-variant="default"
             disabled=""
             type="submit"
           >
-            No shipping methods available
+            Continue to Payment
           </button>
         </div>
       </form>
@@ -626,7 +608,7 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
     data-testid="sf-toggle-card-shipping-options"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -635,9 +617,9 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
         >
-          Shipping Options
+          Shipping Method
         </span>
       </div>
       <div
@@ -651,152 +633,176 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
       data-testid="sf-toggle-card-shipping-options-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4"
         method="post"
       >
         <div
-          class="space-y-4"
+          class="flex flex-col gap-4"
         >
-          <label
-            class="text-sm font-medium text-foreground"
-          >
-            Shipping Options
-          </label>
           <div
-            aria-label="Shipping Options"
+            aria-label="Shipping Method"
             aria-required="true"
-            class="grid gap-3"
+            class="flex flex-col gap-4"
             data-slot="radio-group"
             dir="ltr"
             role="radiogroup"
             style="outline: none;"
             tabindex="0"
           >
-            <div
-              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+            <label
+              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              for="standard"
             >
-              <button
-                aria-checked="true"
-                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 w-5 h-5"
-                data-radix-collection-item=""
-                data-slot="radio-group-item"
-                data-state="checked"
-                id="standard"
-                role="radio"
-                tabindex="0"
-                type="button"
-                value="standard"
+              <div
+                class="flex items-center gap-2"
               >
-                <span
-                  class="relative flex items-center justify-center"
-                  data-slot="radio-group-indicator"
+                <button
+                  aria-checked="true"
+                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                  data-radix-collection-item=""
+                  data-slot="radio-group-item"
                   data-state="checked"
+                  id="standard"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                  value="standard"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                    fill="none"
-                    height="24"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <span
+                    class="relative flex items-center justify-center"
+                    data-slot="radio-group-indicator"
+                    data-state="checked"
                   >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                    />
-                  </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <input
+                  aria-hidden="true"
+                  checked=""
+                  name="shippingMethodId"
+                  required=""
+                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                  tabindex="-1"
+                  type="radio"
+                  value="standard"
+                />
+                <span
+                  class="flex-1 text-sm font-medium leading-none"
+                >
+                  Standard Shipping
                 </span>
-              </button>
-              <input
-                aria-hidden="true"
-                checked=""
-                name="shippingMethodId"
-                required=""
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                tabindex="-1"
-                type="radio"
-                value="standard"
-              />
-              <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
-                data-slot="label"
-                for="standard"
-              >
-                <div
-                  class="space-y-1"
+                <span
+                  class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    $9.99 | Standard Shipping
-                  </p>
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    5-7 business days
-                  </p>
-                </div>
-              </label>
-            </div>
-            <div
-              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                  $9.99
+                </span>
+              </div>
+              <span
+                class="pl-6 text-sm text-muted-foreground"
+              >
+                5-7 business days
+              </span>
+            </label>
+            <label
+              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              for="express"
             >
-              <button
-                aria-checked="false"
-                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 w-5 h-5"
-                data-radix-collection-item=""
-                data-slot="radio-group-item"
-                data-state="unchecked"
-                id="express"
-                role="radio"
-                tabindex="-1"
-                type="button"
-                value="express"
-              />
-              <input
-                aria-hidden="true"
-                name="shippingMethodId"
-                required=""
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                tabindex="-1"
-                type="radio"
-                value="express"
-              />
-              <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
-                data-slot="label"
-                for="express"
+              <div
+                class="flex items-center gap-2"
               >
-                <div
-                  class="space-y-1"
+                <button
+                  aria-checked="false"
+                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                  data-radix-collection-item=""
+                  data-slot="radio-group-item"
+                  data-state="unchecked"
+                  id="express"
+                  role="radio"
+                  tabindex="-1"
+                  type="button"
+                  value="express"
+                />
+                <input
+                  aria-hidden="true"
+                  name="shippingMethodId"
+                  required=""
+                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                  tabindex="-1"
+                  type="radio"
+                  value="express"
+                />
+                <span
+                  class="flex-1 text-sm font-medium leading-none"
                 >
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    $19.99 | Express Shipping
-                  </p>
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    2-3 business days
-                  </p>
-                </div>
-              </label>
-            </div>
+                  Express Shipping
+                </span>
+                <span
+                  class="shrink-0 text-sm font-semibold leading-none"
+                >
+                  $19.99
+                </span>
+              </div>
+              <span
+                class="pl-6 text-sm text-muted-foreground"
+              >
+                2-3 business days
+              </span>
+            </label>
           </div>
         </div>
         <div
-          class="flex justify-end"
+          class="flex items-center gap-2 rounded-lg border border-border-subtle p-4"
         >
           <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-48"
-            data-size="lg"
+            aria-checked="false"
+            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+            data-slot="checkbox"
+            data-state="unchecked"
+            id="shipping-options-gift-wrapping"
+            role="checkbox"
+            type="button"
+            value="true"
+          />
+          <input
+            aria-hidden="true"
+            name="giftWrapping"
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="true"
+          />
+          <label
+            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 cursor-pointer"
+            data-slot="label"
+            for="shipping-options-gift-wrapping"
+          >
+            Send as a gift (gift wrapping)
+          </label>
+        </div>
+        <div
+          class="w-full pt-2"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
             data-slot="button"
             data-variant="default"
             type="submit"
@@ -818,7 +824,7 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
     data-testid="sf-toggle-card-shipping-options"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -827,9 +833,9 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
         >
-          Shipping Options
+          Shipping Method
         </span>
       </div>
       <div
@@ -843,7 +849,7 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
       data-testid="sf-toggle-card-shipping-options-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4"
         method="post"
       >
         <div
@@ -854,103 +860,127 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
           Failed to save shipping method. Please try again.
         </div>
         <div
-          class="space-y-4"
+          class="flex flex-col gap-4"
         >
-          <label
-            class="text-sm font-medium text-foreground"
-          >
-            Shipping Options
-          </label>
           <div
-            aria-label="Shipping Options"
+            aria-label="Shipping Method"
             aria-required="true"
-            class="grid gap-3"
+            class="flex flex-col gap-4"
             data-slot="radio-group"
             dir="ltr"
             role="radiogroup"
             style="outline: none;"
             tabindex="0"
           >
-            <div
-              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+            <label
+              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              for="standard"
             >
-              <button
-                aria-checked="true"
-                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 w-5 h-5"
-                data-radix-collection-item=""
-                data-slot="radio-group-item"
-                data-state="checked"
-                id="standard"
-                role="radio"
-                tabindex="0"
-                type="button"
-                value="standard"
+              <div
+                class="flex items-center gap-2"
               >
-                <span
-                  class="relative flex items-center justify-center"
-                  data-slot="radio-group-indicator"
+                <button
+                  aria-checked="true"
+                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                  data-radix-collection-item=""
+                  data-slot="radio-group-item"
                   data-state="checked"
+                  id="standard"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                  value="standard"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                    fill="none"
-                    height="24"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <span
+                    class="relative flex items-center justify-center"
+                    data-slot="radio-group-indicator"
+                    data-state="checked"
                   >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                    />
-                  </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <input
+                  aria-hidden="true"
+                  checked=""
+                  name="shippingMethodId"
+                  required=""
+                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                  tabindex="-1"
+                  type="radio"
+                  value="standard"
+                />
+                <span
+                  class="flex-1 text-sm font-medium leading-none"
+                >
+                  Standard Shipping
                 </span>
-              </button>
-              <input
-                aria-hidden="true"
-                checked=""
-                name="shippingMethodId"
-                required=""
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                tabindex="-1"
-                type="radio"
-                value="standard"
-              />
-              <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
-                data-slot="label"
-                for="standard"
-              >
-                <div
-                  class="space-y-1"
+                <span
+                  class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    $9.99 | Standard Shipping
-                  </p>
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    5-7 business days
-                  </p>
-                </div>
-              </label>
-            </div>
+                  $9.99
+                </span>
+              </div>
+              <span
+                class="pl-6 text-sm text-muted-foreground"
+              >
+                5-7 business days
+              </span>
+            </label>
           </div>
         </div>
         <div
-          class="flex justify-end"
+          class="flex items-center gap-2 rounded-lg border border-border-subtle p-4"
         >
           <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-48"
-            data-size="lg"
+            aria-checked="false"
+            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+            data-slot="checkbox"
+            data-state="unchecked"
+            id="shipping-options-gift-wrapping"
+            role="checkbox"
+            type="button"
+            value="true"
+          />
+          <input
+            aria-hidden="true"
+            name="giftWrapping"
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="true"
+          />
+          <label
+            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 cursor-pointer"
+            data-slot="label"
+            for="shipping-options-gift-wrapping"
+          >
+            Send as a gift (gift wrapping)
+          </label>
+        </div>
+        <div
+          class="w-full pt-2"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
             data-slot="button"
             data-variant="default"
             type="submit"
@@ -972,7 +1002,7 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
     data-testid="sf-toggle-card-shipping-options"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -981,9 +1011,9 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
         >
-          Shipping Options
+          Shipping Method
         </span>
       </div>
       <div
@@ -997,152 +1027,176 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
       data-testid="sf-toggle-card-shipping-options-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4"
         method="post"
       >
         <div
-          class="space-y-4"
+          class="flex flex-col gap-4"
         >
-          <label
-            class="text-sm font-medium text-foreground"
-          >
-            Shipping Options
-          </label>
           <div
-            aria-label="Shipping Options"
+            aria-label="Shipping Method"
             aria-required="true"
-            class="grid gap-3"
+            class="flex flex-col gap-4"
             data-slot="radio-group"
             dir="ltr"
             role="radiogroup"
             style="outline: none;"
             tabindex="0"
           >
-            <div
-              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+            <label
+              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              for="free"
             >
-              <button
-                aria-checked="true"
-                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 w-5 h-5"
-                data-radix-collection-item=""
-                data-slot="radio-group-item"
-                data-state="checked"
-                id="free"
-                role="radio"
-                tabindex="0"
-                type="button"
-                value="free"
+              <div
+                class="flex items-center gap-2"
               >
-                <span
-                  class="relative flex items-center justify-center"
-                  data-slot="radio-group-indicator"
+                <button
+                  aria-checked="true"
+                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                  data-radix-collection-item=""
+                  data-slot="radio-group-item"
                   data-state="checked"
+                  id="free"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                  value="free"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                    fill="none"
-                    height="24"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <span
+                    class="relative flex items-center justify-center"
+                    data-slot="radio-group-indicator"
+                    data-state="checked"
                   >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                    />
-                  </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <input
+                  aria-hidden="true"
+                  checked=""
+                  name="shippingMethodId"
+                  required=""
+                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                  tabindex="-1"
+                  type="radio"
+                  value="free"
+                />
+                <span
+                  class="flex-1 text-sm font-medium leading-none"
+                >
+                  Free Standard Shipping
                 </span>
-              </button>
-              <input
-                aria-hidden="true"
-                checked=""
-                name="shippingMethodId"
-                required=""
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                tabindex="-1"
-                type="radio"
-                value="free"
-              />
-              <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
-                data-slot="label"
-                for="free"
-              >
-                <div
-                  class="space-y-1"
+                <span
+                  class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    Free | Free Standard Shipping
-                  </p>
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    5-7 business days
-                  </p>
-                </div>
-              </label>
-            </div>
-            <div
-              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                  Free
+                </span>
+              </div>
+              <span
+                class="pl-6 text-sm text-muted-foreground"
+              >
+                5-7 business days
+              </span>
+            </label>
+            <label
+              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              for="express"
             >
-              <button
-                aria-checked="false"
-                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 w-5 h-5"
-                data-radix-collection-item=""
-                data-slot="radio-group-item"
-                data-state="unchecked"
-                id="express"
-                role="radio"
-                tabindex="-1"
-                type="button"
-                value="express"
-              />
-              <input
-                aria-hidden="true"
-                name="shippingMethodId"
-                required=""
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                tabindex="-1"
-                type="radio"
-                value="express"
-              />
-              <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
-                data-slot="label"
-                for="express"
+              <div
+                class="flex items-center gap-2"
               >
-                <div
-                  class="space-y-1"
+                <button
+                  aria-checked="false"
+                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                  data-radix-collection-item=""
+                  data-slot="radio-group-item"
+                  data-state="unchecked"
+                  id="express"
+                  role="radio"
+                  tabindex="-1"
+                  type="button"
+                  value="express"
+                />
+                <input
+                  aria-hidden="true"
+                  name="shippingMethodId"
+                  required=""
+                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                  tabindex="-1"
+                  type="radio"
+                  value="express"
+                />
+                <span
+                  class="flex-1 text-sm font-medium leading-none"
                 >
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    $19.99 | Express Shipping
-                  </p>
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    2-3 business days
-                  </p>
-                </div>
-              </label>
-            </div>
+                  Express Shipping
+                </span>
+                <span
+                  class="shrink-0 text-sm font-semibold leading-none"
+                >
+                  $19.99
+                </span>
+              </div>
+              <span
+                class="pl-6 text-sm text-muted-foreground"
+              >
+                2-3 business days
+              </span>
+            </label>
           </div>
         </div>
         <div
-          class="flex justify-end"
+          class="flex items-center gap-2 rounded-lg border border-border-subtle p-4"
         >
           <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-48"
-            data-size="lg"
+            aria-checked="false"
+            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+            data-slot="checkbox"
+            data-state="unchecked"
+            id="shipping-options-gift-wrapping"
+            role="checkbox"
+            type="button"
+            value="true"
+          />
+          <input
+            aria-hidden="true"
+            name="giftWrapping"
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="true"
+          />
+          <label
+            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 cursor-pointer"
+            data-slot="label"
+            for="shipping-options-gift-wrapping"
+          >
+            Send as a gift (gift wrapping)
+          </label>
+        </div>
+        <div
+          class="w-full pt-2"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
             data-slot="button"
             data-variant="default"
             type="submit"
@@ -1164,7 +1218,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
     data-testid="sf-toggle-card-shipping-options"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -1173,9 +1227,9 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
         >
-          Shipping Options
+          Shipping Method
         </span>
       </div>
       <div
@@ -1189,197 +1243,221 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
       data-testid="sf-toggle-card-shipping-options-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4"
         method="post"
       >
         <div
-          class="space-y-4"
+          class="flex flex-col gap-4"
         >
-          <label
-            class="text-sm font-medium text-foreground"
-          >
-            Shipping Options
-          </label>
           <div
-            aria-label="Shipping Options"
+            aria-label="Shipping Method"
             aria-required="true"
-            class="grid gap-3"
+            class="flex flex-col gap-4"
             data-slot="radio-group"
             dir="ltr"
             role="radiogroup"
             style="outline: none;"
             tabindex="0"
           >
-            <div
-              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+            <label
+              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              for="standard"
             >
-              <button
-                aria-checked="true"
-                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 w-5 h-5"
-                data-radix-collection-item=""
-                data-slot="radio-group-item"
-                data-state="checked"
-                id="standard"
-                role="radio"
-                tabindex="0"
-                type="button"
-                value="standard"
+              <div
+                class="flex items-center gap-2"
               >
-                <span
-                  class="relative flex items-center justify-center"
-                  data-slot="radio-group-indicator"
+                <button
+                  aria-checked="true"
+                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                  data-radix-collection-item=""
+                  data-slot="radio-group-item"
                   data-state="checked"
+                  id="standard"
+                  role="radio"
+                  tabindex="0"
+                  type="button"
+                  value="standard"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                    fill="none"
-                    height="24"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <span
+                    class="relative flex items-center justify-center"
+                    data-slot="radio-group-indicator"
+                    data-state="checked"
                   >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                    />
-                  </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <input
+                  aria-hidden="true"
+                  checked=""
+                  name="shippingMethodId"
+                  required=""
+                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                  tabindex="-1"
+                  type="radio"
+                  value="standard"
+                />
+                <span
+                  class="flex-1 text-sm font-medium leading-none"
+                >
+                  Standard Shipping
                 </span>
-              </button>
-              <input
-                aria-hidden="true"
-                checked=""
-                name="shippingMethodId"
-                required=""
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                tabindex="-1"
-                type="radio"
-                value="standard"
-              />
-              <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
-                data-slot="label"
-                for="standard"
-              >
-                <div
-                  class="space-y-1"
+                <span
+                  class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    $9.99 | Standard Shipping
-                  </p>
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    5-7 business days
-                  </p>
-                </div>
-              </label>
-            </div>
-            <div
-              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                  $9.99
+                </span>
+              </div>
+              <span
+                class="pl-6 text-sm text-muted-foreground"
+              >
+                5-7 business days
+              </span>
+            </label>
+            <label
+              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              for="express"
             >
-              <button
-                aria-checked="false"
-                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 w-5 h-5"
-                data-radix-collection-item=""
-                data-slot="radio-group-item"
-                data-state="unchecked"
-                id="express"
-                role="radio"
-                tabindex="-1"
-                type="button"
-                value="express"
-              />
-              <input
-                aria-hidden="true"
-                name="shippingMethodId"
-                required=""
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                tabindex="-1"
-                type="radio"
-                value="express"
-              />
-              <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
-                data-slot="label"
-                for="express"
+              <div
+                class="flex items-center gap-2"
               >
-                <div
-                  class="space-y-1"
+                <button
+                  aria-checked="false"
+                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                  data-radix-collection-item=""
+                  data-slot="radio-group-item"
+                  data-state="unchecked"
+                  id="express"
+                  role="radio"
+                  tabindex="-1"
+                  type="button"
+                  value="express"
+                />
+                <input
+                  aria-hidden="true"
+                  name="shippingMethodId"
+                  required=""
+                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                  tabindex="-1"
+                  type="radio"
+                  value="express"
+                />
+                <span
+                  class="flex-1 text-sm font-medium leading-none"
                 >
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    $19.99 | Express Shipping
-                  </p>
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    2-3 business days
-                  </p>
-                </div>
-              </label>
-            </div>
-            <div
-              class="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                  Express Shipping
+                </span>
+                <span
+                  class="shrink-0 text-sm font-semibold leading-none"
+                >
+                  $19.99
+                </span>
+              </div>
+              <span
+                class="pl-6 text-sm text-muted-foreground"
+              >
+                2-3 business days
+              </span>
+            </label>
+            <label
+              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              for="overnight"
             >
-              <button
-                aria-checked="false"
-                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 w-5 h-5"
-                data-radix-collection-item=""
-                data-slot="radio-group-item"
-                data-state="unchecked"
-                id="overnight"
-                role="radio"
-                tabindex="-1"
-                type="button"
-                value="overnight"
-              />
-              <input
-                aria-hidden="true"
-                name="shippingMethodId"
-                required=""
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                tabindex="-1"
-                type="radio"
-                value="overnight"
-              />
-              <label
-                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex-1 cursor-pointer group-has-[:checked]:text-foreground"
-                data-slot="label"
-                for="overnight"
+              <div
+                class="flex items-center gap-2"
               >
-                <div
-                  class="space-y-1"
+                <button
+                  aria-checked="false"
+                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                  data-radix-collection-item=""
+                  data-slot="radio-group-item"
+                  data-state="unchecked"
+                  id="overnight"
+                  role="radio"
+                  tabindex="-1"
+                  type="button"
+                  value="overnight"
+                />
+                <input
+                  aria-hidden="true"
+                  name="shippingMethodId"
+                  required=""
+                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                  tabindex="-1"
+                  type="radio"
+                  value="overnight"
+                />
+                <span
+                  class="flex-1 text-sm font-medium leading-none"
                 >
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    $29.99 | Overnight Shipping
-                  </p>
-                  <p
-                    class="text-left text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base"
-                  >
-                    Next business day
-                  </p>
-                </div>
-              </label>
-            </div>
+                  Overnight Shipping
+                </span>
+                <span
+                  class="shrink-0 text-sm font-semibold leading-none"
+                >
+                  $29.99
+                </span>
+              </div>
+              <span
+                class="pl-6 text-sm text-muted-foreground"
+              >
+                Next business day
+              </span>
+            </label>
           </div>
         </div>
         <div
-          class="flex justify-end"
+          class="flex items-center gap-2 rounded-lg border border-border-subtle p-4"
         >
           <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-48"
-            data-size="lg"
+            aria-checked="false"
+            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+            data-slot="checkbox"
+            data-state="unchecked"
+            id="shipping-options-gift-wrapping"
+            role="checkbox"
+            type="button"
+            value="true"
+          />
+          <input
+            aria-hidden="true"
+            name="giftWrapping"
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="true"
+          />
+          <label
+            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 cursor-pointer"
+            data-slot="label"
+            for="shipping-options-gift-wrapping"
+          >
+            Send as a gift (gift wrapping)
+          </label>
+        </div>
+        <div
+          class="w-full pt-2"
+        >
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
             data-slot="button"
             data-variant="default"
             type="submit"

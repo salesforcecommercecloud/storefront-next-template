@@ -28,7 +28,8 @@ type ToggleCardContextValue = {
 
 const ToggleCardContext = createContext<ToggleCardContextValue | undefined>(undefined);
 
-export type ToggleCardProps = ComponentProps<'div'> & {
+/** Omit HTML `title` so checkout step headings can be React nodes (e.g. styled spans). */
+export type ToggleCardProps = Omit<ComponentProps<'div'>, 'title'> & {
     id?: string;
     title?: ReactNode;
     description?: ReactNode;
@@ -68,11 +69,12 @@ export function ToggleCard({
     const contextValue = useMemo<ToggleCardContextValue>(() => ({ editing, disabled }), [editing, disabled]);
 
     const showHeaderContentGap = editing || (!editing && !disabled);
+    const isCompact = !editing && disabled;
 
     return (
         <ToggleCardContext.Provider value={contextValue}>
             <Card
-                className={cn('relative', showHeaderContentGap ? 'gap-4' : 'gap-0', className)}
+                className={cn('relative', showHeaderContentGap ? 'gap-4' : 'gap-0', isCompact && 'py-4', className)}
                 data-testid={id ? `sf-toggle-card-${id}` : undefined}
                 aria-disabled={disabled && !editing ? true : undefined}
                 {...props}>

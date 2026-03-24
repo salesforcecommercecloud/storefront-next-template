@@ -284,6 +284,22 @@ describe('ShippingAddress Integration Tests', () => {
         test('calls onEdit when edit button clicked', async () => {
             const user = userEvent.setup();
             const handleEdit = vi.fn();
+            const basketWithAddress = createMockBasket({
+                shipments: [
+                    {
+                        shipmentId: 'shipment-1',
+                        shippingAddress: {
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            address1: '123 Main St',
+                            city: 'New York',
+                            stateCode: 'NY',
+                            postalCode: '10001',
+                        },
+                    },
+                ],
+            });
+            useBasket.mockReturnValue(basketWithAddress);
 
             // Mock basket with shipping address so edit button appears
             useBasket.mockReturnValue(
@@ -308,8 +324,8 @@ describe('ShippingAddress Integration Tests', () => {
                 <ShippingAddress {...createDefaultProps({ isEditing: false, isCompleted: true, onEdit: handleEdit })} />
             );
 
-            const editButton = screen.getByRole('button', { name: /edit/i });
-            await user.click(editButton);
+            const changeButton = screen.getByRole('button', { name: /edit/i });
+            await user.click(changeButton);
 
             expect(handleEdit).toHaveBeenCalled();
         });

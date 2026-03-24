@@ -481,10 +481,13 @@
             "phonePlaceholder": "(000) 000-0000"
         },
         "shippingOptions": {
-            "title": "Shipping Options",
+            "title": "Shipping Method",
+            "giftWrappingLabel": "Send as a gift (gift wrapping)",
+            "giftWrappingDescription": "You can enable or disable gift options at any time.",
             "selectRequired": "Select a shipping method",
             "saving": "Saving...",
             "continue": "Continue to Payment",
+            "completePreviousSteps": "Complete previous steps to continue",
             "enterAddressFirst": "Enter your shipping address to view available shipping methods.",
             "arrives": "Arrives: {{estimatedArrivalTime}}",
             "priceAndMethod": "{{price}} | {{methodName}}",
