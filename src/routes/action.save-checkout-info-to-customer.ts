@@ -15,7 +15,7 @@
  */
 import { getAuth } from '@/middlewares/auth.server';
 import { getBasket } from '@/middlewares/basket.server';
-import type { RouteContext } from '@salesforce/storefront-next-runtime';
+import type { ActionFunctionArgs } from 'react-router';
 import {
     savePaymentMethodToCustomer,
     type PaymentInstrumentForSave,
@@ -31,7 +31,7 @@ import {
  *
  * This allows the newly registered customer to have their information pre-filled on future visits.
  */
-export async function action({ request, context }: { request: Request; context: RouteContext }) {
+export async function action({ request, context }: { request: Request; context: ActionFunctionArgs['context'] }) {
     try {
         const auth = getAuth(context);
 

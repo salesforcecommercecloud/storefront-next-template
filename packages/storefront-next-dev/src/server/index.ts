@@ -51,7 +51,6 @@ const RELATIVE_MIDDLEWARE_REGISTRY_BUILT_PATHS: readonly string[] = RELATIVE_MID
 );
 
 const DEFAULT_BUNDLE_ID = 'local';
-
 export interface ServerOptions extends Partial<ServerModeFeatures> {
     /** Server mode: development (with Vite), preview (preview), or production (minimal) */
     mode: ServerMode;
@@ -123,7 +122,6 @@ export async function createServer(options: ServerOptions): Promise<Express> {
     if (enableLogging) {
         app.use(createLoggingMiddleware());
     }
-
     // If streaming is enabled then compression needs to be handled by the streaming handler
     // in the streamingHandler file
     if (enableCompression && !streaming) {
@@ -185,10 +183,9 @@ export async function createServer(options: ServerOptions): Promise<Express> {
 
     // Normalize the Host header for React Router's CSRF validation features
     app.use(createHostHeaderMiddleware());
-
     // SSR request handler
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    app.all('*', await createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatching));
+    app.all('*splat', await createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatching));
 
     return app;
 }

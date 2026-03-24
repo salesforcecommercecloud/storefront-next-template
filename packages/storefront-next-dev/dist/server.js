@@ -619,7 +619,7 @@ async function createServer(options) {
 	if (mode === "development" && vite) app.use(vite.middlewares);
 	if (enableProxy) app.use(config.commerce.api.proxy, createCommerceProxyMiddleware(config));
 	app.use(createHostHeaderMiddleware());
-	app.all("*", await createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatching));
+	app.all("*splat", await createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatching));
 	return app;
 }
 /**

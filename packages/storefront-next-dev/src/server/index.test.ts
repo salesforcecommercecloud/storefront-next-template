@@ -513,7 +513,7 @@ describe('server/index', () => {
 
                 await createServer(options);
 
-                expect(mockExpressApp.all).toHaveBeenCalledWith('*', expect.any(Function));
+                expect(mockExpressApp.all).toHaveBeenCalledWith('*splat', expect.any(Function));
             });
         });
     });
@@ -551,7 +551,7 @@ describe('server/index', () => {
                 await createServer(options);
 
                 // Get the SSR handler that was registered
-                const ssrHandlerCall = mockExpressApp.all.mock.calls.find((call) => call[0] === '*');
+                const ssrHandlerCall = mockExpressApp.all.mock.calls.find((call) => call[0] === '*splat');
                 expect(ssrHandlerCall).toBeDefined();
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const ssrHandler = ssrHandlerCall![1];
@@ -595,7 +595,7 @@ describe('server/index', () => {
                 await createServer(options);
 
                 // Get the SSR handler
-                const ssrHandlerCall = mockExpressApp.all.mock.calls.find((call) => call[0] === '*');
+                const ssrHandlerCall = mockExpressApp.all.mock.calls.find((call) => call[0] === '*splat');
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const ssrHandler = ssrHandlerCall![1];
 
@@ -639,7 +639,7 @@ describe('server/index', () => {
 
                 await createServer(options);
 
-                const ssrHandlerCall = mockExpressApp.all.mock.calls.find((call) => call[0] === '*');
+                const ssrHandlerCall = mockExpressApp.all.mock.calls.find((call) => call[0] === '*splat');
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const ssrHandler = ssrHandlerCall![1];
 
@@ -673,7 +673,7 @@ describe('server/index', () => {
                     mode: process.env.NODE_ENV,
                 });
 
-                const ssrHandlerCall = mockExpressApp.all.mock.calls.find((call) => call[0] === '*');
+                const ssrHandlerCall = mockExpressApp.all.mock.calls.find((call) => call[0] === '*splat');
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 expect(ssrHandlerCall![1]).toBe(mockHandler);
             });
@@ -695,7 +695,7 @@ describe('server/index', () => {
                     mode: process.env.NODE_ENV,
                 });
 
-                const ssrHandlerCall = mockExpressApp.all.mock.calls.find((call) => call[0] === '*');
+                const ssrHandlerCall = mockExpressApp.all.mock.calls.find((call) => call[0] === '*splat');
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 expect(ssrHandlerCall![1]).toBe(mockHandler);
             });

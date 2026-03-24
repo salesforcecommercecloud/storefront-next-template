@@ -15,7 +15,7 @@
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { action } from './action.save-checkout-info-to-customer';
-import type { RouteContext } from '@salesforce/storefront-next-runtime';
+import type { ActionFunctionArgs } from 'react-router';
 
 // Mock dependencies
 vi.mock('@/middlewares/auth.server', () => ({
@@ -47,7 +47,7 @@ const mockSaveShippingAddressToCustomer = saveShippingAddressToCustomer as Retur
 const mockSaveBillingAddressToCustomer = saveBillingAddressToCustomer as ReturnType<typeof vi.fn>;
 
 describe('action.save-checkout-info-to-customer', () => {
-    const mockContext = {} as RouteContext;
+    const mockContext = {} as ActionFunctionArgs['context'];
 
     beforeEach(() => {
         vi.clearAllMocks();
