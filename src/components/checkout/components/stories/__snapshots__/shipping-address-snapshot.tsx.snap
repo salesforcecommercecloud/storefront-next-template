@@ -8,7 +8,7 @@ exports[`ShippingAddress stories snapshot > CompletedState story renders and mat
     data-testid="sf-toggle-card-shipping-address"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -17,7 +17,7 @@ exports[`ShippingAddress stories snapshot > CompletedState story renders and mat
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -42,9 +42,11 @@ exports[`ShippingAddress stories snapshot > CompletedState story renders and mat
       data-slot="card-content"
       data-testid="sf-toggle-card-shipping-address-content"
     >
-      <div
-        class="space-y-2"
-      />
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Complete previous steps to continue
+      </p>
     </div>
   </div>
 </div>
@@ -58,7 +60,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
     data-testid="sf-toggle-card-shipping-address"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -67,7 +69,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -83,32 +85,33 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
       data-testid="sf-toggle-card-shipping-address-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4 pt-2"
       >
         <div>
           <div
-            class="grid grid-cols-2 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_0_-form-item"
               >
                 First Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping given-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_0_-form-item"
                 name="firstName"
-                placeholder="First name"
+                placeholder="First Name"
                 value=""
               />
             </div>
@@ -117,21 +120,22 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1_-form-item"
               >
                 Last Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping family-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_1_-form-item"
                 name="lastName"
-                placeholder="Last name"
+                placeholder="Last Name"
                 value=""
               />
             </div>
@@ -144,21 +148,22 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_2_-form-item"
               >
                 Address Line 1
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="off"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_2_-form-item"
                 name="address1"
-                placeholder="Street address"
+                placeholder="Address Line 1"
                 value=""
               />
             </div>
@@ -171,7 +176,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_3_-form-item"
@@ -181,7 +186,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_3_-form-item"
                 name="address2"
@@ -191,65 +196,44 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
             </div>
           </div>
           <div
-            class="grid grid-cols-3 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_4_-form-item"
               >
-                Zip Code
-              </label>
-              <input
-                aria-invalid="false"
-                autocomplete="shipping postal-code"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-                data-slot="form-control"
-                id="_r_4_-form-item"
-                name="postalCode"
-                placeholder="Zip code"
-                value=""
-              />
-            </div>
-            <div
-              class="grid gap-2"
-              data-slot="form-item"
-            >
-              <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-                data-error="false"
-                data-slot="form-label"
-                for="_r_5_-form-item"
-              >
                 City
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
-                id="_r_5_-form-item"
+                id="_r_4_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
               />
             </div>
             <div
-              class="grid gap-2 w-full [&_[data-slot=native-select-wrapper]]:w-full"
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_6_-form-item"
+                for="_r_5_-form-item"
               >
                 State
+                *
               </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
@@ -257,19 +241,19 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
               >
                 <select
                   aria-invalid="false"
-                  aria-label="State"
                   autocomplete="shipping address-level1"
-                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-muted-foreground"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_6_-form-item"
+                  id="_r_5_-form-item"
                   name="stateCode"
                 >
                   <option
+                    class="text-muted-foreground"
                     data-slot="native-select-option"
                     value=""
                   >
-                    State or province
+                    State
                   </option>
                   <option
                     data-slot="native-select-option"
@@ -600,43 +584,103 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
             </div>
           </div>
           <div
-            class="grid gap-2"
-            data-slot="form-item"
+            class="grid grid-cols-2 gap-2 items-start "
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_7_-form-item"
+            <div
+              class="grid gap-2"
+              data-slot="form-item"
             >
-              Phone Number
-            </label>
-            <input
-              aria-invalid="false"
-              autocomplete="tel"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-              data-slot="form-control"
-              id="_r_7_-form-item"
-              name="phone"
-              placeholder="(555) 123-4567"
-              type="tel"
-              value=""
-            />
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_6_-form-item"
+              >
+                Zip Code
+                *
+              </label>
+              <input
+                aria-invalid="false"
+                autocomplete="shipping postal-code"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                data-slot="form-control"
+                id="_r_6_-form-item"
+                name="postalCode"
+                placeholder="Zip"
+                value=""
+              />
+            </div>
+            <div
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
+              data-slot="form-item"
+            >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_7_-form-item"
+              >
+                Country
+                *
+              </label>
+              <div
+                class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
+                data-slot="native-select-wrapper"
+              >
+                <select
+                  aria-invalid="false"
+                  aria-label="Country"
+                  autocomplete="shipping country"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                  data-size="default"
+                  data-slot="form-control"
+                  id="_r_7_-form-item"
+                  name="countryCode"
+                >
+                  <option
+                    data-slot="native-select-option"
+                    value="US"
+                  >
+                    United States
+                  </option>
+                  <option
+                    data-slot="native-select-option"
+                    value="CA"
+                  >
+                    Canada
+                  </option>
+                </select>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
+                  data-slot="native-select-icon"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m6 9 6 6 6-6"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
-        <div
-          class="flex justify-end pt-4"
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          type="submit"
         >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-            data-size="lg"
-            data-slot="button"
-            data-variant="default"
-            type="submit"
-          >
-            Continue to Shipping Options
-          </button>
-        </div>
+          Continue to Shipping Method
+        </button>
       </form>
     </div>
   </div>
@@ -651,7 +695,7 @@ exports[`ShippingAddress stories snapshot > DisabledState story renders and matc
     data-testid="sf-toggle-card-shipping-address"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -660,7 +704,7 @@ exports[`ShippingAddress stories snapshot > DisabledState story renders and matc
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -668,26 +712,18 @@ exports[`ShippingAddress stories snapshot > DisabledState story renders and matc
       <div
         class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
         data-slot="card-action"
-      >
-        <button
-          aria-label="Edit"
-          class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
-          data-size="sm"
-          data-slot="button"
-          data-variant="link"
-        >
-          Edit
-        </button>
-      </div>
+      />
     </div>
     <div
       class="px-6"
       data-slot="card-content"
       data-testid="sf-toggle-card-shipping-address-content"
     >
-      <div
-        class="space-y-2"
-      />
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Complete previous steps to continue
+      </p>
     </div>
   </div>
 </div>
@@ -701,7 +737,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
     data-testid="sf-toggle-card-shipping-address"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -710,7 +746,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -726,32 +762,33 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
       data-testid="sf-toggle-card-shipping-address-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4 pt-2"
       >
         <div>
           <div
-            class="grid grid-cols-2 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1q_-form-item"
               >
                 First Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping given-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_1q_-form-item"
                 name="firstName"
-                placeholder="First name"
+                placeholder="First Name"
                 value=""
               />
             </div>
@@ -760,21 +797,22 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1r_-form-item"
               >
                 Last Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping family-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_1r_-form-item"
                 name="lastName"
-                placeholder="Last name"
+                placeholder="Last Name"
                 value=""
               />
             </div>
@@ -787,21 +825,22 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1s_-form-item"
               >
                 Address Line 1
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="off"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_1s_-form-item"
                 name="address1"
-                placeholder="Street address"
+                placeholder="Address Line 1"
                 value=""
               />
             </div>
@@ -814,7 +853,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1t_-form-item"
@@ -824,7 +863,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_1t_-form-item"
                 name="address2"
@@ -834,65 +873,44 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
             </div>
           </div>
           <div
-            class="grid grid-cols-3 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1u_-form-item"
               >
-                Zip Code
-              </label>
-              <input
-                aria-invalid="false"
-                autocomplete="shipping postal-code"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-                data-slot="form-control"
-                id="_r_1u_-form-item"
-                name="postalCode"
-                placeholder="Zip code"
-                value=""
-              />
-            </div>
-            <div
-              class="grid gap-2"
-              data-slot="form-item"
-            >
-              <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-                data-error="false"
-                data-slot="form-label"
-                for="_r_1v_-form-item"
-              >
                 City
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
-                id="_r_1v_-form-item"
+                id="_r_1u_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
               />
             </div>
             <div
-              class="grid gap-2 w-full [&_[data-slot=native-select-wrapper]]:w-full"
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_20_-form-item"
+                for="_r_1v_-form-item"
               >
                 State
+                *
               </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
@@ -900,19 +918,19 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
               >
                 <select
                   aria-invalid="false"
-                  aria-label="State"
                   autocomplete="shipping address-level1"
-                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-muted-foreground"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_20_-form-item"
+                  id="_r_1v_-form-item"
                   name="stateCode"
                 >
                   <option
+                    class="text-muted-foreground"
                     data-slot="native-select-option"
                     value=""
                   >
-                    State or province
+                    State
                   </option>
                   <option
                     data-slot="native-select-option"
@@ -1243,43 +1261,103 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
             </div>
           </div>
           <div
-            class="grid gap-2"
-            data-slot="form-item"
+            class="grid grid-cols-2 gap-2 items-start "
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_21_-form-item"
+            <div
+              class="grid gap-2"
+              data-slot="form-item"
             >
-              Phone Number
-            </label>
-            <input
-              aria-invalid="false"
-              autocomplete="tel"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-              data-slot="form-control"
-              id="_r_21_-form-item"
-              name="phone"
-              placeholder="(555) 123-4567"
-              type="tel"
-              value=""
-            />
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_20_-form-item"
+              >
+                Zip Code
+                *
+              </label>
+              <input
+                aria-invalid="false"
+                autocomplete="shipping postal-code"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                data-slot="form-control"
+                id="_r_20_-form-item"
+                name="postalCode"
+                placeholder="Zip"
+                value=""
+              />
+            </div>
+            <div
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
+              data-slot="form-item"
+            >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_21_-form-item"
+              >
+                Country
+                *
+              </label>
+              <div
+                class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
+                data-slot="native-select-wrapper"
+              >
+                <select
+                  aria-invalid="false"
+                  aria-label="Country"
+                  autocomplete="shipping country"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                  data-size="default"
+                  data-slot="form-control"
+                  id="_r_21_-form-item"
+                  name="countryCode"
+                >
+                  <option
+                    data-slot="native-select-option"
+                    value="US"
+                  >
+                    United States
+                  </option>
+                  <option
+                    data-slot="native-select-option"
+                    value="CA"
+                  >
+                    Canada
+                  </option>
+                </select>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
+                  data-slot="native-select-icon"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m6 9 6 6 6-6"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
-        <div
-          class="flex justify-end pt-4"
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          type="submit"
         >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-            data-size="lg"
-            data-slot="button"
-            data-variant="default"
-            type="submit"
-          >
-            Continue to Shipping Options
-          </button>
-        </div>
+          Continue to Shipping Method
+        </button>
       </form>
     </div>
   </div>
@@ -1294,7 +1372,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
     data-testid="sf-toggle-card-shipping-address"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -1303,7 +1381,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -1319,32 +1397,33 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
       data-testid="sf-toggle-card-shipping-address-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4 pt-2"
       >
         <div>
           <div
-            class="grid grid-cols-2 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_m_-form-item"
               >
                 First Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping given-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_m_-form-item"
                 name="firstName"
-                placeholder="First name"
+                placeholder="First Name"
                 value=""
               />
             </div>
@@ -1353,21 +1432,22 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_n_-form-item"
               >
                 Last Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping family-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_n_-form-item"
                 name="lastName"
-                placeholder="Last name"
+                placeholder="Last Name"
                 value=""
               />
             </div>
@@ -1380,21 +1460,22 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_o_-form-item"
               >
                 Address Line 1
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="off"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_o_-form-item"
                 name="address1"
-                placeholder="Street address"
+                placeholder="Address Line 1"
                 value=""
               />
             </div>
@@ -1407,7 +1488,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_p_-form-item"
@@ -1417,7 +1498,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_p_-form-item"
                 name="address2"
@@ -1427,65 +1508,44 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
             </div>
           </div>
           <div
-            class="grid grid-cols-3 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_q_-form-item"
               >
-                Zip Code
-              </label>
-              <input
-                aria-invalid="false"
-                autocomplete="shipping postal-code"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-                data-slot="form-control"
-                id="_r_q_-form-item"
-                name="postalCode"
-                placeholder="Zip code"
-                value=""
-              />
-            </div>
-            <div
-              class="grid gap-2"
-              data-slot="form-item"
-            >
-              <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-                data-error="false"
-                data-slot="form-label"
-                for="_r_r_-form-item"
-              >
                 City
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
-                id="_r_r_-form-item"
+                id="_r_q_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
               />
             </div>
             <div
-              class="grid gap-2 w-full [&_[data-slot=native-select-wrapper]]:w-full"
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_s_-form-item"
+                for="_r_r_-form-item"
               >
                 State
+                *
               </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
@@ -1493,19 +1553,19 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
               >
                 <select
                   aria-invalid="false"
-                  aria-label="State"
                   autocomplete="shipping address-level1"
-                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-muted-foreground"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_s_-form-item"
+                  id="_r_r_-form-item"
                   name="stateCode"
                 >
                   <option
+                    class="text-muted-foreground"
                     data-slot="native-select-option"
                     value=""
                   >
-                    State or province
+                    State
                   </option>
                   <option
                     data-slot="native-select-option"
@@ -1836,44 +1896,104 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
             </div>
           </div>
           <div
-            class="grid gap-2"
-            data-slot="form-item"
+            class="grid grid-cols-2 gap-2 items-start "
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_t_-form-item"
+            <div
+              class="grid gap-2"
+              data-slot="form-item"
             >
-              Phone Number
-            </label>
-            <input
-              aria-invalid="false"
-              autocomplete="tel"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-              data-slot="form-control"
-              id="_r_t_-form-item"
-              name="phone"
-              placeholder="(555) 123-4567"
-              type="tel"
-              value=""
-            />
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_s_-form-item"
+              >
+                Zip Code
+                *
+              </label>
+              <input
+                aria-invalid="false"
+                autocomplete="shipping postal-code"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                data-slot="form-control"
+                id="_r_s_-form-item"
+                name="postalCode"
+                placeholder="Zip"
+                value=""
+              />
+            </div>
+            <div
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
+              data-slot="form-item"
+            >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_t_-form-item"
+              >
+                Country
+                *
+              </label>
+              <div
+                class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
+                data-slot="native-select-wrapper"
+              >
+                <select
+                  aria-invalid="false"
+                  aria-label="Country"
+                  autocomplete="shipping country"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                  data-size="default"
+                  data-slot="form-control"
+                  id="_r_t_-form-item"
+                  name="countryCode"
+                >
+                  <option
+                    data-slot="native-select-option"
+                    value="US"
+                  >
+                    United States
+                  </option>
+                  <option
+                    data-slot="native-select-option"
+                    value="CA"
+                  >
+                    Canada
+                  </option>
+                </select>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
+                  data-slot="native-select-icon"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m6 9 6 6 6-6"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
-        <div
-          class="flex justify-end pt-4"
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          disabled=""
+          type="submit"
         >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-            data-size="lg"
-            data-slot="button"
-            data-variant="default"
-            disabled=""
-            type="submit"
-          >
-            Submitting
-          </button>
-        </div>
+          Saving...
+        </button>
       </form>
     </div>
     <div
@@ -1899,7 +2019,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
     data-testid="sf-toggle-card-shipping-address"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -1908,7 +2028,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -1924,32 +2044,33 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
       data-testid="sf-toggle-card-shipping-address-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4 pt-2"
       >
         <div>
           <div
-            class="grid grid-cols-2 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_b_-form-item"
               >
                 First Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping given-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_b_-form-item"
                 name="firstName"
-                placeholder="First name"
+                placeholder="First Name"
                 value=""
               />
             </div>
@@ -1958,21 +2079,22 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_c_-form-item"
               >
                 Last Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping family-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_c_-form-item"
                 name="lastName"
-                placeholder="Last name"
+                placeholder="Last Name"
                 value=""
               />
             </div>
@@ -1985,21 +2107,22 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_d_-form-item"
               >
                 Address Line 1
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="off"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_d_-form-item"
                 name="address1"
-                placeholder="Street address"
+                placeholder="Address Line 1"
                 value=""
               />
             </div>
@@ -2012,7 +2135,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_e_-form-item"
@@ -2022,7 +2145,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_e_-form-item"
                 name="address2"
@@ -2032,65 +2155,44 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
             </div>
           </div>
           <div
-            class="grid grid-cols-3 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_f_-form-item"
               >
-                Zip Code
-              </label>
-              <input
-                aria-invalid="false"
-                autocomplete="shipping postal-code"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-                data-slot="form-control"
-                id="_r_f_-form-item"
-                name="postalCode"
-                placeholder="Zip code"
-                value=""
-              />
-            </div>
-            <div
-              class="grid gap-2"
-              data-slot="form-item"
-            >
-              <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-                data-error="false"
-                data-slot="form-label"
-                for="_r_g_-form-item"
-              >
                 City
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
-                id="_r_g_-form-item"
+                id="_r_f_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
               />
             </div>
             <div
-              class="grid gap-2 w-full [&_[data-slot=native-select-wrapper]]:w-full"
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_h_-form-item"
+                for="_r_g_-form-item"
               >
                 State
+                *
               </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
@@ -2098,19 +2200,19 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
               >
                 <select
                   aria-invalid="false"
-                  aria-label="State"
                   autocomplete="shipping address-level1"
-                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-muted-foreground"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_h_-form-item"
+                  id="_r_g_-form-item"
                   name="stateCode"
                 >
                   <option
+                    class="text-muted-foreground"
                     data-slot="native-select-option"
                     value=""
                   >
-                    State or province
+                    State
                   </option>
                   <option
                     data-slot="native-select-option"
@@ -2441,43 +2543,103 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
             </div>
           </div>
           <div
-            class="grid gap-2"
-            data-slot="form-item"
+            class="grid grid-cols-2 gap-2 items-start "
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_i_-form-item"
+            <div
+              class="grid gap-2"
+              data-slot="form-item"
             >
-              Phone Number
-            </label>
-            <input
-              aria-invalid="false"
-              autocomplete="tel"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-              data-slot="form-control"
-              id="_r_i_-form-item"
-              name="phone"
-              placeholder="(555) 123-4567"
-              type="tel"
-              value=""
-            />
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_h_-form-item"
+              >
+                Zip Code
+                *
+              </label>
+              <input
+                aria-invalid="false"
+                autocomplete="shipping postal-code"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                data-slot="form-control"
+                id="_r_h_-form-item"
+                name="postalCode"
+                placeholder="Zip"
+                value=""
+              />
+            </div>
+            <div
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
+              data-slot="form-item"
+            >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_i_-form-item"
+              >
+                Country
+                *
+              </label>
+              <div
+                class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
+                data-slot="native-select-wrapper"
+              >
+                <select
+                  aria-invalid="false"
+                  aria-label="Country"
+                  autocomplete="shipping country"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                  data-size="default"
+                  data-slot="form-control"
+                  id="_r_i_-form-item"
+                  name="countryCode"
+                >
+                  <option
+                    data-slot="native-select-option"
+                    value="US"
+                  >
+                    United States
+                  </option>
+                  <option
+                    data-slot="native-select-option"
+                    value="CA"
+                  >
+                    Canada
+                  </option>
+                </select>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
+                  data-slot="native-select-icon"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m6 9 6 6 6-6"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
-        <div
-          class="flex justify-end pt-4"
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          type="submit"
         >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-            data-size="lg"
-            data-slot="button"
-            data-variant="default"
-            type="submit"
-          >
-            Continue to Shipping Options
-          </button>
-        </div>
+          Continue to Shipping Method
+        </button>
       </form>
     </div>
   </div>
@@ -2492,7 +2654,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
     data-testid="sf-toggle-card-shipping-address"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -2501,7 +2663,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -2517,7 +2679,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
       data-testid="sf-toggle-card-shipping-address-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4 pt-2"
       >
         <div
           aria-live="polite"
@@ -2528,28 +2690,29 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
         </div>
         <div>
           <div
-            class="grid grid-cols-2 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_14_-form-item"
               >
                 First Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping given-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_14_-form-item"
                 name="firstName"
-                placeholder="First name"
+                placeholder="First Name"
                 value=""
               />
             </div>
@@ -2558,21 +2721,22 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_15_-form-item"
               >
                 Last Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping family-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_15_-form-item"
                 name="lastName"
-                placeholder="Last name"
+                placeholder="Last Name"
                 value=""
               />
             </div>
@@ -2585,21 +2749,22 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_16_-form-item"
               >
                 Address Line 1
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="off"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_16_-form-item"
                 name="address1"
-                placeholder="Street address"
+                placeholder="Address Line 1"
                 value=""
               />
             </div>
@@ -2612,7 +2777,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_17_-form-item"
@@ -2622,7 +2787,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_17_-form-item"
                 name="address2"
@@ -2632,65 +2797,44 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
             </div>
           </div>
           <div
-            class="grid grid-cols-3 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_18_-form-item"
               >
-                Zip Code
-              </label>
-              <input
-                aria-invalid="false"
-                autocomplete="shipping postal-code"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-                data-slot="form-control"
-                id="_r_18_-form-item"
-                name="postalCode"
-                placeholder="Zip code"
-                value=""
-              />
-            </div>
-            <div
-              class="grid gap-2"
-              data-slot="form-item"
-            >
-              <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-                data-error="false"
-                data-slot="form-label"
-                for="_r_19_-form-item"
-              >
                 City
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
-                id="_r_19_-form-item"
+                id="_r_18_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
               />
             </div>
             <div
-              class="grid gap-2 w-full [&_[data-slot=native-select-wrapper]]:w-full"
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_1a_-form-item"
+                for="_r_19_-form-item"
               >
                 State
+                *
               </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
@@ -2698,19 +2842,19 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
               >
                 <select
                   aria-invalid="false"
-                  aria-label="State"
                   autocomplete="shipping address-level1"
-                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-muted-foreground"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_1a_-form-item"
+                  id="_r_19_-form-item"
                   name="stateCode"
                 >
                   <option
+                    class="text-muted-foreground"
                     data-slot="native-select-option"
                     value=""
                   >
-                    State or province
+                    State
                   </option>
                   <option
                     data-slot="native-select-option"
@@ -3041,43 +3185,103 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
             </div>
           </div>
           <div
-            class="grid gap-2"
-            data-slot="form-item"
+            class="grid grid-cols-2 gap-2 items-start "
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_1b_-form-item"
+            <div
+              class="grid gap-2"
+              data-slot="form-item"
             >
-              Phone Number
-            </label>
-            <input
-              aria-invalid="false"
-              autocomplete="tel"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-              data-slot="form-control"
-              id="_r_1b_-form-item"
-              name="phone"
-              placeholder="(555) 123-4567"
-              type="tel"
-              value=""
-            />
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_1a_-form-item"
+              >
+                Zip Code
+                *
+              </label>
+              <input
+                aria-invalid="false"
+                autocomplete="shipping postal-code"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                data-slot="form-control"
+                id="_r_1a_-form-item"
+                name="postalCode"
+                placeholder="Zip"
+                value=""
+              />
+            </div>
+            <div
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
+              data-slot="form-item"
+            >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_1b_-form-item"
+              >
+                Country
+                *
+              </label>
+              <div
+                class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
+                data-slot="native-select-wrapper"
+              >
+                <select
+                  aria-invalid="false"
+                  aria-label="Country"
+                  autocomplete="shipping country"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                  data-size="default"
+                  data-slot="form-control"
+                  id="_r_1b_-form-item"
+                  name="countryCode"
+                >
+                  <option
+                    data-slot="native-select-option"
+                    value="US"
+                  >
+                    United States
+                  </option>
+                  <option
+                    data-slot="native-select-option"
+                    value="CA"
+                  >
+                    Canada
+                  </option>
+                </select>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
+                  data-slot="native-select-icon"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m6 9 6 6 6-6"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
-        <div
-          class="flex justify-end pt-4"
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          type="submit"
         >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-            data-size="lg"
-            data-slot="button"
-            data-variant="default"
-            type="submit"
-          >
-            Continue to Shipping Options
-          </button>
-        </div>
+          Continue to Shipping Method
+        </button>
       </form>
     </div>
   </div>
@@ -3092,7 +3296,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
     data-testid="sf-toggle-card-shipping-address"
   >
     <div
-      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center"
+      class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
       data-slot="card-header"
     >
       <div
@@ -3101,7 +3305,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
         tabindex="0"
       >
         <span
-          class="text-lg font-semibold text-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -3117,7 +3321,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
       data-testid="sf-toggle-card-shipping-address-content"
     >
       <form
-        class="space-y-6"
+        class="flex flex-col gap-4 pt-2"
       >
         <div
           class="space-y-2"
@@ -3153,28 +3357,29 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
         </div>
         <div>
           <div
-            class="grid grid-cols-2 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1f_-form-item"
               >
                 First Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping given-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_1f_-form-item"
                 name="firstName"
-                placeholder="First name"
+                placeholder="First Name"
                 value=""
               />
             </div>
@@ -3183,21 +3388,22 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1g_-form-item"
               >
                 Last Name
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping family-name"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_1g_-form-item"
                 name="lastName"
-                placeholder="Last name"
+                placeholder="Last Name"
                 value=""
               />
             </div>
@@ -3210,21 +3416,22 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1h_-form-item"
               >
                 Address Line 1
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="off"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_1h_-form-item"
                 name="address1"
-                placeholder="Street address"
+                placeholder="Address Line 1"
                 value=""
               />
             </div>
@@ -3237,7 +3444,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1i_-form-item"
@@ -3247,7 +3454,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-line2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_1i_-form-item"
                 name="address2"
@@ -3257,65 +3464,44 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
             </div>
           </div>
           <div
-            class="grid grid-cols-3 gap-4 mb-4"
+            class="grid grid-cols-2 gap-2 mb-4 items-start"
           >
             <div
               class="grid gap-2"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
                 for="_r_1j_-form-item"
               >
-                Zip Code
-              </label>
-              <input
-                aria-invalid="false"
-                autocomplete="shipping postal-code"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-                data-slot="form-control"
-                id="_r_1j_-form-item"
-                name="postalCode"
-                placeholder="Zip code"
-                value=""
-              />
-            </div>
-            <div
-              class="grid gap-2"
-              data-slot="form-item"
-            >
-              <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-                data-error="false"
-                data-slot="form-label"
-                for="_r_1k_-form-item"
-              >
                 City
+                *
               </label>
               <input
                 aria-invalid="false"
                 autocomplete="shipping address-level2"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
-                id="_r_1k_-form-item"
+                id="_r_1j_-form-item"
                 name="city"
                 placeholder="City"
                 value=""
               />
             </div>
             <div
-              class="grid gap-2 w-full [&_[data-slot=native-select-wrapper]]:w-full"
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
-                class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
                 data-error="false"
                 data-slot="form-label"
-                for="_r_1l_-form-item"
+                for="_r_1k_-form-item"
               >
                 State
+                *
               </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
@@ -3323,19 +3509,19 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
               >
                 <select
                   aria-invalid="false"
-                  aria-label="State"
                   autocomplete="shipping address-level1"
-                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 min-w-0 appearance-none rounded-md bg-transparent px-3 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-sm text-foreground font-normal py-1 leading-normal border-2 focus:border-primary transition-colors w-full [font-family:inherit]"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-muted-foreground"
                   data-size="default"
                   data-slot="form-control"
-                  id="_r_1l_-form-item"
+                  id="_r_1k_-form-item"
                   name="stateCode"
                 >
                   <option
+                    class="text-muted-foreground"
                     data-slot="native-select-option"
                     value=""
                   >
-                    State or province
+                    State
                   </option>
                   <option
                     data-slot="native-select-option"
@@ -3666,43 +3852,103 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
             </div>
           </div>
           <div
-            class="grid gap-2"
-            data-slot="form-item"
+            class="grid grid-cols-2 gap-2 items-start "
           >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_1m_-form-item"
+            <div
+              class="grid gap-2"
+              data-slot="form-item"
             >
-              Phone Number
-            </label>
-            <input
-              aria-invalid="false"
-              autocomplete="tel"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md bg-transparent px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 focus:border-primary transition-colors"
-              data-slot="form-control"
-              id="_r_1m_-form-item"
-              name="phone"
-              placeholder="(555) 123-4567"
-              type="tel"
-              value=""
-            />
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_1l_-form-item"
+              >
+                Zip Code
+                *
+              </label>
+              <input
+                aria-invalid="false"
+                autocomplete="shipping postal-code"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                data-slot="form-control"
+                id="_r_1l_-form-item"
+                name="postalCode"
+                placeholder="Zip"
+                value=""
+              />
+            </div>
+            <div
+              class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
+              data-slot="form-item"
+            >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_1m_-form-item"
+              >
+                Country
+                *
+              </label>
+              <div
+                class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
+                data-slot="native-select-wrapper"
+              >
+                <select
+                  aria-invalid="false"
+                  aria-label="Country"
+                  autocomplete="shipping country"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                  data-size="default"
+                  data-slot="form-control"
+                  id="_r_1m_-form-item"
+                  name="countryCode"
+                >
+                  <option
+                    data-slot="native-select-option"
+                    value="US"
+                  >
+                    United States
+                  </option>
+                  <option
+                    data-slot="native-select-option"
+                    value="CA"
+                  >
+                    Canada
+                  </option>
+                </select>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-down text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none"
+                  data-slot="native-select-icon"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m6 9 6 6 6-6"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
-        <div
-          class="flex justify-end pt-4"
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          type="submit"
         >
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-            data-size="lg"
-            data-slot="button"
-            data-variant="default"
-            type="submit"
-          >
-            Continue to Shipping Options
-          </button>
-        </div>
+          Continue to Shipping Method
+        </button>
       </form>
     </div>
   </div>

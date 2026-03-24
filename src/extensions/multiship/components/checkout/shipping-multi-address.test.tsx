@@ -659,7 +659,7 @@ describe('ShippingMultiAddress', () => {
             await user.click(addAddressButton[0]);
 
             // Dialog should be open
-            expect(screen.getByRole('heading', { name: 'Add Address' })).toBeInTheDocument();
+            expect(screen.getByRole('heading', { name: 'Add New Address' })).toBeInTheDocument();
             expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
             expect(screen.getByPlaceholderText(/last name/i)).toBeInTheDocument();
         });
@@ -705,10 +705,10 @@ describe('ShippingMultiAddress', () => {
             await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Home');
             await user.type(screen.getByPlaceholderText(/first name/i), 'Jane');
             await user.type(screen.getByPlaceholderText(/last name/i), 'Doe');
-            await user.type(screen.getByRole('textbox', { name: /^(Address|Address\s*Line\s*1)$/i }), '789 New St');
+            await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '789 New St');
             await user.type(screen.getByPlaceholderText(/city/i), 'Seattle');
             await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'WA');
-            await user.type(screen.getByPlaceholderText(/(postal code|zip code)/i), '98101');
+            await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '98101');
             await user.type(screen.getByRole('textbox', { name: /phone/i }), '2065551234');
 
             // Submit the form
@@ -717,7 +717,7 @@ describe('ShippingMultiAddress', () => {
 
             // Wait for dialog to close
             await waitFor(() => {
-                expect(screen.queryByText('Add Address')).not.toBeInTheDocument();
+                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
             });
 
             // Check that the address is now selected for the item
@@ -770,10 +770,10 @@ describe('ShippingMultiAddress', () => {
             await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Work');
             await user.type(screen.getByPlaceholderText(/first name/i), 'John');
             await user.type(screen.getByPlaceholderText(/last name/i), 'Smith');
-            await user.type(screen.getByRole('textbox', { name: /^(Address|Address\s*Line\s*1)$/i }), '123 Test Ave');
+            await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '123 Test Ave');
             await user.type(screen.getByPlaceholderText(/city/i), 'Portland');
             await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'OR');
-            await user.type(screen.getByPlaceholderText(/(postal code|zip code)/i), '97201');
+            await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '97201');
             await user.type(screen.getByRole('textbox', { name: /phone/i }), '5035551234');
 
             const saveButton = screen.getByRole('button', { name: 'Save' });
@@ -781,7 +781,7 @@ describe('ShippingMultiAddress', () => {
 
             // Wait for dialog to close
             await waitFor(() => {
-                expect(screen.queryByText('Add Address')).not.toBeInTheDocument();
+                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
             });
 
             // Both items should have the new address selected
@@ -839,17 +839,17 @@ describe('ShippingMultiAddress', () => {
             await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Shared');
             await user.type(screen.getByPlaceholderText(/first name/i), 'Shared');
             await user.type(screen.getByPlaceholderText(/last name/i), 'Address');
-            await user.type(screen.getByRole('textbox', { name: /^(Address|Address\s*Line\s*1)$/i }), '999 Shared St');
+            await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '999 Shared St');
             await user.type(screen.getByPlaceholderText(/city/i), 'Boston');
             await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'MA');
-            await user.type(screen.getByPlaceholderText(/(postal code|zip code)/i), '02101');
+            await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '02101');
             await user.type(screen.getByRole('textbox', { name: /phone/i }), '6175551234');
 
             const saveButton = screen.getByRole('button', { name: 'Save' });
             await user.click(saveButton);
 
             await waitFor(() => {
-                expect(screen.queryByText('Add Address')).not.toBeInTheDocument();
+                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
             });
 
             // Now select the new address for item-2 from dropdown
@@ -896,7 +896,7 @@ describe('ShippingMultiAddress', () => {
             await user.click(cancelButton);
 
             await waitFor(() => {
-                expect(screen.queryByText('Add Address')).not.toBeInTheDocument();
+                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
             });
 
             // Reopen dialog

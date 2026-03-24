@@ -862,7 +862,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
                       disabled=""
-                      placeholder="First name"
+                      placeholder="First Name"
                       value="john"
                     />
                   </div>
@@ -876,7 +876,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
                       disabled=""
-                      placeholder="Last name"
+                      placeholder="Last Name"
                       value="doe"
                     />
                   </div>
@@ -891,7 +891,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
                     class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                     data-slot="input"
                     disabled=""
-                    placeholder="Street address"
+                    placeholder="Address Line 1"
                     value="123 Main St"
                   />
                 </div>
@@ -936,7 +936,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
                       disabled=""
-                      placeholder="State or province"
+                      placeholder="State"
                       value="UT"
                     />
                   </div>
@@ -950,7 +950,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
                       disabled=""
-                      placeholder="Zip code"
+                      placeholder="Zip"
                       value="84095"
                     />
                   </div>
@@ -965,7 +965,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
                     class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                     data-slot="input"
                     disabled=""
-                    placeholder="(555) 123-4567"
+                    placeholder="(000) 000-0000"
                     type="tel"
                     value="1233211234"
                   />
@@ -980,7 +980,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
                     data-variant="default"
                     disabled=""
                   >
-                    Submitting
+                    Saving...
                   </button>
                 </div>
               </div>
@@ -1224,7 +1224,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="First name"
+                      placeholder="First Name"
                       value="john"
                     />
                   </div>
@@ -1237,7 +1237,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="Last name"
+                      placeholder="Last Name"
                       value="doe"
                     />
                   </div>
@@ -1251,7 +1251,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
                   <input
                     class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                     data-slot="input"
-                    placeholder="Street address"
+                    placeholder="Address Line 1"
                     value="123 Main St"
                   />
                 </div>
@@ -1293,7 +1293,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="State or province"
+                      placeholder="State"
                       value="UT"
                     />
                   </div>
@@ -1306,7 +1306,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="Zip code"
+                      placeholder="Zip"
                       value="84095"
                     />
                   </div>
@@ -1320,7 +1320,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
                   <input
                     class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                     data-slot="input"
-                    placeholder="(555) 123-4567"
+                    placeholder="(000) 000-0000"
                     type="tel"
                     value="1233211234"
                   />
@@ -1334,7 +1334,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
                     data-slot="button"
                     data-variant="default"
                   >
-                    Continue to Shipping Options
+                    Continue to Shipping Method
                   </button>
                 </div>
               </div>
@@ -2649,7 +2649,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="First name"
+                      placeholder="First Name"
                       value=""
                     />
                   </div>
@@ -2662,7 +2662,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="Last name"
+                      placeholder="Last Name"
                       value=""
                     />
                   </div>
@@ -2676,7 +2676,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
                   <input
                     class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                     data-slot="input"
-                    placeholder="Street address"
+                    placeholder="Address Line 1"
                     value=""
                   />
                 </div>
@@ -2718,7 +2718,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="State or province"
+                      placeholder="State"
                       value=""
                     />
                   </div>
@@ -2731,7 +2731,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="Zip code"
+                      placeholder="Zip"
                       value=""
                     />
                   </div>
@@ -2745,7 +2745,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
                   <input
                     class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                     data-slot="input"
-                    placeholder="(555) 123-4567"
+                    placeholder="(000) 000-0000"
                     type="tel"
                     value=""
                   />
@@ -2759,7 +2759,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
                     data-slot="button"
                     data-variant="default"
                   >
-                    Continue to Shipping Options
+                    Continue to Shipping Method
                   </button>
                 </div>
               </div>
@@ -4252,7 +4252,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="First name"
+                      placeholder="First Name"
                       value="john"
                     />
                   </div>
@@ -4265,7 +4265,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="Last name"
+                      placeholder="Last Name"
                       value="doe"
                     />
                   </div>
@@ -4279,7 +4279,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
                   <input
                     class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                     data-slot="input"
-                    placeholder="Street address"
+                    placeholder="Address Line 1"
                     value="123 Main St"
                   />
                 </div>
@@ -4321,7 +4321,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="State or province"
+                      placeholder="State"
                       value="UT"
                     />
                   </div>
@@ -4334,7 +4334,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
                     <input
                       class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                       data-slot="input"
-                      placeholder="Zip code"
+                      placeholder="Zip"
                       value="84095"
                     />
                   </div>
@@ -4348,7 +4348,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
                   <input
                     class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                     data-slot="input"
-                    placeholder="(555) 123-4567"
+                    placeholder="(000) 000-0000"
                     type="tel"
                     value="1233211234"
                   />
@@ -4362,7 +4362,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
                     data-slot="button"
                     data-variant="default"
                   >
-                    Continue to Shipping Options
+                    Continue to Shipping Method
                   </button>
                 </div>
               </div>

@@ -225,7 +225,7 @@ describe('Payment Integration Tests', () => {
             await user.click(checkbox);
 
             await waitFor(() => {
-                expect(screen.getByRole('textbox', { name: /^first name$/i })).toBeInTheDocument();
+                expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
             });
         });
     });

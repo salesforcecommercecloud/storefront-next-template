@@ -59,8 +59,9 @@ export const createShippingAddressSchema = (t: SchemaTFunction) => {
         address1: z.string().min(1, t('checkout:shippingAddress.addressRequired')),
         address2: z.string().optional(),
         city: z.string().min(1, t('checkout:shippingAddress.cityRequired')),
-        stateCode: z.string().optional(), // Optional for international compatibility
-        postalCode: z.string().optional(), // Optional for international compatibility
+        stateCode: z.string().min(1, t('checkout:shippingAddress.stateRequired')),
+        postalCode: z.string().min(1, t('checkout:shippingAddress.postalCodeRequired')),
+        phoneCountryCode: z.string().optional(),
         phone: z.string().optional(),
     });
 };
@@ -356,6 +357,7 @@ export const parseShippingAddressFromFormData = (formData: FormData): ShippingAd
         city: formData.get('city')?.toString() || '',
         stateCode: formData.get('stateCode')?.toString() || '',
         postalCode: formData.get('postalCode')?.toString() || '',
+        phoneCountryCode: formData.get('phoneCountryCode')?.toString() || '',
         phone: formData.get('phone')?.toString() || '',
     };
 };

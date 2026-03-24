@@ -35,35 +35,12 @@ import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
 import { useCheckoutContext } from '@/hooks/use-checkout';
+import { formatPhoneInput, stripCountryCode, formatPhoneDisplay, extractCountryCode } from '@/lib/phone-utils';
 import type { OtpFlowActiveRef } from '@/hooks/use-checkout-actions';
 import { Spinner } from '@/components/spinner';
 import { ConfigContext } from '@salesforce/storefront-next-runtime/config';
 
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
-
-const formatPhoneInput = (value: string): string => {
-    const digits = value.replace(/\D/g, '');
-    const limited = digits.slice(0, 10);
-
-    if (limited.length >= 7) {
-        return `(${limited.slice(0, 3)}) ${limited.slice(3, 6)}-${limited.slice(6)}`;
-    } else if (limited.length >= 4) {
-        return `(${limited.slice(0, 3)}) ${limited.slice(3)}`;
-    } else if (limited.length > 0) {
-        return `(${limited}`;
-    }
-    return limited;
-};
-
-const formatPhoneDisplay = (phone: string, countryCode = '+1'): string => {
-    const digits = phone.replace(/\D/g, '');
-    const local = digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits.slice(0, 10);
-
-    if (local.length === 10) {
-        return `${countryCode} (${local.slice(0, 3)}) ${local.slice(3, 6)}-${local.slice(6)}`;
-    }
-    return phone;
-};
 
 interface ContactInfoProps {
     onSubmit: (data: ContactInfoData) => void;
@@ -114,8 +91,12 @@ export default function ContactInfo({
         resolver: zodResolver(schema),
         defaultValues: {
             email: cart?.customerInfo?.email || customerContactInfo.email || '',
-            countryCode: '+1',
-            phone: String(cart?.billingAddress?.phone || cart?.customerInfo?.phone || customerContactInfo.phone || ''),
+            countryCode: extractCountryCode(
+                String(cart?.billingAddress?.phone || cart?.customerInfo?.phone || customerContactInfo.phone || '')
+            ),
+            phone: stripCountryCode(
+                String(cart?.billingAddress?.phone || cart?.customerInfo?.phone || customerContactInfo.phone || '')
+            ),
         },
     });
 

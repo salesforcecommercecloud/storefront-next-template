@@ -30,12 +30,13 @@ import {
     DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { AddressFormFields, AddressFormControl } from '@/components/address-form-fields';
 import { createShippingAddressSchema } from '@/lib/checkout-schemas';
 import { usPostalCodeRegex, canadianPostalCodeRegex } from '@/components/customer-address-form/constants';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { stripCountryCode, extractCountryCode } from '@/lib/phone-utils';
 
 function createAddressModalSchema(
     t: TFunction,
@@ -98,7 +99,7 @@ export interface AddressModalProps {
     showPhone?: boolean;
     /** Show country selector. Default: true */
     showCountry?: boolean;
-    /** When true, hide labels and use placeholders only. Default: true */
+    /** When true, hide labels and use placeholders only. Default: false */
     labelsAsPlaceholders?: boolean;
     /**
      * Enable strict validation: phone, stateCode, and postalCode become required,
@@ -131,7 +132,7 @@ export function AddressModal({
     showAddressId = false,
     showPhone = false,
     showCountry = true,
-    labelsAsPlaceholders = true,
+    labelsAsPlaceholders = false,
     strictValidation = false,
     generateAddressId,
     isLoading,
@@ -157,7 +158,7 @@ export function AddressModal({
         [t, tAccount, tErrors, showAddressId, strictValidation]
     );
 
-    const form = useForm<Partial<ShopperCustomers.schemas['CustomerAddress']>>({
+    const form = useForm<Partial<ShopperCustomers.schemas['CustomerAddress'] & { phoneCountryCode?: string }>>({
         // @ts-expect-error - zodResolver type mismatch with zod version
         resolver: zodResolver(schema),
         defaultValues: {
@@ -169,7 +170,8 @@ export function AddressModal({
             city: defaultValues?.city || '',
             stateCode: defaultValues?.stateCode || '',
             postalCode: defaultValues?.postalCode || '',
-            phone: defaultValues?.phone || '',
+            phoneCountryCode: extractCountryCode(defaultValues?.phone || ''),
+            phone: stripCountryCode(defaultValues?.phone || ''),
             countryCode: defaultValues?.countryCode || countryCode,
             preferred: defaultValues?.preferred ?? false,
         },
@@ -186,7 +188,8 @@ export function AddressModal({
                 city: defaultValues?.city || '',
                 stateCode: defaultValues?.stateCode || '',
                 postalCode: defaultValues?.postalCode || '',
-                phone: defaultValues?.phone || '',
+                phoneCountryCode: extractCountryCode(defaultValues?.phone || ''),
+                phone: stripCountryCode(defaultValues?.phone || ''),
                 countryCode: defaultValues?.countryCode || countryCode,
                 preferred: defaultValues?.preferred ?? false,
             });
@@ -200,15 +203,24 @@ export function AddressModal({
     };
 
     const handleSave = (formData: Partial<ShopperCustomers.schemas['CustomerAddress']>) => {
-        const data = formData as ShopperCustomers.schemas['CustomerAddress'];
+        const data = formData as ShopperCustomers.schemas['CustomerAddress'] & { phoneCountryCode?: string };
         let addressId = data.addressId.trim();
         if (!addressId && generateAddressId) {
             addressId = generateAddressId(data.firstName ?? '', data.lastName ?? '');
         }
 
+        // Combine phoneCountryCode and phone into a single phone field
+        const phone =
+            data.phone && data.phoneCountryCode ? `${data.phoneCountryCode} ${data.phone}`.trim() : data.phone || '';
+
+        // Remove phoneCountryCode from the result as it's not part of SCAPI schema
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { phoneCountryCode, ...addressData } = data;
+
         const result: ShopperCustomers.schemas['CustomerAddress'] = {
-            ...data,
+            ...addressData,
             addressId,
+            phone,
         };
 
         onSave?.(result);
@@ -223,11 +235,12 @@ export function AddressModal({
             <DialogContent
                 className="w-full max-w-[calc(100%-2rem)] sm:min-w-[32rem] sm:max-w-2xl border border-border rounded-lg bg-card shadow-lg gap-0 p-0 overflow-hidden"
                 showCloseButton
-                aria-labelledby="address-modal-title">
-                <DialogHeader className="pt-6 px-6 pb-0 gap-1.5 text-left">
+                aria-labelledby="address-modal-title"
+                aria-describedby="address-modal-desc">
+                <DialogHeader className="pt-6 px-6 pb-4 gap-1.5 text-left border-b border-border">
                     <DialogTitle
                         id="address-modal-title"
-                        className="text-lg font-semibold leading-[1.2] tracking-tight text-card-foreground">
+                        className="text-base font-bold tracking-tight text-card-foreground">
                         {isEditMode ? t('addressModal.editTitle') : t('addressModal.title')}
                     </DialogTitle>
                     <DialogDescription className="sr-only">
@@ -246,12 +259,18 @@ export function AddressModal({
                                     name="addressId"
                                     render={({ field }) => (
                                         <FormItem>
+                                            <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
+                                                {tAccount('addressForm.addressTitleLabel')}*
+                                            </FormLabel>
                                             <AddressFormControl>
                                                 <Input
                                                     type="text"
                                                     maxLength={256}
-                                                    placeholder={tAccount('addressForm.addressTitlePlaceholder')}
-                                                    className="h-12 text-base border-2 focus:border-primary transition-colors"
+                                                    placeholder={
+                                                        labelsAsPlaceholders
+                                                            ? `${tAccount('addressForm.addressTitleLabel')}*`
+                                                            : tAccount('addressForm.addressTitlePlaceholder')
+                                                    }
                                                     {...field}
                                                 />
                                             </AddressFormControl>
@@ -266,6 +285,7 @@ export function AddressModal({
                                 showCountry={showCountry}
                                 countryCode={countryCode}
                                 labelsAsPlaceholders={labelsAsPlaceholders}
+                                phoneRequired={strictValidation && showPhone}
                             />
                         </div>
                         <DialogFooter className="flex flex-row gap-2 items-center justify-end pb-6 pt-0 px-6 border-t-0">

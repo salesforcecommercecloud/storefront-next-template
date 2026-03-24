@@ -215,23 +215,17 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                           class="mt-2"
                         >
                           <div
-                            class="space-y-2"
+                            class="text-sm font-normal leading-5 text-foreground"
                           >
                             <div>
-                              <p
-                                class="text-sm font-medium leading-none text-left text-muted-foreground"
-                              >
+                              <p>
                                 John Snow
                               </p>
                             </div>
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
+                            <p>
                               2030 Market street 8th st
                             </p>
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
+                            <p>
                               98121, Seattle, WA, US
                             </p>
                           </div>
@@ -540,12 +534,10 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                           class="mt-2"
                         >
                           <div
-                            class="space-y-2"
+                            class="text-sm font-normal leading-5 text-foreground"
                           >
                             <div>
-                              <p
-                                class="text-sm font-medium leading-none text-left text-muted-foreground"
-                              >
+                              <p>
                                 Alice Smith
                               </p>
                             </div>
@@ -682,12 +674,10 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                           class="mt-2"
                         >
                           <div
-                            class="space-y-2"
+                            class="text-sm font-normal leading-5 text-foreground"
                           >
                             <div>
-                              <p
-                                class="text-sm font-medium leading-none text-left text-muted-foreground"
-                              >
+                              <p>
                                 Bob Jones
                               </p>
                             </div>
@@ -1015,23 +1005,17 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                           class="mt-2"
                         >
                           <div
-                            class="space-y-2"
+                            class="text-sm font-normal leading-5 text-foreground"
                           >
                             <div>
-                              <p
-                                class="text-sm font-medium leading-none text-left text-muted-foreground"
-                              >
+                              <p>
                                 John Snow
                               </p>
                             </div>
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
+                            <p>
                               2030 Market street 8th st
                             </p>
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
+                            <p>
                               98121, Seattle, WA, US
                             </p>
                           </div>

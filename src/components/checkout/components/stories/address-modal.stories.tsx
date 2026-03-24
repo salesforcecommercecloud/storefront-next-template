@@ -88,7 +88,7 @@ export const Default: Story = {
         const body = within(document.body);
 
         void expect(body.getByRole('dialog')).toBeInTheDocument();
-        void expect(body.getByRole('heading', { name: 'Add Address' })).toBeInTheDocument();
+        void expect(body.getByRole('heading', { name: 'Add New Address' })).toBeInTheDocument();
         void expect(body.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
         void expect(body.getByRole('button', { name: /^save$/i })).toBeInTheDocument();
     },

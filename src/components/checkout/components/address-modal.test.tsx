@@ -35,13 +35,13 @@ describe('AddressModal', () => {
     test('does not render dialog content when open is false', () => {
         render(<AddressModal open={false} onOpenChange={vi.fn()} />);
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-        expect(screen.queryByText('Add Address')).not.toBeInTheDocument();
+        expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
     });
 
     test('renders dialog with title and form when open is true', () => {
         render(<AddressModal open={true} onOpenChange={vi.fn()} />);
         expect(screen.getByRole('dialog')).toBeInTheDocument();
-        expect(screen.getByRole('heading', { name: 'Add Address' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Add New Address' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /^save$/i })).toBeInTheDocument();
         expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
@@ -77,10 +77,10 @@ describe('AddressModal', () => {
 
         await user.type(screen.getByPlaceholderText(/first name/i), 'Jane');
         await user.type(screen.getByPlaceholderText(/last name/i), 'Doe');
-        await user.type(screen.getByRole('textbox', { name: /^(Address|Address\s*Line\s*1)$/i }), '123 Main St');
-        await user.type(screen.getByPlaceholderText(/city/i), 'San Francisco');
+        await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '123 Main St');
+        await user.type(screen.getByRole('textbox', { name: /city/i }), 'San Francisco');
         await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'CA');
-        await user.type(screen.getByPlaceholderText(/(postal code|zip code)/i), '94102');
+        await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '94102');
 
         await user.click(screen.getByRole('button', { name: /^save$/i }));
 
@@ -104,10 +104,10 @@ describe('AddressModal', () => {
 
         await user.type(screen.getByPlaceholderText(/first name/i), 'Jane');
         await user.type(screen.getByPlaceholderText(/last name/i), 'Doe');
-        await user.type(screen.getByRole('textbox', { name: /^(Address|Address\s*Line\s*1)$/i }), '123 Main St');
-        await user.type(screen.getByPlaceholderText(/city/i), 'San Francisco');
+        await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '123 Main St');
+        await user.type(screen.getByRole('textbox', { name: /city/i }), 'San Francisco');
         await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'CA');
-        await user.type(screen.getByPlaceholderText(/(postal code|zip code)/i), '94102');
+        await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '94102');
         await user.click(screen.getByRole('button', { name: /^save$/i }));
 
         await waitFor(() => {
@@ -140,17 +140,9 @@ describe('AddressModal', () => {
     test('has accessible dialog with aria-labelledby and aria-describedby', () => {
         render(<AddressModal open={true} onOpenChange={vi.fn()} />);
         const dialog = screen.getByRole('dialog');
-        const labelledBy = dialog.getAttribute('aria-labelledby');
-        const describedBy = dialog.getAttribute('aria-describedby');
-        expect(labelledBy).toBeTruthy();
-        expect(describedBy).toBeTruthy();
-        const titleEl = labelledBy ? document.getElementById(labelledBy) : null;
-        const descEl = describedBy ? document.getElementById(describedBy) : null;
-        expect(titleEl).not.toBeNull();
-        expect(titleEl).toHaveTextContent('Add Address');
-        expect(descEl).not.toBeNull();
-        expect(descEl).toHaveTextContent(/shipping address/i);
-        expect(screen.getByRole('heading', { name: 'Add Address' })).toBeInTheDocument();
+        expect(dialog).toHaveAttribute('aria-labelledby', 'address-modal-title');
+        expect(dialog).toHaveAttribute('aria-describedby', 'address-modal-desc');
+        expect(screen.getByRole('heading', { name: 'Add New Address' })).toHaveAttribute('id', 'address-modal-title');
     });
 
     test('shows addressId field when showAddressId is true', () => {
@@ -180,10 +172,10 @@ describe('AddressModal', () => {
 
         await user.type(screen.getByPlaceholderText(/first name/i), 'John');
         await user.type(screen.getByPlaceholderText(/last name/i), 'Doe');
-        await user.type(screen.getByRole('textbox', { name: /^(Address|Address\s*Line\s*1)$/i }), '123 Main St');
-        await user.type(screen.getByPlaceholderText(/city/i), 'Seattle');
+        await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '123 Main St');
+        await user.type(screen.getByRole('textbox', { name: /city/i }), 'Seattle');
         await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'WA');
-        await user.type(screen.getByPlaceholderText(/(postal code|zip code)/i), '98101');
+        await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '98101');
 
         await user.click(screen.getByRole('button', { name: /^save$/i }));
 
@@ -213,18 +205,43 @@ describe('AddressModal', () => {
     test('shows "Edit Address" title when isEditMode is true', () => {
         render(<AddressModal open={true} onOpenChange={vi.fn()} isEditMode={true} />);
         expect(screen.getByRole('heading', { name: 'Edit Address' })).toBeInTheDocument();
-        expect(screen.queryByRole('heading', { name: 'Add Address' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('heading', { name: 'Add New Address' })).not.toBeInTheDocument();
     });
 
     test('shows "Add Address" title when isEditMode is false', () => {
         render(<AddressModal open={true} onOpenChange={vi.fn()} isEditMode={false} />);
-        expect(screen.getByRole('heading', { name: 'Add Address' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Add New Address' })).toBeInTheDocument();
         expect(screen.queryByRole('heading', { name: 'Edit Address' })).not.toBeInTheDocument();
     });
 
-    test('defaults to "Add Address" title when isEditMode is not provided', () => {
+    test('defaults to "Add New Address" title when isEditMode is not provided', () => {
         render(<AddressModal open={true} onOpenChange={vi.fn()} />);
-        expect(screen.getByRole('heading', { name: 'Add Address' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Add New Address' })).toBeInTheDocument();
+    });
+
+    test('strips phoneCountryCode from saved data', async () => {
+        const user = userEvent.setup();
+        const onSave = vi.fn();
+        render(<AddressModal open={true} onOpenChange={vi.fn()} onSave={onSave} countryCode="US" showPhone={true} />);
+
+        await user.type(screen.getByPlaceholderText(/first name/i), 'Jane');
+        await user.type(screen.getByPlaceholderText(/last name/i), 'Doe');
+        await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '123 Main St');
+        await user.type(screen.getByRole('textbox', { name: /city/i }), 'San Francisco');
+        await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'CA');
+        await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '94102');
+        await user.type(screen.getByRole('textbox', { name: /phone/i }), '5551234567');
+
+        await user.click(screen.getByRole('button', { name: /^save$/i }));
+
+        await waitFor(() => {
+            expect(onSave).toHaveBeenCalledTimes(1);
+        });
+        const data = onSave.mock.calls[0][0];
+        // phoneCountryCode should not be in the result
+        expect(data).not.toHaveProperty('phoneCountryCode');
+        // phone should include country code
+        expect(data.phone).toContain('+1');
     });
 
     describe('isLoading prop', () => {
@@ -256,10 +273,10 @@ describe('AddressModal', () => {
 
             await user.type(screen.getByPlaceholderText(/first name/i), 'Jane');
             await user.type(screen.getByPlaceholderText(/last name/i), 'Doe');
-            await user.type(screen.getByRole('textbox', { name: /^(Address|Address\s*Line\s*1)$/i }), '123 Main St');
-            await user.type(screen.getByPlaceholderText(/city/i), 'San Francisco');
+            await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '123 Main St');
+            await user.type(screen.getByRole('textbox', { name: /city/i }), 'San Francisco');
             await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'CA');
-            await user.type(screen.getByPlaceholderText(/(postal code|zip code)/i), '94102');
+            await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '94102');
             await user.click(screen.getByRole('button', { name: /^save$/i }));
 
             await waitFor(() => {

@@ -35,13 +35,14 @@ import { AddressFormFields } from '@/components/address-form-fields';
 import SavedAddressesList from './saved-addresses-list';
 import AddressModal from './address-modal';
 import type { CheckoutActionData } from '../types';
-import { addressToFormData, findMatchingSavedAddressId } from '@/lib/address-utils';
+import { addressToFormData, findMatchingSavedAddressId, isAddressEmpty } from '@/lib/address-utils';
 import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import ShippingAddressDisplay from './shipping-address-display';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { DEFAULT_COUNTRY_CODE } from '@/components/customer-address-form/constants';
+import { stripCountryCode, extractCountryCode } from '@/lib/phone-utils';
 
 interface ShippingAddressProps {
     onSubmit: (formData: FormData) => void;
@@ -61,7 +62,7 @@ export default function ShippingAddress({
     onSubmit,
     isLoading,
     actionData,
-    isCompleted: _isCompleted,
+    isCompleted,
     isEditing,
     onEdit,
     // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
@@ -103,7 +104,8 @@ export default function ShippingAddress({
             city: shippingAddress?.city || customerShippingAddress.city || '',
             stateCode: shippingAddress?.stateCode || customerShippingAddress.stateCode || '',
             postalCode: shippingAddress?.postalCode || customerShippingAddress.postalCode || '',
-            phone: prioritizedPhoneNumber,
+            phoneCountryCode: extractCountryCode(prioritizedPhoneNumber),
+            phone: stripCountryCode(prioritizedPhoneNumber),
         },
     });
 
@@ -155,7 +157,7 @@ export default function ShippingAddress({
     const handleUpdateError = () => {
         pendingEditAddressRef.current = null;
         setEditingAddress(null);
-        setAddressModalOpen(false);
+        // Keep modal open on error so user can retry
         // TODO: Add error alert to the user
     };
 
@@ -166,10 +168,16 @@ export default function ShippingAddress({
 
     useEffect(() => {
         if (pendingAddAddressRef.current && !isLoading) {
-            pendingAddAddressRef.current = false;
-            setAddressModalOpen(false);
+            // Only close modal if there were no errors
+            if (!actionData?.error && !actionData?.fieldErrors) {
+                pendingAddAddressRef.current = false;
+                setAddressModalOpen(false);
+            } else {
+                // There was an error, keep modal open but reset flag so user can retry
+                pendingAddAddressRef.current = false;
+            }
         }
-    }, [isLoading]);
+    }, [isLoading, actionData]);
 
     const isModalSaving = isEditMode
         ? updateAddressFetcher.state === 'submitting' || pendingEditAddressRef.current !== null
@@ -222,10 +230,39 @@ export default function ShippingAddress({
         onSubmit(formData);
     };
 
-    // For single page layout, always show the component but in collapsed state when not editing
-    // The ToggleCard will handle the collapsed/expanded state based on editing prop
-
-    const stepTitle = <span className="text-lg font-semibold text-foreground">{t('shippingAddress.title')}</span>;
+    const stepTitle =
+        hasSavedAddresses && isEditing ? (
+            <div className="flex items-center justify-between w-full">
+                <span className="text-2xl font-bold tracking-tight text-card-foreground">
+                    {t('shippingAddress.title')}
+                </span>
+                <div className="flex items-center gap-2">
+                    {/* @sfdc-extension-block-start SFDC_EXT_MULTISHIP */}
+                    {enableMultiAddress && (
+                        <Button
+                            type="button"
+                            variant="link"
+                            size="sm"
+                            className="cursor-pointer font-bold"
+                            onClick={handleToggleShippingAddressMode}>
+                            {tMultiship('checkout.deliverToMultipleAddresses')}
+                        </Button>
+                    )}
+                    {/* @sfdc-extension-block-end SFDC_EXT_MULTISHIP */}
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="font-medium text-secondary-foreground"
+                        onClick={() => setAddressModalOpen(true)}
+                        aria-label={t('shippingAddress.addNewAddressButton')}>
+                        {t('shippingAddress.addNewAddressButton')}
+                    </Button>
+                </div>
+            </div>
+        ) : (
+            <span className="text-2xl font-bold tracking-tight text-card-foreground">{t('shippingAddress.title')}</span>
+        );
 
     return (
         <ToggleCard
@@ -233,16 +270,20 @@ export default function ShippingAddress({
             // @ts-expect-error CardTitle accepts ReactNode; strict downstream type excludes null
             title={stepTitle as React.ReactNode}
             editing={isEditing}
+            disableEdit={!isCompleted && !isEditing}
             onEdit={onEdit}
             editLabel={t('common.edit')}
+            showHeaderSeparator
             // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
-            editAction={enableMultiAddress ? tMultiship('checkout.deliverToMultipleAddresses') : undefined}
-            onEditActionClick={enableMultiAddress ? handleToggleShippingAddressMode : undefined}
+            editAction={
+                enableMultiAddress && !hasSavedAddresses ? tMultiship('checkout.deliverToMultipleAddresses') : undefined
+            }
+            onEditActionClick={enableMultiAddress && !hasSavedAddresses ? handleToggleShippingAddressMode : undefined}
             // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
             isLoading={isLoading}>
             <ToggleCardEdit>
                 {hasSavedAddresses ? (
-                    <div className="space-y-6">
+                    <div className="flex flex-col gap-4 pt-2">
                         {shippingFormError && <CheckoutErrorBanner message={shippingFormError} />}
                         {actionData?.fieldErrors && (
                             <div className="space-y-2">
@@ -255,23 +296,21 @@ export default function ShippingAddress({
                             addresses={savedAddresses}
                             value={effectiveSelectedId}
                             onValueChange={setSelectedAddressId}
-                            onAddNewAddress={() => setAddressModalOpen(true)}
                             onEditAddress={handleEditAddress}
                         />
-                        <div className="flex justify-end pt-4">
-                            <Button
-                                type="button"
-                                disabled={isLoading}
-                                size="lg"
-                                className="min-w-56 h-12 text-base font-semibold"
-                                onClick={handleSavedAddressSubmit}>
-                                {isLoading ? t('common.submitting') : t('shippingAddress.continue')}
-                            </Button>
-                        </div>
+                        <Button
+                            type="button"
+                            disabled={isLoading}
+                            className="w-full"
+                            onClick={handleSavedAddressSubmit}>
+                            {isLoading ? t('shippingAddress.saving') : t('shippingAddress.continue')}
+                        </Button>
                     </div>
                 ) : (
                     <Form {...form}>
-                        <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
+                        <form
+                            onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
+                            className="flex flex-col gap-4 pt-2">
                             {shippingFormError && <CheckoutErrorBanner message={shippingFormError} />}
                             {actionData?.fieldErrors && (
                                 <div className="space-y-2">
@@ -282,29 +321,26 @@ export default function ShippingAddress({
                             )}
                             <AddressFormFields
                                 form={form}
-                                showPhone={true}
+                                showPhone={false}
+                                showCountry={true}
                                 autoFocus={isEditing}
                                 autoFocusField="firstName"
                                 countryCode={DEFAULT_COUNTRY_CODE}
                             />
-                            <div className="flex justify-end pt-4">
-                                <Button
-                                    type="submit"
-                                    disabled={isLoading}
-                                    size="lg"
-                                    className="min-w-56 h-12 text-base font-semibold">
-                                    {isLoading ? t('common.submitting') : t('shippingAddress.continue')}
-                                </Button>
-                            </div>
+                            <Button type="submit" disabled={isLoading} className="w-full">
+                                {isLoading ? t('shippingAddress.saving') : t('shippingAddress.continue')}
+                            </Button>
                         </form>
                     </Form>
                 )}
             </ToggleCardEdit>
 
             <ToggleCardSummary>
-                <div className="space-y-2">
+                {shippingAddress && !isAddressEmpty(shippingAddress) ? (
                     <ShippingAddressDisplay address={shippingAddress} />
-                </div>
+                ) : (
+                    <p className="text-sm text-muted-foreground">{t('shippingAddress.completePreviousSteps')}</p>
+                )}
             </ToggleCardSummary>
             <AddressModal
                 open={addressModalOpen}

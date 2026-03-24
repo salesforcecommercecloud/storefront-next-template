@@ -391,7 +391,7 @@ function MockCheckoutFormPage({
                                         <div className="flex justify-center pt-2">
                                             <Button disabled={isLoading} size="lg" className="min-w-48">
                                                 {isLoading
-                                                    ? t('checkout:common.submitting')
+                                                    ? t('checkout:shippingAddress.saving')
                                                     : t('checkout:shippingAddress.continue')}
                                             </Button>
                                         </div>

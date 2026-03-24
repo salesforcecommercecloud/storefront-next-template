@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, type ReactElement } from 'react';
+import { useState, useRef, type ReactElement } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -53,6 +53,7 @@ export function SavedAddressesList({
 }: SavedAddressesListProps): ReactElement {
     const { t } = useTranslation('checkout');
     const [showAll, setShowAll] = useState(false);
+    const radioGroupRef = useRef<HTMLDivElement>(null);
 
     if (addresses.length === 0) {
         return <></>;
@@ -64,86 +65,113 @@ export function SavedAddressesList({
     const hasMore = addresses.length > maxVisible;
     const moreCount = hasMore ? addresses.length - maxVisible : 0;
 
+    const handleViewLess = () => {
+        setShowAll(false);
+        // Scroll to center the address list in viewport after collapsing
+        setTimeout(() => {
+            if (radioGroupRef.current) {
+                const element = radioGroupRef.current;
+                const elementRect = element.getBoundingClientRect();
+                const elementTop = elementRect.top + window.scrollY;
+                const elementHeight = elementRect.height;
+                const viewportHeight = window.innerHeight;
+
+                // Center the element in the viewport
+                const offsetPosition = elementTop - viewportHeight / 2 + elementHeight / 2;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth',
+                });
+            }
+        }, 50);
+    };
+
     return (
         <div className="space-y-4">
-            <RadioGroup
-                value={selectedId}
-                onValueChange={onValueChange}
-                className="space-y-2"
-                aria-label={t('shippingAddress.selectSavedAddress')}>
-                {visibleAddresses.map((addr) => {
-                    const isSelected = selectedId === addr.id;
-                    return (
-                        <div
-                            key={addr.id}
-                            className={cn(
-                                'group flex items-start gap-4 rounded-lg border-2 bg-card p-4 transition-all duration-200',
-                                isSelected ? 'border-primary' : 'border-transparent'
-                            )}>
-                            <RadioGroupItem
-                                value={addr.id}
-                                id={`saved-address-${addr.id}`}
-                                className="mt-0.5 w-5 h-5 shrink-0"
-                            />
-                            <Label
-                                htmlFor={`saved-address-${addr.id}`}
-                                className={cn('flex-1 cursor-pointer min-w-0', isSelected && 'text-foreground')}>
-                                <div className="space-y-2">
-                                    <ShippingAddressDisplay address={addr} variant="card" />
-                                    {onEditAddress && (
-                                        <Button
-                                            type="button"
-                                            variant="link"
-                                            size="sm"
-                                            className="px-0 h-auto font-normal underline"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                onEditAddress(addr.id);
-                                            }}
-                                            aria-label={t('shippingAddress.editAddressLink')}>
-                                            {t('shippingAddress.editAddressLink')}
-                                        </Button>
-                                    )}
-                                </div>
-                            </Label>
-                        </div>
-                    );
-                })}
-            </RadioGroup>
-            <div className="flex gap-3 items-center flex-wrap">
-                {hasMore && !showAll && (
+            {onAddNewAddress && (
+                <div className="flex justify-end">
                     <Button
                         type="button"
-                        variant="ghost"
-                        size="default"
-                        onClick={() => setShowAll(true)}
-                        aria-expanded={false}
-                        aria-label={t('shippingAddress.viewAllLink')}>
-                        {t('shippingAddress.viewAllLink')} {t('shippingAddress.viewAllMore', { count: moreCount })}
-                    </Button>
-                )}
-                {hasMore && showAll && (
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="default"
-                        onClick={() => setShowAll(false)}
-                        aria-expanded={true}
-                        aria-label={t('shippingAddress.viewLessAddresses')}>
-                        {t('shippingAddress.viewLessAddresses')}
-                    </Button>
-                )}
-                {onAddNewAddress && (
-                    <Button
-                        type="button"
-                        variant="secondary"
-                        size="default"
+                        variant="outline"
+                        size="sm"
                         onClick={onAddNewAddress}
                         aria-label={t('shippingAddress.addNewAddressButton')}>
                         {t('shippingAddress.addNewAddressButton')}
                     </Button>
-                )}
+                </div>
+            )}
+            <div ref={radioGroupRef}>
+                <RadioGroup
+                    value={selectedId}
+                    onValueChange={onValueChange}
+                    className="space-y-2"
+                    aria-label={t('shippingAddress.selectSavedAddress')}>
+                    {visibleAddresses.map((addr) => {
+                        const isSelected = selectedId === addr.id;
+                        return (
+                            <div
+                                key={addr.id}
+                                className={cn(
+                                    'group flex items-start gap-2 transition-all duration-200',
+                                    isSelected ? 'border border-primary p-4' : 'gap-3'
+                                )}>
+                                <RadioGroupItem
+                                    value={addr.id}
+                                    id={`saved-address-${addr.id}`}
+                                    className="mt-0.5 size-4 shrink-0"
+                                />
+                                <Label htmlFor={`saved-address-${addr.id}`} className="flex-1 cursor-pointer min-w-0">
+                                    <div className="space-y-1.5">
+                                        <ShippingAddressDisplay address={addr} variant="card" />
+                                        {onEditAddress && (
+                                            <Button
+                                                type="button"
+                                                variant="link"
+                                                size="sm"
+                                                className="px-0 h-auto font-medium underline"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    onEditAddress(addr.id);
+                                                }}
+                                                aria-label={t('shippingAddress.editAddressLink')}>
+                                                {t('shippingAddress.editAddressLink')}
+                                            </Button>
+                                        )}
+                                    </div>
+                                </Label>
+                            </div>
+                        );
+                    })}
+                </RadioGroup>
             </div>
+            {hasMore && (
+                <div>
+                    {!showAll ? (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-sm font-medium text-foreground"
+                            onClick={() => setShowAll(true)}
+                            aria-expanded={false}
+                            aria-label={t('shippingAddress.viewAllLink')}>
+                            {t('shippingAddress.viewAllLink')} {t('shippingAddress.viewAllMore', { count: moreCount })}
+                        </Button>
+                    ) : (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-sm font-medium text-foreground"
+                            onClick={handleViewLess}
+                            aria-expanded={true}
+                            aria-label={t('shippingAddress.viewLessAddresses')}>
+                            {t('shippingAddress.viewLessAddresses')}
+                        </Button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

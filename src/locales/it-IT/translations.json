@@ -406,7 +406,7 @@
             "sessionExpired": "Sessione scaduta. Acceda nuovamente."
         },
         "addressModal": {
-            "title": "Aggiungi indirizzo",
+            "title": "Aggiungi nuovo indirizzo",
             "editTitle": "Modifica indirizzo",
             "description": "Inserisci il tuo indirizzo di spedizione nel modulo sottostante.",
             "editDescription": "Aggiorna il tuo indirizzo di spedizione nel modulo sottostante.",
@@ -429,12 +429,13 @@
             "cityRequired": "Inserisci la tua città.",
             "stateRequired": "Seleziona il tuo stato.",
             "postalCodeRequired": "Inserisci il tuo codice postale.",
-            "continue": "Continua alle opzioni di spedizione",
+            "continue": "Continua al metodo di spedizione",
             "saving": "Salvataggio in corso...",
             "saved": "Indirizzo di spedizione salvato",
             "failed": "Impossibile salvare l'indirizzo di spedizione",
             "confirmed": "Indirizzo di spedizione confermato",
-            "notProvided": "Indirizzo di spedizione non ancora fornito"
+            "notProvided": "Indirizzo di spedizione non ancora fornito",
+            "completePreviousSteps": "Completa i passaggi precedenti per continuare"
         },
         "addressForm": {
             "firstNameLabel": "Nome",
@@ -456,8 +457,9 @@
             "zipPlaceholder": "Cap",
             "postalCodeLabel": "Codice postale",
             "postalCodePlaceholder": "Codice postale",
+            "codeLabel": "Codice",
             "phoneLabel": "Numero di telefono",
-            "phonePlaceholder": "(555) 123-4567"
+            "phonePlaceholder": "(000) 000-0000"
         },
         "shippingOptions": {
             "title": "Opzioni di spedizione",
