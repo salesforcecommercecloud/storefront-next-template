@@ -160,6 +160,8 @@ export default defineConfig(({ mode }) => {
                 // Server-only config access (must be before '@' to take precedence)
                 '@/config/server': resolve(__dirname, './config.server.ts'),
                 '@': resolve(__dirname, './src'),
+                // Fonts alias for easy customization
+                '@fonts': resolve(__dirname, './public/fonts'),
             },
         },
         optimizeDeps: {

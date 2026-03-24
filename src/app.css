@@ -4,6 +4,22 @@
 @custom-variant dark (&:is(.dark *));
 /*---break---*/
 @theme inline {
+    /* Font families */
+    --font-sans: 'Sen', -apple-system, 'system-ui', 'Helvetica Neue', Arial, sans-serif;
+    --font-serif: 'Sen', Georgia, serif;
+    --font-mono: 'Sen', 'Courier New', monospace;
+
+    /* DEPRECATED: Custom font size overrides (non-standard Tailwind values)
+     * TODO: Migrate components to use standard Tailwind sizes (text-sm, text-2xl) in a future PR
+     * See: https://tailwindcss.com/docs/font-size
+     * - text-lg should be 1.125rem (18px), not 0.875rem (14px) → migrate to text-sm
+     * - text-xl should be 1.25rem (20px), not 1.5rem (24px) → migrate to text-2xl
+     */
+    --text-lg: 0.875rem;     /* 14px - DEPRECATED: should use text-sm instead */
+    --text-lg--line-height: 1.422rem;
+    --text-xl: 1.5rem;       /* 24px - DEPRECATED: should use text-2xl instead */
+    --text-xl--line-height: 2rem;
+    /* Radius tokens */
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
@@ -308,17 +324,6 @@
     --cart-summary-px: 1rem;
     --cart-free-price: #16a34a;
     --cart-free-price-size: 1.125rem;
-
-    /* font overrides */
-    --font-sans: 'Sen', -apple-system, 'system-ui', 'Helvetica Neue', Arial, sans-serif;
-    --text-lg: 0.875rem;
-    --text-lg--line-height: 1.422rem;
-    --text-lg-xl: 1.1875rem;
-    --text-lg-xl--line-height: 1.75rem;
-    --text-xl: 1.5rem;
-    --text-xl--line-height: 2rem;
-    /** Account section headers (Welcome back, Account Details, Wishlist, etc.). Override to adjust size. */
-    --account-section-header: 1.125rem;
 
     [role="radio"]:not([data-labeled]) {
         min-width: var(--swatch-pill-size);
@@ -785,6 +790,7 @@ html:not(.dark) [data-theme='inverse'] {
     }
     body {
         @apply bg-background text-foreground;
+        font-family: var(--font-sans);
     }
 }
 

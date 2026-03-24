@@ -22,7 +22,7 @@ export default function Help(): ReactElement {
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="lg:flex lg:items-center lg:justify-between">
                 <div className="lg:max-w-lg">
-                    <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">{`We're here to help`}</h2>
+                    <h2 className="text-3xl font-bold text-foreground sm:text-4xl">{`We're here to help`}</h2>
                     <p className="mt-4 text-lg text-muted-foreground">
                         Contact our support staff.
                         <br />

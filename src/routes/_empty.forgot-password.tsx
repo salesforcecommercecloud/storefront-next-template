@@ -77,9 +77,7 @@ export default function ForgotPassword(): ReactElement {
             <div className="flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
-                        <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
-                            {t('checkEmailTitle')}
-                        </h2>
+                        <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('checkEmailTitle')}</h2>
                         <p className="mt-2 text-center text-sm text-muted-foreground">
                             {t('checkEmailDescription', { email: actionData.email })}
                         </p>
@@ -102,7 +100,7 @@ export default function ForgotPassword(): ReactElement {
         <div className="flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">{t('title')}</h2>
+                    <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
                     <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                 </div>
 

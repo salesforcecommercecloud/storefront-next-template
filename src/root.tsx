@@ -96,11 +96,18 @@ import { initializeRegistry } from '@/lib/static-registry';
 import { currencyContext } from '@/lib/currency';
 import { buildSeoMetaDescriptors } from '@/utils/seo';
 
+// Import load-fonts to trigger module-level font loading
+import '@/lib/load-fonts';
+
 // Adapters
 import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
 
 // Assets
 import favicon from '/favicon.ico';
+
+// Fonts (preload only the most-used weights: 500 and 600)
+import sen500 from '@fonts/sen/sen-500.woff2?url';
+import sen600 from '@fonts/sen/sen-600.woff2?url';
 
 // Styles
 import { PageDesignerInit } from '@/page-designer-init';
@@ -116,6 +123,9 @@ import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 // eslint-disable-next-line react-refresh/only-export-components
 export const links: LinksFunction = () => {
     return [
+        // Preload critical fonts
+        { rel: 'preload', href: sen500, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
+        { rel: 'preload', href: sen600, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
         { rel: 'preload', href: appStylesHref, as: 'style' },
         { rel: 'stylesheet', href: appStylesHref },
     ];
