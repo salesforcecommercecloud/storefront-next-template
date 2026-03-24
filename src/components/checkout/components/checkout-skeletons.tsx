@@ -252,3 +252,36 @@ export function MyCartSkeleton({ itemCount = 2 }: { itemCount?: number }): React
         </div>
     );
 }
+
+export function CheckoutSkeleton(): ReactElement {
+    return (
+        <div className="space-y-6">
+            <div className="space-y-2">
+                <Skeleton className="h-8 w-64" />
+                <Skeleton className="h-4 w-96" />
+            </div>
+
+            <div className="flex space-x-4">
+                {Array.from({ length: 4 }, (_, index) => (
+                    <div key={`progress-item-${index}`} className="flex items-center space-x-2">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <Skeleton className="h-4 w-16" />
+                    </div>
+                ))}
+            </div>
+
+            <div className="space-y-6">
+                {Array.from({ length: 3 }, (_, index) => (
+                    <div key={`form-section-item-${index}`} className="rounded-lg border p-6">
+                        <Skeleton className="h-6 w-32 mb-4" />
+                        <div className="space-y-3">
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-2/3" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}

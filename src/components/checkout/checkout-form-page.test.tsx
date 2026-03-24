@@ -99,6 +99,18 @@ vi.mock('@/components/order-summary', () => ({
     default: () => <div data-testid="order-summary">Order Summary</div>,
 }));
 
+vi.mock('./components/checkout-skeletons', () => ({
+    CheckoutSkeleton: () => <div data-testid="checkout-skeleton">Loading checkout...</div>,
+    ContactInfoSkeleton: () => <div data-testid="contact-info-skeleton">Loading...</div>,
+    ShippingAddressSkeleton: () => <div data-testid="shipping-address-skeleton">Loading...</div>,
+    ShippingOptionsSkeleton: () => <div data-testid="shipping-options-skeleton">Loading...</div>,
+    PaymentSkeleton: () => <div data-testid="payment-skeleton">Loading...</div>,
+    ExpressPaymentsSkeleton: () => <div data-testid="express-payments-skeleton">Loading...</div>,
+    MyCartSkeleton: () => <div data-testid="my-cart-skeleton">Loading...</div>,
+    OrderSummarySkeleton: () => <div data-testid="order-summary-skeleton">Loading...</div>,
+    PickupSkeleton: () => <div data-testid="pickup-skeleton">Loading...</div>,
+}));
+
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: vi.fn(),
@@ -883,7 +895,8 @@ describe('CheckoutFormPage', () => {
 
             await renderCheckoutPage();
 
-            expect(screen.getByText(i18next.t('checkout:common.emptyCart'))).toBeInTheDocument();
+            // When cart is null, show loading skeleton (prevents race condition)
+            expect(screen.getByTestId('checkout-skeleton')).toBeInTheDocument();
         });
 
         test('handles cart without basketId', async () => {

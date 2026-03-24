@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next';
 import CheckoutFormPage from '@/components/checkout/checkout-form-page';
 import CheckoutProvider from '@/components/checkout/utils/checkout-context';
 import { CheckoutErrorBoundary } from '@/components/checkout-error-boundary';
-import { Skeleton } from '@/components/ui/skeleton';
+import { CheckoutSkeleton } from '@/components/checkout/components/checkout-skeletons';
 import { useBasketUpdater } from '@/providers/basket';
 import { useToast } from '@/components/toast';
 // @sfdc-extension-line SFDC_EXT_BOPIS
@@ -54,39 +54,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
         default:
             return Response.json({ success: false, error: 'Invalid action intent' }, { status: 400 });
     }
-}
-
-function CheckoutSkeleton() {
-    return (
-        <div className="space-y-6">
-            <div className="space-y-2">
-                <Skeleton className="h-8 w-64" />
-                <Skeleton className="h-4 w-96" />
-            </div>
-
-            <div className="flex space-x-4">
-                {Array.from({ length: 4 }, (_, index) => (
-                    <div key={`progress-item-${index}`} className="flex items-center space-x-2">
-                        <Skeleton className="h-8 w-8 rounded-full" />
-                        <Skeleton className="h-4 w-16" />
-                    </div>
-                ))}
-            </div>
-
-            <div className="space-y-6">
-                {Array.from({ length: 3 }, (_, index) => (
-                    <div key={`form-section-item-${index}`} className="rounded-lg border p-6">
-                        <Skeleton className="h-6 w-32 mb-4" />
-                        <div className="space-y-3">
-                            <Skeleton className="h-10 w-full" />
-                            <Skeleton className="h-10 w-full" />
-                            <Skeleton className="h-10 w-2/3" />
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
 }
 
 function CheckoutView({

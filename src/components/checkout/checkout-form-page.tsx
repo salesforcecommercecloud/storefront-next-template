@@ -55,6 +55,7 @@ const ExpressPayments = lazy(() => import('./components/express-payments'));
 
 // Import skeleton components for accurate loading states
 import {
+    CheckoutSkeleton,
     ContactInfoSkeleton,
     ExpressPaymentsSkeleton,
     MyCartSkeleton,
@@ -370,8 +371,13 @@ export default function CheckoutFormPage({
         }
     }, [paymentFetcher.state, paymentFetcher.data, submitPlaceOrder]);
 
-    // Check if cart is empty (no items) - also handle basketId to ensure we have a valid basket
-    if (!cart || !cart.basketId || !cart.productItems || cart.productItems.length === 0) {
+    // Show loading state while basket is being fetched (prevents race condition errors)
+    if (!cart) {
+        return <CheckoutSkeleton />;
+    }
+
+    // Check if cart is empty (no items) - only after basket is fully loaded
+    if (!cart.basketId || !cart.productItems || cart.productItems.length === 0) {
         return (
             <div className="min-h-screen bg-muted flex items-center justify-center">
                 <Card className="w-full max-w-md">
