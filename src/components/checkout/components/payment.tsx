@@ -217,7 +217,6 @@ export default function Payment({
                       billingCity: billingAddress.city ?? '',
                       billingStateCode: billingAddress.stateCode ?? '',
                       billingPostalCode: billingAddress.postalCode ?? '',
-                      billingPhone: billingAddress.phone ?? '',
                       billingCountryCode: billingAddress.countryCode ?? 'US',
                   }
                 : {}),
@@ -232,7 +231,6 @@ export default function Payment({
                 billingCity: '',
                 billingStateCode: '',
                 billingPostalCode: '',
-                billingPhone: '',
                 billingCountryCode: 'US',
             }),
             // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -273,7 +271,6 @@ export default function Payment({
         form.setValue('billingCity', shippingAddress.city ?? '');
         form.setValue('billingStateCode', shippingAddress.stateCode ?? '');
         form.setValue('billingPostalCode', shippingAddress.postalCode ?? '');
-        form.setValue('billingPhone', shippingAddress.phone ?? '');
         form.setValue('billingCountryCode', shippingAddress.countryCode ?? 'US');
     }, [showBillingSameAsShipping, shippingAddress, shippingAddressSyncKey, billingSameAsShippingWatched, form]);
 
@@ -600,6 +597,17 @@ export default function Payment({
                                                                 checked={field.value}
                                                                 onCheckedChange={(checked) => {
                                                                     field.onChange(checked === true);
+                                                                    // Clear billing address fields when unchecking "Same as shipping"
+                                                                    if (checked === false) {
+                                                                        form.setValue('billingFirstName', '');
+                                                                        form.setValue('billingLastName', '');
+                                                                        form.setValue('billingAddress1', '');
+                                                                        form.setValue('billingAddress2', '');
+                                                                        form.setValue('billingCity', '');
+                                                                        form.setValue('billingStateCode', '');
+                                                                        form.setValue('billingPostalCode', '');
+                                                                        form.setValue('billingCountryCode', 'US');
+                                                                    }
                                                                 }}
                                                                 className="size-5 shrink-0 rounded border-2 border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-primary-foreground"
                                                                 aria-label={t('payment.billingSameAsShipping')}
