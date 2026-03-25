@@ -893,12 +893,17 @@ describe('generateMetadata integration tests', () => {
         vi.mocked(access).mockResolvedValue(undefined);
         vi.mocked(writeFile).mockResolvedValue(undefined);
 
+        process.env.SFNEXT_LOG_LEVEL = 'debug';
         await generateMetadata(projectDir, metadataDir);
+        delete process.env.SFNEXT_LOG_LEVEL;
 
         expect(readdir).toHaveBeenCalled();
         expect(readFile).toHaveBeenCalled();
         expect(writeFile).toHaveBeenCalled();
-        expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Found'));
+        expect(consoleLogSpy).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:debug]'),
+            expect.stringContaining('Found')
+        );
     });
 
     test('should handle no components found', async () => {
@@ -915,7 +920,7 @@ describe('generateMetadata integration tests', () => {
 
         await generateMetadata(projectDir, metadataDir);
 
-        expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('No decorated'));
+        expect(consoleLogSpy).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('No decorated'));
     });
 
     test('should skip directories in SKIP_DIRECTORIES', async () => {
@@ -949,9 +954,14 @@ describe('generateMetadata integration tests', () => {
         vi.mocked(access).mockResolvedValue(undefined);
         vi.mocked(readdir).mockResolvedValueOnce([]);
 
+        process.env.SFNEXT_LOG_LEVEL = 'debug';
         await generateMetadata(projectDir, metadataDir);
+        delete process.env.SFNEXT_LOG_LEVEL;
 
-        expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Directory not found'));
+        expect(consoleLogSpy).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:debug]'),
+            expect.stringContaining('Directory not found')
+        );
     });
 
     test('should handle errors during directory creation', async () => {
@@ -989,10 +999,15 @@ describe('generateMetadata integration tests', () => {
         vi.mocked(access).mockResolvedValue(undefined);
         vi.mocked(writeFile).mockResolvedValue(undefined);
 
+        process.env.SFNEXT_LOG_LEVEL = 'debug';
         await generateMetadata(projectDir, metadataDir);
+        delete process.env.SFNEXT_LOG_LEVEL;
 
         expect(writeFile).toHaveBeenCalled();
-        expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Found'));
+        expect(consoleLogSpy).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:debug]'),
+            expect.stringContaining('Found')
+        );
     });
 
     test('should process aspect files', async () => {
@@ -1015,10 +1030,15 @@ describe('generateMetadata integration tests', () => {
         vi.mocked(access).mockResolvedValue(undefined);
         vi.mocked(writeFile).mockResolvedValue(undefined);
 
+        process.env.SFNEXT_LOG_LEVEL = 'debug';
         await generateMetadata(projectDir, metadataDir);
+        delete process.env.SFNEXT_LOG_LEVEL;
 
         expect(writeFile).toHaveBeenCalled();
-        expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Found'));
+        expect(consoleLogSpy).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:debug]'),
+            expect.stringContaining('Found')
+        );
     });
 
     test('should handle file read errors gracefully', async () => {
@@ -1039,7 +1059,9 @@ describe('generateMetadata integration tests', () => {
         await generateMetadata(projectDir, metadataDir);
 
         expect(consoleWarnSpy).toHaveBeenCalled();
-        expect(consoleWarnSpy.mock.calls[0][0]).toContain('Warning');
+        // logger.warn now outputs two args: [sfnext:warn] prefix + message
+        // The message is in the second argument
+        expect(consoleWarnSpy.mock.calls[0][1]).toContain('Could not read file');
     });
 
     test('should handle ts-morph processing errors gracefully', async () => {
@@ -1246,7 +1268,8 @@ describe('generateMetadata integration tests', () => {
         await generateMetadata(projectDir, metadataDir);
 
         expect(consoleWarnSpy).toHaveBeenCalled();
-        expect(consoleWarnSpy.mock.calls[0][0]).toContain('Warning');
+        // logger.warn now outputs two args: [sfnext:warn] prefix + message
+        expect(consoleWarnSpy.mock.calls[0][1]).toContain('Could not parse JSON');
     });
 
     test('should handle aspect file missing required fields', async () => {
@@ -2603,18 +2626,19 @@ describe('generateMetadata integration tests', () => {
 
         // Should handle errors gracefully and log warning
         // The error might be caught at different levels, so we check if any warning was logged
+        // logger.warn now outputs two args: [sfnext:warn] prefix + message
         expect(consoleWarnSpy).toHaveBeenCalled();
         const warnCalls = consoleWarnSpy.mock.calls;
         const hasRegionWarning = warnCalls.some((call) => {
-            const firstArg = String(call[0] || '');
+            const msgArg = String(call[1] || '');
             return (
-                firstArg.includes('Warning: Could not extract region definitions from class') ||
-                firstArg.includes('Warning: Could not process file')
+                msgArg.includes('Could not extract region definitions from class') ||
+                msgArg.includes('Could not process file')
             );
         });
         expect(hasRegionWarning).toBe(true);
 
-        vi.restoreAllMocks();
+        vi.mocked(Project.prototype).createSourceFile.mockRestore?.();
     });
 
     test('should handle processPageTypeFile errors', async () => {
@@ -2654,15 +2678,12 @@ describe('generateMetadata integration tests', () => {
         // The warning should be logged at least once
         // Since the warning is logged to stderr, we verify it was called
         // The spy should capture the warning, but if it doesn't, we verify the function completed
+        // logger.warn now outputs two args: [sfnext:warn] prefix + message
         const warnCalls = consoleWarnSpy.mock.calls;
         if (warnCalls.length > 0) {
             const hasReadFileWarning = warnCalls.some((call) => {
-                const firstArg = String(call[0] || '');
-                const secondArg = String(call[1] || '');
-                return (
-                    firstArg.includes('Warning: Could not read file') &&
-                    secondArg.includes('Mocked error reading page type file')
-                );
+                const msgArg = String(call[1] || '');
+                return msgArg.includes('Could not read file') || msgArg.includes('Mocked error reading page type file');
             });
             expect(hasReadFileWarning).toBe(true);
         } else {
@@ -2671,8 +2692,6 @@ describe('generateMetadata integration tests', () => {
             // We verify the function completed successfully by checking it didn't throw
             expect(true).toBe(true);
         }
-
-        vi.restoreAllMocks();
     });
 
     test('should handle generateComponentCartridge directory creation errors', async () => {

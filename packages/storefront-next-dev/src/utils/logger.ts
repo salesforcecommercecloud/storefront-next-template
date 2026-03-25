@@ -52,35 +52,75 @@ export function getPackageVersion(packageName: string, projectDir: string): stri
 }
 
 /**
- * Logger utilities
+ * Centralized, level-gated logger for the SDK.
+ *
+ * Log level is controlled by `SFNEXT_LOG_LEVEL` env var (`error` | `warn` | `info` | `debug`).
+ * Falls back to: `DEBUG` targeting sfnext -> `debug`, `NODE_ENV=production` -> `warn`, otherwise `info`.
  */
-const colors = {
-    warn: 'yellow',
-    error: 'red',
-    success: 'cyan',
-    info: 'green',
-    debug: 'gray',
-} as const;
 
-const fancyLog = (level: keyof typeof colors, msg: string) => {
-    const color = colors[level];
-    const colorFn = chalk[color];
-    console.log(`${colorFn(level)}: ${msg}`);
+export type LogLevel = 'error' | 'warn' | 'info' | 'debug';
+
+const LEVEL_PRIORITY: Record<LogLevel, number> = {
+    error: 0,
+    warn: 1,
+    info: 2,
+    debug: 3,
 };
 
-export const info = (msg: string) => fancyLog('info', msg);
-export const success = (msg: string) => fancyLog('success', msg);
-export const warn = (msg: string) => fancyLog('warn', msg);
-export const error = (msg: string) => fancyLog('error', msg);
+let overrideLevel: LogLevel | undefined;
 
-export const debug = (msg: string, data?: unknown) => {
-    // Only log debug messages if DEBUG environment variable is set or not in production
-    if (process.env.DEBUG || process.env.NODE_ENV !== 'production') {
-        fancyLog('debug', msg);
-        if (data) {
-            console.log(data);
-        }
-    }
+/**
+ * Returns true when the `DEBUG` env var targets sfnext or is a general enable flag.
+ * Avoids accidentally enabling debug mode when DEBUG is set for unrelated libraries
+ * (e.g. `DEBUG=express:*`).
+ */
+function debugEnablesSfnext(): boolean {
+    const raw = process.env.DEBUG?.trim();
+    if (!raw) return false;
+    const normalized = raw.toLowerCase();
+    if (['1', 'true', 'yes', 'on'].includes(normalized)) return true;
+    return raw.split(',').some((token) => {
+        const value = token.trim();
+        return value === '*' || value === 'sfnext' || value === 'sfnext:*';
+    });
+}
+
+function resolveLevel(): LogLevel {
+    if (overrideLevel) return overrideLevel;
+    const envLevel = process.env.SFNEXT_LOG_LEVEL;
+    if (envLevel && envLevel in LEVEL_PRIORITY) return envLevel as LogLevel;
+    if (debugEnablesSfnext()) return 'debug';
+    if (process.env.NODE_ENV === 'production') return 'warn';
+    return 'info';
+}
+
+function shouldLog(level: LogLevel): boolean {
+    return LEVEL_PRIORITY[level] <= LEVEL_PRIORITY[resolveLevel()];
+}
+
+export const logger = {
+    error(msg: string, ...args: unknown[]): void {
+        if (!shouldLog('error')) return;
+        console.error(chalk.red('[sfnext:error]'), msg, ...args);
+    },
+    warn(msg: string, ...args: unknown[]): void {
+        if (!shouldLog('warn')) return;
+        console.warn(chalk.yellow('[sfnext:warn]'), msg, ...args);
+    },
+    info(msg: string, ...args: unknown[]): void {
+        if (!shouldLog('info')) return;
+        console.log(chalk.cyan('[sfnext:info]'), msg, ...args);
+    },
+    debug(msg: string, ...args: unknown[]): void {
+        if (!shouldLog('debug')) return;
+        console.log(chalk.gray('[sfnext:debug]'), msg, ...args);
+    },
+    setLevel(level: LogLevel | undefined): void {
+        overrideLevel = level;
+    },
+    getLevel(): LogLevel {
+        return resolveLevel();
+    },
 };
 
 /**
@@ -99,8 +139,8 @@ export function printServerInfo(mode: ServerMode, port: number, startTime: numbe
     console.log(`  ${chalk.green.bold(modeLabel)}`);
     console.log();
     console.log(
-        `  ${chalk.dim('react')} ${chalk.green(`v${reactVersion}`)} ${chalk.dim('│')} ` +
-            `${chalk.dim('react-router')} ${chalk.green(`v${reactRouterVersion}`)} ${chalk.dim('│')} ` +
+        `  ${chalk.dim('react')} ${chalk.green(`v${reactVersion}`)} ${chalk.dim('|')} ` +
+            `${chalk.dim('react-router')} ${chalk.green(`v${reactRouterVersion}`)} ${chalk.dim('|')} ` +
             `${chalk.green(`ready in ${elapsed}ms`)}`
     );
     console.log();
@@ -141,26 +181,26 @@ export function printServerConfig(config: {
         console.log(
             `    ${chalk.green('✓')} ${chalk.bold('Proxy:')} ${chalk.cyan(`localhost:${port}${proxyPath}`)} ${chalk.dim('→')} ${chalk.cyan(proxyHost)}`
         );
-        console.log(`      ${chalk.dim('Short Code:     ')} ${chalk.dim(shortCode)}`);
+        console.log(`      ${chalk.dim('Short Code:      ')}${chalk.dim(shortCode)}`);
         if (organizationId) {
-            console.log(`      ${chalk.dim('Organization ID:')} ${chalk.dim(organizationId)}`);
+            console.log(`      ${chalk.dim('Organization ID: ')}${chalk.dim(organizationId)}`);
         }
         if (clientId) {
-            console.log(`      ${chalk.dim('Client ID:      ')} ${chalk.dim(clientId)}`);
+            console.log(`      ${chalk.dim('Client ID:       ')}${chalk.dim(clientId)}`);
         }
         if (siteId) {
-            console.log(`      ${chalk.dim('Site ID:        ')} ${chalk.dim(siteId)}`);
+            console.log(`      ${chalk.dim('Site ID:         ')}${chalk.dim(siteId)}`);
         }
     } else {
-        console.log(`    ${chalk.gray('○')} ${chalk.bold('Proxy:           ')} ${chalk.dim('disabled')}`);
+        console.log(`    ${chalk.bold('Proxy:           ')} ${chalk.dim('disabled')}`);
     }
 
     if (enableStaticServing) {
-        console.log(`    ${chalk.green('✓')} ${chalk.bold('Static:          ')} ${chalk.dim('enabled')}`);
+        console.log(`    ${chalk.bold('Static:          ')} ${chalk.dim('enabled')}`);
     }
 
     if (enableCompression) {
-        console.log(`    ${chalk.green('✓')} ${chalk.bold('Compression:     ')} ${chalk.dim('enabled')}`);
+        console.log(`    ${chalk.bold('Compression:     ')} ${chalk.dim('enabled')}`);
     }
 
     // URLs
@@ -170,9 +210,9 @@ export function printServerConfig(config: {
     const networkUrl = networkAddress ? `http://${networkAddress}:${port}` : undefined;
 
     console.log();
-    console.log(`  ${chalk.green('➜')}  ${chalk.bold('Local:  ')} ${chalk.cyan(localUrl)}`);
+    console.log(`  ${chalk.bold('Local:  ')} ${chalk.cyan(localUrl)}`);
     if (networkUrl) {
-        console.log(`  ${chalk.green('➜')}  ${chalk.bold('Network:')} ${chalk.cyan(networkUrl)}`);
+        console.log(`  ${chalk.bold('Network:')} ${chalk.cyan(networkUrl)}`);
     }
 
     console.log();

@@ -21,6 +21,7 @@
 import fs from 'fs';
 import path from 'path';
 import Handlebars from 'handlebars';
+import { logger } from '../logger';
 
 // The directories to skip when searching for files to merge
 const SKIP_DIRS = ['node_modules', 'dist', 'build'];
@@ -143,14 +144,10 @@ export const findMarkedFiles = (projectRoot: string, markerValue: string) => {
         }
     };
     searchFiles(projectRoot);
-    // eslint-disable-next-line no-console
-    console.log(`Found ${mergeFiles.length} files to merge for marker value ${markerValue}:`);
-    // eslint-disable-next-line no-console
-    console.log(mergeFiles.join('\n'));
-    // eslint-disable-next-line no-console
-    console.log(`Found ${newFiles.length} files to add for marker value ${markerValue}:`);
-    // eslint-disable-next-line no-console
-    console.log(newFiles.join('\n'));
+    logger.info(`Found ${mergeFiles.length} files to merge for marker value ${markerValue}:`);
+    logger.info(mergeFiles.join('\n'));
+    logger.info(`Found ${newFiles.length} files to add for marker value ${markerValue}:`);
+    logger.info(newFiles.join('\n'));
     return { mergeFiles, newFiles };
 };
 
@@ -192,6 +189,5 @@ export const genertaeAndWriteInstructions = (templateFile: string, context: Exte
     const template = Handlebars.compile(templateContent);
     const mdcContent = template(context);
     fs.writeFileSync(outputFile, mdcContent, 'utf8');
-    // eslint-disable-next-line no-console
-    console.log(`MDC instructions written to ${outputFile}`);
+    logger.info(`MDC instructions written to ${outputFile}`);
 };

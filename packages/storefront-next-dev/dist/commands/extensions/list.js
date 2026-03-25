@@ -1,3 +1,5 @@
+import "../../logger.js";
+import "../../logger2.js";
 import "../../dependency-utils.js";
 import { t as commonFlags } from "../../flags.js";
 import { n as listExtensions } from "../../manage-extensions.js";

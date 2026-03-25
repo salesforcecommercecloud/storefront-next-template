@@ -44,11 +44,6 @@ export default class Install extends Command {
             description: 'Git URL of the source template project',
             default: DEFAULT_TEMPLATE_GIT_URL,
         }),
-        verbose: Flags.boolean({
-            char: 'v',
-            description: 'Verbose mode',
-            default: false,
-        }),
     };
 
     async run(): Promise<void> {
@@ -59,7 +54,6 @@ export default class Install extends Command {
             install: true,
             extensions: flags.extension ? [flags.extension] : undefined,
             sourceGitUrl: flags['source-git-url'],
-            verbose: flags.verbose,
         });
     }
 }

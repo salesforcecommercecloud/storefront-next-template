@@ -34,13 +34,19 @@ vi.mock('prompts', () => ({
 
 // Mock logger
 vi.mock('./logger', () => ({
-    warn: vi.fn(),
-    info: vi.fn(),
-    success: vi.fn(),
+    logger: {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+    },
 }));
 
 import prompts from 'prompts';
-import { warn, info, success } from './logger';
+import { logger } from './logger';
+
+const logInfoSpy = vi.spyOn(logger, 'info');
+const logWarnSpy = vi.spyOn(logger, 'warn');
 
 describe('local-dev-setup', () => {
     beforeEach(() => {
@@ -69,7 +75,7 @@ describe('local-dev-setup', () => {
 
             await prepareForLocalDev({ projectDirectory: '/test-project' });
 
-            expect(info).toHaveBeenCalledWith(
+            expect(logInfoSpy).toHaveBeenCalledWith(
                 'No workspace:* dependencies found. Project is ready for standalone use.'
             );
         });
@@ -160,7 +166,7 @@ describe('local-dev-setup', () => {
             // Should not prompt at all
             expect(prompts).not.toHaveBeenCalled();
             // Should warn that the default path was not found
-            expect(warn).toHaveBeenCalledWith(expect.stringContaining('default path not found'));
+            expect(logWarnSpy).toHaveBeenCalledWith(expect.stringContaining('default path not found'));
         });
 
         it('should replace workspace:* with file: references', async () => {
@@ -184,7 +190,7 @@ describe('local-dev-setup', () => {
             expect(updatedPackageJson.dependencies['@salesforce/storefront-next-dev']).toBe(
                 'file:/packages/storefront-next-dev'
             );
-            expect(success).toHaveBeenCalledWith('package.json updated with local package links');
+            expect(logInfoSpy).toHaveBeenCalledWith('package.json updated with local package links');
         });
 
         it('should remove unresolved workspace dependencies', async () => {
@@ -204,8 +210,8 @@ describe('local-dev-setup', () => {
 
             const updatedPackageJson = JSON.parse(vol.readFileSync('/test-project/package.json', 'utf8') as string);
             expect(updatedPackageJson.dependencies['@salesforce/storefront-next-dev']).toBeUndefined();
-            expect(warn).toHaveBeenCalledWith('Skipping @salesforce/storefront-next-dev - no path provided');
-            expect(warn).toHaveBeenCalledWith(
+            expect(logWarnSpy).toHaveBeenCalledWith('Skipping @salesforce/storefront-next-dev - no path provided');
+            expect(logWarnSpy).toHaveBeenCalledWith(
                 'Removing unresolved workspace dependency: @salesforce/storefront-next-dev'
             );
         });
@@ -312,7 +318,9 @@ describe('local-dev-setup', () => {
 
             await prepareForLocalDev({ projectDirectory: '/test-project' });
 
-            expect(warn).toHaveBeenCalledWith('vite.config.ts not found, skipping patch for file-linked packages');
+            expect(logWarnSpy).toHaveBeenCalledWith(
+                'vite.config.ts not found, skipping patch for file-linked packages'
+            );
         });
 
         it('should add ssr.noExternal block when ssr block does not exist', async () => {
@@ -346,7 +354,7 @@ export default defineConfig(() => {
             expect(updatedViteConfig).toContain('ssr:');
             expect(updatedViteConfig).toContain('noExternal:');
             expect(updatedViteConfig).toContain("'@salesforce/storefront-next-dev'");
-            expect(success).toHaveBeenCalledWith(
+            expect(logInfoSpy).toHaveBeenCalledWith(
                 'vite.config.ts patched for file-linked packages (ssr.noExternal + resolve.dedupe)'
             );
         });
@@ -484,7 +492,7 @@ export default defineConfig(() => {
             await prepareForLocalDev({ projectDirectory: '/test-project' });
 
             // Should report already configured since dedupe is also checked
-            expect(info).toHaveBeenCalledWith('vite.config.ts already configured for file-linked packages');
+            expect(logInfoSpy).toHaveBeenCalledWith('vite.config.ts already configured for file-linked packages');
         });
 
         it('should skip dedupe if already present', async () => {

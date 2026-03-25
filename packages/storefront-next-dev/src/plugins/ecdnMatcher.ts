@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { logger } from '../logger';
+
 /**
  * Cloudflare eCDN Routing Rule Matcher
  *
@@ -112,8 +114,7 @@ export function testPatterns(pathname: string, patterns: string[]): boolean {
             }
         } catch (error) {
             // Invalid regex pattern - log warning and skip
-            // eslint-disable-next-line no-console
-            console.warn(`[Hybrid Proxy] Invalid regex pattern: ${pattern}`, error);
+            logger.warn(`Invalid regex pattern: ${pattern} ${String(error)}`);
             continue;
         }
     }
@@ -149,8 +150,7 @@ export function shouldRouteToNext(pathname: string, routingRules?: string): bool
 
     if (patterns.length === 0) {
         // Malformed expression or no patterns found - default to Next (fail-safe)
-        // eslint-disable-next-line no-console
-        console.warn('[Hybrid Proxy] No valid patterns found in routing rules');
+        logger.warn('No valid patterns found in routing rules');
         return true;
     }
 

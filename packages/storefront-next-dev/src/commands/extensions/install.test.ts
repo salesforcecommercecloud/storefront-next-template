@@ -35,7 +35,6 @@ describe('extensions install command', () => {
                 'project-directory': '/test/project',
                 extension: 'SFDC_EXT_STORE_LOCATOR',
                 'source-git-url': 'https://github.com/test/repo.git',
-                verbose: false,
             },
             args: {},
             argv: [],
@@ -50,7 +49,6 @@ describe('extensions install command', () => {
             install: true,
             extensions: ['SFDC_EXT_STORE_LOCATOR'],
             sourceGitUrl: 'https://github.com/test/repo.git',
-            verbose: false,
         });
     });
 
@@ -62,7 +60,6 @@ describe('extensions install command', () => {
                 'project-directory': '/test/project',
                 extension: undefined,
                 'source-git-url': 'https://github.com/test/repo.git',
-                verbose: true,
             },
             args: {},
             argv: [],
@@ -77,7 +74,6 @@ describe('extensions install command', () => {
             install: true,
             extensions: undefined,
             sourceGitUrl: 'https://github.com/test/repo.git',
-            verbose: true,
         });
     });
 
@@ -91,7 +87,6 @@ describe('extensions install command', () => {
                 'project-directory': '/test/project',
                 extension: 'SFDC_EXT_TEST',
                 'source-git-url': defaultGitUrl,
-                verbose: false,
             },
             args: {},
             argv: [],
@@ -106,7 +101,6 @@ describe('extensions install command', () => {
             install: true,
             extensions: ['SFDC_EXT_TEST'],
             sourceGitUrl: defaultGitUrl,
-            verbose: false,
         });
     });
 });

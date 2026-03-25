@@ -1,3 +1,5 @@
+import "../../logger.js";
+import "../../logger2.js";
 import "../../dependency-utils.js";
 import { t as commonFlags } from "../../flags.js";
 import { r as manageExtensions } from "../../manage-extensions.js";
@@ -15,11 +17,6 @@ var Remove = class Remove extends Command {
 		extensions: Flags.string({
 			char: "e",
 			description: "Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_THEME_SWITCHER)"
-		}),
-		verbose: Flags.boolean({
-			char: "v",
-			description: "Verbose mode",
-			default: false
 		})
 	};
 	async run() {
@@ -28,8 +25,7 @@ var Remove = class Remove extends Command {
 		await manageExtensions({
 			projectDirectory: flags["project-directory"],
 			uninstall: true,
-			extensions,
-			verbose: flags.verbose
+			extensions
 		});
 	}
 };

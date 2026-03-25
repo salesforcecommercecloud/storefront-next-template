@@ -134,6 +134,7 @@ describe('transformTargetPlaceholderPlugin', () => {
         const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         expect(() => vitePlugin.transform(mockCode, mockId)).toThrow(error);
         expect(errorSpy).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining('UITarget replace ERROR in /project/src/SomeComponent.tsx: Error: test error')
         );
         errorSpy.mockRestore();
@@ -149,6 +150,7 @@ describe('transformTargetPlaceholderPlugin', () => {
         const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         expect(() => vitePlugin.transform(mockCode, mockId)).toThrow(error);
         expect(errorSpy).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining('UITarget replace ERROR in /project/src/SomeComponent.tsx: test error')
         );
         errorSpy.mockRestore();

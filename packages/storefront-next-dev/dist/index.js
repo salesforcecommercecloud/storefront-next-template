@@ -1,11 +1,12 @@
 import path, { basename, extname, join, resolve } from "node:path";
 import fs from "fs-extra";
+import chalk from "chalk";
 import path$1, { dirname, join as join$1, relative, resolve as resolve$1 } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import { parse } from "@babel/parser";
 import { isArrayPattern, isClassDeclaration, isExportSpecifier, isFunctionDeclaration, isIdentifier, isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, isMemberExpression, isObjectPattern, isObjectProperty, isRestElement, isVariableDeclaration, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
 import { generate } from "@babel/generator";
-import traverseModule from "@babel/traverse";
+import _traverse from "@babel/traverse";
 import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
@@ -17,7 +18,6 @@ import express from "express";
 import { createRequestHandler } from "@react-router/express";
 import { pathToFileURL as pathToFileURL$1 } from "node:url";
 import { createProxyMiddleware } from "http-proxy-middleware";
-import chalk from "chalk";
 import compression from "compression";
 import zlib from "node:zlib";
 import morgan from "morgan";
@@ -36,6 +36,71 @@ import { tmpdir } from "node:os";
 import { randomUUID } from "node:crypto";
 import { npmRunPathEnv } from "npm-run-path";
 
+//#region src/utils/logger.ts
+const LEVEL_PRIORITY = {
+	error: 0,
+	warn: 1,
+	info: 2,
+	debug: 3
+};
+let overrideLevel;
+/**
+* Returns true when the `DEBUG` env var targets sfnext or is a general enable flag.
+* Avoids accidentally enabling debug mode when DEBUG is set for unrelated libraries
+* (e.g. `DEBUG=express:*`).
+*/
+function debugEnablesSfnext() {
+	const raw = process.env.DEBUG?.trim();
+	if (!raw) return false;
+	const normalized = raw.toLowerCase();
+	if ([
+		"1",
+		"true",
+		"yes",
+		"on"
+	].includes(normalized)) return true;
+	return raw.split(",").some((token) => {
+		const value = token.trim();
+		return value === "*" || value === "sfnext" || value === "sfnext:*";
+	});
+}
+function resolveLevel() {
+	if (overrideLevel) return overrideLevel;
+	const envLevel = process.env.SFNEXT_LOG_LEVEL;
+	if (envLevel && envLevel in LEVEL_PRIORITY) return envLevel;
+	if (debugEnablesSfnext()) return "debug";
+	if (process.env.NODE_ENV === "production") return "warn";
+	return "info";
+}
+function shouldLog(level) {
+	return LEVEL_PRIORITY[level] <= LEVEL_PRIORITY[resolveLevel()];
+}
+const logger = {
+	error(msg, ...args) {
+		if (!shouldLog("error")) return;
+		console.error(chalk.red("[sfnext:error]"), msg, ...args);
+	},
+	warn(msg, ...args) {
+		if (!shouldLog("warn")) return;
+		console.warn(chalk.yellow("[sfnext:warn]"), msg, ...args);
+	},
+	info(msg, ...args) {
+		if (!shouldLog("info")) return;
+		console.log(chalk.cyan("[sfnext:info]"), msg, ...args);
+	},
+	debug(msg, ...args) {
+		if (!shouldLog("debug")) return;
+		console.log(chalk.gray("[sfnext:debug]"), msg, ...args);
+	},
+	setLevel(level) {
+		overrideLevel = level;
+	},
+	getLevel() {
+		return resolveLevel();
+	}
+};
+
+//#endregion
 //#region src/plugins/fixReactRouterManifestUrls.ts
 function patchAssetsPaths(dir) {
 	const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -46,7 +111,7 @@ function patchAssetsPaths(dir) {
 			const content = fs.readFileSync(fullPath, "utf-8");
 			if (content.includes("\"/assets/") || content.includes("'/assets/")) {
 				fs.writeFileSync(fullPath, content.replace(/["']\/assets\//g, "(window._BUNDLE_PATH || \"/\") + \"assets/"));
-				console.log(`patched /assets/ references in ${fullPath}`);
+				logger.debug(`patched /assets/ references in ${fullPath}`);
 			}
 		}
 	}
@@ -332,7 +397,7 @@ const patchReactRouterPlugin = () => {
 
 //#endregion
 //#region src/extensibility/target-utils.ts
-const traverse$1 = traverseModule.default || traverseModule;
+const traverse$1 = _traverse.default || _traverse;
 const TARGET_COMPONENT_TAG = "UITarget";
 const TARGET_PROVIDERS_TAG = "TargetProviders";
 const TARGET_ID_ATTRIBUTE = "targetId";
@@ -548,7 +613,7 @@ function transformTargetPlaceholderPlugin() {
 				};
 				return null;
 			} catch (err) {
-				console.error(`UITarget replace ERROR in ${id}: ${err instanceof Error ? err.stack : String(err)}`);
+				logger.error(`UITarget replace ERROR in ${id}: ${err instanceof Error ? err.stack : String(err)}`);
 				throw err;
 			}
 		}
@@ -571,7 +636,7 @@ const watchConfigFilesPlugin = () => {
 			server.watcher.add(glob$1);
 			const onChange = (file) => {
 				if (file.endsWith("target-config.json")) {
-					console.log(`🔁 target-config.json changed: ${file}`);
+					logger.debug(`🔁 target-config.json changed: ${file}`);
 					server.restart();
 				}
 			};
@@ -651,12 +716,12 @@ function hasFallbackExport(sourceFile) {
 /**
 * Scans all files in the component directory for @Component decorators and extracts metadata using ts-morph
 */
-async function scanComponents(project, projectRoot, componentPath, registryPath, verbose$1) {
+async function scanComponents(project, projectRoot, componentPath, registryPath) {
 	const componentFiles = await glob(`${componentPath}/**/*.{ts,tsx}`, {
 		cwd: projectRoot,
 		absolute: true
 	});
-	if (verbose$1) console.log(`🔍 Scanning ${componentFiles.length} files in ${componentPath}...`);
+	logger.debug(`🔍 Scanning ${componentFiles.length} files in ${componentPath}...`);
 	const components = [];
 	const registryDir = dirname(resolve$1(projectRoot, registryPath));
 	for (const filePath of componentFiles) try {
@@ -681,19 +746,17 @@ async function scanComponents(project, projectRoot, componentPath, registryPath,
 						hasClientLoader: hasClientLoaderExport,
 						hasFallback
 					});
-					if (verbose$1) {
-						const exports = [];
-						if (hasLoaderExport) exports.push("loader");
-						if (hasClientLoaderExport) exports.push("clientLoader");
-						if (hasFallback) exports.push("fallback");
-						const exportsText = exports.length > 0 ? ` (with ${exports.join(", ")})` : "";
-						console.log(`  ✅ Found component: ${componentInfo.id} → ${relativePath}${exportsText}`);
-					}
+					const exports = [];
+					if (hasLoaderExport) exports.push("loader");
+					if (hasClientLoaderExport) exports.push("clientLoader");
+					if (hasFallback) exports.push("fallback");
+					const exportsText = exports.length > 0 ? ` (with ${exports.join(", ")})` : "";
+					logger.debug(`  ✅ Found component: ${componentInfo.id} → ${relativePath}${exportsText}`);
 				}
 			}
 		}
 	} catch (error) {
-		if (verbose$1) console.warn(`⚠️  Could not process ${filePath}:`, error.message);
+		logger.warn(`⚠️  Could not process ${filePath}: ${error.message}`);
 	}
 	return components;
 }
@@ -741,10 +804,10 @@ ${registrations}
 /**
 * Updates the registry.ts file with the generated code
 */
-function updateRegistryFile(registryFilePath, generatedCode, verbose$1) {
+function updateRegistryFile(registryFilePath, generatedCode) {
 	let existingContent;
 	if (!existsSync(registryFilePath)) {
-		if (verbose$1) console.log(`📝 Creating new registry file...`);
+		logger.debug("📝 Creating new registry file...");
 		const basicRegistryContent = `import { ComponentRegistry } from '@/lib/component-registry';
 
 // Create the component registry instance
@@ -769,7 +832,7 @@ export const registry = new ComponentRegistry();
 	const updatedContent = `${existingContent.slice(0, startIndex + 24)}\n${generatedCode}\n${existingContent.slice(endIndex)}`;
 	try {
 		writeFileSync(registryFilePath, updatedContent, "utf-8");
-		if (verbose$1) console.log(`💾 Updated registry file: ${registryFilePath}`);
+		logger.debug(`💾 Updated registry file: ${registryFilePath}`);
 	} catch (error) {
 		throw new Error(`Failed to write registry file: ${error.message}`);
 	}
@@ -798,10 +861,10 @@ export const registry = new ComponentRegistry();
 * })
 */
 const staticRegistryPlugin = (config = {}) => {
-	const { componentPath = "src/components", registryPath = "src/lib/static-registry.ts", registryIdentifier = "registry", failOnError = true, verbose: verbose$1 = false } = config;
+	const { componentPath = "src/components", registryPath = "src/lib/static-registry.ts", registryIdentifier = "registry", failOnError = true } = config;
 	let projectRoot;
 	const runRegistryGeneration = async () => {
-		if (verbose$1) console.log("🚀 Starting static registry generation...");
+		logger.debug("🚀 Starting static registry generation...");
 		const components = await scanComponents(new Project({ compilerOptions: {
 			target: ts.ScriptTarget.Latest,
 			module: ts.ModuleKind.ESNext,
@@ -809,12 +872,12 @@ const staticRegistryPlugin = (config = {}) => {
 			allowJs: true,
 			skipLibCheck: true,
 			noEmit: true
-		} }), projectRoot, componentPath, registryPath, verbose$1);
-		if (verbose$1) console.log(`📦 Found ${components.length} components with @Component decorators`);
+		} }), projectRoot, componentPath, registryPath);
+		logger.debug(`📦 Found ${components.length} components with @Component decorators`);
 		const generatedCode = generateRegistryCode(components, registryIdentifier);
 		const registryFilePath = resolve$1(projectRoot, registryPath);
-		updateRegistryFile(registryFilePath, generatedCode, verbose$1);
-		if (verbose$1) console.log("✅ Static registry generation complete!");
+		updateRegistryFile(registryFilePath, generatedCode);
+		logger.debug("✅ Static registry generation complete!");
 		return registryFilePath;
 	};
 	return {
@@ -826,23 +889,23 @@ const staticRegistryPlugin = (config = {}) => {
 			try {
 				await runRegistryGeneration();
 			} catch (error) {
-				console.error(`❌ Static registry generation failed: ${error.message}`);
+				logger.error(`❌ Static registry generation failed: ${error.message}`);
 				if (failOnError) throw error;
-				console.warn("⚠️  Continuing build without static registry...");
+				logger.warn("⚠️  Continuing build without static registry...");
 			}
 		},
 		async handleHotUpdate({ file, server }) {
 			const normalizedComponentPath = componentPath.replace(/\\/g, "/");
 			const normalizedFile = file.replace(/\\/g, "/");
 			if (normalizedFile.includes(`/${normalizedComponentPath}/`) && (normalizedFile.endsWith(".ts") || normalizedFile.endsWith(".tsx"))) {
-				if (verbose$1) console.log(`🔄 Component file changed: ${file}, regenerating registry...`);
+				logger.debug(`🔄 Component file changed: ${file}, regenerating registry...`);
 				try {
 					const registryFilePath = await runRegistryGeneration();
 					const registryModule = server.moduleGraph.getModuleById(registryFilePath);
 					if (registryModule) await server.reloadModule(registryModule);
-					if (verbose$1) console.log("✅ Registry regenerated successfully!");
+					logger.debug("✅ Registry regenerated successfully!");
 				} catch (error) {
-					console.error(`❌ Failed to regenerate registry: ${error.message}`);
+					logger.error(`❌ Failed to regenerate registry: ${error.message}`);
 				}
 				return [];
 			}
@@ -855,19 +918,19 @@ const staticRegistryPlugin = (config = {}) => {
 /**
 * Load the engagement config from config.server.ts
 */
-async function loadEngagementConfig(projectRoot, configPath, verbose$1) {
+async function loadEngagementConfig(projectRoot, configPath) {
 	const absoluteConfigPath = resolve$1(projectRoot, configPath);
 	try {
 		const config = (await import(pathToFileURL(absoluteConfigPath).href)).default;
-		if (verbose$1) console.log(`  📄 Loaded config from ${configPath}`);
+		logger.debug(`📄 Loaded config from ${configPath}`);
 		const engagement = config?.app?.engagement;
 		if (!engagement) {
-			if (verbose$1) console.log(`  ⚠️  No engagement config found in ${configPath}`);
+			logger.debug(`⚠️  No engagement config found in ${configPath}`);
 			return null;
 		}
 		return engagement;
 	} catch (error) {
-		if (verbose$1) console.warn(`  ⚠️  Could not load config from ${configPath}: ${error.message}`);
+		logger.warn(`⚠️  Could not load config from ${configPath}: ${error.message}`);
 		return null;
 	}
 }
@@ -877,7 +940,7 @@ async function loadEngagementConfig(projectRoot, configPath, verbose$1) {
 /**
 * Extract all trackEvent calls from source files and return the event types found
 */
-async function scanForInstrumentedEvents(projectRoot, scanPaths, verbose$1) {
+async function scanForInstrumentedEvents(projectRoot, scanPaths) {
 	const instrumentedEvents = /* @__PURE__ */ new Set();
 	const trackEventPattern = /trackEvent\s*\([^,]+,[^,]+,[^,]+,\s*['"]([^'"]+)['"]/g;
 	const sendViewPagePattern = /sendViewPageEvent\s*\(/g;
@@ -890,29 +953,29 @@ async function scanForInstrumentedEvents(projectRoot, scanPaths, verbose$1) {
 			"**/*.spec.tsx",
 			"**/node_modules/**"
 		] });
-		if (verbose$1) console.log(`  📂 Scanning ${files.length} files in ${scanPath}...`);
+		logger.debug(`📂 Scanning ${files.length} files in ${scanPath}...`);
 		for (const file of files) try {
 			const content = readFileSync(file, "utf-8");
 			let match;
 			while ((match = trackEventPattern.exec(content)) !== null) {
 				const eventType = match[1];
 				instrumentedEvents.add(eventType);
-				if (verbose$1) console.log(`    ✓ Found trackEvent('${eventType}') in ${file}`);
+				logger.debug(`  ✓ Found trackEvent('${eventType}') in ${file}`);
 			}
 			if (sendViewPagePattern.test(content)) {
 				instrumentedEvents.add("view_page");
-				if (verbose$1) console.log(`    ✓ Found sendViewPageEvent() in ${file}`);
+				logger.debug(`  ✓ Found sendViewPageEvent() in ${file}`);
 			}
 			while ((match = createEventPattern.exec(content)) !== null) {
 				const eventType = match[1];
 				instrumentedEvents.add(eventType);
-				if (verbose$1) console.log(`    ✓ Found createEvent('${eventType}') in ${file}`);
+				logger.debug(`  ✓ Found createEvent('${eventType}') in ${file}`);
 			}
 			trackEventPattern.lastIndex = 0;
 			sendViewPagePattern.lastIndex = 0;
 			createEventPattern.lastIndex = 0;
 		} catch (error) {
-			if (verbose$1) console.warn(`    ⚠️  Could not read ${file}: ${error.message}`);
+			logger.warn(`⚠️  Could not read ${file}: ${error.message}`);
 		}
 	}
 	return instrumentedEvents;
@@ -956,7 +1019,7 @@ function extractEnabledEvents(engagement) {
 * })
 */
 const eventInstrumentationValidatorPlugin = (config = {}) => {
-	const { configPath = "config.server.ts", scanPaths = ["src"], failOnMissing = false, verbose: verbose$1 = false } = config;
+	const { configPath = "config.server.ts", scanPaths = ["src"], failOnMissing = false } = config;
 	let resolvedConfig;
 	return {
 		name: "storefrontnext:event-instrumentation-validator",
@@ -966,34 +1029,29 @@ const eventInstrumentationValidatorPlugin = (config = {}) => {
 		},
 		async buildStart() {
 			const projectRoot = resolvedConfig.root;
-			if (verbose$1) console.log("\n🔍 [event-instrumentation] Validating event instrumentation...");
-			const engagement = await loadEngagementConfig(projectRoot, configPath, verbose$1);
+			logger.debug("🔍 Validating event instrumentation...");
+			const engagement = await loadEngagementConfig(projectRoot, configPath);
 			if (!engagement) {
-				if (verbose$1) console.log("  ℹ️  Skipping validation - no engagement config found\n");
+				logger.debug("ℹ️  Skipping validation - no engagement config found");
 				return;
 			}
 			const adapterEvents = extractEnabledEvents(engagement);
 			if (adapterEvents.size === 0) {
-				if (verbose$1) console.log("  ℹ️  No enabled adapters with event toggles found\n");
+				logger.debug("ℹ️  No enabled adapters with event toggles found");
 				return;
 			}
-			const instrumentedEvents = await scanForInstrumentedEvents(projectRoot, scanPaths, verbose$1);
-			if (verbose$1) {
-				console.log(`\n  🔎 Found ${instrumentedEvents.size} instrumented event types:`);
-				for (const event of instrumentedEvents) console.log(`     - ${event}`);
-			}
+			const instrumentedEvents = await scanForInstrumentedEvents(projectRoot, scanPaths);
+			logger.debug(`🔎 Found ${instrumentedEvents.size} instrumented event types: ${[...instrumentedEvents].join(", ")}`);
 			const missingInstrumentation = [];
 			for (const [adapterName, enabledEvents] of adapterEvents) for (const eventType of enabledEvents) if (!instrumentedEvents.has(eventType)) missingInstrumentation.push({
 				adapter: adapterName,
 				event: eventType
 			});
 			if (missingInstrumentation.length === 0) {
-				if (verbose$1) console.log("\n  ✅ All enabled events are instrumented\n");
+				logger.debug("✅ All enabled events are instrumented");
 				return;
 			}
-			console.log("\n");
-			for (const { adapter, event } of missingInstrumentation) console.warn(`  ⚠️  [event-instrumentation] ${adapter}.${event} is enabled but '${event}' is never instrumented`);
-			console.log("\n");
+			for (const { adapter, event } of missingInstrumentation) logger.warn(`⚠️  ${adapter}.${event} is enabled but '${event}' is never instrumented`);
 			if (failOnMissing) throw new Error(`[event-instrumentation] ${missingInstrumentation.length} event(s) are enabled but not instrumented. Either add instrumentation or disable the event toggles in config.server.ts.`);
 		}
 	};
@@ -1275,7 +1333,7 @@ const workspacePlugin = () => {
 
 //#endregion
 //#region src/plugins/componentLoaders.ts
-const traverse = traverseModule.default || traverseModule;
+const traverse = _traverse.default || _traverse;
 const generate$1 = generate.default || generate;
 /**
 * Names of exports to strip per environment.
@@ -1533,13 +1591,11 @@ function componentLoadersPlugin(config = {}) {
 function storefrontNextTargets(config = {}) {
 	const { readableChunkNames = false, staticRegistry = {
 		componentPath: "",
-		registryPath: "",
-		verbose: false
+		registryPath: ""
 	}, eventInstrumentationValidator = {
 		configPath: "config.server.ts",
 		scanPaths: ["src"],
-		failOnMissing: false,
-		verbose: false
+		failOnMissing: false
 	} } = config;
 	const plugins = [
 		...process.env.SCAPI_PROXY_HOST ? [workspacePlugin()] : [],
@@ -1553,10 +1609,7 @@ function storefrontNextTargets(config = {}) {
 	];
 	if (staticRegistry?.componentPath && staticRegistry?.registryPath) {
 		plugins.push(staticRegistryPlugin(staticRegistry));
-		plugins.push(componentLoadersPlugin({
-			componentPath: staticRegistry.componentPath,
-			verbose: staticRegistry.verbose
-		}));
+		plugins.push(componentLoadersPlugin({ componentPath: staticRegistry.componentPath }));
 	}
 	if (eventInstrumentationValidator !== false) plugins.push(eventInstrumentationValidatorPlugin(eventInstrumentationValidator));
 	if (readableChunkNames) plugins.push(readableChunkFileNamesPlugin());
@@ -1679,18 +1732,17 @@ function escapeRegExp(str) {
 */
 function hybridProxyPlugin(options) {
 	if (!options.enabled) {
-		console.log("[Hybrid Proxy] Disabled (HYBRID_PROXY_ENABLED is not true)");
+		logger.debug("Hybrid proxy disabled (HYBRID_PROXY_ENABLED is not true)");
 		return { name: "hybrid-proxy" };
 	}
 	if (!options.targetOrigin) {
-		console.warn("[Hybrid Proxy] No target origin configured (SFCC_ORIGIN required)");
+		logger.warn("Hybrid proxy: no target origin configured (SFCC_ORIGIN required)");
 		return { name: "hybrid-proxy" };
 	}
-	console.log("[Hybrid Proxy] Enabled");
-	console.log(`[Hybrid Proxy] Target origin: ${options.targetOrigin}`);
-	console.log(`[Hybrid Proxy] Routing rules: ${options.routingRules.slice(0, 100)}...`);
+	logger.info(`Hybrid proxy enabled → ${options.targetOrigin}`);
+	logger.debug(`Hybrid proxy routing rules: ${options.routingRules.slice(0, 100)}...`);
 	const locale = options.locale || "default";
-	console.log(`[Hybrid Proxy] Path transformation: / → /s/${options.siteId}, /path → /s/${options.siteId}/${locale}/path`);
+	logger.debug(`Hybrid proxy path transformation: / → /s/${options.siteId}, /path → /s/${options.siteId}/${locale}/path`);
 	const targetOriginPattern = new RegExp(escapeRegExp(options.targetOrigin), "g");
 	const proxy = httpProxy.createProxyServer({
 		changeOrigin: true,
@@ -1709,7 +1761,7 @@ function hybridProxyPlugin(options) {
 			*/
 			if (pathname === "/") proxyReq.path = `/s/${options.siteId}${url.search}`;
 			else proxyReq.path = `/s/${options.siteId}/${locale}${pathname}${url.search}`;
-			console.log(`[Hybrid Proxy] Path rewrite: ${originalPath} → ${proxyReq.path}`);
+			logger.debug(`Hybrid proxy path rewrite: ${originalPath} → ${proxyReq.path}`);
 		}
 	});
 	proxy.on("proxyRes", (proxyRes, req, res) => {
@@ -1717,13 +1769,13 @@ function hybridProxyPlugin(options) {
 		const locationHeader = proxyRes.headers.location;
 		const statusCode = proxyRes.statusCode || 200;
 		if (statusCode >= 300 && statusCode < 400 && typeof locationHeader === "string" && /\/404\b/.test(locationHeader)) {
-			console.warn(`[Hybrid Proxy] ⚠️  SFCC returned a redirect to 404 for ${req.url}\n  This usually means your HYBRID_ROUTING_RULES are missing a pattern for this path.\n  Stripping Set-Cookie headers to prevent session cookie corruption.\n  Fix: add a matching pattern to HYBRID_ROUTING_RULES (e.g., "^${req.url?.split("?")[0]}.*")`);
+			logger.warn(`⚠️  SFCC returned a redirect to 404 for ${req.url}. This usually means your HYBRID_ROUTING_RULES are missing a pattern for this path. Stripping Set-Cookie headers to prevent session cookie corruption. Fix: add a matching pattern to HYBRID_ROUTING_RULES (e.g., "^${req.url?.split("?")[0]}.*")`);
 			delete proxyRes.headers["set-cookie"];
 		}
 		const setCookieHeaders = proxyRes.headers["set-cookie"];
 		if (setCookieHeaders && Array.isArray(setCookieHeaders)) proxyRes.headers["set-cookie"] = setCookieHeaders.map((cookie) => {
 			const rewritten = rewriteCookieForLocalhost(cookie);
-			console.log(`[Hybrid Proxy] Cookie rewrite: ${cookie.slice(0, 50)}... → ${rewritten.slice(0, 50)}...`);
+			logger.debug(`Hybrid proxy cookie rewrite: ${cookie.slice(0, 50)}... → ${rewritten.slice(0, 50)}...`);
 			return rewritten;
 		});
 		if (locationHeader && typeof locationHeader === "string") try {
@@ -1731,10 +1783,10 @@ function hybridProxyPlugin(options) {
 			if (locationUrl.origin === options.targetOrigin) {
 				const localUrl = `http://${req.headers.host}${locationUrl.pathname}${locationUrl.search}${locationUrl.hash}`;
 				proxyRes.headers.location = localUrl;
-				console.log(`[Hybrid Proxy] Location rewrite: ${locationHeader} → ${localUrl}`);
+				logger.debug(`Hybrid proxy location rewrite: ${locationHeader} → ${localUrl}`);
 			}
 		} catch {
-			console.warn("[Hybrid Proxy] Invalid Location header:", locationHeader);
+			logger.warn(`Hybrid proxy: invalid Location header: ${locationHeader}`);
 		}
 		const contentType = (proxyRes.headers["content-type"] || "").split(";")[0].trim();
 		if (!(contentType === "text/html" || contentType === "application/json")) {
@@ -1767,11 +1819,11 @@ function hybridProxyPlugin(options) {
 			headers["content-length"] = String(Buffer.byteLength(text, "utf8"));
 			clientRes.writeHead(proxyRes.statusCode || 200, headers);
 			clientRes.end(text);
-			console.log(`[Hybrid Proxy] Rewrote ${contentType} body URLs for ${req.url}`);
+			logger.debug(`Hybrid proxy rewrote ${contentType} body URLs for ${req.url}`);
 		});
 	});
 	proxy.on("error", (err, req, res) => {
-		console.error("[Hybrid Proxy] Proxy error:", err.message, req.url);
+		logger.error(`Hybrid proxy error: ${err.message} ${req.url}`);
 		if ("writeHead" in res && !res.headersSent) {
 			res.writeHead(502, { "Content-Type": "text/plain" });
 			res.end("Bad Gateway: Failed to proxy to SFCC");
@@ -1790,16 +1842,16 @@ function hybridProxyPlugin(options) {
 					try {
 						shouldRouteToNextApp = options.routeMatcher(pathname, options.routingRules);
 					} catch (error) {
-						console.error("[Hybrid Proxy] Error checking routing rules:", error);
+						logger.error(`Hybrid proxy error checking routing rules: ${String(error)}`);
 						return next();
 					}
 					if (shouldRouteToNextApp) return next();
 				}
-				console.log(`[Hybrid Proxy] Proxying: ${req.method} ${pathname} → ${options.targetOrigin}`);
+				logger.debug(`Hybrid proxy: ${req.method} ${pathname} → ${options.targetOrigin}`);
 				try {
 					proxy.web(req, res, { target: options.targetOrigin });
 				} catch (error) {
-					console.error("[Hybrid Proxy] Failed to proxy request:", error);
+					logger.error(`Hybrid proxy failed to proxy request: ${String(error)}`);
 					if (!res.headersSent) {
 						res.writeHead(502, { "Content-Type": "text/plain" });
 						res.end("Bad Gateway: Failed to proxy to SFCC");
@@ -1812,21 +1864,6 @@ function hybridProxyPlugin(options) {
 
 //#endregion
 //#region src/plugins/ecdnMatcher.ts
-/**
-* Copyright 2026 Salesforce, Inc.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
 /**
 * Cloudflare eCDN Routing Rule Matcher
 *
@@ -1902,7 +1939,7 @@ function testPatterns(pathname, patterns) {
 		}
 		if (regex.test(pathname)) return true;
 	} catch (error) {
-		console.warn(`[Hybrid Proxy] Invalid regex pattern: ${pattern}`, error);
+		logger.warn(`Invalid regex pattern: ${pattern} ${String(error)}`);
 		continue;
 	}
 	return false;
@@ -1929,7 +1966,7 @@ function shouldRouteToNext(pathname, routingRules) {
 	if (!routingRules) return true;
 	const patterns = extractPatterns(routingRules);
 	if (patterns.length === 0) {
-		console.warn("[Hybrid Proxy] No valid patterns found in routing rules");
+		logger.warn("No valid patterns found in routing rules");
 		return true;
 	}
 	return testPatterns(pathname, patterns);
@@ -2077,31 +2114,6 @@ function createCommerceProxyMiddleware(config) {
 }
 
 //#endregion
-//#region src/utils/logger.ts
-/**
-* Logger utilities
-*/
-const colors = {
-	warn: "yellow",
-	error: "red",
-	success: "cyan",
-	info: "green",
-	debug: "gray"
-};
-const fancyLog = (level, msg) => {
-	const colorFn = chalk[colors[level]];
-	console.log(`${colorFn(level)}: ${msg}`);
-};
-const info = (msg) => fancyLog("info", msg);
-const warn = (msg) => fancyLog("warn", msg);
-const debug = (msg, data) => {
-	if (process.env.DEBUG || process.env.NODE_ENV !== "production") {
-		fancyLog("debug", msg);
-		if (data) console.log(data);
-	}
-};
-
-//#endregion
 //#region src/server/middleware/static.ts
 /**
 * Create static file serving middleware for client assets
@@ -2110,7 +2122,7 @@ const debug = (msg, data) => {
 function createStaticMiddleware(bundleId, projectDirectory) {
 	const bundlePath = getBundlePath(bundleId);
 	const clientBuildDir = path$1.join(projectDirectory, "build", "client");
-	info(`Serving static assets from ${clientBuildDir} at ${bundlePath}`);
+	logger.info(`Serving static assets from ${clientBuildDir} at ${bundlePath}`);
 	return express.static(clientBuildDir, { setHeaders: (res) => {
 		res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
 		res.setHeader("x-local-static-cache-control", "1");
@@ -2129,7 +2141,7 @@ function getCompressionLevel() {
 	if (raw == null || raw.trim() === "") return DEFAULT;
 	const level = Number(raw);
 	if (!(Number.isInteger(level) && level >= 0 && level <= 9)) {
-		warn(`[compression] Invalid COMPRESSION_LEVEL="${raw}". Using default (${DEFAULT}).`);
+		logger.warn(`[compression] Invalid COMPRESSION_LEVEL="${raw}". Using default (${DEFAULT}).`);
 		return DEFAULT;
 	}
 	return level;
@@ -2182,14 +2194,14 @@ function createLoggingMiddleware() {
 	});
 	morgan.token("method-colored", (req) => {
 		const method = req.method;
-		const colors$1 = {
+		const colors = {
 			GET: chalk.green,
 			POST: chalk.blue,
 			PUT: chalk.yellow,
 			DELETE: chalk.red,
 			PATCH: chalk.magenta
 		};
-		return (method && colors$1[method] || chalk.white)(method);
+		return (method && colors[method] || chalk.white)(method);
 	});
 	return morgan((tokens, req, res) => {
 		return [
@@ -2355,7 +2367,7 @@ function initTelemetry() {
 		cachedTracer = provider.getTracer(SERVICE_NAME);
 		return cachedTracer;
 	} catch (error) {
-		console.error("[otel] Failed to initialize OpenTelemetry:", error);
+		logger.error("[otel] Failed to initialize OpenTelemetry:", error);
 		return null;
 	}
 }
@@ -2463,7 +2475,7 @@ function readPackageMetadata(path$2) {
 	try {
 		return JSON.parse(readFileSync$1(path$2, "utf8"));
 	} catch (error) {
-		debug(`Health check: failed to parse package.json at ${path$2}`, error);
+		logger.debug(`Health check: failed to parse package.json at ${path$2}`, error);
 		return null;
 	}
 }
@@ -2610,17 +2622,15 @@ const SINGLE_LINE_MARKER = "@sfdc-extension-line";
 const BLOCK_MARKER_START = "@sfdc-extension-block-start";
 const BLOCK_MARKER_END = "@sfdc-extension-block-end";
 const FILE_MARKER = "@sfdc-extension-file";
-let verbose = false;
-function trimExtensions(directory, selectedExtensions, extensionConfig, verboseOverride = false) {
+function trimExtensions(directory, selectedExtensions, extensionConfig) {
 	const startTime = Date.now();
-	verbose = verboseOverride ?? false;
 	const configuredExtensions = extensionConfig?.extensions || {};
 	const extensions = {};
 	Object.keys(configuredExtensions).forEach((targetKey) => {
 		extensions[targetKey] = Boolean(selectedExtensions?.[targetKey]) || false;
 	});
 	if (Object.keys(extensions).length === 0) {
-		if (verbose) console.log("No targets found, skipping trim");
+		logger.debug("No targets found, skipping trim");
 		return;
 	}
 	const processDirectory = (dir) => {
@@ -2639,7 +2649,7 @@ function trimExtensions(directory, selectedExtensions, extensionConfig, verboseO
 		updateExtensionConfig(directory, extensions);
 	}
 	const endTime = Date.now();
-	if (verbose) console.log(`Trim extensions took ${endTime - startTime}ms`);
+	logger.debug(`Trim extensions took ${endTime - startTime}ms`);
 }
 /**
 * Update the extension config file to only include the selected extensions.
@@ -2664,15 +2674,14 @@ function processFile(filePath, extensions) {
 	if (source.includes(FILE_MARKER)) {
 		const markerLine = source.split("\n").find((line) => line.includes(FILE_MARKER));
 		const extMatch = Object.keys(extensions).find((ext) => markerLine.includes(ext));
-		if (!extMatch) {
-			if (verbose) console.warn(`File ${filePath} is marked with ${markerLine} but it does not match any known extensions`);
-		} else if (extensions[extMatch] === false) {
+		if (!extMatch) logger.warn(`File ${filePath} is marked with ${markerLine} but it does not match any known extensions`);
+		else if (extensions[extMatch] === false) {
 			try {
 				fs$1.unlinkSync(filePath);
-				if (verbose) console.log(`Deleted file ${filePath}`);
+				logger.debug(`Deleted file ${filePath}`);
 			} catch (e) {
 				const error = e;
-				console.error(`Error deleting file ${filePath}: ${error.message}`);
+				logger.error(`Error deleting file ${filePath}: ${error.message}`);
 				throw e;
 			}
 			return;
@@ -2701,7 +2710,7 @@ function processFile(filePath, extensions) {
 						line: i
 					});
 					skippingBlock = extensions[matchingExtension] === false;
-				} else if (verbose) console.warn(`Warning: Unknown marker found in ${filePath} at line ${i}: \n${line}`);
+				} else logger.warn(`Unknown marker found in ${filePath} at line ${i}: \n${line}`);
 			} else if (line.includes(BLOCK_MARKER_END)) {
 				if (Object.keys(extensions).find((extension) => line.includes(extension))) {
 					const extension = Object.keys(extensions).find((p) => line.includes(p));
@@ -2722,10 +2731,10 @@ function processFile(filePath, extensions) {
 		const newSource = newLines.join("\n");
 		if (newSource !== source) try {
 			fs$1.writeFileSync(filePath, newSource);
-			if (verbose) console.log(`Updated file ${filePath}`);
+			logger.debug(`Updated file ${filePath}`);
 		} catch (e) {
 			const error = e;
-			console.error(`Error updating file ${filePath}: ${error.message}`);
+			logger.error(`Error updating file ${filePath}: ${error.message}`);
 			throw e;
 		}
 	}
@@ -2749,11 +2758,11 @@ function deleteExtensionFolders(projectRoot, extensions, extensionConfig) {
 					recursive: true,
 					force: true
 				});
-				if (verbose) console.log(`Deleted extension folder: ${extensionFolderPath}`);
+				logger.debug(`Deleted extension folder: ${extensionFolderPath}`);
 			} catch (err) {
 				const error = err;
-				if (error.code === "EPERM") console.error(`Permission denied - cannot delete ${extensionFolderPath}. You may need to run with sudo or check permissions.`);
-				else console.error(`Error deleting ${extensionFolderPath}: ${error.message}`);
+				if (error.code === "EPERM") logger.error(`Permission denied - cannot delete ${extensionFolderPath}. You may need to run with sudo or check permissions.`);
+				else logger.error(`Error deleting ${extensionFolderPath}: ${error.message}`);
 			}
 		}
 	});
@@ -2829,7 +2838,7 @@ function filePathToRoute(filePath, projectRoot) {
 		const routeFileNormalized = routeFilePosix.replace(/^\.\//, "");
 		if (filePathPosix.endsWith(routeFileNormalized) || filePathPosix.endsWith(`/${routeFileNormalized}`)) return route.path;
 	}
-	console.warn(`Warning: Could not find route for file: ${filePath}`);
+	logger.warn(`Could not find route for file: ${filePath}`);
 	return "/unknown";
 }
 /**
@@ -2904,7 +2913,7 @@ const TYPE_MAPPING = {
 function resolveAttributeType(decoratorType, tsMorphType, fieldName) {
 	if (decoratorType) {
 		if (!VALID_ATTRIBUTE_TYPES.includes(decoratorType)) {
-			console.error(`Error: Invalid attribute type '${decoratorType}' for field '${fieldName || "unknown"}'. Valid types are: ${VALID_ATTRIBUTE_TYPES.join(", ")}`);
+			logger.error(`Invalid attribute type '${decoratorType}' for field '${fieldName || "unknown"}'. Valid types are: ${VALID_ATTRIBUTE_TYPES.join(", ")}`);
 			process.exit(1);
 		}
 		return decoratorType;
@@ -2948,7 +2957,7 @@ function parseNestedObject(objectLiteral) {
 			if (initializer) result[name] = parseExpression(initializer);
 		}
 	} catch (error) {
-		console.warn(`Warning: Could not parse nested object: ${error.message}`);
+		logger.warn(`Could not parse nested object: ${error.message}`);
 		return result;
 	}
 	return result;
@@ -2959,7 +2968,7 @@ function parseArrayLiteral(arrayLiteral) {
 		const elements = arrayLiteral.getElements();
 		for (const element of elements) result.push(parseExpression(element));
 	} catch (error) {
-		console.warn(`Warning: Could not parse array literal: ${error.message}`);
+		logger.warn(`Could not parse array literal: ${error.message}`);
 	}
 	return result;
 }
@@ -2992,7 +3001,7 @@ function parseDecoratorArgs(decorator) {
 		}
 		return result;
 	} catch (error) {
-		console.warn(`Warning: Could not parse decorator arguments: ${error.message}`);
+		logger.warn(`Could not parse decorator arguments: ${error.message}`);
 		return result;
 	}
 }
@@ -3021,7 +3030,7 @@ function extractAttributesFromSource(sourceFile, className) {
 			attributes.push(attribute);
 		}
 	} catch (error) {
-		console.warn(`Warning: Could not extract attributes from class ${className}: ${error.message}`);
+		logger.warn(`Could not extract attributes from class ${className}: ${error.message}`);
 	}
 	return attributes;
 }
@@ -3056,7 +3065,7 @@ function extractRegionDefinitionsFromSource(sourceFile, className) {
 			}
 		}
 	} catch (error) {
-		console.warn(`Warning: Could not extract region definitions from class ${className}: ${error.message}`);
+		logger.warn(`Warning: Could not extract region definitions from class ${className}: ${error.message}`);
 	}
 	return regionDefinitions;
 }
@@ -3090,11 +3099,11 @@ async function processComponentFile(filePath, _projectRoot) {
 				components.push(componentMetadata);
 			}
 		} catch (error) {
-			console.warn(`Warning: Could not process file ${filePath}:`, error.message);
+			logger.warn(`Could not process file ${filePath}:`, error.message);
 		}
 		return components;
 	} catch (error) {
-		console.warn(`Warning: Could not read file ${filePath}:`, error.message);
+		logger.warn(`Could not read file ${filePath}:`, error.message);
 		return [];
 	}
 }
@@ -3130,11 +3139,11 @@ async function processPageTypeFile(filePath, projectRoot) {
 				pageTypes.push(pageTypeMetadata);
 			}
 		} catch (error) {
-			console.warn(`Warning: Could not process file ${filePath}:`, error.message);
+			logger.warn(`Could not process file ${filePath}:`, error.message);
 		}
 		return pageTypes;
 	} catch (error) {
-		console.warn(`Warning: Could not read file ${filePath}:`, error.message);
+		logger.warn(`Could not read file ${filePath}:`, error.message);
 		return [];
 	}
 }
@@ -3157,11 +3166,11 @@ async function processAspectFile(filePath, _projectRoot) {
 			};
 			aspects.push(aspectMetadata);
 		} catch (parseError) {
-			console.warn(`Warning: Could not parse JSON in file ${filePath}:`, parseError.message);
+			logger.warn(`Could not parse JSON in file ${filePath}:`, parseError.message);
 		}
 		return aspects;
 	} catch (error) {
-		console.warn(`Warning: Could not read file ${filePath}:`, error.message);
+		logger.warn(`Could not read file ${filePath}:`, error.message);
 		return [];
 	}
 }
@@ -3190,7 +3199,7 @@ async function generateComponentCartridge(component, outputDir, dryRun = false) 
 		await writeFile(outputPath, JSON.stringify(cartridgeData, null, 2));
 	}
 	const prefix = dryRun ? "   - [DRY RUN]" : "   -";
-	console.log(`${prefix} ${String(component.typeId)}: ${String(component.name)} (${String(component.attributes.length)} attributes) → ${fileName}.json`);
+	logger.debug(`${prefix} ${String(component.typeId)}: ${String(component.name)} (${String(component.attributes.length)} attributes) → ${fileName}.json`);
 }
 async function generatePageTypeCartridge(pageType, outputDir, dryRun = false) {
 	const fileName = toCamelCaseFileName(pageType.name);
@@ -3213,7 +3222,7 @@ async function generatePageTypeCartridge(pageType, outputDir, dryRun = false) {
 		await writeFile(outputPath, JSON.stringify(cartridgeData, null, 2));
 	}
 	const prefix = dryRun ? "   - [DRY RUN]" : "   -";
-	console.log(`${prefix} ${String(pageType.name)}: ${String(pageType.description)} (${String(pageType.attributes.length)} attributes) → ${fileName}.json`);
+	logger.debug(`${prefix} ${String(pageType.name)}: ${String(pageType.description)} (${String(pageType.attributes.length)} attributes) → ${fileName}.json`);
 }
 async function generateAspectCartridge(aspect, outputDir, dryRun = false) {
 	const fileName = toCamelCaseFileName(aspect.id);
@@ -3229,7 +3238,7 @@ async function generateAspectCartridge(aspect, outputDir, dryRun = false) {
 		await writeFile(outputPath, JSON.stringify(cartridgeData, null, 2));
 	}
 	const prefix = dryRun ? "   - [DRY RUN]" : "   -";
-	console.log(`${prefix} ${String(aspect.name)}: ${String(aspect.description)} (${String(aspect.attributeDefinitions.length)} attributes) → ${fileName}.json`);
+	logger.debug(`${prefix} ${String(aspect.name)}: ${String(aspect.description)} (${String(aspect.attributeDefinitions.length)} attributes) → ${fileName}.json`);
 }
 /**
 * Runs ESLint with --fix on the specified directory to format JSON files.
@@ -3237,20 +3246,20 @@ async function generateAspectCartridge(aspect, outputDir, dryRun = false) {
 */
 function lintGeneratedFiles(metadataDir, projectRoot) {
 	try {
-		console.log("🔧 Running ESLint --fix on generated JSON files...");
+		logger.debug("🔧 Running ESLint --fix on generated JSON files...");
 		execSync(`npx eslint "${metadataDir}/**/*.json" --fix --no-error-on-unmatched-pattern`, {
 			cwd: projectRoot,
 			stdio: "pipe",
 			encoding: "utf-8"
 		});
-		console.log("✅ JSON files formatted successfully");
+		logger.debug("✅ JSON files formatted successfully");
 	} catch (error) {
 		const execError = error;
 		if (execError.status === 2) {
 			const errMsg = execError.stderr || execError.stdout || "Unknown error";
-			console.warn(`⚠️  Warning: Could not run ESLint --fix: ${errMsg}`);
-		} else if (execError.stderr && execError.stderr.includes("error")) console.warn(`⚠️  Warning: Some linting issues could not be auto-fixed. Run ESLint manually to review.`);
-		else console.log("✅ JSON files formatted successfully");
+			logger.warn(`⚠️  Could not run ESLint --fix: ${errMsg}`);
+		} else if (execError.stderr && execError.stderr.includes("error")) logger.warn(`⚠️  Some linting issues could not be auto-fixed. Run ESLint manually to review.`);
+		else logger.debug("✅ JSON files formatted successfully");
 	}
 }
 async function generateMetadata(projectDirectory, metadataDirectory, options) {
@@ -3258,9 +3267,9 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 		const filePaths = options?.filePaths;
 		const isIncrementalMode = filePaths && filePaths.length > 0;
 		const dryRun = options?.dryRun || false;
-		if (dryRun) console.log("🔍 [DRY RUN] Scanning for decorated components and page types...");
-		else if (isIncrementalMode) console.log(`🔍 Generating metadata for ${filePaths.length} specified file(s)...`);
-		else console.log("🔍 Generating metadata for decorated components and page types...");
+		if (dryRun) logger.debug("🔍 [DRY RUN] Scanning for decorated components and page types...");
+		else if (isIncrementalMode) logger.debug(`🔍 Generating metadata for ${filePaths.length} specified file(s)...`);
+		else logger.debug("🔍 Generating metadata for decorated components and page types...");
 		const projectRoot = resolve(projectDirectory);
 		const srcDir = join(projectRoot, "src");
 		const metadataDir = resolve(metadataDirectory);
@@ -3269,7 +3278,7 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 		const aspectsOutputDir = join(metadataDir, "aspects");
 		if (!dryRun) {
 			if (!isIncrementalMode) {
-				console.log("🗑️  Cleaning existing output directories...");
+				logger.debug("🗑️  Cleaning existing output directories...");
 				for (const outputDir of [
 					componentsOutputDir,
 					pagesOutputDir,
@@ -3279,12 +3288,12 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 						recursive: true,
 						force: true
 					});
-					console.log(`   - Deleted: ${outputDir}`);
+					logger.debug(`   - Deleted: ${outputDir}`);
 				} catch {
-					console.log(`   - Directory not found (skipping): ${outputDir}`);
+					logger.debug(`   - Directory not found (skipping): ${outputDir}`);
 				}
-			} else console.log("📝 Incremental mode: existing cartridge files will be preserved/overwritten");
-			console.log("📁 Creating output directories...");
+			} else logger.debug("📝 Incremental mode: existing cartridge files will be preserved/overwritten");
+			logger.debug("Creating output directories...");
 			for (const outputDir of [
 				componentsOutputDir,
 				pagesOutputDir,
@@ -3295,16 +3304,16 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 				try {
 					await access(outputDir);
 				} catch {
-					console.error(`❌ Error: Failed to create output directory ${outputDir}: ${error.message}`);
+					logger.error(`❌ Failed to create output directory ${outputDir}: ${error.message}`);
 					process.exit(1);
 				}
 			}
-		} else if (isIncrementalMode) console.log(`📝 [DRY RUN] Would process ${filePaths.length} specific file(s)`);
-		else console.log("📝 [DRY RUN] Would clean and regenerate all metadata files");
+		} else if (isIncrementalMode) logger.debug(`📝 [DRY RUN] Would process ${filePaths.length} specific file(s)`);
+		else logger.debug("📝 [DRY RUN] Would clean and regenerate all metadata files");
 		let files = [];
 		if (isIncrementalMode && filePaths) {
 			files = filePaths.map((fp) => resolve(projectRoot, fp));
-			console.log(`📂 Processing ${files.length} specified file(s)...`);
+			logger.debug(`📂 Processing ${files.length} specified file(s)...`);
 		} else {
 			const scanDirectory = async (dir) => {
 				const entries = await readdir(dir, { withFileTypes: true });
@@ -3329,7 +3338,7 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 			allAspects.push(...aspects);
 		}
 		if (allComponents.length === 0 && allPageTypes.length === 0 && allAspects.length === 0) {
-			console.log("⚠️  No decorated components, page types, or aspect files found.");
+			logger.info("⚠️  No decorated components, page types, or aspect files found.");
 			return {
 				componentsGenerated: 0,
 				pageTypesGenerated: 0,
@@ -3338,22 +3347,22 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 			};
 		}
 		if (allComponents.length > 0) {
-			console.log(`✅ Found ${allComponents.length} decorated component(s):`);
+			logger.debug(`✅ Found ${allComponents.length} decorated component(s)`);
 			for (const component of allComponents) await generateComponentCartridge(component, componentsOutputDir, dryRun);
-			if (dryRun) console.log(`📄 [DRY RUN] Would generate ${allComponents.length} component metadata file(s) in: ${componentsOutputDir}`);
-			else console.log(`📄 Generated ${allComponents.length} component metadata file(s) in: ${componentsOutputDir}`);
+			if (dryRun) logger.info(`[DRY RUN] Would generate ${allComponents.length} component metadata file(s)`);
+			else logger.info(`Generated ${allComponents.length} component metadata file(s)`);
 		}
 		if (allPageTypes.length > 0) {
-			console.log(`✅ Found ${allPageTypes.length} decorated page type(s):`);
+			logger.debug(`✅ Found ${allPageTypes.length} decorated page type(s)`);
 			for (const pageType of allPageTypes) await generatePageTypeCartridge(pageType, pagesOutputDir, dryRun);
-			if (dryRun) console.log(`📄 [DRY RUN] Would generate ${allPageTypes.length} page type metadata file(s) in: ${pagesOutputDir}`);
-			else console.log(`📄 Generated ${allPageTypes.length} page type metadata file(s) in: ${pagesOutputDir}`);
+			if (dryRun) logger.info(`[DRY RUN] Would generate ${allPageTypes.length} page type metadata file(s)`);
+			else logger.info(`Generated ${allPageTypes.length} page type metadata file(s)`);
 		}
 		if (allAspects.length > 0) {
-			console.log(`✅ Found ${allAspects.length} decorated aspect(s):`);
+			logger.debug(`✅ Found ${allAspects.length} decorated aspect(s)`);
 			for (const aspect of allAspects) await generateAspectCartridge(aspect, aspectsOutputDir, dryRun);
-			if (dryRun) console.log(`📄 [DRY RUN] Would generate ${allAspects.length} aspect metadata file(s) in: ${aspectsOutputDir}`);
-			else console.log(`📄 Generated ${allAspects.length} aspect metadata file(s) in: ${aspectsOutputDir}`);
+			if (dryRun) logger.info(`[DRY RUN] Would generate ${allAspects.length} aspect metadata file(s)`);
+			else logger.info(`Generated ${allAspects.length} aspect metadata file(s)`);
 		}
 		const shouldLintFix = options?.lintFix !== false;
 		if (!dryRun && shouldLintFix && (allComponents.length > 0 || allPageTypes.length > 0 || allAspects.length > 0)) lintGeneratedFiles(metadataDir, projectRoot);
@@ -3364,7 +3373,7 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 			totalFiles: allComponents.length + allPageTypes.length + allAspects.length
 		};
 	} catch (error) {
-		console.error("❌ Error:", error.message);
+		logger.error("❌ Error:", error.message);
 		process.exit(1);
 	}
 }

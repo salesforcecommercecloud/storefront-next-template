@@ -22,29 +22,22 @@ import os from 'os';
 import { execSync } from 'child_process';
 import { z } from 'zod';
 import { getMissingDependencies, resolveDependentsForMultiple, type ExtensionConfig } from './dependency-utils';
+import { logger } from '../logger';
 
 const EXTENSIONS_DIR = ['src', 'extensions'];
 const CONFIG_PATH = [...EXTENSIONS_DIR, 'config.json'];
 const EXTENSION_FOLDERS = ['components', 'locales', 'hooks', 'routes'];
 
-/**
- * Console log a message with a specific type
- * @param message string
- * @param type
- */
 const consoleLog = (message: string, type: 'error' | 'success' | 'info') => {
     switch (type) {
         case 'error':
-            // eslint-disable-next-line no-console
-            console.error(`❌ ${message}`);
+            logger.error(`❌ ${message}`);
             break;
         case 'success':
-            // eslint-disable-next-line no-console
-            console.log(`✅ ${message}`);
+            logger.info(`✅ ${message}`);
             break;
         default:
-            // eslint-disable-next-line no-console
-            console.log(message);
+            logger.info(message);
             break;
     }
 };
@@ -109,7 +102,6 @@ const getExtensionSelection = async (
  * @param options {
     projectDirectory: string;
     extensions?: string[];
-    verbose?: boolean;
 }
  * @returns void
  */
@@ -118,7 +110,6 @@ const handleUninstall = async (
     options: {
         projectDirectory: string;
         extensions?: string[];
-        verbose?: boolean;
     }
 ) => {
     let installedExtensions: string[] = Object.keys(extensionConfig);
@@ -196,12 +187,9 @@ const handleUninstall = async (
     // trim the extensions in source project
     const extensionsToUninstallSet = new Set(extensionsToUninstall);
     installedExtensions = installedExtensions.filter((ext) => !extensionsToUninstallSet.has(ext));
-    trimExtensions(
-        options.projectDirectory,
-        Object.fromEntries(installedExtensions.map((ext) => [ext, true])),
-        { extensions: extensionConfig },
-        options.verbose ?? false
-    );
+    trimExtensions(options.projectDirectory, Object.fromEntries(installedExtensions.map((ext) => [ext, true])), {
+        extensions: extensionConfig,
+    });
     consoleLog(' Extensions uninstalled.', 'success');
 };
 
@@ -227,8 +215,7 @@ const installSingleExtension = (
         );
     }
     if (extension.installationInstructions) {
-        // eslint-disable-next-line no-console
-        console.log(`\n⏳ Installing ${extension.name}, this will take a few minutes...`);
+        logger.info(`⏳ Installing ${extension.name}, this will take a few minutes...`);
         try {
             execSync(
                 `cursor-agent -p --force 'Execute the steps specified in the installation instructions file: ${extension.installationInstructions}' --output-format text`,
@@ -256,7 +243,6 @@ const installSingleExtension = (
     sourceGithubUrl?: string;
     projectDirectory: string;
     extensions?: string[];
-    verbose?: boolean;
 }
  * @returns
  */
@@ -266,7 +252,6 @@ const handleInstall = async (
         sourceGitUrl?: string;
         projectDirectory: string;
         extensions?: string[];
-        verbose?: boolean;
     }
 ) => {
     const { sourceGitUrl } = await prompts({
@@ -377,7 +362,7 @@ const handleInstall = async (
         .filter((file: string | Buffer<ArrayBufferLike>) => file.toString().endsWith('.original'));
     if (originalFiles.length > 0) {
         consoleLog(
-            '\n📄 The following files were modified. The original files are still available in the same location with the ".original" extension.:',
+            '\n📄 The following files were modified. The original files are still available in the same location with the ".original" extension:',
             'info'
         );
         originalFiles.forEach((file: string | Buffer<ArrayBufferLike>) => {
@@ -395,7 +380,6 @@ export const manageExtensions = async (options: {
     uninstall?: boolean;
     extensions?: string[];
     sourceGitUrl?: string;
-    verbose?: boolean;
 }) => {
     if (options.install && options.uninstall) {
         consoleLog('Please select either install or uninstall, not both.', 'error');

@@ -1,4 +1,5 @@
-import { a as printServerInfo, i as printServerConfig, o as printShutdownMessage } from "../logger.js";
+import { i as printShutdownMessage, n as printServerConfig, r as printServerInfo } from "../logger.js";
+import "../logger2.js";
 import { c as loadEnvFile } from "../utils.js";
 import { n as getCommerceCloudApiUrl, r as loadProjectConfig, t as createServer$2 } from "../server.js";
 import { t as commonFlags } from "../flags.js";

@@ -15,7 +15,7 @@
  */
 import { execFileSync, execSync } from 'child_process';
 import { generateEnvFile } from './utils';
-import { error, warn } from './utils/logger';
+import { logger } from './logger';
 import prompts from 'prompts';
 import path from 'path';
 import fs from 'fs-extra';
@@ -39,7 +39,6 @@ const isLocalPath = (template: string): boolean =>
 
 export const createStorefront = async (
     options: {
-        verbose?: boolean;
         localPackagesDir?: string;
         name?: string;
         template?: string;
@@ -52,7 +51,9 @@ export const createStorefront = async (
     try {
         execSync('git --version', { stdio: 'ignore' });
     } catch (e) {
-        error(`❌ git isn't installed or found in your PATH. Install git before running this command: ${String(e)}`);
+        logger.error(
+            `❌ git is not installed or found in your PATH. Install git before running this command: ${String(e)}`
+        );
         process.exit(1);
     }
 
@@ -68,11 +69,10 @@ export const createStorefront = async (
         storefront = response.storefront;
     }
     if (!storefront) {
-        error('Storefront name is required.');
+        logger.error('Storefront name is required.');
         process.exit(1);
     }
-    // eslint-disable-next-line no-console
-    console.log('\n');
+    logger.info('\n');
 
     const outputPath = options.outputDir ? path.join(options.outputDir, storefront) : storefront;
 
@@ -89,8 +89,7 @@ export const createStorefront = async (
             ],
         });
         template = response.template;
-        // eslint-disable-next-line no-console
-        console.log('\n');
+        logger.info('\n');
         if (template === 'custom') {
             const { githubUrl } = await prompts({
                 type: 'text',
@@ -98,18 +97,18 @@ export const createStorefront = async (
                 message: '🌐 What is the Github URL for your template?\n',
             });
             if (!githubUrl) {
-                error('Github URL is required.');
+                logger.error('Github URL is required.');
                 process.exit(1);
             }
             template = githubUrl;
         }
     }
     if (!template) {
-        error('Template is required.');
+        logger.error('Template is required.');
         process.exit(1);
     }
     if (options.templateBranch !== undefined && options.templateBranch.trim() === '') {
-        error('--template-branch cannot be empty.');
+        logger.error('--template-branch cannot be empty.');
         process.exit(1);
     }
     // Clone or copy the template into the storefront directory
@@ -166,8 +165,7 @@ export const createStorefront = async (
         });
     }
 
-    // eslint-disable-next-line no-console
-    console.log('\n');
+    logger.info('\n');
     // configure extensions
     if (fs.existsSync(path.join(outputPath, 'src', 'extensions', 'config.json'))) {
         const extensionConfigText = fs.readFileSync(path.join(outputPath, 'src', 'extensions', 'config.json'), 'utf8');
@@ -177,7 +175,7 @@ export const createStorefront = async (
             try {
                 validateNoCycles(extensionConfig);
             } catch (e) {
-                error(`Extension configuration error: ${(e as Error).message}`);
+                logger.error(`Extension configuration error: ${(e as Error).message}`);
                 process.exit(1);
             }
 
@@ -225,18 +223,15 @@ export const createStorefront = async (
                         const dependentNames = dependentExts
                             .map((ext: string) => extensionConfig.extensions[ext]?.name || ext)
                             .join(', ');
-                        warn(`${dependentNames} requires ${addedName}. ${addedName} has been automatically added.`);
+                        logger.warn(
+                            `${dependentNames} requires ${addedName}. ${addedName} has been automatically added.`
+                        );
                     }
                 }
             }
 
             const enabledExtensions = Object.fromEntries(resolvedExtensions.map((ext: string) => [ext, true]));
-            trimExtensions(
-                outputPath,
-                enabledExtensions,
-                { extensions: extensionConfig.extensions },
-                options?.verbose || false
-            );
+            trimExtensions(outputPath, enabledExtensions, { extensions: extensionConfig.extensions });
         }
     }
     // interview for config overrides
@@ -251,8 +246,7 @@ export const createStorefront = async (
         const result = dotenv.parse(fs.readFileSync(envDefaultPath, 'utf8'));
         envDefaultValues = result;
     }
-    // eslint-disable-next-line no-console
-    console.log('\n⚙️ We will now configure your storefront before it will be ready to run.\n');
+    logger.info('\n⚙️ We will now configure your storefront before it will be ready to run.\n');
     const configOverrides: Record<string, string> = {};
     for (const config of configMeta.configs) {
         if (options.defaults) {
@@ -283,6 +277,5 @@ export const createStorefront = async (
         - Build the storefront: pnpm run build
         - Run the development server: pnpm run dev
     `;
-    // eslint-disable-next-line no-console
-    console.log(BANNER);
+    logger.info(BANNER);
 };

@@ -16,7 +16,7 @@
 import type { RequestHandler } from 'express';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { debug } from '../../utils/logger';
+import { logger } from '../../logger';
 
 const DEFAULT_HEALTH_DESCRIPTION = 'storefront-next-dev server health';
 const PACKAGE_JSON_NAME = 'package.json';
@@ -62,7 +62,7 @@ function readPackageMetadata(path: string): PackageMetadata | null {
         const metadata = JSON.parse(readFileSync(path, 'utf8')) as PackageMetadata;
         return metadata;
     } catch (error) {
-        debug(`Health check: failed to parse package.json at ${path}`, error);
+        logger.debug(`Health check: failed to parse package.json at ${path}`, error);
         return null;
     }
 }

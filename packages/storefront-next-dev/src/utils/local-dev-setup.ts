@@ -32,7 +32,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import prompts from 'prompts';
-import { warn, info, success } from './logger';
+import { logger } from './logger';
 
 export interface PrepareLocalOptions {
     projectDirectory: string;
@@ -68,18 +68,15 @@ export async function prepareForLocalDev(options: PrepareLocalOptions): Promise<
     }
 
     if (workspaceDeps.length === 0) {
-        info('No workspace:* dependencies found. Project is ready for standalone use.');
+        logger.info('No workspace:* dependencies found. Project is ready for standalone use.');
         return;
     }
 
-    // eslint-disable-next-line no-console
-    console.log('\n🔗 Found workspace dependencies that need to be linked to local packages:\n');
+    logger.info('\n🔗 Found workspace dependencies that need to be linked to local packages:\n');
     for (const { pkg } of workspaceDeps) {
-        // eslint-disable-next-line no-console
-        console.log(`   • ${pkg}`);
+        logger.info(`   • ${pkg}`);
     }
-    // eslint-disable-next-line no-console
-    console.log('');
+    logger.info('');
 
     // Default path suggestions based on package name
     const defaultPaths: Record<string, string> = {};
@@ -104,7 +101,7 @@ export async function prepareForLocalDev(options: PrepareLocalOptions): Promise<
         if (defaults && defaultExists) {
             localPath = defaultPath;
         } else if (defaults) {
-            warn(`Skipping ${pkg} - default path not found: ${defaultPath}`);
+            logger.warn(`Skipping ${pkg} - default path not found: ${defaultPath}`);
         } else {
             ({ localPath } = await prompts({
                 type: 'text',
@@ -123,7 +120,7 @@ export async function prepareForLocalDev(options: PrepareLocalOptions): Promise<
         }
 
         if (!localPath) {
-            warn(`Skipping ${pkg} - no path provided`);
+            logger.warn(`Skipping ${pkg} - no path provided`);
             continue;
         }
 
@@ -141,11 +138,11 @@ export async function prepareForLocalDev(options: PrepareLocalOptions): Promise<
                 const localPath = resolvedPaths[pkg];
                 if (localPath) {
                     const fileRef = `file:${localPath}`;
-                    info(`Linked ${pkg} → ${fileRef}`);
+                    logger.info(`Linked ${pkg} → ${fileRef}`);
                     deps[pkg] = fileRef;
                     modified = true;
                 } else {
-                    warn(`Removing unresolved workspace dependency: ${pkg}`);
+                    logger.warn(`Removing unresolved workspace dependency: ${pkg}`);
                     delete deps[pkg];
                     modified = true;
                 }
@@ -164,7 +161,7 @@ export async function prepareForLocalDev(options: PrepareLocalOptions): Promise<
 
     if (modified) {
         fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 4)}\n`);
-        success('package.json updated with local package links');
+        logger.info('package.json updated with local package links');
 
         // Patch vite.config.ts to fix "HydratedRouter" errors with file-linked packages
         const linkedPackages = Object.keys(resolvedPaths);
@@ -188,7 +185,7 @@ function patchViteConfigForLinkedPackages(projectDirectory: string, linkedPackag
     const viteConfigPath = path.join(projectDirectory, 'vite.config.ts');
 
     if (!fs.existsSync(viteConfigPath)) {
-        warn('vite.config.ts not found, skipping patch for file-linked packages');
+        logger.warn('vite.config.ts not found, skipping patch for file-linked packages');
         return;
     }
 
@@ -277,8 +274,8 @@ function patchViteConfigForLinkedPackages(projectDirectory: string, linkedPackag
 
     if (modified) {
         fs.writeFileSync(viteConfigPath, viteConfig);
-        success('vite.config.ts patched for file-linked packages (ssr.noExternal + resolve.dedupe)');
+        logger.info('vite.config.ts patched for file-linked packages (ssr.noExternal + resolve.dedupe)');
     } else {
-        info('vite.config.ts already configured for file-linked packages');
+        logger.info('vite.config.ts already configured for file-linked packages');
     }
 }

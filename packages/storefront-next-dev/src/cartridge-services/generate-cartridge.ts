@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint-disable no-console */
 import { readdir, readFile, writeFile, mkdir, access, rm } from 'node:fs/promises';
 import { join, extname, resolve, basename } from 'node:path';
 import { execSync } from 'node:child_process';
 import { Project, Node, type SourceFile, type PropertyDeclaration, type Decorator } from 'ts-morph';
 import { filePathToRoute } from './react-router-config.js';
+import { logger } from '../logger';
 
 // Re-export `filePathToRoute`
 export { filePathToRoute };
@@ -81,8 +81,8 @@ function resolveAttributeType(decoratorType?: string, tsMorphType?: string, fiel
     // 1) If the type is set on the decorator, use that (with validation)
     if (decoratorType) {
         if (!VALID_ATTRIBUTE_TYPES.includes(decoratorType as AttributeType)) {
-            console.error(
-                `Error: Invalid attribute type '${decoratorType}' for field '${fieldName || 'unknown'}'. Valid types are: ${VALID_ATTRIBUTE_TYPES.join(', ')}`
+            logger.error(
+                `Invalid attribute type '${decoratorType}' for field '${fieldName || 'unknown'}'. Valid types are: ${VALID_ATTRIBUTE_TYPES.join(', ')}`
             );
             process.exit(1);
         }
@@ -179,7 +179,7 @@ function parseNestedObject(objectLiteral: any): Record<string, unknown> {
             }
         }
     } catch (error) {
-        console.warn(`Warning: Could not parse nested object: ${(error as Error).message}`);
+        logger.warn(`Could not parse nested object: ${(error as Error).message}`);
         return result; // Return the result even if there was an error
     }
 
@@ -198,7 +198,7 @@ function parseArrayLiteral(arrayLiteral: any): unknown[] {
             result.push(parseExpression(element));
         }
     } catch (error) {
-        console.warn(`Warning: Could not parse array literal: ${(error as Error).message}`);
+        logger.warn(`Could not parse array literal: ${(error as Error).message}`);
     }
 
     return result;
@@ -258,7 +258,7 @@ function parseDecoratorArgs(decorator: Decorator): Record<string, unknown> {
 
         return result;
     } catch (error) {
-        console.warn(`Warning: Could not parse decorator arguments: ${(error as Error).message}`);
+        logger.warn(`Could not parse decorator arguments: ${(error as Error).message}`);
         return result;
     }
 }
@@ -309,7 +309,7 @@ function extractAttributesFromSource(sourceFile: SourceFile, className: string):
             attributes.push(attribute);
         }
     } catch (error) {
-        console.warn(`Warning: Could not extract attributes from class ${className}: ${(error as Error).message}`);
+        logger.warn(`Could not extract attributes from class ${className}: ${(error as Error).message}`);
     }
 
     return attributes;
@@ -391,7 +391,7 @@ function extractRegionDefinitionsFromSource(sourceFile: SourceFile, className: s
             }
         }
     } catch (error) {
-        console.warn(
+        logger.warn(
             `Warning: Could not extract region definitions from class ${className}: ${(error as Error).message}`
         );
     }
@@ -452,12 +452,12 @@ async function processComponentFile(filePath: string, _projectRoot: string): Pro
                 components.push(componentMetadata);
             }
         } catch (error) {
-            console.warn(`Warning: Could not process file ${filePath}:`, (error as Error).message);
+            logger.warn(`Could not process file ${filePath}:`, (error as Error).message);
         }
 
         return components;
     } catch (error) {
-        console.warn(`Warning: Could not read file ${filePath}:`, (error as Error).message);
+        logger.warn(`Could not read file ${filePath}:`, (error as Error).message);
         return [];
     }
 }
@@ -513,12 +513,12 @@ async function processPageTypeFile(filePath: string, projectRoot: string): Promi
                 pageTypes.push(pageTypeMetadata);
             }
         } catch (error) {
-            console.warn(`Warning: Could not process file ${filePath}:`, (error as Error).message);
+            logger.warn(`Could not process file ${filePath}:`, (error as Error).message);
         }
 
         return pageTypes;
     } catch (error) {
-        console.warn(`Warning: Could not read file ${filePath}:`, (error as Error).message);
+        logger.warn(`Could not read file ${filePath}:`, (error as Error).message);
         return [];
     }
 }
@@ -560,12 +560,12 @@ async function processAspectFile(filePath: string, _projectRoot: string): Promis
 
             aspects.push(aspectMetadata);
         } catch (parseError) {
-            console.warn(`Warning: Could not parse JSON in file ${filePath}:`, (parseError as Error).message);
+            logger.warn(`Could not parse JSON in file ${filePath}:`, (parseError as Error).message);
         }
 
         return aspects;
     } catch (error) {
-        console.warn(`Warning: Could not read file ${filePath}:`, (error as Error).message);
+        logger.warn(`Could not read file ${filePath}:`, (error as Error).message);
         return [];
     }
 }
@@ -609,7 +609,7 @@ async function generateComponentCartridge(
     }
 
     const prefix = dryRun ? '   - [DRY RUN]' : '   -';
-    console.log(
+    logger.debug(
         `${prefix} ${String(component.typeId)}: ${String(component.name)} (${String((component.attributes as unknown[]).length)} attributes) → ${fileName}.json`
     );
 }
@@ -656,7 +656,7 @@ async function generatePageTypeCartridge(
     }
 
     const prefix = dryRun ? '   - [DRY RUN]' : '   -';
-    console.log(
+    logger.debug(
         `${prefix} ${String(pageType.name)}: ${String(pageType.description)} (${String((pageType.attributes as unknown[]).length)} attributes) → ${fileName}.json`
     );
 }
@@ -686,7 +686,7 @@ async function generateAspectCartridge(
     }
 
     const prefix = dryRun ? '   - [DRY RUN]' : '   -';
-    console.log(
+    logger.debug(
         `${prefix} ${String(aspect.name)}: ${String(aspect.description)} (${String((aspect.attributeDefinitions as unknown[]).length)} attributes) → ${fileName}.json`
     );
 }
@@ -731,7 +731,7 @@ export interface GenerateMetadataResult {
  */
 function lintGeneratedFiles(metadataDir: string, projectRoot: string): void {
     try {
-        console.log('🔧 Running ESLint --fix on generated JSON files...');
+        logger.debug('🔧 Running ESLint --fix on generated JSON files...');
 
         // Run ESLint from the project root directory so it picks up the correct config
         // Use --no-error-on-unmatched-pattern to handle cases where no JSON files exist yet
@@ -743,7 +743,7 @@ function lintGeneratedFiles(metadataDir: string, projectRoot: string): void {
             encoding: 'utf-8',
         });
 
-        console.log('✅ JSON files formatted successfully');
+        logger.debug('✅ JSON files formatted successfully');
     } catch (error) {
         // ESLint returns non-zero exit code even when --fix resolves all issues
         // We only warn if there are actual unfixable issues
@@ -753,12 +753,12 @@ function lintGeneratedFiles(metadataDir: string, projectRoot: string): void {
         // Exit code 2 means configuration error or other fatal error
         if (execError.status === 2) {
             const errMsg = execError.stderr || execError.stdout || 'Unknown error';
-            console.warn(`⚠️  Warning: Could not run ESLint --fix: ${errMsg}`);
+            logger.warn(`⚠️  Could not run ESLint --fix: ${errMsg}`);
         } else if (execError.stderr && execError.stderr.includes('error')) {
-            console.warn(`⚠️  Warning: Some linting issues could not be auto-fixed. Run ESLint manually to review.`);
+            logger.warn(`⚠️  Some linting issues could not be auto-fixed. Run ESLint manually to review.`);
         } else {
             // Exit code 1 with no errors in stderr usually means all issues were fixed
-            console.log('✅ JSON files formatted successfully');
+            logger.debug('✅ JSON files formatted successfully');
         }
     }
 }
@@ -775,11 +775,11 @@ export async function generateMetadata(
         const dryRun = options?.dryRun || false;
 
         if (dryRun) {
-            console.log('🔍 [DRY RUN] Scanning for decorated components and page types...');
+            logger.debug('🔍 [DRY RUN] Scanning for decorated components and page types...');
         } else if (isIncrementalMode) {
-            console.log(`🔍 Generating metadata for ${filePaths.length} specified file(s)...`);
+            logger.debug(`🔍 Generating metadata for ${filePaths.length} specified file(s)...`);
         } else {
-            console.log('🔍 Generating metadata for decorated components and page types...');
+            logger.debug('🔍 Generating metadata for decorated components and page types...');
         }
 
         const projectRoot = resolve(projectDirectory);
@@ -793,22 +793,22 @@ export async function generateMetadata(
         if (!dryRun) {
             // Only delete existing directories in full scan mode (not incremental)
             if (!isIncrementalMode) {
-                console.log('🗑️  Cleaning existing output directories...');
+                logger.debug('🗑️  Cleaning existing output directories...');
                 for (const outputDir of [componentsOutputDir, pagesOutputDir, aspectsOutputDir]) {
                     try {
                         await rm(outputDir, { recursive: true, force: true });
-                        console.log(`   - Deleted: ${outputDir}`);
+                        logger.debug(`   - Deleted: ${outputDir}`);
                     } catch {
                         // Directory might not exist, which is fine
-                        console.log(`   - Directory not found (skipping): ${outputDir}`);
+                        logger.debug(`   - Directory not found (skipping): ${outputDir}`);
                     }
                 }
             } else {
-                console.log('📝 Incremental mode: existing cartridge files will be preserved/overwritten');
+                logger.debug('📝 Incremental mode: existing cartridge files will be preserved/overwritten');
             }
 
             // Create output directories if they don't exist
-            console.log('📁 Creating output directories...');
+            logger.debug('Creating output directories...');
             for (const outputDir of [componentsOutputDir, pagesOutputDir, aspectsOutputDir]) {
                 try {
                     await mkdir(outputDir, { recursive: true });
@@ -817,17 +817,15 @@ export async function generateMetadata(
                         await access(outputDir);
                         // Directory exists, that's fine
                     } catch {
-                        console.error(
-                            `❌ Error: Failed to create output directory ${outputDir}: ${(error as Error).message}`
-                        );
+                        logger.error(`❌ Failed to create output directory ${outputDir}: ${(error as Error).message}`);
                         process.exit(1);
                     }
                 }
             }
         } else if (isIncrementalMode) {
-            console.log(`📝 [DRY RUN] Would process ${filePaths.length} specific file(s)`);
+            logger.debug(`📝 [DRY RUN] Would process ${filePaths.length} specific file(s)`);
         } else {
-            console.log('📝 [DRY RUN] Would clean and regenerate all metadata files');
+            logger.debug('📝 [DRY RUN] Would clean and regenerate all metadata files');
         }
 
         let files: string[] = [];
@@ -835,7 +833,7 @@ export async function generateMetadata(
         if (isIncrementalMode && filePaths) {
             // Use the specified file paths (resolve them relative to project root)
             files = filePaths.map((fp) => resolve(projectRoot, fp));
-            console.log(`📂 Processing ${files.length} specified file(s)...`);
+            logger.debug(`📂 Processing ${files.length} specified file(s)...`);
         } else {
             // Full scan mode: scan entire src directory
             const scanDirectory = async (dir: string): Promise<void> => {
@@ -879,7 +877,7 @@ export async function generateMetadata(
         }
 
         if (allComponents.length === 0 && allPageTypes.length === 0 && allAspects.length === 0) {
-            console.log('⚠️  No decorated components, page types, or aspect files found.');
+            logger.info('⚠️  No decorated components, page types, or aspect files found.');
             return {
                 componentsGenerated: 0,
                 pageTypesGenerated: 0,
@@ -890,47 +888,39 @@ export async function generateMetadata(
 
         // Generate component cartridge files
         if (allComponents.length > 0) {
-            console.log(`✅ Found ${allComponents.length} decorated component(s):`);
+            logger.debug(`✅ Found ${allComponents.length} decorated component(s)`);
             for (const component of allComponents) {
                 await generateComponentCartridge(component as Record<string, unknown>, componentsOutputDir, dryRun);
             }
             if (dryRun) {
-                console.log(
-                    `📄 [DRY RUN] Would generate ${allComponents.length} component metadata file(s) in: ${componentsOutputDir}`
-                );
+                logger.info(`[DRY RUN] Would generate ${allComponents.length} component metadata file(s)`);
             } else {
-                console.log(
-                    `📄 Generated ${allComponents.length} component metadata file(s) in: ${componentsOutputDir}`
-                );
+                logger.info(`Generated ${allComponents.length} component metadata file(s)`);
             }
         }
 
         // Generate page type cartridge files
         if (allPageTypes.length > 0) {
-            console.log(`✅ Found ${allPageTypes.length} decorated page type(s):`);
+            logger.debug(`✅ Found ${allPageTypes.length} decorated page type(s)`);
             for (const pageType of allPageTypes) {
                 await generatePageTypeCartridge(pageType as Record<string, unknown>, pagesOutputDir, dryRun);
             }
             if (dryRun) {
-                console.log(
-                    `📄 [DRY RUN] Would generate ${allPageTypes.length} page type metadata file(s) in: ${pagesOutputDir}`
-                );
+                logger.info(`[DRY RUN] Would generate ${allPageTypes.length} page type metadata file(s)`);
             } else {
-                console.log(`📄 Generated ${allPageTypes.length} page type metadata file(s) in: ${pagesOutputDir}`);
+                logger.info(`Generated ${allPageTypes.length} page type metadata file(s)`);
             }
         }
 
         if (allAspects.length > 0) {
-            console.log(`✅ Found ${allAspects.length} decorated aspect(s):`);
+            logger.debug(`✅ Found ${allAspects.length} decorated aspect(s)`);
             for (const aspect of allAspects) {
                 await generateAspectCartridge(aspect as Record<string, unknown>, aspectsOutputDir, dryRun);
             }
             if (dryRun) {
-                console.log(
-                    `📄 [DRY RUN] Would generate ${allAspects.length} aspect metadata file(s) in: ${aspectsOutputDir}`
-                );
+                logger.info(`[DRY RUN] Would generate ${allAspects.length} aspect metadata file(s)`);
             } else {
-                console.log(`📄 Generated ${allAspects.length} aspect metadata file(s) in: ${aspectsOutputDir}`);
+                logger.info(`Generated ${allAspects.length} aspect metadata file(s)`);
             }
         }
 
@@ -952,7 +942,7 @@ export async function generateMetadata(
             totalFiles: allComponents.length + allPageTypes.length + allAspects.length,
         };
     } catch (error) {
-        console.error('❌ Error:', (error as Error).message);
+        logger.error('❌ Error:', (error as Error).message);
         process.exit(1);
     }
 }

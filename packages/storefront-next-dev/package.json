@@ -13,6 +13,12 @@
         "default": "./dist/index.js"
       }
     },
+    "./logger": {
+      "import": {
+        "types": "./dist/logger/index.d.ts",
+        "default": "./dist/logger/index.js"
+      }
+    },
     "./react-router-preset": {
       "import": {
         "types": "./dist/configs/react-router.config.d.ts",

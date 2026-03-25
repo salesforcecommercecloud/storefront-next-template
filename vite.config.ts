@@ -100,7 +100,6 @@ export default defineConfig(({ mode }) => {
                 staticRegistry: {
                     componentPath: 'src/components',
                     registryPath: 'src/lib/static-registry.ts',
-                    verbose: mode !== 'production' && mode !== 'test',
                 },
             }),
             perEnvironmentPlugin('bundlesize', (env) => {

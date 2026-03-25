@@ -27,6 +27,20 @@ export default defineConfig([
         external: [/node_modules/],
         hash: false,
     },
+    // 1b. Public logger subpath export
+    {
+        entry: {
+            index: 'src/logger.ts',
+        },
+        platform: 'node',
+        target: 'node24',
+        format: ['esm'],
+        dts: true,
+        outDir: 'dist/logger',
+        clean: false,
+        external: [/node_modules/],
+        hash: false,
+    },
     // 2. React Router Scripts component
     {
         entry: {

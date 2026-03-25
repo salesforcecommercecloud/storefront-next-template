@@ -16,6 +16,7 @@
 import type { Plugin, ResolvedConfig } from 'vite';
 import path from 'node:path';
 import fs from 'fs-extra';
+import { logger } from '../logger';
 
 function patchAssetsPaths(dir: string) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -32,8 +33,7 @@ function patchAssetsPaths(dir: string) {
                     fullPath,
                     content.replace(/["']\/assets\//g, '(window._BUNDLE_PATH || "/") + "assets/')
                 );
-                // eslint-disable-next-line no-console
-                console.log(`patched /assets/ references in ${fullPath}`);
+                logger.debug(`patched /assets/ references in ${fullPath}`);
             }
         }
     }

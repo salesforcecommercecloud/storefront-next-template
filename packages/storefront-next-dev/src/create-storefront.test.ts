@@ -24,6 +24,7 @@ import { prepareForLocalDev } from './utils/local-dev-setup';
 // Mock external modules before importing the SUT
 vi.spyOn(console, 'error').mockImplementation(() => {});
 vi.spyOn(console, 'log').mockImplementation(() => {});
+vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 // Mock local-dev-setup module
 vi.mock('./utils/local-dev-setup', () => ({
@@ -120,9 +121,10 @@ describe('create-storefront', () => {
         await createStorefront().catch(() => {});
 
         expect(exitMock).toHaveBeenCalledWith(1);
-        expect(console.log).toHaveBeenCalledWith(
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining(
-                `git isn't installed or found in your PATH. Install git before running this command`
+                `git is not installed or found in your PATH. Install git before running this command`
             )
         );
     });
@@ -139,7 +141,10 @@ describe('create-storefront', () => {
             // because we mocked process.exit, the code will continue and the error will be caught by the try/catch block
             expect(e).toBeDefined();
         }
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Storefront name is required'));
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
+            expect.stringContaining('Storefront name is required')
+        );
         expect(exitMock).toHaveBeenCalledWith(1);
     });
 
@@ -155,7 +160,10 @@ describe('create-storefront', () => {
             // because we mocked process.exit, the code will continue and the error will be caught by the try/catch block
             expect(e).toBeDefined();
         }
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Github URL is required'));
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
+            expect.stringContaining('Github URL is required')
+        );
         expect(exitMock).toHaveBeenCalledWith(1);
     });
 
@@ -284,7 +292,10 @@ describe('create-storefront', () => {
         }).catch(() => {});
 
         expect(exitMock).toHaveBeenCalledWith(1);
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('--template-branch cannot be empty'));
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
+            expect.stringContaining('--template-branch cannot be empty')
+        );
     });
 
     it('should abort if templateBranch is a whitespace string', async () => {
@@ -295,7 +306,10 @@ describe('create-storefront', () => {
         }).catch(() => {});
 
         expect(exitMock).toHaveBeenCalledWith(1);
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('--template-branch cannot be empty'));
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
+            expect.stringContaining('--template-branch cannot be empty')
+        );
     });
 
     it('should configure extensions', async () => {
@@ -312,7 +326,7 @@ describe('create-storefront', () => {
             })
         );
         try {
-            await createStorefront({ verbose: false });
+            await createStorefront({});
         } catch (e: any) {
             expect(e).toBeDefined();
         }
@@ -326,8 +340,7 @@ describe('create-storefront', () => {
                         description: 'Store Locator allows a shopper to find the closest store to them.',
                     },
                 },
-            },
-            false
+            }
         );
     });
 
@@ -393,7 +406,7 @@ describe('create-storefront', () => {
             vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(extensionConfigWithDependencies));
 
             try {
-                await createStorefront({ verbose: false });
+                await createStorefront({});
             } catch (e: any) {
                 expect(e).toBeDefined();
             }
@@ -403,8 +416,7 @@ describe('create-storefront', () => {
             expect(trimExtensions).toHaveBeenCalledWith(
                 'my-storefront',
                 { SFDC_EXT_STORE_LOCATOR: true, SFDC_EXT_BOPIS: true },
-                { extensions: extensionConfigWithDependencies.extensions },
-                false
+                { extensions: extensionConfigWithDependencies.extensions }
             );
         });
 
@@ -421,14 +433,20 @@ describe('create-storefront', () => {
             vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(extensionConfigWithDependencies));
 
             try {
-                await createStorefront({ verbose: false });
+                await createStorefront({});
             } catch {
                 // Expected
             }
 
             // Should log a warning about the auto-added dependency
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Store Locator'));
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining('automatically added'));
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('Store Locator')
+            );
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('automatically added')
+            );
         });
 
         it('should include all dependencies when extension is selected along with its dependencies', async () => {
@@ -444,7 +462,7 @@ describe('create-storefront', () => {
             vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(extensionConfigWithDependencies));
 
             try {
-                await createStorefront({ verbose: false });
+                await createStorefront({});
             } catch {
                 // Expected
             }
@@ -453,8 +471,7 @@ describe('create-storefront', () => {
             expect(trimExtensions).toHaveBeenCalledWith(
                 'my-storefront',
                 { SFDC_EXT_STORE_LOCATOR: true, SFDC_EXT_BOPIS: true },
-                { extensions: extensionConfigWithDependencies.extensions },
-                false
+                { extensions: extensionConfigWithDependencies.extensions }
             );
         });
 
@@ -486,13 +503,16 @@ describe('create-storefront', () => {
             vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(circularConfig));
 
             try {
-                await createStorefront({ verbose: false });
+                await createStorefront({});
             } catch {
                 // Expected
             }
 
             expect(exitMock).toHaveBeenCalledWith(1);
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Circular dependency detected'));
+            expect(console.error).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
+                expect.stringContaining('Circular dependency detected')
+            );
         });
 
         it('should handle 3-layer transitive dependency chain', async () => {
@@ -529,7 +549,7 @@ describe('create-storefront', () => {
             vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(threeLayerConfig));
 
             try {
-                await createStorefront({ verbose: false });
+                await createStorefront({});
             } catch {
                 // Expected
             }
@@ -542,8 +562,7 @@ describe('create-storefront', () => {
                     SFDC_EXT_STORE_LOCATOR: true,
                     SFDC_EXT_BOPIS: true,
                 },
-                { extensions: threeLayerConfig.extensions },
-                false
+                { extensions: threeLayerConfig.extensions }
             );
         });
     });
@@ -570,7 +589,7 @@ describe('create-storefront', () => {
             vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify({ configs: [] }));
 
             try {
-                await createStorefront({ verbose: false });
+                await createStorefront({});
             } catch {
                 // Expected due to mock limitations
             }
@@ -600,7 +619,6 @@ describe('create-storefront', () => {
 
             try {
                 await createStorefront({
-                    verbose: false,
                     localPackagesDir: '/custom/packages/path',
                 });
             } catch {
@@ -630,7 +648,7 @@ describe('create-storefront', () => {
             vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify({ configs: [] }));
 
             try {
-                await createStorefront({ verbose: false });
+                await createStorefront({});
             } catch {
                 // Expected due to mock limitations
             }
@@ -655,7 +673,7 @@ describe('create-storefront', () => {
             vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify({ configs: [] }));
 
             try {
-                await createStorefront({ verbose: false });
+                await createStorefront({});
             } catch {
                 // Expected due to mock limitations
             }
@@ -684,7 +702,6 @@ describe('create-storefront', () => {
 
             try {
                 await createStorefront({
-                    verbose: false,
                     localPackagesDir: '/override/packages/path',
                 });
             } catch {
@@ -856,8 +873,7 @@ describe('create-storefront', () => {
             expect(trimExtensions).toHaveBeenCalledWith(
                 'my-storefront',
                 { SFDC_EXT_ENABLED: true },
-                expect.any(Object),
-                false
+                expect.any(Object)
             );
         });
 

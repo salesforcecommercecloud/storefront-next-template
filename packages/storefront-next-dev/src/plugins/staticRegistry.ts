@@ -26,6 +26,7 @@ import {
     type FunctionDeclaration,
     type VariableStatement,
 } from 'ts-morph';
+import { logger } from '../logger';
 
 // Default component group when none is specified in the decorator
 const DEFAULT_COMPONENT_GROUP = 'odyssey_base';
@@ -77,12 +78,6 @@ export interface StaticRegistryPluginConfig {
      * @default true
      */
     failOnError?: boolean;
-
-    /**
-     * Enable verbose logging
-     * @default false
-     */
-    verbose?: boolean;
 }
 
 /**
@@ -214,8 +209,7 @@ export async function scanComponents(
     project: Project,
     projectRoot: string,
     componentPath: string,
-    registryPath: string,
-    verbose: boolean
+    registryPath: string
 ): Promise<ComponentInfo[]> {
     // Scan all TypeScript/TSX files in the component directory recursively
     const componentPattern = `${componentPath}/**/*.{ts,tsx}`;
@@ -224,9 +218,7 @@ export async function scanComponents(
         absolute: true,
     });
 
-    if (verbose) {
-        console.log(`🔍 Scanning ${componentFiles.length} files in ${componentPath}...`);
-    }
+    logger.debug(`🔍 Scanning ${componentFiles.length} files in ${componentPath}...`);
 
     const components: ComponentInfo[] = [];
     const registryDir = dirname(resolve(projectRoot, registryPath));
@@ -274,30 +266,24 @@ export async function scanComponents(
                                 hasFallback,
                             });
 
-                            if (verbose) {
-                                const exports = [];
-                                if (hasLoaderExport) {
-                                    exports.push('loader');
-                                }
-                                if (hasClientLoaderExport) {
-                                    exports.push('clientLoader');
-                                }
-                                if (hasFallback) {
-                                    exports.push('fallback');
-                                }
-                                const exportsText = exports.length > 0 ? ` (with ${exports.join(', ')})` : '';
-                                console.log(
-                                    `  ✅ Found component: ${componentInfo.id} → ${relativePath}${exportsText}`
-                                );
+                            const exports = [];
+                            if (hasLoaderExport) {
+                                exports.push('loader');
                             }
+                            if (hasClientLoaderExport) {
+                                exports.push('clientLoader');
+                            }
+                            if (hasFallback) {
+                                exports.push('fallback');
+                            }
+                            const exportsText = exports.length > 0 ? ` (with ${exports.join(', ')})` : '';
+                            logger.debug(`  ✅ Found component: ${componentInfo.id} → ${relativePath}${exportsText}`);
                         }
                     }
                 }
             }
         } catch (error) {
-            if (verbose) {
-                console.warn(`⚠️  Could not process ${filePath}:`, (error as Error).message);
-            }
+            logger.warn(`⚠️  Could not process ${filePath}: ${(error as Error).message}`);
             // Continue processing other files even if one fails
         }
     }
@@ -370,14 +356,12 @@ ${registrations}
 /**
  * Updates the registry.ts file with the generated code
  */
-export function updateRegistryFile(registryFilePath: string, generatedCode: string, verbose: boolean): void {
+export function updateRegistryFile(registryFilePath: string, generatedCode: string): void {
     let existingContent: string;
 
     // Check if file exists, if not create a basic one
     if (!existsSync(registryFilePath)) {
-        if (verbose) {
-            console.log(`📝 Creating new registry file...`);
-        }
+        logger.debug('📝 Creating new registry file...');
 
         // Create a basic registry file
         const basicRegistryContent = `import { ComponentRegistry } from '@/lib/component-registry';
@@ -420,9 +404,7 @@ export const registry = new ComponentRegistry();
 
     try {
         writeFileSync(registryFilePath, updatedContent, 'utf-8');
-        if (verbose) {
-            console.log(`💾 Updated registry file: ${registryFilePath}`);
-        }
+        logger.debug(`💾 Updated registry file: ${registryFilePath}`);
     } catch (error) {
         throw new Error(`Failed to write registry file: ${(error as Error).message}`);
     }
@@ -457,15 +439,12 @@ export const staticRegistryPlugin = (config: StaticRegistryPluginConfig = {}): P
         registryPath = 'src/lib/static-registry.ts',
         registryIdentifier = 'registry',
         failOnError = true,
-        verbose = false,
     } = config;
 
     let projectRoot: string;
 
     const runRegistryGeneration = async () => {
-        if (verbose) {
-            console.log('🚀 Starting static registry generation...');
-        }
+        logger.debug('🚀 Starting static registry generation...');
 
         // Create a fresh Project for this run only
         const project = new Project({
@@ -480,23 +459,19 @@ export const staticRegistryPlugin = (config: StaticRegistryPluginConfig = {}): P
         });
 
         // Build AST, extract plain data
-        const components = await scanComponents(project, projectRoot, componentPath, registryPath, verbose);
+        const components = await scanComponents(project, projectRoot, componentPath, registryPath);
 
         // From here on we do not need the AST any more.
         // `components` is just an array of plain objects.
         // `project` will fall out of scope after this function returns and can be GC'd.
 
-        if (verbose) {
-            console.log(`📦 Found ${components.length} components with @Component decorators`);
-        }
+        logger.debug(`📦 Found ${components.length} components with @Component decorators`);
 
         const generatedCode = generateRegistryCode(components, registryIdentifier);
         const registryFilePath = resolve(projectRoot, registryPath);
-        updateRegistryFile(registryFilePath, generatedCode, verbose);
+        updateRegistryFile(registryFilePath, generatedCode);
 
-        if (verbose) {
-            console.log('✅ Static registry generation complete!');
-        }
+        logger.debug('✅ Static registry generation complete!');
 
         return registryFilePath;
     };
@@ -512,11 +487,11 @@ export const staticRegistryPlugin = (config: StaticRegistryPluginConfig = {}): P
             try {
                 await runRegistryGeneration();
             } catch (error) {
-                console.error(`❌ Static registry generation failed: ${(error as Error).message}`);
+                logger.error(`❌ Static registry generation failed: ${(error as Error).message}`);
                 if (failOnError) {
                     throw error;
                 }
-                console.warn('⚠️  Continuing build without static registry...');
+                logger.warn('⚠️  Continuing build without static registry...');
             }
         },
 
@@ -528,9 +503,7 @@ export const staticRegistryPlugin = (config: StaticRegistryPluginConfig = {}): P
                 normalizedFile.includes(`/${normalizedComponentPath}/`) &&
                 (normalizedFile.endsWith('.ts') || normalizedFile.endsWith('.tsx'))
             ) {
-                if (verbose) {
-                    console.log(`🔄 Component file changed: ${file}, regenerating registry...`);
-                }
+                logger.debug(`🔄 Component file changed: ${file}, regenerating registry...`);
 
                 try {
                     const registryFilePath = await runRegistryGeneration();
@@ -540,11 +513,9 @@ export const staticRegistryPlugin = (config: StaticRegistryPluginConfig = {}): P
                         await server.reloadModule(registryModule);
                     }
 
-                    if (verbose) {
-                        console.log('✅ Registry regenerated successfully!');
-                    }
+                    logger.debug('✅ Registry regenerated successfully!');
                 } catch (error) {
-                    console.error(`❌ Failed to regenerate registry: ${(error as Error).message}`);
+                    logger.error(`❌ Failed to regenerate registry: ${(error as Error).message}`);
                 }
 
                 return [];

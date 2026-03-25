@@ -108,6 +108,10 @@ describe('initTelemetry', () => {
         const result = initTelemetry();
 
         expect(result).toBeNull();
-        expect(consoleSpy).toHaveBeenCalledWith('[otel] Failed to initialize OpenTelemetry:', expect.any(Error));
+        expect(consoleSpy).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
+            '[otel] Failed to initialize OpenTelemetry:',
+            expect.any(Error)
+        );
     });
 });

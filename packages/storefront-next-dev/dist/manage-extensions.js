@@ -1,3 +1,4 @@
+import { t as logger } from "./logger.js";
 import { a as trimExtensions, r as resolveDependentsForMultiple, t as getMissingDependencies } from "./dependency-utils.js";
 import { execSync } from "child_process";
 import os from "os";
@@ -15,21 +16,16 @@ const EXTENSION_FOLDERS = [
 	"hooks",
 	"routes"
 ];
-/**
-* Console log a message with a specific type
-* @param message string
-* @param type
-*/
 const consoleLog = (message, type) => {
 	switch (type) {
 		case "error":
-			console.error(`❌ ${message}`);
+			logger.error(`❌ ${message}`);
 			break;
 		case "success":
-			console.log(`✅ ${message}`);
+			logger.info(`✅ ${message}`);
 			break;
 		default:
-			console.log(message);
+			logger.info(message);
 			break;
 	}
 };
@@ -79,7 +75,6 @@ const getExtensionSelection = async (type, extensionConfig, message, installedEx
 * @param options {
 projectDirectory: string;
 extensions?: string[];
-verbose?: boolean;
 }
 * @returns void
 */
@@ -130,7 +125,7 @@ const handleUninstall = async (extensionConfig, options) => {
 	});
 	const extensionsToUninstallSet = new Set(extensionsToUninstall);
 	installedExtensions = installedExtensions.filter((ext) => !extensionsToUninstallSet.has(ext));
-	trimExtensions(options.projectDirectory, Object.fromEntries(installedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig }, options.verbose ?? false);
+	trimExtensions(options.projectDirectory, Object.fromEntries(installedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig });
 	consoleLog(" Extensions uninstalled.", "success");
 };
 /**
@@ -142,7 +137,7 @@ const installSingleExtension = (extensionKey, srcExtensionConfig, extensionConfi
 	const startTime = Date.now();
 	if (extension.folder) fs.copySync(path.join(tmpDir, ...EXTENSIONS_DIR, extension.folder), path.join(projectDirectory, ...EXTENSIONS_DIR, extension.folder));
 	if (extension.installationInstructions) {
-		console.log(`\n⏳ Installing ${extension.name}, this will take a few minutes...`);
+		logger.info(`⏳ Installing ${extension.name}, this will take a few minutes...`);
 		try {
 			execSync(`cursor-agent -p --force 'Execute the steps specified in the installation instructions file: ${extension.installationInstructions}' --output-format text`, {
 				cwd: projectDirectory,
@@ -165,7 +160,6 @@ const installSingleExtension = (extensionKey, srcExtensionConfig, extensionConfi
 sourceGithubUrl?: string;
 projectDirectory: string;
 extensions?: string[];
-verbose?: boolean;
 }
 * @returns
 */
@@ -230,7 +224,7 @@ const handleInstall = async (extensionConfig, options) => {
 	}
 	const originalFiles = fs.readdirSync(path.join(options.projectDirectory, "src"), { recursive: true }).filter((file) => file.toString().endsWith(".original"));
 	if (originalFiles.length > 0) {
-		consoleLog("\n📄 The following files were modified. The original files are still available in the same location with the \".original\" extension.:", "info");
+		consoleLog("\n📄 The following files were modified. The original files are still available in the same location with the \".original\" extension:", "info");
 		originalFiles.forEach((file) => {
 			consoleLog(`- ${file.toString().replace(".original", "")}`, "info");
 		});

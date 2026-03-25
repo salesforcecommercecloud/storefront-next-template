@@ -1,4 +1,5 @@
-import { r as info, s as success } from "../logger.js";
+import { t as logger } from "../logger.js";
+import "../logger2.js";
 import { i as getMrtConfig, n as getDefaultBuildDir, r as getDefaultMessage } from "../utils.js";
 import { t as commonFlags } from "../flags.js";
 import { t as createBundle } from "../bundle.js";
@@ -25,9 +26,9 @@ async function createBundleCommand(options) {
 	await fs.ensureDir(outputDirectory);
 	const message = options.message ?? getDefaultMessage(options.projectDirectory);
 	const config = await buildMrtConfig(buildDirectory, options.projectDirectory);
-	info(`Creating bundle for project: ${projectSlug}`);
-	info(`Build directory: ${buildDirectory}`);
-	info(`Output directory: ${outputDirectory}`);
+	logger.info(`Creating bundle for project: ${projectSlug}`);
+	logger.info(`Build directory: ${buildDirectory}`);
+	logger.info(`Output directory: ${outputDirectory}`);
 	const bundle = await createBundle({
 		message,
 		ssr_parameters: config.ssrParameters,
@@ -52,11 +53,11 @@ async function createBundleCommand(options) {
 		data_size: bundleData.length
 	};
 	await fs.writeJson(bundleJsonPath, bundleMetadata, { spaces: 2 });
-	success(`Bundle created successfully!`);
-	info(`Bundle tgz file: ${bundleTgzPath}`);
-	info(`Bundle metadata: ${bundleJsonPath}`);
-	info(`Uncompressed size: ${(bundleData.length / 1024 / 1024).toFixed(2)} MB`);
-	info(`Compressed size: ${(compressedData.length / 1024 / 1024).toFixed(2)} MB`);
+	logger.info(`Bundle created successfully!`);
+	logger.info(`Bundle tgz file: ${bundleTgzPath}`);
+	logger.info(`Bundle metadata: ${bundleJsonPath}`);
+	logger.info(`Uncompressed size: ${(bundleData.length / 1024 / 1024).toFixed(2)} MB`);
+	logger.info(`Compressed size: ${(compressedData.length / 1024 / 1024).toFixed(2)} MB`);
 }
 
 //#endregion

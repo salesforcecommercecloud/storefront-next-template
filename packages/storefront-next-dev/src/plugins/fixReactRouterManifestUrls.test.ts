@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ResolvedConfig } from 'vite';
 import { normalizePath, createPathRegex } from '../test-utils';
 
@@ -52,6 +52,11 @@ function callHook(hook: any, ...args: any[]) {
 describe('fixReactRouterManifestUrlsPlugin', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        process.env.SFNEXT_LOG_LEVEL = 'debug';
+    });
+
+    afterEach(() => {
+        delete process.env.SFNEXT_LOG_LEVEL;
     });
 
     it('should return a plugin with correct name', () => {
@@ -130,6 +135,7 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
             expect(consoleLogSpy).toHaveBeenCalledTimes(1);
             // Use regex to match both Unix (/) and Windows (\) path separators
             expect(consoleLogSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-abc123.js'))
             );
         });
@@ -164,6 +170,7 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
 
             expect(consoleLogSpy).toHaveBeenCalledTimes(1);
             expect(consoleLogSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-abc.js'))
             );
         });
@@ -199,6 +206,7 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
 
             expect(consoleLogSpy).toHaveBeenCalledTimes(1);
             expect(consoleLogSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-xyz.js'))
             );
         });
@@ -235,6 +243,7 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
 
             expect(consoleLogSpy).toHaveBeenCalledTimes(1);
             expect(consoleLogSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-multi.js'))
             );
         });
@@ -301,12 +310,14 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
             expect(consoleLogSpy).toHaveBeenCalledTimes(2);
             expect(consoleLogSpy).toHaveBeenNthCalledWith(
                 1,
+                expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(
                     createPathRegex('patched /assets/ references in /build/subdir/manifest-nested.js')
                 )
             );
             expect(consoleLogSpy).toHaveBeenNthCalledWith(
                 2,
+                expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-root.js'))
             );
         });
@@ -347,14 +358,17 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
             // Use regex to match both Unix (/) and Windows (\) path separators
             expect(consoleLogSpy).toHaveBeenNthCalledWith(
                 1,
+                expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest-valid.js'))
             );
             expect(consoleLogSpy).toHaveBeenNthCalledWith(
                 2,
+                expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(createPathRegex('patched /assets/ references in /build/other-file.js'))
             );
             expect(consoleLogSpy).toHaveBeenNthCalledWith(
                 3,
+                expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(createPathRegex('patched /assets/ references in /build/manifest.js'))
             );
         });

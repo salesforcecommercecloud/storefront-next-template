@@ -31,11 +31,6 @@ interface StaticRegistryPluginConfig {
    * @default true
    */
   failOnError?: boolean;
-  /**
-   * Enable verbose logging
-   * @default false
-   */
-  verbose?: boolean;
 }
 //#endregion
 //#region src/plugins/eventInstrumentationValidator.d.ts
@@ -59,11 +54,6 @@ interface EventInstrumentationValidatorConfig {
    * @default false (warning only)
    */
   failOnMissing?: boolean;
-  /**
-   * Enable verbose logging
-   * @default false
-   */
-  verbose?: boolean;
 }
 //#endregion
 //#region src/storefront-next-targets.d.ts
@@ -393,7 +383,7 @@ declare const ExtensionConfig: {
 //#endregion
 //#region src/extensibility/trim-extensions.d.ts
 type ExtensionsSelection = Record<string, boolean>;
-declare function trimExtensions(directory: string, selectedExtensions?: Partial<ExtensionsSelection>, extensionConfig?: typeof ExtensionConfig, verboseOverride?: boolean): void;
+declare function trimExtensions(directory: string, selectedExtensions?: Partial<ExtensionsSelection>, extensionConfig?: typeof ExtensionConfig): void;
 //#endregion
 //#region src/cartridge-services/generate-cartridge.d.ts
 /**

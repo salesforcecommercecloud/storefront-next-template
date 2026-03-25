@@ -104,6 +104,7 @@ describe('manageExtensions', () => {
     it('should abort if install and uninstall are both provided', async () => {
         await manageExtensions({ projectDirectory: '/test-project', install: true, uninstall: true });
         expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining('Please select either install or uninstall, not both.')
         );
     });
@@ -114,6 +115,7 @@ describe('manageExtensions', () => {
         });
         await manageExtensions({ projectDirectory: '/test-project' });
         expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining('Please select at least one extension to uninstall')
         );
     });
@@ -123,6 +125,7 @@ describe('manageExtensions', () => {
         vi.spyOn(fs, 'readFileSync').mockReturnValue('{"extensions": {}}');
         await manageExtensions({ projectDirectory: '/test-project', uninstall: true });
         expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining('You have not installed any extensions yet.')
         );
     });
@@ -134,6 +137,7 @@ describe('manageExtensions', () => {
         });
         await manageExtensions({ projectDirectory: '/test-project', uninstall: true });
         expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining('Please select at least one extension to uninstall.')
         );
     });
@@ -161,10 +165,9 @@ describe('manageExtensions', () => {
                         folder: 'store-locator',
                     },
                 },
-            },
-            false
+            }
         );
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Extensions uninstalled.'));
+        expect(console.log).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('Extensions uninstalled.'));
     });
 
     it('should prompt and uninstall dependents when uninstalling a dependency', async () => {
@@ -200,12 +203,13 @@ describe('manageExtensions', () => {
         });
         // Should show dependent warning
         expect(console.log).toHaveBeenCalledWith(
+            expect.anything(),
             expect.stringContaining('will also uninstall the following dependent extensions')
         );
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('BOPIS'));
+        expect(console.log).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('BOPIS'));
         // Should proceed with uninstall
         expect(trimExtensions).toHaveBeenCalled();
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Extensions uninstalled.'));
+        expect(console.log).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('Extensions uninstalled.'));
     });
 
     it('should abort uninstall when user declines dependent uninstall', async () => {
@@ -242,10 +246,11 @@ describe('manageExtensions', () => {
         });
         // Should show dependent warning
         expect(console.log).toHaveBeenCalledWith(
+            expect.anything(),
             expect.stringContaining('will also uninstall the following dependent extensions')
         );
         // Should abort
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Uninstallation aborted.'));
+        expect(console.log).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('Uninstallation aborted.'));
         expect(trimExtensions).not.toHaveBeenCalled();
     });
 
@@ -285,6 +290,7 @@ describe('manageExtensions', () => {
             extensions: ['SFDC_EXT_STORE_LOCATOR'],
         });
         expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining('This extension contains LLM instructions, please install cursor cli and try again')
         );
     });
@@ -301,6 +307,7 @@ describe('manageExtensions', () => {
         });
         // Use regex to match both Unix (/) and Windows (\) path separators
         expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringMatching(
                 createPathRegex(
                     'No extensions found in the source project, please check src/extensions/config.json exists'
@@ -320,6 +327,7 @@ describe('manageExtensions', () => {
             sourceGitUrl: SOURCE_GIT_URL,
         });
         expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining('Please select exactly one extension to install.')
         );
     });
@@ -372,15 +380,20 @@ describe('manageExtensions', () => {
         expect(rmSyncCalls[0][1]).toEqual({ recursive: true, force: true });
         // verify success message is logged
         expect(console.log).toHaveBeenCalledWith(
-            expect.stringContaining('✅ Store Locator was installed successfully.')
+            expect.anything(),
+            expect.stringContaining('Store Locator was installed successfully.')
         );
         expect(console.log).toHaveBeenCalledWith(
+            expect.anything(),
             expect.stringContaining(
-                'The following files were modified. The original files are still available in the same location with the ".original" extension.:'
+                'The following files were modified. The original files are still available in the same location with the ".original" extension:'
             )
         );
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('- index.tsx'));
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Installation completed successfully.'));
+        expect(console.log).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('- index.tsx'));
+        expect(console.log).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.stringContaining('Installation completed successfully.')
+        );
     });
 
     it('should honor the defaultOn flag', async () => {
@@ -427,7 +440,10 @@ describe('manageExtensions', () => {
             sourceGitUrl: SOURCE_GIT_URL,
             extensions: ['SFDC_EXT_STORE_LOCATOR'],
         });
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Error installing Store Locator. error'));
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
+            expect.stringContaining('Error installing Store Locator. error')
+        );
     });
 
     it('should skip LLM instructions if no installation instructions are found', async () => {
@@ -500,8 +516,11 @@ describe('manageExtensions', () => {
             extensions: ['SFDC_EXT_BOPIS'],
         });
         // Should show dependency prompt
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('requires the following dependencies'));
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Store Locator'));
+        expect(console.log).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.stringContaining('requires the following dependencies')
+        );
+        expect(console.log).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('Store Locator'));
         // Should install both extensions (Store Locator first, then BOPIS)
         expect(fs.copySync).toHaveBeenCalledWith(
             path.join(`/tmp`, `sfnext-extensions-${MOCK_NOW}`, 'src', 'extensions', 'store-locator'),
@@ -553,9 +572,12 @@ describe('manageExtensions', () => {
             extensions: ['SFDC_EXT_BOPIS'],
         });
         // Should show dependency prompt
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('requires the following dependencies'));
+        expect(console.log).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.stringContaining('requires the following dependencies')
+        );
         // Should abort
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Installation aborted.'));
+        expect(console.log).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('Installation aborted.'));
         // Should not copy any files
         expect(fs.copySync).not.toHaveBeenCalled();
     });
@@ -566,7 +588,10 @@ describe('manageExtensions', () => {
             throw new Error('exit');
         });
         await expect(manageExtensions({ projectDirectory: '/not-exist' })).rejects.toThrow('exit');
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Extension config file not found'));
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
+            expect.stringContaining('Extension config file not found')
+        );
         exitSpy.mockRestore();
     });
 
@@ -622,6 +647,7 @@ describe('manageExtensions', () => {
             description: 'My Extension description',
         });
         expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining(
                 'Extension name can only contain alphanumeric characters, spaces, dashes, or underscores'
             )
@@ -634,7 +660,10 @@ describe('manageExtensions', () => {
             name: 'Store Locator',
             description: 'Store Locator description',
         });
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Extension "Store Locator" already exists'));
+        expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
+            expect.stringContaining('Extension "Store Locator" already exists')
+        );
     });
 
     it('should prevent extension directory that already exists', async () => {
@@ -644,6 +673,7 @@ describe('manageExtensions', () => {
             description: 'My Extension description',
         });
         expect(console.error).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:error]'),
             expect.stringContaining('Extension directory my-extension2 already exists')
         );
     });
@@ -651,6 +681,6 @@ describe('manageExtensions', () => {
     /** List extensions test cases starts here */
     it('should list installed extensions', () => {
         listExtensions({ projectDirectory: '/test-project' });
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Store Locator'));
+        expect(console.log).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('Store Locator'));
     });
 });

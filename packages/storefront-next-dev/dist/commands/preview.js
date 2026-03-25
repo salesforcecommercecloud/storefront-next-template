@@ -1,4 +1,5 @@
-import { a as printServerInfo, c as warn, i as printServerConfig, n as error, o as printShutdownMessage, r as info } from "../logger.js";
+import { i as printShutdownMessage, n as printServerConfig, r as printServerInfo, t as logger } from "../logger.js";
+import "../logger2.js";
 import { c as loadEnvFile } from "../utils.js";
 import { n as getCommerceCloudApiUrl, r as loadProjectConfig, t as createServer } from "../server.js";
 import { t as commonFlags } from "../flags.js";
@@ -23,24 +24,25 @@ async function preview(options = {}) {
 	loadEnvFile(projectDir);
 	const buildPath = path.join(projectDir, "build", "server", "index.js");
 	if (!fs.existsSync(buildPath)) {
-		warn("Production build not found. Building project...");
-		info("Running: pnpm build");
+		logger.warn("Production build not found. Building project...");
+		logger.info("Running: pnpm build");
 		try {
 			execSync("pnpm build", {
 				cwd: projectDir,
 				stdio: "inherit"
 			});
-			info("Build completed successfully");
+			logger.info("Build completed successfully");
 		} catch (err) {
-			error(`Build failed: ${err instanceof Error ? err.message : String(err)}`);
+			const errorMsg = err instanceof Error ? err.message : String(err);
+			logger.error(`Build failed: ${errorMsg}`);
 			process.exit(1);
 		}
 		if (!fs.existsSync(buildPath)) {
-			error(`Build still not found at ${buildPath} after running build command`);
+			logger.error(`Build still not found at ${buildPath} after running build command`);
 			process.exit(1);
 		}
 	}
-	info(`Loading production build from ${buildPath}`);
+	logger.info(`Loading production build from ${buildPath}`);
 	const build = (await import(pathToFileURL(buildPath).href)).default;
 	const config = await loadProjectConfig(projectDir);
 	const server = (await createServer({

@@ -1,4 +1,4 @@
-import { c as warn, r as info, t as debug } from "./logger.js";
+import { t as logger } from "./logger.js";
 import path from "path";
 import chalk from "chalk";
 import express from "express";
@@ -172,7 +172,7 @@ function createCommerceProxyMiddleware(config) {
 function createStaticMiddleware(bundleId, projectDirectory) {
 	const bundlePath = getBundlePath(bundleId);
 	const clientBuildDir = path.join(projectDirectory, "build", "client");
-	info(`Serving static assets from ${clientBuildDir} at ${bundlePath}`);
+	logger.info(`Serving static assets from ${clientBuildDir} at ${bundlePath}`);
 	return express.static(clientBuildDir, { setHeaders: (res) => {
 		res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
 		res.setHeader("x-local-static-cache-control", "1");
@@ -191,7 +191,7 @@ function getCompressionLevel() {
 	if (raw == null || raw.trim() === "") return DEFAULT;
 	const level = Number(raw);
 	if (!(Number.isInteger(level) && level >= 0 && level <= 9)) {
-		warn(`[compression] Invalid COMPRESSION_LEVEL="${raw}". Using default (${DEFAULT}).`);
+		logger.warn(`[compression] Invalid COMPRESSION_LEVEL="${raw}". Using default (${DEFAULT}).`);
 		return DEFAULT;
 	}
 	return level;
@@ -417,7 +417,7 @@ function initTelemetry() {
 		cachedTracer = provider.getTracer(SERVICE_NAME);
 		return cachedTracer;
 	} catch (error) {
-		console.error("[otel] Failed to initialize OpenTelemetry:", error);
+		logger.error("[otel] Failed to initialize OpenTelemetry:", error);
 		return null;
 	}
 }
@@ -525,7 +525,7 @@ function readPackageMetadata(path$1) {
 	try {
 		return JSON.parse(readFileSync(path$1, "utf8"));
 	} catch (error) {
-		debug(`Health check: failed to parse package.json at ${path$1}`, error);
+		logger.debug(`Health check: failed to parse package.json at ${path$1}`, error);
 		return null;
 	}
 }

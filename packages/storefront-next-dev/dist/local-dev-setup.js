@@ -1,4 +1,4 @@
-import { c as warn, r as info, s as success } from "./logger.js";
+import { t as logger } from "./logger.js";
 import path from "path";
 import fs from "fs-extra";
 import prompts from "prompts";
@@ -27,12 +27,12 @@ async function prepareForLocalDev(options) {
 		});
 	}
 	if (workspaceDeps.length === 0) {
-		info("No workspace:* dependencies found. Project is ready for standalone use.");
+		logger.info("No workspace:* dependencies found. Project is ready for standalone use.");
 		return;
 	}
-	console.log("\n🔗 Found workspace dependencies that need to be linked to local packages:\n");
-	for (const { pkg } of workspaceDeps) console.log(`   • ${pkg}`);
-	console.log("");
+	logger.info("\n🔗 Found workspace dependencies that need to be linked to local packages:\n");
+	for (const { pkg } of workspaceDeps) logger.info(`   • ${pkg}`);
+	logger.info("");
 	const defaultPaths = {};
 	if (sourcePackagesDir) {
 		defaultPaths["@salesforce/storefront-next-dev"] = path.resolve(sourcePackagesDir, "storefront-next-dev");
@@ -45,7 +45,7 @@ async function prepareForLocalDev(options) {
 		const defaultExists = defaultPath && fs.existsSync(defaultPath);
 		let localPath;
 		if (defaults && defaultExists) localPath = defaultPath;
-		else if (defaults) warn(`Skipping ${pkg} - default path not found: ${defaultPath}`);
+		else if (defaults) logger.warn(`Skipping ${pkg} - default path not found: ${defaultPath}`);
 		else ({localPath} = await prompts({
 			type: "text",
 			name: "localPath",
@@ -59,7 +59,7 @@ async function prepareForLocalDev(options) {
 			}
 		}));
 		if (!localPath) {
-			warn(`Skipping ${pkg} - no path provided`);
+			logger.warn(`Skipping ${pkg} - no path provided`);
 			continue;
 		}
 		resolvedPaths[pkg] = localPath;
@@ -76,11 +76,11 @@ async function prepareForLocalDev(options) {
 			const localPath = resolvedPaths[pkg];
 			if (localPath) {
 				const fileRef = `file:${localPath}`;
-				info(`Linked ${pkg} → ${fileRef}`);
+				logger.info(`Linked ${pkg} → ${fileRef}`);
 				deps[pkg] = fileRef;
 				modified = true;
 			} else {
-				warn(`Removing unresolved workspace dependency: ${pkg}`);
+				logger.warn(`Removing unresolved workspace dependency: ${pkg}`);
 				delete deps[pkg];
 				modified = true;
 			}
@@ -93,7 +93,7 @@ async function prepareForLocalDev(options) {
 	}
 	if (modified) {
 		fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 4)}\n`);
-		success("package.json updated with local package links");
+		logger.info("package.json updated with local package links");
 		patchViteConfigForLinkedPackages(projectDirectory, Object.keys(resolvedPaths));
 	}
 }
@@ -112,7 +112,7 @@ async function prepareForLocalDev(options) {
 function patchViteConfigForLinkedPackages(projectDirectory, linkedPackages) {
 	const viteConfigPath = path.join(projectDirectory, "vite.config.ts");
 	if (!fs.existsSync(viteConfigPath)) {
-		warn("vite.config.ts not found, skipping patch for file-linked packages");
+		logger.warn("vite.config.ts not found, skipping patch for file-linked packages");
 		return;
 	}
 	if (linkedPackages.length === 0) return;
@@ -171,8 +171,8 @@ function patchViteConfigForLinkedPackages(projectDirectory, linkedPackages) {
 	}
 	if (modified) {
 		fs.writeFileSync(viteConfigPath, viteConfig);
-		success("vite.config.ts patched for file-linked packages (ssr.noExternal + resolve.dedupe)");
-	} else info("vite.config.ts already configured for file-linked packages");
+		logger.info("vite.config.ts patched for file-linked packages (ssr.noExternal + resolve.dedupe)");
+	} else logger.info("vite.config.ts already configured for file-linked packages");
 }
 
 //#endregion

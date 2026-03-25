@@ -18,11 +18,7 @@ import os from 'os';
 import {
     getNetworkAddress,
     getPackageVersion,
-    info,
-    success,
-    warn,
-    error,
-    debug,
+    logger,
     printServerInfo,
     printServerConfig,
     printShutdownMessage,
@@ -37,6 +33,8 @@ vi.mock('os', () => ({
 
 // Mock console methods
 const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
+const mockConsoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 // Mock module for createRequire
 vi.mock('module', async () => {
@@ -194,56 +192,117 @@ describe('logger utils', () => {
         });
     });
 
-    describe('logger functions', () => {
-        it('info should log with green color', () => {
-            info('test message');
-            expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('test message'));
+    describe('logger object', () => {
+        it('should default to info level in non-production', () => {
+            delete process.env.NODE_ENV;
+            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.DEBUG;
+            expect(logger.getLevel()).toBe('info');
         });
 
-        it('success should log with cyan color', () => {
-            success('test success');
-            expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('test success'));
+        it('should respect SFNEXT_LOG_LEVEL env var', () => {
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            expect(logger.getLevel()).toBe('debug');
         });
 
-        it('warn should log with yellow color', () => {
-            warn('test warning');
-            expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('test warning'));
+        it('should fall back to debug when DEBUG=true', () => {
+            delete process.env.SFNEXT_LOG_LEVEL;
+            process.env.DEBUG = 'true';
+            expect(logger.getLevel()).toBe('debug');
         });
 
-        it('error should log with red color', () => {
-            error('test error');
-            expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('test error'));
+        it.each(['1', 'yes', 'on', 'TRUE', 'Yes'])('should fall back to debug when DEBUG=%s', (value) => {
+            delete process.env.SFNEXT_LOG_LEVEL;
+            process.env.DEBUG = value;
+            expect(logger.getLevel()).toBe('debug');
         });
 
-        describe('debug', () => {
-            it('should log in non-production environment', () => {
-                delete process.env.NODE_ENV;
-                debug('debug message');
-                expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('debug message'));
-            });
+        it('should fall back to debug when DEBUG=* (wildcard)', () => {
+            delete process.env.SFNEXT_LOG_LEVEL;
+            process.env.DEBUG = '*';
+            expect(logger.getLevel()).toBe('debug');
+        });
 
-            it('should log when DEBUG env var is set', () => {
-                process.env.NODE_ENV = 'production';
-                process.env.DEBUG = 'true';
-                debug('debug message');
-                expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('debug message'));
-            });
+        it('should fall back to debug when DEBUG targets sfnext', () => {
+            delete process.env.SFNEXT_LOG_LEVEL;
+            process.env.DEBUG = 'sfnext';
+            expect(logger.getLevel()).toBe('debug');
+        });
 
-            it('should not log in production without DEBUG', () => {
-                process.env.NODE_ENV = 'production';
-                delete process.env.DEBUG;
-                const callCount = mockConsoleLog.mock.calls.length;
-                debug('debug message');
-                expect(mockConsoleLog).toHaveBeenCalledTimes(callCount);
-            });
+        it('should fall back to debug when DEBUG targets sfnext:*', () => {
+            delete process.env.SFNEXT_LOG_LEVEL;
+            process.env.DEBUG = 'sfnext:*';
+            expect(logger.getLevel()).toBe('debug');
+        });
 
-            it('should log additional data when provided', () => {
-                delete process.env.NODE_ENV;
-                const data = { test: 'value' };
-                debug('debug message', data);
-                expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('debug message'));
-                expect(mockConsoleLog).toHaveBeenCalledWith(data);
-            });
+        it('should fall back to debug when DEBUG contains sfnext in a comma list', () => {
+            delete process.env.SFNEXT_LOG_LEVEL;
+            process.env.DEBUG = 'express:*,sfnext,other';
+            expect(logger.getLevel()).toBe('debug');
+        });
+
+        it('should NOT fall back to debug when DEBUG targets unrelated libraries', () => {
+            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.NODE_ENV;
+            process.env.DEBUG = 'express:*';
+            expect(logger.getLevel()).toBe('info');
+        });
+
+        it('should fall back to warn in production', () => {
+            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.DEBUG;
+            process.env.NODE_ENV = 'production';
+            expect(logger.getLevel()).toBe('warn');
+        });
+
+        it('setLevel should override env-based resolution', () => {
+            process.env.NODE_ENV = 'production';
+            logger.setLevel('debug');
+            expect(logger.getLevel()).toBe('debug');
+            // Reset override for other tests
+            logger.setLevel(undefined);
+        });
+
+        it('info should log via console.log with cyan prefix', () => {
+            logger.info('test message');
+            expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('[sfnext:info]'), 'test message');
+        });
+
+        it('warn should log via console.warn with yellow prefix', () => {
+            logger.warn('test warning');
+            expect(mockConsoleWarn).toHaveBeenCalledWith(expect.stringContaining('[sfnext:warn]'), 'test warning');
+        });
+
+        it('error should log via console.error with red prefix', () => {
+            logger.error('test error');
+            expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('[sfnext:error]'), 'test error');
+        });
+
+        it('debug should not log at default info level', () => {
+            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.DEBUG;
+            delete process.env.NODE_ENV;
+            const callCount = mockConsoleLog.mock.calls.length;
+            logger.debug('hidden debug');
+            expect(mockConsoleLog).toHaveBeenCalledTimes(callCount);
+        });
+
+        it('debug should log when level is debug', () => {
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            logger.debug('visible debug');
+            expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('[sfnext:debug]'), 'visible debug');
+        });
+
+        it('should gate lower-priority levels', () => {
+            process.env.SFNEXT_LOG_LEVEL = 'error';
+            const logBefore = mockConsoleLog.mock.calls.length;
+            const warnBefore = mockConsoleWarn.mock.calls.length;
+            logger.info('should not appear');
+            logger.warn('should not appear');
+            expect(mockConsoleLog).toHaveBeenCalledTimes(logBefore);
+            expect(mockConsoleWarn).toHaveBeenCalledTimes(warnBefore);
+            logger.error('should appear');
+            expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('[sfnext:error]'), 'should appear');
         });
     });
 

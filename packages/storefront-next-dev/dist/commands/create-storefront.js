@@ -1,4 +1,5 @@
-import { c as warn, n as error } from "../logger.js";
+import { t as logger } from "../logger.js";
+import "../logger2.js";
 import { t as generateEnvFile } from "../utils.js";
 import { a as trimExtensions, i as validateNoCycles, n as resolveDependenciesForMultiple } from "../dependency-utils.js";
 import { t as prepareForLocalDev } from "../local-dev-setup.js";
@@ -17,7 +18,7 @@ const createStorefront = async (options = {}) => {
 	try {
 		execSync("git --version", { stdio: "ignore" });
 	} catch (e) {
-		error(`❌ git isn't installed or found in your PATH. Install git before running this command: ${String(e)}`);
+		logger.error(`❌ git is not installed or found in your PATH. Install git before running this command: ${String(e)}`);
 		process.exit(1);
 	}
 	let storefront = options.name;
@@ -28,10 +29,10 @@ const createStorefront = async (options = {}) => {
 		initial: DEFAULT_STOREFRONT
 	})).storefront;
 	if (!storefront) {
-		error("Storefront name is required.");
+		logger.error("Storefront name is required.");
 		process.exit(1);
 	}
-	console.log("\n");
+	logger.info("\n");
 	const outputPath = options.outputDir ? path.join(options.outputDir, storefront) : storefront;
 	let template = options.template;
 	if (!template) {
@@ -47,7 +48,7 @@ const createStorefront = async (options = {}) => {
 				value: "custom"
 			}]
 		})).template;
-		console.log("\n");
+		logger.info("\n");
 		if (template === "custom") {
 			const { githubUrl } = await prompts({
 				type: "text",
@@ -55,18 +56,18 @@ const createStorefront = async (options = {}) => {
 				message: "🌐 What is the Github URL for your template?\n"
 			});
 			if (!githubUrl) {
-				error("Github URL is required.");
+				logger.error("Github URL is required.");
 				process.exit(1);
 			}
 			template = githubUrl;
 		}
 	}
 	if (!template) {
-		error("Template is required.");
+		logger.error("Template is required.");
 		process.exit(1);
 	}
 	if (options.templateBranch !== void 0 && options.templateBranch.trim() === "") {
-		error("--template-branch cannot be empty.");
+		logger.error("--template-branch cannot be empty.");
 		process.exit(1);
 	}
 	if (isLocalPath(template)) {
@@ -107,7 +108,7 @@ const createStorefront = async (options = {}) => {
 			defaults: options.defaults
 		});
 	}
-	console.log("\n");
+	logger.info("\n");
 	if (fs.existsSync(path.join(outputPath, "src", "extensions", "config.json"))) {
 		const extensionConfigText = fs.readFileSync(path.join(outputPath, "src", "extensions", "config.json"), "utf8");
 		const extensionConfig = JSON.parse(extensionConfigText);
@@ -115,7 +116,7 @@ const createStorefront = async (options = {}) => {
 			try {
 				validateNoCycles(extensionConfig);
 			} catch (e) {
-				error(`Extension configuration error: ${e.message}`);
+				logger.error(`Extension configuration error: ${e.message}`);
 				process.exit(1);
 			}
 			let selectedExtensions;
@@ -140,10 +141,11 @@ const createStorefront = async (options = {}) => {
 				});
 				if (dependentExts.length > 0) {
 					const addedName = extensionConfig.extensions[addedExt]?.name || addedExt;
-					warn(`${dependentExts.map((ext) => extensionConfig.extensions[ext]?.name || ext).join(", ")} requires ${addedName}. ${addedName} has been automatically added.`);
+					const dependentNames = dependentExts.map((ext) => extensionConfig.extensions[ext]?.name || ext).join(", ");
+					logger.warn(`${dependentNames} requires ${addedName}. ${addedName} has been automatically added.`);
 				}
 			}
-			trimExtensions(outputPath, Object.fromEntries(resolvedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig.extensions }, options?.verbose || false);
+			trimExtensions(outputPath, Object.fromEntries(resolvedExtensions.map((ext) => [ext, true])), { extensions: extensionConfig.extensions });
 		}
 	}
 	const configMetaPath = fs.existsSync(path.join(outputPath, "config-meta.json")) ? path.join(outputPath, "config-meta.json") : path.join(outputPath, "src", "config", "config-meta.json");
@@ -151,7 +153,7 @@ const createStorefront = async (options = {}) => {
 	const envDefaultPath = path.join(outputPath, ".env.default");
 	let envDefaultValues = {};
 	if (fs.existsSync(envDefaultPath)) envDefaultValues = dotenv.parse(fs.readFileSync(envDefaultPath, "utf8"));
-	console.log("\n⚙️ We will now configure your storefront before it will be ready to run.\n");
+	logger.info("\n⚙️ We will now configure your storefront before it will be ready to run.\n");
 	const configOverrides = {};
 	for (const config of configMeta.configs) if (options.defaults) configOverrides[config.key] = envDefaultValues[config.key] ?? "";
 	else {
@@ -176,7 +178,7 @@ const createStorefront = async (options = {}) => {
         - Build the storefront: pnpm run build
         - Run the development server: pnpm run dev
     `;
-	console.log(BANNER);
+	logger.info(BANNER);
 };
 
 //#endregion
@@ -188,17 +190,11 @@ var CreateStorefront = class CreateStorefront extends Command {
 	static description = "Create a storefront project";
 	static examples = [
 		"<%= config.bin %> <%= command.id %>",
-		"<%= config.bin %> <%= command.id %> -v",
 		"<%= config.bin %> <%= command.id %> -n my-storefront -t https://github.com/org/template -b release-0.2.x",
 		"<%= config.bin %> <%= command.id %> -n my-storefront -t /path/to/local/template",
 		"<%= config.bin %> <%= command.id %> -l /path/to/monorepo/packages"
 	];
 	static flags = {
-		verbose: Flags.boolean({
-			char: "v",
-			description: "Verbose mode",
-			default: false
-		}),
 		name: Flags.string({
 			char: "n",
 			description: "Storefront project name"
@@ -228,7 +224,6 @@ var CreateStorefront = class CreateStorefront extends Command {
 	async run() {
 		const { flags } = await this.parse(CreateStorefront);
 		await createStorefront({
-			verbose: flags.verbose,
 			name: flags.name,
 			template: flags.template,
 			templateBranch: flags["template-branch"],

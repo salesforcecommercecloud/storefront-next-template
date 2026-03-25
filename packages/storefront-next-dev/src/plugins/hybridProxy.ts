@@ -51,11 +51,11 @@
  * - PUBLIC__app__i18n__fallbackLng (fallback) - Used if HYBRID_PROXY_LOCALE not set
  */
 
-/* eslint-disable no-console */
 import type { Plugin, ViteDevServer } from 'vite';
 import httpProxy from 'http-proxy';
 import type { IncomingMessage } from 'http';
 import { gunzipSync, brotliDecompressSync, inflateSync } from 'zlib';
+import { logger } from '../logger';
 
 export interface HybridProxyPluginOptions {
     /** Whether hybrid proxying is enabled */
@@ -230,25 +230,24 @@ function escapeRegExp(str: string): string {
  */
 export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
     if (!options.enabled) {
-        console.log('[Hybrid Proxy] Disabled (HYBRID_PROXY_ENABLED is not true)');
+        logger.debug('Hybrid proxy disabled (HYBRID_PROXY_ENABLED is not true)');
         return {
             name: 'hybrid-proxy',
         };
     }
 
     if (!options.targetOrigin) {
-        console.warn('[Hybrid Proxy] No target origin configured (SFCC_ORIGIN required)');
+        logger.warn('Hybrid proxy: no target origin configured (SFCC_ORIGIN required)');
         return {
             name: 'hybrid-proxy',
         };
     }
 
-    console.log('[Hybrid Proxy] Enabled');
-    console.log(`[Hybrid Proxy] Target origin: ${options.targetOrigin}`);
-    console.log(`[Hybrid Proxy] Routing rules: ${options.routingRules.slice(0, 100)}...`);
+    logger.info(`Hybrid proxy enabled → ${options.targetOrigin}`);
+    logger.debug(`Hybrid proxy routing rules: ${options.routingRules.slice(0, 100)}...`);
     const locale = options.locale || 'default';
-    console.log(
-        `[Hybrid Proxy] Path transformation: / → /s/${options.siteId}, /path → /s/${options.siteId}/${locale}/path`
+    logger.debug(
+        `Hybrid proxy path transformation: / → /s/${options.siteId}, /path → /s/${options.siteId}/${locale}/path`
     );
 
     // Pre-compile regex for URL rewriting in response bodies
@@ -289,7 +288,7 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
                 // Rewrite internal proxy path without changing browser URL
                 proxyReq.path = `/s/${options.siteId}/${locale}${pathname}${url.search}`;
             }
-            console.log(`[Hybrid Proxy] Path rewrite: ${originalPath} → ${proxyReq.path}`);
+            logger.debug(`Hybrid proxy path rewrite: ${originalPath} → ${proxyReq.path}`);
         }
     });
 
@@ -313,11 +312,11 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
             /\/404\b/.test(locationHeader);
 
         if (isRedirectToError) {
-            console.warn(
-                `[Hybrid Proxy] ⚠️  SFCC returned a redirect to 404 for ${req.url}\n` +
-                    `  This usually means your HYBRID_ROUTING_RULES are missing a pattern for this path.\n` +
-                    `  Stripping Set-Cookie headers to prevent session cookie corruption.\n` +
-                    `  Fix: add a matching pattern to HYBRID_ROUTING_RULES (e.g., "^${req.url?.split('?')[0]}.*")`
+            logger.warn(
+                `⚠️  SFCC returned a redirect to 404 for ${req.url}. ` +
+                    `This usually means your HYBRID_ROUTING_RULES are missing a pattern for this path. ` +
+                    `Stripping Set-Cookie headers to prevent session cookie corruption. ` +
+                    `Fix: add a matching pattern to HYBRID_ROUTING_RULES (e.g., "^${req.url?.split('?')[0]}.*")`
             );
             delete proxyRes.headers['set-cookie'];
         }
@@ -329,7 +328,7 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
         if (setCookieHeaders && Array.isArray(setCookieHeaders)) {
             proxyRes.headers['set-cookie'] = setCookieHeaders.map((cookie) => {
                 const rewritten = rewriteCookieForLocalhost(cookie);
-                console.log(`[Hybrid Proxy] Cookie rewrite: ${cookie.slice(0, 50)}... → ${rewritten.slice(0, 50)}...`);
+                logger.debug(`Hybrid proxy cookie rewrite: ${cookie.slice(0, 50)}... → ${rewritten.slice(0, 50)}...`);
                 return rewritten;
             });
         }
@@ -341,10 +340,10 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
                 if (locationUrl.origin === options.targetOrigin) {
                     const localUrl = `http://${req.headers.host}${locationUrl.pathname}${locationUrl.search}${locationUrl.hash}`;
                     proxyRes.headers.location = localUrl;
-                    console.log(`[Hybrid Proxy] Location rewrite: ${locationHeader} → ${localUrl}`);
+                    logger.debug(`Hybrid proxy location rewrite: ${locationHeader} → ${localUrl}`);
                 }
             } catch {
-                console.warn('[Hybrid Proxy] Invalid Location header:', locationHeader);
+                logger.warn(`Hybrid proxy: invalid Location header: ${locationHeader}`);
             }
         }
 
@@ -404,13 +403,13 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
             clientRes.writeHead(proxyRes.statusCode || 200, headers);
             clientRes.end(text);
 
-            console.log(`[Hybrid Proxy] Rewrote ${contentType} body URLs for ${req.url}`);
+            logger.debug(`Hybrid proxy rewrote ${contentType} body URLs for ${req.url}`);
         });
     });
 
     // Error handling
     proxy.on('error', (err, req, res) => {
-        console.error('[Hybrid Proxy] Proxy error:', err.message, req.url);
+        logger.error(`Hybrid proxy error: ${err.message} ${req.url}`);
         if ('writeHead' in res && !res.headersSent) {
             res.writeHead(502, { 'Content-Type': 'text/plain' });
             res.end('Bad Gateway: Failed to proxy to SFCC');
@@ -441,7 +440,7 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
                         shouldRouteToNextApp = options.routeMatcher(pathname, options.routingRules);
                     } catch (error) {
                         // Fail-safe: if routing check fails, let React Router handle it
-                        console.error('[Hybrid Proxy] Error checking routing rules:', error);
+                        logger.error(`Hybrid proxy error checking routing rules: ${String(error)}`);
                         return next();
                     }
 
@@ -452,14 +451,14 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
                 }
 
                 // Proxy to SFCC
-                console.log(`[Hybrid Proxy] Proxying: ${req.method} ${pathname} → ${options.targetOrigin}`);
+                logger.debug(`Hybrid proxy: ${req.method} ${pathname} → ${options.targetOrigin}`);
 
                 try {
                     proxy.web(req, res, {
                         target: options.targetOrigin,
                     });
                 } catch (error) {
-                    console.error('[Hybrid Proxy] Failed to proxy request:', error);
+                    logger.error(`Hybrid proxy failed to proxy request: ${String(error)}`);
                     if (!res.headersSent) {
                         res.writeHead(502, { 'Content-Type': 'text/plain' });
                         res.end('Bad Gateway: Failed to proxy to SFCC');

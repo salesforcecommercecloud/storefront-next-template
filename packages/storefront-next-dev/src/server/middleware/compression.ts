@@ -16,7 +16,7 @@
 import compression from 'compression';
 import type { RequestHandler } from 'express';
 import zlib from 'node:zlib';
-import { warn } from '../../utils/logger';
+import { logger } from '../../logger';
 
 /**
  * Parse and validate COMPRESSION_LEVEL environment variable
@@ -35,7 +35,7 @@ function getCompressionLevel(): number {
     const isValid = Number.isInteger(level) && level >= 0 && level <= 9;
 
     if (!isValid) {
-        warn(`[compression] Invalid COMPRESSION_LEVEL="${raw}". ` + `Using default (${DEFAULT}).`);
+        logger.warn(`[compression] Invalid COMPRESSION_LEVEL="${raw}". ` + `Using default (${DEFAULT}).`);
         return DEFAULT;
     }
 

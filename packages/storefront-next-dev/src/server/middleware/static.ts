@@ -16,7 +16,7 @@
 import express, { type RequestHandler } from 'express';
 import path from 'path';
 import { getBundlePath } from '../../utils/paths';
-import { info } from '../../utils/logger';
+import { logger } from '../../logger';
 
 /**
  * Create static file serving middleware for client assets
@@ -26,7 +26,7 @@ export function createStaticMiddleware(bundleId: string, projectDirectory: strin
     const bundlePath = getBundlePath(bundleId);
     const clientBuildDir = path.join(projectDirectory, 'build', 'client');
 
-    info(`Serving static assets from ${clientBuildDir} at ${bundlePath}`);
+    logger.info(`Serving static assets from ${clientBuildDir} at ${bundlePath}`);
 
     return express.static(clientBuildDir, {
         setHeaders: (res) => {

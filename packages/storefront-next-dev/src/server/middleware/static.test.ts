@@ -50,14 +50,18 @@ vi.mock('../../utils/paths', () => ({
 }));
 
 // Mock the logger
-vi.mock('../../utils/logger', () => ({
-    info: vi.fn(),
+vi.mock('../../logger', () => ({
+    logger: {
+        info: vi.fn(),
+    },
 }));
 
 // Import after mocks are set up
 import { createStaticMiddleware } from './static';
 import { getBundlePath } from '../../utils/paths';
-import { info } from '../../utils/logger';
+import { logger } from '../../logger';
+
+const logInfoSpy = vi.spyOn(logger, 'info');
 
 describe('static middleware', () => {
     beforeEach(() => {
@@ -88,7 +92,7 @@ describe('static middleware', () => {
             createStaticMiddleware('test-123', '/my/project');
 
             // Use regex to match both Unix (/) and Windows (\) path separators
-            expect(info).toHaveBeenCalledWith(
+            expect(logInfoSpy).toHaveBeenCalledWith(
                 expect.stringMatching(
                     createPathRegex(
                         'Serving static assets from /my/project/build/client at /mobify/bundle/test-123/client/'

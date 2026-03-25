@@ -38,6 +38,7 @@ afterEach(() => {
     console.log = originalConsole.log;
     console.warn = originalConsole.warn;
     console.error = originalConsole.error;
+    delete process.env.SFNEXT_LOG_LEVEL;
 });
 
 // Mock fs to use memfs but keep some functions mockable
@@ -103,7 +104,6 @@ describe('staticRegistryPlugin', { timeout: 15_000 }, () => {
             const config = {
                 componentPath: 'custom/components',
                 registryPath: 'custom/static-registry.ts',
-                verbose: true,
             };
 
             const plugin = staticRegistryPlugin(config);
@@ -402,12 +402,16 @@ export default class NewComponent {}`,
             mockExistsSync.mockReturnValue(false);
             mockGlob.mockResolvedValue([]);
 
-            const plugin = staticRegistryPlugin({ verbose: true });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = staticRegistryPlugin();
             await callPluginHooks(plugin, mockProjectRoot);
 
             // Should create the registry file
             expect(mockWriteFileSync).toHaveBeenCalledTimes(2); // Once for creation, once for update
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Creating new registry file'));
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining('Creating new registry file')
+            );
         });
     });
 
@@ -415,7 +419,7 @@ export default class NewComponent {}`,
         it.each([
             {
                 description: 'triggers regeneration when component files change',
-                config: { componentPath: 'src/components', verbose: true },
+                config: { componentPath: 'src/components' },
                 filePath: '/test/project/src/components/hero/index.tsx',
                 expectedResult: [],
             },
@@ -486,19 +490,22 @@ export const registry = new ComponentRegistry();
             const consoleErrorSpy = expectConsoleError ? vi.spyOn(console, 'error').mockImplementation(() => {}) : null;
             const mockError = expectError ? vi.fn() : undefined;
 
-            const plugin = staticRegistryPlugin({ verbose: true, failOnError: false });
+            const plugin = staticRegistryPlugin({ failOnError: false });
             await callPluginHooks(plugin, mockProjectRoot, mockError);
 
             if (expectConsoleWarn && consoleSpy) {
                 expect(consoleSpy).toHaveBeenCalledWith(
-                    expect.stringContaining('Could not process'),
-                    expect.any(String)
+                    expect.stringContaining('[sfnext:warn]'),
+                    expect.stringContaining('Could not process')
                 );
                 consoleSpy.mockRestore();
             }
 
             if (expectConsoleError && consoleErrorSpy) {
-                expect(consoleErrorSpy).toHaveBeenCalledWith(expectConsoleError);
+                expect(consoleErrorSpy).toHaveBeenCalledWith(
+                    expect.stringContaining('[sfnext:error]'),
+                    expect.stringContaining('Static registry generation failed: Glob error')
+                );
                 consoleErrorSpy.mockRestore();
             }
 
@@ -508,7 +515,7 @@ export const registry = new ComponentRegistry();
         });
     });
 
-    describe('Verbose Logging', () => {
+    describe('Debug Logging', () => {
         const mockProjectRoot = '/test/project';
 
         beforeEach(() => {
@@ -517,29 +524,29 @@ export const registry = new ComponentRegistry();
 
         it.each([
             {
-                description: 'logs detailed information when verbose is enabled',
-                verbose: true,
+                description: 'logs detailed information at debug level',
+                logLevel: 'debug',
                 files: {
                     '/test/project/src/components/hero/index.tsx': `@Component('hero', {})
 export default class Hero {}`,
                 },
                 expectedLogs: [
-                    '🚀 Starting static registry generation...',
+                    'Starting static registry generation...',
                     'Found component: odyssey_base.hero',
-                    '✅ Static registry generation complete!',
+                    'Static registry generation complete',
                 ],
                 shouldLog: true,
             },
             {
-                description: 'does not log when verbose is disabled',
-                verbose: false,
+                description: 'does not log debug messages at info level',
+                logLevel: 'info',
                 files: {},
                 expectedLogs: [],
                 shouldLog: false,
             },
             {
-                description: 'logs clientLoader export when verbose is enabled',
-                verbose: true,
+                description: 'logs clientLoader export at debug level',
+                logLevel: 'debug',
                 files: {
                     '/test/project/src/components/hero/index.tsx': `@Component('hero', {})
 export default class Hero {}
@@ -549,8 +556,8 @@ export const clientLoader = () => {};`,
                 shouldLog: true,
             },
             {
-                description: 'logs fallback export when verbose is enabled',
-                verbose: true,
+                description: 'logs fallback export at debug level',
+                logLevel: 'debug',
                 files: {
                     '/test/project/src/components/hero/index.tsx': `@Component('hero', {})
 export default class Hero {}
@@ -560,8 +567,8 @@ export const fallback = () => <div>Loading...</div>;`,
                 shouldLog: true,
             },
             {
-                description: 'logs multiple exports when verbose is enabled',
-                verbose: true,
+                description: 'logs multiple exports at debug level',
+                logLevel: 'debug',
                 files: {
                     '/test/project/src/components/hero/index.tsx': `@Component('hero', {})
 export default class Hero {}
@@ -572,8 +579,9 @@ export const fallback = () => <div>Loading...</div>;`,
                 expectedLogs: ['Found component: odyssey_base.hero', '(with loader, clientLoader, fallback)'],
                 shouldLog: true,
             },
-        ])('$description', async ({ verbose, files, expectedLogs, shouldLog }) => {
+        ])('$description', async ({ logLevel, files, expectedLogs, shouldLog }) => {
             const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+            process.env.SFNEXT_LOG_LEVEL = logLevel;
             const componentFiles = Object.keys(files);
 
             const fileSystem: Record<string, string> = {
@@ -596,15 +604,22 @@ export const registry = new ComponentRegistry();
 
             mockGlob.mockResolvedValue(componentFiles);
 
-            const plugin = staticRegistryPlugin({ verbose });
+            const plugin = staticRegistryPlugin();
             await callPluginHooks(plugin, mockProjectRoot);
 
             if (shouldLog) {
                 expectedLogs.forEach((expectedLog) => {
-                    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining(expectedLog));
+                    expect(consoleSpy).toHaveBeenCalledWith(
+                        expect.stringContaining('[sfnext:debug]'),
+                        expect.stringContaining(expectedLog)
+                    );
                 });
             } else {
-                expect(consoleSpy).not.toHaveBeenCalled();
+                // At info level, debug messages should not appear
+                const debugCalls = consoleSpy.mock.calls.filter(
+                    (call) => typeof call[0] === 'string' && call[0].includes('[sfnext:debug]')
+                );
+                expect(debugCalls).toHaveLength(0);
             }
 
             consoleSpy.mockRestore();
@@ -693,13 +708,13 @@ export const registry = new ComponentRegistry();
                 const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
                 const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-                const plugin = staticRegistryPlugin({ failOnError: false, verbose: true });
+                const plugin = staticRegistryPlugin({ failOnError: false });
                 await callPluginHooks(plugin, mockProjectRoot);
 
                 // The error should be caught and logged as a warning during file processing
                 expect(consoleWarnSpy).toHaveBeenCalledWith(
-                    expect.stringContaining('Could not process'),
-                    expect.any(String)
+                    expect.stringContaining('[sfnext:warn]'),
+                    expect.stringContaining('Could not process')
                 );
 
                 consoleErrorSpy.mockRestore();
@@ -871,7 +886,10 @@ export default class Hero {}`,
             const plugin = staticRegistryPlugin({ failOnError: false });
             await callPluginHooks(plugin, mockProjectRoot);
 
-            expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining(expectedError));
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
+                expect.stringContaining(expectedError)
+            );
 
             consoleErrorSpy.mockRestore();
         });
@@ -914,7 +932,7 @@ export default class Hero {}`,
 
             const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-            const plugin = staticRegistryPlugin({ verbose: true, failOnError: false });
+            const plugin = staticRegistryPlugin({ failOnError: false });
 
             // Initialize plugin first - this should fail but not throw due to failOnError: false
             await callPluginHooks(plugin, mockProjectRoot);
@@ -922,7 +940,10 @@ export default class Hero {}`,
             // Now test hot reload - this should also fail gracefully
             const result = await callHandleHotUpdate(plugin, '/test/project/src/components/hero/index.tsx');
 
-            expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('❌ Failed to regenerate registry:'));
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
+                expect.stringContaining('Failed to regenerate registry:')
+            );
             expect(result).toEqual([]);
 
             consoleErrorSpy.mockRestore();
@@ -950,7 +971,7 @@ export const registry = new ComponentRegistry();
                 reloadModule: vi.fn(),
             };
 
-            const plugin = staticRegistryPlugin({ verbose: true });
+            const plugin = staticRegistryPlugin();
 
             // Initialize plugin first
             await callPluginHooks(plugin, mockProjectRoot);
@@ -1041,8 +1062,9 @@ export const registry = new ComponentRegistry();
             await callPluginHooks(plugin, mockProjectRoot);
 
             expect(consoleErrorSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
                 expect.stringContaining(
-                    '❌ Static registry generation failed: Failed to write registry file: Write permission denied'
+                    'Static registry generation failed: Failed to write registry file: Write permission denied'
                 )
             );
 

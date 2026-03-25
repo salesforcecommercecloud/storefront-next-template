@@ -59,12 +59,6 @@ export interface ComponentLoadersPluginConfig {
      * @default 'src/components'
      */
     componentPath?: string;
-
-    /**
-     * Enable verbose logging.
-     * @default false
-     */
-    verbose?: boolean;
 }
 
 /**

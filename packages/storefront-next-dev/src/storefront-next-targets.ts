@@ -105,13 +105,11 @@ export function storefrontNextTargets(config: StorefrontNextTargetsConfig = {}):
         staticRegistry = {
             componentPath: '',
             registryPath: '',
-            verbose: false,
         },
         eventInstrumentationValidator = {
             configPath: 'config.server.ts',
             scanPaths: ['src'],
             failOnMissing: false,
-            verbose: false,
         },
     } = config;
 
@@ -135,7 +133,6 @@ export function storefrontNextTargets(config: StorefrontNextTargetsConfig = {}):
         plugins.push(
             componentLoadersPlugin({
                 componentPath: staticRegistry.componentPath,
-                verbose: staticRegistry.verbose,
             })
         );
     }

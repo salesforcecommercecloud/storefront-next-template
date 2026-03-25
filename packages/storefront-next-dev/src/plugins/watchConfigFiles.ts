@@ -15,6 +15,7 @@
  */
 import type { ViteDevServer, ResolvedConfig } from 'vite';
 import path from 'path';
+import { logger } from '../logger';
 
 export const watchConfigFilesPlugin = () => {
     let viteConfig: ResolvedConfig;
@@ -32,8 +33,7 @@ export const watchConfigFilesPlugin = () => {
 
             const onChange = (file: string) => {
                 if (file.endsWith('target-config.json')) {
-                    // eslint-disable-next-line no-console
-                    console.log(`🔁 target-config.json changed: ${file}`);
+                    logger.debug(`🔁 target-config.json changed: ${file}`);
                     void server.restart();
                 }
             };

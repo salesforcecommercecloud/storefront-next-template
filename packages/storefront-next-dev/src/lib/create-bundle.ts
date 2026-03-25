@@ -21,7 +21,7 @@ import { promisify } from 'util';
 import { createBundle } from '../bundle';
 import { buildMrtConfig } from '../config';
 import { getDefaultBuildDir, getMrtConfig, getDefaultMessage } from '../utils';
-import { info, success } from '../utils/logger';
+import { logger } from '../logger';
 
 const gzip = promisify(zlib.gzip);
 
@@ -65,9 +65,9 @@ export async function createBundleCommand(options: CreateBundleOptions): Promise
     // Build SSR configuration for MRT bundle
     const config = await buildMrtConfig(buildDirectory, options.projectDirectory);
 
-    info(`Creating bundle for project: ${projectSlug}`);
-    info(`Build directory: ${buildDirectory}`);
-    info(`Output directory: ${outputDirectory}`);
+    logger.info(`Creating bundle for project: ${projectSlug}`);
+    logger.info(`Build directory: ${buildDirectory}`);
+    logger.info(`Output directory: ${outputDirectory}`);
 
     // Create bundle
     const bundle = await createBundle({
@@ -102,9 +102,9 @@ export async function createBundleCommand(options: CreateBundleOptions): Promise
     };
     await fs.writeJson(bundleJsonPath, bundleMetadata, { spaces: 2 });
 
-    success(`Bundle created successfully!`);
-    info(`Bundle tgz file: ${bundleTgzPath}`);
-    info(`Bundle metadata: ${bundleJsonPath}`);
-    info(`Uncompressed size: ${(bundleData.length / 1024 / 1024).toFixed(2)} MB`);
-    info(`Compressed size: ${(compressedData.length / 1024 / 1024).toFixed(2)} MB`);
+    logger.info(`Bundle created successfully!`);
+    logger.info(`Bundle tgz file: ${bundleTgzPath}`);
+    logger.info(`Bundle metadata: ${bundleJsonPath}`);
+    logger.info(`Uncompressed size: ${(bundleData.length / 1024 / 1024).toFixed(2)} MB`);
+    logger.info(`Compressed size: ${(compressedData.length / 1024 / 1024).toFixed(2)} MB`);
 }

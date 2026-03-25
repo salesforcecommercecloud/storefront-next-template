@@ -35,6 +35,7 @@ afterEach(() => {
     console.log = originalConsole.log;
     console.warn = originalConsole.warn;
     console.error = originalConsole.error;
+    delete process.env.SFNEXT_LOG_LEVEL;
 });
 
 // Mock fs to use memfs
@@ -103,7 +104,6 @@ describe('eventInstrumentationValidatorPlugin', () => {
                 configPath: 'custom/config.ts',
                 scanPaths: ['custom/src'],
                 failOnMissing: true,
-                verbose: true,
             };
 
             const plugin = eventInstrumentationValidatorPlugin(config);
@@ -326,15 +326,15 @@ export function PageViewTracker() {
             mockGlob.mockResolvedValue(['/test/project/src/hooks/use-analytics.ts']);
             mockReadFileSync.mockReturnValue(COMPLEX_ANALYTICS_FILE);
 
-            const plugin = eventInstrumentationValidatorPlugin({
-                verbose: true,
-            });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
             await callPluginHooks(plugin, path);
 
             // Should not warn because view_search is instrumented in the complex file
             expect(console.warn).not.toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
                 expect.stringContaining("'view_search' is never instrumented")
             );
         });
@@ -356,18 +356,29 @@ export function PageViewTracker() {
             mockGlob.mockResolvedValue(['/test/project/src/hooks/use-analytics.ts']);
             mockReadFileSync.mockReturnValue(COMPLEX_ANALYTICS_FILE);
 
-            const plugin = eventInstrumentationValidatorPlugin({
-                verbose: true,
-            });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
             await callPluginHooks(plugin, path);
 
             // Should find all 4 event types in the complex file
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining("trackEvent('view_page')"));
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining("trackEvent('view_product')"));
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining("trackEvent('view_search')"));
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining("trackEvent('view_category')"));
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining("trackEvent('view_page')")
+            );
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining("trackEvent('view_product')")
+            );
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining("trackEvent('view_search')")
+            );
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining("trackEvent('view_category')")
+            );
         });
 
         it('detects trackEvent calls with double quotes', async () => {
@@ -403,14 +414,16 @@ export const useAnalytics = () => {
 };
             `);
 
-            const plugin = eventInstrumentationValidatorPlugin({
-                verbose: true,
-            });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
             await callPluginHooks(plugin, path);
             // Verify plugin runs and detects the double-quoted event
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining("trackEvent('view_product')"));
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining("trackEvent('view_product')")
+            );
         });
 
         it('detects sendViewPageEvent and createEvent in complex page tracker', async () => {
@@ -427,16 +440,21 @@ export const useAnalytics = () => {
             mockGlob.mockResolvedValue(['/test/project/src/lib/page-view-tracker.tsx']);
             mockReadFileSync.mockReturnValue(COMPLEX_PAGE_VIEW_TRACKER_FILE);
 
-            const plugin = eventInstrumentationValidatorPlugin({
-                verbose: true,
-            });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
             await callPluginHooks(plugin, path);
 
             // Should detect both createEvent('view_page') and sendViewPageEvent() in complex context
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining("createEvent('view_page')"));
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining('sendViewPageEvent()'));
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining("createEvent('view_page')")
+            );
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining('sendViewPageEvent()')
+            );
         });
 
         it('detects events across both config file and instrumented files', async () => {
@@ -468,15 +486,17 @@ export const useAnalytics = () => {
                 return '';
             });
 
-            const plugin = eventInstrumentationValidatorPlugin({
-                verbose: true,
-            });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
             await callPluginHooks(plugin, path);
 
             // Should not warn - both events are instrumented across the two files
-            expect(console.warn).not.toHaveBeenCalledWith(expect.stringContaining('is never instrumented'));
+            expect(console.warn).not.toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('is never instrumented')
+            );
         });
 
         it('detects createEvent calls in isolation', async () => {
@@ -511,14 +531,16 @@ export function CartTracker({ items, onAdd }) {
 }
             `);
 
-            const plugin = eventInstrumentationValidatorPlugin({
-                verbose: true,
-            });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
             await callPluginHooks(plugin, path);
 
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining("createEvent('cart_item_add')"));
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining("createEvent('cart_item_add')")
+            );
         });
     });
 
@@ -527,14 +549,16 @@ export function CartTracker({ items, onAdd }) {
             mockLoadEngagementConfig.mockResolvedValue(null);
             mockGlob.mockResolvedValue([]);
 
-            const plugin = eventInstrumentationValidatorPlugin({
-                verbose: true,
-            });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
             await callPluginHooks(plugin, path);
 
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Skipping validation'));
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining('Skipping validation')
+            );
         });
 
         it('skips disabled adapters', async () => {
@@ -550,15 +574,17 @@ export function CartTracker({ items, onAdd }) {
             });
             mockGlob.mockResolvedValue([]);
 
-            const plugin = eventInstrumentationValidatorPlugin({
-                verbose: true,
-            });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
             await callPluginHooks(plugin, path);
 
             // Should not warn about view_search since adapter is disabled
-            expect(console.warn).not.toHaveBeenCalledWith(expect.stringContaining('view_search'));
+            expect(console.warn).not.toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('view_search')
+            );
         });
 
         it('skips test files when scanning', async () => {
@@ -615,6 +641,7 @@ export function CartTracker({ items, onAdd }) {
             await callPluginHooks(plugin, path);
 
             expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
                 expect.stringContaining(
                     "einstein.view_recommender is enabled but 'view_recommender' is never instrumented"
                 )
@@ -646,8 +673,14 @@ export function CartTracker({ items, onAdd }) {
             await expect(callPluginHooks(plugin, path)).resolves.not.toThrow();
 
             // But should still warn about the missing events
-            expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('einstein.view_recommender'));
-            expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('einstein.click_product_in_recommender'));
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('einstein.view_recommender')
+            );
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('einstein.click_product_in_recommender')
+            );
         });
 
         it('does not throw with default config (failOnMissing defaults to false)', async () => {
@@ -672,7 +705,10 @@ export function CartTracker({ items, onAdd }) {
             await expect(callPluginHooks(plugin, path)).resolves.not.toThrow();
 
             // Should warn about the missing event
-            expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('activeData.checkout_start'));
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('activeData.checkout_start')
+            );
         });
 
         it('reports missing instrumentation per adapter', async () => {
@@ -700,8 +736,14 @@ export function CartTracker({ items, onAdd }) {
             const path = normalizePath('/test/project');
             await callPluginHooks(plugin, path);
 
-            expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('einstein.click_product_in_recommender'));
-            expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('activeData.click_product_in_search'));
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('einstein.click_product_in_recommender')
+            );
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('activeData.click_product_in_search')
+            );
         });
 
         it('throws error when failOnMissing is true', async () => {
@@ -753,15 +795,18 @@ export function CartTracker({ items, onAdd }) {
 
             // Should warn about missing custom_wishlist_add and view_page
             expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
                 expect.stringContaining(
                     "customAdapter.custom_wishlist_add is enabled but 'custom_wishlist_add' is never instrumented"
                 )
             );
             expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
                 expect.stringContaining("customAdapter.view_page is enabled but 'view_page' is never instrumented")
             );
             // Should NOT warn about custom_purchase since it IS instrumented
             expect(console.warn).not.toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
                 expect.stringContaining('custom_purchase is never instrumented')
             );
         });
@@ -784,15 +829,18 @@ export function CartTracker({ items, onAdd }) {
                 trackEvent(a, b, c, 'view_product', {});
             `);
 
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({
                 failOnMissing: true,
-                verbose: true,
             });
 
             // Should not throw
             const path = normalizePath('/test/project');
             await expect(callPluginHooks(plugin, path)).resolves.not.toThrow();
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining('All enabled events are instrumented'));
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining('All enabled events are instrumented')
+            );
         });
 
         it('handles engagement config with no adapters', async () => {
@@ -802,7 +850,8 @@ export function CartTracker({ items, onAdd }) {
             mockGlob.mockResolvedValue(['/test/project/src/hooks/use-analytics.ts']);
             mockReadFileSync.mockReturnValue(`trackEvent(a, b, c, 'view_page', {});`);
 
-            const plugin = eventInstrumentationValidatorPlugin({ verbose: true });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
             await expect(callPluginHooks(plugin, path)).resolves.not.toThrow();
@@ -824,13 +873,17 @@ export function CartTracker({ items, onAdd }) {
                 throw new Error('Permission denied');
             });
 
-            const plugin = eventInstrumentationValidatorPlugin({ verbose: true });
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
             await callPluginHooks(plugin, path);
 
             // Should warn about the file read error
-            expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('Could not read'));
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('Could not read')
+            );
         });
     });
 });

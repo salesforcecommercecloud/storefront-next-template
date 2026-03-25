@@ -36,11 +36,6 @@ export default class Remove extends Command {
             description:
                 'Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_THEME_SWITCHER)',
         }),
-        verbose: Flags.boolean({
-            char: 'v',
-            description: 'Verbose mode',
-            default: false,
-        }),
     };
 
     async run(): Promise<void> {
@@ -53,7 +48,6 @@ export default class Remove extends Command {
             projectDirectory: flags['project-directory'],
             uninstall: true,
             extensions,
-            verbose: flags.verbose,
         });
     }
 }

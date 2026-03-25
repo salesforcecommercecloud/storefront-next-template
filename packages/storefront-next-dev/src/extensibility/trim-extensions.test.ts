@@ -137,7 +137,7 @@ const reloadModule = async () => {
 };
 
 describe('trim-extensions', () => {
-    let trimExtensions: (dir: string, ext: Record<string, boolean>, config?: any, verbose?: boolean) => void;
+    let trimExtensions: (dir: string, ext: Record<string, boolean>, config?: any) => void;
 
     beforeEach(async () => {
         vi.resetModules();
@@ -398,7 +398,10 @@ describe('trim-extensions', () => {
             const trimExt = mod.default || mod;
             trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
 
-            expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('Warning: Unknown marker found'));
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
+                expect.stringContaining('Unknown marker found')
+            );
             consoleSpy.mockRestore();
         });
     });
@@ -406,6 +409,8 @@ describe('trim-extensions', () => {
     describe('file markers', () => {
         it('removes entire file when marked by @sfdc-extension-file marker and extension is disabled', async () => {
             const consoleSpy = mockConsole('log');
+            const originalLogLevel = process.env.SFNEXT_LOG_LEVEL;
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
             vol.mkdirSync('/mock/dir/src/routes', { recursive: true });
             vol.writeFileSync(
                 '/mock/dir/src/routes/featureARoute.tsx',
@@ -422,10 +427,12 @@ describe('trim-extensions', () => {
             trimExt('/mock/dir', { SFDC_EXT_featureA: false, SFDC_EXT_featureB: true }, mockedExtensionConfig, true);
             expect(fileExists('/mock/dir/src/routes/featureARoute.tsx')).toBe(false);
             expect(fileExists('/mock/dir/src/routes/featureBRoute.tsx')).toBe(true);
-            // Use regex to match both Unix (/) and Windows (\) path separators
+            // logger.debug outputs two args: [sfnext:debug] prefix + message
             expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(createPathRegex('Deleted file /mock/dir/src/routes/featureARoute.tsx'))
             );
+            process.env.SFNEXT_LOG_LEVEL = originalLogLevel || '';
             consoleSpy.mockRestore();
         });
 
@@ -457,6 +464,7 @@ describe('trim-extensions', () => {
             trimExt('/mock/dir', { SFDC_EXT_featureA: true }, mockedExtensionConfig, true);
 
             expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:warn]'),
                 expect.stringMatching(/is marked with.*but it does not match any known extensions/)
             );
             consoleSpy.mockRestore();
@@ -482,6 +490,7 @@ describe('trim-extensions', () => {
             }).toThrow('Simulated delete error');
 
             expect(console.error).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
                 expect.stringMatching(/Error deleting file.*Simulated delete error/)
             );
 
@@ -493,6 +502,8 @@ describe('trim-extensions', () => {
     describe('extension folder deletion', () => {
         it('deletes extension folder when extension is disabled and has folder property', async () => {
             const consoleSpy = mockConsole('log');
+            const originalLogLevel = process.env.SFNEXT_LOG_LEVEL;
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
             vol.mkdirSync('/mock/dir/src/extensions/feature-a/components', { recursive: true });
             vol.mkdirSync('/mock/dir/src/extensions/feature-a/pages', { recursive: true });
             vol.writeFileSync(
@@ -509,7 +520,11 @@ describe('trim-extensions', () => {
             expect(fileExists('/mock/dir/src/extensions/feature-a')).toBe(false);
             expect(fileExists('/mock/dir/src/extensions/feature-a/components/component.tsx')).toBe(false);
             expect(fileExists('/mock/dir/src/extensions/feature-a/pages/page.tsx')).toBe(false);
-            expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Deleted extension folder'));
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                expect.stringContaining('Deleted extension folder')
+            );
+            process.env.SFNEXT_LOG_LEVEL = originalLogLevel || '';
             consoleSpy.mockRestore();
         });
 
@@ -573,7 +588,10 @@ describe('trim-extensions', () => {
             const trimExt = mod.default || mod;
             trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
 
-            expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Permission denied'));
+            expect(console.error).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
+                expect.stringContaining('Permission denied')
+            );
 
             vol.rmSync = originalRmSync;
             consoleSpy.mockRestore();
@@ -594,7 +612,10 @@ describe('trim-extensions', () => {
             const trimExt = mod.default || mod;
             trimExt('/mock/dir', { SFDC_EXT_featureA: true, SFDC_EXT_featureB: false }, mockedExtensionConfig, true);
 
-            expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Some other deletion error'));
+            expect(console.error).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
+                expect.stringContaining('Some other deletion error')
+            );
 
             vol.rmSync = originalRmSync;
             consoleSpy.mockRestore();
@@ -782,7 +803,10 @@ describe('trim-extensions', () => {
                 expect((error as Error).message).toContain('Simulated write error');
             }
 
-            expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Error updating file'));
+            expect(console.error).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
+                expect.stringContaining('Error updating file')
+            );
             vol.writeFileSync = originalWriteFileSync;
             consoleSpy.mockRestore();
         });
@@ -791,6 +815,8 @@ describe('trim-extensions', () => {
     describe('edge cases and error handling', () => {
         it('skips processing when no extensions configured', async () => {
             const consoleSpy = mockConsole('log');
+            const originalLogLevel = process.env.SFNEXT_LOG_LEVEL;
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
             vol.writeFileSync(
                 '/mock/dir/src/components/test.tsx',
                 `// @sfdc-extension-line SFDC_EXT_featureA
@@ -801,10 +827,14 @@ describe('trim-extensions', () => {
             const trimExt = mod.default || mod;
             trimExt('/mock/dir', {}, { extensions: {} }, true);
 
-            // Should log early return message
-            expect(console.log).toHaveBeenCalledWith('No targets found, skipping trim');
+            // Should log early return message via logger.debug
+            expect(console.log).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:debug]'),
+                'No targets found, skipping trim'
+            );
             const content = readFile('/mock/dir/src/components/test.tsx');
             expect(content).toContain('@sfdc-extension-line SFDC_EXT_featureA');
+            process.env.SFNEXT_LOG_LEVEL = originalLogLevel || '';
             consoleSpy.mockRestore();
         });
 
@@ -822,37 +852,25 @@ describe('trim-extensions', () => {
             // Test with extensionConfig but undefined extensions property
             expect(() => {
                 // @ts-expect-error - Testing defensive code path
-                trimExt('/mock/dir', {}, { extensions: undefined }, false);
+                trimExt('/mock/dir', {}, { extensions: undefined });
             }).not.toThrow();
         });
 
-        it('handles verbose mode configuration correctly', async () => {
+        it('emits debug logs when SFNEXT_LOG_LEVEL=debug', async () => {
             const consoleSpy = mockConsole('log');
+            const originalLogLevel = process.env.SFNEXT_LOG_LEVEL;
+            process.env.SFNEXT_LOG_LEVEL = 'debug';
 
             vol.writeFileSync('/mock/dir/src/components/test.tsx', `export const Test = 'test';`);
 
             const mod = await reloadModule();
             const trimExt = mod.default || mod;
 
-            // Test with verbose mode enabled
-            trimExt('/mock/dir', {}, mockedExtensionConfig, true);
+            trimExt('/mock/dir', {}, mockedExtensionConfig);
             expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
             expect(console.log).toHaveBeenCalled();
-            consoleSpy.mockClear();
 
-            // Test with verbose parameter set to false
-            trimExt('/mock/dir', {}, mockedExtensionConfig, false);
-            expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
-
-            // Test with verbose parameter set to null/undefined to cover ?? false branch (line 33)
-            // @ts-expect-error - Testing defensive code path with null
-            trimExt('/mock/dir', {}, mockedExtensionConfig, null);
-            expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
-
-            // @ts-expect-error - Testing defensive code path with undefined
-            trimExt('/mock/dir', {}, mockedExtensionConfig, undefined);
-            expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
-
+            process.env.SFNEXT_LOG_LEVEL = originalLogLevel || '';
             consoleSpy.mockRestore();
         });
 

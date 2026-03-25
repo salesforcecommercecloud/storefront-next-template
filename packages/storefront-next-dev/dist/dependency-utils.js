@@ -1,3 +1,4 @@
+import { t as logger } from "./logger.js";
 import path from "path";
 import fs from "fs";
 
@@ -17,17 +18,15 @@ const SINGLE_LINE_MARKER = "@sfdc-extension-line";
 const BLOCK_MARKER_START = "@sfdc-extension-block-start";
 const BLOCK_MARKER_END = "@sfdc-extension-block-end";
 const FILE_MARKER = "@sfdc-extension-file";
-let verbose = false;
-function trimExtensions(directory, selectedExtensions, extensionConfig, verboseOverride = false) {
+function trimExtensions(directory, selectedExtensions, extensionConfig) {
 	const startTime = Date.now();
-	verbose = verboseOverride ?? false;
 	const configuredExtensions = extensionConfig?.extensions || {};
 	const extensions = {};
 	Object.keys(configuredExtensions).forEach((targetKey) => {
 		extensions[targetKey] = Boolean(selectedExtensions?.[targetKey]) || false;
 	});
 	if (Object.keys(extensions).length === 0) {
-		if (verbose) console.log("No targets found, skipping trim");
+		logger.debug("No targets found, skipping trim");
 		return;
 	}
 	const processDirectory = (dir) => {
@@ -46,7 +45,7 @@ function trimExtensions(directory, selectedExtensions, extensionConfig, verboseO
 		updateExtensionConfig(directory, extensions);
 	}
 	const endTime = Date.now();
-	if (verbose) console.log(`Trim extensions took ${endTime - startTime}ms`);
+	logger.debug(`Trim extensions took ${endTime - startTime}ms`);
 }
 /**
 * Update the extension config file to only include the selected extensions.
@@ -71,15 +70,14 @@ function processFile(filePath, extensions) {
 	if (source.includes(FILE_MARKER)) {
 		const markerLine = source.split("\n").find((line) => line.includes(FILE_MARKER));
 		const extMatch = Object.keys(extensions).find((ext) => markerLine.includes(ext));
-		if (!extMatch) {
-			if (verbose) console.warn(`File ${filePath} is marked with ${markerLine} but it does not match any known extensions`);
-		} else if (extensions[extMatch] === false) {
+		if (!extMatch) logger.warn(`File ${filePath} is marked with ${markerLine} but it does not match any known extensions`);
+		else if (extensions[extMatch] === false) {
 			try {
 				fs.unlinkSync(filePath);
-				if (verbose) console.log(`Deleted file ${filePath}`);
+				logger.debug(`Deleted file ${filePath}`);
 			} catch (e) {
 				const error = e;
-				console.error(`Error deleting file ${filePath}: ${error.message}`);
+				logger.error(`Error deleting file ${filePath}: ${error.message}`);
 				throw e;
 			}
 			return;
@@ -108,7 +106,7 @@ function processFile(filePath, extensions) {
 						line: i
 					});
 					skippingBlock = extensions[matchingExtension] === false;
-				} else if (verbose) console.warn(`Warning: Unknown marker found in ${filePath} at line ${i}: \n${line}`);
+				} else logger.warn(`Unknown marker found in ${filePath} at line ${i}: \n${line}`);
 			} else if (line.includes(BLOCK_MARKER_END)) {
 				if (Object.keys(extensions).find((extension) => line.includes(extension))) {
 					const extension = Object.keys(extensions).find((p) => line.includes(p));
@@ -129,10 +127,10 @@ function processFile(filePath, extensions) {
 		const newSource = newLines.join("\n");
 		if (newSource !== source) try {
 			fs.writeFileSync(filePath, newSource);
-			if (verbose) console.log(`Updated file ${filePath}`);
+			logger.debug(`Updated file ${filePath}`);
 		} catch (e) {
 			const error = e;
-			console.error(`Error updating file ${filePath}: ${error.message}`);
+			logger.error(`Error updating file ${filePath}: ${error.message}`);
 			throw e;
 		}
 	}
@@ -156,11 +154,11 @@ function deleteExtensionFolders(projectRoot, extensions, extensionConfig) {
 					recursive: true,
 					force: true
 				});
-				if (verbose) console.log(`Deleted extension folder: ${extensionFolderPath}`);
+				logger.debug(`Deleted extension folder: ${extensionFolderPath}`);
 			} catch (err) {
 				const error = err;
-				if (error.code === "EPERM") console.error(`Permission denied - cannot delete ${extensionFolderPath}. You may need to run with sudo or check permissions.`);
-				else console.error(`Error deleting ${extensionFolderPath}: ${error.message}`);
+				if (error.code === "EPERM") logger.error(`Permission denied - cannot delete ${extensionFolderPath}. You may need to run with sudo or check permissions.`);
+				else logger.error(`Error deleting ${extensionFolderPath}: ${error.message}`);
 			}
 		}
 	});

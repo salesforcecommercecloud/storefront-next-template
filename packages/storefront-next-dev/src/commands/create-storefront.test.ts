@@ -27,12 +27,11 @@ describe('create-storefront command', () => {
         vi.clearAllMocks();
     });
 
-    it('should call createStorefront with verbose and localPackagesDir from flags', async () => {
+    it('should call createStorefront with localPackagesDir from flags', async () => {
         const cmd = new CreateStorefront([], {} as never);
 
         vi.spyOn(cmd as any, 'parse').mockResolvedValue({
             flags: {
-                verbose: true,
                 name: undefined,
                 template: undefined,
                 'local-packages-dir': '/path/to/packages',
@@ -46,7 +45,6 @@ describe('create-storefront command', () => {
         await cmd.run();
 
         expect(createStorefront).toHaveBeenCalledWith({
-            verbose: true,
             name: undefined,
             template: undefined,
             localPackagesDir: '/path/to/packages',

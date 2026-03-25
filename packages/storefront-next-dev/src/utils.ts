@@ -18,7 +18,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
-import { warn, debug } from './utils/logger';
+import { logger } from './logger';
 import type { ProjectPackage, DependencyTree, DependencyRecord } from './types';
 
 export const getDefaultBuildDir = (targetDir: string) => path.join(targetDir, 'build');
@@ -62,7 +62,7 @@ export const loadEnvFile = (projectDir: string): void => {
     if (fs.existsSync(envPath)) {
         dotenv.config({ path: envPath });
     } else {
-        warn('No .env file found');
+        logger.warn('No .env file found');
     }
 };
 
@@ -92,7 +92,7 @@ export const getMrtConfig = (
     // Priority: .env -> undefined (target is optional)
     const defaultMrtTarget = process.env.MRT_TARGET ?? undefined;
 
-    debug('MRT configuration resolved', {
+    logger.debug('MRT configuration resolved', {
         projectDir,
         envMrtProject: process.env.MRT_PROJECT,
         envMrtTarget: process.env.MRT_TARGET,
@@ -165,7 +165,7 @@ export const getDefaultMessage = (projectDir: string): string => {
         }).trim();
         return `${branch}: ${commit}`;
     } catch {
-        debug('Using default bundle message as no message was provided and not in a Git repo.');
+        logger.debug('Using default bundle message as no message was provided and not in a Git repo.');
         return 'PWA Kit Bundle';
     }
 };

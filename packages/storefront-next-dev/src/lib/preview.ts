@@ -20,14 +20,8 @@ import { execSync } from 'child_process';
 import type { ServerBuild } from 'react-router';
 import { createServer } from '../server/index';
 import { loadProjectConfig } from '../server/config';
-import {
-    printServerInfo,
-    printServerConfig,
-    printShutdownMessage,
-    info,
-    warn,
-    error as logError,
-} from '../utils/logger';
+import { logger } from '../logger';
+import { printServerInfo, printServerConfig, printShutdownMessage } from '../utils/logger';
 import { loadEnvFile } from '../utils';
 import { getCommerceCloudApiUrl } from '../utils/paths';
 
@@ -59,8 +53,8 @@ export async function preview(options: ServeOptions = {}): Promise<void> {
     const buildPath = path.join(projectDir, 'build', 'server', 'index.js');
 
     if (!fs.existsSync(buildPath)) {
-        warn('Production build not found. Building project...');
-        info('Running: pnpm build');
+        logger.warn('Production build not found. Building project...');
+        logger.info('Running: pnpm build');
 
         try {
             // Run build command
@@ -69,22 +63,22 @@ export async function preview(options: ServeOptions = {}): Promise<void> {
                 stdio: 'inherit',
             });
 
-            info('Build completed successfully');
+            logger.info('Build completed successfully');
         } catch (err) {
             const errorMsg = err instanceof Error ? err.message : String(err);
-            logError(`Build failed: ${errorMsg}`);
+            logger.error(`Build failed: ${errorMsg}`);
             process.exit(1);
         }
 
         // Verify build was created
         if (!fs.existsSync(buildPath)) {
-            logError(`Build still not found at ${buildPath} after running build command`);
+            logger.error(`Build still not found at ${buildPath} after running build command`);
             process.exit(1);
         }
     }
 
     // Load production build (env vars already loaded above)
-    info(`Loading production build from ${buildPath}`);
+    logger.info(`Loading production build from ${buildPath}`);
     const buildModule = (await import(pathToFileURL(buildPath).href)) as { default: ServerBuild };
     const build = buildModule.default;
 

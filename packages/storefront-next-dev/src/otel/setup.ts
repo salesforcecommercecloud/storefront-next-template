@@ -59,6 +59,7 @@ import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
+import { logger } from '../logger';
 
 export const SERVICE_NAME = 'storefront-next';
 
@@ -122,8 +123,7 @@ export function initTelemetry(): Tracer | null {
         cachedTracer = provider.getTracer(SERVICE_NAME);
         return cachedTracer;
     } catch (error) {
-        // eslint-disable-next-line no-console -- intentional: surface init failures visibly
-        console.error('[otel] Failed to initialize OpenTelemetry:', error);
+        logger.error('[otel] Failed to initialize OpenTelemetry:', error);
         return null;
     }
 }

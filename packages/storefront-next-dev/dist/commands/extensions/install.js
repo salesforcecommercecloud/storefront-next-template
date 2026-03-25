@@ -1,3 +1,5 @@
+import "../../logger.js";
+import "../../logger2.js";
 import "../../dependency-utils.js";
 import { t as commonFlags } from "../../flags.js";
 import { r as manageExtensions } from "../../manage-extensions.js";
@@ -21,11 +23,6 @@ var Install = class Install extends Command {
 			char: "s",
 			description: "Git URL of the source template project",
 			default: DEFAULT_TEMPLATE_GIT_URL
-		}),
-		verbose: Flags.boolean({
-			char: "v",
-			description: "Verbose mode",
-			default: false
 		})
 	};
 	async run() {
@@ -34,8 +31,7 @@ var Install = class Install extends Command {
 			projectDirectory: flags["project-directory"],
 			install: true,
 			extensions: flags.extension ? [flags.extension] : void 0,
-			sourceGitUrl: flags["source-git-url"],
-			verbose: flags.verbose
+			sourceGitUrl: flags["source-git-url"]
 		});
 	}
 };

@@ -25,18 +25,12 @@ export default class CreateStorefront extends Command {
 
     static examples = [
         '<%= config.bin %> <%= command.id %>',
-        '<%= config.bin %> <%= command.id %> -v',
         '<%= config.bin %> <%= command.id %> -n my-storefront -t https://github.com/org/template -b release-0.2.x',
         '<%= config.bin %> <%= command.id %> -n my-storefront -t /path/to/local/template',
         '<%= config.bin %> <%= command.id %> -l /path/to/monorepo/packages',
     ];
 
     static flags = {
-        verbose: Flags.boolean({
-            char: 'v',
-            description: 'Verbose mode',
-            default: false,
-        }),
         name: Flags.string({
             char: 'n',
             description: 'Storefront project name',
@@ -68,7 +62,6 @@ export default class CreateStorefront extends Command {
         const { flags } = await this.parse(CreateStorefront);
 
         await createStorefront({
-            verbose: flags.verbose,
             name: flags.name,
             template: flags.template,
             templateBranch: flags['template-branch'],

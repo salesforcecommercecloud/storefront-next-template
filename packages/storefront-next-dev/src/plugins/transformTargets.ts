@@ -21,6 +21,7 @@ import {
 } from '../extensibility/target-utils';
 import path from 'path';
 import type { ResolvedConfig } from 'vite';
+import { logger } from '../logger';
 
 // --- Vite Plugin --------------------------------------------------------------
 
@@ -55,8 +56,7 @@ export function transformTargetPlaceholderPlugin() {
                 }
                 return null;
             } catch (err: unknown) {
-                // eslint-disable-next-line no-console
-                console.error(`UITarget replace ERROR in ${id}: ${err instanceof Error ? err.stack : String(err)}`);
+                logger.error(`UITarget replace ERROR in ${id}: ${err instanceof Error ? err.stack : String(err)}`);
                 throw err;
             }
         },

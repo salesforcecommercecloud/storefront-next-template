@@ -18,11 +18,11 @@
  * Utility to trim the directory to remove unused components and unused extensions.
  * This is used to reduce the size of the project by removing the code that is not part of the selected extensions.
  */
-/* eslint-disable no-console */
 import fs from 'fs';
 import path from 'path';
 import type ExtensionConfig from './extension-config';
 import { isSupportedFileExtension } from './path-util';
+import { logger } from '../logger';
 
 type ExtensionsSelection = Record<string, boolean>;
 
@@ -30,16 +30,13 @@ const SINGLE_LINE_MARKER = '@sfdc-extension-line';
 const BLOCK_MARKER_START = '@sfdc-extension-block-start';
 const BLOCK_MARKER_END = '@sfdc-extension-block-end';
 const FILE_MARKER = '@sfdc-extension-file';
-let verbose = false;
 
 export default function trimExtensions(
     directory: string,
     selectedExtensions?: Partial<ExtensionsSelection>,
-    extensionConfig?: typeof ExtensionConfig,
-    verboseOverride: boolean = false
+    extensionConfig?: typeof ExtensionConfig
 ): void {
     const startTime = Date.now();
-    verbose = verboseOverride ?? false;
 
     // read available extensions from config file
     const configuredExtensions: Record<string, unknown> = extensionConfig?.extensions || {};
@@ -49,9 +46,7 @@ export default function trimExtensions(
     });
 
     if (Object.keys(extensions).length === 0) {
-        if (verbose) {
-            console.log('No targets found, skipping trim');
-        }
+        logger.debug('No targets found, skipping trim');
         return;
     }
 
@@ -77,9 +72,7 @@ export default function trimExtensions(
         updateExtensionConfig(directory, extensions);
     }
     const endTime = Date.now();
-    if (verbose) {
-        console.log(`Trim extensions took ${endTime - startTime}ms`);
-    }
+    logger.debug(`Trim extensions took ${endTime - startTime}ms`);
 }
 
 /**
@@ -112,20 +105,14 @@ function processFile(filePath: string, extensions: ExtensionsSelection): void {
         const markerLine = source.split('\n').find((line) => line.includes(FILE_MARKER)) as string;
         const extMatch = Object.keys(extensions).find((ext) => markerLine.includes(ext));
         if (!extMatch) {
-            if (verbose) {
-                console.warn(
-                    `File ${filePath} is marked with ${markerLine} but it does not match any known extensions`
-                );
-            }
+            logger.warn(`File ${filePath} is marked with ${markerLine} but it does not match any known extensions`);
         } else if (extensions[extMatch] === false) {
             try {
                 fs.unlinkSync(filePath);
-                if (verbose) {
-                    console.log(`Deleted file ${filePath}`);
-                }
+                logger.debug(`Deleted file ${filePath}`);
             } catch (e: unknown) {
                 const error = e as Error;
-                console.error(`Error deleting file ${filePath}: ${error.message}`);
+                logger.error(`Error deleting file ${filePath}: ${error.message}`);
                 throw e;
             }
             return;
@@ -157,9 +144,7 @@ function processFile(filePath: string, extensions: ExtensionsSelection): void {
                     blockMarkers.push({ extension: matchingExtension, line: i });
                     skippingBlock = extensions[matchingExtension] === false;
                 } else {
-                    if (verbose) {
-                        console.warn(`Warning: Unknown marker found in ${filePath} at line ${i}: \n${line}`);
-                    }
+                    logger.warn(`Unknown marker found in ${filePath} at line ${i}: \n${line}`);
                 }
             } else if (line.includes(BLOCK_MARKER_END)) {
                 const matchingExtension = Object.keys(extensions).find((extension) => line.includes(extension));
@@ -201,12 +186,10 @@ function processFile(filePath: string, extensions: ExtensionsSelection): void {
         if (newSource !== source) {
             try {
                 fs.writeFileSync(filePath, newSource);
-                if (verbose) {
-                    console.log(`Updated file ${filePath}`);
-                }
+                logger.debug(`Updated file ${filePath}`);
             } catch (e: unknown) {
                 const error = e as Error;
-                console.error(`Error updating file ${filePath}: ${error.message}`);
+                logger.error(`Error updating file ${filePath}: ${error.message}`);
                 throw e;
             }
         }
@@ -239,17 +222,15 @@ function deleteExtensionFolders(
             if (fs.existsSync(extensionFolderPath)) {
                 try {
                     fs.rmSync(extensionFolderPath, { recursive: true, force: true });
-                    if (verbose) {
-                        console.log(`Deleted extension folder: ${extensionFolderPath}`);
-                    }
+                    logger.debug(`Deleted extension folder: ${extensionFolderPath}`);
                 } catch (err: unknown) {
                     const error = err as Error & { code?: string };
                     if (error.code === 'EPERM') {
-                        console.error(
+                        logger.error(
                             `Permission denied - cannot delete ${extensionFolderPath}. You may need to run with sudo or check permissions.`
                         );
                     } else {
-                        console.error(`Error deleting ${extensionFolderPath}: ${error.message}`);
+                        logger.error(`Error deleting ${extensionFolderPath}: ${error.message}`);
                     }
                 }
             }

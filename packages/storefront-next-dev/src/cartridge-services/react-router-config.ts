@@ -20,6 +20,7 @@ import { tmpdir } from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { npmRunPathEnv } from 'npm-run-path';
 import type { RouteConfigEntry } from '@react-router/dev/routes';
+import { logger } from '../logger';
 
 let isCliAvailable: boolean | null = null;
 
@@ -121,7 +122,7 @@ export function filePathToRoute(filePath: string, projectRoot: string): string {
     }
 
     // Fallback: if no match found, return a warning path
-    console.warn(`Warning: Could not find route for file: ${filePath}`);
+    logger.warn(`Could not find route for file: ${filePath}`);
     return '/unknown';
 }
 

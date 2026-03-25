@@ -70,13 +70,18 @@ const mockInfo = vi.fn();
 const mockWarn = vi.fn();
 const mockError = vi.fn();
 
+vi.mock('../logger', () => ({
+    logger: {
+        info: mockInfo,
+        warn: mockWarn,
+        error: mockError,
+    },
+}));
+
 vi.mock('../utils/logger', () => ({
     printServerInfo: mockPrintServerInfo,
     printServerConfig: mockPrintServerConfig,
     printShutdownMessage: mockPrintShutdownMessage,
-    info: mockInfo,
-    warn: mockWarn,
-    error: mockError,
 }));
 
 const mockLoadEnvFile = vi.fn();

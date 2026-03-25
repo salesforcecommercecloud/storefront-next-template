@@ -15,6 +15,7 @@
  */
 import { resolve } from 'path';
 import { pathToFileURL } from 'url';
+import { logger } from '../logger';
 
 /**
  * Adapter configuration with event toggles
@@ -35,11 +36,7 @@ export interface EngagementConfig {
 /**
  * Load the engagement config from config.server.ts
  */
-export async function loadEngagementConfig(
-    projectRoot: string,
-    configPath: string,
-    verbose: boolean
-): Promise<EngagementConfig | null> {
+export async function loadEngagementConfig(projectRoot: string, configPath: string): Promise<EngagementConfig | null> {
     const absoluteConfigPath = resolve(projectRoot, configPath);
 
     try {
@@ -48,29 +45,20 @@ export async function loadEngagementConfig(
         const configModule = await import(configUrl);
         const config = configModule.default;
 
-        if (verbose) {
-            // eslint-disable-next-line no-console
-            console.log(`  📄 Loaded config from ${configPath}`);
-        }
+        logger.debug(`📄 Loaded config from ${configPath}`);
 
         // Navigate to engagement config
         const engagement = config?.app?.engagement as EngagementConfig | undefined;
 
         if (!engagement) {
-            if (verbose) {
-                // eslint-disable-next-line no-console
-                console.log(`  ⚠️  No engagement config found in ${configPath}`);
-            }
+            logger.debug(`⚠️  No engagement config found in ${configPath}`);
             return null;
         }
 
         return engagement;
     } catch (error) {
         // Config might not exist or have import errors - this is non-fatal
-        if (verbose) {
-            // eslint-disable-next-line no-console
-            console.warn(`  ⚠️  Could not load config from ${configPath}: ${(error as Error).message}`);
-        }
+        logger.warn(`⚠️  Could not load config from ${configPath}: ${(error as Error).message}`);
         return null;
     }
 }

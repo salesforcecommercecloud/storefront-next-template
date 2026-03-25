@@ -1,3 +1,5 @@
+import { t as logger } from "../logger.js";
+import "../logger2.js";
 import { Command, Flags } from "@oclif/core";
 import path from "path";
 import fs from "fs";
@@ -85,10 +87,10 @@ const findMarkedFiles = (projectRoot, markerValue) => {
 		}
 	};
 	searchFiles(projectRoot);
-	console.log(`Found ${mergeFiles.length} files to merge for marker value ${markerValue}:`);
-	console.log(mergeFiles.join("\n"));
-	console.log(`Found ${newFiles.length} files to add for marker value ${markerValue}:`);
-	console.log(newFiles.join("\n"));
+	logger.info(`Found ${mergeFiles.length} files to merge for marker value ${markerValue}:`);
+	logger.info(mergeFiles.join("\n"));
+	logger.info(`Found ${newFiles.length} files to add for marker value ${markerValue}:`);
+	logger.info(newFiles.join("\n"));
 	return {
 		mergeFiles,
 		newFiles
@@ -111,7 +113,7 @@ const genertaeAndWriteInstructions = (templateFile, context, outputFile) => {
 	const templateContent = fs.readFileSync(templateFile, "utf8");
 	const mdcContent = Handlebars.compile(templateContent)(context);
 	fs.writeFileSync(outputFile, mdcContent, "utf8");
-	console.log(`MDC instructions written to ${outputFile}`);
+	logger.info(`MDC instructions written to ${outputFile}`);
 };
 
 //#endregion

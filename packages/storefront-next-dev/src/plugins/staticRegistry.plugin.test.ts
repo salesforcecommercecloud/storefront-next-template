@@ -79,7 +79,6 @@ describe('staticRegistryPlugin Integration', () => {
             const config = {
                 componentPath: 'custom/components',
                 registryPath: 'custom/registry.ts',
-                verbose: true,
             };
             const plugin = staticRegistryPlugin(config);
             expect(plugin.name).toBe('storefrontnext:static-registry');
@@ -181,7 +180,10 @@ describe('staticRegistryPlugin Integration', () => {
             await callPluginHooks(plugin, mockProjectRoot, errorCallback);
 
             // Check that console.error was called with write error
-            expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Static registry generation failed'));
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
+                expect.stringContaining('Static registry generation failed')
+            );
         });
 
         it('handles glob errors gracefully', async () => {
@@ -193,7 +195,10 @@ describe('staticRegistryPlugin Integration', () => {
             const plugin = staticRegistryPlugin({ failOnError: false });
             await callPluginHooks(plugin, mockProjectRoot, errorCallback);
 
-            expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Static registry generation failed'));
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[sfnext:error]'),
+                expect.stringContaining('Static registry generation failed')
+            );
         });
     });
 

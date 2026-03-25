@@ -18,6 +18,7 @@ import { glob } from 'glob';
 import { readFileSync } from 'fs';
 import { resolve, join } from 'path';
 import { loadEngagementConfig, type EngagementConfig } from './configLoader';
+import { logger } from '../logger';
 
 /**
  * Configuration options for the event instrumentation validator plugin
@@ -40,22 +41,12 @@ export interface EventInstrumentationValidatorConfig {
      * @default false (warning only)
      */
     failOnMissing?: boolean;
-
-    /**
-     * Enable verbose logging
-     * @default false
-     */
-    verbose?: boolean;
 }
 
 /**
  * Extract all trackEvent calls from source files and return the event types found
  */
-async function scanForInstrumentedEvents(
-    projectRoot: string,
-    scanPaths: string[],
-    verbose: boolean
-): Promise<Set<string>> {
+async function scanForInstrumentedEvents(projectRoot: string, scanPaths: string[]): Promise<Set<string>> {
     const instrumentedEvents = new Set<string>();
 
     // Regex patterns to match trackEvent calls
@@ -77,9 +68,7 @@ async function scanForInstrumentedEvents(
             ignore: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx', '**/node_modules/**'],
         });
 
-        if (verbose) {
-            console.log(`  📂 Scanning ${files.length} files in ${scanPath}...`);
-        }
+        logger.debug(`📂 Scanning ${files.length} files in ${scanPath}...`);
 
         for (const file of files) {
             try {
@@ -90,26 +79,20 @@ async function scanForInstrumentedEvents(
                 while ((match = trackEventPattern.exec(content)) !== null) {
                     const eventType = match[1];
                     instrumentedEvents.add(eventType);
-                    if (verbose) {
-                        console.log(`    ✓ Found trackEvent('${eventType}') in ${file}`);
-                    }
+                    logger.debug(`  ✓ Found trackEvent('${eventType}') in ${file}`);
                 }
 
                 // Check for sendViewPageEvent (implies view_page is instrumented)
                 if (sendViewPagePattern.test(content)) {
                     instrumentedEvents.add('view_page');
-                    if (verbose) {
-                        console.log(`    ✓ Found sendViewPageEvent() in ${file}`);
-                    }
+                    logger.debug(`  ✓ Found sendViewPageEvent() in ${file}`);
                 }
 
                 // Find createEvent calls as backup
                 while ((match = createEventPattern.exec(content)) !== null) {
                     const eventType = match[1];
                     instrumentedEvents.add(eventType);
-                    if (verbose) {
-                        console.log(`    ✓ Found createEvent('${eventType}') in ${file}`);
-                    }
+                    logger.debug(`  ✓ Found createEvent('${eventType}') in ${file}`);
                 }
 
                 // Reset regex lastIndex for next file
@@ -117,9 +100,7 @@ async function scanForInstrumentedEvents(
                 sendViewPagePattern.lastIndex = 0;
                 createEventPattern.lastIndex = 0;
             } catch (error) {
-                if (verbose) {
-                    console.warn(`    ⚠️  Could not read ${file}: ${(error as Error).message}`);
-                }
+                logger.warn(`⚠️  Could not read ${file}: ${(error as Error).message}`);
             }
         }
     }
@@ -185,7 +166,7 @@ function extractEnabledEvents(engagement: EngagementConfig): Map<string, Set<str
  * })
  */
 export const eventInstrumentationValidatorPlugin = (config: EventInstrumentationValidatorConfig = {}): Plugin => {
-    const { configPath = 'config.server.ts', scanPaths = ['src'], failOnMissing = false, verbose = false } = config;
+    const { configPath = 'config.server.ts', scanPaths = ['src'], failOnMissing = false } = config;
 
     let resolvedConfig: ResolvedConfig;
 
@@ -200,17 +181,13 @@ export const eventInstrumentationValidatorPlugin = (config: EventInstrumentation
         async buildStart() {
             const projectRoot = resolvedConfig.root;
 
-            if (verbose) {
-                console.log('\n🔍 [event-instrumentation] Validating event instrumentation...');
-            }
+            logger.debug('🔍 Validating event instrumentation...');
 
             // Load engagement config
-            const engagement = await loadEngagementConfig(projectRoot, configPath, verbose);
+            const engagement = await loadEngagementConfig(projectRoot, configPath);
 
             if (!engagement) {
-                if (verbose) {
-                    console.log('  ℹ️  Skipping validation - no engagement config found\n');
-                }
+                logger.debug('ℹ️  Skipping validation - no engagement config found');
                 return;
             }
 
@@ -218,21 +195,16 @@ export const eventInstrumentationValidatorPlugin = (config: EventInstrumentation
             const adapterEvents = extractEnabledEvents(engagement);
 
             if (adapterEvents.size === 0) {
-                if (verbose) {
-                    console.log('  ℹ️  No enabled adapters with event toggles found\n');
-                }
+                logger.debug('ℹ️  No enabled adapters with event toggles found');
                 return;
             }
 
             // Scan source files for instrumented events
-            const instrumentedEvents = await scanForInstrumentedEvents(projectRoot, scanPaths, verbose);
+            const instrumentedEvents = await scanForInstrumentedEvents(projectRoot, scanPaths);
 
-            if (verbose) {
-                console.log(`\n  🔎 Found ${instrumentedEvents.size} instrumented event types:`);
-                for (const event of instrumentedEvents) {
-                    console.log(`     - ${event}`);
-                }
-            }
+            logger.debug(
+                `🔎 Found ${instrumentedEvents.size} instrumented event types: ${[...instrumentedEvents].join(', ')}`
+            );
 
             // Validate each adapter's enabled events
             const missingInstrumentation: Array<{ adapter: string; event: string }> = [];
@@ -250,20 +222,14 @@ export const eventInstrumentationValidatorPlugin = (config: EventInstrumentation
 
             // Report results
             if (missingInstrumentation.length === 0) {
-                if (verbose) {
-                    console.log('\n  ✅ All enabled events are instrumented\n');
-                }
+                logger.debug('✅ All enabled events are instrumented');
                 return;
             }
 
             // Report missing instrumentation
-            console.log('\n');
             for (const { adapter, event } of missingInstrumentation) {
-                console.warn(
-                    `  ⚠️  [event-instrumentation] ${adapter}.${event} is enabled but '${event}' is never instrumented`
-                );
+                logger.warn(`⚠️  ${adapter}.${event} is enabled but '${event}' is never instrumented`);
             }
-            console.log('\n');
 
             if (failOnMissing) {
                 throw new Error(

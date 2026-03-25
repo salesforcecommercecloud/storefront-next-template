@@ -1,4 +1,4 @@
-import { c as warn, t as debug } from "./logger.js";
+import { t as logger } from "./logger.js";
 import { execSync } from "child_process";
 import os from "os";
 import path from "path";
@@ -25,7 +25,7 @@ const getProjectPkg = (projectDir) => {
 const loadEnvFile = (projectDir) => {
 	const envPath = path.join(projectDir, ".env");
 	if (fs.existsSync(envPath)) dotenv.config({ path: envPath });
-	else warn("No .env file found");
+	else logger.warn("No .env file found");
 };
 /**
 * Get MRT configuration with priority logic: .env -> package.json -> defaults
@@ -36,7 +36,7 @@ const getMrtConfig = (projectDir) => {
 	const defaultMrtProject = process.env.MRT_PROJECT ?? pkg.name;
 	if (!defaultMrtProject || defaultMrtProject.trim() === "") throw new Error("Project name couldn't be determined. Do one of these options:\n  1. Set MRT_PROJECT in your .env file, or\n  2. Ensure package.json has a valid \"name\" field.");
 	const defaultMrtTarget = process.env.MRT_TARGET ?? void 0;
-	debug("MRT configuration resolved", {
+	logger.debug("MRT configuration resolved", {
 		projectDir,
 		envMrtProject: process.env.MRT_PROJECT,
 		envMrtTarget: process.env.MRT_TARGET,
@@ -95,7 +95,7 @@ const getDefaultMessage = (projectDir) => {
 			cwd: projectDir
 		}).trim()}`;
 	} catch {
-		debug("Using default bundle message as no message was provided and not in a Git repo.");
+		logger.debug("Using default bundle message as no message was provided and not in a Git repo.");
 		return "PWA Kit Bundle";
 	}
 };

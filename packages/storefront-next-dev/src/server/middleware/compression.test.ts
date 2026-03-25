@@ -18,8 +18,10 @@ import type { Request, Response } from 'express';
 import zlib from 'node:zlib';
 
 // Mock the logger module
-vi.mock('../../utils/logger', () => ({
-    warn: vi.fn(),
+vi.mock('../../logger', () => ({
+    logger: {
+        warn: vi.fn(),
+    },
 }));
 
 // Mock the compression module
@@ -45,7 +47,9 @@ vi.mock('compression', () => {
 // Import after mock is set up
 import { createCompressionMiddleware } from './compression';
 import compression from 'compression';
-import { warn } from '../../utils/logger';
+import { logger } from '../../logger';
+
+const logWarnSpy = vi.spyOn(logger, 'warn');
 
 describe('compression middleware', () => {
     let originalEnv: NodeJS.ProcessEnv;
@@ -105,7 +109,7 @@ describe('compression middleware', () => {
                 const middleware = createCompressionMiddleware() as any;
 
                 expect(middleware.options.level).toBe(zlib.constants.Z_DEFAULT_COMPRESSION);
-                expect(warn).toHaveBeenCalledWith(
+                expect(logWarnSpy).toHaveBeenCalledWith(
                     '[compression] Invalid COMPRESSION_LEVEL="invalid". Using default (-1).'
                 );
             });
@@ -115,7 +119,9 @@ describe('compression middleware', () => {
                 const middleware = createCompressionMiddleware() as any;
 
                 expect(middleware.options.level).toBe(zlib.constants.Z_DEFAULT_COMPRESSION);
-                expect(warn).toHaveBeenCalledWith('[compression] Invalid COMPRESSION_LEVEL="-5". Using default (-1).');
+                expect(logWarnSpy).toHaveBeenCalledWith(
+                    '[compression] Invalid COMPRESSION_LEVEL="-5". Using default (-1).'
+                );
             });
 
             it('should use default compression level and warn when COMPRESSION_LEVEL is greater than 9', () => {
@@ -123,7 +129,9 @@ describe('compression middleware', () => {
                 const middleware = createCompressionMiddleware() as any;
 
                 expect(middleware.options.level).toBe(zlib.constants.Z_DEFAULT_COMPRESSION);
-                expect(warn).toHaveBeenCalledWith('[compression] Invalid COMPRESSION_LEVEL="10". Using default (-1).');
+                expect(logWarnSpy).toHaveBeenCalledWith(
+                    '[compression] Invalid COMPRESSION_LEVEL="10". Using default (-1).'
+                );
             });
 
             it('should use default compression level and warn when COMPRESSION_LEVEL is a large number', () => {
@@ -131,7 +139,9 @@ describe('compression middleware', () => {
                 const middleware = createCompressionMiddleware() as any;
 
                 expect(middleware.options.level).toBe(zlib.constants.Z_DEFAULT_COMPRESSION);
-                expect(warn).toHaveBeenCalledWith('[compression] Invalid COMPRESSION_LEVEL="100". Using default (-1).');
+                expect(logWarnSpy).toHaveBeenCalledWith(
+                    '[compression] Invalid COMPRESSION_LEVEL="100". Using default (-1).'
+                );
             });
 
             it('should use default compression level and warn when COMPRESSION_LEVEL is a decimal number', () => {
@@ -139,7 +149,9 @@ describe('compression middleware', () => {
                 const middleware = createCompressionMiddleware() as any;
 
                 expect(middleware.options.level).toBe(zlib.constants.Z_DEFAULT_COMPRESSION);
-                expect(warn).toHaveBeenCalledWith('[compression] Invalid COMPRESSION_LEVEL="5.5". Using default (-1).');
+                expect(logWarnSpy).toHaveBeenCalledWith(
+                    '[compression] Invalid COMPRESSION_LEVEL="5.5". Using default (-1).'
+                );
             });
 
             it('should use default compression level without warning when COMPRESSION_LEVEL is empty string', () => {
@@ -147,7 +159,7 @@ describe('compression middleware', () => {
                 const middleware = createCompressionMiddleware() as any;
 
                 expect(middleware.options.level).toBe(zlib.constants.Z_DEFAULT_COMPRESSION);
-                expect(warn).not.toHaveBeenCalled();
+                expect(logWarnSpy).not.toHaveBeenCalled();
             });
 
             it('should use default compression level without warning when COMPRESSION_LEVEL contains only whitespace', () => {
@@ -155,7 +167,7 @@ describe('compression middleware', () => {
                 const middleware = createCompressionMiddleware() as any;
 
                 expect(middleware.options.level).toBe(zlib.constants.Z_DEFAULT_COMPRESSION);
-                expect(warn).not.toHaveBeenCalled();
+                expect(logWarnSpy).not.toHaveBeenCalled();
             });
 
             it('should use default compression level and warn when COMPRESSION_LEVEL is alphabetic', () => {
@@ -163,7 +175,9 @@ describe('compression middleware', () => {
                 const middleware = createCompressionMiddleware() as any;
 
                 expect(middleware.options.level).toBe(zlib.constants.Z_DEFAULT_COMPRESSION);
-                expect(warn).toHaveBeenCalledWith('[compression] Invalid COMPRESSION_LEVEL="abc". Using default (-1).');
+                expect(logWarnSpy).toHaveBeenCalledWith(
+                    '[compression] Invalid COMPRESSION_LEVEL="abc". Using default (-1).'
+                );
             });
 
             it('should use default compression level and warn when COMPRESSION_LEVEL is mixed alphanumeric', () => {
@@ -171,7 +185,7 @@ describe('compression middleware', () => {
                 const middleware = createCompressionMiddleware() as any;
 
                 expect(middleware.options.level).toBe(zlib.constants.Z_DEFAULT_COMPRESSION);
-                expect(warn).toHaveBeenCalledWith(
+                expect(logWarnSpy).toHaveBeenCalledWith(
                     '[compression] Invalid COMPRESSION_LEVEL="5abc". Using default (-1).'
                 );
             });
