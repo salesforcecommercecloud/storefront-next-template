@@ -11,7 +11,7 @@
         "noFilterOptionsAvailable": "No filter options available."
     },
     "common": {
-        "defaultSiteName": "NextGen PWA Kit Store",
+        "defaultSiteName": "Storefront Next Store",
         "loading": "Loading",
         "loadingMore": "Loading more...",
         "product": "the product",
@@ -1111,6 +1111,10 @@
                 "ctaText": "Shop Now",
                 "imageAlt": "Women's Grey Dress"
             }
+        },
+        "meta": {
+            "title": "Storefront Next Store",
+            "description": "Next gen fashion store"
         },
         "featuredProducts": {
             "title": "Featured Products",

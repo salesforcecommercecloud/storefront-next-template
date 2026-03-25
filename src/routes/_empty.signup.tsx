@@ -22,6 +22,7 @@ import { registerCustomer } from '@/lib/api/auth/register';
 
 // components
 import { SignupForm } from '@/components/signup-form';
+import { SeoMeta } from '@/components/seo-meta';
 
 // utils
 import { isPasswordValid } from '@/lib/utils';
@@ -98,6 +99,13 @@ export default function Signup(): ReactElement {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+            <SeoMeta
+                title={t('meta.title', { defaultValue: 'Sign Up' })}
+                description={t('meta.description', {
+                    defaultValue: 'Create an account to save your preferences and track your orders.',
+                })}
+                noIndex
+            />
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>

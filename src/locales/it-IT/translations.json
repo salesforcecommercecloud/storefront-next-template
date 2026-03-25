@@ -11,7 +11,7 @@
         "noFilterOptionsAvailable": "Nessuna opzione di filtro disponibile."
     },
     "common": {
-        "defaultSiteName": "Negozio NextGen PWA Kit",
+        "defaultSiteName": "Storefront Next Negozio",
         "loading": "Caricamento",
         "loadingMore": "Caricamento in corso...",
         "product": "il prodotto",
@@ -1002,6 +1002,10 @@
                 "ctaText": "Acquista Ora",
                 "imageAlt": "Abito grigio da donna"
             }
+        },
+        "meta": {
+            "title": "Storefront Next Store",
+            "description": "Negozio di moda di nuova generazione"
         },
         "featuredProducts": {
             "title": "Prodotti in evidenza",
