@@ -22,8 +22,11 @@ import {
     getEventMediator,
     type EventMediator,
     type AnalyticsEvent,
+    type EventSiteInfo,
 } from '@salesforce/storefront-next-runtime/events';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { useSite } from '@salesforce/storefront-next-runtime/multi-site';
+import { useTranslation } from 'react-i18next';
 import type { AppConfig } from '@/types/config';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { getAllAdapters } from '@/lib/adapters';
@@ -55,6 +58,7 @@ async function trackEvent<TEventType extends AnalyticsEvent['eventType']>(
     authPromise: Promise<SessionData | undefined>,
     appConfig: AppConfig,
     trackingConsent: TrackingConsent | undefined,
+    siteInfo: EventSiteInfo | undefined,
     eventType: TEventType,
     eventData: Omit<Parameters<typeof createEvent<TEventType>>[1], 'payload'>
 ): Promise<void> {
@@ -83,7 +87,7 @@ async function trackEvent<TEventType extends AnalyticsEvent['eventType']>(
             usid: auth.usid,
         },
     } as Parameters<typeof createEvent<TEventType>>[1]);
-    return void mediator.track(event);
+    return void mediator.track(event, siteInfo);
 }
 
 /**
@@ -93,6 +97,9 @@ export const useAnalytics = () => {
     const auth = useAuth();
     const appConfig = useConfig<AppConfig>();
     const { trackingConsent } = useTrackingConsent();
+    const site = useSite();
+    const { i18n } = useTranslation();
+    const siteInfo = site ? { siteId: site.id, localeId: i18n.language } : undefined;
 
     // Store the promise resolver so we can resolve it when auth becomes available
     const authResolverRef = useRef<((value: SessionData | undefined) => void) | null>(null);
@@ -151,7 +158,7 @@ export const useAnalytics = () => {
      * function is provided for manual firing of page views.
      */
     const trackViewPage = async (data: { url: string }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'view_page', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'view_page', {
             path: data.url,
         });
     };
@@ -160,7 +167,7 @@ export const useAnalytics = () => {
      * Track a product view
      */
     const trackViewProduct = async (data: { product: ShopperProducts.schemas['Product'] }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'view_product', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'view_product', {
             product: data.product,
         });
     };
@@ -169,7 +176,7 @@ export const useAnalytics = () => {
      * Track add to cart
      */
     const trackCartItemAdd = async (data: { cartItems: ShopperBasketsV2.schemas['ProductItem'][] }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'cart_item_add', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'cart_item_add', {
             cartItems: data.cartItems,
         });
     };
@@ -178,7 +185,7 @@ export const useAnalytics = () => {
      * Track start of checkout process
      */
     const trackCheckoutStart = async (data: { basket: ShopperBasketsV2.schemas['Basket'] }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'checkout_start', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'checkout_start', {
             basket: data.basket,
         });
     };
@@ -191,7 +198,7 @@ export const useAnalytics = () => {
         stepNumber: number;
         basket: ShopperBasketsV2.schemas['Basket'];
     }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'checkout_step', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'checkout_step', {
             stepName: data.stepName,
             stepNumber: data.stepNumber,
             basket: data.basket,
@@ -207,7 +214,7 @@ export const useAnalytics = () => {
         sort: string;
         refinements: ShopperSearch.schemas['ProductSearchResult']['selectedRefinements'];
     }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'view_search', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'view_search', {
             searchInputText: data.searchInputText,
             searchResults: data.searchResults,
             sort: data.sort || '',
@@ -224,7 +231,7 @@ export const useAnalytics = () => {
         sort: string;
         refinements: ShopperSearch.schemas['ProductSearchResult']['selectedRefinements'];
     }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'view_category', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'view_category', {
             category: data.category,
             searchResults: data.searchResults,
             sort: data.sort || '',
@@ -239,7 +246,7 @@ export const useAnalytics = () => {
         category: ShopperProducts.schemas['Category'];
         product: ShopperSearch.schemas['ProductSearchHit'];
     }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'click_product_in_category', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'click_product_in_category', {
             category: data.category,
             product: data.product,
         });
@@ -252,7 +259,7 @@ export const useAnalytics = () => {
         searchInputText: string;
         product: ShopperSearch.schemas['ProductSearchHit'];
     }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'click_product_in_search', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'click_product_in_search', {
             searchInputText: data.searchInputText,
             product: data.product,
         });
@@ -262,7 +269,7 @@ export const useAnalytics = () => {
      * Track view of search suggestions
      */
     const trackViewSearchSuggestions = async (data: { searchInputText: string; suggestions: Array<string> }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'view_search_suggestion', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'view_search_suggestion', {
             searchInputText: data.searchInputText,
             suggestions: data.suggestions,
         });
@@ -272,7 +279,7 @@ export const useAnalytics = () => {
      * Track click on a search suggestion
      */
     const trackClickSearchSuggestion = async (data: { searchInputText: string; suggestion: string }) => {
-        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, 'click_search_suggestion', {
+        return trackEvent(authPromiseRef.current, appConfig, trackingConsent, siteInfo, 'click_search_suggestion', {
             searchInputText: data.searchInputText,
             suggestion: data.suggestion,
         });

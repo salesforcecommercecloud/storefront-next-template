@@ -371,8 +371,6 @@ export default defineConfig<Config>(
                     activeData: {
                         enabled: true,
                         host: 'https://zzrf-001.dx.commercecloud.salesforce.com',
-                        siteId: 'RefArchGlobal',
-                        locale: 'en_GB',
                         siteUUID: '8bb1ea1b04ac3454d36b83a888',
                         eventToggles: {
                             view_page: true,
@@ -440,5 +438,15 @@ export default defineConfig<Config>(
             },
         },
     },
-    { protectedPaths: ['app__engagement', 'app__url__prefix', 'app__url__excludeRoutes'] }
+    {
+        protectedPaths: [
+            'app__engagement__adapters__einstein',
+            'app__engagement__adapters__dataCloud',
+            // intentionally lock these property at runtime override and allow the rest of config
+            'app__engagement__adapters__activeData__enabled',
+            'app__engagement__adapters__activeData__eventToggles',
+            'app__url__prefix',
+            'app__url__excludeRoutes',
+        ],
+    }
 );

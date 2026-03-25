@@ -144,20 +144,25 @@ type EventTypeMap = { [K in AnalyticsEvent as K['eventType']]: K };
 type EventPayload<T extends AnalyticsEvent['eventType']> = Omit<EventTypeMap[T], 'eventType' | 'payload'> & {
   payload: AnalyticsPayload;
 };
+/** Site identification passed to adapters at event-send time */
+type EventSiteInfo = {
+  siteId: string;
+  localeId: string;
+};
 /**
  * Minimal interface for engagement adapters that can send analytics events.
  * Engagemet Adapters must implement this interface to work with the event mediator.
  */
 interface EventAdapter {
   name: string;
-  sendEvent?: (event: AnalyticsEvent) => Promise<unknown>;
+  sendEvent?: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => Promise<unknown>;
 }
 /**
  * Generic event mediator interface for tracking events.
  * This can be used for analytics, telemetry, or any other event tracking system.
  */
 type EventMediator = {
-  track: (event: AnalyticsEvent) => void;
+  track: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => void;
 };
 //#endregion
 //#region src/events/events.d.ts
@@ -185,7 +190,7 @@ declare function createEvent<T extends AnalyticsEvent['eventType']>(eventType: T
  * @param event - The view page event to send
  * @param eventMediator - The event mediator to send the event to
  */
-declare function sendViewPageEvent(event: ViewPageEvent, eventMediator: EventMediator): void;
+declare function sendViewPageEvent(event: ViewPageEvent, eventMediator: EventMediator, siteInfo?: EventSiteInfo): void;
 //#endregion
 //#region src/events/mediator.d.ts
 /**
@@ -204,5 +209,5 @@ declare function getEventMediator(getAdapters: () => EventAdapter[]): EventMedia
  */
 declare function resetEventMediator(): void;
 //#endregion
-export { AnalyticsEvent, AnalyticsEventExtensions, AnalyticsPayload, AnalyticsUser, BaseEvent, CartItemAddEvent, CheckoutStartEvent, CheckoutStepEvent, ClickProductInCategoryEvent, ClickProductInRecommenderEvent, ClickProductInSearchEvent, ClickSearchSuggestionEvent, EventAdapter, EventMediator, EventPayload, EventTypeMap, PayloadTbd, ViewCategoryEvent, ViewPageEvent, ViewProductEvent, ViewRecommenderEvent, ViewSearchEvent, ViewSearchSuggestionEvent, createEvent, getEventMediator, resetEventMediator, sendViewPageEvent };
+export { AnalyticsEvent, AnalyticsEventExtensions, AnalyticsPayload, AnalyticsUser, BaseEvent, CartItemAddEvent, CheckoutStartEvent, CheckoutStepEvent, ClickProductInCategoryEvent, ClickProductInRecommenderEvent, ClickProductInSearchEvent, ClickSearchSuggestionEvent, EventAdapter, EventMediator, EventPayload, EventSiteInfo, EventTypeMap, PayloadTbd, ViewCategoryEvent, ViewPageEvent, ViewProductEvent, ViewRecommenderEvent, ViewSearchEvent, ViewSearchSuggestionEvent, createEvent, getEventMediator, resetEventMediator, sendViewPageEvent };
 //# sourceMappingURL=events.d.ts.map

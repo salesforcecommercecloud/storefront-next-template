@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { AnalyticsEvent, EventAdapter } from '@salesforce/storefront-next-runtime/events';
+import type { AnalyticsEvent, EventAdapter, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
 
 /**
  * Configuration for adapters
  */
 export type EngagementAdapterConfig = {
-    siteId: string;
+    siteId?: string;
     eventToggles: Record<AnalyticsEvent['eventType'], boolean>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
@@ -30,6 +30,6 @@ export type EngagementAdapterConfig = {
  */
 export interface EngagementAdapter extends EventAdapter {
     name: string;
-    sendEvent?: (event: AnalyticsEvent) => Promise<unknown>;
+    sendEvent?: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => Promise<unknown>;
     send?: (url: string, options?: RequestInit) => Promise<Response>;
 }

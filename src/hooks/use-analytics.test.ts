@@ -36,6 +36,14 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: vi.fn(),
 }));
 
+vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
+    useSite: vi.fn(),
+}));
+
+vi.mock('react-i18next', () => ({
+    useTranslation: vi.fn(),
+}));
+
 vi.mock('./use-tracking-consent', () => ({
     useTrackingConsent: vi.fn(),
 }));
@@ -59,6 +67,8 @@ vi.mock('@/lib/adapters/initialize-adapters', () => ({
 
 import { useAuth } from '@/providers/auth';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { useSite } from '@salesforce/storefront-next-runtime/multi-site';
+import { useTranslation } from 'react-i18next';
 import { getAllAdapters } from '@/lib/adapters';
 import { initializeEngagementAdapters } from '@/adapters';
 import { createEvent, getEventMediator, type EventMediator } from '@salesforce/storefront-next-runtime/events';
@@ -132,6 +142,8 @@ describe('useAnalytics', () => {
 
         // Setup default mocks
         vi.mocked(useConfig).mockReturnValue(mockConfig as any);
+        vi.mocked(useSite).mockReturnValue({ id: 'RefArchGlobal' } as any);
+        vi.mocked(useTranslation).mockReturnValue({ i18n: { language: 'en-GB' } } as any);
         vi.mocked(getAllAdapters).mockReturnValue([]);
         vi.mocked(initializeEngagementAdapters).mockResolvedValue(undefined);
         vi.mocked(ensureAdaptersInitialized).mockResolvedValue(undefined);
@@ -181,7 +193,8 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: 'test-usid',
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
 
@@ -225,7 +238,8 @@ describe('useAnalytics', () => {
                         userType: 'guest',
                         usid: undefined,
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });
@@ -246,7 +260,8 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: 'test-usid',
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });
@@ -267,7 +282,8 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: 'test-usid',
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });
@@ -288,7 +304,8 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: 'test-usid',
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });
@@ -315,7 +332,8 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: 'test-usid',
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });
@@ -342,7 +360,8 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: 'test-usid',
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });
@@ -369,7 +388,8 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: 'test-usid',
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });
@@ -394,7 +414,8 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: 'test-usid',
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });
@@ -419,7 +440,8 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: 'test-usid',
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });
@@ -443,7 +465,8 @@ describe('useAnalytics', () => {
                         userType: 'guest',
                         usid: 'test-usid',
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
 
@@ -465,7 +488,8 @@ describe('useAnalytics', () => {
                         userType: 'registered',
                         usid: undefined,
                     },
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });
@@ -524,7 +548,8 @@ describe('useAnalytics', () => {
                 expect.objectContaining({
                     eventType: 'view_page',
                     path: '/test-page',
-                })
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
             );
         });
     });

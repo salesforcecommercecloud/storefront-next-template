@@ -18,12 +18,14 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { useSite } from '@salesforce/storefront-next-runtime/multi-site';
 import type { AppConfig } from '@/types/config';
 import { useAuth } from '@/providers/auth';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { getAllAdapters } from '@/lib/adapters';
 import { useTrackingConsent } from '@/hooks/use-tracking-consent';
 import { TrackingConsent } from '@/types/tracking-consent';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Component that tracks page view events asynchronously
@@ -39,6 +41,8 @@ export function PageViewTracker() {
     const config = useConfig<AppConfig>();
     const auth = useAuth();
     const { trackingConsent } = useTrackingConsent();
+    const site = useSite();
+    const { i18n } = useTranslation();
     const trackedRef = useRef<{ path: string; timestamp: number } | null>(null);
     const trackingResetDuration = config.engagement.analytics.pageViewsResetDuration;
 
@@ -103,7 +107,8 @@ export function PageViewTracker() {
                         usid: auth.usid,
                     },
                 });
-                sendViewPageEvent(event, mediator);
+                const eventSiteInfo = site ? { siteId: site.id, localeId: i18n.language } : undefined;
+                sendViewPageEvent(event, mediator, eventSiteInfo);
             } catch (error) {
                 // Silently fail - analytics should not break the app
                 trackedRef.current = null; // Reset the tracked path to allow tracking again
@@ -125,6 +130,8 @@ export function PageViewTracker() {
         auth,
         trackingConsent,
         trackingResetDuration,
+        site,
+        i18n.language,
     ]);
 
     return null;

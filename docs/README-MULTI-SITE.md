@@ -81,6 +81,9 @@ url: {
 
 Both `prefix` and `search` are optional. You can use either, both, or neither depending on your URL strategy.
 
+> **Important: `url.prefix` and `url.excludeRoutes` require a rebuild.**
+> These values are protected by `protectedPaths` in the config and **cannot be overridden via `PUBLIC__` environment variables** at runtime. Attempting to set `PUBLIC__app__url__prefix` or `PUBLIC__app__url__excludeRoutes` will throw an error. This is because `prefix` determines the React Router route structure, which is baked into the build — changing it at runtime would cause a mismatch between the routes the server expects and the routes the client has bundled. To change the URL prefix pattern, update `config.server.ts` and rebuild the application.
+
 ### URL Config Use Cases
 
 Below are common URL patterns you can achieve by combining `prefix` and `search`. The available `:param` placeholders are **`:siteId`** and **`:localeId`**, which are resolved from the current site and locale refs (after alias mapping).
@@ -468,6 +471,40 @@ The locale switcher (`src/components/locale-switcher`) changes the locale on the
 4. Submits `locale` and `pathname` to `/action/set-locale`
 5. The server action sets the `lng` cookie and redirects to the new URL
 6. The page reloads with the new locale, triggering full revalidation of all loaders
+
+## Engagement Data & Multi-Site
+
+Engagement adapters (Einstein, Active Data, Data Cloud) are initialized once at application startup with static configuration from `config.server.ts`. However, the current site and locale are injected dynamically at **event-send time** via `EventSiteInfo`, which is resolved from the multi-site middleware context.
+
+### How Site Context Flows to Adapters
+
+1. The `useAnalytics` hook calls `useSite()` to get the current site from router context
+2. It constructs an `EventSiteInfo` object: `{ siteId: site.id, localeId: i18n.language }`
+3. Every tracking call (e.g., `trackViewProduct`, `trackAddToCart`) passes `siteInfo` to the event mediator
+4. The mediator forwards `siteInfo` to each registered adapter's `sendEvent` method
+
+```typescript
+// In use-analytics.ts
+const site = useSite();
+const siteInfo = site ? { siteId: site.id, localeId: i18n.language } : undefined;
+
+// Passed to every tracking call
+mediator.track(event, siteInfo);
+```
+
+### Adapter Behavior Per Site
+
+| Adapter | Multi-site aware? | How it uses site context |
+|---------|-------------------|--------------------------|
+| **Active Data** | Yes | Uses `siteInfo.siteId` and `siteInfo.localeId` at event time to build the endpoint URL (`Sites-{siteId}-Site/{locale}`) |
+| **Einstein** | No (static) | Uses the `siteId` from config at initialization — ignores the `siteInfo` parameter at event time |
+| **Data Cloud** | N/A | Not yet implemented |
+
+Active Data automatically routes events to the correct Commerce Cloud site based on the shopper's current site context. Einstein currently sends all events to the single site configured in `config.server.ts` regardless of which site the shopper is browsing.
+
+### Configuration
+
+Engagement adapter config is defined once in `config.server.ts` under `app.engagement.adapters`. These settings are **protected paths** — they cannot be overridden via `PUBLIC__` environment variables at runtime (see [URL Config](#url-config) for a similar restriction). To change engagement adapter settings, update `config.server.ts` and rebuild.
 
 ## Best Practices
 

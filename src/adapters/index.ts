@@ -55,8 +55,6 @@ export function initializeEngagementAdapters(appConfig: AppConfig): void {
                 'active-data',
                 createActiveDataAdapter({
                     host: engagementAdapterConfigs.activeData.host || '',
-                    siteId: engagementAdapterConfigs.activeData.siteId || appConfig.commerce.api.siteId,
-                    locale: engagementAdapterConfigs.activeData.locale || appConfig.i18n.fallbackLng,
                     siteUUID: engagementAdapterConfigs.activeData.siteUUID || '',
                     eventToggles: engagementAdapterConfigs.activeData.eventToggles || {},
                 })

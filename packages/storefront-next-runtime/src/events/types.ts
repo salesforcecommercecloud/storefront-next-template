@@ -214,13 +214,19 @@ export type EventPayload<T extends AnalyticsEvent['eventType']> = Omit<EventType
 // Event System Types
 // ============================================================================
 
+/** Site identification passed to adapters at event-send time */
+export type EventSiteInfo = {
+    siteId: string;
+    localeId: string;
+};
+
 /**
  * Minimal interface for engagement adapters that can send analytics events.
  * Engagemet Adapters must implement this interface to work with the event mediator.
  */
 export interface EventAdapter {
     name: string;
-    sendEvent?: (event: AnalyticsEvent) => Promise<unknown>;
+    sendEvent?: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => Promise<unknown>;
 }
 
 /**
@@ -228,5 +234,5 @@ export interface EventAdapter {
  * This can be used for analytics, telemetry, or any other event tracking system.
  */
 export type EventMediator = {
-    track: (event: AnalyticsEvent) => void;
+    track: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => void;
 };

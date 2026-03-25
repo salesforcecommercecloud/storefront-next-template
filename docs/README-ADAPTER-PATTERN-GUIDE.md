@@ -1911,6 +1911,23 @@ Configuration is driven by `appConfig` object, typically loaded from environment
 }
 ```
 
+#### Multi-Site Considerations
+
+Engagement adapters are initialized once at application startup with static configuration. In a multi-site storefront, the current site and locale are passed dynamically at **event-send time** via `EventSiteInfo` (resolved from the multi-site middleware context). See [Multi-Site: Engagement Data](./README-MULTI-SITE.md#engagement-data--multi-site) for how site context flows to adapters.
+
+#### Environment Variable Overrides
+
+Most engagement adapter settings are **protected paths** — they cannot be overridden via `PUBLIC__` environment variables at runtime. Attempting to set `PUBLIC__app__engagement__adapters__einstein__*` or `PUBLIC__app__engagement__adapters__dataCloud__*` will throw an error. To change these values, update `config.server.ts` and rebuild.
+
+The exceptions are Active Data's `host` and `siteUUID`, which **can** be overridden via environment variables:
+
+```bash
+PUBLIC__app__engagement__adapters__activeData__host=https://your-host.commercecloud.salesforce.com
+PUBLIC__app__engagement__adapters__activeData__siteUUID=your-site-uuid
+```
+
+This allows deploying the same build to different environments that point to different Commerce Cloud instances without rebuilding.
+
 ---
 
 ## Code Templates

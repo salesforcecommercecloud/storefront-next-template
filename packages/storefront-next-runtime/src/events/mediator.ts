@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { EventMediator, AnalyticsEvent, EventAdapter } from './types';
+import type { EventMediator, AnalyticsEvent, EventAdapter, EventSiteInfo } from './types';
 
 // Module-level storage for the event mediator singleton
 // This ensures a single mediator instance across all usages
@@ -34,8 +34,8 @@ let mediatorInstance: EventMediator | undefined;
  */
 function createEventMediator(getAdapters: () => EventAdapter[]): EventMediator {
     return {
-        track: (event: AnalyticsEvent) => {
-            processEventWithAdapters(event, getAdapters).catch((error) => {
+        track: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => {
+            processEventWithAdapters(event, getAdapters, siteInfo).catch((error) => {
                 // eslint-disable-next-line no-console
                 console.error('Analytics tracking failed:', error);
             });
@@ -82,7 +82,11 @@ export function resetEventMediator(): void {
  * @param event - The analytics event to process
  * @param getAdapters - Function that returns the current array of event adapters
  */
-async function processEventWithAdapters(event: AnalyticsEvent, getAdapters: () => EventAdapter[]): Promise<void> {
+async function processEventWithAdapters(
+    event: AnalyticsEvent,
+    getAdapters: () => EventAdapter[],
+    siteInfo?: EventSiteInfo
+): Promise<void> {
     // Get the current array of event adapters
     const eventAdapters = getAdapters();
     if (eventAdapters.length === 0) {
@@ -95,7 +99,7 @@ async function processEventWithAdapters(event: AnalyticsEvent, getAdapters: () =
     const promises = eventAdapters.map(async (adapter) => {
         try {
             if (typeof adapter.sendEvent === 'function') {
-                await adapter.sendEvent(event);
+                await adapter.sendEvent(event, siteInfo);
             } else {
                 // eslint-disable-next-line no-console
                 console.warn(`Adapter ${adapter.name} does not implement sendEvent`);

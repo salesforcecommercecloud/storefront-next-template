@@ -39,6 +39,8 @@ import { TrackingConsent } from '@/types/tracking-consent';
 const mockUseAuth = vi.fn();
 const mockUseConfig = vi.fn();
 const mockUseTrackingConsent = vi.fn();
+const mockUseSite = vi.fn();
+const mockUseTranslation = vi.fn();
 
 // Don't mock useLocation - let it use the actual router location
 
@@ -52,6 +54,14 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 
 vi.mock('@/hooks/use-tracking-consent', () => ({
     useTrackingConsent: () => mockUseTrackingConsent(),
+}));
+
+vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
+    useSite: () => mockUseSite(),
+}));
+
+vi.mock('react-i18next', () => ({
+    useTranslation: () => mockUseTranslation(),
 }));
 
 // Mock dynamic imports - these are loaded asynchronously
@@ -111,6 +121,8 @@ describe('PageViewTracker', () => {
         // Setup default mocks - auth must be defined for tracking to occur
         mockUseAuth.mockReturnValue(defaultGuestAuth);
         mockUseConfig.mockReturnValue(defaultConfig);
+        mockUseSite.mockReturnValue({ id: 'RefArchGlobal' });
+        mockUseTranslation.mockReturnValue({ i18n: { language: 'en-GB' } });
 
         // Default to tracking consent accepted for all existing tests
         mockUseTrackingConsent.mockReturnValue({
@@ -252,7 +264,10 @@ describe('PageViewTracker', () => {
             });
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator);
+                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
+                    siteId: 'RefArchGlobal',
+                    localeId: 'en-GB',
+                });
             });
         });
 
@@ -274,7 +289,10 @@ describe('PageViewTracker', () => {
             });
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator);
+                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
+                    siteId: 'RefArchGlobal',
+                    localeId: 'en-GB',
+                });
             });
         });
     });
@@ -422,7 +440,10 @@ describe('PageViewTracker', () => {
             });
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator);
+                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
+                    siteId: 'RefArchGlobal',
+                    localeId: 'en-GB',
+                });
             });
         });
 
@@ -444,7 +465,10 @@ describe('PageViewTracker', () => {
             });
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator);
+                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
+                    siteId: 'RefArchGlobal',
+                    localeId: 'en-GB',
+                });
             });
         });
     });
@@ -507,7 +531,36 @@ describe('PageViewTracker', () => {
             });
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator);
+                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
+                    siteId: 'RefArchGlobal',
+                    localeId: 'en-GB',
+                });
+            });
+        });
+    });
+
+    describe('Dynamic site/locale', () => {
+        it('should pass correct siteInfo for a different site and locale', async () => {
+            mockUseSite.mockReturnValue({ id: 'SiteGenesis' });
+            mockUseTranslation.mockReturnValue({ i18n: { language: 'fr-FR' } });
+
+            renderPageViewTracker('/test-page');
+
+            await waitFor(() => {
+                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
+                    siteId: 'SiteGenesis',
+                    localeId: 'fr-FR',
+                });
+            });
+        });
+
+        it('should pass undefined siteInfo when useSite returns undefined', async () => {
+            mockUseSite.mockReturnValue(undefined);
+
+            renderPageViewTracker('/test-page');
+
+            await waitFor(() => {
+                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, undefined);
             });
         });
     });
