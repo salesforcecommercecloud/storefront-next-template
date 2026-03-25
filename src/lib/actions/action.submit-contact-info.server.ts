@@ -21,7 +21,6 @@ import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { createContactInfoSchema, parseContactInfoFromFormData } from '@/lib/checkout-schemas';
-import { customerLookup } from '@/lib/api/customer';
 import { updateBillingAddressForBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
 import type { AppConfig } from '@/types/config';
@@ -55,21 +54,6 @@ export async function action(formData: FormData, context: RouterContextProvider)
     // Combine country code and phone number with space separator
     const fullPhone = countryCode && phone ? `${countryCode} ${phone}` : phone;
 
-    // Perform customer lookup first to determine if user is registered or guest
-    let customerLookupResult = null;
-    try {
-        customerLookupResult = await customerLookup(context, email);
-    } catch {
-        // Customer lookup failed, continue with guest flow
-        // Continue with guest flow if lookup fails
-        customerLookupResult = {
-            isRegistered: false,
-            recommendation: 'guest' as const,
-            message: t('checkout.contactInfo.lookupFallbackMessage'),
-        };
-    }
-
-    // Update customer info in Commerce Cloud only if user should be treated as registered
     const basketId = await ensureBasketId(context);
     if (!basketId) {
         return Response.json(
@@ -160,7 +144,6 @@ export async function action(formData: FormData, context: RouterContextProvider)
         data: {
             email,
             phone: fullPhone,
-            customerLookup: customerLookupResult,
         },
         basket: updatedBasket,
     });

@@ -71,6 +71,7 @@ describe('Checkout Loaders', () => {
         vi.restoreAllMocks();
     });
 
+    // Test suite for checkout page loader
     describe('loader', () => {
         function createMockArgs() {
             return {
