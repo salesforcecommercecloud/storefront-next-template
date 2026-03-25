@@ -162,7 +162,7 @@ export const WithWishlist: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         // WishlistButton is inside aria-hidden="true" (visual/mouse only — keyboard reaches wishlist via PDP)
-        const wishlistButton = canvasElement.querySelector('[aria-label="Add to wishlist"]');
+        const wishlistButton = canvasElement.querySelector('[aria-label="Add to Wishlist"]');
         await expect(wishlistButton).not.toBeNull();
     },
 };

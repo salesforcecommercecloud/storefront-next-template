@@ -37,6 +37,7 @@ import { SeoMeta } from '@/components/seo-meta';
 import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
 import {
     getInitialFiltersOpen,
+    getSearchWithoutClientOnlyParams,
     getSearchWithoutFiltersParam,
     useFiltersPanelState,
 } from '@/hooks/use-filters-panel-state';
@@ -134,12 +135,12 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
-    const filtersOnlyChanged =
+    const clientOnlyParamsChanged =
         currentUrl.pathname === nextUrl.pathname &&
         currentUrl.search !== nextUrl.search &&
-        getSearchWithoutFiltersParam(currentUrl.search) === getSearchWithoutFiltersParam(nextUrl.search);
+        getSearchWithoutClientOnlyParams(currentUrl.search) === getSearchWithoutClientOnlyParams(nextUrl.search);
 
-    if (filtersOnlyChanged) {
+    if (clientOnlyParamsChanged) {
         return false;
     }
 

@@ -11,7 +11,7 @@ exports[`WishlistButton stories snapshot > CustomStyling story renders and match
       class="relative"
     >
       <button
-        aria-label="Add to wishlist"
+        aria-label="Add to Wishlist"
         class="absolute top-2 right-2 z-10 bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed text-red-500 hover:text-red-600"
       >
         <svg
@@ -45,7 +45,7 @@ exports[`WishlistButton stories snapshot > Default story renders and matches sna
       class="relative"
     >
       <button
-        aria-label="Add to wishlist"
+        aria-label="Add to Wishlist"
         class="z-10 bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed static top-auto right-auto"
       >
         <svg
@@ -103,7 +103,7 @@ exports[`WishlistButton stories snapshot > DifferentProducts story renders and m
             class="absolute top-2 right-2"
           >
             <button
-              aria-label="Add to wishlist"
+              aria-label="Add to Wishlist"
               class="absolute top-2 right-2 z-10 bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <svg
@@ -145,7 +145,7 @@ exports[`WishlistButton stories snapshot > DifferentProducts story renders and m
             class="absolute top-2 right-2"
           >
             <button
-              aria-label="Add to wishlist"
+              aria-label="Add to Wishlist"
               class="absolute top-2 right-2 z-10 bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <svg
@@ -182,7 +182,7 @@ exports[`WishlistButton stories snapshot > InWishlist story renders and matches 
       class="relative"
     >
       <button
-        aria-label="Add to wishlist"
+        aria-label="Add to Wishlist"
         class="z-10 bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed static top-auto right-auto"
       >
         <svg
@@ -216,7 +216,7 @@ exports[`WishlistButton stories snapshot > LargeSize story renders and matches s
       class="relative"
     >
       <button
-        aria-label="Add to wishlist"
+        aria-label="Add to Wishlist"
         class="z-10 bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed static top-auto right-auto"
       >
         <svg
@@ -250,9 +250,8 @@ exports[`WishlistButton stories snapshot > LoadingState story renders and matche
       class="relative"
     >
       <button
-        aria-label="Add to wishlist"
-        class="absolute top-2 right-2 z-10 bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed opacity-50 cursor-not-allowed"
-        disabled=""
+        aria-label="Add to Wishlist"
+        class="absolute top-2 right-2 z-10 bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
       >
         <svg
           aria-hidden="true"
@@ -285,7 +284,7 @@ exports[`WishlistButton stories snapshot > SmallSize story renders and matches s
       class="relative"
     >
       <button
-        aria-label="Add to wishlist"
+        aria-label="Add to Wishlist"
         class="z-10 bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed static top-auto right-auto"
       >
         <svg
@@ -319,7 +318,7 @@ exports[`WishlistButton stories snapshot > WithVariant story renders and matches
       class="relative"
     >
       <button
-        aria-label="Add to wishlist"
+        aria-label="Add to Wishlist"
         class="z-10 bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed static top-auto right-auto"
       >
         <svg

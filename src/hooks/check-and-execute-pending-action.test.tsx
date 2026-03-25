@@ -77,6 +77,9 @@ describe('useCheckAndExecutePendingAction', () => {
             expect(mockShouldExecute).toHaveBeenCalledWith({ productId: '123' });
             expect(mockOnMatch).toHaveBeenCalledWith({ productId: '123' });
         });
+
+        // Should not navigate — URL cleanup is handled by the root-level hook
+        expect(mockNavigate).not.toHaveBeenCalled();
     });
 
     test('does not execute when action name does not match', async () => {
@@ -113,13 +116,13 @@ describe('useCheckAndExecutePendingAction', () => {
         });
     });
 
-    test('clears URL params on error', async () => {
+    test('resets execution flag on error so action can retry', async () => {
         const mockOnMatch = vi.fn().mockImplementation(() => {
             return Promise.reject(new Error('Test error'));
         });
         const mockShouldExecute = vi.fn().mockReturnValue(true);
 
-        // Catch unhandled rejections - the hook throws the error after clearing URL
+        // Catch unhandled rejections - the hook re-throws after resetting the flag
         const unhandledRejections: unknown[] = [];
         const originalUnhandledRejection = process.listeners('unhandledRejection');
         process.removeAllListeners('unhandledRejection');
@@ -137,13 +140,18 @@ describe('useCheckAndExecutePendingAction', () => {
         await waitFor(
             () => {
                 expect(mockOnMatch).toHaveBeenCalled();
-                expect(mockNavigate).toHaveBeenCalledWith('/product/123', { replace: true });
             },
             { timeout: 2000 }
         );
 
-        // Wait a bit for any async operations to complete
+        // Should not navigate — error resets execution flag but doesn't clean URL
+        expect(mockNavigate).not.toHaveBeenCalled();
+
+        // Wait a bit for the re-thrown error to propagate
         await new Promise((resolve) => setTimeout(resolve, 100));
+
+        expect(unhandledRejections).toHaveLength(1);
+        expect(unhandledRejections[0]).toBeInstanceOf(Error);
 
         // Restore original handlers
         process.removeAllListeners('unhandledRejection');
@@ -164,7 +172,7 @@ describe('useCheckAndExecutePendingAction', () => {
         render(<RouterProvider router={router} />);
 
         await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith('/product/123', { replace: true });
+            expect(mockNavigate).toHaveBeenCalledWith({ pathname: '/product/123', search: '' }, { replace: true });
             expect(mockOnMatch).not.toHaveBeenCalled();
         });
     });
@@ -222,6 +230,8 @@ describe('useCheckAndExecutePendingAction', () => {
                 quantity: 2,
             });
         });
+
+        expect(mockNavigate).not.toHaveBeenCalled();
     });
 
     test('does not execute when actionParams is missing', async () => {

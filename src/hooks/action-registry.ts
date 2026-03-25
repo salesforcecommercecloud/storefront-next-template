@@ -64,20 +64,24 @@ export const actionRegistry: Record<string, ActionHandler> = {
             }
             return formData;
         },
-        handleSuccess: (result, _params, addToast) => {
+        handleSuccess: (result, params, addToast) => {
             const { t } = getTranslation();
+            const productName = params.productName as string | undefined;
             if ((result as { alreadyInWishlist?: boolean }).alreadyInWishlist) {
-                addToast(t('product:itemAlreadyInWishlist'), 'info');
+                addToast(
+                    productName ? t('product:alreadyInWishlist', { productName }) : t('product:itemAlreadyInWishlist'),
+                    'info'
+                );
             } else {
-                addToast(t('product:addedToWishlistGeneric'), 'success');
+                addToast(
+                    productName ? t('product:addedToWishlist', { productName }) : t('product:addedToWishlistGeneric'),
+                    'success'
+                );
             }
         },
         handleError: (result, _params, addToast) => {
-            if (result.error) {
-                addToast(result.error, 'error');
-            }
+            const { t } = getTranslation();
+            addToast(result.error || t('product:failedToAddToWishlist'), 'error');
         },
     },
-    // Add more actions here, e.g.:
-    // addToCart: { ... },
 };

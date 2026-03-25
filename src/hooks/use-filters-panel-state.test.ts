@@ -22,6 +22,8 @@ import {
     FILTERS_OPEN,
     FILTERS_QUERY_PARAM,
     getSearchWithoutFiltersParam,
+    getSearchWithoutActionParams,
+    getSearchWithoutClientOnlyParams,
     getInitialFiltersOpen,
     useFiltersPanelState,
 } from './use-filters-panel-state';
@@ -67,6 +69,46 @@ describe('use-filters-panel-state', () => {
 
         test('returns empty string when filters is the only param', () => {
             expect(getSearchWithoutFiltersParam('?filters=closed')).toBe('');
+        });
+    });
+
+    describe('getSearchWithoutActionParams', () => {
+        test('removes action and actionParams while preserving other params', () => {
+            expect(
+                getSearchWithoutActionParams('?q=shoes&action=addToWishlist&actionParams=%7B%7D&sort=price-asc')
+            ).toBe('?q=shoes&sort=price-asc');
+        });
+
+        test('returns empty string when only action params are present', () => {
+            expect(getSearchWithoutActionParams('?action=addToWishlist&actionParams=%7B%7D')).toBe('');
+        });
+
+        test('preserves filters param', () => {
+            expect(getSearchWithoutActionParams('?filters=open&action=addToWishlist')).toBe('?filters=open');
+        });
+
+        test('returns empty string for empty search', () => {
+            expect(getSearchWithoutActionParams('')).toBe('');
+        });
+    });
+
+    describe('getSearchWithoutClientOnlyParams', () => {
+        test('removes filters, action, and actionParams while preserving other params', () => {
+            expect(
+                getSearchWithoutClientOnlyParams(
+                    '?q=shoes&filters=open&action=addToWishlist&actionParams=%7B%7D&sort=price-asc'
+                )
+            ).toBe('?q=shoes&sort=price-asc');
+        });
+
+        test('returns empty string when only client-only params are present', () => {
+            expect(getSearchWithoutClientOnlyParams('?filters=open&action=addToWishlist&actionParams=%7B%7D')).toBe('');
+        });
+
+        test('preserves non-client-only params', () => {
+            expect(getSearchWithoutClientOnlyParams('?q=shoes&offset=10&refine=color:red')).toBe(
+                '?q=shoes&offset=10&refine=color%3Ared'
+            );
         });
     });
 

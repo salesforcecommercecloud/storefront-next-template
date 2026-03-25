@@ -25,11 +25,29 @@ export function getInitialFiltersOpen(searchParams: URLSearchParams): boolean {
     return searchParams.get(FILTERS_QUERY_PARAM) === FILTERS_OPEN;
 }
 
-export function getSearchWithoutFiltersParam(search: string): string {
+export const ACTION_PARAMS = ['action', 'actionParams'] as const;
+
+function stripParams(search: string, keys: readonly string[]): string {
     const params = new URLSearchParams(search);
-    params.delete(FILTERS_QUERY_PARAM);
+    for (const key of keys) {
+        params.delete(key);
+    }
     const serialized = params.toString();
     return serialized ? `?${serialized}` : '';
+}
+
+export function getSearchWithoutFiltersParam(search: string): string {
+    return stripParams(search, [FILTERS_QUERY_PARAM]);
+}
+
+/** Strips pending action params (action, actionParams) while preserving search state. */
+export function getSearchWithoutActionParams(search: string): string {
+    return stripParams(search, ACTION_PARAMS);
+}
+
+/** Strips all client-only params (filters, pending action) for shouldRevalidate comparison. */
+export function getSearchWithoutClientOnlyParams(search: string): string {
+    return stripParams(search, [FILTERS_QUERY_PARAM, ...ACTION_PARAMS]);
 }
 
 function buildSearchWithFiltersState(search: string, isOpen: boolean): string {
