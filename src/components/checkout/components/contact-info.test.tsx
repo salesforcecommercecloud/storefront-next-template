@@ -170,11 +170,11 @@ describe('ContactInfo Integration Tests', () => {
     });
 
     describe('Email Input', () => {
-        test('renders email label', async () => {
+        test('renders email label with required indicator', async () => {
             renderWithRouter(<ContactInfo {...createDefaultProps()} />);
 
             await waitFor(() => {
-                expect(screen.getByText(/email address/i)).toBeInTheDocument();
+                expect(screen.getByText(/email address\*/i)).toBeInTheDocument();
             });
         });
 
@@ -182,7 +182,7 @@ describe('ContactInfo Integration Tests', () => {
             renderWithRouter(<ContactInfo {...createDefaultProps()} />);
 
             await waitFor(() => {
-                const emailInput = screen.getByLabelText(/email address/i);
+                const emailInput = screen.getByLabelText(/email address\*/i);
                 expect(emailInput).toBeInTheDocument();
                 expect(emailInput).toHaveAttribute('type', 'email');
             });
@@ -267,7 +267,7 @@ describe('ContactInfo Integration Tests', () => {
             expect(screen.getByPlaceholderText('(000) 000-0000')).toBeInTheDocument();
         });
 
-        test('hides phone fields for logged-in users', async () => {
+        test('shows phone fields for logged-in users', async () => {
             useCustomerProfile.mockReturnValue({
                 customerId: 'customer-123',
                 email: 'user@example.com',
@@ -276,10 +276,8 @@ describe('ContactInfo Integration Tests', () => {
             renderWithRouter(<ContactInfo {...createDefaultProps()} />);
 
             await waitFor(() => {
-                expect(screen.getByPlaceholderText(/email address/i)).toBeInTheDocument();
+                expect(screen.getByPlaceholderText('(000) 000-0000')).toBeInTheDocument();
             });
-            expect(screen.queryByPlaceholderText('(000) 000-0000')).not.toBeInTheDocument();
-            expect(screen.queryByLabelText(/^code$/i)).not.toBeInTheDocument();
         });
 
         test('renders country code select', async () => {
@@ -291,13 +289,15 @@ describe('ContactInfo Integration Tests', () => {
             });
         });
 
-        test('allows entering phone number', async () => {
+        test('formats phone number on blur', async () => {
             const user = userEvent.setup();
             renderWithRouter(<ContactInfo {...createDefaultProps()} />);
 
             const phoneInput = screen.getByPlaceholderText('(000) 000-0000');
             await user.type(phoneInput, '5551234567');
+            expect(phoneInput).toHaveValue('5551234567');
 
+            await user.tab();
             expect(phoneInput).toHaveValue('(555) 123-4567');
         });
     });
@@ -319,7 +319,7 @@ describe('ContactInfo Integration Tests', () => {
             expect(screen.getByPlaceholderText('(000) 000-0000')).toBeInTheDocument();
         });
 
-        test('handles logged-in user flow (email only; phone hidden)', async () => {
+        test('handles logged-in user flow', async () => {
             useBasket.mockReturnValue(
                 createMockBasket({
                     customerInfo: { email: 'user@example.com', customerId: 'customer-123' },
@@ -335,7 +335,7 @@ describe('ContactInfo Integration Tests', () => {
             await waitFor(() => {
                 expect(screen.getByPlaceholderText(/email address/i)).toBeInTheDocument();
             });
-            expect(screen.queryByPlaceholderText('(000) 000-0000')).not.toBeInTheDocument();
+            expect(screen.getByPlaceholderText('(000) 000-0000')).toBeInTheDocument();
         });
     });
 
@@ -420,7 +420,7 @@ describe('ContactInfo Integration Tests', () => {
                 expect(handleSubmit).toHaveBeenCalledWith({
                     email: 'valid.email@example.com',
                     countryCode: '+1',
-                    phone: '(555) 123-4567',
+                    phone: '5551234567',
                 });
             });
         });

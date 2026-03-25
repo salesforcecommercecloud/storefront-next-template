@@ -402,6 +402,42 @@ describe('AddressFormFields', () => {
         });
     });
 
+    describe('Phone Field Formatting', () => {
+        test('shows raw digits while typing and formats on blur', async () => {
+            const user = userEvent.setup();
+            render(<TestWrapper>{(form) => <AddressFormFields form={form} showPhone />}</TestWrapper>);
+
+            const phoneInput = screen.getByPlaceholderText(/\(000\) 000-0000/);
+            await user.type(phoneInput, '5551234567');
+            expect(phoneInput).toHaveValue('5551234567');
+
+            await user.tab();
+            expect(phoneInput).toHaveValue('(555) 123-4567');
+        });
+
+        test('strips formatting on focus for editing', async () => {
+            const user = userEvent.setup();
+            render(
+                <TestWrapper defaultValues={{ phone: '(555) 123-4567' }}>
+                    {(form) => <AddressFormFields form={form} showPhone />}
+                </TestWrapper>
+            );
+
+            const phoneInput = screen.getByPlaceholderText(/\(000\) 000-0000/);
+            await user.click(phoneInput);
+            expect(phoneInput).toHaveValue('5551234567');
+        });
+
+        test('limits phone input to 10 digits', async () => {
+            const user = userEvent.setup();
+            render(<TestWrapper>{(form) => <AddressFormFields form={form} showPhone />}</TestWrapper>);
+
+            const phoneInput = screen.getByPlaceholderText(/\(000\) 000-0000/);
+            await user.type(phoneInput, '12345678901234');
+            expect(phoneInput).toHaveValue('1234567890');
+        });
+    });
+
     describe('Field Name Prefixing', () => {
         test('generates correct field names without prefix', () => {
             render(<TestWrapper>{(form) => <AddressFormFields form={form} />}</TestWrapper>);

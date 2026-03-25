@@ -473,10 +473,11 @@ export const Interactive: Story = {
         await userEvent.type(postalCodeInput, '60601');
         await expect(postalCodeInput).toHaveValue('60601');
 
-        // Phone field is shown in ShippingAddressFormWrapper (showPhone=true by default)
-        // The phone input formats as you type: "3125551234" becomes "(312) 555-1234"
+        // Phone field: raw digits while focused, formatted on blur
         const phoneInput = canvas.getByPlaceholderText(/\(000\) 000-0000/i);
         await userEvent.type(phoneInput, '3125551234');
+        await expect(phoneInput).toHaveValue('3125551234');
+        await userEvent.tab();
         await expect(phoneInput).toHaveValue('(312) 555-1234');
     },
 };

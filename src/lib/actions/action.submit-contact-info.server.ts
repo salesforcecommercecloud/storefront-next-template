@@ -23,7 +23,6 @@ import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { createContactInfoSchema, parseContactInfoFromFormData } from '@/lib/checkout-schemas';
 import { customerLookup } from '@/lib/api/customer';
 import { updateBillingAddressForBasket } from '@/lib/api/basket';
-import { isOrderBillingAddressIncomplete } from '@/lib/address-utils';
 import { getTranslation } from '@/lib/i18next';
 import type { AppConfig } from '@/types/config';
 
@@ -133,17 +132,14 @@ export async function action(formData: FormData, context: RouterContextProvider)
         );
     }
 
-    // Save phone on billing only when billing already has a full street address. Patching phone alone creates a
-    // stub that blocks shipping→billing sync and can make createOrder fail with an invalid billing address.
+    // Save phone to billing address so it persists for order placement
     if (fullPhone && updatedBasket) {
         try {
-            const existingBilling = updatedBasket.billingAddress;
-            if (existingBilling && !isOrderBillingAddressIncomplete(existingBilling)) {
-                const billingWithPhone = { ...existingBilling, phone: fullPhone };
-                const billingBasket = await updateBillingAddressForBasket(context, basketId, billingWithPhone);
-                updatedBasket = { ...updatedBasket, billingAddress: billingBasket.billingAddress };
-                updateBasketResource(context, updatedBasket);
-            }
+            const existingBilling = updatedBasket.billingAddress ?? {};
+            const billingWithPhone = { ...existingBilling, phone: fullPhone };
+            const billingBasket = await updateBillingAddressForBasket(context, basketId, billingWithPhone);
+            updatedBasket = { ...updatedBasket, billingAddress: billingBasket.billingAddress };
+            updateBasketResource(context, updatedBasket);
         } catch {
             // Non-blocking: phone on billing is supplemental
         }
@@ -163,6 +159,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         step: 'contactInfo',
         data: {
             email,
+            phone: fullPhone,
             customerLookup: customerLookupResult,
         },
         basket: updatedBasket,

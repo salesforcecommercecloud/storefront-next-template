@@ -14,9 +14,39 @@
  * limitations under the License.
  */
 import { describe, it, expect } from 'vitest';
-import { stripCountryCode, formatPhoneInput, formatPhoneDisplay, extractCountryCode } from './phone-utils';
+import {
+    stripNonDigits,
+    stripCountryCode,
+    formatPhoneInput,
+    formatPhoneDisplay,
+    extractCountryCode,
+} from './phone-utils';
 
 describe('phone-utils', () => {
+    describe('stripNonDigits', () => {
+        it('strips formatting characters from phone numbers', () => {
+            expect(stripNonDigits('(123) 456-7890')).toBe('1234567890');
+            expect(stripNonDigits('123-456-7890')).toBe('1234567890');
+            expect(stripNonDigits('123.456.7890')).toBe('1234567890');
+        });
+
+        it('strips letters and special characters', () => {
+            expect(stripNonDigits('abc123def456')).toBe('123456');
+            expect(stripNonDigits('+1 (555) 123-4567')).toBe('15551234567');
+        });
+
+        it('returns empty string for non-digit input', () => {
+            expect(stripNonDigits('')).toBe('');
+            expect(stripNonDigits('abcdef')).toBe('');
+            expect(stripNonDigits('---')).toBe('');
+        });
+
+        it('returns digits unchanged when no non-digits present', () => {
+            expect(stripNonDigits('1234567890')).toBe('1234567890');
+            expect(stripNonDigits('0')).toBe('0');
+        });
+    });
+
     describe('extractCountryCode', () => {
         it('extracts country code from phone number', () => {
             expect(extractCountryCode('+1 (123) 456-7890')).toBe('+1');

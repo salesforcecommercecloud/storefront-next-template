@@ -29,7 +29,7 @@ import { MIN_INPUT_LENGTH, useAutocompleteSuggestions } from '@/hooks/use-autoco
 import { processAddressSuggestion } from '@/lib/address-suggestions';
 import { UITarget } from '@/targets/ui-target';
 import { getCommonPhoneCountryCodes } from '@/lib/country-codes';
-import { formatPhoneInput, stripCountryCode } from '@/lib/phone-utils';
+import { formatPhoneInput, stripNonDigits, stripCountryCode } from '@/lib/phone-utils';
 
 /**
  * Control slot for address inputs: sets `aria-describedby` only when a validation message exists.
@@ -560,7 +560,15 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                         {...field}
                                         value={stripCountryCode(field.value || '')}
                                         onChange={(e) => {
+                                            field.onChange(stripNonDigits(e.target.value).slice(0, 10));
+                                        }}
+                                        onBlur={(e) => {
+                                            field.onBlur();
                                             field.onChange(formatPhoneInput(e.target.value));
+                                        }}
+                                        onFocus={(e) => {
+                                            const digits = stripNonDigits(e.target.value);
+                                            if (digits !== e.target.value) field.onChange(digits);
                                         }}
                                     />
                                 </AddressFormControl>

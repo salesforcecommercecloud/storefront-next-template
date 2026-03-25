@@ -50,6 +50,15 @@ export const stripCountryCode = (phone: string): string => {
 };
 
 /**
+ * Strips all non-digit characters from a string.
+ *
+ * @example
+ * stripNonDigits("(123) 456-7890") // "1234567890"
+ * stripNonDigits("abc123")         // "123"
+ */
+export const stripNonDigits = (value: string): string => value.replace(/\D/g, '');
+
+/**
  * Formats phone number input as user types (US format).
  * Automatically adds parentheses and dashes: (123) 456-7890
  * Limits input to 10 digits.

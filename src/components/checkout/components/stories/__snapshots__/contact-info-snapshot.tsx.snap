@@ -46,11 +46,9 @@ exports[`ContactInfo stories snapshot > CompletedState story renders and matches
         data-testid="sf-toggle-card-contact-info-content"
       >
         <div
-          class="space-y-2"
+          class="text-sm font-normal leading-5 text-foreground"
         >
-          <p
-            class="text-sm font-medium leading-none text-left text-muted-foreground"
-          >
+          <p>
             Not provided yet
           </p>
         </div>
@@ -104,12 +102,13 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
               data-error="false"
               data-slot="form-label"
               for="_r_0_-form-item"
             >
               Email Address
+              *
             </label>
             <div
               class="relative"
@@ -118,7 +117,7 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
                 aria-describedby="_r_0_-form-item-description"
                 aria-invalid="false"
                 autocomplete="email"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background pr-12"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pr-12"
                 data-slot="form-control"
                 id="_r_0_-form-item"
                 name="email"
@@ -129,12 +128,20 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
             </div>
           </div>
           <div
-            class="flex gap-2"
+            class="flex items-start gap-2"
           >
             <div
-              class="grid gap-2 w-24"
+              class="grid gap-2 w-20"
               data-slot="form-item"
             >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_1_-form-item"
+              >
+                Code
+              </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                 data-slot="native-select-wrapper"
@@ -143,17 +150,11 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
                   aria-describedby="_r_1_-form-item-description"
                   aria-invalid="false"
                   aria-label="Code"
-                  class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 w-full min-w-0 appearance-none rounded-md px-3 py-2 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   data-size="default"
                   data-slot="form-control"
                   id="_r_1_-form-item"
                 >
-                  <option
-                    disabled=""
-                    value=""
-                  >
-                    +1
-                  </option>
                   <option
                     value="+1"
                   >
@@ -234,14 +235,24 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
               class="grid gap-2 flex-1"
               data-slot="form-item"
             >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_2_-form-item"
+              >
+                Phone Number
+                *
+              </label>
               <input
                 aria-describedby="_r_2_-form-item-description"
                 aria-invalid="false"
-                aria-label="Phone Number"
                 autocomplete="tel-national"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_2_-form-item"
+                inputmode="numeric"
+                maxlength="14"
                 name="phone"
                 placeholder="(000) 000-0000"
                 type="tel"
@@ -249,20 +260,15 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
               />
             </div>
           </div>
-          <div
-            class="flex justify-end pt-4"
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+            type="submit"
           >
-            <button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-              data-size="lg"
-              data-slot="button"
-              data-variant="default"
-              disabled=""
-              type="submit"
-            >
-              Continue to Shipping Address
-            </button>
-          </div>
+            Continue to Shipping Address
+          </button>
         </form>
       </div>
     </div>
@@ -316,11 +322,9 @@ exports[`ContactInfo stories snapshot > DisabledState story renders and matches 
         data-testid="sf-toggle-card-contact-info-content"
       >
         <div
-          class="space-y-2"
+          class="text-sm font-normal leading-5 text-foreground"
         >
-          <p
-            class="text-sm font-medium leading-none text-left text-muted-foreground"
-          >
+          <p>
             Not provided yet
           </p>
         </div>
@@ -374,12 +378,13 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
               data-error="false"
               data-slot="form-label"
               for="_r_6_-form-item"
             >
               Email Address
+              *
             </label>
             <div
               class="relative"
@@ -388,7 +393,7 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
                 aria-describedby="_r_6_-form-item-description"
                 aria-invalid="false"
                 autocomplete="email"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background pr-12"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pr-12"
                 data-slot="form-control"
                 id="_r_6_-form-item"
                 name="email"
@@ -399,12 +404,20 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
             </div>
           </div>
           <div
-            class="flex gap-2"
+            class="flex items-start gap-2"
           >
             <div
-              class="grid gap-2 w-24"
+              class="grid gap-2 w-20"
               data-slot="form-item"
             >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_7_-form-item"
+              >
+                Code
+              </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                 data-slot="native-select-wrapper"
@@ -413,17 +426,11 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
                   aria-describedby="_r_7_-form-item-description"
                   aria-invalid="false"
                   aria-label="Code"
-                  class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 w-full min-w-0 appearance-none rounded-md px-3 py-2 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   data-size="default"
                   data-slot="form-control"
                   id="_r_7_-form-item"
                 >
-                  <option
-                    disabled=""
-                    value=""
-                  >
-                    +1
-                  </option>
                   <option
                     value="+1"
                   >
@@ -504,14 +511,24 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
               class="grid gap-2 flex-1"
               data-slot="form-item"
             >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_8_-form-item"
+              >
+                Phone Number
+                *
+              </label>
               <input
                 aria-describedby="_r_8_-form-item-description"
                 aria-invalid="false"
-                aria-label="Phone Number"
                 autocomplete="tel-national"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_8_-form-item"
+                inputmode="numeric"
+                maxlength="14"
                 name="phone"
                 placeholder="(000) 000-0000"
                 type="tel"
@@ -519,20 +536,16 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
               />
             </div>
           </div>
-          <div
-            class="flex justify-end pt-4"
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+            disabled=""
+            type="submit"
           >
-            <button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-              data-size="lg"
-              data-slot="button"
-              data-variant="default"
-              disabled=""
-              type="submit"
-            >
-              Saving...
-            </button>
-          </div>
+            Saving...
+          </button>
         </form>
       </div>
       <div
@@ -595,12 +608,13 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
               data-error="false"
               data-slot="form-label"
               for="_r_3_-form-item"
             >
               Email Address
+              *
             </label>
             <div
               class="relative"
@@ -609,7 +623,7 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
                 aria-describedby="_r_3_-form-item-description"
                 aria-invalid="false"
                 autocomplete="email"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background pr-12"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pr-12"
                 data-slot="form-control"
                 id="_r_3_-form-item"
                 name="email"
@@ -620,12 +634,20 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
             </div>
           </div>
           <div
-            class="flex gap-2"
+            class="flex items-start gap-2"
           >
             <div
-              class="grid gap-2 w-24"
+              class="grid gap-2 w-20"
               data-slot="form-item"
             >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_4_-form-item"
+              >
+                Code
+              </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                 data-slot="native-select-wrapper"
@@ -634,17 +656,11 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
                   aria-describedby="_r_4_-form-item-description"
                   aria-invalid="false"
                   aria-label="Code"
-                  class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 w-full min-w-0 appearance-none rounded-md px-3 py-2 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   data-size="default"
                   data-slot="form-control"
                   id="_r_4_-form-item"
                 >
-                  <option
-                    disabled=""
-                    value=""
-                  >
-                    +1
-                  </option>
                   <option
                     value="+1"
                   >
@@ -725,14 +741,24 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
               class="grid gap-2 flex-1"
               data-slot="form-item"
             >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_5_-form-item"
+              >
+                Phone Number
+                *
+              </label>
               <input
                 aria-describedby="_r_5_-form-item-description"
                 aria-invalid="false"
-                aria-label="Phone Number"
                 autocomplete="tel-national"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_5_-form-item"
+                inputmode="numeric"
+                maxlength="14"
                 name="phone"
                 placeholder="(000) 000-0000"
                 type="tel"
@@ -740,20 +766,15 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
               />
             </div>
           </div>
-          <div
-            class="flex justify-end pt-4"
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+            type="submit"
           >
-            <button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-              data-size="lg"
-              data-slot="button"
-              data-variant="default"
-              disabled=""
-              type="submit"
-            >
-              Continue to Shipping Address
-            </button>
-          </div>
+            Continue to Shipping Address
+          </button>
         </form>
       </div>
     </div>
@@ -812,12 +833,13 @@ exports[`ContactInfo stories snapshot > WithFormError story renders and matches 
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
               data-error="false"
               data-slot="form-label"
               for="_r_9_-form-item"
             >
               Email Address
+              *
             </label>
             <div
               class="relative"
@@ -826,7 +848,7 @@ exports[`ContactInfo stories snapshot > WithFormError story renders and matches 
                 aria-describedby="_r_9_-form-item-description"
                 aria-invalid="false"
                 autocomplete="email"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background pr-12"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pr-12"
                 data-slot="form-control"
                 id="_r_9_-form-item"
                 name="email"
@@ -837,12 +859,20 @@ exports[`ContactInfo stories snapshot > WithFormError story renders and matches 
             </div>
           </div>
           <div
-            class="flex gap-2"
+            class="flex items-start gap-2"
           >
             <div
-              class="grid gap-2 w-24"
+              class="grid gap-2 w-20"
               data-slot="form-item"
             >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_a_-form-item"
+              >
+                Code
+              </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                 data-slot="native-select-wrapper"
@@ -851,17 +881,11 @@ exports[`ContactInfo stories snapshot > WithFormError story renders and matches 
                   aria-describedby="_r_a_-form-item-description"
                   aria-invalid="false"
                   aria-label="Code"
-                  class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 w-full min-w-0 appearance-none rounded-md px-3 py-2 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   data-size="default"
                   data-slot="form-control"
                   id="_r_a_-form-item"
                 >
-                  <option
-                    disabled=""
-                    value=""
-                  >
-                    +1
-                  </option>
                   <option
                     value="+1"
                   >
@@ -942,14 +966,24 @@ exports[`ContactInfo stories snapshot > WithFormError story renders and matches 
               class="grid gap-2 flex-1"
               data-slot="form-item"
             >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_b_-form-item"
+              >
+                Phone Number
+                *
+              </label>
               <input
                 aria-describedby="_r_b_-form-item-description"
                 aria-invalid="false"
-                aria-label="Phone Number"
                 autocomplete="tel-national"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_b_-form-item"
+                inputmode="numeric"
+                maxlength="14"
                 name="phone"
                 placeholder="(000) 000-0000"
                 type="tel"
@@ -957,20 +991,15 @@ exports[`ContactInfo stories snapshot > WithFormError story renders and matches 
               />
             </div>
           </div>
-          <div
-            class="flex justify-end pt-4"
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+            type="submit"
           >
-            <button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-              data-size="lg"
-              data-slot="button"
-              data-variant="default"
-              disabled=""
-              type="submit"
-            >
-              Continue to Shipping Address
-            </button>
-          </div>
+            Continue to Shipping Address
+          </button>
         </form>
       </div>
     </div>
@@ -1022,12 +1051,13 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
             data-slot="form-item"
           >
             <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-base font-medium text-foreground data-[error=true]:text-xl data-[error=true]:font-bold"
+              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
               data-error="false"
               data-slot="form-label"
               for="_r_c_-form-item"
             >
               Email Address
+              *
             </label>
             <div
               class="relative"
@@ -1036,7 +1066,7 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
                 aria-describedby="_r_c_-form-item-description"
                 aria-invalid="false"
                 autocomplete="email"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background pr-12"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pr-12"
                 data-slot="form-control"
                 id="_r_c_-form-item"
                 name="email"
@@ -1047,12 +1077,20 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
             </div>
           </div>
           <div
-            class="flex gap-2"
+            class="flex items-start gap-2"
           >
             <div
-              class="grid gap-2 w-24"
+              class="grid gap-2 w-20"
               data-slot="form-item"
             >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_d_-form-item"
+              >
+                Code
+              </label>
               <div
                 class="group/native-select relative w-fit has-[select:disabled]:opacity-50"
                 data-slot="native-select-wrapper"
@@ -1061,17 +1099,11 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
                   aria-describedby="_r_d_-form-item-description"
                   aria-invalid="false"
                   aria-label="Code"
-                  class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 w-full min-w-0 appearance-none rounded-md px-3 py-2 pr-9 shadow-xs outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
+                  class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   data-size="default"
                   data-slot="form-control"
                   id="_r_d_-form-item"
                 >
-                  <option
-                    disabled=""
-                    value=""
-                  >
-                    +1
-                  </option>
                   <option
                     value="+1"
                   >
@@ -1152,14 +1184,24 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
               class="grid gap-2 flex-1"
               data-slot="form-item"
             >
+              <label
+                class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+                data-error="false"
+                data-slot="form-label"
+                for="_r_e_-form-item"
+              >
+                Phone Number
+                *
+              </label>
               <input
                 aria-describedby="_r_e_-form-item-description"
                 aria-invalid="false"
-                aria-label="Phone Number"
                 autocomplete="tel-national"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md px-3 py-1 shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-12 text-base border-2 border-[#9ca3af] dark:border-input focus:border-primary transition-colors text-foreground bg-background"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 data-slot="form-control"
                 id="_r_e_-form-item"
+                inputmode="numeric"
+                maxlength="14"
                 name="phone"
                 placeholder="(000) 000-0000"
                 type="tel"
@@ -1167,20 +1209,15 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
               />
             </div>
           </div>
-          <div
-            class="flex justify-end pt-4"
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+            data-size="default"
+            data-slot="button"
+            data-variant="default"
+            type="submit"
           >
-            <button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 has-[>svg]:px-4 min-w-56 h-12 text-base font-semibold"
-              data-size="lg"
-              data-slot="button"
-              data-variant="default"
-              disabled=""
-              type="submit"
-            >
-              Continue to Shipping Address
-            </button>
-          </div>
+            Continue to Shipping Address
+          </button>
         </form>
       </div>
     </div>
