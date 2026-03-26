@@ -11,7 +11,7 @@
         "noFilterOptionsAvailable": "No filter options available."
     },
     "common": {
-        "defaultSiteName": "Storefront Next Store",
+        "defaultSiteName": "Storefront Next: Market Street",
         "loading": "Loading",
         "loadingMore": "Loading more...",
         "product": "the product",
@@ -1113,7 +1113,7 @@
             }
         },
         "meta": {
-            "title": "Storefront Next Store",
+            "title": "Storefront Next: Market Street",
             "description": "Next gen fashion store"
         },
         "featuredProducts": {

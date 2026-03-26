@@ -26,7 +26,7 @@ describe('SeoMeta', () => {
     describe('title', () => {
         test('renders title with site name suffix', () => {
             render(<SeoMeta title="Classic Jacket" />);
-            expect(document.title).toBe('Classic Jacket | Storefront Next Store');
+            expect(document.title).toBe('Classic Jacket | Storefront Next: Market Street');
         });
 
         test('renders raw title without suffix when rawTitle is set', () => {
@@ -36,7 +36,7 @@ describe('SeoMeta', () => {
 
         test('renders site name as fallback when no title is provided', () => {
             render(<SeoMeta />);
-            expect(document.title).toBe('Storefront Next Store');
+            expect(document.title).toBe('Storefront Next: Market Street');
         });
     });
 

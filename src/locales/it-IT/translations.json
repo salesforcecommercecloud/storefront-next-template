@@ -11,7 +11,7 @@
         "noFilterOptionsAvailable": "Nessuna opzione di filtro disponibile."
     },
     "common": {
-        "defaultSiteName": "Storefront Next Negozio",
+        "defaultSiteName": "Storefront Next: Market Street",
         "loading": "Caricamento",
         "loadingMore": "Caricamento in corso...",
         "product": "il prodotto",
@@ -1004,7 +1004,7 @@
             }
         },
         "meta": {
-            "title": "Storefront Next Store",
+            "title": "Storefront Next: Market Street",
             "description": "Negozio di moda di nuova generazione"
         },
         "featuredProducts": {
