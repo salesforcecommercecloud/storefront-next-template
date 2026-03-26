@@ -41,7 +41,7 @@ import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/ut
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
 import { generateProductSchema } from '@/utils/product-schema';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';

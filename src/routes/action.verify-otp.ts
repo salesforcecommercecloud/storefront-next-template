@@ -21,7 +21,7 @@ import { getTranslation } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 type VerifyOtpResponse = {
     success: boolean;

@@ -35,8 +35,21 @@ import authMiddleware, {
     updateAuth,
     destroyAuth,
     flashAuth,
+    clearInvalidSessionAndRestoreGuest,
 } from './auth.server';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+
+const mockLogger = {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+};
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => mockLogger),
+    loggerContext: {},
+}));
 
 // Mock createApiClients to return mocked auth namespace
 const mockAuth = {
@@ -320,6 +333,10 @@ describe('auth middleware (server)', () => {
                 refreshToken,
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: 'test-dwsid' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: refreshAccessToken starting', {
+                hasTrackingConsent: false,
+            });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: refreshAccessToken succeeded');
         });
 
         it('should include client secret when SLAS is private', async () => {
@@ -346,6 +363,9 @@ describe('auth middleware (server)', () => {
             mockAuth.refreshToken.mockRejectedValue(mockError);
 
             await expect(refreshAccessToken(provider, refreshToken)).rejects.toThrow('Invalid refresh token');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: refreshAccessToken failed', {
+                error: mockError,
+            });
         });
 
         it('should include DNT value when provided in options', async () => {
@@ -470,6 +490,11 @@ describe('auth middleware (server)', () => {
                 usid: undefined,
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: 'guest-dwsid' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: loginGuestUser starting', {
+                hasUsid: false,
+                isSlasPrivate: false,
+            });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: loginGuestUser succeeded');
         });
 
         it('should login guest user with usid', async () => {
@@ -509,6 +534,9 @@ describe('auth middleware (server)', () => {
             mockAuth.loginAsGuest.mockRejectedValue(mockError);
 
             await expect(loginGuestUser(provider)).rejects.toThrow('Guest login failed');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: loginGuestUser failed', {
+                error: mockError,
+            });
         });
     });
 
@@ -532,6 +560,11 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: 'registered-dwsid' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: loginRegisteredUser starting', {
+                hasUsid: true,
+                hasTrackingConsent: false,
+            });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: loginRegisteredUser succeeded');
         });
 
         it('should login registered user with custom parameters', async () => {
@@ -588,6 +621,9 @@ describe('auth middleware (server)', () => {
             mockAuth.loginWithCredentials.mockRejectedValue(mockError);
 
             await expect(loginRegisteredUser(provider, email, password)).rejects.toThrow('Invalid credentials');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: loginRegisteredUser failed', {
+                error: mockError,
+            });
         });
 
         it('should include DNT value when feature is enabled and DNT exists in auth context', async () => {
@@ -713,6 +749,10 @@ describe('auth middleware (server)', () => {
                     locale: 'en-US',
                 })
             );
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: authorizePasswordless starting', {
+                mode: 'email',
+            });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: authorizePasswordless succeeded');
         });
 
         it('should authorize passwordless with redirect path', async () => {
@@ -749,6 +789,9 @@ describe('auth middleware (server)', () => {
             mockAuth.passwordless.authorize.mockRejectedValue(mockError);
 
             await expect(authorizePasswordless(provider, { userid })).rejects.toThrow('Authorization failed');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: authorizePasswordless failed', {
+                error: mockError,
+            });
         });
 
         it('should return response with non-200 status', async () => {
@@ -788,6 +831,10 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: 'pwdless-dwsid' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: getPasswordLessAccessToken starting', {
+                hasUsid: true,
+            });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: getPasswordLessAccessToken succeeded');
         });
 
         it('should include DNT value when feature is enabled and DNT exists in auth context', async () => {
@@ -919,6 +966,9 @@ describe('auth middleware (server)', () => {
             mockAuth.passwordless.exchangeToken.mockRejectedValue(mockError);
 
             await expect(getPasswordLessAccessToken(provider, token)).rejects.toThrow('Invalid token');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: getPasswordLessAccessToken failed', {
+                error: mockError,
+            });
         });
     });
 
@@ -941,6 +991,8 @@ describe('auth middleware (server)', () => {
             // Verify performance timer was called
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authGetPasswordResetToken', 'start');
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authGetPasswordResetToken', 'end');
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: getPasswordResetToken starting', { mode: 'email' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: getPasswordResetToken succeeded');
         });
 
         it('should request password reset token with private SLAS and include authorization header', async () => {
@@ -1036,6 +1088,9 @@ describe('auth middleware (server)', () => {
             mockAuth.password.requestReset.mockRejectedValue(mockError);
 
             await expect(getPasswordResetToken(provider, { email })).rejects.toThrow('Failed to send reset email');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: getPasswordResetToken failed', {
+                error: mockError,
+            });
         });
 
         it('should call performance timer even on failure', async () => {
@@ -1072,6 +1127,8 @@ describe('auth middleware (server)', () => {
             // Verify performance timer was called
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authResetPasswordWithToken', 'start');
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authResetPasswordWithToken', 'end');
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: resetPasswordWithToken starting');
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: resetPasswordWithToken succeeded');
         });
 
         it('should reset password with private SLAS and include authorization header', async () => {
@@ -1122,6 +1179,9 @@ describe('auth middleware (server)', () => {
             await expect(resetPasswordWithToken(provider, { email, token, newPassword })).rejects.toThrow(
                 'Invalid or expired token'
             );
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: resetPasswordWithToken failed', {
+                error: mockError,
+            });
         });
 
         it('should handle password reset failure due to weak password', async () => {
@@ -2148,6 +2208,35 @@ describe('auth middleware (server)', () => {
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
             expect(storage.get('customerId')).toBe('cookie-customer-id');
+        });
+    });
+
+    describe('clearInvalidSessionAndRestoreGuest', () => {
+        it('should log info on successful guest session restore', async () => {
+            const data = getMockAuthData();
+            const { provider } = mockContext(data);
+            const mockTokenResponse = getMockTokenResponse();
+
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            await clearInvalidSessionAndRestoreGuest(provider);
+
+            expect(mockLogger.info).toHaveBeenCalledWith('Auth: clearing invalid session and restoring guest');
+            expect(mockLogger.info).toHaveBeenCalledWith('Auth: guest session restored successfully');
+        });
+
+        it('should log error on guest session restore failure', async () => {
+            const data = getMockAuthData();
+            const { provider } = mockContext(data);
+            const mockError = new Error('Guest login failed');
+
+            mockAuth.loginAsGuest.mockRejectedValue(mockError);
+
+            await expect(clearInvalidSessionAndRestoreGuest(provider)).rejects.toThrow('Guest login failed');
+            expect(mockLogger.info).toHaveBeenCalledWith('Auth: clearing invalid session and restoring guest');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: guest session restore failed', {
+                error: mockError,
+            });
         });
     });
 });

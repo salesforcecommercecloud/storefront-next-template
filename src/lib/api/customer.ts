@@ -22,7 +22,7 @@ import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 import { orderAddressToCustomerAddress } from '@/lib/address-utils';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Customer lookup result

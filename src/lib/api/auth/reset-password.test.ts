@@ -51,6 +51,10 @@ vi.mock('react-router', () => {
     };
 });
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
+
 // Mock jose library
 vi.mock('jose', () => ({
     decodeJwt: vi.fn(),

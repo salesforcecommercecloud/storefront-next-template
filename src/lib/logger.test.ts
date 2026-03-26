@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createLogger, getLogger, setLogLevel, getLogLevel } from './logger';
-import { correlationContext } from '@/lib/correlation';
+import { createLogger, setLogLevel, getLogLevel } from './logger';
 
 const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 const mockConsoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -176,61 +175,5 @@ describe('createLogger', () => {
             const logger = createLogger();
             expect(Object.isFrozen(logger)).toBe(true);
         });
-    });
-});
-
-describe('getLogger', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-        setLogLevel(undefined);
-    });
-
-    afterEach(() => {
-        setLogLevel(undefined);
-    });
-
-    it('includes correlation ID from router context', () => {
-        const mockContext = {
-            get: vi.fn((ctx: unknown) => {
-                if (ctx === correlationContext) return 'corr-abc-123';
-                return undefined;
-            }),
-        } as any;
-
-        const logger = getLogger(mockContext);
-        logger.info('Session created');
-
-        expect(mockConsoleLog).toHaveBeenCalledWith(
-            'INFO Session created',
-            JSON.stringify({ correlationId: 'corr-abc-123' })
-        );
-    });
-
-    it('merges correlation ID with call-site metadata', () => {
-        const mockContext = {
-            get: vi.fn((ctx: unknown) => {
-                if (ctx === correlationContext) return 'corr-xyz';
-                return undefined;
-            }),
-        } as any;
-
-        const logger = getLogger(mockContext);
-        logger.info('Product loaded', { productId: 'prod-789' });
-
-        expect(mockConsoleLog).toHaveBeenCalledWith(
-            'INFO Product loaded',
-            JSON.stringify({ correlationId: 'corr-xyz', productId: 'prod-789' })
-        );
-    });
-
-    it('works without correlation ID in context', () => {
-        const mockContext = {
-            get: vi.fn(() => undefined),
-        } as any;
-
-        const logger = getLogger(mockContext);
-        logger.info('Product loaded');
-
-        expect(mockConsoleLog).toHaveBeenCalledWith('INFO Product loaded');
     });
 });

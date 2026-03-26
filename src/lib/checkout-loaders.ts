@@ -38,7 +38,7 @@ import { getCustomerProfileForCheckout, isRegisteredCustomer } from '@/lib/api/c
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 import { createApiClients } from '@/lib/api-clients';
 import { currencyContext } from '@/lib/currency';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getPickupShipment } from '@/extensions/bopis/lib/basket-utils';

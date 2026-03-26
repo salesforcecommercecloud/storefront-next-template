@@ -38,6 +38,16 @@ vi.mock('@/lib/api-clients', () => ({
     createApiClients: () => mockCreateApiClients(),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+        child: vi.fn().mockReturnThis(),
+    })),
+}));
+
 vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual = (await importOriginal()) as any;
     return {

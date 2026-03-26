@@ -46,7 +46,7 @@ import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
 import { mergeBasket } from '@/lib/api/basket';
 import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 type LoginActionResponse = {
     success: boolean;

@@ -36,7 +36,7 @@ import { getTranslation } from '@/lib/i18next';
 import { buildUrlFromContext } from '@/lib/url.server';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 function placeOrderErrorResponse(body: { success: false; error: string; step: string }) {
     return Response.json(body, { status: 400 });

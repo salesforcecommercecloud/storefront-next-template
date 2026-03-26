@@ -38,8 +38,7 @@ vi.mock('@/lib/i18next', () => ({
     getTranslation: vi.fn(),
 }));
 
-vi.mock('@/lib/logger', () => ({
-    createLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
 }));
 

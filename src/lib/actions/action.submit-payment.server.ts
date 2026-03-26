@@ -27,7 +27,7 @@ import { getTranslation } from '@/lib/i18next';
 import { getAuth } from '@/middlewares/auth.server';
 import { getCustomerProfileForCheckout } from '@/lib/api/customer';
 import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action for submitting checkout payment information.

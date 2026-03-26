@@ -18,7 +18,7 @@ import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import type { CustomQueryParameters } from '@/lib/api/types';
 import { updateAuth, loginRegisteredUser as authLoginRegisteredUser } from '@/middlewares/auth.server';
 import { getTranslation } from '@/lib/i18next';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 export const loginRegisteredUser = async (
     context: ActionFunctionArgs['context'],

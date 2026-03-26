@@ -32,6 +32,9 @@ import { createTestContext } from '@/lib/test-utils';
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/api-clients');
 vi.mock('@/lib/api/auth/standard-login');
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
 
 const mockContext = createTestContext();
 const { t } = getTranslation();

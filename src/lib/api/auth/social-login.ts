@@ -23,7 +23,7 @@ import type { AppConfig } from '@/types/config';
 import { mergeBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 export interface AuthorizeIDPParams {
     hint: string;

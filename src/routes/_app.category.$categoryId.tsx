@@ -45,7 +45,7 @@ import {
     getSearchWithoutFiltersParam,
     useFiltersPanelState,
 } from '@/hooks/use-filters-panel-state';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 @PageType({
     name: 'Product Listing Page',

@@ -19,7 +19,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { currencyContext } from '@/lib/currency';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];

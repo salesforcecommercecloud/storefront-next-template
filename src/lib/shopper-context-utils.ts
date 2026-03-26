@@ -15,7 +15,7 @@
  */
 import type { RouterContextProvider } from 'react-router';
 import { createShopperContext, type ShopperContext } from '@/lib/api/shopper-context';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 import {
     SHOPPER_CONTEXT_SEARCH_PARAMS,
     QUALIFIER_MAPPING_PARAM_NAME,

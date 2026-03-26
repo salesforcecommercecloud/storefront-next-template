@@ -50,6 +50,10 @@ vi.mock('@/middlewares/basket.server', () => ({
     updateBasketResource: vi.fn(),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
+
 vi.mock('@/lib/utils', () => ({
     isPasswordlessLoginEnabled: false,
     getAppOrigin: vi.fn(),

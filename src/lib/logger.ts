@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createContext as createRouterContext, type RouterContextProvider } from 'react-router';
-import { correlationContext } from '@/lib/correlation';
-
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug';
 
 const LEVEL_PRIORITY: Record<LogLevel, number> = {
@@ -34,7 +31,7 @@ const LEVEL_LABELS: Record<LogLevel, string> = {
 
 let overrideLevel: LogLevel | undefined;
 
-function resolveLevel(): LogLevel {
+export function resolveLevel(): LogLevel {
     if (overrideLevel) return overrideLevel;
 
     if (typeof process !== 'undefined' && process.env) {
@@ -53,7 +50,7 @@ function shouldLog(level: LogLevel): boolean {
 /**
  * Serialize an Error into a plain object so JSON.stringify doesn't produce "{}".
  */
-function serializeError(error: unknown): Record<string, unknown> {
+export function serializeError(error: unknown): Record<string, unknown> {
     if (error instanceof Error) {
         return {
             name: error.name,
@@ -67,7 +64,7 @@ function serializeError(error: unknown): Record<string, unknown> {
 /**
  * Process metadata: serialize Error instances found in values.
  */
-function processMetadata(metadata: Record<string, unknown>): Record<string, unknown> {
+export function processMetadata(metadata: Record<string, unknown>): Record<string, unknown> {
     const processed: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(metadata)) {
         processed[key] = value instanceof Error ? serializeError(value) : value;
@@ -85,23 +82,23 @@ function mergeMetadata(
     return { ...base, ...extra };
 }
 
+/**
+ * Structured logger interface used across the application.
+ *
+ * **Log level guidelines:**
+ * - `error` — Unrecoverable failures within a request (e.g. uncaught exceptions, fatal API errors).
+ * - `warn`  — Recoverable problems: fallback paths, retries, degraded behavior.
+ * - `info`  — Observable outcomes: request completed, action succeeded/failed, significant state changes.
+ *             Use for entries you want visible in production logs.
+ * - `debug` — Internal progress: "starting X", "parsed Y", intermediate steps.
+ *             Useful for local debugging but too noisy for production.
+ */
 export interface Logger {
     error(message: string, metadata?: Record<string, unknown>): void;
     warn(message: string, metadata?: Record<string, unknown>): void;
     info(message: string, metadata?: Record<string, unknown>): void;
     debug(message: string, metadata?: Record<string, unknown>): void;
 }
-
-/**
- * Router context for SDK logger injection.
- *
- * TODO: When the SDK structured logger (pino) is ready, an SDK middleware will
- * set the logger here via `context.set(loggerContext, sdkLogger)`. At that point,
- * `getLogger` should check this context first and delegate to the SDK logger when
- * available. The SDK logger will automatically include request-scoped context
- * (correlation ID, route pattern, etc.) so callers don't need to pass anything.
- */
-export const loggerContext = createRouterContext<Logger | undefined>(undefined);
 
 /**
  * Create a level-gated logger for the template application.
@@ -112,8 +109,8 @@ export const loggerContext = createRouterContext<Logger | undefined>(undefined);
  * Defaults to `warn` in production, `info` otherwise.
  *
  * Use this for client-side code or when router context is not available.
- * For server-side code with router context, prefer {@link getLogger} which
- * automatically includes the correlation ID.
+ * For server-side code with router context, prefer `getLogger` from `@/lib/logger.server`
+ * which automatically includes the correlation ID.
  *
  * @param baseMetadata - Optional metadata included in every log entry (e.g. correlationId)
  *
@@ -166,29 +163,6 @@ export function createLogger(baseMetadata?: Record<string, unknown>): Logger {
             }
         },
     });
-}
-
-/**
- * Get a request-scoped logger from router context.
- *
- * Automatically includes the correlation ID from the request context in every log entry.
- * Use this in middlewares, loaders, actions, and API helpers that have access to
- * the React Router context.
- *
- * @param context - React Router context provider (from middleware/loader/action args)
- *
- * @example
- * ```ts
- * export async function loader({ context }: LoaderFunctionArgs) {
- *     const logger = getLogger(context);
- *     logger.info('Product loaded', { productId });
- * }
- * ```
- */
-export function getLogger(context: Readonly<RouterContextProvider>): Logger {
-    const correlationId = context.get(correlationContext);
-    const baseMetadata = correlationId ? { correlationId } : undefined;
-    return createLogger(baseMetadata);
 }
 
 /**

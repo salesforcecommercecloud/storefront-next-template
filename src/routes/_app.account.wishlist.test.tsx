@@ -38,6 +38,8 @@ const mockLogger = vi.hoisted(() => ({
 }));
 vi.mock('@/lib/logger', () => ({
     createLogger: vi.fn(() => mockLogger),
+}));
+vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => mockLogger),
 }));
 

@@ -23,7 +23,7 @@ import { getTranslation } from '@/lib/i18next';
 import { createApiClients } from '@/lib/api-clients';
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Loader function to fetch preferred store details from cookie.

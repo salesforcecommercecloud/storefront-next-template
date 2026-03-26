@@ -80,8 +80,7 @@ const mockLogger = vi.hoisted(() => ({
     info: vi.fn(),
     debug: vi.fn(),
 }));
-vi.mock('@/lib/logger', () => ({
-    createLogger: vi.fn(() => mockLogger),
+vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => mockLogger),
 }));
 

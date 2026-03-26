@@ -23,7 +23,7 @@ import {
     validateSlasCallbackToken,
 } from '@/lib/marketing-cloud';
 import { getTranslation } from '@/lib/i18next';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 // Re-export for backwards compatibility with tests
 export { resetMarketingCloudTokenCache };

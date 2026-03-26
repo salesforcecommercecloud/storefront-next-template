@@ -42,6 +42,10 @@ vi.mock('@/components/product-view/child-products', () => ({
     ),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
+
 vi.mock('@/components/typography', () => ({
     Typography: ({ children, variant, className, ...props }: any) => (
         <div data-variant={variant} className={className} {...props}>

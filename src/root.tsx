@@ -67,6 +67,7 @@ import {
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { correlationMiddleware } from '@/middlewares/correlation.server';
+import { loggingMiddleware } from '@/middlewares/logging.server';
 import { modeDetectionMiddlewareServer, modeDetectionMiddlewareClient } from '@/middlewares/mode-detection';
 import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 
@@ -139,6 +140,7 @@ export const meta: MetaFunction<typeof loader> = ({ loaderData }) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const middleware: MiddlewareFunction<Response>[] = [
     correlationMiddleware,
+    loggingMiddleware,
     modeDetectionMiddlewareServer,
     appConfigMiddlewareServer,
     multiSiteMiddleware, // Must run after appConfig, before i18next and currency

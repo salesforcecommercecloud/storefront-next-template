@@ -22,7 +22,7 @@ import {
     saveShippingAddressToCustomer,
     saveBillingAddressToCustomer,
 } from '@/lib/api/customer';
-import { getLogger } from '@/lib/logger';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Action route: /action/save-checkout-info-to-customer

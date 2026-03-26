@@ -46,6 +46,7 @@ import {
     COOKIE_AUTH_RECOVERY_GUARD,
 } from '@/middlewares/auth.utils';
 import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
+import { getLogger } from '@/lib/logger.server';
 import { createApiClients } from '@/lib/api-clients';
 import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
@@ -64,6 +65,7 @@ export async function refreshAccessToken(
     refreshToken: string,
     options?: { trackingConsent?: TrackingConsent }
 ): Promise<AuthResponse> {
+    const logger = getLogger(context);
     const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
     performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'start');
@@ -80,12 +82,21 @@ export async function refreshAccessToken(
         }
     }
 
+    logger.debug('Auth: refreshAccessToken starting', {
+        hasTrackingConsent: trackingConsent !== undefined,
+    });
+
     try {
-        return await clients.auth.refreshToken({
+        const result = await clients.auth.refreshToken({
             refreshToken,
             // Convert TrackingConsent enum to boolean for SLAS API
             ...(trackingConsent !== undefined && { dnt: trackingConsentToBoolean(trackingConsent) }),
         });
+        logger.debug('Auth: refreshAccessToken succeeded');
+        return result;
+    } catch (error) {
+        logger.error('Auth: refreshAccessToken failed', { error });
+        throw error;
     } finally {
         performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshAccessToken, 'end');
     }
@@ -100,6 +111,7 @@ export async function loginGuestUser(
     context: Readonly<RouterContextProvider>,
     options?: { usid?: string }
 ): Promise<AuthResponse> {
+    const logger = getLogger(context);
     const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
     const appConfig = getConfig<AppConfig>(context);
@@ -109,9 +121,19 @@ export async function loginGuestUser(
         : PERFORMANCE_MARKS.authLoginGuestUser;
     performanceTimer?.mark(performanceName, 'start');
 
+    logger.debug('Auth: loginGuestUser starting', {
+        hasUsid: !!options?.usid,
+        isSlasPrivate,
+    });
+
     try {
         // SDK handles auth flow selection internally when proxyHost is configured
-        return await clients.auth.loginAsGuest({ usid: options?.usid });
+        const result = await clients.auth.loginAsGuest({ usid: options?.usid });
+        logger.debug('Auth: loginGuestUser succeeded');
+        return result;
+    } catch (error) {
+        logger.error('Auth: loginGuestUser failed', { error });
+        throw error;
     } finally {
         performanceTimer?.mark(performanceName, 'end');
     }
@@ -127,6 +149,7 @@ export async function loginRegisteredUser(
     password: string,
     _options?: { customParameters?: Record<string, unknown> }
 ): Promise<AuthResponse> {
+    const logger = getLogger(context);
     const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
     const { usid } = getAuth(context);
@@ -146,14 +169,24 @@ export async function loginRegisteredUser(
 
     performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'start');
 
+    logger.debug('Auth: loginRegisteredUser starting', {
+        hasUsid: !!usid,
+        hasTrackingConsent: trackingConsent !== undefined,
+    });
+
     try {
-        return await clients.auth.loginWithCredentials({
+        const result = await clients.auth.loginWithCredentials({
             username: email,
             password,
             usid: usid ? String(usid) : undefined,
             // Convert TrackingConsent enum to boolean for SLAS API
             ...(trackingConsent !== undefined && { dnt: trackingConsentToBoolean(trackingConsent) }),
         });
+        logger.debug('Auth: loginRegisteredUser succeeded');
+        return result;
+    } catch (error) {
+        logger.error('Auth: loginRegisteredUser failed', { error });
+        throw error;
     } finally {
         performanceTimer?.mark(PERFORMANCE_MARKS.authLoginRegisteredUser, 'end');
     }
@@ -202,17 +235,25 @@ export async function authorizePasswordless(
     const i18nextData = context.get(i18nextContext);
     const locale = i18nextData?.getLocale();
 
-    return await clients.auth.passwordless
-        .authorize({
+    const logger = getLogger(context);
+    logger.debug('Auth: authorizePasswordless starting', { mode });
+
+    try {
+        const result = await clients.auth.passwordless.authorize({
             userId,
             callbackUri: finalCallbackUri,
             usid: usid ? String(usid) : undefined,
             mode,
             ...(locale && { locale }),
-        })
-        .finally(() => {
-            performanceTimer?.mark(PERFORMANCE_MARKS.authAuthorizePasswordless, 'end');
         });
+        logger.debug('Auth: authorizePasswordless succeeded');
+        return result;
+    } catch (error) {
+        logger.error('Auth: authorizePasswordless failed', { error });
+        throw error;
+    } finally {
+        performanceTimer?.mark(PERFORMANCE_MARKS.authAuthorizePasswordless, 'end');
+    }
 }
 
 /**
@@ -243,13 +284,21 @@ export async function getPasswordResetToken(
     const i18nextData = context.get(i18nextContext);
     const locale = i18nextData?.getLocale();
 
+    const logger = getLogger(context);
+    logger.debug('Auth: getPasswordResetToken starting', { mode });
+
     try {
-        return await clients.auth.password.requestReset({
+        const result = await clients.auth.password.requestReset({
             userId: parameters.email,
             callbackUri,
             mode,
             ...(locale && { locale }),
         });
+        logger.debug('Auth: getPasswordResetToken succeeded');
+        return result;
+    } catch (error) {
+        logger.error('Auth: getPasswordResetToken failed', { error });
+        throw error;
     } finally {
         performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordResetToken, 'end');
     }
@@ -269,14 +318,22 @@ export async function resetPasswordWithToken(
     const performanceTimer = context.get(performanceTimerContext);
     performanceTimer?.mark(PERFORMANCE_MARKS.authResetPasswordWithToken, 'start');
 
+    const logger = getLogger(context);
     const clients = createApiClients(context);
 
+    logger.debug('Auth: resetPasswordWithToken starting');
+
     try {
-        return await clients.auth.password.reset({
+        const result = await clients.auth.password.reset({
             userId: parameters.email,
             token: parameters.token,
             newPassword: parameters.newPassword,
         });
+        logger.debug('Auth: resetPasswordWithToken succeeded');
+        return result;
+    } catch (error) {
+        logger.error('Auth: resetPasswordWithToken failed', { error });
+        throw error;
     } finally {
         performanceTimer?.mark(PERFORMANCE_MARKS.authResetPasswordWithToken, 'end');
     }
@@ -311,12 +368,22 @@ export async function getPasswordLessAccessToken(
         }
     }
 
+    const logger = getLogger(context);
+    logger.debug('Auth: getPasswordLessAccessToken starting', {
+        hasUsid: !!usid,
+    });
+
     try {
-        return await clients.auth.passwordless.exchangeToken({
+        const result = await clients.auth.passwordless.exchangeToken({
             pwdlessLoginToken,
             usid: usid ? String(usid) : undefined,
             ...(dnt !== undefined && { dnt }),
         });
+        logger.debug('Auth: getPasswordLessAccessToken succeeded');
+        return result;
+    } catch (error) {
+        logger.error('Auth: getPasswordLessAccessToken failed', { error });
+        throw error;
     } finally {
         performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordLessAccessToken, 'end');
     }
@@ -326,12 +393,15 @@ export async function getPasswordLessAccessToken(
  * Server-side utility to retrieve/verify the validity of stored Commerce API auth information.
  * Validates access token expiry using the expiry injected from JWT during middleware initialization.
  */
+type AuthAction = 'tokenValid' | 'tokenRefreshed' | 'guestLogin';
+
 const retrieveAuthStorageData = async (
     context: Readonly<RouterContextProvider>,
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,
     cache: { ref: AuthData | undefined }
-): Promise<void> => {
+): Promise<AuthAction> => {
     const { t } = getTranslation(context);
+    const logger = getLogger(context);
 
     const accessToken = storage.get('accessToken');
     const accessTokenExpiry = storage.get('accessTokenExpiry');
@@ -347,32 +417,39 @@ const retrieveAuthStorageData = async (
         typeof accessTokenExpiry === 'number' &&
         accessTokenExpiry > Date.now()
     ) {
-        return;
+        logger.debug('Auth: access token valid', {
+            expiresIn: Math.round((accessTokenExpiry - Date.now()) / 1000),
+        });
+        return 'tokenValid';
     }
     // Token missing or expired - proceed to refresh flow below
 
     // If access token missing but refresh token exists, use it to get new access token
     if (typeof refreshToken === 'string' && refreshToken.length) {
+        const storedUserType = storage.get('userType');
+        const userType: 'guest' | 'registered' = storedUserType === 'registered' ? 'registered' : 'guest';
+        logger.debug('Auth: access token expired or missing, refreshing', { userType });
         try {
-            const storedUserType = storage.get('userType');
-            const userType: 'guest' | 'registered' = storedUserType === 'registered' ? 'registered' : 'guest';
-
             // Use refresh token operation and update storage/cache
             performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshToken, 'start');
             const tokenResponse = await refreshAccessToken(context, refreshToken);
             performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshToken, 'end');
             await updateStorageAndCache(context, storage, cache, tokenResponse, userType);
-            return;
-        } catch {
+            logger.info('Auth: token refreshed', { userType });
+            return 'tokenRefreshed';
+        } catch (error) {
             // Invalid/expired refresh token: clear tokens and fall back to guest login
+            logger.warn('Auth: refresh token failed, falling back to guest login', { error, userType });
             storage.set('error', t('errors:accessTokenRefreshFailed'));
         }
     }
 
     // Otherwise, get a new guest token (fallback for users not logged in)
     // Note: Registered users should log in through `/login` action, not here
+    const storedUsid = storage.get('usid');
+    const hasUsid = typeof storedUsid === 'string' && storedUsid.length > 0;
+    logger.debug('Auth: no valid tokens, performing guest login', { hasUsid });
     try {
-        const storedUsid = storage.get('usid');
         const usid = typeof storedUsid === 'string' ? storedUsid : undefined;
 
         // Use guest login operation and update storage/cache
@@ -382,8 +459,12 @@ const retrieveAuthStorageData = async (
         });
         performanceTimer?.mark(PERFORMANCE_MARKS.authGuestLogin, 'end');
         await updateStorageAndCache(context, storage, cache, tokenResponse, 'guest');
-    } catch {
+        logger.info('Auth: guest session created');
+        return 'guestLogin';
+    } catch (error) {
+        logger.error('Auth: guest login failed', { error });
         storage.set('error', t('errors:guestAccessTokenFailed'));
+        return 'guestLogin';
     }
 };
 
@@ -428,8 +509,11 @@ const handleAuthTokenInvalidation = async ({
     hasAuthRecoveryGuard: boolean;
     error: unknown;
 }): Promise<{ response: Response; authRecoveryTriggered: boolean }> => {
+    const logger = getLogger(context);
+
     // Guard against loops: if we already redirected once, surface the error.
     if (hasAuthRecoveryGuard) {
+        logger.error('Auth: token invalidation recovery blocked by guard', { error });
         throw error;
     }
 
@@ -444,8 +528,11 @@ const handleAuthTokenInvalidation = async ({
 
     // If recovery failed, rethrow so ErrorBoundary can handle it.
     if (authStorage.has('error')) {
+        logger.error('Auth: token invalidation recovery failed', { error });
         throw error;
     }
+
+    logger.info('Auth: token invalidation recovery succeeded, redirecting');
 
     // Restart the request lifecycle with fresh auth cookies.
     return {
@@ -493,6 +580,8 @@ const authCacheContext = createContext<{ ref: AuthData | undefined }>();
  * to ensure the Commerce API context portion becomes available throughout the whole application.
  */
 const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
+    const logger = getLogger(context);
+    logger.debug('Auth middleware: start');
     // Before calling the handler: Load current Commerce API data from incoming cookies, if applicable
     const cookieConfig = getCookieConfig({ httpOnly: true }, context);
     const cookieHeader = request.headers.get('Cookie');
@@ -578,6 +667,13 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         refreshToken = null;
     }
 
+    logger.debug('Auth middleware: cookies parsed', {
+        userType,
+        hasRefreshToken: !!refreshToken,
+        hasAccessToken: !!accessToken,
+        hasUsid: !!usid,
+    });
+
     // Reconstruct authData from individual cookies
     // Note: expiry times are NOT persisted in cookies - they're derived from JWT tokens at runtime
     // This decodes once during middleware initialization for fast numeric comparison later
@@ -594,6 +690,10 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         // Only validate if tracking consent feature is enabled
         if (isTrackingConsentEnabled(context) && claims?.trackingConsent !== null && trackingConsent !== undefined) {
             if (claims?.trackingConsent !== trackingConsent) {
+                logger.info('Auth middleware: tracking consent mismatch detected', {
+                    tokenConsent: claims?.trackingConsent,
+                    cookieConsent: trackingConsentCookieValue,
+                });
                 trackingConsent = undefined;
                 hasTrackingConsentMismatch = true;
             }
@@ -608,6 +708,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
             authData.customerId = tokenCustomerId;
             if (tokenCustomerId !== customerId) {
                 hasCustomerIdMismatch = true;
+                logger.info('Auth middleware: customer ID mismatch detected');
             }
         } else if (customerId) {
             authData.customerId = customerId;
@@ -648,9 +749,14 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     context.set(authCacheContext, authCache);
 
     // Before calling the handler: Verify existing Commerce API auth data or retrieve new information
-    await retrieveAuthStorageData(context, authStorage, authCache).catch(() => {
-        // Intentionally empty
-    });
+    let authAction: AuthAction | undefined;
+    await retrieveAuthStorageData(context, authStorage, authCache)
+        .then((action) => {
+            authAction = action;
+        })
+        .catch((error) => {
+            logger.warn('Auth middleware: retrieveAuthStorageData failed', { error });
+        });
 
     let response: Response;
     let authRecoveryTriggered = false;
@@ -663,6 +769,10 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         if (!isAuthTokenInvalidError(error)) {
             throw error;
         }
+
+        logger.warn('Auth middleware: token invalidation detected, attempting recovery', {
+            hasRecoveryGuard: hasAuthRecoveryGuard,
+        });
 
         // Run the recovery flow and build the redirect response.
         const recovery = await handleAuthTokenInvalidation({
@@ -677,10 +787,14 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         // Persist recovery state for response cookie handling below.
         authRecoveryTriggered = recovery.authRecoveryTriggered;
         response = recovery.response;
+        logger.debug('Auth middleware: recovery redirect issued');
     }
 
     const storedAuthError = authStorage.get('error');
     if (storedAuthError === AUTH_TOKEN_INVALID_ERROR) {
+        logger.warn('Auth middleware: deferred token invalidation error, attempting recovery', {
+            hasRecoveryGuard: hasAuthRecoveryGuard,
+        });
         authStorage.delete('error');
         const recovery = await handleAuthTokenInvalidation({
             request,
@@ -696,6 +810,10 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
 
     // After calling the handler: Write back storage data and cookies, if required
     if (authStorage.has('isDestroyed') || authStorage.has('error')) {
+        logger.warn('Auth middleware: session destroyed or errored, clearing all auth cookies', {
+            isDestroyed: authStorage.has('isDestroyed'),
+            hasError: authStorage.has('error'),
+        });
         // Clean up the storage container. That way the information is immediately updated for eventually
         // running middlewares after this one as well.
         clearStorage(authStorage, false);
@@ -732,6 +850,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         response.headers.append('Set-Cookie', await shopperContextCookie.serialize('', deleteHttpOnlyCookieConfig));
         response.headers.append('Set-Cookie', await sourceCodeCookie.serialize('', deleteHttpOnlyCookieConfig));
     } else if (authStorage.has('isUpdated')) {
+        logger.debug('Auth middleware: auth storage updated, writing cookies');
         // Clean up storage container metadata
         authStorage.delete('isUpdated');
 
@@ -990,6 +1109,15 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         response.headers.set('x-sfnext-auth-recovery-guard', '1');
     }
 
+    logger.debug('Auth middleware: complete', {
+        status: response.status,
+        userType: (authStorage.get('userType') as string) ?? 'unknown',
+        authAction,
+        authRecoveryTriggered,
+        hasError: authStorage.has('error'),
+        isDestroyed: authStorage.has('isDestroyed'),
+    });
+
     return response;
 };
 
@@ -1063,6 +1191,7 @@ export const flashAuth = (context: Readonly<RouterContextProvider>, message?: st
  * the middleware's response section to send Set-Cookie deletion headers.
  */
 export const clearInvalidSessionAndRestoreGuest = async (context: Readonly<RouterContextProvider>): Promise<void> => {
+    const logger = getLogger(context);
     const { t } = getTranslation();
     const storage = context.get(authStorageContext);
     const cache = context.get(authCacheContext);
@@ -1071,6 +1200,8 @@ export const clearInvalidSessionAndRestoreGuest = async (context: Readonly<Route
     if (!storage || !cache || !promiseCache) {
         throw new Error('clearInvalidSessionAndRestoreGuest must be used within auth middleware');
     }
+
+    logger.info('Auth: clearing invalid session and restoring guest');
 
     // Clear in-memory storage and cache
     clearStorage(storage);
@@ -1084,10 +1215,12 @@ export const clearInvalidSessionAndRestoreGuest = async (context: Readonly<Route
 
         // Mark for destruction - triggers cookie deletion in response section
         storage.set('isDestroyed', true);
+        logger.info('Auth: guest session restored successfully');
     } catch (error) {
         // If guest login fails, still mark for destruction and set error
         storage.set('isDestroyed', true);
         storage.set('error', t('errors:guestAccessTokenFailed'));
+        logger.error('Auth: guest session restore failed', { error });
         throw error;
     }
 };
