@@ -52,8 +52,8 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
     const firstName = customer?.firstName || t('overview.defaultName');
 
     return (
-        <Card className="bg-card border-border">
-            <CardContent className="px-6 py-3">
+        <Card className="bg-card border-border py-0">
+            <CardContent className="p-6">
                 <h1 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1">
                     {t('overview.welcomeBack', { name: firstName })}
                 </h1>
@@ -68,8 +68,8 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
  */
 export function WelcomeSectionSkeleton(): ReactElement {
     return (
-        <Card className="bg-card border-border">
-            <CardContent className="px-6 py-3">
+        <Card className="bg-card border-border py-0">
+            <CardContent className="p-6">
                 <Skeleton className="h-6 w-64 mb-1" />
                 <Skeleton className="h-4 w-96 max-w-full" />
             </CardContent>
@@ -111,7 +111,7 @@ export function QuickLinksSection(): ReactElement {
     ];
 
     return (
-        <Card>
+        <Card className="py-0">
             <CardContent className="p-6">
                 <h2 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4">
                     {t('overview.quickLinks.title')}
@@ -147,7 +147,7 @@ export function QuickLinksSection(): ReactElement {
  */
 export function QuickLinksSectionSkeleton(): ReactElement {
     return (
-        <Card>
+        <Card className="py-0">
             <CardContent className="p-6">
                 <Skeleton className="h-7 w-32 mb-4" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -182,12 +182,20 @@ export function CuratedForYouSection(): ReactElement {
     );
 
     return (
-        <Card>
+        <Card className="py-0">
             <CardContent className="p-6">
-                <Suspense fallback={<ProductRecommendationSkeleton title={t('overview.curatedForYou.title')} />}>
+                <Suspense
+                    fallback={
+                        <ProductRecommendationSkeleton
+                            title={t('overview.curatedForYou.title')}
+                            className="max-w-none -mx-6 md:py-0"
+                        />
+                    }>
                     <ProductRecommendations
                         recommender={curatedRecommender}
                         titleClassName="text-[length:var(--account-section-header)] font-semibold text-foreground tracking-tight"
+                        subtitle={t('overview.curatedForYou.subtitle')}
+                        className="max-w-none -mx-6 md:py-0"
                     />
                 </Suspense>
             </CardContent>
@@ -200,9 +208,9 @@ export function CuratedForYouSection(): ReactElement {
  */
 export function CuratedForYouSectionSkeleton(): ReactElement {
     return (
-        <Card>
+        <Card className="py-0">
             <CardContent className="p-6">
-                <ProductRecommendationSkeleton />
+                <ProductRecommendationSkeleton className="max-w-none -mx-6 md:py-0" />
             </CardContent>
         </Card>
     );

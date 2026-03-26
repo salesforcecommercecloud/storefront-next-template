@@ -120,10 +120,18 @@ export function ProductMainSkeleton() {
  * // Generic recommendation with default count
  * <ProductRecommendationSkeleton />
  */
-export function ProductRecommendationSkeleton({ title, itemCount }: { title?: string; itemCount?: number }) {
+export function ProductRecommendationSkeleton({
+    title,
+    itemCount,
+    className,
+}: {
+    title?: string;
+    itemCount?: number;
+    className?: string;
+}) {
     const config = useConfig<AppConfig>();
     const defaultItemCount = itemCount ?? config.global.skeleton.defaultItemCount;
-    return <ProductCarouselSkeleton title={title} itemCount={defaultItemCount} />;
+    return <ProductCarouselSkeleton title={title} itemCount={defaultItemCount} className={className} />;
 }
 
 /**

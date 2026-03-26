@@ -777,7 +777,8 @@
                 "addressesDesc": "Manage your addresses"
             },
             "curatedForYou": {
-                "title": "Curated for You"
+                "title": "Curated for You",
+                "subtitle": "Picked for you based on your activity"
             }
         },
         "wishlist": {

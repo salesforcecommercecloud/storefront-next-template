@@ -31,6 +31,8 @@ export interface ProductCarouselProps {
     products: ShopperSearch.schemas['ProductSearchHit'][];
     /** Optional title to display above the carousel */
     title?: string;
+    /** Optional subtitle displayed below the title */
+    subtitle?: string;
     /** Optional "Shop all" link URL displayed next to the title */
     shopAllUrl?: string;
     /** Optional label for the "Shop all" link. Defaults to "Shop all" */
@@ -87,6 +89,7 @@ const defaultTitleClassName = 'text-2xl md:text-3xl font-normal text-foreground 
 export default function ProductCarousel({
     products,
     title,
+    subtitle,
     shopAllUrl,
     shopAllText,
     titleClassName,
@@ -103,20 +106,32 @@ export default function ProductCarousel({
         );
     }
 
+    const titleSection = title && (
+        <div className="flex items-center justify-between mb-6">
+            {subtitle ? (
+                <div>
+                    <h2 className={titleClassName ?? defaultTitleClassName}>{title}</h2>
+                    <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
+                </div>
+            ) : (
+                <h2 className={titleClassName ?? defaultTitleClassName}>{title}</h2>
+            )}
+            {shopAllText &&
+                (shopAllUrl ? (
+                    <Link
+                        to={shopAllUrl}
+                        className="text-sm font-medium text-primary hover:text-primary/80 transition-colors shrink-0 ml-4">
+                        {shopAllText}
+                    </Link>
+                ) : (
+                    <span className="text-sm font-medium text-primary shrink-0 ml-4">{shopAllText}</span>
+                ))}
+        </div>
+    );
+
     return (
         <div className={cn('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12', className)}>
-            {title && (
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className={titleClassName ?? defaultTitleClassName}>{title}</h2>
-                    {shopAllUrl && (
-                        <Link
-                            to={shopAllUrl}
-                            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors shrink-0 ml-4">
-                            {shopAllText ?? t('shopAll')} →
-                        </Link>
-                    )}
-                </div>
-            )}
+            {titleSection}
 
             <Carousel
                 className="w-full"

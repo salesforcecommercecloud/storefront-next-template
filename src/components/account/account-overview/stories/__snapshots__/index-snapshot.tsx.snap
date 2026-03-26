@@ -5,11 +5,11 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
   class="space-y-5"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-card border-border py-0"
     data-slot="card"
   >
     <div
-      class="px-6 py-3"
+      class="p-6"
       data-slot="card-content"
     >
       <h1
@@ -25,7 +25,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -34,7 +34,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
     />
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -324,11 +324,11 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
   class="space-y-5"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-card border-border py-0"
     data-slot="card"
   >
     <div
-      class="px-6 py-3"
+      class="p-6"
       data-slot="card-content"
     >
       <h1
@@ -344,7 +344,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -353,7 +353,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
     />
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -643,11 +643,11 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
   class="space-y-5"
 >
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-card border-border py-0"
     data-slot="card"
   >
     <div
-      class="px-6 py-3"
+      class="p-6"
       data-slot="card-content"
     >
       <div
@@ -661,7 +661,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -669,7 +669,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
       data-slot="card-content"
     >
       <div
-        class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 animate-pulse"
+        class="w-full px-4 sm:px-6 lg:px-8 py-8 animate-pulse max-w-none -mx-6 md:py-0"
       >
         <div
           class="relative w-full"
@@ -947,7 +947,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -1049,7 +1049,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
 
 exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
   data-slot="card"
 >
   <div
@@ -1335,7 +1335,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
 
 exports[`AccountOverview stories snapshot > QuickLinksSectionLoading story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
   data-slot="card"
 >
   <div
@@ -1436,11 +1436,11 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionLoading story rende
 
 exports[`AccountOverview stories snapshot > WelcomeSectionDefault story renders and matches snapshot 1`] = `
 <div
-  class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+  class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-card border-border py-0"
   data-slot="card"
 >
   <div
-    class="px-6 py-3"
+    class="p-6"
     data-slot="card-content"
   >
     <h1
@@ -1459,11 +1459,11 @@ exports[`AccountOverview stories snapshot > WelcomeSectionDefault story renders 
 
 exports[`AccountOverview stories snapshot > WelcomeSectionLoading story renders and matches snapshot 1`] = `
 <div
-  class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+  class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-card border-border py-0"
   data-slot="card"
 >
   <div
-    class="px-6 py-3"
+    class="p-6"
     data-slot="card-content"
   >
     <div
