@@ -180,6 +180,7 @@ export default defineConfig(({ mode }) => {
             exclude: [
                 ...configDefaults.exclude, // Extend Vitest's default excludes (node_modules, .git, etc.)
                 '.storybook/**/*', // Exclude entire Storybook folder (story tests use Storybook config)
+                'e2e/**/*', // Exclude E2E tests (CodeceptJS, not Vitest)
             ],
             coverage: {
                 reporter: [...new Set([...coverageConfigDefaults.reporter, 'json', 'json-summary'])], // `json-summary` and `json` are required for the CI

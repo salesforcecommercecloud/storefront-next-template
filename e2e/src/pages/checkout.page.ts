@@ -1,0 +1,1065 @@
+/**
+ * Copyright 2026 Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { buildSitePath } from '../utils/url-utils';
+
+const { I } = inject();
+
+/**
+ * Checkout Page Object
+ * Handles interactions with the multi-step checkout page
+ *
+ * Checkout Flow Steps:
+ * 1. Contact Info (email)
+ * 2. Shipping Address
+ * 3. Shipping Method
+ * 4. Payment
+ * 5. Review & Place Order
+ */
+class CheckoutPage {
+    locators = {
+        checkoutContainer: locate('main').as('Checkout Container'),
+        emailInput: locate('[data-testid="sf-toggle-card-contact-info"] input[type="email"]').as('Email Input'),
+        phoneInputContactInfo: locate(
+            '[data-testid="sf-toggle-card-contact-info"] input[name="phone"], [data-testid="sf-toggle-card-contact-info"] input[type="tel"]'
+        ).as('Phone Input (Contact Info)'),
+        continueToShippingButton: locate('[data-testid="sf-toggle-card-contact-info"] button[type="submit"]').as(
+            'Contact Info Continue Button'
+        ),
+        contactInfoEditButton: locate('[data-testid="sf-toggle-card-contact-info"]')
+            .find('button')
+            .withText('Edit')
+            .as('Contact Info Edit Button'),
+        // Shipping address fields - scoped to avoid matching billing/payment fields
+        firstNameInput: locate('[data-testid="sf-toggle-card-shipping-address"] input[name="firstName"]').as(
+            'First Name Input'
+        ),
+        lastNameInput: locate('[data-testid="sf-toggle-card-shipping-address"] input[name="lastName"]').as(
+            'Last Name Input'
+        ),
+        address1Input: locate('[data-testid="sf-toggle-card-shipping-address"] input[name="address1"]').as(
+            'Address Line 1 Input'
+        ),
+        cityInput: locate('[data-testid="sf-toggle-card-shipping-address"] input[name="city"]').as('City Input'),
+        stateSelect: locate('[data-testid="sf-toggle-card-shipping-address"] select[name="stateCode"]').as(
+            'State Select'
+        ),
+        postalCodeInput: locate('[data-testid="sf-toggle-card-shipping-address"] input[name="postalCode"]').as(
+            'Postal Code Input'
+        ),
+        phoneInput: locate(
+            '[data-testid="sf-toggle-card-shipping-address"] input[name="phone"], [data-testid="sf-toggle-card-shipping-address"] input[type="tel"]'
+        ).as('Phone Input'),
+        shippingAddressSubmitButton: locate('[data-testid="sf-toggle-card-shipping-address"] button[type="submit"]').as(
+            'Shipping Address Submit Button'
+        ),
+        shippingMethodOption: locate('input[type="radio"][name="shippingMethodId"]').as('Shipping Method Radio'),
+        // Label is clickable; the radio input has aria-hidden and cannot be clicked by Playwright
+        shippingMethodLabelFirst: locate('[data-testid="sf-toggle-card-shipping-options"] label[for]').as(
+            'First Shipping Method Label'
+        ),
+        shippingMethodLabel: locate('label').as('Shipping Method Label'),
+        // Payment section - billing address fields (Radix UI renders button with role="checkbox")
+        billingSameAsShippingCheckbox: locate('#billingSameAsShipping').as('Billing Same As Shipping Checkbox'),
+        billingSameAsShippingLabel: locate('label[for="billingSameAsShipping"]').as('Billing Same As Shipping Label'),
+        billingFirstNameInput: locate('[data-testid="sf-toggle-card-payment"] input[name="billingFirstName"]').as(
+            'Billing First Name Input'
+        ),
+        billingLastNameInput: locate('[data-testid="sf-toggle-card-payment"] input[name="billingLastName"]').as(
+            'Billing Last Name Input'
+        ),
+        billingAddress1Input: locate('[data-testid="sf-toggle-card-payment"] input[name="billingAddress1"]').as(
+            'Billing Address 1 Input'
+        ),
+        billingAddress2Input: locate('[data-testid="sf-toggle-card-payment"] input[name="billingAddress2"]').as(
+            'Billing Address 2 Input'
+        ),
+        billingCityInput: locate('[data-testid="sf-toggle-card-payment"] input[name="billingCity"]').as(
+            'Billing City Input'
+        ),
+        billingStateSelect: locate('[data-testid="sf-toggle-card-payment"] select[name="billingStateCode"]').as(
+            'Billing State Select'
+        ),
+        billingPostalCodeInput: locate('[data-testid="sf-toggle-card-payment"] input[name="billingPostalCode"]').as(
+            'Billing Postal Code Input'
+        ),
+        billingCountrySelect: locate('[data-testid="sf-toggle-card-payment"] select[name="billingCountryCode"]').as(
+            'Billing Country Select'
+        ),
+        // Note: billing address does NOT have phone field (showPhone={false} in payment.tsx)
+        cardNumberInput: locate('input[name="cardNumber"]').as('Card Number Input'),
+        cardholderNameInput: locate('input[name="cardholderName"]').as('Cardholder Name Input'),
+        expiryDateInput: locate('input[name="expiryDate"]').as('Expiry Date Input'),
+        cvvInput: locate('input[name="cvv"], input[name="securityCode"], input[name="cvn"]').as('CVV Input'),
+        submitButton: locate('button[type="submit"]').as('Submit Button'),
+        shippingAddressEditButton: locate('[data-testid="sf-toggle-card-shipping-address"]')
+            .find('button')
+            .withText('Edit')
+            .as('Shipping Address Edit Button'),
+        shippingOptionsEditButton: locate('[data-testid="sf-toggle-card-shipping-options"]')
+            .find('button')
+            .withText('Edit')
+            .as('Shipping Options Edit Button'),
+        paymentEditButton: locate('[data-testid="sf-toggle-card-payment"]')
+            .find('button')
+            .withText('Change')
+            .as('Payment Edit Button'),
+        orderNumberText: locate('span.text-primary').as('Order Number'),
+        confirmationMessage: locate('text=/thank you|order placed|order confirmed|your order is confirmed/i').as(
+            'Confirmation Message'
+        ),
+        errorMessage: locate('[role="alert"]').as('Error Message'),
+        // Shown when cart is empty on checkout (e.g. add-to-cart failed). Use as fallback to retry with a different product.
+        emptyCartMessage: locate('text=/No items in cart\\. Add items before checkout\\./i').as('Empty Cart Message'),
+        // My Cart (collapsible sidebar on checkout)
+        myCartToggle: locate('[data-testid="my-cart-toggle"]').as('My Cart Toggle'),
+        myCartItems: locate('[data-testid^="my-cart-item-"]').as('My Cart Items'),
+        // Promotion-related content within a My Cart item (label "Promotions" or "Saved" badge)
+        myCartItemPromotionOrSaved: locate('text=/Promotions|Saved\\s/').as('My Cart Item Promotion or Saved'),
+
+        // Saved addresses list (checkout shipping step for registered shoppers)
+        savedAddressRadioGroup: locate('[data-testid="sf-toggle-card-shipping-address"] [role="radiogroup"]').as(
+            'Saved Addresses Radio Group'
+        ),
+        savedAddressRadio: (addressId: string) =>
+            locate(`#saved-address-${addressId}`).as(`Saved Address Radio: ${addressId}`),
+        savedAddressCard: locate(
+            '[data-testid="sf-toggle-card-shipping-address"] [role="radiogroup"] [role="radio"]'
+        ).as('Saved Address Card'),
+        addNewAddressButton: locate('[data-testid="sf-toggle-card-shipping-address"] button')
+            .withText('Add new address')
+            .as('Add New Address Button'),
+        editAddressLink: locate('[data-testid="sf-toggle-card-shipping-address"] button')
+            .withText('Edit Address')
+            .as('Edit Address Link'),
+        viewAllButton: locate('[data-testid="sf-toggle-card-shipping-address"] button')
+            .withText('View all')
+            .as('View All Button'),
+        viewLessButton: locate('[data-testid="sf-toggle-card-shipping-address"] button')
+            .withText('View less')
+            .as('View Less Button'),
+        continueToShippingOptionsButton: locate('[data-testid="sf-toggle-card-shipping-address"] button')
+            .withText('Continue to Shipping Method')
+            .as('Continue to Shipping Options Button'),
+
+        // Address modal (add/edit during checkout)
+        addressModal: locate('[role="dialog"][aria-labelledby="address-modal-title"]').as('Address Modal'),
+        addressModalTitle: locate('#address-modal-title').as('Address Modal Title'),
+        addressModalFirstNameInput: locate('[role="dialog"] input[name="firstName"]').as(
+            'Address Modal First Name Input'
+        ),
+        addressModalLastNameInput: locate('[role="dialog"] input[name="lastName"]').as('Address Modal Last Name Input'),
+        addressModalAddress1Input: locate('[role="dialog"] input[name="address1"]').as(
+            'Address Modal Address Line 1 Input'
+        ),
+        addressModalAddress2Input: locate('[role="dialog"] input[name="address2"]').as(
+            'Address Modal Address Line 2 Input'
+        ),
+        addressModalCityInput: locate('[role="dialog"] input[name="city"]').as('Address Modal City Input'),
+        addressModalStateSelect: locate('[role="dialog"] select[name="stateCode"]').as('Address Modal State Select'),
+        addressModalPostalCodeInput: locate('[role="dialog"] input[name="postalCode"]').as(
+            'Address Modal Postal Code Input'
+        ),
+        addressModalCountrySelect: locate('[role="dialog"] select[name="countryCode"]').as(
+            'Address Modal Country Select'
+        ),
+        addressModalSaveButton: locate('[role="dialog"] button[type="submit"]')
+            .withText('Save')
+            .as('Address Modal Save Button'),
+        addressModalCancelButton: locate('[role="dialog"] button[type="button"]')
+            .withText('Cancel')
+            .as('Address Modal Cancel Button'),
+    };
+
+    navigate(): void {
+        I.amOnPage(buildSitePath('/checkout'));
+    }
+
+    /**
+     * Retryable checkout navigation for transient browser/server aborts.
+     */
+    async navigateWithRetry(maxAttempts: number = 3): Promise<void> {
+        const targetPath = buildSitePath('/checkout');
+        const baseUrl = process.env.BASE_URL || 'http://localhost:5173';
+        const targetUrl = new URL(targetPath, baseUrl).toString();
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                await (I.usePlaywrightTo('navigate to checkout with retry', async ({ page }) => {
+                    await page.goto(targetUrl, { waitUntil: 'load', timeout: 30_000 });
+                }) as unknown as Promise<void>);
+                return;
+            } catch (error) {
+                if (attempt === maxAttempts) {
+                    throw error;
+                }
+                await new Promise((resolve) => setTimeout(resolve, 500));
+            }
+        }
+    }
+
+    validatePageLoaded(): void {
+        I.seeElement(this.locators.checkoutContainer);
+        // Wait for contact info card content to be rendered (lazy-loaded).
+        // Registered users with disableEdit have no button in summary mode, so check content instead.
+        I.waitForElement(locate('[data-testid="sf-toggle-card-contact-info-content"]'), 25);
+    }
+
+    /**
+     * Returns true if checkout shows the empty-cart message (add-to-cart failed or cart was cleared).
+     * Use as fallback to detect that we need to try adding a different product and navigate to checkout again.
+     */
+    async isEmptyCartShown(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.emptyCartMessage);
+        return count > 0;
+    }
+
+    async fillContactInfo(email: string, phone?: string): Promise<void> {
+        // If contact info is in summary mode (registered user), click Edit to expand the form
+        const editButtonVisible = await I.grabNumberOfVisibleElements(this.locators.contactInfoEditButton);
+        if (editButtonVisible > 0) {
+            I.click(this.locators.contactInfoEditButton);
+        }
+        I.waitForElement(this.locators.emailInput, 5);
+
+        // Check if email is already populated (e.g., for registered users)
+        const currentEmail = await I.grabValueFrom(this.locators.emailInput);
+
+        if (!currentEmail || currentEmail.trim() === '') {
+            // Email field is empty, fill it
+            I.fillField(this.locators.emailInput, email);
+        } else {
+            // Email is pre-filled - clear and re-enter to ensure validation triggers
+            I.click(this.locators.emailInput);
+            I.pressKey(['CommandOrControl', 'a']);
+            I.pressKey('Backspace');
+            I.fillField(this.locators.emailInput, email);
+        }
+
+        // Blur the email field to trigger validation
+        I.pressKey('Tab');
+
+        // Phone is required — fill with provided value or a default
+        const phoneValue = phone || '5551234567';
+        const phoneFieldCount = await I.grabNumberOfVisibleElements(this.locators.phoneInputContactInfo);
+        if (phoneFieldCount > 0) {
+            I.fillField(this.locators.phoneInputContactInfo, phoneValue);
+            I.pressKey('Tab');
+        }
+
+        // Click "Continue to Shipping" - use regular click so form submit fires properly (forceClick can bypass form submission)
+        I.waitForElement(this.locators.continueToShippingButton, 10);
+        I.scrollTo(this.locators.continueToShippingButton);
+        I.click(this.locators.continueToShippingButton);
+
+        // Wait for contact info to submit and shipping address form to render (API round-trip + step transition)
+        I.waitForElement(this.locators.firstNameInput, 30);
+    }
+
+    /**
+     * Click "Continue to Shipping" from contact info step.
+     * Idempotent: if already on shipping step, just waits for form.
+     */
+    async continueFromContactInfo(): Promise<void> {
+        const hasButton = (await I.grabNumberOfVisibleElements(this.locators.continueToShippingButton)) > 0;
+        if (hasButton) {
+            I.scrollTo(this.locators.continueToShippingButton);
+            I.click(this.locators.continueToShippingButton);
+        }
+        I.waitForElement(this.locators.firstNameInput, 30);
+    }
+
+    async fillShippingAddress(address: {
+        firstName: string;
+        lastName: string;
+        address1: string;
+        city: string;
+        stateCode: string;
+        postalCode: string;
+        phone: string;
+    }): Promise<void> {
+        // Registered users with saved address may have shipping in preview mode (Edit button, no form)
+        const inPreview = (await I.grabNumberOfVisibleElements(this.locators.shippingAddressEditButton)) > 0;
+        if (inPreview) {
+            // Wait for shipping options section (form or preview) to be ready
+            I.waitForElement(locate('[data-testid="sf-toggle-card-shipping-options"]').find('button'), 30);
+            return;
+        }
+        I.waitForElement(this.locators.firstNameInput, 30);
+        I.fillField(this.locators.firstNameInput, address.firstName);
+        I.fillField(this.locators.lastNameInput, address.lastName);
+        I.fillField(this.locators.address1Input, address.address1);
+        I.fillField(this.locators.cityInput, address.city);
+        I.fillField(this.locators.postalCodeInput, address.postalCode);
+        I.selectOption(this.locators.stateSelect, address.stateCode);
+        // Note: Phone is in Contact Info section, not Shipping Address
+        I.click(this.locators.shippingAddressSubmitButton);
+
+        // Wait for shipping address to be saved (Edit button appears in summary view)
+        I.waitForElement(this.locators.shippingAddressEditButton);
+
+        // Now wait for shipping methods to load
+        I.waitForElement(this.locators.shippingMethodOption, 30);
+    }
+
+    /**
+     * Click submit on shipping address step (Continue to Shipping Options).
+     */
+    async continueFromShippingAddress(): Promise<void> {
+        const hasButton = (await I.grabNumberOfVisibleElements(this.locators.shippingAddressSubmitButton)) > 0;
+        if (hasButton) {
+            I.click(this.locators.shippingAddressSubmitButton);
+            I.waitForElement(this.locators.shippingAddressEditButton);
+        }
+        I.waitForElement(this.locators.shippingMethodOption, 30);
+    }
+
+    async selectShippingMethod(index: number = 0): Promise<void> {
+        // Registered users may have shipping method prefilled (Edit button, no form)
+        const optionsInPreview = (await I.grabNumberOfVisibleElements(this.locators.shippingOptionsEditButton)) > 0;
+        if (optionsInPreview) {
+            // Shipping options in preview - payment section is next; wait for it to be ready
+            I.waitForElement(locate('[data-testid="sf-toggle-card-payment"]').find('button'));
+            return;
+        }
+        I.waitForElement(this.locators.shippingMethodOption);
+
+        if (index === 0) {
+            // Click "Continue to Payment" button
+            I.click(this.locators.submitButton);
+            I.waitForElement(this.locators.cardNumberInput, 10);
+            return;
+        }
+
+        // Click the label (not the hidden radio input) - Radix UI uses aria-hidden on the input
+        const labelOption = this.locators.shippingMethodLabelFirst.at(index + 1);
+        I.click(labelOption);
+
+        // Click "Continue to Payment" button
+        I.click(this.locators.submitButton);
+        I.waitForElement(this.locators.cardNumberInput, 10);
+    }
+
+    /** Select first shipping method (radio); does not submit. Call continueFromShippingOptions to advance. */
+    async selectFirstShippingMethod(): Promise<void> {
+        const inPreview = (await I.grabNumberOfVisibleElements(this.locators.shippingOptionsEditButton)) > 0;
+        if (inPreview) return;
+        I.waitForElement(this.locators.shippingMethodOption, 10);
+        const count = await I.grabNumberOfVisibleElements(this.locators.shippingMethodOption);
+        if (count > 0) {
+            // Click the label instead of the radio input; Radix UI hides the input (aria-hidden)
+            // and Playwright cannot click hidden elements
+            I.click(this.locators.shippingMethodLabelFirst.first());
+        }
+    }
+
+    /** Click "Continue to Payment" from shipping options step. */
+    continueFromShippingOptions(): void {
+        I.waitForElement(this.locators.submitButton, 10);
+        I.scrollTo(this.locators.submitButton);
+        I.click(this.locators.submitButton);
+        I.waitForElement(this.locators.cardNumberInput);
+    }
+
+    /** Alias for fillPaymentInfo for specs that use fillPayment. */
+    async fillPayment(payment: {
+        cardNumber: string;
+        cardholderName: string;
+        expiryDate: string;
+        cvv: string;
+    }): Promise<void> {
+        await this.fillPaymentInfo(payment);
+    }
+
+    /**
+     * Fill payment form fields only (does not click Place Order).
+     * Use when the flow requires additional steps before placing order (e.g. create account checkbox, OTP modal).
+     */
+    fillPaymentFieldsOnly(payment: {
+        cardNumber: string;
+        cardholderName: string;
+        expiryDate: string;
+        cvv: string;
+    }): void {
+        I.waitForElement(this.locators.cardNumberInput, 5);
+        I.fillField(this.locators.cardNumberInput, payment.cardNumber);
+        I.waitForElement(this.locators.cardholderNameInput, 5);
+        I.fillField(this.locators.cardholderNameInput, payment.cardholderName);
+        I.fillField(this.locators.expiryDateInput, payment.expiryDate);
+        I.fillField(this.locators.cvvInput, payment.cvv);
+    }
+
+    async fillPaymentInfo(payment: {
+        cardNumber: string;
+        cardholderName: string;
+        expiryDate: string;
+        cvv: string;
+    }): Promise<void> {
+        // Registered users may have payment prefilled (Edit button, no form)
+        const paymentInPreview = (await I.grabNumberOfVisibleElements(this.locators.paymentEditButton)) > 0;
+        if (paymentInPreview) {
+            const placeOrderBtn = locate('button[type="submit"]').withText('Place Order');
+            I.waitForElement(placeOrderBtn, 10);
+            I.scrollTo(placeOrderBtn);
+            I.click(placeOrderBtn);
+            I.waitForElement(this.locators.confirmationMessage, 30);
+            return;
+        }
+        I.waitForElement(this.locators.cardNumberInput, 5);
+        I.fillField(this.locators.cardNumberInput, payment.cardNumber);
+        I.waitForElement(this.locators.cardholderNameInput, 5);
+        I.fillField(this.locators.cardholderNameInput, payment.cardholderName);
+        I.fillField(this.locators.expiryDateInput, payment.expiryDate);
+        I.fillField(this.locators.cvvInput, payment.cvv);
+        I.waitForElement(this.locators.submitButton, 10);
+        // Click "Place Order" button
+        I.click(this.locators.submitButton);
+        I.waitForElement(this.locators.confirmationMessage, 30);
+    }
+
+    waitForOrderConfirmation(timeout: number = 60): void {
+        // Wait for redirect to order confirmation page or confirmation message
+        I.waitForURL(/\/order-confirmation\//, timeout);
+        I.waitForElement(this.locators.confirmationMessage);
+    }
+
+    async getOrderNumber(): Promise<string> {
+        const orderNumberText = await I.grabTextFrom(this.locators.orderNumberText);
+        return orderNumberText.trim();
+    }
+
+    validateOrderConfirmation(): void {
+        I.seeElement(this.locators.confirmationMessage);
+        I.seeElement(this.locators.orderNumberText);
+    }
+
+    /**
+     * Wait for contact section to be ready (form or preview) so prefilled email can be read.
+     * For registered users the section may load after profile data is fetched.
+     */
+    async waitForContactSectionReady(timeoutSeconds: number = 20): Promise<void> {
+        const deadline = Date.now() + timeoutSeconds * 1000;
+        while (Date.now() < deadline) {
+            const hasEdit = (await I.grabNumberOfVisibleElements(this.locators.contactInfoEditButton)) > 0;
+            const hasEmailInput = (await I.grabNumberOfVisibleElements(this.locators.emailInput)) > 0;
+            if (hasEdit || hasEmailInput) return;
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+    }
+
+    async getPrefilledEmail(): Promise<string> {
+        await this.waitForContactSectionReady();
+        const emailFieldCount = await I.grabNumberOfVisibleElements(this.locators.emailInput);
+        if (emailFieldCount === 0) {
+            return '';
+        }
+        return await I.grabValueFrom(this.locators.emailInput);
+    }
+
+    async isShippingAddressPrefilled(): Promise<boolean> {
+        try {
+            const firstName = await I.grabValueFrom(this.locators.firstNameInput);
+            return firstName.length > 0;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * Check if contact info section is in preview/summary mode (no email form visible).
+     * Registered users with disableEdit won't have an Edit button, so we detect
+     * summary mode by checking that the email input (form) is absent.
+     */
+    async isContactInfoInPreviewMode(): Promise<boolean> {
+        const emailFieldCount = await I.grabNumberOfVisibleElements(this.locators.emailInput);
+        return emailFieldCount === 0;
+    }
+
+    /**
+     * Check if shipping address section is in preview/summary mode (Edit button visible)
+     */
+    async isShippingAddressInPreviewMode(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.shippingAddressEditButton);
+        return count > 0;
+    }
+
+    /**
+     * Check if shipping options section is in preview/summary mode (Edit button visible)
+     */
+    async isShippingOptionsInPreviewMode(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.shippingOptionsEditButton);
+        return count > 0;
+    }
+
+    /**
+     * Check if payment section is in preview/summary mode (Edit button visible)
+     */
+    async isPaymentInPreviewMode(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.paymentEditButton);
+        return count > 0;
+    }
+
+    /**
+     * Validate that all checkout sections (contact info, shipping address, shipping options, payment)
+     * are prefilled and in preview mode (showing Edit buttons, not forms).
+     * Polls for up to 30s to allow profile data to load for registered shoppers.
+     */
+    async validateAllCheckoutSectionsPrefilled(): Promise<void> {
+        const timeoutMs = 30_000;
+        const pollIntervalMs = 2_000;
+        const deadline = Date.now() + timeoutMs;
+
+        while (Date.now() < deadline) {
+            const contactPreview = await this.isContactInfoInPreviewMode();
+            const shippingPreview = await this.isShippingAddressInPreviewMode();
+            const shippingOptionsPreview = await this.isShippingOptionsInPreviewMode();
+            const paymentPreview = await this.isPaymentInPreviewMode();
+
+            if (contactPreview && shippingPreview && shippingOptionsPreview && paymentPreview) {
+                return;
+            }
+            await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+        }
+
+        const contactPreview = await this.isContactInfoInPreviewMode();
+        const shippingPreview = await this.isShippingAddressInPreviewMode();
+        const shippingOptionsPreview = await this.isShippingOptionsInPreviewMode();
+        const paymentPreview = await this.isPaymentInPreviewMode();
+        throw new Error(
+            `Checkout sections not all in preview mode after ${timeoutMs / 1000}s: contact=${contactPreview}, shipping=${shippingPreview}, shippingOptions=${shippingOptionsPreview}, payment=${paymentPreview}`
+        );
+    }
+
+    /**
+     * Click "Create account for faster checkout" checkbox and wait for either OTP modal or error.
+     * The OTP modal appears when the registration API succeeds; an error appears when it fails
+     * (e.g. passwordless auth not configured in the test environment).
+     *
+     * @returns true if OTP modal appeared, false if error appeared or timeout (API unavailable)
+     */
+    async clickCreateAccountCheckboxAndWaitForModalOrError(timeoutSeconds: number = 30): Promise<boolean> {
+        I.waitForElement('[data-testid="create-account-checkbox"]', 10);
+        I.scrollTo('[data-testid="create-account-checkbox"]');
+        I.click('#create-account-checkbox');
+
+        const deadline = Date.now() + timeoutSeconds * 1000;
+        const otpModalSelector = '[data-testid="otp-modal"]';
+        while (Date.now() < deadline) {
+            const modalCount = await I.grabNumberOfVisibleElements(otpModalSelector);
+            if (modalCount > 0) return true;
+
+            // Check for registration error (e.g. "Unable to send verification code")
+            const registerSection = locate('[data-testid="register-customer-checkbox"]');
+            const hasError = (await I.grabNumberOfVisibleElements(registerSection.find('.text-destructive'))) > 0;
+            if (hasError) return false;
+
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+        return false;
+    }
+
+    /**
+     * Click Place Order button (when checkout is fully prefilled)
+     */
+    clickPlaceOrder(): void {
+        const placeOrderLocator = locate('button[type="submit"]').withText('Place Order');
+        I.waitForElement(placeOrderLocator, 10);
+        I.scrollTo(placeOrderLocator);
+        I.click(placeOrderLocator);
+    }
+
+    /**
+     * Complete checkout when all sections are prefilled (registered shopper with full profile).
+     * Validates prefilled state, clicks Place Order, waits for confirmation.
+     *
+     * @returns Promise<string> - Order number
+     */
+    async completePrefilledCheckout(): Promise<string> {
+        await this.validateAllCheckoutSectionsPrefilled();
+        this.clickPlaceOrder();
+        this.waitForOrderConfirmation();
+        this.validateOrderConfirmation();
+        return await this.getOrderNumber();
+    }
+
+    async completeGuestCheckout(checkoutData: {
+        email: string;
+        phone?: string;
+        shippingAddress: {
+            firstName: string;
+            lastName: string;
+            address1: string;
+            city: string;
+            stateCode: string;
+            postalCode: string;
+            phone: string;
+        };
+        payment: {
+            cardNumber: string;
+            cardholderName: string;
+            expiryDate: string;
+            cvv: string;
+        };
+    }): Promise<string> {
+        // For registered shoppers, checkout skips steps where basket already has data
+        // If basket has contact info (email), this step is skipped and email field is not present
+
+        const emailFieldCount = await I.grabNumberOfVisibleElements(this.locators.emailInput);
+        if (emailFieldCount > 0) {
+            await this.fillContactInfo(checkoutData.email, checkoutData.phone || checkoutData.shippingAddress.phone);
+        }
+
+        await this.fillShippingAddress(checkoutData.shippingAddress);
+        await this.selectShippingMethod(0);
+        await this.fillPaymentInfo(checkoutData.payment);
+        this.waitForOrderConfirmation();
+        this.validateOrderConfirmation();
+        return await this.getOrderNumber();
+    }
+
+    /**
+     * Expand the My Cart accordion on checkout so cart items are in the DOM.
+     */
+    expandMyCart(): void {
+        I.waitForElement(this.locators.myCartToggle);
+        I.click(this.locators.myCartToggle);
+        I.waitForElement(this.locators.myCartItems, 30);
+    }
+
+    /**
+     * Validate that My Cart shows at least one item with product image, price, and optional promotions.
+     * Uses DOM checks because the accordion content can be present but not considered visible by Playwright (overflow-hidden).
+     */
+    async validateMyCartDisplaysItemsWithPriceImageAndPromotions(): Promise<void> {
+        I.seeElement(this.locators.myCartToggle);
+        const result = (await I.executeScript(() => {
+            const items = document.querySelectorAll('[data-testid^="my-cart-item-"]');
+            if (items.length === 0) return { ok: false, reason: 'no items' };
+            const first = items[0];
+            const hasImg = first.querySelector('img') !== null;
+            const hasLink = first.querySelector('a') !== null;
+            const hasPrice = first.querySelector('[aria-label*="price"]') !== null;
+            const text = first.textContent ?? '';
+            const hasPromotionOrSaved = /Promotions|Saved\s/i.test(text);
+            return {
+                ok: hasImg && hasLink && hasPrice,
+                itemCount: items.length,
+                hasImg,
+                hasLink,
+                hasPrice,
+                hasPromotionOrSaved,
+            };
+        })) as {
+            ok: boolean;
+            reason?: string;
+            itemCount: number;
+            hasImg: boolean;
+            hasLink: boolean;
+            hasPrice: boolean;
+            hasPromotionOrSaved: boolean;
+        };
+        if (!result.ok) {
+            if (result.reason) {
+                throw new Error('My Cart should display at least one item');
+            }
+            throw new Error(
+                `My Cart first item missing required elements: img=${result.hasImg} link=${result.hasLink} price=${result.hasPrice}`
+            );
+        }
+    }
+
+    // =========================================================================
+    // Shipping Address Modal & Saved Addresses (Registered Shopper)
+    // =========================================================================
+
+    /**
+     * Check if saved addresses list is visible in the shipping step
+     */
+    async isSavedAddressesListVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.savedAddressRadioGroup);
+        return count > 0;
+    }
+
+    /**
+     * Get the number of visible saved address radio options
+     */
+    async getSavedAddressCount(): Promise<number> {
+        return await I.grabNumberOfVisibleElements(this.locators.savedAddressCard);
+    }
+
+    /**
+     * Click "Add New Address" in the saved addresses list
+     */
+    clickAddNewAddress(): void {
+        I.click(this.locators.addNewAddressButton);
+        I.waitForElement(this.locators.addressModal, 5);
+    }
+
+    /**
+     * Click "Edit Address" on a saved address card
+     * @param index - 0-based index of the address to edit
+     */
+    clickEditAddress(index: number = 0): void {
+        I.click(locate(this.locators.editAddressLink).at(index + 1));
+        I.waitForElement(this.locators.addressModal, 5);
+    }
+
+    /**
+     * Check if the address modal is open
+     */
+    async isAddressModalOpen(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.addressModal);
+        return count > 0;
+    }
+
+    /**
+     * Get the title text of the address modal ("Add Address" or "Edit Address")
+     */
+    async getAddressModalTitle(): Promise<string> {
+        return await I.grabTextFrom(this.locators.addressModalTitle);
+    }
+
+    /**
+     * Fill the address modal form fields
+     */
+    fillAddressModal(address: {
+        firstName: string;
+        lastName: string;
+        address1: string;
+        address2?: string;
+        city: string;
+        stateCode: string;
+        postalCode: string;
+    }): void {
+        I.fillField(this.locators.addressModalFirstNameInput, address.firstName);
+        I.fillField(this.locators.addressModalLastNameInput, address.lastName);
+        I.fillField(this.locators.addressModalAddress1Input, address.address1);
+        if (address.address2) {
+            I.fillField(this.locators.addressModalAddress2Input, address.address2);
+        }
+        I.fillField(this.locators.addressModalCityInput, address.city);
+        I.selectOption(this.locators.addressModalStateSelect, address.stateCode);
+        I.fillField(this.locators.addressModalPostalCodeInput, address.postalCode);
+    }
+
+    /**
+     * Clear and fill a single field in the address modal (for editing)
+     */
+    clearAndFillAddressModalField(locator: CodeceptJS.LocatorOrString, value: string): void {
+        I.click(locator);
+        I.pressKey(['CommandOrControl', 'a']);
+        I.pressKey('Backspace');
+        I.fillField(locator, value);
+    }
+
+    /**
+     * Click Save on the address modal
+     */
+    clickAddressModalSave(): void {
+        I.click(this.locators.addressModalSaveButton);
+    }
+
+    /**
+     * Click Cancel on the address modal
+     */
+    clickAddressModalCancel(): void {
+        I.click(this.locators.addressModalCancelButton);
+    }
+
+    /**
+     * Wait for address modal to close
+     */
+    waitForAddressModalClosed(timeout: number = 10): void {
+        I.waitForInvisible(this.locators.addressModal, timeout);
+    }
+
+    /**
+     * Click "View all" to expand the saved addresses list
+     */
+    clickViewAllAddresses(): void {
+        I.click(this.locators.viewAllButton);
+    }
+
+    /**
+     * Click "View less" to collapse the saved addresses list
+     */
+    clickViewLessAddresses(): void {
+        I.click(this.locators.viewLessButton);
+    }
+
+    /**
+     * Check if "View all" button is visible
+     */
+    async isViewAllVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.viewAllButton);
+        return count > 0;
+    }
+
+    /**
+     * Check if "View less" button is visible
+     */
+    async isViewLessVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.viewLessButton);
+        return count > 0;
+    }
+
+    /**
+     * Check if "Add New Address" button is visible in the saved addresses list
+     */
+    async isAddNewAddressButtonVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.addNewAddressButton);
+        return count > 0;
+    }
+
+    /**
+     * Click "Continue to Shipping Options" in the saved addresses step.
+     * Waits for the shipping address step to return to preview mode.
+     */
+    clickContinueToShippingOptions(): void {
+        I.click(this.locators.continueToShippingOptionsButton);
+    }
+
+    /**
+     * Expand shipping address step into edit mode (click Edit button)
+     */
+    expandShippingAddressStep(): void {
+        I.click(this.locators.shippingAddressEditButton);
+    }
+
+    /**
+     * Expand shipping address step from auto-applied preview mode to reveal the
+     * saved addresses list (radio buttons + Add New Address).
+     * For registered shoppers whose address is auto-applied to the basket.
+     */
+    async expandShippingAddressForSavedAddresses(): Promise<void> {
+        this.validatePageLoaded();
+        const shippingInPreview = await this.isShippingAddressInPreviewMode();
+        if (shippingInPreview) {
+            this.expandShippingAddressStep();
+        }
+    }
+
+    /**
+     * Edit the city field on the address modal (clear existing value, type new one).
+     */
+    editAddressModalCity(newCity: string): void {
+        this.clearAndFillAddressModalField(this.locators.addressModalCityInput, newCity);
+    }
+
+    /**
+     * Get the value from a field in the address modal
+     */
+    async getAddressModalFieldValue(fieldName: string): Promise<string> {
+        const field = locate(`[role="dialog"] input[name="${fieldName}"], [role="dialog"] select[name="${fieldName}"]`);
+        return await I.grabValueFrom(field);
+    }
+
+    /**
+     * Get all visible text from the shipping address preview/summary section.
+     * Useful for verifying which address is applied to the basket after selection/add/edit.
+     */
+    async getShippingAddressPreviewText(): Promise<string> {
+        const section = locate('[data-testid="sf-toggle-card-shipping-address"]');
+        return await I.grabTextFrom(section);
+    }
+
+    /**
+     * Get the number of items in the My Cart section (DOM count).
+     * Uses DOM count because accordion content can be present but not considered visible by Playwright.
+     * Useful for validating basket context sync after client-side navigation.
+     */
+    async getMyCartItemCount(): Promise<number> {
+        const count = (await I.executeScript(() => {
+            return document.querySelectorAll('[data-testid^="my-cart-item-"]').length;
+        })) as number;
+        return count;
+    }
+
+    // =========================================================================
+    // Billing Address Methods (Payment Section)
+    // =========================================================================
+
+    /**
+     * Check if the "Same as shipping" checkbox is checked
+     */
+    async isBillingSameAsShippingChecked(): Promise<boolean> {
+        const checkbox = await I.grabAttributeFrom(this.locators.billingSameAsShippingCheckbox, 'aria-checked');
+        return checkbox === 'true';
+    }
+
+    /**
+     * Toggle the "Same as shipping" checkbox
+     */
+    async toggleBillingSameAsShipping(): Promise<void> {
+        I.click(this.locators.billingSameAsShippingLabel);
+        // Wait a bit for React state to update and fields to render/clear
+        await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+
+    /**
+     * Uncheck the "Same as shipping" checkbox if it's currently checked
+     */
+    async uncheckBillingSameAsShipping(): Promise<void> {
+        const isChecked = await this.isBillingSameAsShippingChecked();
+        if (isChecked) {
+            await this.toggleBillingSameAsShipping();
+        }
+    }
+
+    /**
+     * Check the "Same as shipping" checkbox if it's currently unchecked
+     */
+    async checkBillingSameAsShipping(): Promise<void> {
+        const isChecked = await this.isBillingSameAsShippingChecked();
+        if (!isChecked) {
+            await this.toggleBillingSameAsShipping();
+        }
+    }
+
+    /**
+     * Check if billing address fields are visible (i.e., "Same as shipping" is unchecked)
+     */
+    async areBillingAddressFieldsVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.billingFirstNameInput);
+        return count > 0;
+    }
+
+    /**
+     * Get all billing address field values as an object
+     * Note: billing address does NOT have phone field (showPhone={false})
+     */
+    async getBillingAddressFieldValues(): Promise<{
+        firstName: string;
+        lastName: string;
+        address1: string;
+        address2: string;
+        city: string;
+        stateCode: string;
+        postalCode: string;
+        countryCode: string;
+    }> {
+        // Wait for fields to be visible
+        I.waitForElement(this.locators.billingFirstNameInput, 5);
+
+        return {
+            firstName: await I.grabValueFrom(this.locators.billingFirstNameInput),
+            lastName: await I.grabValueFrom(this.locators.billingLastNameInput),
+            address1: await I.grabValueFrom(this.locators.billingAddress1Input),
+            address2: await I.grabValueFrom(this.locators.billingAddress2Input),
+            city: await I.grabValueFrom(this.locators.billingCityInput),
+            stateCode: await I.grabValueFrom(this.locators.billingStateSelect),
+            postalCode: await I.grabValueFrom(this.locators.billingPostalCodeInput),
+            countryCode: await I.grabValueFrom(this.locators.billingCountrySelect),
+        };
+    }
+
+    /**
+     * Validate that all billing address fields are empty/blank
+     */
+    async validateBillingAddressFieldsAreBlank(): Promise<void> {
+        const values = await this.getBillingAddressFieldValues();
+        const errors: string[] = [];
+
+        if (values.firstName !== '') errors.push(`firstName: "${values.firstName}"`);
+        if (values.lastName !== '') errors.push(`lastName: "${values.lastName}"`);
+        if (values.address1 !== '') errors.push(`address1: "${values.address1}"`);
+        if (values.address2 !== '') errors.push(`address2: "${values.address2}"`);
+        if (values.city !== '') errors.push(`city: "${values.city}"`);
+        if (values.stateCode !== '') errors.push(`stateCode: "${values.stateCode}"`);
+        if (values.postalCode !== '') errors.push(`postalCode: "${values.postalCode}"`);
+        // Note: phone field not included - billing form has showPhone={false}
+        // countryCode defaults to 'US', so we expect it to have that value
+        if (values.countryCode !== 'US') errors.push(`countryCode: "${values.countryCode}" (expected: "US")`);
+
+        if (errors.length > 0) {
+            throw new Error(`Billing address fields are not blank:\n  ${errors.join('\n  ')}`);
+        }
+    }
+
+    /**
+     * Fill billing address fields (when "Same as shipping" is unchecked)
+     * Note: phone field not included - billing form has showPhone={false}
+     */
+    fillBillingAddress(address: {
+        firstName: string;
+        lastName: string;
+        address1: string;
+        address2?: string;
+        city: string;
+        stateCode: string;
+        postalCode: string;
+    }): void {
+        I.waitForElement(this.locators.billingFirstNameInput, 5);
+        I.fillField(this.locators.billingFirstNameInput, address.firstName);
+        I.fillField(this.locators.billingLastNameInput, address.lastName);
+        I.fillField(this.locators.billingAddress1Input, address.address1);
+        if (address.address2) {
+            I.fillField(this.locators.billingAddress2Input, address.address2);
+        }
+        I.fillField(this.locators.billingCityInput, address.city);
+        I.selectOption(this.locators.billingStateSelect, address.stateCode);
+        I.fillField(this.locators.billingPostalCodeInput, address.postalCode);
+    }
+
+    /**
+     * Check if payment validation error messages are visible (e.g. "Please enter your card number.").
+     * These render as `<p data-slot="form-message">` inside the payment card.
+     */
+    async getPaymentValidationErrors(): Promise<string[]> {
+        const errors = (await I.executeScript(() => {
+            const paymentCard = document.querySelector('[data-testid="sf-toggle-card-payment"]');
+            if (!paymentCard) return [];
+            const messages = paymentCard.querySelectorAll('[data-slot="form-message"]');
+            return Array.from(messages).map((el) => el.textContent?.trim() ?? '');
+        })) as string[];
+        return errors.filter((e) => e.length > 0);
+    }
+
+    /**
+     * Click Place Order and wait for validation errors to appear (does NOT wait for confirmation page).
+     * Use when testing that validation blocks the order.
+     */
+    clickPlaceOrderAndWaitForValidation(timeoutSeconds: number = 10): void {
+        this.clickPlaceOrder();
+        I.waitForElement('[data-testid="sf-toggle-card-payment"] [data-slot="form-message"]', timeoutSeconds);
+    }
+
+    /**
+     * Wait for My Cart to show at least minCount items (basket context sync after navigation).
+     * Polls in the browser. Returns once condition is met or timeout.
+     * It is a test helper for waiting on basket sync in the E2E flow.
+     */
+    async waitForMyCartItemCount(minCount: number, timeoutSeconds: number = 20): Promise<number> {
+        const count = (await I.executeScript(
+            (params: { min: number; timeout: number }) =>
+                new Promise<number>((resolve) => {
+                    const deadline = Date.now() + params.timeout;
+                    const check = (): void => {
+                        const n = document.querySelectorAll('[data-testid^="my-cart-item-"]').length;
+                        if (n >= params.min || Date.now() >= deadline) {
+                            resolve(document.querySelectorAll('[data-testid^="my-cart-item-"]').length);
+                            return;
+                        }
+                        setTimeout(check, 200);
+                    };
+                    check();
+                }),
+            { min: minCount, timeout: timeoutSeconds * 1000 }
+        )) as number;
+        return count;
+    }
+}
+
+export = new CheckoutPage();

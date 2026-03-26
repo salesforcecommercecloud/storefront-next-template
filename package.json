@@ -27,8 +27,8 @@
         "generate:story-tests:coverage": "pnpm generate:story-tests && vitest run --coverage --config .storybook/vite.config.ts",
         "test:ui": "vitest --ui",
         "test:watch": "vitest",
-        "lint": "cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint . --report-unused-disable-directives --max-warnings 0 --cache",
-        "lint:fix": "cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint . --fix --cache",
+        "lint": "cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint . --report-unused-disable-directives --max-warnings 0 --cache && pnpm --filter ./e2e lint",
+        "lint:fix": "cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint . --fix --cache && pnpm --filter ./e2e lint:fix",
         "lint:check-extensions": "node scripts/check-typescript-only.js",
         "lint:colors": "cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint src --ext .ts,.tsx,.js,.jsx --rule 'no-restricted-classnames: error' --cache",
         "storybook": "storybook dev -p 6006",
@@ -43,7 +43,16 @@
         "test-storybook:a11y": "cross-env STORYBOOK_A11Y_TEST_MODE=error concurrently \"pnpm storybook\" \"wait-on http://127.0.0.1:6006 && sleep 1 && test-storybook --url http://127.0.0.1:6006 --index-json --config-dir .storybook --browsers chromium --maxWorkers 3 --excludeTags skip-a11y\" --success first --kill-others",
         "test-storybook:a11y:agent": "bash -c 'cross-env STORYBOOK_A11Y_TEST_MODE=error concurrently --raw \"pnpm storybook\" \"wait-on http://127.0.0.1:6006 && sleep 1 && test-storybook --url http://127.0.0.1:6006 --index-json --config-dir .storybook --browsers chromium --maxWorkers 3 --excludeTags skip-a11y\" --success first --kill-others 2>&1 | { grep -E \"(PASS|FAIL|Test Suites|Tests:|violations)\" || true; } | tail -20; exit ${PIPESTATUS[0]}'",
         "test-storybook:static:a11y": "pnpm build-storybook && cross-env STORYBOOK_A11Y_TEST_MODE=error concurrently \"npx serve .storybook/storybook-static\" \"wait-on http://127.0.0.1:3000 && sleep 1 && test-storybook --url http://127.0.0.1:3000 --index-json --config-dir .storybook --browsers chromium --maxWorkers 3 --excludeTags skip-a11y\" --success first --kill-others",
-        "lighthouse:ci": "lhci autorun"
+        "lighthouse:ci": "lhci autorun",
+        "e2e": "pnpm --filter ./e2e e2e",
+        "e2e:headless": "pnpm --filter ./e2e e2e:headless",
+        "e2e:verbose": "pnpm --filter ./e2e e2e:verbose",
+        "e2e:debug": "pnpm --filter ./e2e e2e:debug",
+        "e2e:report": "pnpm --filter ./e2e report",
+        "a11y": "pnpm --filter ./e2e a11y",
+        "a11y:headless": "pnpm --filter ./e2e a11y:headless",
+        "a11y:report": "pnpm --filter ./e2e a11y:report",
+        "a11y:update-baseline": "pnpm --filter ./e2e a11y:update-baseline"
     },
     "dependencies": {
         "@hookform/resolvers": "5.2.2",
