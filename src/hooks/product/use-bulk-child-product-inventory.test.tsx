@@ -46,6 +46,17 @@ const updateFetcher = (
     fetcherVersion++; // Increment to ensure new object reference
 };
 
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => mockLogger),
+    getLogger: vi.fn(() => mockLogger),
+}));
+
 vi.mock('@/hooks/use-scapi-fetcher', () => ({
     useScapiFetcher: vi.fn(() => {
         // Return a new object each time with current properties
@@ -982,7 +993,6 @@ describe('useBulkChildProductInventory', () => {
         });
 
         it('should handle errors in onError callback', async () => {
-            const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
             const product = createMockProduct('product-1');
             const selection = createChildSelection(product);
 
@@ -1021,25 +1031,21 @@ describe('useBulkChildProductInventory', () => {
             // Wait for useScapiFetcherEffect to process the state change
             await waitFor(
                 () => {
-                    expect(consoleWarnSpy).toHaveBeenCalled();
+                    expect(mockLogger.warn).toHaveBeenCalled();
                 },
                 { timeout: 1000 }
             );
 
-            // Should log warnings for errors
-            expect(consoleWarnSpy).toHaveBeenCalledWith(
-                'Failed to fetch bulk child product inventory:',
-                expect.stringContaining('API Error')
-            );
+            expect(mockLogger.warn).toHaveBeenCalledWith('Failed to fetch bulk child product inventory', {
+                errors: expect.stringContaining('API Error'),
+            });
 
             // Should return original selection on error
             expect(result.current.enrichedSelections).toEqual([selection]);
-
-            consoleWarnSpy.mockRestore();
         });
 
         it('should handle empty errors array in onError callback', async () => {
-            const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+            mockLogger.warn.mockClear();
             const product = createMockProduct('product-1');
             const selection = createChildSelection(product);
 
@@ -1063,12 +1069,10 @@ describe('useBulkChildProductInventory', () => {
             });
 
             // Should not log when errors array is empty
-            expect(consoleWarnSpy).not.toHaveBeenCalled();
+            expect(mockLogger.warn).not.toHaveBeenCalled();
 
             // Should return original selection
             expect(result.current.enrichedSelections).toEqual([selection]);
-
-            consoleWarnSpy.mockRestore();
         });
     });
 });

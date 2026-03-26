@@ -74,6 +74,17 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
     };
 });
 
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => mockLogger),
+    getLogger: vi.fn(() => mockLogger),
+}));
+
 /**
  * Satisfies React Router's DataFunctionArgs (request, context, params, unstable_pattern).
  * React Router added required unstable_pattern in a 7.x release;
@@ -425,7 +436,6 @@ describe('shopper-context.server', () => {
 
     describe('error handling', () => {
         test('should not fail request when createShopperContext throws', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
             vi.mocked(createShopperContext).mockRejectedValue(new Error('API Error'));
 
             const url = new URL('https://example.com?src=email');
@@ -435,19 +445,14 @@ describe('shopper-context.server', () => {
 
             expect(result).toBeInstanceOf(Response);
             expect(mockNext).toHaveBeenCalledOnce();
-            // Error is caught and logged with structured object
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Shopper context server middleware error:', {
+            expect(mockLogger.error).toHaveBeenCalledWith('Shopper context server middleware error', {
                 error: 'API Error',
                 usid: 'test-usid',
                 url: url.toString(),
             });
-
-            consoleErrorSpy.mockRestore();
         });
 
         test('should continue processing even if computation fails', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
             // Simulate an error by making getCookieConfig throw
             vi.mocked(getCookieConfig).mockImplementationOnce(() => {
                 throw new Error('Computation error');
@@ -457,19 +462,14 @@ describe('shopper-context.server', () => {
 
             expect(result).toBeInstanceOf(Response);
             expect(mockNext).toHaveBeenCalledOnce();
-            // Error is caught and logged with structured object
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Shopper context server middleware error:', {
+            expect(mockLogger.error).toHaveBeenCalledWith('Shopper context server middleware error', {
                 error: 'Computation error',
                 usid: 'test-usid',
                 url: mockRequest.url,
             });
-
-            consoleErrorSpy.mockRestore();
         });
 
         test('should return response from next() when cookie setting fails after handler execution', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
             const url = new URL('https://example.com?src=email');
             mockRequest = new Request(url.toString());
 
@@ -483,16 +483,14 @@ describe('shopper-context.server', () => {
             const result = await shopperContextMiddleware(createMiddlewareArgs(mockRequest, mockContext), mockNext);
 
             expect(result).toBeInstanceOf(Response);
-            expect(mockNext).toHaveBeenCalledOnce(); // Should only be called once, not twice
-            // Error is caught and logged with structured object
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Shopper context server middleware error:', {
+            expect(mockNext).toHaveBeenCalledOnce();
+            expect(mockLogger.error).toHaveBeenCalledWith('Shopper context server middleware error', {
                 error: 'Cookie append error',
                 usid: 'test-usid',
                 url: url.toString(),
             });
-            expect(result).toBe(mockResponse); // Should return the same response from next()
+            expect(result).toBe(mockResponse);
 
-            consoleErrorSpy.mockRestore();
             appendSpy.mockRestore();
         });
     });

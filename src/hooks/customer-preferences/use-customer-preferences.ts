@@ -23,6 +23,9 @@ import type {
     CustomerInterests,
     CustomerPreferences,
 } from '@/lib/adapters/customer-preferences-types';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /**
  * Return type for the useCustomerInterests hook
@@ -99,8 +102,7 @@ export const useCustomerInterests = (): UseCustomerInterestsResult => {
                 const fetchError = err instanceof Error ? err : new Error('Failed to fetch interests');
                 setError(fetchError);
                 if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.error('[useCustomerInterests] Error fetching interests:', fetchError);
+                    logger.error('Error fetching interests', { error: fetchError });
                 }
             } finally {
                 setIsLoading(false);
@@ -124,8 +126,7 @@ export const useCustomerInterests = (): UseCustomerInterestsResult => {
                 const updateError = err instanceof Error ? err : new Error('Failed to update interests');
                 setError(updateError);
                 if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.error('[useCustomerInterests] Error updating interests:', updateError);
+                    logger.error('Error updating interests', { error: updateError });
                 }
                 throw updateError;
             } finally {
@@ -221,8 +222,7 @@ export const useCustomerPreferences = (): UseCustomerPreferencesResult => {
                 const fetchError = err instanceof Error ? err : new Error('Failed to fetch preferences');
                 setError(fetchError);
                 if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.error('[useCustomerPreferences] Error fetching preferences:', fetchError);
+                    logger.error('Error fetching preferences', { error: fetchError });
                 }
             } finally {
                 setIsLoading(false);
@@ -249,8 +249,7 @@ export const useCustomerPreferences = (): UseCustomerPreferencesResult => {
                 const updateError = err instanceof Error ? err : new Error('Failed to update preferences');
                 setError(updateError);
                 if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.error('[useCustomerPreferences] Error updating preferences:', updateError);
+                    logger.error('Error updating preferences', { error: updateError });
                 }
                 throw updateError;
             } finally {

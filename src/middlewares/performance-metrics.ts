@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-console */
 import { createContext, type DataStrategyResult, type MiddlewareFunction } from 'react-router';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 type MarkerType = 'start' | 'end';
 
@@ -161,7 +163,9 @@ export class PerformanceTimer {
                 callback();
             })
             .catch((error) => {
-                console.error('[perf] Error in async completion:', error);
+                logger.error('Error in async completion', {
+                    error: error instanceof Error ? error.message : String(error),
+                });
                 // Still call callback even if there's an error
                 callback();
             });
@@ -189,14 +193,13 @@ export class PerformanceTimer {
     /**
      * A utility function to format and log performance metrics grouped by request.
      * This provides better readability and request context with a visual timeline.
-     * TODO: we should replace this with a logger if available
      *
      * @function
      * @private
      */
     log(): void {
         if (this.metrics.length === 0) {
-            console.log(`[perf] No metrics to log for request ${this.requestId}`);
+            logger.info(`[perf] No metrics to log for request ${this.requestId}`);
             return;
         }
 
@@ -206,23 +209,23 @@ export class PerformanceTimer {
         const totalDuration = maxEndTime - minStartTime;
 
         // Generate timeline visualization
-        console.log('');
-        console.log('═'.repeat(120));
-        console.log(`🚀 Request ${this.requestId}`);
-        console.log(`📍 ${this.requestUrl}`);
-        console.log(`⏱️ ${totalDuration.toFixed(2)}ms`);
-        console.log(
+        logger.info('');
+        logger.info('═'.repeat(120));
+        logger.info(`🚀 Request ${this.requestId}`);
+        logger.info(`📍 ${this.requestUrl}`);
+        logger.info(`⏱️ ${totalDuration.toFixed(2)}ms`);
+        logger.info(
             '⚠️  SSR timing shows total processing time. With streaming enabled, UI renders progressively before completion.'
         );
-        console.log('═'.repeat(120));
-        console.log('');
+        logger.info('═'.repeat(120));
+        logger.info('');
 
         // Print column headers
         const nameColHeader = 'Name'.padEnd(42);
         const durationColHeader = 'Duration'.padStart(10);
         const timelineHeader = 'Timeline';
-        console.log(`${nameColHeader}${durationColHeader}    ${timelineHeader}`);
-        console.log('─'.repeat(120));
+        logger.info(`${nameColHeader}${durationColHeader}    ${timelineHeader}`);
+        logger.info('─'.repeat(120));
 
         // Print timeline header
         const timelineWidth = 80;
@@ -232,8 +235,8 @@ export class PerformanceTimer {
             const timeAtMarker = (totalDuration * i) / 5;
             timeMarkers.push(`${timeAtMarker.toFixed(0)}ms`);
         }
-        console.log(`${''.padEnd(52)} ${timeMarkers.join(''.padEnd(12))}`);
-        console.log('');
+        logger.info(`${''.padEnd(52)} ${timeMarkers.join(''.padEnd(12))}`);
+        logger.info('');
 
         // Print each metric with its timeline
         const categoryIcons: Record<string, string> = {
@@ -268,11 +271,11 @@ export class PerformanceTimer {
             const nameCol = `${icon} ${metric.name}`.padEnd(42); // icon + space + name
             const durationCol = `${metric.duration.toFixed(2)}ms`.padStart(10);
 
-            console.log(`${nameCol}${durationCol} ${timeline} ${timeRange}${detail}`);
+            logger.info(`${nameCol}${durationCol} ${timeline} ${timeRange}${detail}`);
         });
 
-        console.log('─'.repeat(120));
-        console.log('');
+        logger.info('─'.repeat(120));
+        logger.info('');
 
         // Calculate summary statistics
         const sumOfAllOperations = this.metrics.reduce((sum, m) => sum + m.duration, 0);
@@ -303,22 +306,22 @@ export class PerformanceTimer {
         };
 
         // Print summary
-        console.log('📊 Summary:');
-        console.log(`   Total Operations: ${this.metrics.length}`);
-        console.log(`   Total Duration: ${totalDuration.toFixed(2)}ms`);
-        console.log(`   Sum of All Operations: ${sumOfAllOperations.toFixed(2)}ms`);
-        console.log(`   Parallelization: ${parallelization.toFixed(1)}%`);
-        console.log('');
-        console.log('📈 Breakdown by Category:');
+        logger.info('📊 Summary:');
+        logger.info(`   Total Operations: ${this.metrics.length}`);
+        logger.info(`   Total Duration: ${totalDuration.toFixed(2)}ms`);
+        logger.info(`   Sum of All Operations: ${sumOfAllOperations.toFixed(2)}ms`);
+        logger.info(`   Parallelization: ${parallelization.toFixed(1)}%`);
+        logger.info('');
+        logger.info('📈 Breakdown by Category:');
         Object.keys(categoryStats).forEach((category) => {
             const stats = categoryStats[category];
             const icon = categoryIconsUppercase[category] || '📊';
-            console.log(
+            logger.info(
                 `   ${icon} ${category}: ${stats.count} ops, ${stats.total.toFixed(2)}ms total, ${stats.avg.toFixed(2)}ms avg`
             );
         });
-        console.log('');
-        console.log('═'.repeat(120));
+        logger.info('');
+        logger.info('═'.repeat(120));
     }
 
     /**
@@ -334,16 +337,12 @@ export class PerformanceTimer {
         }
 
         if (!name) {
-            console.warn('Performance mark cannot be created because the name is undefined.', {
-                namespace: 'performance',
-            });
+            logger.warn('Performance mark cannot be created because the name is undefined.');
             return;
         }
 
         if (type !== this.MARKER_TYPES.START && type !== this.MARKER_TYPES.END) {
-            console.warn('Performance mark cannot be created because the type must be either "start" or "end".', {
-                namespace: 'performance',
-            });
+            logger.warn('Performance mark cannot be created because the type must be either "start" or "end".');
             return;
         }
 

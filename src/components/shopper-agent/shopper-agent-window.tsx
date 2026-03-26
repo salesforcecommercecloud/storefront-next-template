@@ -20,6 +20,9 @@ import {
     notifyEmbeddedMessagingFirstBotMessageSent,
     type ShopperAgentConfig,
 } from './shopper-agent.utils';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /** Prevents multiple simultaneous inits of Embedded Messaging when multiple instances mount. */
 let initGuard = false;
@@ -89,14 +92,12 @@ export function ShopperAgentWindow({
                 return Promise.resolve([]);
             }
             if (!Array.isArray(conversationContext)) {
-                // eslint-disable-next-line no-console -- embedded service feedback
-                console.warn('[ShopperAgent] Conversation context is enabled but no valid array data provided');
+                logger.warn('Conversation context is enabled but no valid array data provided');
                 return Promise.resolve([]);
             }
             return Promise.resolve(conversationContext);
         } catch (error) {
-            // eslint-disable-next-line no-console -- embedded service feedback
-            console.error('[ShopperAgent] Error retrieving conversation context:', error);
+            logger.error('Error retrieving conversation context', { error });
             return Promise.resolve([]);
         }
     };
@@ -114,14 +115,12 @@ export function ShopperAgentWindow({
             const embeddedMessagingFrame = el instanceof HTMLIFrameElement ? el : null;
 
             if (!embeddedMessagingFrame) {
-                // eslint-disable-next-line no-console -- embedded service feedback
-                console.warn('[ShopperAgent] Embedded messaging iframe not found');
+                logger.warn('Embedded messaging iframe not found');
                 return;
             }
 
             if (!embeddedMessagingFrame.src) {
-                // eslint-disable-next-line no-console -- embedded service feedback
-                console.warn('[ShopperAgent] Embedded messaging iframe has no source URL');
+                logger.warn('Embedded messaging iframe has no source URL');
                 return;
             }
 
@@ -129,8 +128,7 @@ export function ShopperAgentWindow({
             const targetOrigin = new URL(embeddedMessagingFrame.src).origin;
             embeddedMessagingFrame.contentWindow?.postMessage(eventData, targetOrigin);
         } catch (error) {
-            // eslint-disable-next-line no-console -- embedded service feedback
-            console.error('[ShopperAgent] Error sending conversation context:', error);
+            logger.error('Error sending conversation context', { error });
         }
     };
 
@@ -147,13 +145,11 @@ export function ShopperAgentWindow({
             try {
                 const trustedOrigin = new URL(embeddedServiceEndpoint).origin;
                 if (event.origin !== trustedOrigin) {
-                    // eslint-disable-next-line no-console -- security: reject untrusted origin
-                    console.warn('[ShopperAgent] Message from untrusted origin:', event.origin);
+                    logger.warn('Message from untrusted origin', { origin: event.origin });
                     return;
                 }
             } catch (error) {
-                // eslint-disable-next-line no-console -- security: invalid endpoint config
-                console.error('[ShopperAgent] Failed to validate message origin:', error);
+                logger.error('Failed to validate message origin', { error });
                 return;
             }
 
@@ -173,8 +169,7 @@ export function ShopperAgentWindow({
                     });
                 }
             } catch (error) {
-                // eslint-disable-next-line no-console -- embedded service feedback
-                console.error('[ShopperAgent] Error handling message event:', error);
+                logger.error('Error handling message event', { error });
             }
         }
     };
@@ -218,8 +213,7 @@ export function ShopperAgentWindow({
         script.async = true;
         script.onload = () => setScriptLoaded(true);
         script.onerror = () => {
-            // eslint-disable-next-line no-console -- embedded service load feedback
-            console.error('[ShopperAgent] Failed to load Embedded Messaging script');
+            logger.error('Failed to load Embedded Messaging script');
         };
         document.body.appendChild(script);
         // Script is left in place for the session; no cleanup on unmount.
@@ -243,8 +237,7 @@ export function ShopperAgentWindow({
             });
         } catch (err) {
             initGuard = false;
-            // eslint-disable-next-line no-console -- embedded service init feedback
-            console.error('[ShopperAgent] Error initializing Embedded Messaging:', err);
+            logger.error('Error initializing Embedded Messaging', { error: err });
         }
     }, [scriptLoaded, salesforceOrgId, embeddedServiceName, embeddedServiceEndpoint, scrt2Url, locale]);
 
@@ -258,8 +251,7 @@ export function ShopperAgentWindow({
          */
         const handleEmbeddedMessagingReady = () => {
             if (!window.embeddedservice_bootstrap?.prechatAPI) {
-                // eslint-disable-next-line no-console -- embedded service feedback
-                console.warn('[ShopperAgent] prechatAPI not available');
+                logger.warn('prechatAPI not available');
                 return;
             }
 
@@ -289,8 +281,7 @@ export function ShopperAgentWindow({
                     launchChat({ fromPendingReady: true });
                 }
             } catch (error) {
-                // eslint-disable-next-line no-console -- embedded service feedback
-                console.error('[ShopperAgent] Error setting prechat fields:', error);
+                logger.error('Error setting prechat fields', { error });
             }
         };
 
@@ -307,8 +298,7 @@ export function ShopperAgentWindow({
                     embeddedMessagingFrame.style.zIndex = String(zIndex);
                 }
             } catch (error) {
-                // eslint-disable-next-line no-console -- embedded service feedback
-                console.error('[ShopperAgent] Error setting z-index:', error);
+                logger.error('Error setting z-index', { error });
             }
         };
 

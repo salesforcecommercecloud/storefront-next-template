@@ -19,6 +19,9 @@ import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi'
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
 import type { ChildProductSelection } from '@/lib/inventory-utils';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 interface UseBulkChildProductInventoryProps {
     /** Child product selections containing products and variants to fetch inventory for */
@@ -209,10 +212,8 @@ export function useBulkChildProductInventory({
             lastEnrichedInventoryIdRef.current = inventoryId;
         },
         onError: (errors) => {
-            // Log errors for debugging
             if (errors && errors.length > 0) {
-                // eslint-disable-next-line no-console
-                console.warn('Failed to fetch bulk child product inventory:', errors.join(', '));
+                logger.warn('Failed to fetch bulk child product inventory', { errors: errors.join(', ') });
             }
         },
     });

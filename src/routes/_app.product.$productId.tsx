@@ -41,6 +41,7 @@ import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/ut
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
 import { generateProductSchema } from '@/utils/product-schema';
+import { getLogger } from '@/lib/logger';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
@@ -83,6 +84,7 @@ export type ProductPageData = {
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): ProductPageData {
     const { request, params, context } = args;
+    const logger = getLogger(context);
     const { productId = '' } = params;
     const { searchParams } = new URL(request.url);
 
@@ -192,8 +194,9 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
                 const productUrl = `${url.origin}${url.pathname}${url.search}`;
                 return generateProductSchema(product, productUrl);
             } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error('Error generating product schema in loader:', error);
+                logger.error('Error generating product schema in loader', {
+                    error: error instanceof Error ? error : String(error),
+                });
                 return null;
             }
         })

@@ -15,6 +15,9 @@
  */
 import type { AppConfig } from '@/types/config';
 import { getAllAdapters } from './adapter-store';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 let adaptersInitializationPromise: Promise<void> | undefined;
 
@@ -43,8 +46,7 @@ export async function ensureAdaptersInitialized(appConfig: AppConfig): Promise<v
             return;
         } catch (error) {
             if (import.meta.env.DEV) {
-                // eslint-disable-next-line no-console
-                console.warn('Failed to initialize engagement adapters:', error);
+                logger.warn('Failed to initialize engagement adapters', { error });
             }
             return;
         }
@@ -63,8 +65,7 @@ export async function ensureAdaptersInitialized(appConfig: AppConfig): Promise<v
         // Clear promise on error to allow retry
         adaptersInitializationPromise = undefined;
         if (import.meta.env.DEV) {
-            // eslint-disable-next-line no-console
-            console.warn('Failed to initialize engagement adapters:', error);
+            logger.warn('Failed to initialize engagement adapters', { error });
         }
         throw error;
     });

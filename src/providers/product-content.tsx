@@ -19,6 +19,9 @@ import { getProductContentAdapter, PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME } from '
 import { ensureProductContentAdapterRegistered } from '@/lib/adapters/ensure-product-content-adapter';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 const ProductContentContext = createContext<ProductContentAdapter | undefined>(undefined);
 
@@ -52,8 +55,7 @@ const ProductContentProvider = ({
                 setAdapter(initializedAdapter);
             } catch (error) {
                 if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.warn('Failed to initialize product content adapter:', error);
+                    logger.warn('Failed to initialize product content adapter', { error });
                 }
             }
         };

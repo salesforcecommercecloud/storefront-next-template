@@ -22,6 +22,7 @@ import {
     saveShippingAddressToCustomer,
     saveBillingAddressToCustomer,
 } from '@/lib/api/customer';
+import { getLogger } from '@/lib/logger';
 
 /**
  * Action route: /action/save-checkout-info-to-customer
@@ -32,6 +33,7 @@ import {
  * This allows the newly registered customer to have their information pre-filled on future visits.
  */
 export async function action({ request, context }: { request: Request; context: ActionFunctionArgs['context'] }) {
+    const logger = getLogger(context);
     try {
         const auth = getAuth(context);
 
@@ -70,8 +72,9 @@ export async function action({ request, context }: { request: Request; context: 
             savePromises.push(
                 savePaymentMethodToCustomer(context, customerId, paymentInstrument as PaymentInstrumentForSave).catch(
                     (error) => {
-                        // eslint-disable-next-line no-console
-                        console.error('Failed to save payment method:', error);
+                        logger.error('Failed to save payment method', {
+                            error: error instanceof Error ? error : String(error),
+                        });
                     }
                 )
             );
@@ -82,8 +85,9 @@ export async function action({ request, context }: { request: Request; context: 
         if (shippingAddress) {
             savePromises.push(
                 saveShippingAddressToCustomer(context, customerId, shippingAddress).catch((error) => {
-                    // eslint-disable-next-line no-console
-                    console.error('Failed to save shipping address:', error);
+                    logger.error('Failed to save shipping address', {
+                        error: error instanceof Error ? error : String(error),
+                    });
                 })
             );
         }
@@ -92,8 +96,9 @@ export async function action({ request, context }: { request: Request; context: 
         if (basket.billingAddress) {
             savePromises.push(
                 saveBillingAddressToCustomer(context, customerId, basket.billingAddress).catch((error) => {
-                    // eslint-disable-next-line no-console
-                    console.error('Failed to save billing address:', error);
+                    logger.error('Failed to save billing address', {
+                        error: error instanceof Error ? error : String(error),
+                    });
                 })
             );
         }
@@ -101,19 +106,18 @@ export async function action({ request, context }: { request: Request; context: 
         // Wait for all save operations to complete
         if (savePromises.length > 0) {
             await Promise.all(savePromises);
-            // eslint-disable-next-line no-console
-            console.log(`Successfully saved ${savePromises.length} items to customer profile`);
+            logger.info(`Successfully saved ${savePromises.length} items to customer profile`);
         } else {
-            // eslint-disable-next-line no-console
-            console.log('No items to save to customer profile');
+            logger.debug('No items to save to customer profile');
         }
 
         return Response.json({
             success: true,
         });
     } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error saving checkout info to customer:', error);
+        logger.error('Error saving checkout info to customer', {
+            error: error instanceof Error ? error : String(error),
+        });
         return Response.json(
             {
                 success: false,

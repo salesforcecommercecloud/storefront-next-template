@@ -32,6 +32,11 @@ vi.mock('@/lib/api/customer', () => ({
     saveBillingAddressToCustomer: vi.fn(),
 }));
 
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
+
 import { getAuth } from '@/middlewares/auth.server';
 import { getBasket } from '@/middlewares/basket.server';
 import {

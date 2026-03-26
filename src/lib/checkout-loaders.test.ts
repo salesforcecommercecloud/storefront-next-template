@@ -38,6 +38,11 @@ vi.mock('@/lib/checkout-server-utils', () => ({
     fetchProductsInBasket: vi.fn(() => Promise.resolve({})),
 }));
 
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
+
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(() => ({
         shopperPromotions: {

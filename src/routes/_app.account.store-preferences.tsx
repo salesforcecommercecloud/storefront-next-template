@@ -23,6 +23,7 @@ import { getTranslation } from '@/lib/i18next';
 import { createApiClients } from '@/lib/api-clients';
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
+import { getLogger } from '@/lib/logger';
 
 /**
  * Loader function to fetch preferred store details from cookie.
@@ -32,6 +33,7 @@ import { selectedStoreContext } from '@/extensions/store-locator/middlewares/sel
  */
 // eslint-disable-next-line react-refresh/only-export-components -- Loader exports are required by React Router
 export async function loader({ context }: LoaderFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
 
     // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
@@ -51,8 +53,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
             const preferredStore = storesData?.data?.[0] || null;
             return { preferredStore, error: null };
         } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Failed to fetch preferred store:', error);
+            logger.error('Failed to fetch preferred store', { error: error instanceof Error ? error : String(error) });
             return {
                 preferredStore: null,
                 error: t('storePreferences.preferredStore.error'),

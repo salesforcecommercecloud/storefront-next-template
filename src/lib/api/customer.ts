@@ -22,6 +22,7 @@ import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 import { orderAddressToCustomerAddress } from '@/lib/address-utils';
+import { getLogger } from '@/lib/logger';
 
 /**
  * Customer lookup result
@@ -805,6 +806,7 @@ export async function savePaymentMethodToCustomer(
     customerId: string,
     paymentInstrument: PaymentInstrumentForSave
 ): Promise<boolean> {
+    const logger = getLogger(context);
     try {
         const clients = createApiClients(context);
 
@@ -816,8 +818,7 @@ export async function savePaymentMethodToCustomer(
         const derivedLast4 = cardWithReadOnly && getLastFourFromPaymentCard(cardWithReadOnly);
         const numberForRequest = card?.number ?? (derivedLast4 ? `************${derivedLast4}` : null);
         if (!numberForRequest) {
-            // eslint-disable-next-line no-console -- server-side log when payment save cannot proceed
-            console.error('Cannot save payment method: no card number available');
+            logger.error('Cannot save payment method: no card number available');
             return false;
         }
 

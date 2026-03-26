@@ -16,6 +16,9 @@
 import { type ReactElement, memo, Suspense, useEffect } from 'react';
 import { registry } from '@/lib/registry';
 import { Await, useAsyncError } from 'react-router';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import { useComponentDataById } from './component-data-context';
 import type { ComponentType } from './index';
@@ -38,12 +41,7 @@ function ComponentErrorFallback({ componentId, componentTypeId }: { componentId:
     const error = useAsyncError();
 
     useEffect(() => {
-        // Log the error once when mounted
-        // eslint-disable-next-line no-console
-        console.error(
-            `[Page Designer] Failed to load data for component "${componentId}" (${componentTypeId}):`,
-            error
-        );
+        logger.error(`Failed to load data for component "${componentId}" (${componentTypeId})`, { error });
     }, [componentId, componentTypeId, error]);
 
     // Render nothing when data loading fails

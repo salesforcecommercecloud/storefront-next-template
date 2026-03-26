@@ -22,6 +22,9 @@ import {
 import { ensureCustomerPreferencesAdapterRegistered } from '@/lib/adapters/ensure-customer-preferences-adapter';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 const CustomerPreferencesContext = createContext<CustomerInterestsPreferencesAdapter | undefined>(undefined);
 
@@ -56,8 +59,7 @@ const CustomerPreferencesProvider = ({
             } catch (error) {
                 // Silently handle initialization errors - preferences will simply not display
                 if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.warn('Failed to initialize customer preferences adapter:', error);
+                    logger.warn('Failed to initialize customer preferences adapter', { error });
                 }
             }
         };

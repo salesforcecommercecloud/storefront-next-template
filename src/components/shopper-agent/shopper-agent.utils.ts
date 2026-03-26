@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
+
 /** Custom event to trigger Shopper Agent chunk load when user interacts before idle (e.g. clicks Open chat). */
 export const SHOPPER_AGENT_LOAD_EVENT = 'shopper-agent:load';
 
@@ -111,8 +115,7 @@ export interface ShopperAgentConfig {
  */
 export const validateShopperAgentConfig = (config: unknown): config is ShopperAgentConfig => {
     if (!config || typeof config !== 'object') {
-        // eslint-disable-next-line no-console -- config validation feedback
-        console.error('[ShopperAgent] Configuration must be an object.');
+        logger.error('Configuration must be an object.');
         return false;
     }
 
@@ -139,24 +142,21 @@ export const validateShopperAgentConfig = (config: unknown): config is ShopperAg
     const isValid = requiredFields.every(isRequiredFieldValid);
 
     if (!isValid) {
-        // eslint-disable-next-line no-console -- config validation feedback
-        console.error('[ShopperAgent] Invalid configuration - missing or empty required fields.');
+        logger.error('Invalid configuration - missing or empty required fields.');
         return false;
     }
 
     // Validate optional conversation context properties if present
     if (typedConfig.enableConversationContext !== undefined) {
         if (typeof typedConfig.enableConversationContext !== 'string') {
-            // eslint-disable-next-line no-console -- config validation feedback
-            console.error('[ShopperAgent] enableConversationContext must be a string.');
+            logger.error('enableConversationContext must be a string.');
             return false;
         }
     }
 
     if (typedConfig.conversationContext !== undefined) {
         if (!Array.isArray(typedConfig.conversationContext)) {
-            // eslint-disable-next-line no-console -- config validation feedback
-            console.error('[ShopperAgent] conversationContext must be an array.');
+            logger.error('conversationContext must be an array.');
             return false;
         }
     }
@@ -165,8 +165,7 @@ export const validateShopperAgentConfig = (config: unknown): config is ShopperAg
     if (typedConfig.scriptSourceUrl) {
         const isTrustedDomain = validateSalesforceDomain(typedConfig.scriptSourceUrl as string);
         if (!isTrustedDomain) {
-            // eslint-disable-next-line no-console -- config validation feedback
-            console.error('[ShopperAgent] Script URL must be from a trusted Salesforce domain.');
+            logger.error('Script URL must be from a trusted Salesforce domain.');
             return false;
         }
     }
@@ -235,8 +234,7 @@ export function launchChat(options?: { fromPendingReady?: boolean }): void {
     try {
         const utilAPI = window.embeddedservice_bootstrap?.utilAPI;
         if (!utilAPI) {
-            // eslint-disable-next-line no-console -- embedded service API feedback
-            console.warn('[ShopperAgent] utilAPI not available');
+            logger.warn('utilAPI not available');
             pendingOpenWhenReady = true;
             if (typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent(SHOPPER_AGENT_LOAD_EVENT));
@@ -262,8 +260,7 @@ export function launchChat(options?: { fromPendingReady?: boolean }): void {
             void utilAPI.launchChat();
         }
     } catch (error) {
-        // eslint-disable-next-line no-console -- embedded service API feedback
-        console.error('[ShopperAgent] Error launching chat:', error);
+        logger.error('Error launching chat', { error });
     }
 }
 
@@ -278,23 +275,20 @@ export function launchChat(options?: { fromPendingReady?: boolean }): void {
  */
 export function sendTextMessage(message: string): void {
     if (!onClient) {
-        // eslint-disable-next-line no-console -- embedded service API feedback
-        console.warn('[ShopperAgent] sendTextMessage called on server side');
+        logger.warn('sendTextMessage called on server side');
         return;
     }
 
     try {
         const utilAPI = window.embeddedservice_bootstrap?.utilAPI;
         if (!utilAPI?.sendTextMessage) {
-            // eslint-disable-next-line no-console -- embedded service API feedback
-            console.warn('[ShopperAgent] utilAPI.sendTextMessage not available');
+            logger.warn('utilAPI.sendTextMessage not available');
             return;
         }
 
         void utilAPI.sendTextMessage(message);
     } catch (error) {
-        // eslint-disable-next-line no-console -- embedded service API feedback
-        console.error('[ShopperAgent] Error sending text message:', error);
+        logger.error('Error sending text message', { error });
     }
 }
 
@@ -312,7 +306,6 @@ export function openShopperAgent(): void {
     try {
         launchChat();
     } catch (error) {
-        // eslint-disable-next-line no-console -- embedded service API feedback
-        console.error('[ShopperAgent] Error opening agent:', error);
+        logger.error('Error opening agent', { error });
     }
 }

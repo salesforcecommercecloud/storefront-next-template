@@ -19,6 +19,9 @@ import type {
     ShopperProducts,
     ShopperSearch,
 } from '@salesforce/storefront-next-runtime/scapi';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 type ProductType = ShopperProducts.schemas['ProductType'];
 
@@ -87,8 +90,7 @@ export const findLowestPrice = (product: Product): LowestPriceResult | undefined
     // i.e. when a shopper has narrowed down to a variant, do not look into other variants
     const isMaster = product.hitType === 'master' || !!(product.type as ProductType | undefined)?.master;
     if (isMaster && !product.variants) {
-        // eslint-disable-next-line no-console
-        console.warn(
+        logger.warn(
             'Expecting `product.variants` to exist. For more accuracy, please tweak your API request to ask for the variants details.'
         );
     }

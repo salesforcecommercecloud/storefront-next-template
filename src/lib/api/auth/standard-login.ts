@@ -18,6 +18,7 @@ import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import type { CustomQueryParameters } from '@/lib/api/types';
 import { updateAuth, loginRegisteredUser as authLoginRegisteredUser } from '@/middlewares/auth.server';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger';
 
 export const loginRegisteredUser = async (
     context: ActionFunctionArgs['context'],
@@ -28,6 +29,7 @@ export const loginRegisteredUser = async (
     error?: string;
     errorDetails?: string;
 }> => {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
 
     try {
@@ -50,13 +52,8 @@ export const loginRegisteredUser = async (
             success: true,
         };
     } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('[Standard Login] Login error:', error);
-
-        // Capture more detailed error information for debugging
         const errorDetails = error instanceof Error ? error.message : String(error);
-        // eslint-disable-next-line no-console
-        console.error('[Standard Login] Error details:', errorDetails);
+        logger.error('Login error', { error, errorDetails });
 
         const errorMessage = t('errors:loginFailed');
         return {

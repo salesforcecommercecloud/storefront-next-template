@@ -17,6 +17,9 @@
 
 import { type ReactElement, useEffect, useState, useCallback, useMemo } from 'react';
 import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 import { Heart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -136,8 +139,7 @@ export function WishlistPageContent({ items, productsByProductId }: WishlistPage
                     const parsed = JSON.parse(stored) as string[];
                     return new Set(parsed);
                 } catch (e) {
-                    // eslint-disable-next-line no-console
-                    console.error('Failed to parse stored disabled IDs:', e);
+                    logger.error('Failed to parse stored disabled IDs', { error: e });
                 }
             }
         }

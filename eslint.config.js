@@ -210,7 +210,7 @@ const baseConfig = defineConfig([
 
             // General code quality rules
             'import/no-namespace': 'error',
-            'no-console': 'warn',
+            'no-console': 'error',
             'no-debugger': 'error',
             'no-alert': 'warn',
             'no-var': 'error',
@@ -250,6 +250,13 @@ const baseConfig = defineConfig([
         files: ['**/src/components/link/index.tsx', '**/src/hooks/use-navigate.ts'],
         rules: {
             'no-restricted-imports': 'off',
+        },
+    },
+    {
+        // Logger utility — wraps console.* for centralized logging
+        files: ['**/src/lib/logger.ts'],
+        rules: {
+            'no-console': 'off',
         },
     },
     {

@@ -24,6 +24,9 @@ import { useAuth } from '@/providers/auth';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { getAllAdapters } from '@/lib/adapters';
 import { useTrackingConsent } from '@/hooks/use-tracking-consent';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 import { TrackingConsent } from '@/types/tracking-consent';
 import { useTranslation } from 'react-i18next';
 
@@ -113,8 +116,7 @@ export function PageViewTracker() {
                 // Silently fail - analytics should not break the app
                 trackedRef.current = null; // Reset the tracked path to allow tracking again
                 if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.warn('Failed to load and send page view tracking:', error);
+                    logger.warn('Failed to load and send page view tracking', { error });
                 }
             }
         };

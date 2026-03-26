@@ -15,6 +15,7 @@
  */
 import type { RouterContextProvider } from 'react-router';
 import { createShopperContext, type ShopperContext } from '@/lib/api/shopper-context';
+import { getLogger } from '@/lib/logger';
 import {
     SHOPPER_CONTEXT_SEARCH_PARAMS,
     QUALIFIER_MAPPING_PARAM_NAME,
@@ -228,6 +229,7 @@ export async function updateShopperContext({
     newSourceCodeContext: Record<string, string>;
     cookieHeader: string | null;
 }): Promise<{ setCookieHeaders: string[] }> {
+    const logger = getLogger(context);
     const setCookieHeaders: string[] = [];
 
     // Get current context from cookies using cookie-utils (same as other app cookies; adds siteId suffix)
@@ -276,12 +278,9 @@ export async function updateShopperContext({
             setCookieHeaders.push(header);
         }
     } catch (cookieError) {
-        // Cookie serialization failed - log but don't throw
-        // eslint-disable-next-line no-console
-        console.error(
-            'Failed to serialize shopper context cookie:',
-            cookieError instanceof Error ? cookieError.message : String(cookieError)
-        );
+        logger.error('Failed to serialize shopper context cookie', {
+            error: cookieError instanceof Error ? cookieError.message : String(cookieError),
+        });
     }
 
     return { setCookieHeaders };

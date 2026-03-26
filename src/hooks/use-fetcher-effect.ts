@@ -15,6 +15,9 @@
  */
 import { useEffect, useRef } from 'react';
 import type { FetcherWithComponents } from 'react-router';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /**
  * Configuration object for the useFetcherEffect hook
@@ -161,17 +164,13 @@ export function useFetcherEffect<TData = unknown>(
                 try {
                     onSuccess(currentData);
                 } catch (callbackError) {
-                    // Silently handle callback errors to prevent breaking the component
-                    // eslint-disable-next-line no-console
-                    console.error('Error in onSuccess callback:', callbackError);
+                    logger.error('Error in onSuccess callback', { error: callbackError });
                 }
             } else if (!success && error !== undefined && onError) {
                 try {
                     onError(error, currentData);
                 } catch (callbackError) {
-                    // Silently handle callback errors to prevent breaking the component
-                    // eslint-disable-next-line no-console
-                    console.error('Error in onError callback:', callbackError);
+                    logger.error('Error in onError callback', { error: callbackError });
                 }
             }
         }

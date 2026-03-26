@@ -20,6 +20,9 @@ import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 const RecommendersContext = createContext<RecommendersAdapter | undefined>(undefined);
 
@@ -54,8 +57,7 @@ const RecommendersProvider = ({ children, adapterName = EINSTEIN_ADAPTER_NAME }:
             } catch (error) {
                 // Silently handle initialization errors - recommendations will simply not display
                 if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.warn('Failed to initialize recommenders adapter:', error);
+                    logger.warn('Failed to initialize recommenders adapter', { error });
                 }
             }
         };

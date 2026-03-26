@@ -19,6 +19,17 @@ import { useUpdateMarketingConsent } from './use-update-marketing-consent';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => mockLogger),
+    getLogger: vi.fn(() => mockLogger),
+}));
+
 const mockSubmit = vi.fn();
 const createMockFetcher = (overrides: { state?: string; data?: unknown } = {}) => ({
     state: (overrides.state ?? 'idle') as 'idle' | 'loading' | 'submitting',
@@ -166,8 +177,6 @@ describe('useUpdateMarketingConsent', () => {
             const onError = vi.fn();
             mockFetcher = createMockFetcher({ state: 'submitting', data: null });
             vi.spyOn(ReactRouter, 'useFetcher').mockImplementation(() => mockFetcher as any);
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
             const { rerender } = renderHook(() => useUpdateMarketingConsent(undefined, onError));
             expect(onError).not.toHaveBeenCalled();
 
@@ -178,11 +187,9 @@ describe('useUpdateMarketingConsent', () => {
                 success: false,
                 error: 'Subscription update failed',
             });
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-                'Marketing consent update failed:',
-                'Subscription update failed'
-            );
-            consoleErrorSpy.mockRestore();
+            expect(mockLogger.error).toHaveBeenCalledWith('Marketing consent update failed', {
+                message: 'Subscription update failed',
+            });
         });
     });
 });

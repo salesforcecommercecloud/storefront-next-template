@@ -38,6 +38,8 @@ import { getCustomerProfileForCheckout, isRegisteredCustomer } from '@/lib/api/c
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 import { createApiClients } from '@/lib/api-clients';
 import { currencyContext } from '@/lib/currency';
+import { getLogger } from '@/lib/logger';
+
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getPickupShipment } from '@/extensions/bopis/lib/basket-utils';
 import { setAddressAndMethodForPickup } from '@/extensions/bopis/lib/api/shipment';
@@ -350,6 +352,7 @@ export async function initializeBasketForReturningCustomer(
     context: LoaderFunctionArgs['context'],
     customerProfile: CustomerProfile
 ): Promise<ShopperBasketsV2.schemas['Basket'] | null> {
+    const logger = getLogger(context);
     try {
         // Load the basket if it's not already loaded
         const basket = (await getBasket(context)).current ?? undefined;
@@ -486,8 +489,7 @@ export async function initializeBasketForReturningCustomer(
                     updateBasketResource(context, updatedBasket);
                 }
             } catch (err) {
-                // eslint-disable-next-line no-console -- server-side log to debug missing shipping method in prefill
-                console.warn('Prefill: could not set default shipping method on basket', {
+                logger.warn('Prefill: could not set default shipping method on basket', {
                     basketId,
                     error: err instanceof Error ? err.message : String(err),
                 });
@@ -508,8 +510,9 @@ export async function initializeBasketForReturningCustomer(
                     const normalizedCardType = normalizeCardType(preferredMethod.cardType);
 
                     if (!normalizedCardType || normalizedCardType === 'unknown') {
-                        // eslint-disable-next-line no-console -- server-side log when skipping invalid saved card type
-                        console.warn('Invalid card type for saved payment method:', preferredMethod.cardType);
+                        logger.warn('Invalid card type for saved payment method', {
+                            cardType: preferredMethod.cardType,
+                        });
                         // Skip auto-applying invalid payment method to avoid incomplete basket payment
                     } else {
                         const paymentInfo = {

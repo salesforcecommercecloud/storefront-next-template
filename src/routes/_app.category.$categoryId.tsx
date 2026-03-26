@@ -45,6 +45,7 @@ import {
     getSearchWithoutFiltersParam,
     useFiltersPanelState,
 } from '@/hooks/use-filters-panel-state';
+import { getLogger } from '@/lib/logger';
 
 @PageType({
     name: 'Product Listing Page',
@@ -98,6 +99,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
         request,
         params: { categoryId = '' },
     } = args;
+    const logger = getLogger(context);
     const { searchParams } = new URL(request.url);
     const offset = parseInt(getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.OFFSET) || '0', 10);
     const sort = getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.SORT);
@@ -172,14 +174,16 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
                     defaultCurrency: currency,
                 });
             } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error('Error generating category schema in loader:', error);
+                logger.error('Error generating category schema in loader', {
+                    error: error instanceof Error ? error : String(error),
+                });
                 return null;
             }
         })
         .catch((error) => {
-            // eslint-disable-next-line no-console
-            console.error('Error in category schema promise chain:', error);
+            logger.error('Error in category schema promise chain', {
+                error: error instanceof Error ? error : String(error),
+            });
             return null;
         });
 

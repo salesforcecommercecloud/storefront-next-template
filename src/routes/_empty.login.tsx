@@ -46,6 +46,7 @@ import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
 import { mergeBasket } from '@/lib/api/basket';
 import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+import { getLogger } from '@/lib/logger';
 
 type LoginActionResponse = {
     success: boolean;
@@ -72,6 +73,7 @@ type LoginLoaderData = {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader({ request, context }: LoaderFunctionArgs) {
+    const logger = getLogger(context);
     const session = getAuth(context);
     const url = new URL(request.url);
     const returnUrl = url.searchParams.get('returnUrl');
@@ -122,9 +124,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
             try {
                 await mergeBasket(context);
             } catch (basketError) {
-                // eslint-disable-next-line no-console
-                console.error('Failed to merge basket during passwordless login:', basketError);
-                // Continue with login even if basket merge fails
+                logger.error('Failed to merge basket during passwordless login', {
+                    error: basketError instanceof Error ? basketError : String(basketError),
+                });
             }
 
             return redirect(returnUrl || '/');
@@ -171,6 +173,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<LoginActionResponse> {
+    const logger = getLogger(context);
     const config = getConfig<AppConfig>(context);
     const { t } = getTranslation(context);
     const genericError = t('errors:genericTryAgain');
@@ -273,9 +276,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                     updateBasketResource(context, mergedBasket);
                 }
             } catch (error) {
-                // Log but don't block redirect - user can still access their registered basket
-                // eslint-disable-next-line no-console
-                console.error('[Standard Login] Failed to merge basket:', error);
+                logger.error('Failed to merge basket', { error: error instanceof Error ? error : String(error) });
             }
 
             // Login successful - redirect to returnUrl if provided, otherwise home

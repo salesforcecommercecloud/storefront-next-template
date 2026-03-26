@@ -36,6 +36,7 @@ import { getTranslation } from '@/lib/i18next';
 import { buildUrlFromContext } from '@/lib/url.server';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket';
+import { getLogger } from '@/lib/logger';
 
 function placeOrderErrorResponse(body: { success: false; error: string; step: string }) {
     return Response.json(body, { status: 400 });
@@ -45,6 +46,7 @@ function placeOrderErrorResponse(body: { success: false; error: string; step: st
  * Server action for placing an order.
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
 
     try {
@@ -263,8 +265,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
                             auth.customerId,
                             order.paymentInstruments[0] as PaymentInstrumentForSave
                         ).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            console.error('Failed to save payment method for new customer:', error);
+                            logger.error('Failed to save payment method for new customer', {
+                                error: error instanceof Error ? error : String(error),
+                            });
                         })
                     );
                 }
@@ -277,8 +280,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
                             auth.customerId,
                             order.shipments[0].shippingAddress
                         ).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            console.error('Failed to save shipping address for new customer:', error);
+                            logger.error('Failed to save shipping address for new customer', {
+                                error: error instanceof Error ? error : String(error),
+                            });
                         })
                     );
                 }
@@ -287,8 +291,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
                 if (order.billingAddress) {
                     savePromises.push(
                         saveBillingAddressToCustomer(context, auth.customerId, order.billingAddress).catch((error) => {
-                            // eslint-disable-next-line no-console
-                            console.error('Failed to save billing address for new customer:', error);
+                            logger.error('Failed to save billing address for new customer', {
+                                error: error instanceof Error ? error : String(error),
+                            });
                         })
                     );
                 }
@@ -302,8 +307,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
                         auth.customerId,
                         order.paymentInstruments[0] as PaymentInstrumentForSave
                     ).catch((error) => {
-                        // eslint-disable-next-line no-console
-                        console.error('Failed to save payment method:', error);
+                        logger.error('Failed to save payment method', {
+                            error: error instanceof Error ? error : String(error),
+                        });
                     })
                 );
             }

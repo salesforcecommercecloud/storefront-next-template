@@ -23,6 +23,7 @@ import type { AppConfig } from '@/types/config';
 import { mergeBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
+import { getLogger } from '@/lib/logger';
 
 export interface AuthorizeIDPParams {
     hint: string;
@@ -152,6 +153,7 @@ export const loginIDPUser = async (
 };
 
 export async function handleSocialLoginLanding({ request, context }: LoaderFunctionArgs): Promise<Response> {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
 
     try {
@@ -166,8 +168,7 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
 
         // Handle error from social provider
         if (error) {
-            // eslint-disable-next-line no-console
-            console.error('[Social Login] Failed to login:', t('socialCallback:socialError'), error);
+            logger.error('Failed to login', { reason: t('socialCallback:socialError'), error });
             const errorMessage = t('socialCallback:socialError');
             return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
         }
@@ -189,29 +190,24 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
                 try {
                     await mergeBasket(context);
                 } catch (err) {
-                    // Log but don't block redirect - user can still access their registered basket
-                    // eslint-disable-next-line no-console
-                    console.error('[Social Login] Failed to merge basket:', err);
+                    logger.error('Failed to merge basket', { error: err });
                 }
 
                 // Redirect to redirectURL if provided, otherwise redirect to home
                 const redirectTo = redirectUrl ? decodeURIComponent(redirectUrl) : '/';
                 return redirect(redirectTo);
             } else {
-                // eslint-disable-next-line no-console
-                console.error('[Social Login] Error during login:', result.error);
+                logger.error('Error during login', { error: result.error });
                 const errorMessage = t('errors:genericTryAgain');
                 return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
             }
         } else {
-            // eslint-disable-next-line no-console
-            console.error('[Social Login] Error during login:', 'Missing Auth code.');
+            logger.error('Error during login', { error: 'Missing Auth code.' });
             const errorMessage = t('errors:genericTryAgain');
             return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
         }
     } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('[Social Login] Error during login:', error);
+        logger.error('Error during login', { error });
         const errorMessage = t('errors:genericTryAgain');
         return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
     }

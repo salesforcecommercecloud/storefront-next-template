@@ -19,6 +19,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { currencyContext } from '@/lib/currency';
+import { getLogger } from '@/lib/logger';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -41,6 +42,7 @@ export async function fetchProductsForWishlist(
     items: CustomerProductListItem[],
     allItems?: CustomerProductListItem[]
 ): Promise<Record<string, Product>> {
+    const logger = getLogger(context);
     const productIds = items
         .map((item) => item.productId)
         .filter((id): id is string => Boolean(id) && typeof id === 'string' && id.trim().length > 0);
@@ -96,9 +98,7 @@ export async function fetchProductsForWishlist(
                 });
             }
         } catch (error) {
-            // Log error but continue with other batches
-            // eslint-disable-next-line no-console
-            console.error(`Error fetching products batch (IDs: ${batchIds.join(', ')}):`, error);
+            logger.error('Error fetching products batch', { ids: batchIds.join(', '), error });
             // Continue processing other batches even if one fails
         }
     }
@@ -123,6 +123,7 @@ export async function getWishlist(
     items: CustomerProductListItem[];
     id: string | null;
 }> {
+    const logger = getLogger(context);
     const clients = createApiClients(context);
 
     try {
@@ -182,8 +183,7 @@ export async function getWishlist(
             id,
         };
     } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching wishlist:', error);
+        logger.error('Error fetching wishlist', { error });
         return {
             wishlist: null,
             items: [],

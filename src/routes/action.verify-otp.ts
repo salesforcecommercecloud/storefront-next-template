@@ -21,6 +21,7 @@ import { getTranslation } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import { getLogger } from '@/lib/logger';
 
 type VerifyOtpResponse = {
     success: boolean;
@@ -34,6 +35,7 @@ type VerifyOtpResponse = {
  * This is called when the user submits the OTP code from the modal
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<VerifyOtpResponse> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
 
     try {
@@ -86,9 +88,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         try {
             await mergeBasket(context);
         } catch (error) {
-            // user can still access their registered basket
-            // eslint-disable-next-line no-console
-            console.error('[OTP Login] Failed to merge basket:', error);
+            logger.error('Failed to merge basket', { error: error instanceof Error ? error : String(error) });
         }
 
         return {
@@ -110,8 +110,9 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                         errorMessage = parsed.message;
                     }
                 } catch (parseError) {
-                    // eslint-disable-next-line no-console
-                    console.error('[OTP Verification] Failed to parse rawBody:', parseError);
+                    logger.error('Failed to parse rawBody', {
+                        error: parseError instanceof Error ? parseError : String(parseError),
+                    });
                 }
             }
             // Only check message if we didn't find rawBody

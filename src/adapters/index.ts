@@ -17,6 +17,9 @@ import type { AppConfig } from '@/types/config';
 import { createEinsteinAdapter } from './einstein';
 import { addAdapter } from '@/lib/adapters';
 import { createActiveDataAdapter } from './active-data';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /**
  * Initialize engagement adapters.
@@ -44,8 +47,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig): void {
                 })
             );
         } catch (error) {
-            // eslint-disable-next-line no-console
-            console.warn('Failed to initialize Einstein adapter:', (error as Error).message);
+            logger.warn('Failed to initialize Einstein adapter', { error });
         }
     }
 
@@ -60,8 +62,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig): void {
                 })
             );
         } catch (error) {
-            // eslint-disable-next-line no-console
-            console.warn('Failed to initialize Active Data adapter:', (error as Error).message);
+            logger.warn('Failed to initialize Active Data adapter', { error });
         }
     }
 }

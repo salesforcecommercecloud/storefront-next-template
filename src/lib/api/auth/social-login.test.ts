@@ -64,6 +64,17 @@ vi.mock('@/lib/utils', () => ({
     isAbsoluteURL: vi.fn((url: string) => url.startsWith('http')),
 }));
 
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => mockLogger),
+    getLogger: vi.fn(() => mockLogger),
+}));
+
 const mockIsTrackingConsentEnabled = vi.mocked(isTrackingConsentEnabled);
 
 /**
@@ -420,8 +431,6 @@ describe('handleSocialLoginCallback', () => {
         it('should handle basket merge errors gracefully and still redirect', async () => {
             mockMergeBasket.mockRejectedValue(new Error('Basket merge failed'));
 
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
             const mockRequest = new Request('http://localhost:5173/social-callback?code=auth_code_123');
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: LoaderFunctionArgs = {
@@ -433,12 +442,12 @@ describe('handleSocialLoginCallback', () => {
             const result = await handleSocialLoginLanding(args);
 
             expect(mockMergeBasket).toHaveBeenCalled();
-            expect(consoleErrorSpy).toHaveBeenCalledWith('[Social Login] Failed to merge basket:', expect.any(Error));
+            expect(mockLogger.error).toHaveBeenCalledWith('Failed to merge basket', {
+                error: expect.any(Error),
+            });
             // Should still redirect to home despite basket merge failure
             expect(result.status).toBe(302);
             expect(result.headers.get('Location')).toBe('/');
-
-            consoleErrorSpy.mockRestore();
         });
 
         it('should use config callbackUri for redirectURI construction', async () => {

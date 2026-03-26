@@ -15,6 +15,9 @@
  */
 import { useFetcher } from 'react-router';
 import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /** Payload for updating a single marketing consent subscription (opt-in/opt-out). */
 export interface UpdateMarketingConsentPayload {
@@ -56,8 +59,7 @@ export function useUpdateMarketingConsent(
         },
         onError: (error, data) => {
             const message = Array.isArray(error) ? error.join(', ') : error;
-            // eslint-disable-next-line no-console
-            console.error('Marketing consent update failed:', message);
+            logger.error('Marketing consent update failed', { message });
             onError?.(message, data);
         },
     });

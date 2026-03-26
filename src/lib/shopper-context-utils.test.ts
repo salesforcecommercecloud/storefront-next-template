@@ -35,6 +35,17 @@ vi.mock('@/lib/api/shopper-context', () => ({
     createShopperContext: vi.fn(),
 }));
 
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => mockLogger),
+    getLogger: vi.fn(() => mockLogger),
+}));
+
 const { mockSerialize, mockParse } = vi.hoisted(() => ({
     mockSerialize: vi.fn(),
     mockParse: vi.fn(),
@@ -797,7 +808,6 @@ describe('shopper-context-utils', () => {
     describe('updateShopperContext', () => {
         let mockContext: RouterContextProvider;
         let mockCreateShopperContext: ReturnType<typeof vi.fn>;
-        let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
         beforeEach(async () => {
             const { createShopperContext } = await import('@/lib/api/shopper-context');
@@ -817,8 +827,6 @@ describe('shopper-context-utils', () => {
                 commerce: { api: { siteId: 'RefArch' } },
             } as any);
 
-            consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
             mockParse.mockResolvedValue(null);
             mockSerialize.mockResolvedValue('Set-Cookie: mock=value');
             mockCreateShopperContext.mockResolvedValue(undefined);
@@ -826,7 +834,6 @@ describe('shopper-context-utils', () => {
 
         afterEach(() => {
             vi.clearAllMocks();
-            consoleErrorSpy.mockRestore();
         });
 
         test('should update shopper context with new qualifiers', async () => {
@@ -961,10 +968,9 @@ describe('shopper-context-utils', () => {
 
             // Should still call API even if cookie serialization fails
             expect(mockCreateShopperContext).toHaveBeenCalledTimes(1);
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-                'Failed to serialize shopper context cookie:',
-                'Cookie serialization failed'
-            );
+            expect(mockLogger.error).toHaveBeenCalledWith('Failed to serialize shopper context cookie', {
+                error: 'Cookie serialization failed',
+            });
             expect(result.setCookieHeaders).toHaveLength(0);
         });
 

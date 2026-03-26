@@ -23,6 +23,7 @@ import {
     validateSlasCallbackToken,
 } from '@/lib/marketing-cloud';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger';
 
 // Re-export for backwards compatibility with tests
 export { resetMarketingCloudTokenCache };
@@ -53,6 +54,7 @@ async function sendResetPasswordEmail(
  * Processes SLAS callback token and sends magic link email
  */
 export async function handleResetPasswordCallback({ request, context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
 
     try {
@@ -85,8 +87,7 @@ export async function handleResetPasswordCallback({ request, context }: ActionFu
         };
     } catch (error) {
         const { responseMessage } = await extractResponseError(error);
-        // eslint-disable-next-line no-console
-        console.error('[Reset Password Callback] Error:', responseMessage);
+        logger.error('Callback error', { error: responseMessage });
 
         return {
             success: false,

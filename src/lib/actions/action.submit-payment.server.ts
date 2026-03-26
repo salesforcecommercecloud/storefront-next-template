@@ -27,11 +27,13 @@ import { getTranslation } from '@/lib/i18next';
 import { getAuth } from '@/middlewares/auth.server';
 import { getCustomerProfileForCheckout } from '@/lib/api/customer';
 import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { getLogger } from '@/lib/logger';
 
 /**
  * Server action for submitting checkout payment information.
  */
 export async function action(formData: FormData, context: RouterContextProvider) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
 
     // Parse and validate using shared schema
@@ -191,8 +193,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         try {
             await removePaymentInstrumentFromBasket(context, basketId, existingPaymentId);
         } catch (err) {
-            // eslint-disable-next-line no-console -- server-side error log for payment debugging
-            console.error('Failed to remove existing payment instrument from basket; cannot safely add new payment.', {
+            logger.error('Failed to remove existing payment instrument from basket; cannot safely add new payment.', {
                 basketId,
                 existingPaymentId,
                 error: err instanceof Error ? err.message : String(err),
@@ -214,8 +215,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
     try {
         updatedBasket = await addPaymentInstrumentToBasket(context, basketId, paymentInfo);
     } catch (err) {
-        // eslint-disable-next-line no-console -- server-side error log for payment debugging
-        console.error(
+        logger.error(
             'Failed to add payment instrument to basket after removing previous instrument; basket may have no payment.',
             {
                 basketId,

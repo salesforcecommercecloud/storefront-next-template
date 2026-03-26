@@ -35,6 +35,17 @@ import { initializeEngagementAdapters } from '@/adapters';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { TrackingConsent } from '@/types/tracking-consent';
 
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => mockLogger),
+    getLogger: vi.fn(() => mockLogger),
+}));
+
 // Mock dependencies
 const mockUseAuth = vi.fn();
 const mockUseConfig = vi.fn();
@@ -395,8 +406,6 @@ describe('PageViewTracker', () => {
         });
 
         it('should handle sendPageViewEvent errors gracefully', async () => {
-            const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
             vi.mocked(sendViewPageEvent).mockImplementation(() => {
                 throw new Error('Send failed');
             });
@@ -413,13 +422,10 @@ describe('PageViewTracker', () => {
             await waitForAsyncTracking();
 
             if (import.meta.env.DEV) {
-                expect(consoleWarnSpy).toHaveBeenCalledWith(
-                    'Failed to load and send page view tracking:',
-                    expect.any(Error)
-                );
+                expect(mockLogger.warn).toHaveBeenCalledWith('Failed to load and send page view tracking', {
+                    error: expect.any(Error),
+                });
             }
-
-            consoleWarnSpy.mockRestore();
         });
     });
 

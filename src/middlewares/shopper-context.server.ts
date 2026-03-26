@@ -18,6 +18,7 @@ import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getAuth } from './auth.server';
 import { isPageDesignerMode, extractQualifiersFromUrl, updateShopperContext } from '@/lib/shopper-context-utils';
+import { getLogger } from '@/lib/logger';
 
 /**
  * Server-side middleware to update shopper context based on URL query parameters and cookies.
@@ -25,6 +26,7 @@ import { isPageDesignerMode, extractQualifiersFromUrl, updateShopperContext } fr
  * Reuses updateShopperContext for API update and cookie serialization.
  */
 const shopperContextMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
+    const logger = getLogger(context);
     const url = new URL(request.url);
     const config = getConfig<AppConfig>(context);
     let response: Response | undefined;
@@ -64,8 +66,7 @@ const shopperContextMiddleware: MiddlewareFunction<Response> = async ({ request,
 
         return response;
     } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Shopper context server middleware error:', {
+        logger.error('Shopper context server middleware error', {
             error: error instanceof Error ? error.message : String(error),
             usid: session.usid,
             url: request.url,
