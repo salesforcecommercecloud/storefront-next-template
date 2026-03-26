@@ -227,7 +227,7 @@ describe('AccountOrders Page', () => {
         test('renders completed status badge', async () => {
             await renderAccountOrders();
             const completedBadge = screen.getByText('Completed').closest('span');
-            expect(completedBadge).toHaveClass('bg-success');
+            expect(completedBadge).toHaveClass('bg-status-positive');
         });
     });
 

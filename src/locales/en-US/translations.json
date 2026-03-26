@@ -839,10 +839,15 @@
             "status": {
                 "created": "Created",
                 "new": "New",
-                "failed": "Failed",
-                "failedWithReopen": "Failed With Reopen",
                 "completed": "Completed",
-                "cancelled": "Cancelled"
+                "cancelled": "Cancelled",
+                "replaced": "Replaced",
+                "failed": "Failed"
+            },
+            "shippingStatus": {
+                "notShipped": "Not Shipped",
+                "partShipped": "Part Shipped",
+                "shipped": "Shipped"
             },
             "totalOrders_one": "Viewing {{count}} order",
             "totalOrders_other": "Viewing {{count}} orders",

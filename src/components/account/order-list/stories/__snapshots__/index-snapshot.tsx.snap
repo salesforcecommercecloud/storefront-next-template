@@ -168,7 +168,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -387,7 +387,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -523,11 +523,32 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-warning text-warning-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
-                Failed With Reopen
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-x mr-1 size-3.5"
+                  data-testid="order-status-icon"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18 6 6 18"
+                  />
+                  <path
+                    d="m6 6 12 12"
+                  />
+                </svg>
+                Failed
               </span>
             </div>
             <div
@@ -713,13 +734,14 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-destructive text-destructive-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
-                  class="lucide lucide-x size-3"
+                  class="lucide lucide-x mr-1 size-3.5"
+                  data-testid="order-status-icon"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -889,13 +911,14 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-success text-success-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
-                  class="lucide lucide-check size-3"
+                  class="lucide lucide-check mr-1 size-3.5"
+                  data-testid="order-status-icon"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -1268,7 +1291,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -1487,7 +1510,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -1623,11 +1646,32 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-warning text-warning-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
-                Failed With Reopen
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-x mr-1 size-3.5"
+                  data-testid="order-status-icon"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18 6 6 18"
+                  />
+                  <path
+                    d="m6 6 12 12"
+                  />
+                </svg>
+                Failed
               </span>
             </div>
             <div
@@ -1813,13 +1857,14 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-destructive text-destructive-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
-                  class="lucide lucide-x size-3"
+                  class="lucide lucide-x mr-1 size-3.5"
+                  data-testid="order-status-icon"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -1989,13 +2034,14 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-success text-success-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
-                  class="lucide lucide-check size-3"
+                  class="lucide lucide-check mr-1 size-3.5"
+                  data-testid="order-status-icon"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -2483,13 +2529,14 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-success text-success-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
-                  class="lucide lucide-check size-3"
+                  class="lucide lucide-check mr-1 size-3.5"
+                  data-testid="order-status-icon"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -2862,7 +2909,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -3125,13 +3172,14 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-success text-success-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
                 <svg
                   aria-hidden="true"
-                  class="lucide lucide-check size-3"
+                  class="lucide lucide-check mr-1 size-3.5"
+                  data-testid="order-status-icon"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -3330,7 +3378,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 gap-1 font-semibold rounded-none border-0 py-1 border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >

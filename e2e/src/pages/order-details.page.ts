@@ -40,6 +40,8 @@ class OrderDetailsPage {
         pageTitle: locate('h1').withText('Order Details').as('Page Title'),
         orderNumber: locate('[data-testid="order-number"]').as('Order Number'),
         orderStatus: locate('[data-testid="order-status-badge"]').as('Order Status Badge'),
+        /** Present on shipment rows when SCAPI returns `shippingStatus` for that shipment */
+        shippingStatus: locate('[data-testid="shipping-status-badge"]').as('Shipping Status Badge'),
 
         // Order items section
         itemsOrderedHeading: locate('h2').withText('Items Ordered').as('Items Ordered Heading'),

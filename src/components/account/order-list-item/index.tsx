@@ -14,41 +14,19 @@
  * limitations under the License.
  */
 
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Link } from '@/components/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
-import { Check, X, ChevronRight, MapPin } from 'lucide-react';
+import { Check, ChevronRight, MapPin, X } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { useCurrency } from '@/providers/currency';
 import { cn } from '@/lib/utils';
+import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order-status';
 
-/**
- * Order status constants for display.
- */
-export const OrderDisplayStatus = {
-    CREATED: 'created',
-    NEW: 'new',
-    FAILED: 'failed',
-    FAILED_WITH_REOPEN: 'failed_with_reopen',
-    COMPLETED: 'completed',
-    CANCELLED: 'cancelled',
-} as const;
-
-export type OrderDisplayStatusType = (typeof OrderDisplayStatus)[keyof typeof OrderDisplayStatus];
-
-/**
- * Translation keys for order status labels.
- */
-type StatusLabelKey =
-    | 'orders.status.created'
-    | 'orders.status.new'
-    | 'orders.status.failed'
-    | 'orders.status.failedWithReopen'
-    | 'orders.status.completed'
-    | 'orders.status.cancelled';
+const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-md w-fit';
 
 /**
  * Product item in an order for thumbnail display.
@@ -100,62 +78,6 @@ export interface OrderListItemProps {
 }
 
 /**
- * Status configuration mapping for visual styling.
- * Uses translation keys for labels (resolved in OrderStatusBadge).
- */
-const STATUS_CONFIG: Record<
-    OrderDisplayStatusType,
-    {
-        className: string;
-        icon: React.ComponentType<{ className?: string }> | undefined;
-        labelKey: string;
-    }
-> = {
-    [OrderDisplayStatus.CREATED]: {
-        className: 'border-transparent bg-info text-info-foreground',
-        icon: undefined,
-        labelKey: 'orders.status.created',
-    },
-    [OrderDisplayStatus.NEW]: {
-        className: 'border-transparent bg-info text-info-foreground',
-        icon: undefined,
-        labelKey: 'orders.status.new',
-    },
-    [OrderDisplayStatus.FAILED]: {
-        className: 'border-transparent bg-destructive text-destructive-foreground',
-        icon: X,
-        labelKey: 'orders.status.failed',
-    },
-    [OrderDisplayStatus.FAILED_WITH_REOPEN]: {
-        className: 'border-transparent bg-warning text-warning-foreground',
-        icon: undefined,
-        labelKey: 'orders.status.failedWithReopen',
-    },
-    [OrderDisplayStatus.COMPLETED]: {
-        className: 'border-transparent bg-success text-success-foreground',
-        icon: Check,
-        labelKey: 'orders.status.completed',
-    },
-    [OrderDisplayStatus.CANCELLED]: {
-        className: 'border-transparent bg-destructive text-destructive-foreground',
-        icon: X,
-        labelKey: 'orders.status.cancelled',
-    },
-};
-
-/**
- * Get status configuration with fallback.
- */
-function getStatusConfig(status: string): {
-    className: string;
-    icon: React.ComponentType<{ className?: string }> | undefined;
-    labelKey: string;
-} {
-    const normalizedStatus = status.toLowerCase().replace(/\s+/g, '_') as OrderDisplayStatusType;
-    return STATUS_CONFIG[normalizedStatus] ?? STATUS_CONFIG[OrderDisplayStatus.CREATED];
-}
-
-/**
  * Format a date string for display using the current locale.
  */
 function formatOrderDate(dateString: string, locale: string, invalidDateLabel: string): string {
@@ -175,21 +97,28 @@ function formatOrderDate(dateString: string, locale: string, invalidDateLabel: s
     }
 }
 
-/**
- * Status badge component for order status display.
- */
-function OrderStatusBadge({ status, label }: { status: string; label?: string }): ReactElement {
+/** Known SCAPI status → colored badge; otherwise show `status` / `statusLabel` as-is (neutral). */
+function OrderStatusBadge({ status, label }: { status: string; label?: string }): ReactNode {
     const { t } = useTranslation('account');
-    const config = getStatusConfig(status);
-    const Icon = config.icon;
-    const displayLabel = label ?? t(config.labelKey as StatusLabelKey);
-
+    const config = getOrderStatusConfig(status);
+    const raw = label?.trim() || formatStatusFallbackLabel(status);
+    if (config) {
+        const Icon = config.icon === 'check' ? Check : config.icon === 'x' ? X : null;
+        return (
+            <Badge data-testid="order-status-badge" className={cn(BADGE_BASE_CLASSES, config.className)}>
+                {Icon ? <Icon data-testid="order-status-icon" className="mr-1 size-3.5" aria-hidden /> : null}
+                {label ?? t(config.labelKey)}
+            </Badge>
+        );
+    }
+    if (!raw) {
+        return null;
+    }
     return (
         <Badge
             data-testid="order-status-badge"
-            className={cn('gap-1 font-semibold rounded-none border-0 py-1', config.className)}>
-            {Icon && <Icon className="size-3" />}
-            {displayLabel}
+            className={cn(BADGE_BASE_CLASSES, 'border-transparent bg-muted text-foreground')}>
+            {raw}
         </Badge>
     );
 }

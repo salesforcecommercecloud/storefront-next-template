@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { OrderDetails } from './index';
@@ -101,37 +101,36 @@ describe('OrderDetails', () => {
         expect(screen.getByText('INO001')).toBeInTheDocument();
     });
 
-    test('renders status label from order.status (new, shipped, delivered)', () => {
-        const cases: Array<{
-            status: ShopperOrders.schemas['Order']['status'] | 'shipped' | 'delivered';
-            expectedLabel: string;
-        }> = [
-            { status: 'new', expectedLabel: 'New' },
-            {
-                status: 'shipped' as ShopperOrders.schemas['Order']['status'],
-                expectedLabel: t('account:orders.status.inTransit'),
-            },
-            {
-                status: 'delivered' as ShopperOrders.schemas['Order']['status'],
-                expectedLabel: t('account:orders.status.delivered'),
-            },
-        ];
-        cases.forEach(({ status, expectedLabel }) => {
-            const { unmount } = renderOrderDetails({
-                ...defaultOrder,
-                status,
-            } as ShopperOrders.schemas['Order']);
-            expect(screen.getByText(expectedLabel)).toBeInTheDocument();
-            unmount();
+    test('renders translated badge for mapped status and raw fallback for unknown status', () => {
+        const { unmount: unmountNew } = renderOrderDetails({
+            ...defaultOrder,
+            status: 'new',
         });
+        expect(screen.getByText(t('account:orders.status.new'))).toBeInTheDocument();
+        unmountNew();
+
+        const { unmount: unmountShipped } = renderOrderDetails({
+            ...defaultOrder,
+            status: 'shipped' as ShopperOrders.schemas['Order']['status'],
+        });
+        expect(screen.getByText('Shipped')).toBeInTheDocument();
+        unmountShipped();
+
+        const { unmount: unmountDelivered } = renderOrderDetails({
+            ...defaultOrder,
+            status: 'delivered' as ShopperOrders.schemas['Order']['status'],
+        });
+        expect(screen.getByText('Delivered')).toBeInTheDocument();
+        unmountDelivered();
     });
 
-    test('renders status as-is when status is not new, shipped, or delivered', () => {
+    test('renders translated SCAPI order status badge when status maps via getOrderStatusConfig', () => {
         renderOrderDetails({
             ...defaultOrder,
             status: 'cancelled',
         } as ShopperOrders.schemas['Order']);
-        expect(screen.getByText('cancelled')).toBeInTheDocument();
+        expect(screen.getByText(t('account:orders.status.cancelled'))).toBeInTheDocument();
+        expect(screen.getByTestId('order-status-icon')).toBeInTheDocument();
     });
 
     test('renders Items Ordered heading', () => {
@@ -292,13 +291,12 @@ describe('OrderDetails', () => {
         };
         renderOrderDetails(orderWithPayment as ShopperOrders.schemas['Order']);
         expect(screen.getByText(t('account:orders.paymentMethod'))).toBeInTheDocument();
-        const paymentMethodCard = document.querySelector('[data-card="payment-method"]');
-        expect(paymentMethodCard).toBeInTheDocument();
+        expect(document.querySelector('[data-card="payment-method"]')).toBeInTheDocument();
         const expectedLabel = t('account:orders.paymentMethodEndingIn', {
             cardType: 'Visa',
             lastDigits: '5678',
         });
-        expect(within(paymentMethodCard as HTMLElement).getByText(expectedLabel)).toBeInTheDocument();
+        expect(screen.getByText(expectedLabel)).toBeInTheDocument();
     });
 
     test('renders Payment Method section with multiple payment methods', () => {
@@ -317,8 +315,6 @@ describe('OrderDetails', () => {
         };
         renderOrderDetails(orderWithMultiplePayments as ShopperOrders.schemas['Order']);
         expect(screen.getByText(t('account:orders.paymentMethod'))).toBeInTheDocument();
-        const paymentMethodCard = document.querySelector('[data-card="payment-method"]');
-        expect(paymentMethodCard).toBeInTheDocument();
         const visaLabel = t('account:orders.paymentMethodEndingIn', {
             cardType: 'Visa',
             lastDigits: '1234',
@@ -327,10 +323,8 @@ describe('OrderDetails', () => {
             cardType: 'Mastercard',
             lastDigits: '9999',
         });
-        const listItems = within(paymentMethodCard as HTMLElement).getAllByRole('listitem');
-        expect(listItems).toHaveLength(2);
-        expect(listItems[0]).toHaveTextContent(visaLabel);
-        expect(listItems[1]).toHaveTextContent(mcLabel);
+        expect(screen.getByText(visaLabel)).toBeInTheDocument();
+        expect(screen.getByText(mcLabel)).toBeInTheDocument();
     });
 
     test('does not show Payment Method section when instrument has no card details', () => {

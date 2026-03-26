@@ -87,8 +87,8 @@ const testOrders: Order[] = [
     {
         orderNo: 'INV003',
         orderDate: '2024-09-10T08:00:00Z',
-        status: 'failed_with_reopen',
-        statusLabel: 'Failed With Reopen',
+        status: 'failed',
+        statusLabel: 'Failed',
         total: 54.0,
         itemCount: 4,
         productItems: [

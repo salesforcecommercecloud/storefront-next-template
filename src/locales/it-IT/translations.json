@@ -785,12 +785,17 @@
             "status": {
                 "created": "Creato",
                 "new": "Nuovo",
-                "failed": "Fallito",
-                "failedWithReopen": "Fallito con riapertura",
                 "completed": "Completato",
                 "cancelled": "Annullato",
+                "replaced": "Sostituito",
+                "failed": "Fallito",
                 "inTransit": "In transito",
                 "delivered": "Consegnato"
+            },
+            "shippingStatus": {
+                "notShipped": "Non spedito",
+                "partShipped": "Parzialmente spedito",
+                "shipped": "Spedito"
             },
             "totalOrders_one": "Visualizzazione di {{count}} ordine",
             "totalOrders_other": "Visualizzazione di {{count}} ordini",

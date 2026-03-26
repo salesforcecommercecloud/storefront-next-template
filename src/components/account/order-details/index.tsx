@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
+import { Check, Hash, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
 import OrderItemsList, { type ProductDataById } from '@/components/account/order-details/order-items-list';
 import OrderSummary from '@/components/order-summary';
 import ShippingAddressDisplay from '@/components/checkout/components/shipping-address-display';
+import { formatStatusFallbackLabel, getOrderStatusConfig, getShippingStatusConfig } from '@/lib/order-status';
+import { cn } from '@/lib/utils';
 
 export type { ProductDataById };
+
+const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-md w-fit';
 
 export type OrderDetailsProps = {
     order: ShopperOrders.schemas['Order'];
@@ -39,17 +45,30 @@ function groupProductItemsByShipmentId(productItems: ProductItem[]): Record<stri
     }, {});
 }
 
-function getOrderStatusLabel(status: string | undefined, t: ReturnType<typeof useTranslation>['t']): string {
-    switch (status) {
-        case 'new':
-            return t('orders.status.new');
-        case 'shipped':
-            return t('orders.status.inTransit');
-        case 'delivered':
-            return t('orders.status.delivered');
-        default:
-            return status ?? '';
+/** Raw `order.status` when it is not a known SCAPI enum value in {@link getOrderStatusConfig}. */
+function orderStatusFallbackLabel(status: string | undefined): string {
+    return formatStatusFallbackLabel(status);
+}
+
+function ShipmentShippingStatusBadge({
+    shippingStatus,
+    t,
+}: {
+    shippingStatus: string | undefined;
+    t: ReturnType<typeof useTranslation>['t'];
+}): ReactElement | null {
+    const trimmed = shippingStatus?.trim() ?? '';
+    const config = getShippingStatusConfig(shippingStatus);
+    if (!config && !trimmed) {
+        return null;
     }
+    return (
+        <Badge
+            data-testid="shipping-status-badge"
+            className={cn(BADGE_BASE_CLASSES, config?.className ?? 'border-transparent bg-muted text-foreground')}>
+            {config ? t(config.labelKey) : formatStatusFallbackLabel(trimmed)}
+        </Badge>
+    );
 }
 
 type PaymentMethodDisplay = { id: string; label: string };
@@ -76,7 +95,10 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
     const { t } = useTranslation('account');
     const shipments = order.shipments ?? [];
     const productItems = order.productItems ?? [];
-    const orderStatusLabel = getOrderStatusLabel(order.status, t);
+    const orderStatusConfig = getOrderStatusConfig(order.status);
+    const orderStatusLabelFallback = orderStatusFallbackLabel(order.status);
+    const showOrderStatusBadge = orderStatusConfig || orderStatusLabelFallback;
+    const OrderStatusIcon = orderStatusConfig?.icon === 'check' ? Check : orderStatusConfig?.icon === 'x' ? X : null;
     const itemsByShipmentId = groupProductItemsByShipmentId(productItems);
     const paymentMethodDisplays = getPaymentMethodDisplays(order, t);
 
@@ -90,21 +112,29 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                         <div>
                             <h1 className="text-xl font-bold">{t('orders.orderDetailsPageTitle')}</h1>
                             <p
-                                className="mt-1 flex items-center text-base font-medium text-muted-foreground"
+                                className="mt-1 flex items-center gap-0 text-base font-medium text-muted-foreground"
                                 data-testid="order-number">
-                                <span
-                                    className="inline-flex size-4 shrink-0 items-center justify-center leading-none"
-                                    aria-hidden="true">
-                                    #
-                                </span>
+                                <Hash className="size-4 shrink-0" aria-hidden={true} />
                                 <span>{order.orderNo}</span>
                             </p>
                         </div>
-                        <span
-                            data-testid="order-status-badge"
-                            className="inline-flex w-fit items-center bg-primary/10 px-3 py-1 text-sm font-medium text-primary shrink-0">
-                            {orderStatusLabel}
-                        </span>
+                        {showOrderStatusBadge ? (
+                            <Badge
+                                data-testid="order-status-badge"
+                                className={cn(
+                                    BADGE_BASE_CLASSES,
+                                    orderStatusConfig?.className ?? 'border-transparent bg-muted text-foreground'
+                                )}>
+                                {OrderStatusIcon ? (
+                                    <OrderStatusIcon
+                                        data-testid="order-status-icon"
+                                        className="mr-1 inline size-3.5"
+                                        aria-hidden={true}
+                                    />
+                                ) : null}
+                                {orderStatusConfig ? t(orderStatusConfig.labelKey) : orderStatusLabelFallback}
+                            </Badge>
+                        ) : null}
                     </div>
                     <div className="border-t border-muted-foreground/20" aria-hidden />
 
@@ -122,12 +152,16 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                 key={sid}
                                                 data-shipment-id={sid}
                                                 className={idx > 0 ? 'border-t border-muted-foreground/20' : ''}>
-                                                <div className="px-3 py-2 bg-muted rounded-none">
-                                                    <p className="text-sm font-medium">
+                                                <div className="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2">
+                                                    <p className="text-sm min-w-0 font-medium">
                                                         {t('orders.shipmentNumber', {
                                                             n: String(idx + 1),
                                                         })}
                                                     </p>
+                                                    <ShipmentShippingStatusBadge
+                                                        shippingStatus={shipment.shippingStatus}
+                                                        t={t}
+                                                    />
                                                 </div>
                                                 <div className="p-3">
                                                     <OrderItemsList items={items} productsById={productsById} />

@@ -95,6 +95,18 @@ export const orderStatusBadgeRecipe: HealingRecipe = {
     fallbackStrategy: 'Look for badge/span with status text and primary background color',
 };
 
+/**
+ * Shipping status badge (per shipment row) — optional; only when API returns shippingStatus
+ * Primary: [data-testid="shipping-status-badge"]
+ */
+export const shippingStatusBadgeRecipe: HealingRecipe = {
+    name: 'shippingStatusBadge',
+    description: 'Per-shipment shipping status badge (e.g. Shipped, Not shipped)',
+    selectors: ['[data-testid="shipping-status-badge"]', '[data-shipment-id] [data-testid="shipping-status-badge"]'],
+    context: 'Badge on shipment header row next to Shipment N label',
+    fallbackStrategy: 'Look for data-testid shipping-status-badge within a shipment section',
+};
+
 // ─── Items Ordered Section ────────────────────────────────────────────────────
 
 /**
@@ -297,6 +309,7 @@ export const orderDetailsRecipes: HealingRecipe[] = [
     orderDetailsPageTitleRecipe,
     orderNumberRecipe,
     orderStatusBadgeRecipe,
+    shippingStatusBadgeRecipe,
     // Items section
     itemsOrderedHeadingRecipe,
     shipmentContainerRecipe,

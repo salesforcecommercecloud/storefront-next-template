@@ -27,21 +27,10 @@ import {
     type PickupLocation,
 } from '@/components/account/order-list-item';
 import { getOffsetLimitPaginationState } from '@/lib/pagination-utils';
+import type { OrderStatusType } from '@/lib/order-status';
 
-/**
- * Order status constants.
- * These are the supported status values from SCAPI.
- */
-export const OrderStatus = {
-    CREATED: 'created',
-    NEW: 'new',
-    FAILED: 'failed',
-    FAILED_WITH_REOPEN: 'failed_with_reopen',
-    COMPLETED: 'completed',
-    CANCELLED: 'cancelled',
-} as const;
-
-export type OrderStatusType = (typeof OrderStatus)[keyof typeof OrderStatus];
+/** Re-export for consumers. Single source of truth: @/lib/order-status */
+export type { OrderStatusType };
 
 /**
  * Order data structure for display.

@@ -133,7 +133,7 @@ describe('OrderList Component', () => {
                 ],
             });
             const badge = screen.getByText('Completed').closest('span');
-            expect(badge).toHaveClass('bg-success');
+            expect(badge).toHaveClass('bg-status-positive');
         });
 
         test('renders cancelled status with destructive styling', () => {
@@ -151,7 +151,7 @@ describe('OrderList Component', () => {
                 ],
             });
             const badge = screen.getByText('Cancelled').closest('span');
-            expect(badge).toHaveClass('bg-destructive');
+            expect(badge).toHaveClass('bg-status-critical/20');
         });
 
         test('renders new status with pickup styling', () => {
