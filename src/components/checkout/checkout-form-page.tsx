@@ -26,6 +26,7 @@ import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
+import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
 import CheckoutErrorBanner from './components/checkout-error-banner';
@@ -65,6 +66,36 @@ import {
     ShippingAddressSkeleton,
     ShippingOptionsSkeleton,
 } from './components/checkout-skeletons';
+
+/**
+ * Determines whether the user's current payment form selection differs from the payment
+ * instrument already on the basket. When they differ, payment must be re-submitted before
+ * place order so the basket reflects the user's actual choice (e.g. switching from a saved
+ * card to a new card, or choosing a different saved card).
+ */
+function doesPaymentSelectionDiffer(
+    paymentData: PaymentData,
+    basket: ShopperBasketsV2.schemas['Basket'] | null | undefined
+): boolean {
+    const basketInstrument = basket?.paymentInstruments?.[0];
+    if (!basketInstrument) return false;
+
+    // User chose "enter a new card" — the basket's existing instrument (from a prior saved-card
+    // auto-apply or a previous payment submit) is stale and must be replaced.
+    if (!paymentData.useSavedPaymentMethod) {
+        return true;
+    }
+
+    // User chose a saved card. The basket instrument doesn't store the customerPaymentInstrumentId
+    // (v2 basket API limitation), so we can't reliably detect whether the user picked a different
+    // saved card than what's already on the basket. Always re-submit to guarantee the correct card
+    // is applied — the server action is idempotent (removes old instrument, adds the selected one).
+    if (paymentData.useSavedPaymentMethod && paymentData.selectedSavedPaymentMethod) {
+        return true;
+    }
+
+    return false;
+}
 
 interface GuestAccountCreationProps {
     cart: ShopperBasketsV2.schemas['Basket'];
@@ -173,6 +204,7 @@ export default function CheckoutFormPage({
         formDataGetter: null,
         shouldPlaceOrderAfterPayment: false,
         options: null,
+        setFormErrors: null,
     });
     const otpFlowActiveRef = useRef(false);
     const [hideCreateAccountAfterSkippedPasswordlessOtp, setHideCreateAccountAfterSkippedPasswordlessOtp] =
@@ -292,18 +324,38 @@ export default function CheckoutFormPage({
 
     const handlePlaceOrderSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Sync basket with current payment selection before placing order so the chosen payment
-        // (saved card or new) is applied. Always submit payment when we have form data so returning
-        // shoppers who changed from the default to another saved card or new payment get their
-        // selection applied (step may be PLACE_ORDER when Place Order is visible).
         const paymentData = paymentSubmissionRef.current.formDataGetter?.();
         const basketAlreadyHasPayment = Boolean(cart?.paymentInstruments?.[0]);
-        // Only POST payment before place order when the basket still has no instrument and the user is
-        // in the payment step flow. If the basket already has an instrument, place order directly — avoids
-        // re-submitting when `editingStep` is still PAYMENT after a successful sync (duplicate POST / 400).
-        const inPaymentStepFlow = editingStep === STEPS.PAYMENT || step === STEPS.PAYMENT;
 
-        if (paymentData && !basketAlreadyHasPayment && inPaymentStepFlow) {
+        // Payment must be submitted before place order when the basket has no instrument, or
+        // when the user's current selection differs from what's on the basket (e.g. returning
+        // shopper switched from saved card to "enter new card").
+        const needsPaymentSync =
+            paymentData && (!basketAlreadyHasPayment || doesPaymentSelectionDiffer(paymentData, cart));
+
+        if (needsPaymentSync) {
+            // For new card entry, validate fields client-side before submitting so the user sees
+            // inline errors (empty card number, missing CVV, etc.)
+            if (!paymentData.useSavedPaymentMethod) {
+                const schema = createPaymentSchema(t);
+                const result = schema.safeParse(paymentData);
+                if (!result.success) {
+                    const { setFormErrors } = paymentSubmissionRef.current;
+                    if (setFormErrors) {
+                        const fieldErrors: Record<string, { type: string; message: string }> = {};
+                        for (const issue of result.error.issues) {
+                            const field = issue.path[0]?.toString();
+                            if (field && !fieldErrors[field]) {
+                                fieldErrors[field] = { type: 'validation', message: issue.message };
+                            }
+                        }
+                        setFormErrors(fieldErrors);
+                    }
+                    goToStep(STEPS.PAYMENT);
+                    return;
+                }
+            }
+
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = true;
             paymentSubmissionRef.current.options = { savePaymentToProfile: paymentData.savePaymentToProfile ?? false };
             submitPayment(paymentData);

@@ -238,7 +238,8 @@ export const createPaymentSchema = (t: SchemaTFunction) => {
             const msg = (key: string, fallback: string) => {
                 const value = t(key);
                 if (typeof value !== 'string' || !value.trim()) return fallback;
-                if (value === key || value.includes(':')) return fallback;
+                const keyWithoutNs = key.includes(':') ? (key.split(':').pop() ?? key) : key;
+                if (value === key || value === keyWithoutNs || value.includes(':')) return fallback;
                 return value;
             };
             if (!data.billingSameAsShipping) {

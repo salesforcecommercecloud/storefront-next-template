@@ -368,8 +368,14 @@ export default function Payment({
                 useSavedPaymentMethod: isUsingSaved,
             };
         };
+        refCurrent.setFormErrors = (errors) => {
+            for (const [field, error] of Object.entries(errors)) {
+                form.setError(field as keyof PaymentData, error);
+            }
+        };
         return () => {
             refCurrent.formDataGetter = null;
+            refCurrent.setFormErrors = null;
         };
     }, [form, paymentSubmissionRef]);
 

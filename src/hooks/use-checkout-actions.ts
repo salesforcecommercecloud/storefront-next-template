@@ -62,6 +62,7 @@ export type PaymentSubmissionRef = MutableRefObject<{
     formDataGetter: (() => PaymentData) | null;
     shouldPlaceOrderAfterPayment: boolean;
     options: { savePaymentToProfile?: boolean } | null;
+    setFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null;
 }>;
 
 /**

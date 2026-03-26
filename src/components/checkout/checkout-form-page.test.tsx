@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, within, waitFor } from '@testing-library/react';
+import { render, screen, within, waitFor, fireEvent } from '@testing-library/react';
 import { act, type ReactNode, type ComponentProps } from 'react';
 import i18next from 'i18next';
 import CheckoutFormPage from './checkout-form-page';
@@ -213,28 +213,38 @@ vi.mock('@/hooks/checkout/use-completed-steps', () => ({
     useCompletedSteps: () => mockUseCompletedSteps(),
 }));
 
-// Mock the checkout actions hook
+// Mock the checkout actions hook — stable references so tests can assert on calls
 const mockIsSubmitting = vi.fn(() => false);
+const mockSubmitContactInfo = vi.fn();
+const mockSubmitShippingAddress = vi.fn();
+const mockSubmitShippingOptions = vi.fn();
+const mockSubmitPayment = vi.fn();
+const mockSubmitPlaceOrder = vi.fn();
+const mockHandleCreateAccountPreferenceChange = vi.fn();
 let mockShouldCreateAccount = false;
 let mockPlaceOrderFetcherState: 'idle' | 'submitting' = 'idle';
 let mockPlaceOrderFetcherData: { success?: boolean; error?: string; step?: string } | null = null;
+let mockPaymentFetcherState: 'idle' | 'submitting' = 'idle';
+let mockPaymentFetcherData: { success?: boolean; error?: string } | null = null;
 
 vi.mock('@/hooks/use-checkout-actions', () => ({
     useCheckoutActions: () => ({
-        submitContactInfo: vi.fn(),
-        submitShippingAddress: vi.fn(),
-        submitShippingOptions: vi.fn(),
-        submitPayment: vi.fn(),
-        submitPlaceOrder: vi.fn(),
+        submitContactInfo: mockSubmitContactInfo,
+        submitShippingAddress: mockSubmitShippingAddress,
+        submitShippingOptions: mockSubmitShippingOptions,
+        submitPayment: mockSubmitPayment,
+        submitPlaceOrder: mockSubmitPlaceOrder,
         contactFetcher: { data: null, state: 'idle' },
         shippingAddressFetcher: { data: null, state: 'idle' },
         shippingOptionsFetcher: { data: null, state: 'idle' },
-        paymentFetcher: { data: null, state: 'idle' },
+        get paymentFetcher() {
+            return { data: mockPaymentFetcherData, state: mockPaymentFetcherState };
+        },
         get placeOrderFetcher() {
             return { data: mockPlaceOrderFetcherData, state: mockPlaceOrderFetcherState };
         },
         isSubmitting: mockIsSubmitting,
-        handleCreateAccountPreferenceChange: vi.fn(),
+        handleCreateAccountPreferenceChange: mockHandleCreateAccountPreferenceChange,
         get shouldCreateAccount() {
             return mockShouldCreateAccount;
         },
@@ -281,8 +291,21 @@ vi.mock('./components/shipping-options', () => ({
     default: () => <div data-testid="shipping-options">Shipping Options Form</div>,
 }));
 
+let mockPaymentFormDataGetter: (() => Record<string, unknown>) | null = null;
+let capturedSetFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null = null;
+
 vi.mock('./components/payment', () => ({
-    default: () => <div data-testid="payment">Payment Form</div>,
+    default: ({ paymentSubmissionRef }: { paymentSubmissionRef?: { current: Record<string, unknown> } }) => {
+        if (paymentSubmissionRef) {
+            paymentSubmissionRef.current.formDataGetter = mockPaymentFormDataGetter;
+            paymentSubmissionRef.current.setFormErrors = (
+                errors: Record<string, { type: string; message: string }>
+            ) => {
+                capturedSetFormErrors?.(errors);
+            };
+        }
+        return <div data-testid="payment">Payment Form</div>;
+    },
 }));
 
 vi.mock('./components/register-customer-selection', () => ({
@@ -374,6 +397,11 @@ describe('CheckoutFormPage', () => {
         mockShouldCreateAccount = false;
         mockPlaceOrderFetcherState = 'idle';
         mockPlaceOrderFetcherData = null;
+        mockPaymentFetcherState = 'idle';
+        mockPaymentFetcherData = null;
+
+        mockPaymentFormDataGetter = null;
+        capturedSetFormErrors = null;
 
         // Setup checkout context mocks
         mockUseCustomerProfile.mockReturnValue(null); // Default to guest user
@@ -1078,6 +1106,168 @@ describe('CheckoutFormPage', () => {
             expect(screen.getByText('Shipping Address Form')).toBeInTheDocument();
             expect(screen.getByText('Shipping Options Form')).toBeInTheDocument();
             expect(screen.getByText('Payment Form')).toBeInTheDocument();
+        });
+    });
+
+    describe('Payment sync on place order (returning shopper)', () => {
+        const basketWithSavedPayment = {
+            basketId: 'test-basket',
+            productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
+            paymentInstruments: [
+                {
+                    paymentInstrumentId: 'pi-1',
+                    paymentMethodId: 'CREDIT_CARD',
+                    paymentCard: { cardType: 'Visa', holder: 'John Doe', maskedNumber: '***1111' },
+                },
+            ],
+        };
+
+        test('blocks place order and shows validation errors when returning shopper switches to new card with empty fields', async () => {
+            const mockGoToStep = vi.fn();
+            mockUseCheckoutContext.mockReturnValue(
+                buildCheckoutContext({ step: defaultSteps.PLACE_ORDER, goToStep: mockGoToStep })
+            );
+            mockUseBasket.mockReturnValue(basketWithSavedPayment);
+            mockUseCustomerProfile.mockReturnValue({
+                customer: { customerId: 'cust-1', email: 'test@example.com' },
+                addresses: [{ addressId: 'addr-1' }],
+                paymentInstruments: [{ paymentInstrumentId: 'pi-1' }],
+            });
+
+            let receivedErrors: Record<string, { type: string; message: string }> | null = null;
+            capturedSetFormErrors = (errors) => {
+                receivedErrors = errors;
+            };
+
+            mockPaymentFormDataGetter = () => ({
+                cardNumber: '',
+                cardholderName: '',
+                expiryDate: '',
+                cvv: '',
+                billingSameAsShipping: true,
+                useSavedPaymentMethod: false,
+                selectedSavedPaymentMethod: undefined,
+            });
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', {
+                name: i18next.t('checkout:placeOrder.button'),
+            });
+
+            act(() => {
+                fireEvent.click(placeOrderButton);
+            });
+
+            expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
+            expect(mockSubmitPayment).not.toHaveBeenCalled();
+            expect(mockGoToStep).toHaveBeenCalledWith(defaultSteps.PAYMENT);
+            expect(receivedErrors).not.toBeNull();
+            expect(receivedErrors).toHaveProperty('cardNumber');
+            expect(receivedErrors).toHaveProperty('cvv');
+        });
+
+        test('submits payment before place order when returning shopper switches to new card with valid fields', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithSavedPayment);
+            mockUseCustomerProfile.mockReturnValue({
+                customer: { customerId: 'cust-1', email: 'test@example.com' },
+                addresses: [{ addressId: 'addr-1' }],
+                paymentInstruments: [{ paymentInstrumentId: 'pi-1' }],
+            });
+
+            mockPaymentFormDataGetter = () => ({
+                cardNumber: '4111111111111111',
+                cardholderName: 'Jane Smith',
+                expiryDate: '12/28',
+                cvv: '123',
+                billingSameAsShipping: true,
+                useSavedPaymentMethod: false,
+                selectedSavedPaymentMethod: undefined,
+            });
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', {
+                name: i18next.t('checkout:placeOrder.button'),
+            });
+
+            act(() => {
+                fireEvent.click(placeOrderButton);
+            });
+
+            expect(mockSubmitPayment).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    cardNumber: '4111111111111111',
+                    useSavedPaymentMethod: false,
+                })
+            );
+            expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
+        });
+
+        test('re-submits payment when returning shopper keeps saved card to ensure correct instrument', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockUseBasket.mockReturnValue(basketWithSavedPayment);
+            mockUseCustomerProfile.mockReturnValue({
+                customer: { customerId: 'cust-1', email: 'test@example.com' },
+                addresses: [{ addressId: 'addr-1' }],
+                paymentInstruments: [{ paymentInstrumentId: 'pi-1' }],
+            });
+
+            mockPaymentFormDataGetter = () => ({
+                cardNumber: '',
+                cardholderName: '',
+                expiryDate: '',
+                cvv: '',
+                billingSameAsShipping: true,
+                useSavedPaymentMethod: true,
+                selectedSavedPaymentMethod: 'pi-1',
+            });
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', {
+                name: i18next.t('checkout:placeOrder.button'),
+            });
+
+            act(() => {
+                fireEvent.click(placeOrderButton);
+            });
+
+            expect(mockSubmitPayment).toHaveBeenCalled();
+            expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
+        });
+
+        test('submits payment when basket has no payment instrument (guest flow)', async () => {
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PAYMENT }));
+            mockUseBasket.mockReturnValue({
+                basketId: 'test-basket',
+                productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
+                paymentInstruments: [],
+            });
+
+            mockPaymentFormDataGetter = () => ({
+                cardNumber: '4111111111111111',
+                cardholderName: 'Guest User',
+                expiryDate: '12/28',
+                cvv: '456',
+                billingSameAsShipping: true,
+                useSavedPaymentMethod: false,
+                selectedSavedPaymentMethod: undefined,
+            });
+
+            await renderCheckoutPage();
+
+            const placeOrderButton = screen.getByRole('button', {
+                name: i18next.t('checkout:placeOrder.button'),
+            });
+
+            act(() => {
+                fireEvent.click(placeOrderButton);
+            });
+
+            expect(mockSubmitPayment).toHaveBeenCalled();
+            expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
         });
     });
 });
