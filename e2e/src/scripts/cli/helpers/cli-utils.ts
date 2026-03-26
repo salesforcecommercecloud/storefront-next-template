@@ -48,7 +48,8 @@ export function createProgram(): Command {
         .option('--mode <mode>', MODE_OPTION_DESCRIPTION, DEFAULT_MODE)
         .option('--base-url <url>', BASE_URL_OPTION_DESCRIPTION)
         .option('--site-id <id>', SITE_ID_OPTION_DESCRIPTION)
-        .option('--no-ai', 'Disable AI features')
+        .option('--ai', 'Enable AI features (self-healing, page object generation)')
+        .option('--no-ai', 'Disable AI features (default)')
         .option('--verbose', 'Enable verbose output')
         .option('--def', 'Generate TypeScript definitions and exit')
         .option('--skip-def', 'Skip automatic TypeScript definition generation')
@@ -139,10 +140,8 @@ function displayConfigInfo(configProvider: ConfigProvider, options: CliOptions):
     log.info(configProvider.getModeDescription());
     log.info('Using CodeceptJS configuration: codecept.conf.cjs');
 
-    if (!options.ai) {
-        log.info('AI features disabled via --no-ai flag');
-    } else {
-        log.info('AI features enabled (self-healing, page object generation)');
+    if (options.ai) {
+        log.info('AI features enabled via --ai flag (self-healing, page object generation)');
         log.info('Debug logging enabled for AI decisions');
     }
 }

@@ -455,7 +455,8 @@ Scenario('Interactive test development demo', async () => {
 
 **Example test execution**:
 ```bash
-pnpm e2e --grep "@search"              # Run search tests (AI features enabled by default)
+pnpm e2e --grep "@search"              # Run search tests
+pnpm e2e --ai --grep "@search"         # Run with AI self-healing
 pnpm e2e --grep "(?=.*@cart)(?!.*@mobile)" # Desktop cart tests
 ```
 
@@ -603,10 +604,9 @@ pause();
 ### Self-Healing Tests
 
 ```bash
-# AI self-healing is enabled by default
-pnpm e2e --grep "@your-test"
+# Enable AI self-healing with --ai flag
+pnpm e2e --ai --grep "@your-test"
 # AI automatically fixes broken locators during test execution
-# To disable AI: pnpm e2e --no-ai --grep "@your-test"
 ```
 
 This skill ensures comprehensive storefront E2E test coverage while leveraging CodeceptJS AI capabilities for efficient test development and maintenance.

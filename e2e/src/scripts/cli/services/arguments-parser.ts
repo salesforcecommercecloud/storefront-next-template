@@ -101,7 +101,7 @@ export class ArgumentParser {
             mode: DEFAULT_MODE as TestMode,
             baseUrl: undefined as string | undefined,
             siteId: undefined as string | undefined,
-            ai: true,
+            ai: false,
             verbose: false,
             def: false,
             skipDef: false,
@@ -113,6 +113,10 @@ export class ArgumentParser {
             const arg = args[i];
 
             // Boolean flags
+            if (arg === '--ai') {
+                cliOptions.ai = true;
+                continue;
+            }
             if (arg === '--no-ai') {
                 cliOptions.ai = false;
                 continue;

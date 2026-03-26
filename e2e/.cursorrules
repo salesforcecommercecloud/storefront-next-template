@@ -41,8 +41,8 @@ This is the **storefront-next-e2e** package for E2E testing of Salesforce Commer
 # Run tests (definitions auto-generated)
 pnpm e2e
 
-# Run tests (AI enabled by default)
-pnpm e2e
+# Run tests with AI features
+pnpm e2e --ai
 
 # Filter by tag
 pnpm e2e --grep "@homepage"

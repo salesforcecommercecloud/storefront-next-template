@@ -55,7 +55,7 @@ When the user requests a task:
 ### AI Features
 - Leverage **`pause()`** for interactive test development
 - Use **`I.askForPageObject()`** for DOM-driven page object generation
-- AI self-healing is **enabled by default** with `pnpm e2e` (use `--no-ai` to disable)
+- AI self-healing is available with `pnpm e2e --ai`
 - TypeScript definitions **auto-generated** before test runs
 
 ## Quick Commands
@@ -64,8 +64,8 @@ When the user requests a task:
 # Run all tests (auto-generates definitions)
 pnpm e2e
 
-# Run tests (AI enabled by default)
-pnpm e2e
+# Run tests with AI features
+pnpm e2e --ai
 
 # Filter tests by tag
 pnpm e2e --grep "@cart"

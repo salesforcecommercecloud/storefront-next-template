@@ -177,14 +177,13 @@ export async function createServer(options: ServerOptions): Promise<Express> {
     }
 
     if (enableProxy) {
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         app.use(config.commerce.api.proxy, createCommerceProxyMiddleware(config));
     }
 
     // Normalize the Host header for React Router's CSRF validation features
     app.use(createHostHeaderMiddleware());
     // SSR request handler
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+
     app.all('*splat', await createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatching));
 
     return app;

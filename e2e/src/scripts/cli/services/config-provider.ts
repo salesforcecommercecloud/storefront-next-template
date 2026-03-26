@@ -198,17 +198,14 @@ export class ConfigProvider {
      * Configure AI and verbose feature flags.
      */
     private configureFeatureFlags(): void {
-        // Enable AI by default, unless --no-ai flag is passed
-        if (!this.options.ai) {
-            // Explicitly disable AI
-            applyEnvironmentConfig({
-                CODECEPT_AI: 'false',
-            });
-        } else {
-            // Enable AI by default (whether --ai flag is passed or not)
+        if (this.options.ai) {
             applyEnvironmentConfig({
                 CODECEPT_AI: 'true',
                 DEBUG: 'codeceptjs:ai',
+            });
+        } else {
+            applyEnvironmentConfig({
+                CODECEPT_AI: 'false',
             });
         }
 

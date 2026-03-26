@@ -51,8 +51,8 @@ This is E2E testing for **Salesforce Commerce Cloud storefront** built with Reac
 
 **Quick Reference:**
 
-- `pnpm e2e` - Run all tests (AI enabled by default, definitions auto-generated)
-- `pnpm e2e --no-ai` - Run without AI features
+- `pnpm e2e` - Run all tests (definitions auto-generated)
+- `pnpm e2e --ai` - Run with AI features (self-healing, page object generation)
 - `pnpm def` - Generate TypeScript definitions manually (optional - auto-generated before tests)
 - `pnpm report` - View Allure dashboard
 
@@ -134,14 +134,12 @@ Scenario('Generate page object', async () => {
 
 ### 3. Self-Healing Tests
 
-**AI self-healing is enabled by default:**
+**AI self-healing is available via the `--ai` flag:**
 
 ```bash
-pnpm e2e
+pnpm e2e --ai
 # Debug AI decisions with:
-DEBUG="codeceptjs:ai" pnpm e2e
-# Disable AI features:
-pnpm e2e --no-ai
+DEBUG="codeceptjs:ai" pnpm e2e --ai
 ```
 
 **Features:**
@@ -577,7 +575,7 @@ Scenario('Add product to cart', async () => {
 ### DO:
 
 - ✅ TypeScript definitions auto-generated (no manual steps needed)
-- ✅ Use AI features for page object generation and interactive development
+- ✅ Use AI features (`--ai` flag) for page object generation and interactive development
 - ✅ Focus on commerce-specific test scenarios
 - ✅ Use semantic locators with `.as('Name')`
 - ✅ Keep tests parallelizable (no shared state)
@@ -622,8 +620,8 @@ pnpm def                     # Manual generation
 **Tests fail with "Element not found":**
 
 ```bash
-# Solution: AI self-healing is enabled by default
-pnpm e2e --grep "@your-test"
+# Solution: Enable AI self-healing
+pnpm e2e --ai --grep "@your-test"
 ```
 
 **Local dev server not starting:**

@@ -25,13 +25,22 @@ import { existsSync } from 'fs';
 export function loadEnvironmentFiles(): void {
     const envPath = join(process.cwd(), '.env');
 
-    // Load environment variables from .env (gitignored, maintained by developers/CI)
-    if (existsSync(envPath)) {
-        // dotenv.config() never throws — errors are returned in the result object.
-        const result = loadDotenv({ path: envPath });
-        if (result.error) {
-            throw new Error(`Failed to load .env file at ${envPath}: ${result.error.message}`);
+    if (!existsSync(envPath)) {
+        if (process.env.CI) {
+            return;
         }
+        const samplePath = join(process.cwd(), '.env.sample');
+        const hint = existsSync(samplePath)
+            ? `A sample file exists — copy it to get started:\n\n  cp .env.sample .env\n\nThen edit .env with your environment-specific values.`
+            : `Create a .env file with at least BASE_URL and SITE_ID. See the README for details.`;
+        throw new Error(
+            `.env file not found at ${envPath}\n\nThe E2E test runner requires a .env file for configuration (base URL, site ID, credentials, etc.).\n${hint}\n`
+        );
+    }
+
+    const result = loadDotenv({ path: envPath });
+    if (result.error) {
+        throw new Error(`Failed to load .env file at ${envPath}: ${result.error.message}`);
     }
 }
 

@@ -49,8 +49,8 @@ This is the **storefront-next-e2e** package, focused on E2E testing for Salesfor
 
 **Quick Commands:**
 ```bash
-pnpm e2e              # Run all tests (AI enabled by default, definitions auto-generated)
-pnpm e2e --no-ai      # Run without AI features
+pnpm e2e              # Run all tests (definitions auto-generated)
+pnpm e2e --ai         # Run with AI features (self-healing, page object generation)
 pnpm e2e --grep "@tag" # Filter tests by tag
 pnpm report           # View Allure dashboard
 ```
