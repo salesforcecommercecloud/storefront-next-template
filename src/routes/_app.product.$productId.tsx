@@ -431,12 +431,12 @@ export default function ProductPage({ loaderData }: { loaderData: ProductPageDat
 
     return (
         <Fragment key={pageKey}>
-            {/* Product JSON-LD Schema for SEO - separate Suspense to ensure it appears at the very top of body */}
-            <Suspense fallback={null}>
-                <JsonLdWrapper productSchemaPromise={loaderData.productSchema} />
-            </Suspense>
             <Suspense fallback={<ProductSkeleton />}>
                 <ProductDetailView loaderData={loaderData} />
+            </Suspense>
+            {/* Product JSON-LD Schema for SEO - render after page content so it appears at end of body flow */}
+            <Suspense fallback={null}>
+                <JsonLdWrapper productSchemaPromise={loaderData.productSchema} />
             </Suspense>
         </Fragment>
     );

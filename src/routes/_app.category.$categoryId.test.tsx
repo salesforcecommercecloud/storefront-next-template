@@ -1068,6 +1068,12 @@ describe('CategoryPage', () => {
             await waitFor(() => {
                 expect(screen.getByTestId('category-schema')).toBeInTheDocument();
             });
+
+            const productGrid = screen.getByTestId('product-grid');
+            const categorySchema = screen.getByTestId('category-schema');
+            expect(
+                Boolean(productGrid.compareDocumentPosition(categorySchema) & Node.DOCUMENT_POSITION_FOLLOWING)
+            ).toBe(true);
         });
 
         test('should not render JSON-LD schema when schema is null', async () => {
