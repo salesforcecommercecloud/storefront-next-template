@@ -67,4 +67,14 @@ export default [
             '@typescript-eslint/no-unused-expressions': 'off',
         },
     },
+    {
+        // CodeceptJS recorder wraps all I.* methods to return thenables at runtime,
+        // but their TypeScript definitions type them as void. This mismatch makes
+        // await-thenable unreliable — it fires or not depending on type resolution,
+        // causing local vs CI inconsistencies.
+        files: ['src/pages/**/*.ts', 'src/specs/**/*.ts', 'src/flows/**/*.ts'],
+        rules: {
+            '@typescript-eslint/await-thenable': 'off',
+        },
+    },
 ];

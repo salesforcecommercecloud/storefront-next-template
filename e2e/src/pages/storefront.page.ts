@@ -272,7 +272,6 @@ class StorefrontPage {
      * Use in Before hooks when scenarios must start fully independent of prior session state.
      */
     async clearCookies(): Promise<void> {
-        // eslint-disable-next-line @typescript-eslint/await-thenable -- CodeceptJS recorder returns a thenable despite the void typing
         await I.usePlaywrightTo('clear browser cookies', async ({ page }) => {
             await page.context().clearCookies();
         });

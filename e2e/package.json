@@ -3,7 +3,6 @@
     "version": "0.3.0-dev",
     "private": true,
     "scripts": {
-        "prepare": "pnpm def",
         "typecheck": "pnpm def && tsc --noEmit",
         "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
         "lint:fix": "eslint . --fix",

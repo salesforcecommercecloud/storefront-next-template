@@ -25,22 +25,23 @@ import { log } from '../../../utils/logger';
  */
 async function main(): Promise<void> {
     try {
-        // Load environment files first (before any config checks)
-        loadEnvironmentFiles();
-
         // Parse CLI options directly from process.argv — Commander's passThroughOptions()
         // stops at the first unknown option (e.g. --grep), so program.opts() would silently
         // drop any CLI flags that appear after pass-through args.
         const options = ArgumentParser.parseCLIOptions();
 
-        // Still parse via Commander so --help and --version work correctly
-        const program = createProgram();
-        program.parse(process.argv);
-
-        // Handle --def flag (generate TypeScript definitions only)
+        // Handle --def flag early — it only generates TypeScript definitions
+        // and does not need .env configuration.
         if (options.def) {
             return await handleDefFlag();
         }
+
+        // Load environment files (before any config checks)
+        loadEnvironmentFiles();
+
+        // Still parse via Commander so --help and --version work correctly
+        const program = createProgram();
+        program.parse(process.argv);
 
         // Handle --playwright-help flag
         if (options.playwrightHelp) {
