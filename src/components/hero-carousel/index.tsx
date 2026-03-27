@@ -26,6 +26,13 @@ import { RegionDefinition } from '@/lib/decorators/region-definition';
 import heroImage from '/images/hero-01.webp';
 import type { ComponentType } from '@/components/region';
 
+const heroCarouselDefaults = {
+    autoPlay: true,
+    autoPlayInterval: 5000,
+    showDots: true,
+    showNavigation: true,
+} as const;
+
 @Component('heroCarousel', {
     name: 'Hero Carousel',
     description:
@@ -41,16 +48,16 @@ import type { ComponentType } from '@/components/region';
     },
 ])
 export class HeroCarouselMetadata {
-    @AttributeDefinition()
+    @AttributeDefinition({ defaultValue: heroCarouselDefaults.autoPlay })
     autoPlay?: boolean;
 
-    @AttributeDefinition()
+    @AttributeDefinition({ defaultValue: heroCarouselDefaults.autoPlayInterval })
     autoPlayInterval?: number;
 
-    @AttributeDefinition()
+    @AttributeDefinition({ defaultValue: heroCarouselDefaults.showDots })
     showDots?: boolean;
 
-    @AttributeDefinition()
+    @AttributeDefinition({ defaultValue: heroCarouselDefaults.showNavigation })
     showNavigation?: boolean;
 }
 
@@ -119,11 +126,11 @@ interface HeroCarouselProps {
 
 export function HeroCarouselPlain({
     slides: propSlides = heroSlides,
-    autoPlay = true,
+    autoPlay = heroCarouselDefaults.autoPlay,
     image,
-    autoPlayInterval = 5000,
-    showDots = true,
-    showNavigation = true,
+    autoPlayInterval = heroCarouselDefaults.autoPlayInterval,
+    showDots = heroCarouselDefaults.showDots,
+    showNavigation = heroCarouselDefaults.showNavigation,
     component,
 }: HeroCarouselProps): ReactElement {
     // Convert page designer heroes to slides format

@@ -18,11 +18,6 @@ import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
-// Mock the hero image import
-vi.mock('/images/hero-01.webp', () => ({
-    default: '/mock-hero-image.png',
-}));
-
 // Mock decorators (minimal mocking to avoid testing them)
 vi.mock('@/lib/decorators/component', () => ({
     Component: () => (target: any) => target,
@@ -62,75 +57,58 @@ describe('Hero Component', () => {
     };
 
     describe('Content Rendering', () => {
-        const contentTestCases = [
-            {
-                description: 'renders default content',
-                props: {},
-                expectedTitle: 'Shop Now',
-                expectedCta: 'Shop Now',
-                expectedLink: '/global/en-GB/category/root',
-                expectedImageSrc: '/mock-hero-image.png',
-                expectedImageAlt: '',
-                hasSubtitle: false,
-            },
-            {
-                description: 'renders custom content',
-                props: {
-                    title: 'Custom Title',
-                    subtitle: 'Custom Subtitle',
-                    ctaText: 'Learn More',
-                    ctaLink: '/custom',
-                    imageUrl: { url: '/custom.jpg' },
-                    imageAlt: 'Custom Alt',
-                },
-                expectedTitle: 'Custom Title',
-                expectedCta: 'Learn More',
-                expectedLink: '/global/en-GB/custom',
-                expectedImageSrc: '/custom.jpg',
-                expectedImageAlt: 'Custom Alt',
-                hasSubtitle: true,
-                expectedSubtitle: 'Custom Subtitle',
-            },
-        ];
+        test('renders empty placeholder state with no props', () => {
+            const { container } = renderHero();
 
-        test.each(contentTestCases)(
-            '$description',
-            ({
-                props,
-                expectedTitle,
-                expectedCta,
-                expectedLink,
-                expectedImageSrc,
-                expectedImageAlt,
-                hasSubtitle,
-                expectedSubtitle,
-            }) => {
-                renderHero(props);
+            expect(screen.queryByRole('heading')).not.toBeInTheDocument();
+            expect(screen.queryByRole('img')).not.toBeInTheDocument();
+            expect(screen.queryByRole('link')).not.toBeInTheDocument();
 
-                // Test title
-                expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(expectedTitle);
+            // Placeholder background should be present instead of an image
+            expect(container.querySelector('.bg-muted')).toBeInTheDocument();
+        });
 
-                // Test CTA and link together to avoid duplicate text issue
-                const link = screen.getByRole('link');
-                expect(link).toHaveTextContent(expectedCta);
-                expect(link).toHaveAttribute('href', expectedLink);
+        test('renders custom content', () => {
+            renderHero({
+                title: 'Custom Title',
+                subtitle: 'Custom Subtitle',
+                ctaText: 'Learn More',
+                ctaLink: '/custom',
+                imageUrl: { url: '/custom.jpg' },
+                imageAlt: 'Custom Alt',
+            });
 
-                // Test image
-                const image =
-                    expectedImageAlt === ''
-                        ? screen.getByRole('presentation')
-                        : screen.getByRole('img', { name: expectedImageAlt });
-                expect(image).toHaveAttribute('src', expectedImageSrc);
-                expect(image).toHaveAttribute('alt', expectedImageAlt);
-                expect(image).toHaveAttribute('fetchpriority', 'high');
+            expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Custom Title');
 
-                if (hasSubtitle && expectedSubtitle) {
-                    expect(screen.getByText(expectedSubtitle)).toBeInTheDocument();
-                } else {
-                    expect(screen.queryByText(/subtitle/i)).not.toBeInTheDocument();
-                }
-            }
-        );
+            const link = screen.getByRole('link');
+            expect(link).toHaveTextContent('Learn More');
+            expect(link).toHaveAttribute('href', '/global/en-GB/custom');
+
+            const image = screen.getByRole('img', { name: 'Custom Alt' });
+            expect(image).toHaveAttribute('src', '/custom.jpg');
+            expect(image).toHaveAttribute('alt', 'Custom Alt');
+            expect(image).toHaveAttribute('fetchpriority', 'high');
+
+            expect(screen.getByText('Custom Subtitle')).toBeInTheDocument();
+        });
+
+        test('renders image with empty alt when imageAlt is not provided', () => {
+            renderHero({ imageUrl: { url: '/test.jpg' } });
+
+            const image = screen.getByRole('presentation');
+            expect(image).toHaveAttribute('src', '/test.jpg');
+            expect(image).toHaveAttribute('alt', '');
+        });
+
+        test('does not render CTA when only ctaText is provided without ctaLink', () => {
+            renderHero({ ctaText: 'Click Me' });
+            expect(screen.queryByRole('link')).not.toBeInTheDocument();
+        });
+
+        test('does not render CTA when only ctaLink is provided without ctaText', () => {
+            renderHero({ ctaLink: '/somewhere' });
+            expect(screen.queryByRole('link')).not.toBeInTheDocument();
+        });
     });
 
     describe('Focal Point Behavior', () => {
@@ -165,25 +143,31 @@ describe('Hero Component', () => {
         test.each(focalPointTestCases)('$description', ({ imageUrl, expectedPosition }) => {
             renderHero({ imageUrl });
 
-            const image = screen.getByRole('img');
+            const image = screen.getByRole('presentation');
             expect(image).toHaveStyle({ objectPosition: expectedPosition });
         });
     });
 
     describe('Component Behavior', () => {
-        test('renders all required elements', () => {
-            renderHero();
+        test('renders all elements when fully configured', () => {
+            renderHero({
+                title: 'Test Title',
+                imageUrl: { url: '/test.jpg' },
+                imageAlt: 'Test image',
+                ctaText: 'Go',
+                ctaLink: '/go',
+            });
 
             expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-            expect(screen.getByRole('presentation')).toBeInTheDocument();
+            expect(screen.getByRole('img', { name: 'Test image' })).toBeInTheDocument();
             expect(screen.getByRole('link')).toBeInTheDocument();
         });
 
         test('subtitle is conditionally rendered', () => {
-            renderHero();
+            renderHero({ title: 'Test' });
             expect(screen.queryByText(/subtitle/i)).not.toBeInTheDocument();
 
-            renderHero({ subtitle: 'Now with subtitle' });
+            renderHero({ title: 'Test', subtitle: 'Now with subtitle' });
             expect(screen.getByText('Now with subtitle')).toBeInTheDocument();
         });
     });

@@ -20,8 +20,6 @@ import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { RegionDefinition } from '@/lib/decorators';
 import { type Image } from '@/types';
-import heroImage from '/images/hero-01.webp';
-import { useTranslation } from 'react-i18next';
 
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
 @Component('hero', {
@@ -60,10 +58,10 @@ export class HeroMetadata {
 export default function Hero({
     title,
     subtitle,
-    imageUrl = { url: heroImage },
+    imageUrl,
     imageAlt,
     ctaText,
-    ctaLink = '/category/root',
+    ctaLink,
 }: {
     title?: string;
     subtitle?: string;
@@ -72,52 +70,51 @@ export default function Hero({
     ctaText?: string;
     ctaLink?: string;
 }): ReactElement {
-    const { t } = useTranslation('common');
-    const fallbackTitle = title || t('hero.defaultTitle') || 'Shop Now';
-    // The default cube image is a decorative placeholder; use empty alt so screen readers skip it.
-    const fallbackImageAlt = imageUrl.url === heroImage ? '' : t('hero.defaultImageAlt') || 'Hero Image';
-    const fallbackCtaText = ctaText || t('hero.defaultCtaText') || 'Shop Now';
+    const renderImage = () => {
+        if (!imageUrl?.url) return <div className="absolute inset-0 bg-muted" />;
 
-    // Calculate focal point for object-position (defaults to center)
-    const focalX = imageUrl.focal_point?.x ? `${imageUrl.focal_point.x}%` : '50%';
-    const focalY = imageUrl.focal_point?.y ? `${imageUrl.focal_point.y}%` : '50%';
-    const objectPosition = `${focalX} ${focalY}`;
+        const focalX = imageUrl.focal_point?.x ? `${imageUrl.focal_point.x}%` : '50%';
+        const focalY = imageUrl.focal_point?.y ? `${imageUrl.focal_point.y}%` : '50%';
+
+        return (
+            <img
+                src={imageUrl.url}
+                alt={imageAlt || ''}
+                fetchPriority="high"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ objectPosition: `${focalX} ${focalY}` }}
+            />
+        );
+    };
 
     return (
         <div className="relative w-full h-[100vh] md:h-[85vh] overflow-hidden">
-            {/* Background image with proper object-fit */}
-            <img
-                src={imageUrl.url}
-                alt={imageAlt || fallbackImageAlt}
-                fetchPriority="high"
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ objectPosition }}
-            />
+            {renderImage()}
 
-            {/* Content overlay */}
             <div className="absolute inset-0 z-10 flex items-center justify-center">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="max-w-2xl mx-auto text-center" data-theme="foundations-light">
-                        {/* Responsive heading */}
-                        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight">
-                            {fallbackTitle}
-                        </h1>
+                        {title && (
+                            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight">
+                                {title}
+                            </h1>
+                        )}
 
-                        {/* Responsive subtitle */}
                         {subtitle && (
                             <p className="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide">
                                 {subtitle}
                             </p>
                         )}
 
-                        {/* Responsive CTA button */}
-                        <div className="flex justify-center">
-                            <Button
-                                asChild
-                                className="text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6">
-                                <Link to={ctaLink}>{fallbackCtaText}</Link>
-                            </Button>
-                        </div>
+                        {ctaText && ctaLink && (
+                            <div className="flex justify-center">
+                                <Button
+                                    asChild
+                                    className="text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6">
+                                    <Link to={ctaLink}>{ctaText}</Link>
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -73,16 +73,20 @@ Scenario('Guest shopper should be able to add items to cart', async () => {
     const cartItemCount = await cartPage.getCartItemCount();
     expect(cartItemCount, 'Cart should have at least 1 item').to.be.greaterThan(0);
 
-    // Get first cart item details
-    const cartItemTitle = await cartPage.getItemTitle(0);
-    const cartItemQuantity = await cartPage.getItemQuantity(0);
-    const cartItemPrice = await cartPage.getItemPrice(0);
+    // Find the cart item that matches the product we just added.
+    // Index order can vary depending on existing cart state.
+    let foundIndex = -1;
+    for (let i = 0; i < cartItemCount; i++) {
+        const cartItemTitle = await cartPage.getItemTitle(i);
+        if (cartItemTitle.toLowerCase().includes(productInfo.title.toLowerCase())) {
+            foundIndex = i;
+            break;
+        }
+    }
+    expect(foundIndex, `Cart should contain product "${productInfo.title}"`).to.be.greaterThan(-1);
 
-    // Validate title matches (case-insensitive partial match)
-    expect(
-        cartItemTitle.toLowerCase(),
-        `Cart item title should contain product title "${productInfo.title}"`
-    ).to.include(productInfo.title.toLowerCase());
+    const cartItemQuantity = await cartPage.getItemQuantity(foundIndex);
+    const cartItemPrice = await cartPage.getItemPrice(foundIndex);
 
     // Validate quantity matches
     expect(cartItemQuantity, 'Cart item quantity should match selected quantity').to.equal(productInfo.quantity);
@@ -176,11 +180,18 @@ Scenario('Guest item should persist in cart after login (basket merge)', async (
     cartPage.navigate('/cart');
     cartPage.validateCartHasItems();
 
-    // Get cart state before login
-    const guestCartItemTitle = await cartPage.getItemTitle(0);
-    expect(guestCartItemTitle.toLowerCase(), `Guest cart should contain product "${productInfo.title}"`).to.include(
-        productInfo.title.toLowerCase()
-    );
+    // Get cart state before login - match by title instead of assuming index order.
+    const guestCartItemCountBeforeLogin = await cartPage.getCartItemCount();
+    let foundGuestItemBeforeLogin = false;
+    for (let i = 0; i < guestCartItemCountBeforeLogin; i++) {
+        const guestCartItemTitle = await cartPage.getItemTitle(i);
+        if (guestCartItemTitle.toLowerCase().includes(productInfo.title.toLowerCase())) {
+            foundGuestItemBeforeLogin = true;
+            break;
+        }
+    }
+    expect(foundGuestItemBeforeLogin, `Guest cart should contain product "${productInfo.title}" before login`).to.be
+        .true;
 
     // Login with the fresh account (triggers basket merge with an empty registered basket)
     await loginFlow.executeWithCredentials(signupData.email, signupData.password);
@@ -265,10 +276,17 @@ Scenario('Registered shopper with existing basket merges with guest basket on lo
     cartPage.navigate('/cart');
     cartPage.validateCartHasItems();
 
-    const guestCartItemTitle = await cartPage.getItemTitle(0);
-    expect(guestCartItemTitle.toLowerCase(), `Guest cart should contain product "${guestProduct.title}"`).to.include(
-        guestProduct.title.toLowerCase()
-    );
+    const guestCartItemCountBeforeLogin = await cartPage.getCartItemCount();
+    let foundGuestItemBeforeLogin = false;
+    for (let i = 0; i < guestCartItemCountBeforeLogin; i++) {
+        const guestCartItemTitle = await cartPage.getItemTitle(i);
+        if (guestCartItemTitle.toLowerCase().includes(guestProduct.title.toLowerCase())) {
+            foundGuestItemBeforeLogin = true;
+            break;
+        }
+    }
+    expect(foundGuestItemBeforeLogin, `Guest cart should contain product "${guestProduct.title}" before login`).to.be
+        .true;
 
     // Login with the registered user (triggers basket merge)
     await loginFlow.executeWithCredentials(signupData.email, signupData.password);

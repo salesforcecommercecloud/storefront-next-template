@@ -972,7 +972,7 @@ describe('generateMetadata integration tests', () => {
         vi.mocked(mkdir).mockRejectedValue(new Error('Permission denied'));
         vi.mocked(access).mockRejectedValue(new Error('Directory does not exist'));
 
-        await generateMetadata(projectDir, metadataDir);
+        await expect(generateMetadata(projectDir, metadataDir)).rejects.toThrow('Permission denied');
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(processExitSpy).toHaveBeenCalledWith(1);
     });
@@ -1094,7 +1094,7 @@ describe('generateMetadata integration tests', () => {
 
         vi.mocked(readdir).mockRejectedValue(new Error('Permission denied'));
 
-        await generateMetadata(projectDir, metadataDir);
+        await expect(generateMetadata(projectDir, metadataDir)).rejects.toThrow('Permission denied');
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(processExitSpy).toHaveBeenCalledWith(1);
     });
@@ -2798,6 +2798,158 @@ describe('generateMetadata integration tests', () => {
         expect(enabledAttr).toBeDefined();
         expect(enabledAttr.default_value).toBe(true);
         expect(enabledAttr.defaultValue).toBeUndefined();
+    });
+
+    test('should resolve property access on same-file const in defaultValue', async () => {
+        const projectDir = '/test/project';
+        const metadataDir = '/test/metadata';
+
+        const componentCode = `
+            export const DEFAULTS = {
+                enabled: true,
+                count: 42,
+                label: 'hello',
+            } as const;
+
+            @Component({ id: 'testComponent', name: 'Test Component' })
+            class TestComponent {
+                @AttributeDefinition({
+                    type: 'boolean',
+                    defaultValue: DEFAULTS.enabled
+                })
+                enabled: boolean;
+
+                @AttributeDefinition({
+                    type: 'integer',
+                    defaultValue: DEFAULTS.count
+                })
+                count: number;
+
+                @AttributeDefinition({
+                    type: 'string',
+                    defaultValue: DEFAULTS.label
+                })
+                label: string;
+            }
+        `;
+
+        vi.mocked(readdir)
+            .mockResolvedValueOnce([{ name: 'components', isDirectory: () => true, isFile: () => false } as any])
+            .mockResolvedValueOnce([
+                { name: 'TestComponent.tsx', isDirectory: () => false, isFile: () => true } as any,
+            ]);
+
+        vi.mocked(readFile).mockResolvedValue(componentCode);
+        vi.mocked(rm).mockResolvedValue(undefined);
+        vi.mocked(mkdir).mockResolvedValue(undefined);
+        vi.mocked(access).mockResolvedValue(undefined);
+        vi.mocked(writeFile).mockResolvedValue(undefined);
+
+        await generateMetadata(projectDir, metadataDir);
+
+        expect(writeFile).toHaveBeenCalled();
+        const writeCall = vi.mocked(writeFile).mock.calls[0];
+        const writtenData = JSON.parse(writeCall[1] as string);
+        const attributes = writtenData.attribute_definition_groups[0].attribute_definitions;
+
+        const enabledAttr = attributes.find((attr: any) => attr.id === 'enabled');
+        expect(enabledAttr).toBeDefined();
+        expect(enabledAttr.default_value).toBe(true);
+
+        const countAttr = attributes.find((attr: any) => attr.id === 'count');
+        expect(countAttr).toBeDefined();
+        expect(countAttr.default_value).toBe(42);
+
+        const labelAttr = attributes.find((attr: any) => attr.id === 'label');
+        expect(labelAttr).toBeDefined();
+        expect(labelAttr.default_value).toBe('hello');
+    });
+
+    test('should resolve simple identifier const in defaultValue', async () => {
+        const projectDir = '/test/project';
+        const metadataDir = '/test/metadata';
+
+        const componentCode = `
+            const MY_DEFAULT = 'hello';
+            const MY_BOOL = true;
+
+            @Component({ id: 'testComponent', name: 'Test Component' })
+            class TestComponent {
+                @AttributeDefinition({
+                    type: 'string',
+                    defaultValue: MY_DEFAULT
+                })
+                title: string;
+
+                @AttributeDefinition({
+                    type: 'boolean',
+                    defaultValue: MY_BOOL
+                })
+                visible: boolean;
+            }
+        `;
+
+        vi.mocked(readdir)
+            .mockResolvedValueOnce([{ name: 'components', isDirectory: () => true, isFile: () => false } as any])
+            .mockResolvedValueOnce([
+                { name: 'TestComponent.tsx', isDirectory: () => false, isFile: () => true } as any,
+            ]);
+
+        vi.mocked(readFile).mockResolvedValue(componentCode);
+        vi.mocked(rm).mockResolvedValue(undefined);
+        vi.mocked(mkdir).mockResolvedValue(undefined);
+        vi.mocked(access).mockResolvedValue(undefined);
+        vi.mocked(writeFile).mockResolvedValue(undefined);
+
+        await generateMetadata(projectDir, metadataDir);
+
+        expect(writeFile).toHaveBeenCalled();
+        const writeCall = vi.mocked(writeFile).mock.calls[0];
+        const writtenData = JSON.parse(writeCall[1] as string);
+        const attributes = writtenData.attribute_definition_groups[0].attribute_definitions;
+
+        const titleAttr = attributes.find((attr: any) => attr.id === 'title');
+        expect(titleAttr).toBeDefined();
+        expect(titleAttr.default_value).toBe('hello');
+
+        const visibleAttr = attributes.find((attr: any) => attr.id === 'visible');
+        expect(visibleAttr).toBeDefined();
+        expect(visibleAttr.default_value).toBe(true);
+    });
+
+    test('should throw on unresolved constant property access reference', async () => {
+        const projectDir = '/test/project';
+        const metadataDir = '/test/metadata';
+
+        const componentCode = `
+            const OPTIONS = getOptions();
+
+            @Component({ id: 'testComponent', name: 'Test Component' })
+            class TestComponent {
+                @AttributeDefinition({
+                    type: 'enum',
+                    values: OPTIONS.values
+                })
+                choice: string;
+            }
+        `;
+
+        vi.mocked(readdir)
+            .mockResolvedValueOnce([{ name: 'components', isDirectory: () => true, isFile: () => false } as any])
+            .mockResolvedValueOnce([
+                { name: 'TestComponent.tsx', isDirectory: () => false, isFile: () => true } as any,
+            ]);
+
+        vi.mocked(readFile).mockResolvedValue(componentCode);
+        vi.mocked(rm).mockResolvedValue(undefined);
+        vi.mocked(mkdir).mockResolvedValue(undefined);
+        vi.mocked(access).mockResolvedValue(undefined);
+        vi.mocked(writeFile).mockResolvedValue(undefined);
+
+        await expect(generateMetadata(projectDir, metadataDir)).rejects.toThrow(
+            "Cannot resolve constant reference 'OPTIONS.values'. Ensure the variable is declared in the same file as a literal value."
+        );
+        expect(writeFile).not.toHaveBeenCalled();
     });
 
     test('should perform dry run without writing files', async () => {

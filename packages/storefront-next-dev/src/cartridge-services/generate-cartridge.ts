@@ -17,7 +17,7 @@
 import { readdir, readFile, writeFile, mkdir, access, rm } from 'node:fs/promises';
 import { join, extname, resolve, basename } from 'node:path';
 import { execSync } from 'node:child_process';
-import { Project, Node, type SourceFile, type PropertyDeclaration, type Decorator } from 'ts-morph';
+import { Project, Node, type SourceFile, type PropertyDeclaration, type Decorator, type Expression } from 'ts-morph';
 import { filePathToRoute } from './react-router-config.js';
 import { logger } from '../logger';
 
@@ -140,6 +140,45 @@ function getTypeFromTsMorph(property: PropertyDeclaration, _sourceFile: SourceFi
     return 'string';
 }
 
+/**
+ * Resolve a variable's initializer expression from the same source file,
+ * unwrapping `as const` type assertions.
+ */
+function resolveVariableInitializer(sourceFile: SourceFile, name: string): Expression | undefined {
+    const varDecl = sourceFile.getVariableDeclaration(name);
+    if (!varDecl) return undefined;
+    let initializer = varDecl.getInitializer();
+    if (initializer && Node.isAsExpression(initializer)) {
+        initializer = initializer.getExpression();
+    }
+    return initializer;
+}
+
+/**
+ * Check whether an AST node is a type that `parseExpression` can resolve to a
+ * concrete JS value (as opposed to falling through to `getText()`).
+ */
+function isResolvableLiteral(node: Expression): boolean {
+    return (
+        Node.isStringLiteral(node) ||
+        Node.isNumericLiteral(node) ||
+        Node.isTrueLiteral(node) ||
+        Node.isFalseLiteral(node) ||
+        Node.isObjectLiteralExpression(node) ||
+        Node.isArrayLiteralExpression(node)
+    );
+}
+
+class UnresolvedConstantReferenceError extends Error {
+    constructor(reference: string) {
+        super(
+            `Cannot resolve constant reference '${reference}'. ` +
+                `Ensure the variable is declared in the same file as a literal value.`
+        );
+        this.name = 'UnresolvedConstantReferenceError';
+    }
+}
+
 // Helper function to parse any TypeScript expression into a JavaScript value
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseExpression(expression: any): unknown {
@@ -155,6 +194,27 @@ function parseExpression(expression: any): unknown {
         return parseNestedObject(expression);
     } else if (Node.isArrayLiteralExpression(expression)) {
         return parseArrayLiteral(expression);
+    } else if (Node.isPropertyAccessExpression(expression)) {
+        const obj = expression.getExpression();
+        const propName = expression.getName();
+        if (Node.isIdentifier(obj)) {
+            const resolved = resolveVariableInitializer(expression.getSourceFile(), obj.getText());
+            if (resolved && Node.isObjectLiteralExpression(resolved)) {
+                const prop = resolved.getProperty(propName);
+                if (prop && Node.isPropertyAssignment(prop)) {
+                    const propInit = prop.getInitializer();
+                    if (propInit) return parseExpression(propInit);
+                }
+            }
+            throw new UnresolvedConstantReferenceError(expression.getText());
+        }
+        return expression.getText();
+    } else if (Node.isIdentifier(expression)) {
+        const resolved = resolveVariableInitializer(expression.getSourceFile(), expression.getText());
+        if (resolved && isResolvableLiteral(resolved)) {
+            return parseExpression(resolved);
+        }
+        return expression.getText();
     } else {
         return expression.getText();
     }
@@ -207,7 +267,6 @@ function parseArrayLiteral(arrayLiteral: any): unknown[] {
 // Parse decorator arguments using ts-morph
 function parseDecoratorArgs(decorator: Decorator): Record<string, unknown> {
     const result: Record<string, unknown> = {};
-
     try {
         const args = decorator.getArguments();
 
@@ -258,6 +317,9 @@ function parseDecoratorArgs(decorator: Decorator): Record<string, unknown> {
 
         return result;
     } catch (error) {
+        if (error instanceof UnresolvedConstantReferenceError) {
+            throw error;
+        }
         logger.warn(`Could not parse decorator arguments: ${(error as Error).message}`);
         return result;
     }
@@ -309,6 +371,9 @@ function extractAttributesFromSource(sourceFile: SourceFile, className: string):
             attributes.push(attribute);
         }
     } catch (error) {
+        if (error instanceof UnresolvedConstantReferenceError) {
+            throw error;
+        }
         logger.warn(`Could not extract attributes from class ${className}: ${(error as Error).message}`);
     }
 
@@ -452,11 +517,17 @@ async function processComponentFile(filePath: string, _projectRoot: string): Pro
                 components.push(componentMetadata);
             }
         } catch (error) {
+            if (error instanceof UnresolvedConstantReferenceError) {
+                throw error;
+            }
             logger.warn(`Could not process file ${filePath}:`, (error as Error).message);
         }
 
         return components;
     } catch (error) {
+        if (error instanceof UnresolvedConstantReferenceError) {
+            throw error;
+        }
         logger.warn(`Could not read file ${filePath}:`, (error as Error).message);
         return [];
     }
@@ -817,8 +888,10 @@ export async function generateMetadata(
                         await access(outputDir);
                         // Directory exists, that's fine
                     } catch {
-                        logger.error(`❌ Failed to create output directory ${outputDir}: ${(error as Error).message}`);
+                        const err = error as Error;
+                        logger.error(`❌ Failed to create output directory ${outputDir}: ${err.message}`);
                         process.exit(1);
+                        throw err;
                     }
                 }
             }
@@ -942,7 +1015,9 @@ export async function generateMetadata(
             totalFiles: allComponents.length + allPageTypes.length + allAspects.length,
         };
     } catch (error) {
-        logger.error('❌ Error:', (error as Error).message);
+        const err = error as Error;
+        logger.error('❌ Error:', err.message);
         process.exit(1);
+        throw err;
     }
 }

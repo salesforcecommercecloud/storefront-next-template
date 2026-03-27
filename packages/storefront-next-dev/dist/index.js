@@ -2938,6 +2938,30 @@ function getTypeFromTsMorph(property, _sourceFile) {
 	} catch {}
 	return "string";
 }
+/**
+* Resolve a variable's initializer expression from the same source file,
+* unwrapping `as const` type assertions.
+*/
+function resolveVariableInitializer(sourceFile, name) {
+	const varDecl = sourceFile.getVariableDeclaration(name);
+	if (!varDecl) return void 0;
+	let initializer = varDecl.getInitializer();
+	if (initializer && Node.isAsExpression(initializer)) initializer = initializer.getExpression();
+	return initializer;
+}
+/**
+* Check whether an AST node is a type that `parseExpression` can resolve to a
+* concrete JS value (as opposed to falling through to `getText()`).
+*/
+function isResolvableLiteral(node) {
+	return Node.isStringLiteral(node) || Node.isNumericLiteral(node) || Node.isTrueLiteral(node) || Node.isFalseLiteral(node) || Node.isObjectLiteralExpression(node) || Node.isArrayLiteralExpression(node);
+}
+var UnresolvedConstantReferenceError = class extends Error {
+	constructor(reference) {
+		super(`Cannot resolve constant reference '${reference}'. Ensure the variable is declared in the same file as a literal value.`);
+		this.name = "UnresolvedConstantReferenceError";
+	}
+};
 function parseExpression(expression) {
 	if (Node.isStringLiteral(expression)) return expression.getLiteralValue();
 	else if (Node.isNumericLiteral(expression)) return expression.getLiteralValue();
@@ -2945,7 +2969,26 @@ function parseExpression(expression) {
 	else if (Node.isFalseLiteral(expression)) return false;
 	else if (Node.isObjectLiteralExpression(expression)) return parseNestedObject(expression);
 	else if (Node.isArrayLiteralExpression(expression)) return parseArrayLiteral(expression);
-	else return expression.getText();
+	else if (Node.isPropertyAccessExpression(expression)) {
+		const obj = expression.getExpression();
+		const propName = expression.getName();
+		if (Node.isIdentifier(obj)) {
+			const resolved = resolveVariableInitializer(expression.getSourceFile(), obj.getText());
+			if (resolved && Node.isObjectLiteralExpression(resolved)) {
+				const prop = resolved.getProperty(propName);
+				if (prop && Node.isPropertyAssignment(prop)) {
+					const propInit = prop.getInitializer();
+					if (propInit) return parseExpression(propInit);
+				}
+			}
+			throw new UnresolvedConstantReferenceError(expression.getText());
+		}
+		return expression.getText();
+	} else if (Node.isIdentifier(expression)) {
+		const resolved = resolveVariableInitializer(expression.getSourceFile(), expression.getText());
+		if (resolved && isResolvableLiteral(resolved)) return parseExpression(resolved);
+		return expression.getText();
+	} else return expression.getText();
 }
 function parseNestedObject(objectLiteral) {
 	const result = {};
@@ -3001,6 +3044,7 @@ function parseDecoratorArgs(decorator) {
 		}
 		return result;
 	} catch (error) {
+		if (error instanceof UnresolvedConstantReferenceError) throw error;
 		logger.warn(`Could not parse decorator arguments: ${error.message}`);
 		return result;
 	}
@@ -3030,6 +3074,7 @@ function extractAttributesFromSource(sourceFile, className) {
 			attributes.push(attribute);
 		}
 	} catch (error) {
+		if (error instanceof UnresolvedConstantReferenceError) throw error;
 		logger.warn(`Could not extract attributes from class ${className}: ${error.message}`);
 	}
 	return attributes;
@@ -3099,10 +3144,12 @@ async function processComponentFile(filePath, _projectRoot) {
 				components.push(componentMetadata);
 			}
 		} catch (error) {
+			if (error instanceof UnresolvedConstantReferenceError) throw error;
 			logger.warn(`Could not process file ${filePath}:`, error.message);
 		}
 		return components;
 	} catch (error) {
+		if (error instanceof UnresolvedConstantReferenceError) throw error;
 		logger.warn(`Could not read file ${filePath}:`, error.message);
 		return [];
 	}
@@ -3304,8 +3351,10 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 				try {
 					await access(outputDir);
 				} catch {
-					logger.error(`❌ Failed to create output directory ${outputDir}: ${error.message}`);
+					const err = error;
+					logger.error(`❌ Failed to create output directory ${outputDir}: ${err.message}`);
 					process.exit(1);
+					throw err;
 				}
 			}
 		} else if (isIncrementalMode) logger.debug(`📝 [DRY RUN] Would process ${filePaths.length} specific file(s)`);
@@ -3373,8 +3422,10 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 			totalFiles: allComponents.length + allPageTypes.length + allAspects.length
 		};
 	} catch (error) {
-		logger.error("❌ Error:", error.message);
+		const err = error;
+		logger.error("❌ Error:", err.message);
 		process.exit(1);
+		throw err;
 	}
 }
 

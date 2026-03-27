@@ -24,6 +24,11 @@ import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { type Image } from '@/types';
 import type { ComponentType } from '@/components/region';
 
+const contentCardDefaults = {
+    showBackground: true,
+    showBorder: true,
+} as const;
+
 interface ContentCardProps extends ComponentProps<'div'> {
     title?: string;
     description?: string;
@@ -70,10 +75,10 @@ export class ContentCardMetadata {
     @AttributeDefinition()
     buttonLink?: string;
 
-    @AttributeDefinition()
+    @AttributeDefinition({ defaultValue: contentCardDefaults.showBackground })
     showBackground?: boolean;
 
-    @AttributeDefinition()
+    @AttributeDefinition({ defaultValue: contentCardDefaults.showBorder })
     showBorder?: boolean;
 }
 /* v8 ignore stop */
@@ -91,8 +96,8 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
             imageAlt,
             buttonText,
             buttonLink,
-            showBackground = true,
-            showBorder = true,
+            showBackground = contentCardDefaults.showBackground,
+            showBorder = contentCardDefaults.showBorder,
             loading = 'lazy',
             regionId: _regionId,
             component: _component,

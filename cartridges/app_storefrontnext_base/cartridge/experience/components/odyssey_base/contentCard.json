@@ -57,14 +57,16 @@
                     "name": "Show Background",
                     "type": "boolean",
                     "required": false,
-                    "description": "Field: showBackground"
+                    "description": "Field: showBackground",
+                    "default_value": true
                 },
                 {
                     "id": "showBorder",
                     "name": "Show Border",
                     "type": "boolean",
                     "required": false,
-                    "description": "Field: showBorder"
+                    "description": "Field: showBorder",
+                    "default_value": true
                 }
             ]
         }
