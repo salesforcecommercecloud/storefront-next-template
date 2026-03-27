@@ -111,22 +111,28 @@ export function processPage(
             const defaultContent = componentInfo?.content?.default ?? {};
             const localeContent = componentInfo?.content?.[processorContext.locale] ?? {};
             const content = { ...defaultContent, ...localeContent };
-            const nodeWithContent =
-                Object.keys(content).length > 0
-                    ? {
-                          ...ctx.node,
-                          data: {
-                              ...(ctx.node.data as Record<string, unknown>),
-                              ...content,
-                          } as typeof ctx.node.data,
-                      }
-                    : ctx.node;
+            const isLocalized = Boolean(componentInfo?.content?.[processorContext.locale]);
+
+            let node: ShopperExperience.schemas['Component'] = {
+                ...ctx.node,
+                // @ts-expect-error - This isn't updated in the schema yet.
+                localized: isLocalized,
+                // Always true here — this processing logic only runs in live/published mode
+                // where invisible components are already filtered out above. The `visible`
+                // flag is only false in design/preview mode, which returns all components
+                // unfiltered and bypasses this code path entirely.
+                visible: true,
+                data: {
+                    ...(ctx.node.data as Record<string, unknown>),
+                    ...content,
+                } as typeof ctx.node.data,
+            };
 
             // Resolve data binding expressions (overrides content for bound attributes).
-            const resolved = resolveComponentDataBindings(nodeWithContent, processorContext.qualifiers?.dataBindings);
+            node = resolveComponentDataBindings(node, processorContext.qualifiers?.dataBindings);
 
             return {
-                ...resolved,
+                ...node,
                 regions: ctx.visitRegions(ctx.node.regions),
             };
         },

@@ -585,14 +585,19 @@ function processPage(page, processorContext) {
 			...defaultContent,
 			...localeContent
 		};
+		const isLocalized = Boolean(componentInfo?.content?.[processorContext.locale]);
+		let node = {
+			...ctx.node,
+			localized: isLocalized,
+			visible: true,
+			data: {
+				...ctx.node.data,
+				...content
+			}
+		};
+		node = resolveComponentDataBindings(node, processorContext.qualifiers?.dataBindings);
 		return {
-			...resolveComponentDataBindings(Object.keys(content).length > 0 ? {
-				...ctx.node,
-				data: {
-					...ctx.node.data,
-					...content
-				}
-			} : ctx.node, processorContext.qualifiers?.dataBindings),
+			...node,
 			regions: ctx.visitRegions(ctx.node.regions)
 		};
 	} });

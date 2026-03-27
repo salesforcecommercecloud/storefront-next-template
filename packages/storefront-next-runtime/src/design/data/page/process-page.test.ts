@@ -532,6 +532,115 @@ describe('processPage', () => {
         });
     });
 
+    describe('localized flag', () => {
+        test('sets localized to true when locale-specific content exists', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: {
+                            default: { heading: 'Default' },
+                            en_US: { heading: 'English' },
+                        },
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const component = result.regions?.[0].components?.[0] as Record<string, unknown>;
+            expect(component.localized).toBe(true);
+        });
+
+        test('sets localized to false when falling back to default locale only', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'ja_JP',
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: {
+                            default: { heading: 'Default' },
+                            en_US: { heading: 'English' },
+                        },
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const component = result.regions?.[0].components?.[0] as Record<string, unknown>;
+            expect(component.localized).toBe(false);
+        });
+
+        test('sets localized to false when componentInfo has no content', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const component = result.regions?.[0].components?.[0] as Record<string, unknown>;
+            expect(component.localized).toBe(false);
+        });
+    });
+
+    describe('visible flag', () => {
+        test('sets visible to true on all processed components', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner'), makeComponent('promo')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {
+                    banner: { visibilityRules: [] },
+                    promo: { visibilityRules: [] },
+                },
+            };
+
+            const result = processPage(page, context);
+            const components = result.regions?.[0].components as Record<string, unknown>[];
+            expect(components[0].visible).toBe(true);
+            expect(components[1].visible).toBe(true);
+        });
+
+        test('sets visible to true on nested components', () => {
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('container', {
+                        regions: [makeRegion('inner', [makeComponent('child')])],
+                    }),
+                ]),
+            ]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {
+                    container: { visibilityRules: [] },
+                    child: { visibilityRules: [] },
+                },
+            };
+
+            const result = processPage(page, context);
+            const container = result.regions?.[0].components?.[0] as Record<string, unknown>;
+            const child = result.regions?.[0].components?.[0].regions?.[0].components?.[0] as Record<string, unknown>;
+            expect(container.visible).toBe(true);
+            expect(child.visible).toBe(true);
+        });
+    });
+
     test('handles page with no regions', () => {
         const page = makePage();
         const context: PageProcessorContext = {
