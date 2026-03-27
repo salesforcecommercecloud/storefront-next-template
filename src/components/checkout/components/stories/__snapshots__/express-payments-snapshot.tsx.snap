@@ -71,8 +71,10 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -86,8 +88,10 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-3 w-auto"
+          height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
     </div>
@@ -182,8 +186,10 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -197,8 +203,10 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-3 w-auto"
+          height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
     </div>
@@ -297,8 +305,10 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -313,8 +323,10 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-3 w-auto"
+          height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
     </div>
@@ -425,8 +437,10 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -440,8 +454,10 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-3 w-auto"
+          height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
     </div>
@@ -520,8 +536,10 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -535,8 +553,10 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-3 w-auto"
+          height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
     </div>
@@ -631,8 +651,10 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -646,8 +668,10 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-3 w-auto"
+          height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
     </div>
@@ -758,8 +782,10 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -773,8 +799,10 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-3 w-auto"
+          height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
     </div>
@@ -853,8 +881,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -868,8 +898,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-3 w-auto"
+          height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
     </div>
@@ -964,8 +996,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-4 w-auto"
+          height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain;"
+          width="48"
         />
       </button>
       <button
@@ -979,8 +1013,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
           alt=""
           aria-hidden="true"
           class="flex-shrink-0 h-3 w-auto"
+          height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           style="object-fit: contain; filter: brightness(0) invert(1);"
+          width="48"
         />
       </button>
     </div>

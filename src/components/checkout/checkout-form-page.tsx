@@ -314,7 +314,6 @@ export default function CheckoutFormPage({
     }, [analytics, step, STEPS, cart]);
 
     const isPlacingOrder = placeOrderFetcher.state === 'submitting';
-    const placeOrderErrorRef = useRef<HTMLDivElement>(null);
 
     // Form submission handlers - delegated to checkout actions hook
     const handleContactSubmit = submitContactInfo;
@@ -400,15 +399,20 @@ export default function CheckoutFormPage({
     // The place order action automatically redirects to the confirmation page
     // Session storage cleanup is also handled in the action route
 
+    // Focus place order error without scrolling (prevents CLS while maintaining accessibility)
     useEffect(() => {
         if (
             placeOrderFetcher.state === 'idle' &&
             placeOrderFetcher.data &&
             !placeOrderFetcher.data.success &&
-            placeOrderFetcher.data.error &&
-            placeOrderErrorRef.current
+            placeOrderFetcher.data.error
         ) {
-            placeOrderErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Find the error banner and focus it without scrolling
+            const errorElement = document.querySelector('[role="alert"]');
+            if (errorElement instanceof HTMLElement) {
+                errorElement.tabIndex = -1;
+                errorElement.focus({ preventScroll: true });
+            }
         }
     }, [placeOrderFetcher.state, placeOrderFetcher.data]);
 
@@ -652,7 +656,6 @@ export default function CheckoutFormPage({
                                     !placeOrderFetcher.data.success &&
                                     placeOrderFetcher.data.error && (
                                         <CheckoutErrorBanner
-                                            ref={placeOrderErrorRef}
                                             message={placeOrderFetcher.data.error}
                                             className="w-full"
                                         />

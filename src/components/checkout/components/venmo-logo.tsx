@@ -36,6 +36,8 @@ export default function VenmoLogo({
         <img
             src={venmoLogo}
             alt={decorative ? '' : label}
+            width="48"
+            height="12"
             {...(decorative ? { 'aria-hidden': true } : {})}
             className={`${className || ''} h-3 w-auto`}
             style={{

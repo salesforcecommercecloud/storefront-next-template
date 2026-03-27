@@ -36,6 +36,8 @@ export default function PayPalLogo({
         <img
             src={paypalLogo}
             alt={decorative ? '' : label}
+            width="48"
+            height="16"
             {...(decorative ? { 'aria-hidden': true } : {})}
             className={`${className || ''} h-4 w-auto`}
             style={{ objectFit: 'contain' }}
