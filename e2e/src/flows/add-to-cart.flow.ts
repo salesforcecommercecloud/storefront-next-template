@@ -18,8 +18,8 @@ const { I, productListPage, productDetailPage, checkoutPage } = inject();
 import type { ProductInfo } from '../types/product.types';
 import { buildSitePath } from '../utils/url-utils';
 
-const MAX_PRODUCTS_TO_TRY = 10;
-const MAX_CHECKOUT_EMPTY_RETRIES = 10;
+const MAX_PRODUCTS_TO_TRY = 3;
+const MAX_CHECKOUT_EMPTY_RETRIES = 3;
 
 /**
  * Add to Cart Flow
@@ -123,8 +123,7 @@ class AddToCartFlow {
      */
     async execute(categoryUrl: string, options?: { preferPromotedProduct?: boolean }): Promise<ProductInfo> {
         try {
-            I.amOnPage(buildSitePath(categoryUrl));
-            productListPage.validateProductsDisplayed();
+            await this.navigateToPLP(categoryUrl);
 
             const productCount = await productListPage.getProductCount();
             if (productCount === 0) {
@@ -148,31 +147,18 @@ class AddToCartFlow {
             for (const index of indices) {
                 await productListPage.clickMoreOptionsForProductByIndex(index);
                 await productDetailPage.waitForPageReady();
-                // Select variants first — Add to Cart may be hidden until variants are chosen
                 await productDetailPage.selectAllVariants();
-                // Poll for Add to Cart (products without it, e.g. sets, are skipped)
-                const addToCartDeadline = Date.now() + 5000;
-                let addToCartVisible = false;
-                while (Date.now() < addToCartDeadline) {
-                    const n = await I.grabNumberOfVisibleElements(productDetailPage.locators.addToCartButton);
-                    if (n > 0) {
-                        addToCartVisible = true;
-                        break;
-                    }
-                    await new Promise((r) => setTimeout(r, 300));
-                }
+
+                const addToCartCount = await I.grabNumberOfVisibleElements(productDetailPage.locators.addToCartButton);
+                const addToCartVisible = addToCartCount > 0;
                 if (!addToCartVisible) {
-                    I.amOnPage(buildSitePath(categoryUrl));
-                    productListPage.validateProductsDisplayed();
+                    await this.navigateToPLP(categoryUrl);
                     continue;
                 }
 
-                // Skip products where Add to Cart is disabled (OOS or incomplete variant selection).
-                // Playwright's I.click() blocks on disabled buttons until timeout, so check first.
                 const enabled = await productDetailPage.isAddToCartEnabled();
                 if (!enabled) {
-                    I.amOnPage(buildSitePath(categoryUrl));
-                    productListPage.validateProductsDisplayed();
+                    await this.navigateToPLP(categoryUrl);
                     continue;
                 }
 
@@ -182,8 +168,7 @@ class AddToCartFlow {
 
                 const outcome = await productDetailPage.waitForAddToCartOutcome(15);
                 if (outcome === 'error') {
-                    I.amOnPage(buildSitePath(categoryUrl));
-                    productListPage.validateProductsDisplayed();
+                    await this.navigateToPLP(categoryUrl);
                     continue;
                 }
 
@@ -199,6 +184,28 @@ class AddToCartFlow {
         } catch (error) {
             I.saveScreenshot(`add-to-cart-error-${Date.now()}.png`);
             throw error;
+        }
+    }
+
+    /** Navigate to PLP and wait for product grid. Retries once if the grid fails to render. */
+    private async navigateToPLP(categoryUrl: string): Promise<void> {
+        I.amOnPage(buildSitePath(categoryUrl));
+        const loaded = await this.waitForPLPGrid();
+        if (!loaded) {
+            I.amOnPage(buildSitePath(categoryUrl));
+            await this.waitForPLPGrid();
+        }
+    }
+
+    /** Wait for product tiles to appear on the PLP. Returns true if found, false on timeout. */
+    private async waitForPLPGrid(timeoutMs: number = 20_000): Promise<boolean> {
+        try {
+            await (I.usePlaywrightTo('wait for PLP product tiles', async ({ page }) => {
+                await page.locator('[data-slot="card"]').first().waitFor({ state: 'visible', timeout: timeoutMs });
+            }) as unknown as Promise<void>);
+            return true;
+        } catch {
+            return false;
         }
     }
 }

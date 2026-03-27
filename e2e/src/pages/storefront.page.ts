@@ -15,7 +15,7 @@
  */
 
 const { I } = inject();
-import { getStorefrontScopedCookies } from '../utils/cookie-utils';
+import { getStorefrontOrigin, getStorefrontScopedCookies } from '../utils/cookie-utils';
 import { buildSitePath } from '../utils/url-utils';
 
 /**
@@ -106,8 +106,9 @@ class StorefrontPage {
     }
 
     /**
-     * Wait for session cookies to be set based on user type and return them
-     * Polls for access token and session cookies, then returns all cookie values
+     * Wait for session cookies to be set based on user type and return them.
+     * Uses Playwright's context.cookies() in a tight loop inside a single
+     * usePlaywrightTo call, avoiding repeated Node-to-browser round-trips.
      *
      * @param userType - Type of user: 'guest' (cc-nx-g) or 'registered' (cc-nx)
      * @param siteId - Site ID for cookie namespacing (defaults to environment SITE_ID)
@@ -126,48 +127,45 @@ class StorefrontPage {
         customerId: string | null;
     }> {
         const actualSiteId = siteId || process.env.SITE_ID || 'RefArchGlobal';
-        const startTime = Date.now();
-        const timeout = timeoutSeconds * 1000;
-        const refreshTokenCookie = userType === 'guest' ? `cc-nx-g_${actualSiteId}` : `cc-nx_${actualSiteId}`;
+        const refreshTokenName = userType === 'guest' ? `cc-nx-g_${actualSiteId}` : `cc-nx_${actualSiteId}`;
+        const timeoutMs = timeoutSeconds * 1000;
 
-        // Longer initial wait for registered users (signup/login takes longer)
-        // Allow time for form submission, server processing, and redirect
-        const initialWait = userType === 'registered' ? 3000 : 1500;
-        await new Promise((resolve) => setTimeout(resolve, initialWait));
+        const result = await (I.usePlaywrightTo(`wait for ${userType} session cookies`, async ({ page }) => {
+            const fallbackOrigin = getStorefrontOrigin();
+            const deadline = Date.now() + timeoutMs;
 
-        while (Date.now() - startTime < timeout) {
-            try {
-                // Only consider cookies on the storefront domain (exclude proxy/external API cookies)
-                const storefrontCookies = await getStorefrontScopedCookies();
+            while (Date.now() < deadline) {
+                const pageUrl = page.url();
+                const origin = pageUrl && !pageUrl.startsWith('about:') ? new URL(pageUrl).origin : fallbackOrigin;
+                const cookies = await page.context().cookies(origin);
+                const cookieMap = new Map(cookies.map((c: { name: string; value: string }) => [c.name, c.value]));
 
-                const accessToken = storefrontCookies.get(`cc-at_${actualSiteId}`) ?? null;
-                const guestRefreshToken = storefrontCookies.get(`cc-nx-g_${actualSiteId}`) ?? null;
-                const authRefreshToken = storefrontCookies.get(`cc-nx_${actualSiteId}`) ?? null;
-                const usid = storefrontCookies.get(`usid_${actualSiteId}`) ?? null;
-                const customerId = storefrontCookies.get(`customerId_${actualSiteId}`) ?? null;
-
+                const accessToken = cookieMap.get(`cc-at_${actualSiteId}`) ?? null;
+                const guestRefreshToken = cookieMap.get(`cc-nx-g_${actualSiteId}`) ?? null;
+                const authRefreshToken = cookieMap.get(`cc-nx_${actualSiteId}`) ?? null;
+                const usid = cookieMap.get(`usid_${actualSiteId}`) ?? null;
+                const customerId = cookieMap.get(`customerId_${actualSiteId}`) ?? null;
                 const refreshToken = userType === 'guest' ? guestRefreshToken : authRefreshToken;
 
-                // All critical session cookies must be present
                 if (accessToken && refreshToken && usid && customerId) {
-                    return {
-                        accessToken,
-                        guestRefreshToken,
-                        authRefreshToken,
-                        usid,
-                        customerId,
-                    };
+                    return { accessToken, guestRefreshToken, authRefreshToken, usid, customerId };
                 }
-            } catch {
-                // Continue polling
+
+                await page.waitForTimeout(250);
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 500));
-        }
+            throw new Error(
+                `Timeout waiting for ${userType} session cookies (${refreshTokenName}) after ${timeoutSeconds} seconds`
+            );
+        }) as unknown as Promise<{
+            accessToken: string | null;
+            guestRefreshToken: string | null;
+            authRefreshToken: string | null;
+            usid: string | null;
+            customerId: string | null;
+        }>);
 
-        throw new Error(
-            `Timeout waiting for ${userType} session cookies (${refreshTokenCookie}) after ${timeoutSeconds} seconds`
-        );
+        return result;
     }
 
     /**

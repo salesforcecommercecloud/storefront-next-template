@@ -266,17 +266,18 @@ class ProductDetailPage {
      * @returns 'success' if added to cart, 'error' if error toast appeared (e.g. OOS) or timeout
      */
     async waitForAddToCartOutcome(timeoutSeconds: number = 5): Promise<'success' | 'error'> {
-        const pollMs = 300;
-        const deadline = Date.now() + timeoutSeconds * 1000;
-        while (Date.now() < deadline) {
-            const successMsgCount = await I.grabNumberOfVisibleElements(this.locators.addedToCartMessage);
-            const successToastCount = await I.grabNumberOfVisibleElements(this.locators.addToCartSuccessToast);
-            if (successMsgCount > 0 || successToastCount > 0) return 'success';
+        try {
+            await (I.usePlaywrightTo('wait for add-to-cart outcome', async ({ page }) => {
+                const successOrError = page.locator(
+                    '[data-sonner-toast][data-type="success"], [data-sonner-toast][data-type="error"]'
+                );
+                await successOrError.first().waitFor({ state: 'visible', timeout: timeoutSeconds * 1000 });
+            }) as unknown as Promise<void>);
             const errorCount = await I.grabNumberOfVisibleElements(this.locators.addToCartErrorToast);
-            if (errorCount > 0) return 'error';
-            await new Promise((r) => setTimeout(r, pollMs));
+            return errorCount > 0 ? 'error' : 'success';
+        } catch {
+            return 'error';
         }
-        return 'error';
     }
 
     /**

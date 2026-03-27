@@ -104,22 +104,9 @@ class LoginFlow {
             // Validate page loaded
             loginPage.validatePageLoaded();
 
-            // Fill login form
             loginPage.fillLoginForm(loginData);
-
-            // Submit form
             loginPage.clickSignIn();
 
-            // Flush recorder queue and confirm form submission triggered navigation.
-            // All pending I.* calls (validatePageLoaded, fillLoginForm, clickSignIn)
-            // execute here atomically before cookie polling begins. Without this fence,
-            // those calls would execute inside waitForSessionCookies' first poll iteration,
-            // causing confusing timeouts and race conditions.
-            await (I.usePlaywrightTo('wait for post-login navigation', async ({ page }) => {
-                await page.waitForURL((url: URL) => !url.pathname.includes('/login'), { timeout: 45_000 });
-            }) as unknown as Promise<void>);
-
-            // Wait for authenticated user session cookies after successful login
             const siteId = process.env.SITE_ID || 'RefArchGlobal';
             await storefrontPage.waitForSessionCookies('registered', siteId, 45);
 

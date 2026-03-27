@@ -14,28 +14,10 @@
  * limitations under the License.
  */
 
-/**
- * Shared Test Data for Checkout E2E Tests
- *
- * This file contains reusable test data constants to ensure consistency
- * across checkout-related tests and avoid duplication.
- */
-
-/**
- * Test Credit Card Numbers
- * These are valid test cards for Salesforce Commerce Cloud test environments
- */
-export const TEST_CARDS = {
-    /** Visa test card - verified working in SFCC test environments */
+const TEST_CARDS = {
     VISA: '4242424242424242',
-    /** Mastercard test card (if needed in future) */
-    // MASTERCARD: '5555555555554444',
 } as const;
 
-/**
- * Standard Test Payment Information
- * Uses SFCC-verified test credit card
- */
 export const TEST_PAYMENT = {
     cardNumber: TEST_CARDS.VISA,
     cardholderName: 'Test Shopper',
@@ -43,10 +25,6 @@ export const TEST_PAYMENT = {
     cvv: '123',
 } as const;
 
-/**
- * Standard Test Shipping Address
- * Boston, MA address for consistent test data
- */
 export const TEST_SHIPPING_ADDRESS = {
     firstName: 'Test',
     lastName: 'Shopper',
@@ -57,10 +35,6 @@ export const TEST_SHIPPING_ADDRESS = {
     phone: '617-555-0123',
 } as const;
 
-/**
- * Alternative Test Shipping Address
- * Used for add/edit address modal tests during checkout
- */
 export const TEST_SHIPPING_ADDRESS_ALT = {
     firstName: 'Jane',
     lastName: 'Smith',
@@ -71,24 +45,22 @@ export const TEST_SHIPPING_ADDRESS_ALT = {
     phone: '415-555-0199',
 } as const;
 
-/**
- * Email Domain for Test Accounts
- * Use @test.com domain (verified accepted by SFCC validation)
- */
-export const TEST_EMAIL_DOMAIN = '@test.com' as const;
+const TEST_EMAIL_DOMAIN = '@test.com' as const;
 
-/**
- * Generate a unique test email address
- * @param prefix - Email prefix (e.g., 'guest', 'registered')
- * @returns Unique email address with timestamp
- */
 export function generateTestEmail(prefix: string = 'test'): string {
     return `${prefix}-${Date.now()}${TEST_EMAIL_DOMAIN}`;
 }
 
-/**
- * Common Product Categories for Testing
- */
+export const INVALID_TEST_DATA = {
+    EMAIL: 'not-an-email',
+    PHONE: '123',
+    EXPIRED_CARD_DATE: '01/20',
+    CVV: 'ab',
+    SHORT_PROMO_CODE: 'X',
+    FAKE_PROMO_CODE: 'FAKECODE123',
+    SHORT_CARD_NUMBER: '4111',
+} as const;
+
 export const TEST_PRODUCT_CATEGORIES = {
     MENS_JACKETS: 'category/mens-clothing-jackets',
     WOMENS_DRESSES: 'category/womens-clothing-dresses',

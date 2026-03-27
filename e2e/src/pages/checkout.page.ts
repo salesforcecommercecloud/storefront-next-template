@@ -63,6 +63,9 @@ class CheckoutPage {
         phoneInput: locate(
             '[data-testid="sf-toggle-card-shipping-address"] input[name="phone"], [data-testid="sf-toggle-card-shipping-address"] input[type="tel"]'
         ).as('Phone Input'),
+        shippingCountrySelect: locate('[data-testid="sf-toggle-card-shipping-address"] select[name="countryCode"]').as(
+            'Shipping Country Select'
+        ),
         shippingAddressSubmitButton: locate('[data-testid="sf-toggle-card-shipping-address"] button[type="submit"]').as(
             'Shipping Address Submit Button'
         ),
@@ -182,6 +185,23 @@ class CheckoutPage {
         addressModalCancelButton: locate('[role="dialog"] button[type="button"]')
             .withText('Cancel')
             .as('Address Modal Cancel Button'),
+
+        // Promo code form (inside Order Summary accordion on checkout)
+        promoCodeAccordionTrigger: locate('[data-testid="checkout-order-summary-sidebar"] button')
+            .withText('Do you have a promo code?')
+            .as('Promo Code Accordion Trigger'),
+        promoCodeForm: locate('[data-testid="checkout-order-summary-sidebar"] [data-testid="promo-code-form"]').as(
+            'Promo Code Form'
+        ),
+        promoCodeInput: locate(
+            '[data-testid="checkout-order-summary-sidebar"] [data-testid="promo-code-form"] input[name="code"]'
+        ).as('Promo Code Input'),
+        promoCodeApplyButton: locate(
+            '[data-testid="checkout-order-summary-sidebar"] [data-testid="promo-code-form"] button[type="submit"]'
+        ).as('Promo Code Apply Button'),
+        promoCodeError: locate(
+            '[data-testid="checkout-order-summary-sidebar"] [data-testid="promo-code-form"] [data-slot="form-message"]'
+        ).as('Promo Code Error'),
     };
 
     navigate(): void {
@@ -1013,6 +1033,71 @@ class CheckoutPage {
         I.fillField(this.locators.billingPostalCodeInput, address.postalCode);
     }
 
+    async getFieldValidationErrors(stepTestId: string): Promise<string[]> {
+        const selector = `[data-testid="${stepTestId}"] [data-slot="form-message"]`;
+        const count = await I.grabNumberOfVisibleElements(selector);
+        if (count === 0) return [];
+        const texts: string[] = [];
+        for (let i = 1; i <= count; i++) {
+            const text = await I.grabTextFrom(locate(selector).at(i));
+            if (text.trim()) texts.push(text.trim());
+        }
+        return texts;
+    }
+
+    clickContactInfoSubmit(): void {
+        I.waitForElement(this.locators.continueToShippingButton, 10);
+        I.scrollTo(this.locators.continueToShippingButton);
+        I.click(this.locators.continueToShippingButton);
+    }
+
+    clickShippingAddressSubmit(): void {
+        I.waitForElement(this.locators.shippingAddressSubmitButton, 10);
+        I.scrollTo(this.locators.shippingAddressSubmitButton);
+        I.click(this.locators.shippingAddressSubmitButton);
+    }
+
+    clearField(locator: CodeceptJS.LocatorOrString): void {
+        I.click(locator);
+        I.pressKey(['CommandOrControl', 'a']);
+        I.pressKey('Backspace');
+    }
+
+    /** Wait for at least `minCount` form-message errors to appear within a step's toggle card. */
+    async waitForValidationErrors(stepTestId: string, minCount: number, timeoutSeconds: number = 10): Promise<void> {
+        const sel = `[data-testid="${stepTestId}"] [data-slot="form-message"]`;
+        await (I.usePlaywrightTo(`wait for ${minCount}+ validation errors`, async ({ page }) => {
+            await page.waitForFunction(
+                ({ selector, min }: { selector: string; min: number }) =>
+                    document.querySelectorAll(selector).length >= min,
+                { selector: sel, min: minCount },
+                { timeout: timeoutSeconds * 1000 }
+            );
+        }) as unknown as Promise<void>);
+    }
+
+    expandPromoCodeAccordion(): void {
+        I.waitForElement(this.locators.promoCodeAccordionTrigger, 10);
+        I.scrollTo(this.locators.promoCodeAccordionTrigger);
+        I.click(this.locators.promoCodeAccordionTrigger);
+        I.waitForElement(this.locators.promoCodeInput, 5);
+    }
+
+    applyPromoCode(code: string): void {
+        I.fillField(this.locators.promoCodeInput, code);
+        I.click(this.locators.promoCodeApplyButton);
+    }
+
+    async getPromoCodeError(): Promise<string> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.promoCodeError);
+        if (count === 0) return '';
+        return (await I.grabTextFrom(this.locators.promoCodeError)).trim();
+    }
+
+    waitForPromoCodeError(timeoutSeconds: number = 10): void {
+        I.waitForElement(this.locators.promoCodeError, timeoutSeconds);
+    }
+
     /**
      * Check if payment validation error messages are visible (e.g. "Please enter your card number.").
      * These render as `<p data-slot="form-message">` inside the payment card.
@@ -1041,6 +1126,59 @@ class CheckoutPage {
      * Polls in the browser. Returns once condition is met or timeout.
      * It is a test helper for waiting on basket sync in the E2E flow.
      */
+    /** Fill contact info fields without submitting. Use for validation tests with invalid data. */
+    fillContactInfoFields(email: string, phone?: string): void {
+        I.fillField(this.locators.emailInput, email);
+        I.pressKey('Tab');
+        if (phone) {
+            I.fillField(this.locators.phoneInputContactInfo, phone);
+            I.pressKey('Tab');
+        }
+    }
+
+    /** Wait for the payment step to be ready (card number input visible). */
+    waitForPaymentStep(timeout: number = 10): void {
+        I.waitForElement(this.locators.cardNumberInput, timeout);
+    }
+
+    /** Wait for the shipping address step to be ready (first name input visible). */
+    waitForShippingAddressStep(timeout: number = 15): void {
+        I.waitForElement(this.locators.firstNameInput, timeout);
+    }
+
+    /** Wait for the main content container to be visible. */
+    waitForMainContent(timeout: number = 15): void {
+        I.waitForElement(this.locators.checkoutContainer, timeout);
+    }
+
+    /** Check whether the order confirmation page/message is shown. */
+    async isOrderConfirmationShown(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(
+            'text=/thank you|order placed|order confirmed|your order is confirmed/i'
+        );
+        return count > 0;
+    }
+
+    /** Check whether shipping address form inputs are visible. */
+    async isShippingAddressStepVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(
+            '[data-testid="sf-toggle-card-shipping-address"] input[name="firstName"]'
+        );
+        return count > 0;
+    }
+
+    /** Check whether shipping method radio buttons are visible. */
+    async isShippingMethodStepVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements('input[type="radio"][name="shippingMethodId"]');
+        return count > 0;
+    }
+
+    /** Check whether the contact info form content section is visible. */
+    async isContactInfoFormVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements('[data-testid="sf-toggle-card-contact-info-content"]');
+        return count > 0;
+    }
+
     async waitForMyCartItemCount(minCount: number, timeoutSeconds: number = 20): Promise<number> {
         const count = (await I.executeScript(
             (params: { min: number; timeout: number }) =>

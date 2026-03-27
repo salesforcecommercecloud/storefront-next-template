@@ -162,6 +162,8 @@ export default defineConfig(({ mode }) => {
                 // Fonts alias for easy customization
                 '@fonts': resolve(__dirname, './public/fonts'),
             },
+            // Prevent duplicate React instances in the monorepo. hooks break if multiple copies are loaded
+            dedupe: ['react', 'react-dom', 'react-router'],
         },
         optimizeDeps: {
             include: ['react-router', 'react-router/internal/react-server-client'],

@@ -164,8 +164,7 @@ class ProductListPage {
      */
     validateProductsDisplayed(timeoutSeconds: number = 30): void {
         I.waitForElement(this.locators.productGrid, timeoutSeconds);
-        I.seeElement(this.locators.productGrid);
-        I.seeElement(this.locators.productTiles);
+        I.waitForElement(this.locators.productTiles, timeoutSeconds);
     }
 
     /**

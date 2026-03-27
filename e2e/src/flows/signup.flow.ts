@@ -117,19 +117,8 @@ class SignupFlow {
             // Fill signup form
             signupPage.fillSignupForm(signupData);
 
-            // Submit form
             signupPage.clickCreateAccount();
 
-            // Flush recorder queue and confirm form submission triggered navigation.
-            // All pending I.* calls (validatePageLoaded, fillSignupForm, clickCreateAccount)
-            // execute here atomically before cookie polling begins. Without this fence,
-            // those calls would execute inside waitForSessionCookies' first poll iteration,
-            // causing confusing timeouts and race conditions.
-            await (I.usePlaywrightTo('wait for post-signup navigation', async ({ page }) => {
-                await page.waitForURL((url: URL) => !url.pathname.includes('/signup'), { timeout: 45_000 });
-            }) as unknown as Promise<void>);
-
-            // Wait for registered user session cookies after successful signup and auto-login
             const siteId = process.env.SITE_ID || 'RefArchGlobal';
             await storefrontPage.waitForSessionCookies('registered', siteId, 45);
 
