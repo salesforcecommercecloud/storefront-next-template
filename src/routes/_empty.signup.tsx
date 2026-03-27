@@ -98,35 +98,37 @@ export default function Signup(): ReactElement {
     const { t } = useTranslation('signup');
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-            <SeoMeta
-                title={t('meta.title', { defaultValue: 'Sign Up' })}
-                description={t('meta.description', {
-                    defaultValue: 'Create an account to save your preferences and track your orders.',
-                })}
-                noIndex
-            />
-            <div className="max-w-md w-full space-y-8">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
-                    <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
+        <>
+            <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+                <SeoMeta
+                    title={t('meta.title', { defaultValue: 'Sign Up' })}
+                    description={t('meta.description', {
+                        defaultValue: 'Create an account to save your preferences and track your orders.',
+                    })}
+                    openGraph={{ type: 'website' }}
+                />
+                <div className="max-w-md w-full space-y-8">
+                    <div>
+                        <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
+                        <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
+                    </div>
+
+                    <Card className="p-8">
+                        <Form method="POST">
+                            <SignupForm error={error} />
+
+                            <div className="text-center mt-6">
+                                <p className="text-sm text-muted-foreground">
+                                    {t('haveAccountQuestion')}
+                                    <Link to="/login" className="font-medium text-primary hover:underline">
+                                        {t('signIn')}
+                                    </Link>
+                                </p>
+                            </div>
+                        </Form>
+                    </Card>
                 </div>
-
-                <Card className="p-8">
-                    <Form method="POST">
-                        <SignupForm error={error} />
-
-                        <div className="text-center mt-6">
-                            <p className="text-sm text-muted-foreground">
-                                {t('haveAccountQuestion')}
-                                <Link to="/login" className="font-medium text-primary hover:underline">
-                                    {t('signIn')}
-                                </Link>
-                            </p>
-                        </div>
-                    </Form>
-                </Card>
             </div>
-        </div>
+        </>
     );
 }

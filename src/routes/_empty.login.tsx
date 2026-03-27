@@ -24,6 +24,7 @@ import {
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
 import { SeoMeta } from '@/components/seo-meta';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
 import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
@@ -69,6 +70,7 @@ type LoginLoaderData = {
     actionParams?: string | null;
     showOTPForm?: boolean;
     otpLength?: number;
+    pageUrl: string;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -76,6 +78,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const logger = getLogger(context);
     const session = getAuth(context);
     const url = new URL(request.url);
+    const pageUrl = buildCanonicalUrl(url.origin, url.pathname, url.search);
     const returnUrl = url.searchParams.get('returnUrl');
 
     // If user is already logged in as registered user, redirect to returnUrl or home
@@ -147,6 +150,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
                 action: pendingAction,
                 actionParams,
                 otpLength: config.auth.otpLength,
+                pageUrl,
             };
         }
     }
@@ -163,6 +167,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         action: pendingAction,
         actionParams,
         otpLength: config.auth.otpLength,
+        pageUrl,
     };
 }
 
@@ -339,6 +344,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
         actionParams,
         showOTPForm,
         otpLength,
+        pageUrl,
     } = loaderData;
 
     // Prefer actionData error (from form submission) over loaderData error (from URL params)
@@ -399,6 +405,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                 description={t('meta.description', {
                     defaultValue: 'Sign in to your account to view orders, manage your wishlist, and more.',
                 })}
+                openGraph={{ type: 'website', url: pageUrl }}
             />
             <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8">

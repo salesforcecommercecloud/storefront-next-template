@@ -35,6 +35,7 @@ import hero04 from '/images/hero-04.webp';
 import HeroCarousel, { HeroCarouselSkeleton, type HeroSlide } from '@/components/hero-carousel';
 import { ProductCarouselSkeleton, ProductCarouselWithSuspense } from '@/components/product-carousel';
 import { SeoMeta } from '@/components/seo-meta';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
 
 @PageType({
@@ -62,6 +63,8 @@ export type HomePageData = {
     page: Promise<PageWithComponentData>;
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     categories: Promise<ShopperProducts.schemas['Category'][]>;
+    pageUrl: string;
+    ogImageUrl: string;
 };
 
 /**
@@ -72,6 +75,8 @@ export type HomePageData = {
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): HomePageData {
     const currency = args.context.get(currencyContext) as string;
+    const requestUrl = new URL(args.request.url);
+    const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
 
     return {
         page: fetchPageWithComponentData(args, {
@@ -83,6 +88,8 @@ export function loader(args: LoaderFunctionArgs): HomePageData {
             currency: currency ?? undefined,
         }),
         categories: fetchCategories(args.context, 'root', 1),
+        pageUrl,
+        ogImageUrl: new URL(hero01, requestUrl.origin).href,
     };
 }
 
@@ -139,6 +146,11 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
                 rawTitle
                 title={t('meta.title', { defaultValue: 'NextGen PWA Kit Store' })}
                 description={t('meta.description', { defaultValue: 'Welcome to our web store for high performers!' })}
+                openGraph={{
+                    type: 'website',
+                    url: loaderData.pageUrl,
+                    image: loaderData.ogImageUrl,
+                }}
             />
             {/* Header Banner Region - Region component handles its own Suspense internally */}
             <div>

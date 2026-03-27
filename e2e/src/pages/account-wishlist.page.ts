@@ -108,8 +108,7 @@ class AccountWishlistPage {
      */
     private async awaitWishlistRender(timeoutSeconds: number = 5): Promise<boolean> {
         try {
-            // CodeceptJS recorder returns a thenable despite the void typing
-            // eslint-disable-next-line @typescript-eslint/await-thenable
+            // eslint-disable-next-line @typescript-eslint/await-thenable -- CodeceptJS recorder returns a thenable despite the void typing
             await I.waitForElement(this.locators.wishlistItem, timeoutSeconds);
             return true;
         } catch {

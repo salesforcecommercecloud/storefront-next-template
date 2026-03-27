@@ -39,6 +39,7 @@ import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/ut
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
 import { generateCategorySchema } from '@/utils/category-schema';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 import {
     getInitialFiltersOpen,
     getSearchWithoutClientOnlyParams,
@@ -80,6 +81,7 @@ type CategoryPageData = {
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     page: Promise<PageWithComponentData | null>;
     categoryId: string;
+    pageUrl: string;
     refine: string[];
     currency: string;
     locale: string;
@@ -99,8 +101,9 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
         request,
         params: { categoryId = '' },
     } = args;
+    const requestUrl = new URL(request.url);
+    const { searchParams } = requestUrl;
     const logger = getLogger(context);
-    const { searchParams } = new URL(request.url);
     const offset = parseInt(getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.OFFSET) || '0', 10);
     const sort = getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.SORT);
     const refine = getAllQueryParams(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.REFINE);
@@ -156,13 +159,12 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
         currency,
     });
 
+    const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
+
     // Generate category schema in loader (server-side) for SEO
     const categorySchemaPromise = searchResultNonCritical
         .then((searchResult: ShopperSearch.schemas['ProductSearchResult']) => {
             try {
-                const url = new URL(request.url);
-                const pageUrl = `${url.origin}${url.pathname}${url.search}`;
-                // Validate inputs before generating schema
                 if (!categoryData || !searchResult) {
                     return null;
                 }
@@ -196,6 +198,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
             categoryId,
         }),
         categoryId,
+        pageUrl,
         refine: effectiveRefine,
         currency,
         locale,
@@ -243,6 +246,7 @@ export default function CategoryPage({
         searchResultNonCritical,
         page,
         categoryId,
+        pageUrl,
         refine,
         locale,
         currency,
@@ -340,6 +344,10 @@ export default function CategoryPage({
             <SeoMeta
                 title={category.name || category.id}
                 description={category.pageDescription || category.description}
+                openGraph={{
+                    type: 'website',
+                    url: pageUrl,
+                }}
             />
             <div className="pb-16">
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">

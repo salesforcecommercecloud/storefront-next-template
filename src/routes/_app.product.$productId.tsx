@@ -41,6 +41,7 @@ import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/ut
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
 import { generateProductSchema } from '@/utils/product-schema';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
@@ -73,6 +74,7 @@ export type ProductPageData = {
     category: Promise<ShopperProducts.schemas['Category'] | undefined>;
     page: Promise<PageWithComponentData>;
     pageKey: string;
+    pageUrl: string;
     productSchema: Promise<ReturnType<typeof generateProductSchema> | null>;
 };
 
@@ -86,7 +88,8 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
     const { request, params, context } = args;
     const logger = getLogger(context);
     const { productId = '' } = params;
-    const { searchParams } = new URL(request.url);
+    const requestUrl = new URL(request.url);
+    const { searchParams } = requestUrl;
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     const selectedStoreInfo = context.get(selectedStoreContext);
@@ -184,15 +187,14 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
         return undefined;
     });
 
+    const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
+
     // Generate product schema in loader (server-side) for SEO
     // This ensures it's available immediately and can be rendered outside Suspense
     const productSchemaPromise = productPromise
         .then((product) => {
             try {
-                // Construct absolute URL from request
-                const url = new URL(request.url);
-                const productUrl = `${url.origin}${url.pathname}${url.search}`;
-                return generateProductSchema(product, productUrl);
+                return generateProductSchema(product, pageUrl);
             } catch (error) {
                 logger.error('Error generating product schema in loader', {
                     error: error instanceof Error ? error : String(error),
@@ -214,6 +216,7 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
             productId: searchParams.get('pid') || productId,
         }),
         pageKey: productId,
+        pageUrl,
         productSchema: productSchemaPromise,
     };
 }
@@ -376,8 +379,9 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
                     <SeoMeta
                         title={productData.name}
                         description={productData.pageDescription || productData.shortDescription}
-                        twitter={{
-                            cardType: 'summary_large_image',
+                        openGraph={{
+                            type: 'product',
+                            url: loaderData.pageUrl,
                             image: primaryImage,
                         }}
                     />

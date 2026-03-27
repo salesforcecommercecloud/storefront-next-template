@@ -232,6 +232,8 @@ const renderComponent = (loaderDataOverrides?: Partial<HomePageData>) => {
         }),
         searchResult: Promise.resolve(mockSearchResult),
         categories: Promise.resolve(mockCategories),
+        pageUrl: 'http://localhost/',
+        ogImageUrl: 'http://localhost/mock-hero-01.webp',
     };
     const data = { ...defaultData, ...loaderDataOverrides };
     return render(<HomePage loaderData={data} />);

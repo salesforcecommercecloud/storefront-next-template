@@ -43,6 +43,7 @@ import { currencyContext } from '@/lib/currency';
 import CartSkeleton from '@/components/cart/cart-skeleton';
 import CartContent from '@/components/cart/cart-content';
 import { SeoMeta } from '@/components/seo-meta';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
@@ -63,6 +64,7 @@ type CartPageData = {
         storesByStoreId: Record<string, ShopperStores.schemas['Store']>;
     }>;
     basketSnapshot: BasketSnapshot | null;
+    pageUrl: string;
 };
 
 /**
@@ -275,7 +277,10 @@ async function fetchProductsInBasket(
  * @returns Promise resolving to cart page data with basket and product details
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export const loader: LoaderFunction = ({ context }: LoaderFunctionArgs): CartPageData => {
+export const loader: LoaderFunction = ({ context, request }: LoaderFunctionArgs): CartPageData => {
+    const requestUrl = new URL(request.url);
+    const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
+
     const basketPromise = getBasket(context, { ensureBasket: true }).then(
         (basketResult) => basketResult.current ?? ({} as ShopperBasketsV2.schemas['Basket'])
     );
@@ -316,6 +321,7 @@ export const loader: LoaderFunction = ({ context }: LoaderFunctionArgs): CartPag
     return {
         basketDataPromise,
         basketSnapshot,
+        pageUrl,
     };
 };
 
@@ -376,6 +382,7 @@ export default function Cart(): ReactElement {
                 description={t('meta.description', {
                     defaultValue: 'Review the items in your shopping cart and proceed to checkout.',
                 })}
+                openGraph={{ type: 'website', url: pageData.pageUrl }}
             />
             <Suspense
                 fallback={

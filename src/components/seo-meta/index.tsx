@@ -41,19 +41,34 @@ export interface SeoMetaProps {
     noIndex?: boolean;
     /** Override the default site name used in the title suffix. Defaults to the localized `common:defaultSiteName` translation. */
     siteName?: string;
-    /** Twitter Card metadata. Omit to skip Twitter Card tags entirely. */
+    /** X (formerly Twitter) Card metadata. Omit to skip Card tags entirely (unless `openGraph` is set, in which case Card tags are auto-derived). The `twitter:` meta tag prefix is part of the Card spec and is still used by X. */
     twitter?: {
         cardType?: 'summary' | 'summary_large_image';
+        image?: string;
+    };
+    /** Open Graph metadata for social sharing (Facebook, LinkedIn, etc.). When set without an explicit `twitter` prop, X (formerly Twitter) Card tags are auto-derived from the Open Graph values. */
+    openGraph?: {
+        /** The OG object type. Defaults to `'website'`. */
+        type?: 'website' | 'product' | 'article';
+        /** Canonical page URL. Should be an absolute URL matching the `<link rel="canonical">`. */
+        url?: string;
+        /** Primary image URL. Must be an absolute URL for social platforms to fetch. */
         image?: string;
     };
 }
 
 /**
- * Renders SEO `<title>` and `<meta>` tags using React 19 document metadata hoisting.
+ * Renders SEO `<title>`, `<meta>`, Open Graph, and X (formerly Twitter) Card tags using
+ * React 19 document metadata hoisting.
  *
  * Tags rendered anywhere in the component tree are automatically hoisted to `<head>`
- * and deduplicated (by `name` for `<meta>`, single instance for `<title>`).
+ * and deduplicated (by `name` for `<meta>`, by `property` for OG, single instance for `<title>`).
  * This works with streaming/Suspense — when data resolves, the tags are sent and hoisted.
+ *
+ * **X Card auto-derivation:** When `openGraph` is provided without an explicit `twitter` prop,
+ * X Card tags (`twitter:*` meta tags) are generated from the Open Graph values
+ * (`summary_large_image` if an image is present, `summary` otherwise). Pass `twitter`
+ * explicitly to override. The `twitter:` prefix is still the standard used by X's crawler.
  *
  * Usage: render `<SeoMeta>` inside any route component.
  *
@@ -61,9 +76,11 @@ export interface SeoMetaProps {
  * ```tsx
  * // Standard page — title gets the site name appended automatically
  * // Renders: <title>Classic Leather Jacket | NextGen PWA Kit Store</title>
+ * // Product page with OG + auto-derived X Card
  * <SeoMeta
  *     title="Classic Leather Jacket"
  *     description="Premium leather jacket with a tailored fit."
+ *     openGraph={{ type: 'product', url: 'https://store.com/product/jacket', image: 'https://...' }}
  * />
  *
  * // Full control over title (e.g., homepage) — no site name suffix
@@ -75,21 +92,37 @@ export interface SeoMetaProps {
  * <SeoMeta title="Order History" noIndex />
  * ```
  */
-export function SeoMeta({ title, rawTitle, description, noIndex, twitter, siteName }: SeoMetaProps) {
+export function SeoMeta({ title, rawTitle, description, noIndex, twitter, openGraph, siteName }: SeoMetaProps) {
     const { t } = useTranslation('common');
     const resolvedSiteName = siteName ?? t(DEFAULT_SITE_NAME_KEY);
     const fullTitle = title ? (rawTitle ? title : `${title} | ${resolvedSiteName}`) : resolvedSiteName;
+    const socialTitle = title || resolvedSiteName;
+
+    const renderTwitter = twitter || openGraph;
+    const twitterCardType = twitter?.cardType ?? (openGraph?.image ? 'summary_large_image' : 'summary');
+    const twitterImage = twitter?.image ?? openGraph?.image;
+
     return (
         <>
             <title>{fullTitle}</title>
             {description && <meta name="description" content={description} />}
             {noIndex && <meta name="robots" content="noindex" />}
-            {twitter && (
+            {openGraph && (
                 <>
-                    <meta name="twitter:card" content={twitter.cardType ?? 'summary'} />
-                    <meta name="twitter:title" content={title || resolvedSiteName} />
+                    <meta property="og:title" content={socialTitle} />
+                    {description && <meta property="og:description" content={description} />}
+                    <meta property="og:type" content={openGraph.type ?? 'website'} />
+                    {openGraph.url && <meta property="og:url" content={openGraph.url} />}
+                    {openGraph.image && <meta property="og:image" content={openGraph.image} />}
+                    <meta property="og:site_name" content={resolvedSiteName} />
+                </>
+            )}
+            {renderTwitter && (
+                <>
+                    <meta name="twitter:card" content={twitterCardType} />
+                    <meta name="twitter:title" content={socialTitle} />
                     {description && <meta name="twitter:description" content={description} />}
-                    {twitter.image && <meta name="twitter:image" content={twitter.image} />}
+                    {twitterImage && <meta name="twitter:image" content={twitterImage} />}
                 </>
             )}
         </>

@@ -834,6 +834,7 @@ describe('Login Route', () => {
                 mode: 'password',
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: true,
+                pageUrl: 'http://localhost/login',
             });
 
             expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -854,6 +855,7 @@ describe('Login Route', () => {
                 mode: 'password',
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: true,
+                pageUrl: 'http://localhost/login',
             });
 
             await user.type(screen.getByLabelText(/email/i), 'test@example.com');
@@ -874,6 +876,7 @@ describe('Login Route', () => {
                 mode: 'passwordless',
                 isPasswordlessLoginEnabled: true,
                 isSocialLoginEnabled: true,
+                pageUrl: 'http://localhost/login',
             });
 
             expect(screen.getByTestId('passwordless-form')).toBeInTheDocument();
@@ -887,6 +890,7 @@ describe('Login Route', () => {
                 mode: 'password',
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: false,
+                pageUrl: 'http://localhost/login',
             });
 
             expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -900,6 +904,7 @@ describe('Login Route', () => {
                 mode: 'password',
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: true,
+                pageUrl: 'http://localhost/login',
             });
 
             expect(screen.queryByText('An error occurred. Please try again.')).not.toBeInTheDocument();

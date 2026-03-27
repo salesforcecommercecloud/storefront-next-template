@@ -38,7 +38,7 @@ const CHECKOUT_PERFORMANCE_BUDGET = {
 Scenario('Checkout page meets Web Vitals performance budgets', async ({ I }) => {
     I.amOnPage(buildSitePath('/checkout'));
 
-    // eslint-disable-next-line @typescript-eslint/await-thenable -- usePlaywrightTo returns Thenable at runtime
+    // eslint-disable-next-line @typescript-eslint/await-thenable -- CodeceptJS recorder returns a thenable despite the void typing
     await I.usePlaywrightTo('capture performance metrics', async ({ page }) => {
         await waitForPageStable(page);
         const metrics = await capturePerformanceMetrics(page);
@@ -72,7 +72,7 @@ Scenario('Checkout page meets Web Vitals performance budgets', async ({ I }) => 
 Scenario('Checkout code splitting loads correctly without blocking', async ({ I }) => {
     I.amOnPage(buildSitePath('/checkout'));
 
-    // eslint-disable-next-line @typescript-eslint/await-thenable -- usePlaywrightTo returns Thenable at runtime
+    // eslint-disable-next-line @typescript-eslint/await-thenable -- CodeceptJS recorder returns a thenable despite the void typing
     await I.usePlaywrightTo('check code splitting', async ({ page }) => {
         await waitForPageStable(page);
         const metrics = await capturePerformanceMetrics(page);
@@ -91,7 +91,7 @@ Scenario('Checkout code splitting loads correctly without blocking', async ({ I 
 Scenario('Checkout page has minimal layout shifts', async ({ I }) => {
     I.amOnPage(buildSitePath('/checkout'));
 
-    // eslint-disable-next-line @typescript-eslint/await-thenable -- usePlaywrightTo returns Thenable at runtime
+    // eslint-disable-next-line @typescript-eslint/await-thenable -- CodeceptJS recorder returns a thenable despite the void typing
     await I.usePlaywrightTo('check layout stability', async ({ page }) => {
         await waitForPageStable(page);
         const metrics = await capturePerformanceMetrics(page);

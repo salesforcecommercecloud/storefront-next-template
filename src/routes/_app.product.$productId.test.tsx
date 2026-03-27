@@ -310,6 +310,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -335,6 +336,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -355,6 +357,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -372,6 +375,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -399,6 +403,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -412,6 +417,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -433,6 +439,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
+import type { LoaderFunctionArgs } from 'react-router';
 import { Link } from '@/components/link';
 import {
     Breadcrumb,
@@ -27,6 +28,7 @@ import ContentCard from '@/components/content-card';
 import Contact from '@/components/contact';
 import { Typography } from '@/components/typography';
 import { SeoMeta } from '@/components/seo-meta';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { PageType } from '@/lib/decorators/page-type';
 import { useTranslation } from 'react-i18next';
 import visionImage from '/images/hero-02.webp';
@@ -38,6 +40,20 @@ import visionImage from '/images/hero-02.webp';
 })
 export class AboutUsPageMetadata {}
 
+type AboutUsPageData = {
+    pageUrl: string;
+    ogImageUrl: string;
+};
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function loader({ request }: LoaderFunctionArgs): AboutUsPageData {
+    const requestUrl = new URL(request.url);
+    return {
+        pageUrl: buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search),
+        ogImageUrl: new URL(visionImage, requestUrl.origin).href,
+    };
+}
+
 /**
  * About Us page component that displays company information
  *
@@ -48,7 +64,7 @@ export class AboutUsPageMetadata {}
  * Header and Footer are automatically included from the root layout.
  * @returns JSX element representing the About Us page
  */
-export default function AboutUs(): ReactElement {
+export default function AboutUs({ loaderData }: { loaderData: AboutUsPageData }): ReactElement {
     const { t } = useTranslation('aboutUs');
 
     return (
@@ -58,6 +74,7 @@ export default function AboutUs(): ReactElement {
                 description={t('meta.description', {
                     defaultValue: 'Learn more about our story, mission, and the team behind the store.',
                 })}
+                openGraph={{ type: 'article', url: loaderData.pageUrl, image: loaderData.ogImageUrl }}
             />
             <div className="max-w-screen-2xl mx-auto px-4 pb-6">
                 {/* Breadcrumb */}

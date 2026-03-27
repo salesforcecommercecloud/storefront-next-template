@@ -34,6 +34,7 @@ import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { SeoMeta } from '@/components/seo-meta';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
 import {
     getInitialFiltersOpen,
@@ -73,7 +74,8 @@ export type SearchPageData = {
     searchTerm: string;
     searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    page: Promise<PageWithComponentData | null>;
+    page: Promise<PageWithComponentData>;
+    pageUrl: string;
     refine: string[];
     currency: string;
     locale: string;
@@ -88,7 +90,8 @@ export type SearchPageData = {
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> {
     const { context, request } = args;
-    const { searchParams } = new URL(request.url);
+    const requestUrl = new URL(request.url);
+    const { searchParams } = requestUrl;
     const offset = parseInt(searchParams.get('offset') || '0', 10);
     const q = searchParams.get('q') ?? '';
     const sort = searchParams.get('sort') ?? '';
@@ -112,6 +115,8 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
         currency,
     });
 
+    const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
+
     return {
         searchTerm: q,
         searchResultCritical,
@@ -126,6 +131,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
         page: fetchPageWithComponentData(args, {
             pageId: 'search',
         }),
+        pageUrl,
         refine,
         currency,
         locale,
@@ -153,6 +159,7 @@ export default function SearchPage({
         searchResultCritical,
         searchResultNonCritical,
         page,
+        pageUrl,
         refine,
         currency,
         locale,
@@ -260,6 +267,7 @@ export default function SearchPage({
                           })
                         : t('meta.description', { defaultValue: 'Search our store for products' })
                 }
+                openGraph={{ type: 'website', url: pageUrl }}
             />
             <div className="pb-16">
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -64,7 +64,7 @@ it('preserves view param', () => {
 
 ## Page Titles and Meta Tags (`SeoMeta`)
 
-Each route renders a `<SeoMeta>` component that sets the page `<title>`, `<meta name="description">`, and optional Twitter Card tags. The component is defined in [`src/components/seo-meta/index.tsx`](../src/components/seo-meta/index.tsx) and uses React 19 document metadata hoisting, which means tags rendered anywhere in the component tree are automatically hoisted to `<head>` and deduplicated. This works with streaming/Suspense — tags are sent when data resolves.
+Each route renders a `<SeoMeta>` component that sets the page `<title>`, `<meta name="description">`, Open Graph tags, and optional X (formerly Twitter) Card tags. The component is defined in [`src/components/seo-meta/index.tsx`](../src/components/seo-meta/index.tsx) and uses React 19 document metadata hoisting, which means tags rendered anywhere in the component tree are automatically hoisted to `<head>` and deduplicated. This works with streaming/Suspense — tags are sent when data resolves.
 
 ### Basic Usage
 
@@ -88,7 +88,7 @@ import { SeoMeta } from '@/components/seo-meta';
 | `description` | `string` | — | Meta description |
 | `noIndex` | `boolean` | `false` | Adds `<meta name="robots" content="noindex">` |
 | `siteName` | `string` | `t('common:defaultSiteName')` | Override the site name used in the title suffix |
-| `twitter` | `object` | — | Twitter Card metadata (`cardType`, `image`) |
+| `twitter` | `object` | — | X (formerly Twitter) Card metadata (`cardType`, `image`). The `twitter:` meta tag prefix is part of the Card spec and is still used by X. |
 
 ### Title Modes
 

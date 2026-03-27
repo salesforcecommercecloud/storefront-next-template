@@ -22,6 +22,10 @@ function getMeta(name: string) {
     return document.head.querySelector(`meta[name="${name}"]`);
 }
 
+function getMetaProperty(property: string) {
+    return document.head.querySelector(`meta[property="${property}"]`);
+}
+
 describe('SeoMeta', () => {
     describe('title', () => {
         test('renders title with site name suffix', () => {
@@ -80,7 +84,7 @@ describe('SeoMeta', () => {
         });
     });
 
-    describe('twitter card', () => {
+    describe('X (formerly Twitter) card', () => {
         test('renders twitter card tags', () => {
             render(
                 <SeoMeta
@@ -106,10 +110,116 @@ describe('SeoMeta', () => {
             expect(getMeta('twitter:image')).not.toBeInTheDocument();
         });
 
-        test('does not render twitter tags when twitter prop is omitted', () => {
+        test('does not render twitter tags when neither twitter nor openGraph is provided', () => {
             render(<SeoMeta title="Page" />);
             expect(getMeta('twitter:card')).not.toBeInTheDocument();
             expect(getMeta('twitter:title')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('open graph', () => {
+        test('renders OG tags with all properties', () => {
+            render(
+                <SeoMeta
+                    title="Leather Jacket"
+                    description="Premium leather jacket with a tailored fit."
+                    openGraph={{
+                        type: 'product',
+                        url: 'https://store.com/product/jacket',
+                        image: 'https://img.example.com/jacket.jpg',
+                    }}
+                />
+            );
+
+            expect(getMetaProperty('og:title')).toHaveAttribute('content', 'Leather Jacket');
+            expect(getMetaProperty('og:description')).toHaveAttribute(
+                'content',
+                'Premium leather jacket with a tailored fit.'
+            );
+            expect(getMetaProperty('og:type')).toHaveAttribute('content', 'product');
+            expect(getMetaProperty('og:url')).toHaveAttribute('content', 'https://store.com/product/jacket');
+            expect(getMetaProperty('og:image')).toHaveAttribute('content', 'https://img.example.com/jacket.jpg');
+            expect(getMetaProperty('og:site_name')).toHaveAttribute('content', 'Storefront Next: Market Street');
+        });
+
+        test('defaults og:type to website when not specified', () => {
+            render(<SeoMeta title="Home" openGraph={{}} />);
+            expect(getMetaProperty('og:type')).toHaveAttribute('content', 'website');
+        });
+
+        test('omits og:url when not provided', () => {
+            render(<SeoMeta title="Page" openGraph={{ type: 'article' }} />);
+            expect(getMetaProperty('og:url')).not.toBeInTheDocument();
+        });
+
+        test('omits og:image when not provided', () => {
+            render(<SeoMeta title="Page" openGraph={{}} />);
+            expect(getMetaProperty('og:image')).not.toBeInTheDocument();
+        });
+
+        test('omits og:description when description is not provided', () => {
+            render(<SeoMeta title="Page" openGraph={{}} />);
+            expect(getMetaProperty('og:description')).not.toBeInTheDocument();
+        });
+
+        test('uses site name as og:title fallback when title is not provided', () => {
+            render(<SeoMeta openGraph={{}} />);
+            expect(getMetaProperty('og:title')).toHaveAttribute('content', 'Storefront Next: Market Street');
+        });
+
+        test('uses custom site name for og:site_name', () => {
+            render(<SeoMeta title="Page" siteName="My Brand" openGraph={{}} />);
+            expect(getMetaProperty('og:site_name')).toHaveAttribute('content', 'My Brand');
+        });
+
+        test('does not render OG tags when openGraph is not provided', () => {
+            render(<SeoMeta title="Page" />);
+            expect(getMetaProperty('og:title')).not.toBeInTheDocument();
+            expect(getMetaProperty('og:type')).not.toBeInTheDocument();
+            expect(getMetaProperty('og:site_name')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('X Card auto-derivation from openGraph', () => {
+        test('auto-derives twitter tags from openGraph when twitter is not provided', () => {
+            render(
+                <SeoMeta
+                    title="Jacket"
+                    description="Nice jacket"
+                    openGraph={{
+                        type: 'product',
+                        image: 'https://img.example.com/jacket.jpg',
+                    }}
+                />
+            );
+
+            expect(getMeta('twitter:card')).toHaveAttribute('content', 'summary_large_image');
+            expect(getMeta('twitter:title')).toHaveAttribute('content', 'Jacket');
+            expect(getMeta('twitter:description')).toHaveAttribute('content', 'Nice jacket');
+            expect(getMeta('twitter:image')).toHaveAttribute('content', 'https://img.example.com/jacket.jpg');
+        });
+
+        test('defaults to summary card when openGraph has no image', () => {
+            render(<SeoMeta title="Page" openGraph={{}} />);
+            expect(getMeta('twitter:card')).toHaveAttribute('content', 'summary');
+            expect(getMeta('twitter:image')).not.toBeInTheDocument();
+        });
+
+        test('explicit twitter prop overrides auto-derived values while OG tags render independently', () => {
+            render(
+                <SeoMeta
+                    title="Jacket"
+                    description="Nice jacket"
+                    openGraph={{ image: 'https://img.example.com/og.jpg' }}
+                    twitter={{ cardType: 'summary', image: 'https://img.example.com/twitter.jpg' }}
+                />
+            );
+
+            expect(getMeta('twitter:card')).toHaveAttribute('content', 'summary');
+            expect(getMeta('twitter:image')).toHaveAttribute('content', 'https://img.example.com/twitter.jpg');
+
+            expect(getMetaProperty('og:image')).toHaveAttribute('content', 'https://img.example.com/og.jpg');
+            expect(getMetaProperty('og:title')).toHaveAttribute('content', 'Jacket');
         });
     });
 });

@@ -349,6 +349,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 initialFiltersOpen: true,
                 refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             const closedLoaderData: SearchPageData = {
@@ -394,6 +395,7 @@ describe('SearchPage', () => {
                 locale: 'en-US',
                 initialFiltersOpen: false,
                 refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -426,6 +428,7 @@ describe('SearchPage', () => {
                 currency: 'USD',
                 locale: 'en-US',
                 refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -463,6 +466,7 @@ describe('SearchPage', () => {
                 currency: 'USD',
                 locale: 'en-US',
                 refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -489,6 +493,7 @@ describe('SearchPage', () => {
                 currency: 'USD',
                 locale: 'en-US',
                 refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -513,6 +518,7 @@ describe('SearchPage', () => {
                 currency: 'USD',
                 locale: 'en-US',
                 refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -537,6 +543,7 @@ describe('SearchPage', () => {
                 currency: 'USD',
                 locale: 'en-US',
                 refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -569,6 +576,7 @@ describe('SearchPage', () => {
                 currency: 'USD',
                 locale: 'en-US',
                 refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -603,6 +611,7 @@ describe('SearchPage', () => {
                 currency: 'USD',
                 locale: 'en-US',
                 refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -640,6 +649,7 @@ describe('SearchPage', () => {
                 currency: 'USD',
                 locale: 'en-US',
                 refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(

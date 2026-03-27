@@ -763,6 +763,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 initialFiltersOpen: true,
                 categorySchema: Promise.resolve(null),
             };
@@ -810,6 +811,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 initialFiltersOpen: false,
                 categorySchema: Promise.resolve(null),
             };
@@ -845,6 +847,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve({
                     '@context': 'https://schema.org',
                     '@type': 'CollectionPage',
@@ -892,6 +895,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -919,6 +923,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -946,6 +951,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -972,6 +978,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -1012,6 +1019,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -1041,6 +1049,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve({
                     '@context': 'https://schema.org',
                     '@type': 'CollectionPage',
@@ -1071,6 +1080,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -1104,6 +1114,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -1142,6 +1153,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
