@@ -735,6 +735,28 @@
                 "saveSuccess": "Preferenze di ritiro salvate con successo"
             }
         },
+        "overview": {
+            "welcomeBack": "Bentornato, {{name}}!",
+            "welcomeSubtitle": "Gestisca il Suo account, visualizzi gli ordini e scopra raccomandazioni personalizzate.",
+            "defaultName": "ospite",
+            "quickLinks": {
+                "title": "Collegamenti rapidi",
+                "accountDetailsDesc": "Visualizza e modifica il tuo profilo",
+                "orderHistoryDesc": "Monitora i tuoi ordini",
+                "wishlistDesc": "Articoli che hai salvato",
+                "addressesDesc": "Gestisci i tuoi indirizzi"
+            },
+            "curatedForYou": {
+                "title": "Selezionato per te"
+            },
+            "appDownload": {
+                "title": "Scarica la nostra app",
+                "description": "Ottieni la migliore esperienza di shopping in movimento. Accedi a offerte esclusive, monitora gli ordini e acquista più velocemente.",
+                "appStore": "App Store",
+                "googlePlay": "Google Play",
+                "qrCode": "Codice QR"
+            }
+        },
         "wishlist": {
             "pageTitle": "La mia lista desideri",
             "pageSubtitle": "I Suoi articoli salvati per dopo",

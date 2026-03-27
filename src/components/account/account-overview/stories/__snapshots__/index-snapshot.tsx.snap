@@ -41,6 +41,76 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
       class="p-6"
       data-slot="card-content"
     >
+      <div
+        class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+      >
+        <div
+          class="flex-1"
+        >
+          <h2
+            class="tracking-tight text-left text-[length:var(--account-section-header)] font-semibold text-foreground mb-2"
+          >
+            Download Our App
+          </h2>
+          <p
+            class="text-sm text-muted-foreground mb-6"
+          >
+            Get the best shopping experience on the go. Access exclusive deals, track orders, and shop faster.
+          </p>
+          <div
+            class="flex flex-wrap gap-3 items-center"
+          >
+            <img
+              alt="App Store"
+              aria-label="App Store"
+              class="h-10 w-auto"
+              src="/images/app-store-badge.svg"
+            />
+            <img
+              alt="Google Play"
+              aria-label="Google Play"
+              class="h-10 w-auto"
+              src="/images/google-play-badge.svg"
+            />
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center gap-2 lg:flex-shrink-0"
+        >
+          <div
+            class="w-32 h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border"
+          >
+            <svg
+              class="w-16 h-16 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            QR Code
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
       <h2
         class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4"
       >
@@ -241,6 +311,76 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
       class="p-6"
       data-slot="card-content"
     />
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
+      <div
+        class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+      >
+        <div
+          class="flex-1"
+        >
+          <h2
+            class="tracking-tight text-left text-[length:var(--account-section-header)] font-semibold text-foreground mb-2"
+          >
+            Download Our App
+          </h2>
+          <p
+            class="text-sm text-muted-foreground mb-6"
+          >
+            Get the best shopping experience on the go. Access exclusive deals, track orders, and shop faster.
+          </p>
+          <div
+            class="flex flex-wrap gap-3 items-center"
+          >
+            <img
+              alt="App Store"
+              aria-label="App Store"
+              class="h-10 w-auto"
+              src="/images/app-store-badge.svg"
+            />
+            <img
+              alt="Google Play"
+              aria-label="Google Play"
+              class="h-10 w-auto"
+              src="/images/google-play-badge.svg"
+            />
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center gap-2 lg:flex-shrink-0"
+        >
+          <div
+            class="w-32 h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border"
+          >
+            <svg
+              class="w-16 h-16 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            QR Code
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
   <div
     class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
@@ -722,6 +862,56 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
               data-slot="skeleton"
             />
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
+      <div
+        class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+      >
+        <div
+          class="flex-1"
+        >
+          <div
+            class="bg-accent animate-pulse rounded-md h-7 w-48 mb-2"
+            data-slot="skeleton"
+          />
+          <div
+            class="bg-accent animate-pulse rounded-md h-4 w-full max-w-xl mb-6"
+            data-slot="skeleton"
+          />
+          <div
+            class="flex flex-wrap gap-3"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-12 w-32"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-12 w-36"
+              data-slot="skeleton"
+            />
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center gap-2 lg:flex-shrink-0"
+        >
+          <div
+            class="bg-accent animate-pulse w-40 h-40 rounded-lg"
+            data-slot="skeleton"
+          />
+          <div
+            class="bg-accent animate-pulse rounded-md h-4 w-16"
+            data-slot="skeleton"
+          />
         </div>
       </div>
     </div>

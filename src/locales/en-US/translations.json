@@ -780,6 +780,13 @@
             "curatedForYou": {
                 "title": "Curated for You",
                 "subtitle": "Picked for you based on your activity"
+            },
+            "appDownload": {
+                "title": "Download Our App",
+                "description": "Get the best shopping experience on the go. Access exclusive deals, track orders, and shop faster.",
+                "appStore": "App Store",
+                "googlePlay": "Google Play",
+                "qrCode": "QR Code"
             }
         },
         "wishlist": {

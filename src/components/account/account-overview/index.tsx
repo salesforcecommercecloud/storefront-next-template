@@ -23,6 +23,7 @@ import { User, CreditCard, Receipt, MapPin } from 'lucide-react';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
 import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
+import { AppDownloadSection } from '@/components/account/app-download-section';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -217,8 +218,35 @@ export function AccountOverview({ customer }: AccountOverviewProps): ReactElemen
         <div className="space-y-5">
             <WelcomeSection customer={customer} />
             <CuratedForYouSection />
+            <AppDownloadSection />
             <QuickLinksSection />
         </div>
+    );
+}
+
+/**
+ * Skeleton for the App Download section
+ */
+export function AppDownloadSectionSkeleton(): ReactElement {
+    return (
+        <Card className="py-0">
+            <CardContent className="p-6">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div className="flex-1">
+                        <Skeleton className="h-7 w-48 mb-2" />
+                        <Skeleton className="h-4 w-full max-w-xl mb-6" />
+                        <div className="flex flex-wrap gap-3">
+                            <Skeleton className="h-12 w-32" />
+                            <Skeleton className="h-12 w-36" />
+                        </div>
+                    </div>
+                    <div className="flex flex-col items-center gap-2 lg:flex-shrink-0">
+                        <Skeleton className="w-40 h-40 rounded-lg" />
+                        <Skeleton className="h-4 w-16" />
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -230,6 +258,7 @@ export function AccountOverviewSkeleton(): ReactElement {
         <div className="space-y-5">
             <WelcomeSectionSkeleton />
             <CuratedForYouSectionSkeleton />
+            <AppDownloadSectionSkeleton />
             <QuickLinksSectionSkeleton />
         </div>
     );
