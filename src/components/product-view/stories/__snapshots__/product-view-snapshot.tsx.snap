@@ -145,9 +145,63 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
         class="order-2"
       >
         <div
-          class="grid gap-4"
+          class="relative grid gap-4"
         >
-          <div>
+          <div
+            class="absolute top-0 right-0 flex items-center gap-2 z-10"
+          >
+            <button
+              aria-label="Add to Wishlist"
+              class="absolute top-2 right-2 z-10 w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed !static border border-border bg-background/90 shadow-none hover:border-muted-foreground/50 hover:bg-background"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 transition-all duration-200 ease-in-out text-muted-foreground scale-100"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+            </button>
+            <button
+              aria-label="Share"
+              class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 !static border border-border bg-background/90 shadow-none hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 text-muted-foreground transition-all duration-200 ease-in-out"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+                />
+                <polyline
+                  points="16 6 12 2 8 6"
+                />
+                <line
+                  x1="12"
+                  x2="12"
+                  y1="2"
+                  y2="15"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="pr-20"
+          >
             <h1
               class="text-2xl lg:text-3xl font-medium text-foreground tracking-tight"
               data-testid="product-title"
@@ -171,7 +225,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
             class="relative mt-2 inline-block"
           >
             <div
-              aria-controls="radix-_r_0_"
+              aria-controls="radix-_r_2_"
               aria-haspopup="dialog"
               class="relative inline-block"
               data-slot="popover-trigger"
@@ -578,32 +632,6 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 type="button"
               >
                 Learn more
-              </button>
-            </div>
-            <div
-              class="grid grid-cols-2 gap-3"
-            >
-              <button
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
-                data-size="lg"
-                data-slot="button"
-                data-variant="outline"
-              >
-                Add to Wishlist
-              </button>
-              <button
-                aria-expanded="false"
-                aria-haspopup="menu"
-                aria-label="Share"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
-                data-size="lg"
-                data-slot="dropdown-menu-trigger"
-                data-state="closed"
-                data-variant="outline"
-                id="radix-_r_8_"
-                type="button"
-              >
-                Share
               </button>
             </div>
           </div>
@@ -849,9 +877,63 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
         class="order-2"
       >
         <div
-          class="grid gap-4"
+          class="relative grid gap-4"
         >
-          <div>
+          <div
+            class="absolute top-0 right-0 flex items-center gap-2 z-10"
+          >
+            <button
+              aria-label="Add to Wishlist"
+              class="absolute top-2 right-2 z-10 w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed !static border border-border bg-background/90 shadow-none hover:border-muted-foreground/50 hover:bg-background"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 transition-all duration-200 ease-in-out text-muted-foreground scale-100"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+            </button>
+            <button
+              aria-label="Share"
+              class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 !static border border-border bg-background/90 shadow-none hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 text-muted-foreground transition-all duration-200 ease-in-out"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+                />
+                <polyline
+                  points="16 6 12 2 8 6"
+                />
+                <line
+                  x1="12"
+                  x2="12"
+                  y1="2"
+                  y2="15"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="pr-20"
+          >
             <h1
               class="text-2xl lg:text-3xl font-medium text-foreground tracking-tight"
               data-testid="product-title"
@@ -875,7 +957,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
             class="relative mt-2 inline-block"
           >
             <div
-              aria-controls="radix-_r_a_"
+              aria-controls="radix-_r_c_"
               aria-haspopup="dialog"
               class="relative inline-block"
               data-slot="popover-trigger"
@@ -1282,32 +1364,6 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                 type="button"
               >
                 Learn more
-              </button>
-            </div>
-            <div
-              class="grid grid-cols-2 gap-3"
-            >
-              <button
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
-                data-size="lg"
-                data-slot="button"
-                data-variant="outline"
-              >
-                Add to Wishlist
-              </button>
-              <button
-                aria-expanded="false"
-                aria-haspopup="menu"
-                aria-label="Share"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
-                data-size="lg"
-                data-slot="dropdown-menu-trigger"
-                data-state="closed"
-                data-variant="outline"
-                id="radix-_r_i_"
-                type="button"
-              >
-                Share
               </button>
             </div>
           </div>

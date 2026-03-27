@@ -139,7 +139,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -439,7 +439,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -739,7 +739,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -1039,7 +1039,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -1339,7 +1339,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -1639,7 +1639,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -1939,7 +1939,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -2239,7 +2239,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -2651,7 +2651,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -2951,7 +2951,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -3251,7 +3251,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -3551,7 +3551,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -3851,7 +3851,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -4151,7 +4151,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -4451,7 +4451,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -4751,7 +4751,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -5156,7 +5156,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -5456,7 +5456,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -5756,7 +5756,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -6056,7 +6056,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -6356,7 +6356,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -6656,7 +6656,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -6956,7 +6956,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg
@@ -7256,7 +7256,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         >
                           <button
                             aria-label="Add to Wishlist"
-                            class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                            class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                             tabindex="-1"
                           >
                             <svg

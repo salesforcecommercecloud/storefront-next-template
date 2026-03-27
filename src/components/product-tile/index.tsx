@@ -413,7 +413,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                                     product={product}
                                     size="sm"
                                     tabIndex={-1}
-                                    className="relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm"
+                                    className="relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
                                 />
                             </div>
                         </div>

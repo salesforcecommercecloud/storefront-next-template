@@ -102,12 +102,13 @@ export const Default: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
+
+        // Verify Add to Cart button exists and is enabled
         const addToCartButton = canvas.getByRole('button', { name: /add to cart/i });
         await expect(addToCartButton).toBeInTheDocument();
         await expect(addToCartButton).toBeEnabled();
 
-        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist/i });
-        await expect(wishlistButton).toBeInTheDocument();
+        // Note: Wishlist button is rendered in ProductInfo component, not ProductCartActions
     },
 };
 

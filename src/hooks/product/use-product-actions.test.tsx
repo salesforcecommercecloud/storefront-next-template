@@ -625,17 +625,6 @@ describe('useProductActions', () => {
 
                 expect(result.current.isAddingToOrUpdatingCart).toBe(false);
             });
-
-            test('isAddingToWishlist starts as false', () => {
-                const { result } = renderHook(
-                    () => useProductActions({ product: standardProd, currentVariant: null }),
-                    {
-                        wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
-                    }
-                );
-
-                expect(result.current.isAddingToWishlist).toBe(false);
-            });
         });
 
         describe('basket item lookup', () => {

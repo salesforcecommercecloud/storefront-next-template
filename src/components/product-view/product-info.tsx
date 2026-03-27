@@ -30,6 +30,8 @@ import InventoryMessage from '../inventory-message';
 import { ProductRatingSummary } from './product-rating-summary';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { useTranslation } from 'react-i18next';
+import { WishlistButton } from '@/components/buttons/wishlist-button';
+import { ShareButton } from '@/components/buttons/share-button';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
 
@@ -119,7 +121,28 @@ export default function ProductInfo({
         : variationAttributes;
 
     return (
-        <div className="grid gap-4">
+        <div className="relative grid gap-4">
+            {/* Action icons — top-right */}
+            {!isCompactStyle && (
+                <div className="absolute top-0 right-0 flex items-center gap-2 z-10">
+                    <WishlistButton
+                        product={{
+                            productId: product.id,
+                            productName: product.name,
+                            price: product.price,
+                            image: product.imageGroups?.[0]?.images?.[0],
+                        }}
+                        size="sm"
+                        className="!static border border-border bg-background/90 shadow-none hover:border-muted-foreground/50 hover:bg-background"
+                    />
+                    <ShareButton
+                        product={product}
+                        size="sm"
+                        className="!static border border-border bg-background/90 shadow-none hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
+                    />
+                </div>
+            )}
+
             {/* Compact style: brand (uppercase) then product name */}
             {isCompactStyle && (
                 <>
@@ -134,7 +157,7 @@ export default function ProductInfo({
 
             {/* Product Title, SKU, Description */}
             {!isCompactStyle && (
-                <div>
+                <div className="pr-20">
                     <h1
                         data-testid="product-title"
                         className="text-2xl lg:text-3xl font-medium text-foreground tracking-tight">

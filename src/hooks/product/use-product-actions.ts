@@ -100,7 +100,6 @@ export function useProductActions({
     const isProductABundle = isProductBundle(product);
 
     const [isAddingToOrUpdatingCart, setIsAddingToOrUpdatingCart] = useState(false);
-    const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
     const hasHandledWishlistResponseRef = useRef(false);
     const [quantity, setQuantity] = useState(initialQuantity ?? 1);
 
@@ -355,38 +354,6 @@ export function useProductActions({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAddingToOrUpdatingCart, bundleFetcher.data]);
 
-    // Generic pending action tracker (after auth redirect)
-    // This tracks when actions are automatically executed after login
-    // Uses URL params directly - if URL has action params for this product, action is executing
-    const productToCheck = isMasterOrVariantProduct ? currentVariant : product;
-    const currentProductId = getProductId(productToCheck);
-
-    useEffect(() => {
-        if (!currentProductId) {
-            return;
-        }
-
-        // Check URL params to see if wishlist action is executing for this product
-        const urlParams = new URLSearchParams(location.search);
-        const urlAction = urlParams.get('action');
-        const urlActionParamsStr = urlParams.get('actionParams');
-
-        let isPendingWishlistAction = false;
-        if (urlAction === 'addToWishlist' && urlActionParamsStr) {
-            try {
-                const urlActionParams = JSON.parse(urlActionParamsStr);
-                const urlProductId = urlActionParams.productId;
-                isPendingWishlistAction = urlProductId === currentProductId;
-            } catch {
-                // Invalid JSON - ignore
-            }
-        }
-
-        // Show loading state if URL indicates action is executing for this product
-        // Always sync state with URL params - don't check current state to avoid timing issues
-        setIsAddingToWishlist(isPendingWishlistAction);
-    }, [currentProductId, location.search]);
-
     // Handle wishlist fetcher response (for both direct clicks and component-executed pending actions)
     useEffect(() => {
         // Check if this is a pending action (from URL params)
@@ -418,7 +385,6 @@ export function useProductActions({
 
         if (result?.success) {
             hasHandledWishlistResponseRef.current = true;
-            setIsAddingToWishlist(false);
 
             // If this was a pending action, clear URL params after successful execution
             if (isPendingAction) {
@@ -440,7 +406,6 @@ export function useProductActions({
             }
         } else if (result?.success === false || result?.error) {
             hasHandledWishlistResponseRef.current = true;
-            setIsAddingToWishlist(false);
 
             // If this was a pending action, clear URL params even on error
             if (isPendingAction) {
@@ -449,16 +414,9 @@ export function useProductActions({
 
             addToast(result.error || t('product:failedToAddProductToWishlist'), 'error');
         }
-        //As addToast, setIsAddingToWishlist, navigate are unlikely to change, we don't need to include them in the dependency array
+        //As addToast, navigate are unlikely to change, we don't need to include them in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        isAddingToWishlist,
-        wishlistFetcher.data,
-        wishlistFetcher.state,
-        product.name,
-        location.pathname,
-        location.search,
-    ]);
+    }, [wishlistFetcher.data, wishlistFetcher.state, product.name, location.pathname, location.search]);
 
     // Handle adding to cart
     const handleAddToCart = useCallback(async () => {
@@ -542,8 +500,8 @@ export function useProductActions({
     const createProductActionHandler = useCallback(
         <TParams extends Record<string, unknown> = Record<string, unknown>>(config: {
             actionRoute: string;
-            isLoading: boolean;
-            setLoading: (loading: boolean) => void;
+            isLoading?: boolean;
+            setLoading?: (loading: boolean) => void;
             fetcher: ReturnType<typeof useFetcher>;
             errorMessage: string;
             buildFormData: (params: TParams) => FormData | Record<string, string>;
@@ -569,7 +527,7 @@ export function useProductActions({
                     return;
                 }
 
-                setLoading(true);
+                setLoading?.(true);
 
                 try {
                     const params = { productId: itemProductId, ...additionalParams } as unknown as TParams;
@@ -581,7 +539,7 @@ export function useProductActions({
                     // Note: fetcher.data may not be immediately available after submit()
                     // Response handling should be done in a useEffect that watches fetcher.state
                 } catch {
-                    setLoading(false);
+                    setLoading?.(false);
                     addToast(errorMessage, 'error');
                 }
             };
@@ -594,14 +552,12 @@ export function useProductActions({
         () =>
             createProductActionHandler<{ productId: string }>({
                 actionRoute: '/action/wishlist-add',
-                isLoading: isAddingToWishlist,
-                setLoading: setIsAddingToWishlist,
                 fetcher: wishlistFetcher,
                 errorMessage: t('product:failedToAddProductToWishlist'),
                 buildFormData: (params) => ({ productId: String(params.productId) }),
                 actionName: 'handleAddToWishlistBase',
             }),
-        [createProductActionHandler, isAddingToWishlist, wishlistFetcher, t]
+        [createProductActionHandler, wishlistFetcher, t]
     );
 
     // Wrap the base handler with auth requirement - must be called at render time (not in async functions)
@@ -956,8 +912,6 @@ export function useProductActions({
             cartFetcher.state === 'submitting' ||
             multipleItemsFetcher.state === 'submitting' ||
             bundleFetcher.state === 'submitting',
-        /** Indicates if an add-to-wishlist operation is currently in progress */
-        isAddingToWishlist,
         /** Current quantity selected for the product */
         quantity,
         /** Maximum quantity allowed (for bonus products, etc.) */

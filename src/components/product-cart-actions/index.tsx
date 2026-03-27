@@ -22,7 +22,6 @@ import { Button } from '@/components/ui/button';
 import { useProductView } from '@/providers/product-view';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
-import { ShareButton } from '@/components/buttons/share-button';
 import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
@@ -73,7 +72,6 @@ export default function ProductCartActions({
     const {
         mode,
         isAddingToOrUpdatingCart,
-        isAddingToWishlist,
         canAddToCart,
         isMasterOrVariantProduct,
         handleAddToCart,
@@ -125,21 +123,6 @@ export default function ProductCartActions({
             onCartSuccess?.();
         } catch (error) {
             onCartError?.(error);
-        }
-    };
-
-    const onAddToWishlist = async () => {
-        const productToAdd = isMasterOrVariantProduct ? currentVariant : product;
-
-        // Call before callback
-        onBeforeAddToWishlist?.();
-
-        try {
-            await handleAddToWishlist(productToAdd as ShopperProducts.schemas['Variant']);
-            // Call success callback after API completes
-            onAddToWishlistSuccess?.();
-        } catch (error) {
-            onAddToWishlistError?.(error);
         }
     };
 
@@ -216,21 +199,6 @@ export default function ProductCartActions({
                         <BuyNowPayLater productId={String(currentProductId)} />
                     )}
                 </UITarget>
-
-                {/* Wishlist + Share — standard layout, add mode only */}
-                {!isCompactAddMode && !isEditMode && (
-                    <div className="grid grid-cols-2 gap-3">
-                        <Button
-                            onClick={() => void onAddToWishlist()}
-                            disabled={isAddingToWishlist}
-                            variant="outline"
-                            className="w-full"
-                            size="lg">
-                            {isAddingToWishlist ? t('addingToWishlist') : t('addToWishlist')}
-                        </Button>
-                        <ShareButton product={product} className="w-full" />
-                    </div>
-                )}
             </div>
         </div>
     );

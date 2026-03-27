@@ -42,6 +42,11 @@ describe('HeartIcon', () => {
             render(<HeartIcon />);
             expect(screen.getByRole('button')).not.toHaveAttribute('aria-busy');
         });
+
+        test('has no border in default state', () => {
+            render(<HeartIcon />);
+            expect(screen.getByRole('button').className).toContain('border-0');
+        });
     });
 
     describe('filled state', () => {
@@ -57,9 +62,11 @@ describe('HeartIcon', () => {
             expect(screen.getByRole('button', { name: /remove from wishlist/i })).toBeInTheDocument();
         });
 
-        test('applies scale-105 class', () => {
+        test('applies light red background and red border', () => {
             render(<HeartIcon isFilled />);
-            expect(screen.getByRole('button').className).toContain('scale-105');
+            const button = screen.getByRole('button');
+            expect(button.className).toContain('bg-red-50');
+            expect(button.className).toContain('border-red-200');
         });
     });
 
@@ -91,9 +98,11 @@ describe('HeartIcon', () => {
             expect(screen.getByRole('button').className).toContain('pointer-events-none');
         });
 
-        test('does not apply scale-105 even when isFilled is true', () => {
+        test('does not apply light red background or border even when isFilled is true', () => {
             render(<HeartIcon isLoading isFilled />);
-            expect(screen.getByRole('button').className).not.toContain('scale-105');
+            const button = screen.getByRole('button');
+            expect(button.className).not.toContain('bg-red-50');
+            expect(button.className).not.toContain('border-red-200');
         });
     });
 

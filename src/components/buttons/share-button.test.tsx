@@ -128,7 +128,14 @@ describe('ShareButton', () => {
             expect(button).toHaveClass('custom-class');
         });
 
-        test('opens dropdown menu when clicked', async () => {
+        test('opens dropdown menu when clicked (no native share)', async () => {
+            // Disable native share for this test
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+
             const user = userEvent.setup();
             render(<ShareButton product={mockProduct} />, { wrapper: defaultConfigWrapper });
 
@@ -136,29 +143,23 @@ describe('ShareButton', () => {
             await user.click(button);
 
             expect(screen.getByText('Copy link')).toBeInTheDocument();
+
+            // Restore native share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: mockShare,
+            });
         });
     });
 
     describe('Native Share', () => {
-        test('shows native share option when navigator.share is available', async () => {
+        test('calls navigator.share directly when button is clicked', async () => {
             const user = userEvent.setup();
             render(<ShareButton product={mockProduct} />, { wrapper: defaultConfigWrapper });
 
             const button = screen.getByRole('button', { name: /share/i });
             await user.click(button);
-
-            expect(screen.getByText('Share via...')).toBeInTheDocument();
-        });
-
-        test('calls navigator.share when native share option is clicked', async () => {
-            const user = userEvent.setup();
-            render(<ShareButton product={mockProduct} />, { wrapper: defaultConfigWrapper });
-
-            const button = screen.getByRole('button', { name: /share/i });
-            await user.click(button);
-
-            const nativeShareOption = screen.getByText('Share via...');
-            await user.click(nativeShareOption);
 
             await waitFor(() => {
                 expect(mockShare).toHaveBeenCalledWith({
@@ -167,6 +168,17 @@ describe('ShareButton', () => {
                     url: 'http://localhost:5173/product/25686571M?color=CHARCWL',
                 });
             });
+        });
+
+        test('does not show dropdown when native share is available', async () => {
+            const user = userEvent.setup();
+            render(<ShareButton product={mockProduct} />, { wrapper: defaultConfigWrapper });
+
+            const button = screen.getByRole('button', { name: /share/i });
+            await user.click(button);
+
+            // Dropdown should not appear with native share
+            expect(screen.queryByText('Copy link')).not.toBeInTheDocument();
         });
 
         test('does not show native share when navigator.share is not available', async () => {
@@ -215,9 +227,6 @@ describe('ShareButton', () => {
             const button = screen.getByRole('button', { name: /share/i });
             await user.click(button);
 
-            const nativeShareOption = screen.getByText('Share via...');
-            await user.click(nativeShareOption);
-
             await waitFor(() => {
                 expect(mockShare).toHaveBeenCalled();
             });
@@ -236,9 +245,6 @@ describe('ShareButton', () => {
             const button = screen.getByRole('button', { name: /share/i });
             await user.click(button);
 
-            const nativeShareOption = screen.getByText('Share via...');
-            await user.click(nativeShareOption);
-
             await waitFor(() => {
                 expect(mockAddToast).toHaveBeenCalledWith('Failed to share', 'error');
             });
@@ -246,7 +252,14 @@ describe('ShareButton', () => {
     });
 
     describe('Copy Link', () => {
-        test('shows copy link option in dropdown', async () => {
+        test('shows copy link option in dropdown when no native share', async () => {
+            // Disable native share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+
             const user = userEvent.setup();
             render(<ShareButton product={mockProduct} />, { wrapper: defaultConfigWrapper });
 
@@ -256,9 +269,23 @@ describe('ShareButton', () => {
             await waitFor(() => {
                 expect(screen.getByText('Copy link')).toBeInTheDocument();
             });
+
+            // Restore native share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: mockShare,
+            });
         });
 
         test('copy link option is clickable', async () => {
+            // Disable native share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+
             const user = userEvent.setup();
             render(<ShareButton product={mockProduct} />, { wrapper: defaultConfigWrapper });
 
@@ -279,10 +306,35 @@ describe('ShareButton', () => {
             await waitFor(() => {
                 expect(mockAddToast).toHaveBeenCalled();
             });
+
+            // Restore native share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: mockShare,
+            });
         });
     });
 
     describe('Social Share Providers', () => {
+        beforeEach(() => {
+            // Disable native share for all social provider tests (they test dropdown)
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+        });
+
+        afterEach(() => {
+            // Restore native share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: mockShare,
+            });
+        });
+
         test('renders only enabled providers from config', async () => {
             const customWrapper = createConfigWrapper({
                 app: {
@@ -472,6 +524,24 @@ describe('ShareButton', () => {
     });
 
     describe('Product Data Handling', () => {
+        beforeEach(() => {
+            // Disable native share for dropdown tests
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+        });
+
+        afterEach(() => {
+            // Restore native share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: mockShare,
+            });
+        });
+
         test('handles missing product name', async () => {
             const productWithoutName = { ...mockProduct, name: undefined } as ShopperProducts.schemas['Product'];
 

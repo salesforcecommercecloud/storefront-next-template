@@ -50,14 +50,30 @@ Object.assign(navigator, {
 
 // Mock navigator.share
 const mockShare = vi.fn();
-Object.defineProperty(navigator, 'share', {
-    writable: true,
-    value: mockShare,
-});
+// eslint-disable-next-line @typescript-eslint/unbound-method -- test fixture
+const originalShare = navigator.share;
 
 // Mock window.open
 const mockWindowOpen = vi.fn();
 window.open = mockWindowOpen;
+
+// Module-level setup and cleanup for navigator.share to prevent test pollution
+beforeEach(() => {
+    Object.defineProperty(navigator, 'share', {
+        writable: true,
+        configurable: true,
+        value: mockShare,
+    });
+});
+
+afterEach(() => {
+    Object.defineProperty(navigator, 'share', {
+        writable: true,
+        configurable: true,
+        value: originalShare,
+    });
+    mockShare.mockClear();
+});
 
 const renderProductView = (props: React.ComponentProps<typeof ProductView>, initialUrl = '/product/test-product') => {
     // Using createMemoryRouter in framework mode is fine
@@ -443,7 +459,30 @@ describe('ProductView', () => {
             expect(shareButton).toBeInTheDocument();
         });
 
-        test('share button opens dropdown menu when clicked', async () => {
+        test('share button triggers native share when available', async () => {
+            const user = userEvent.setup();
+            renderProductView({ product: mockProduct });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            await user.click(shareButton);
+
+            // Native share should be called
+            await waitFor(() => {
+                expect(mockShare).toHaveBeenCalledOnce();
+            });
+        });
+
+        test('share button opens dropdown menu when native share is not available', async () => {
+            // Temporarily set navigator.share to undefined to test fallback
+            // eslint-disable-next-line @typescript-eslint/unbound-method -- test fixture
+            const previousShare = navigator.share;
+
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+
             const user = userEvent.setup();
             renderProductView({ product: mockProduct });
 
@@ -454,25 +493,30 @@ describe('ProductView', () => {
             await waitFor(() => {
                 expect(screen.getByText('Copy link')).toBeInTheDocument();
             });
-        });
-
-        test('share button shows enabled social providers from config', async () => {
-            const user = userEvent.setup();
-            renderProductView({ product: mockProduct });
-
-            const shareButton = screen.getByRole('button', { name: /share/i });
-            await user.click(shareButton);
-
-            await waitFor(() => {
-                expect(screen.getByText('Copy link')).toBeInTheDocument();
-            });
 
             // Check for configured social providers
             expect(screen.getByText('Email')).toBeInTheDocument();
             expect(screen.getByText('Twitter/X')).toBeInTheDocument();
+
+            // Restore navigator.share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: previousShare,
+            });
         });
 
-        test('share button respects disabled socialShare config', async () => {
+        test('share button respects disabled socialShare config in fallback menu', async () => {
+            // Temporarily set navigator.share to undefined to test fallback
+            // eslint-disable-next-line @typescript-eslint/unbound-method -- test fixture
+            const previousShare = navigator.share;
+
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+
             const customConfig = createAppConfig({
                 ...mockBuildConfig,
                 app: {
@@ -512,9 +556,26 @@ describe('ProductView', () => {
             // Social providers should not be shown when disabled
             expect(screen.queryByText('Email')).not.toBeInTheDocument();
             expect(screen.queryByText('Twitter/X')).not.toBeInTheDocument();
+
+            // Restore navigator.share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: previousShare,
+            });
         });
 
-        test('share button shows only configured providers', async () => {
+        test('share button shows only configured providers in fallback menu', async () => {
+            // Temporarily set navigator.share to undefined to test fallback
+            // eslint-disable-next-line @typescript-eslint/unbound-method -- test fixture
+            const previousShare = navigator.share;
+
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+
             const customConfig = createAppConfig({
                 ...mockBuildConfig,
                 app: {
@@ -555,6 +616,13 @@ describe('ProductView', () => {
             expect(screen.getByText('Email')).toBeInTheDocument();
             expect(screen.queryByText('Twitter/X')).not.toBeInTheDocument();
             expect(screen.queryByText('Facebook')).not.toBeInTheDocument();
+
+            // Restore navigator.share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: previousShare,
+            });
         });
 
         test('share button appears alongside wishlist button', () => {
@@ -566,8 +634,8 @@ describe('ProductView', () => {
             expect(wishlistButton).toBeInTheDocument();
             expect(shareButton).toBeInTheDocument();
 
-            // Both buttons should be in the same container (grid layout)
-            const buttonsContainer = wishlistButton.closest('div.grid');
+            // Both buttons should be in the same container (flex layout)
+            const buttonsContainer = wishlistButton.closest('div.flex');
             expect(buttonsContainer).toContainElement(shareButton);
         });
 
