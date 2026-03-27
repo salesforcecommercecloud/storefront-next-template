@@ -64,13 +64,13 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
               alt="App Store"
               aria-label="App Store"
               class="h-10 w-auto"
-              src="/images/app-store-badge.svg"
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
             />
             <img
               alt="Google Play"
               aria-label="Google Play"
               class="h-10 w-auto"
-              src="/images/google-play-badge.svg"
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
             />
           </div>
         </div>
@@ -343,13 +343,13 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
               alt="App Store"
               aria-label="App Store"
               class="h-10 w-auto"
-              src="/images/app-store-badge.svg"
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
             />
             <img
               alt="Google Play"
               aria-label="Google Play"
               class="h-10 w-auto"
-              src="/images/google-play-badge.svg"
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
             />
           </div>
         </div>
