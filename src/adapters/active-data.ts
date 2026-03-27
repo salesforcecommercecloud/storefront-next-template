@@ -17,6 +17,7 @@ import type { AnalyticsEvent, EventSiteInfo } from '@salesforce/storefront-next-
 import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import Cookies from 'js-cookie';
+import { getBasePath } from '@/lib/utils';
 
 export type ActiveDataConfig = EngagementAdapterConfig & {
     host: string;
@@ -501,7 +502,7 @@ export function createActiveDataAdapter(config: ActiveDataConfig): EngagementAda
                 // to ECOM. Direct cross-origin sendBeacon calls don't include the
                 // storefront's dwsid cookie, causing ECOM to create duplicate sessions
                 // when hybrid auth is enabled.
-                const proxyUrl = `/resource/analytics-proxy?url=${encodeURIComponent(url)}`;
+                const proxyUrl = `${getBasePath()}/resource/analytics-proxy?url=${encodeURIComponent(url)}`;
                 navigator.sendBeacon(proxyUrl);
             }
 

@@ -93,4 +93,34 @@ describe('buildMrtConfig', () => {
         const loaderCount = config.ssrOnly.filter((pattern) => pattern === 'loader.js').length;
         expect(loaderCount).toBe(1);
     });
+
+    it('should omit envBasePath from ssrParameters when it is empty', async () => {
+        mockExistsSync.mockReturnValue(true);
+        mockJitiImport.mockResolvedValue({
+            default: {
+                runtime: {
+                    ssrParameters: { envBasePath: '' },
+                },
+            },
+        });
+
+        const config = await buildMrtConfig('/build', '/project');
+
+        expect(config.ssrParameters).not.toHaveProperty('envBasePath');
+    });
+
+    it('should keep envBasePath in ssrParameters when it has a value', async () => {
+        mockExistsSync.mockReturnValue(true);
+        mockJitiImport.mockResolvedValue({
+            default: {
+                runtime: {
+                    ssrParameters: { envBasePath: '/shop' },
+                },
+            },
+        });
+
+        const config = await buildMrtConfig('/build', '/project');
+
+        expect(config.ssrParameters.envBasePath).toBe('/shop');
+    });
 });

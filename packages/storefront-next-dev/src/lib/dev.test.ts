@@ -56,6 +56,7 @@ const mockCreateServer = vi.fn(() => mockApp);
 
 vi.mock('../server/index', () => ({
     createServer: mockCreateServer,
+    initBasePathEnv: vi.fn().mockResolvedValue(undefined),
 }));
 
 const mockConfig: ServerConfig = {
@@ -80,6 +81,7 @@ const mockGetCommerceCloudApiUrl = vi.fn(() => 'https://test-short-code.api.comm
 
 vi.mock('../utils/paths', () => ({
     getCommerceCloudApiUrl: mockGetCommerceCloudApiUrl,
+    getBasePath: vi.fn().mockReturnValue(''),
 }));
 
 const mockPrintServerInfo = vi.fn();

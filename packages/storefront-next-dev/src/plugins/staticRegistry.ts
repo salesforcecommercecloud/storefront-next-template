@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type { Plugin } from 'vite';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { resolve, relative, dirname } from 'path';

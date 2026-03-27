@@ -96,15 +96,19 @@ const buildMrtConfig = async (_buildDirectory, projectDirectory) => {
 	];
 	const defaultSsrParameters = { ssrFunctionNodeVersion: "24.x" };
 	const runtimeConfig = await loadRuntimeConfig(projectDirectory);
+	const ssrOnly = mergePatterns(defaultSsrOnly, runtimeConfig?.ssrOnly);
+	const ssrShared = mergePatterns(defaultSsrShared, runtimeConfig?.ssrShared);
+	const ssrParameters = {
+		...defaultSsrParameters,
+		...runtimeConfig?.ssrParameters ?? {}
+	};
+	if (!ssrParameters.envBasePath) delete ssrParameters.envBasePath;
 	return {
-		ssrOnly: mergePatterns(defaultSsrOnly, runtimeConfig?.ssrOnly),
-		ssrShared: mergePatterns(defaultSsrShared, runtimeConfig?.ssrShared),
-		ssrParameters: {
-			...defaultSsrParameters,
-			...runtimeConfig?.ssrParameters ?? {}
-		}
+		ssrOnly,
+		ssrShared,
+		ssrParameters
 	};
 };
 
 //#endregion
-export { buildMrtConfig as a, SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR as i, GENERATE_AND_DEPLOY_CARTRIDGE_ON_MRT_PUSH as n, SFNEXT_BASE_CARTRIDGE_NAME as r, CARTRIDGES_BASE_DIR as t };
+export { buildMrtConfig as a, SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR as i, GENERATE_AND_DEPLOY_CARTRIDGE_ON_MRT_PUSH as n, loadRuntimeConfig as o, SFNEXT_BASE_CARTRIDGE_NAME as r, CARTRIDGES_BASE_DIR as t };

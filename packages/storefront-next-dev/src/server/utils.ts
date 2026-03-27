@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ServerBuild } from 'react-router';
-import { getBundlePath } from '../utils/paths';
+import { getBundlePath, getBasePath } from '../utils/paths';
 
 /**
  * Patch React Router build to rewrite asset URLs with the correct bundle path
@@ -22,6 +22,7 @@ import { getBundlePath } from '../utils/paths';
  */
 export function patchReactRouterBuild(build: ServerBuild, bundleId: string): ServerBuild {
     const bundlePath = getBundlePath(bundleId);
+    const basePath = getBasePath();
 
     // Clone the assets object and replace /assets/ paths with bundle path
     const assetsJson = JSON.stringify(build.assets);
@@ -32,5 +33,8 @@ export function patchReactRouterBuild(build: ServerBuild, bundleId: string): Ser
     return Object.assign({}, build, {
         publicPath: bundlePath,
         assets: newAssets,
+        // Override basename at runtime from base path env var
+        // This allows the same build to serve under different base paths
+        ...(basePath && { basename: basePath }),
     });
 }

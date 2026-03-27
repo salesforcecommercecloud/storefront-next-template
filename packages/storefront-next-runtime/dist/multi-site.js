@@ -183,8 +183,9 @@ function getSiteFromIdOrAlias(siteIdentifier, sites) {
 async function resolveSite(request, settings) {
 	const { sites, defaultSiteId, siteDetectionConfig, siteCookie } = settings;
 	const requestUrl = new URL(request.url);
+	const basePathOffset = process.env.MRT_ENV_BASE_PATH ? process.env.MRT_ENV_BASE_PATH.split("/").filter(Boolean).length : 0;
 	const resolvers = {
-		path: () => Promise.resolve(lookupFromPath(requestUrl.pathname, siteDetectionConfig.lookupFromPathIndex)),
+		path: () => Promise.resolve(lookupFromPath(requestUrl.pathname, siteDetectionConfig.lookupFromPathIndex + basePathOffset)),
 		querystring: () => Promise.resolve(requestUrl.searchParams.get(siteDetectionConfig.lookupQuerystring)),
 		header: () => Promise.resolve(request.headers.get(siteDetectionConfig.lookupHeader)),
 		cookie: async () => readSiteFromCookie(request, siteCookie)
@@ -292,8 +293,9 @@ async function resolveLocale(request, settings, site) {
 	const { supportedLocales } = site;
 	let locale = null;
 	const requestUrl = new URL(request.url);
+	const basePathOffset = process.env.MRT_ENV_BASE_PATH ? process.env.MRT_ENV_BASE_PATH.split("/").filter(Boolean).length : 0;
 	const resolvers = {
-		path: () => Promise.resolve(lookupFromPath(requestUrl.pathname, localeDetectionConfig.lookupFromPathIndex)),
+		path: () => Promise.resolve(lookupFromPath(requestUrl.pathname, localeDetectionConfig.lookupFromPathIndex + basePathOffset)),
 		querystring: () => Promise.resolve(requestUrl.searchParams.get(localeDetectionConfig.lookupQuerystring)),
 		header: () => Promise.resolve(request.headers.get(localeDetectionConfig.lookupHeader)),
 		cookie: async () => readLocaleFromCookie(request, localeCookie)

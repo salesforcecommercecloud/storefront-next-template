@@ -20,7 +20,7 @@
  * This allows us to test the site detection from cookie using the same approach
  * used by template-retail-rsc-app
  */
-import { describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect } from 'vitest';
 import { DEFAULT_SITE_DETECTION, DEFAULT_LOCALE_DETECTION } from './configs';
 import { createMultiSiteCookie } from './cookies';
 import { resolveSite } from './site-detection';
@@ -131,5 +131,61 @@ describe('site-detection', () => {
         const request = new Request('https://example.com/unknown/segment');
         const site = await resolveSite(request, settings);
         expect(site.id).toBe('site-us');
+    });
+
+    describe('with base path (MRT_ENV_BASE_PATH)', () => {
+        afterEach(() => {
+            delete process.env.MRT_ENV_BASE_PATH;
+        });
+
+        it('resolves site from path when base path is present', async () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            const settings = createSettings();
+            const request = new Request('https://example.com/shop/site-mx/en-MX/page');
+            const site = await resolveSite(request, settings);
+            expect(site.id).toBe('site-mx');
+        });
+
+        it('resolves site by alias from path when base path is present', async () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            const settings = createSettings();
+            const request = new Request('https://example.com/shop/mx/es-MX/page');
+            const site = await resolveSite(request, settings);
+            expect(site.id).toBe('site-mx');
+        });
+
+        it('falls back to default when base path is present and no valid site in path', async () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            const settings = createSettings({
+                siteDetectionConfig: { ...DEFAULT_SITE_DETECTION, order: ['path'] },
+            });
+            const request = new Request('https://example.com/shop/unknown/segment');
+            const site = await resolveSite(request, settings);
+            expect(site.id).toBe('site-us');
+        });
+
+        it('does not affect non-path detection methods', async () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            const settings = createSettings();
+            const request = new Request('https://example.com/shop/?site=site-mx');
+            const site = await resolveSite(request, settings);
+            expect(site.id).toBe('site-mx');
+        });
+
+        it('resolves site from path when multi-segment base path is present', async () => {
+            process.env.MRT_ENV_BASE_PATH = '/region/us';
+            const settings = createSettings();
+            const request = new Request('https://example.com/region/us/site-mx/en-MX/page');
+            const site = await resolveSite(request, settings);
+            expect(site.id).toBe('site-mx');
+        });
+
+        it('resolves site by alias from path when multi-segment base path is present', async () => {
+            process.env.MRT_ENV_BASE_PATH = '/region/us';
+            const settings = createSettings();
+            const request = new Request('https://example.com/region/us/mx/es-MX/page');
+            const site = await resolveSite(request, settings);
+            expect(site.id).toBe('site-mx');
+        });
     });
 });

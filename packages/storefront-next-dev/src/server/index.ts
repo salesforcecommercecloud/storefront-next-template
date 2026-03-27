@@ -21,6 +21,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadConfigFromEnv, type ServerConfig } from './config';
+import { loadRuntimeConfig } from '../config';
 import { importTypescript } from './ts-import';
 import { createCommerceProxyMiddleware } from './middleware/proxy';
 import { createStaticMiddleware } from './middleware/static';
@@ -29,7 +30,7 @@ import { createLoggingMiddleware } from './middleware/logging';
 import { createHostHeaderMiddleware } from './middleware/host-header';
 import { patchReactRouterBuild } from './utils';
 import { ServerModeFeatureMap, type ServerMode, type ServerModeFeatures } from './modes';
-import { getBundlePath } from '../utils/paths';
+import { getBundlePath, getBasePath } from '../utils/paths';
 import { createOtelExpressMiddleware } from '../otel/express/middleware';
 import { createHealthCheckHandler, HEALTH_ENDPOINT_PATH } from './handlers/health-check';
 
@@ -72,6 +73,22 @@ export interface ServerOptions extends Partial<ServerModeFeatures> {
 
     /** Enable streaming of responses */
     streaming?: boolean;
+}
+
+/**
+ * Load MRT_ENV_BASE_PATH from config.server.ts so getBasePath() works in local dev/preview.
+ * On MRT production, this env var is already set by the Lambda from ssrParameters.envBasePath.
+ *
+ * In dev mode this must be called before Vite starts, since the React Router preset
+ * reads getBasePath() at config time to set the basename.
+ *
+ * @param projectDirectory - Project root directory
+ */
+export async function initBasePathEnv(projectDirectory: string): Promise<void> {
+    const runtimeConfig = await loadRuntimeConfig(projectDirectory);
+    if (runtimeConfig?.ssrParameters?.envBasePath) {
+        process.env.MRT_ENV_BASE_PATH = String(runtimeConfig.ssrParameters.envBasePath);
+    }
 }
 
 /**
@@ -178,6 +195,26 @@ export async function createServer(options: ServerOptions): Promise<Express> {
 
     if (enableProxy) {
         app.use(config.commerce.api.proxy, createCommerceProxyMiddleware(config));
+    }
+
+    // In dev/preview, redirect non-prefixed page requests to the prefixed path.
+    // When a base path is configured, redirect non-prefixed requests to the prefixed path.
+    // In dev/preview this improves DX (e.g., /category/womens → /shop/category/womens).
+    // In production on MRT, requests arriving at the environment domain without the base path
+    // (e.g., mrt-env.mobify-storefront.com/category/womens) are redirected to the prefixed URL,
+    // since the CDN routes by base path on the vanity domain but direct MRT access skips it.
+    const basePath = getBasePath();
+    if (basePath) {
+        app.use((req, res, next) => {
+            if (req.path.startsWith(`${basePath}/`) || req.path === basePath) {
+                return next();
+            }
+            // Don't redirect infrastructure paths
+            if (req.path.startsWith('/mobify/')) {
+                return next();
+            }
+            res.redirect(`${basePath}${req.originalUrl}`);
+        });
     }
 
     // Normalize the Host header for React Router's CSRF validation features

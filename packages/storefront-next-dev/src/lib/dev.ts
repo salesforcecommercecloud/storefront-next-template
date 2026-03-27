@@ -16,7 +16,7 @@
 import path from 'path';
 import { createServer as createNodeHttpServer } from 'node:http';
 import { createServer as createViteServer } from 'vite';
-import { createServer } from '../server/index';
+import { createServer, initBasePathEnv } from '../server/index';
 import { loadProjectConfig } from '../server/config';
 import { printServerInfo, printServerConfig, printShutdownMessage } from '../utils/logger';
 import { loadEnvFile } from '../utils';
@@ -42,6 +42,10 @@ export async function dev(options: DevOptions = {}): Promise<void> {
     // Load .env file before reading EXTERNAL_DOMAIN_NAME so values in .env take precedence
     // over the localhost default set below.
     loadEnvFile(projectDir);
+
+    // Set MRT_ENV_BASE_PATH from config.server.ts before Vite starts, since the
+    // React Router preset reads getBasePath() at config time to set the basename.
+    await initBasePathEnv(projectDir);
 
     // Set fallback only after .env has been loaded
     process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;

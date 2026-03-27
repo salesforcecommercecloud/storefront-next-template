@@ -81,7 +81,7 @@ const mergePatterns = (defaults: string[], overrides?: string[]): string[] => {
  *
  * Keep in sync with @salesforce/storefront-next-runtime/src/config/load-config.ts.
  */
-async function loadRuntimeConfig(projectDirectory?: string): Promise<RuntimeConfig['runtime'] | undefined> {
+export async function loadRuntimeConfig(projectDirectory?: string): Promise<RuntimeConfig['runtime'] | undefined> {
     if (!projectDirectory) {
         return undefined;
     }
@@ -152,10 +152,16 @@ export const buildMrtConfig = async (_buildDirectory: string, projectDirectory?:
     const runtimeConfig = await loadRuntimeConfig(projectDirectory);
     const ssrOnly = mergePatterns(defaultSsrOnly, runtimeConfig?.ssrOnly);
     const ssrShared = mergePatterns(defaultSsrShared, runtimeConfig?.ssrShared);
-    const ssrParameters = {
+    const ssrParameters: MrtSsrConfig['ssrParameters'] = {
         ...defaultSsrParameters,
         ...(runtimeConfig?.ssrParameters ?? {}),
     };
+
+    // Remove envBasePath if empty — MRT rejects empty string as invalid.
+    // When not set, the key should be absent so MRT doesn't configure a base path.
+    if (!ssrParameters.envBasePath) {
+        delete ssrParameters.envBasePath;
+    }
 
     return {
         ssrOnly,

@@ -66,6 +66,9 @@ export default defineConfig<Config>(
             ssrShared: [],
             ssrParameters: {
                 ssrFunctionNodeVersion: '24.x',
+                // envBasePath can be used to configure Managed Runtime environment to add basepath
+                // See BASE-PATH.md for more details
+                envBasePath: '',
             },
         },
         // Main application configuration (public settings)

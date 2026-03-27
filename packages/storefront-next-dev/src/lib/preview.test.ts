@@ -37,6 +37,7 @@ const mockCreateServer = vi.fn(() => mockApp);
 
 vi.mock('../server/index', () => ({
     createServer: mockCreateServer,
+    initBasePathEnv: vi.fn().mockResolvedValue(undefined),
 }));
 
 const mockConfig: ServerConfig = {

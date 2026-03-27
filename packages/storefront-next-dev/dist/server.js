@@ -1,4 +1,5 @@
 import { t as logger } from "./logger.js";
+import { o as loadRuntimeConfig } from "./config.js";
 import path from "path";
 import chalk from "chalk";
 import express from "express";
@@ -143,10 +144,41 @@ function getCommerceCloudApiUrl(shortCode, proxyHost) {
 	return proxyHost || `https://${shortCode}.api.commercecloud.salesforce.com`;
 }
 /**
+* Get the configurable base path for the application.
+* Reads from MRT_ENV_BASE_PATH environment variable.
+*
+* The base path is used for CDN routing to the correct MRT environment.
+* It is prepended to all URLs: page routes, /mobify/bundle/ assets, and /mobify/proxy/api.
+*
+* Validation rules:
+* - Must be a single path segment starting with '/'
+* - Max 63 characters after the leading slash
+* - Only URL-safe characters allowed
+* - Returns empty string if not set
+*
+* @returns The sanitized base path (e.g., '/site-a' or '')
+*
+* @example
+* // No base path configured
+* getBasePath() // → ''
+*
+* // With base path '/storefront'
+* getBasePath() // → '/storefront'
+*
+* // Automatically sanitizes
+* // MRT_ENV_BASE_PATH='storefront/' → '/storefront'
+*/
+function getBasePath() {
+	const basePath = process.env.MRT_ENV_BASE_PATH?.trim();
+	if (!basePath) return "";
+	if (!/^\/[a-zA-Z0-9_.+$~"'@:-]{1,63}$/.test(basePath)) throw new Error(`Invalid base path: "${basePath}". Base path must be a single segment starting with '/' (e.g., '/site-a'), contain only URL-safe characters, and be at most 63 characters after the leading slash.`);
+	return basePath;
+}
+/**
 * Get the bundle path for static assets
 */
 function getBundlePath(bundleId) {
-	return `/mobify/bundle/${bundleId}/client/`;
+	return `${getBasePath()}/mobify/bundle/${bundleId}/client/`;
 }
 
 //#endregion
@@ -309,11 +341,13 @@ function createHostHeaderMiddleware() {
 */
 function patchReactRouterBuild(build, bundleId) {
 	const bundlePath = getBundlePath(bundleId);
+	const basePath = getBasePath();
 	const patchedAssetsJson = JSON.stringify(build.assets).replace(/"\/assets\//g, `"${bundlePath}assets/`);
 	const newAssets = JSON.parse(patchedAssetsJson);
 	return Object.assign({}, build, {
 		publicPath: bundlePath,
-		assets: newAssets
+		assets: newAssets,
+		...basePath && { basename: basePath }
 	});
 }
 
@@ -579,6 +613,19 @@ const MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS = [
 const RELATIVE_MIDDLEWARE_REGISTRY_BUILT_PATHS = ["bld/server/middleware-registry", "build/server/middleware-registry"].flatMap((base) => MIDDLEWARE_REGISTRY_BUILT_EXTENSIONS.map((ext) => `${base}${ext}`));
 const DEFAULT_BUNDLE_ID = "local";
 /**
+* Load MRT_ENV_BASE_PATH from config.server.ts so getBasePath() works in local dev/preview.
+* On MRT production, this env var is already set by the Lambda from ssrParameters.envBasePath.
+*
+* In dev mode this must be called before Vite starts, since the React Router preset
+* reads getBasePath() at config time to set the basename.
+*
+* @param projectDirectory - Project root directory
+*/
+async function initBasePathEnv(projectDirectory) {
+	const runtimeConfig = await loadRuntimeConfig(projectDirectory);
+	if (runtimeConfig?.ssrParameters?.envBasePath) process.env.MRT_ENV_BASE_PATH = String(runtimeConfig.ssrParameters.envBasePath);
+}
+/**
 * Create a unified Express server for development, preview, or production mode
 */
 async function createServer(options) {
@@ -618,6 +665,12 @@ async function createServer(options) {
 	});
 	if (mode === "development" && vite) app.use(vite.middlewares);
 	if (enableProxy) app.use(config.commerce.api.proxy, createCommerceProxyMiddleware(config));
+	const basePath = getBasePath();
+	if (basePath) app.use((req, res, next) => {
+		if (req.path.startsWith(`${basePath}/`) || req.path === basePath) return next();
+		if (req.path.startsWith("/mobify/")) return next();
+		res.redirect(`${basePath}${req.originalUrl}`);
+	});
 	app.use(createHostHeaderMiddleware());
 	app.all("*splat", await createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatching));
 	return app;
@@ -656,4 +709,4 @@ async function createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatch
 }
 
 //#endregion
-export { getCommerceCloudApiUrl as n, loadProjectConfig as r, createServer as t };
+export { loadProjectConfig as i, initBasePathEnv as n, getCommerceCloudApiUrl as r, createServer as t };

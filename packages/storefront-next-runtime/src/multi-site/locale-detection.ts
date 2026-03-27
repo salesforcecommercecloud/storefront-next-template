@@ -52,8 +52,20 @@ export async function resolveLocale(request: Request, settings: MultiSiteSetting
     let locale: Locale | null = null;
     const requestUrl = new URL(request.url);
 
+    // When a base path is configured (e.g., '/shop'), we need to skip its path segments.
+    // React Router handles the base path internally for hooks like useParams or useLocation,
+    // but it does not strip it from request.url. The offset is calculated dynamically from
+    // the number of segments in the base path as future-proof in case we support multi-segment
+    // base paths in the future.
+    const basePathOffset = process.env.MRT_ENV_BASE_PATH
+        ? process.env.MRT_ENV_BASE_PATH.split('/').filter(Boolean).length
+        : 0;
+
     const resolvers: Record<DetectionMethod, () => Promise<string | null>> = {
-        path: () => Promise.resolve(lookupFromPath(requestUrl.pathname, localeDetectionConfig.lookupFromPathIndex)),
+        path: () =>
+            Promise.resolve(
+                lookupFromPath(requestUrl.pathname, localeDetectionConfig.lookupFromPathIndex + basePathOffset)
+            ),
         querystring: () => Promise.resolve(requestUrl.searchParams.get(localeDetectionConfig.lookupQuerystring)),
         header: () => Promise.resolve(request.headers.get(localeDetectionConfig.lookupHeader)),
         cookie: async () => readLocaleFromCookie(request, localeCookie),

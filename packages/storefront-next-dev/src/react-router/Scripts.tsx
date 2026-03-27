@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { Scripts as ReactRouterScripts } from 'react-router';
+import { getBasePath } from '../utils/paths';
 
 /**
  * Determines if the code is running in a server-side rendering (SSR) environment.
@@ -40,7 +41,8 @@ const InternalServerScripts = () => {
     }
 
     const bundleId = process.env.BUNDLE_ID || 'local';
-    const bundlePath = `/mobify/bundle/${bundleId}/client/`;
+    const basePath = getBasePath();
+    const bundlePath = `${basePath}/mobify/bundle/${bundleId}/client/`;
     return (
         <script
             id="sf-next-bundle-config"
@@ -49,6 +51,7 @@ const InternalServerScripts = () => {
                 __html: `
         window._BUNDLE_ID = ${JSON.stringify(bundleId)};
         window._BUNDLE_PATH = ${JSON.stringify(bundlePath)};
+        window._BASE_PATH = ${JSON.stringify(basePath)};
     `,
             }}
         />

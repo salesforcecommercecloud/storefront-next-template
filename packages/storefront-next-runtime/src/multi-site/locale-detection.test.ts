@@ -20,7 +20,7 @@
  * This allows us to test the locale detection from cookie using the same approach
  * used by template-retail-rsc-app
  */
-import { describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect } from 'vitest';
 import { DEFAULT_LOCALE_DETECTION, DEFAULT_SITE_DETECTION } from './configs';
 import { createMultiSiteCookie } from './cookies';
 import { resolveLocale } from './locale-detection';
@@ -127,6 +127,46 @@ describe('locale-detection', () => {
         });
         const locale = await resolveLocale(request, settings, SITE);
         expect(locale).toEqual(enUSLocale);
+    });
+
+    describe('with base path (MRT_ENV_BASE_PATH)', () => {
+        afterEach(() => {
+            delete process.env.MRT_ENV_BASE_PATH;
+        });
+
+        it('resolves locale from path when base path is present', async () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            const settings = createSettings();
+            const request = new Request('https://example.com/shop/us/es-US/page');
+            const locale = await resolveLocale(request, settings, SITE);
+            expect(locale).toEqual({ id: 'es-US', preferredCurrency: 'USD' });
+        });
+
+        it('falls back to default locale when base path is present and path locale is invalid', async () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            const settings = createSettings({
+                localeDetectionConfig: { ...DEFAULT_LOCALE_DETECTION, order: ['path'] },
+            });
+            const request = new Request('https://example.com/shop/us/fr-FR/page');
+            const locale = await resolveLocale(request, settings, SITE);
+            expect(locale).toEqual({ id: 'en-US', preferredCurrency: 'USD' });
+        });
+
+        it('does not affect non-path detection methods', async () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            const settings = createSettings();
+            const request = new Request('https://example.com/shop/?lng=es-US');
+            const locale = await resolveLocale(request, settings, SITE);
+            expect(locale).toEqual({ id: 'es-US', preferredCurrency: 'USD' });
+        });
+
+        it('resolves locale from path when multi-segment base path is present', async () => {
+            process.env.MRT_ENV_BASE_PATH = '/region/us';
+            const settings = createSettings();
+            const request = new Request('https://example.com/region/us/site-us/es-US/page');
+            const locale = await resolveLocale(request, settings, SITE);
+            expect(locale).toEqual({ id: 'es-US', preferredCurrency: 'USD' });
+        });
     });
 
     it('resolves locale by alias and returns the full Locale object', async () => {

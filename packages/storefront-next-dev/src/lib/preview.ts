@@ -18,7 +18,7 @@ import fs from 'fs';
 import { pathToFileURL } from 'url';
 import { execSync } from 'child_process';
 import type { ServerBuild } from 'react-router';
-import { createServer } from '../server/index';
+import { createServer, initBasePathEnv } from '../server/index';
 import { loadProjectConfig } from '../server/config';
 import { logger } from '../logger';
 import { printServerInfo, printServerConfig, printShutdownMessage } from '../utils/logger';
@@ -49,6 +49,12 @@ export async function preview(options: ServeOptions = {}): Promise<void> {
     process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;
 
     loadEnvFile(projectDir);
+
+    // Set MRT_ENV_BASE_PATH from config.server.ts before importing the build module.
+    // The server build contains renderBuiltUrl runtime code that evaluates
+    // process.env.MRT_ENV_BASE_PATH at module import time (top-level const assignments).
+    await initBasePathEnv(projectDir);
+
     // Check if build exists, todo: read build dir from react-router config
     const buildPath = path.join(projectDir, 'build', 'server', 'index.js');
 

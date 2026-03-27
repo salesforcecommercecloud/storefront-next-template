@@ -1,6 +1,40 @@
 import { Scripts as Scripts$1 } from "react-router";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 
+//#region src/utils/paths.ts
+/**
+* Get the configurable base path for the application.
+* Reads from MRT_ENV_BASE_PATH environment variable.
+*
+* The base path is used for CDN routing to the correct MRT environment.
+* It is prepended to all URLs: page routes, /mobify/bundle/ assets, and /mobify/proxy/api.
+*
+* Validation rules:
+* - Must be a single path segment starting with '/'
+* - Max 63 characters after the leading slash
+* - Only URL-safe characters allowed
+* - Returns empty string if not set
+*
+* @returns The sanitized base path (e.g., '/site-a' or '')
+*
+* @example
+* // No base path configured
+* getBasePath() // → ''
+*
+* // With base path '/storefront'
+* getBasePath() // → '/storefront'
+*
+* // Automatically sanitizes
+* // MRT_ENV_BASE_PATH='storefront/' → '/storefront'
+*/
+function getBasePath() {
+	const basePath = process.env.MRT_ENV_BASE_PATH?.trim();
+	if (!basePath) return "";
+	if (!/^\/[a-zA-Z0-9_.+$~"'@:-]{1,63}$/.test(basePath)) throw new Error(`Invalid base path: "${basePath}". Base path must be a single segment starting with '/' (e.g., '/site-a'), contain only URL-safe characters, and be at most 63 characters after the leading slash.`);
+	return basePath;
+}
+
+//#endregion
 //#region src/react-router/Scripts.tsx
 /**
 * Determines if the code is running in a server-side rendering (SSR) environment.
@@ -23,12 +57,14 @@ const isSSR = typeof window === "undefined";
 const InternalServerScripts = () => {
 	if (!isSSR) return null;
 	const bundleId = process.env.BUNDLE_ID || "local";
-	const bundlePath = `/mobify/bundle/${bundleId}/client/`;
+	const basePath = getBasePath();
+	const bundlePath = `${basePath}/mobify/bundle/${bundleId}/client/`;
 	return /* @__PURE__ */ jsx("script", {
 		id: "sf-next-bundle-config",
 		dangerouslySetInnerHTML: { __html: `
         window._BUNDLE_ID = ${JSON.stringify(bundleId)};
         window._BUNDLE_PATH = ${JSON.stringify(bundlePath)};
+        window._BASE_PATH = ${JSON.stringify(basePath)};
     ` }
 	});
 };

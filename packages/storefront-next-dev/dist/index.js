@@ -166,10 +166,41 @@ function getCommerceCloudApiUrl(shortCode, proxyHost) {
 	return proxyHost || `https://${shortCode}.api.commercecloud.salesforce.com`;
 }
 /**
+* Get the configurable base path for the application.
+* Reads from MRT_ENV_BASE_PATH environment variable.
+*
+* The base path is used for CDN routing to the correct MRT environment.
+* It is prepended to all URLs: page routes, /mobify/bundle/ assets, and /mobify/proxy/api.
+*
+* Validation rules:
+* - Must be a single path segment starting with '/'
+* - Max 63 characters after the leading slash
+* - Only URL-safe characters allowed
+* - Returns empty string if not set
+*
+* @returns The sanitized base path (e.g., '/site-a' or '')
+*
+* @example
+* // No base path configured
+* getBasePath() // → ''
+*
+* // With base path '/storefront'
+* getBasePath() // → '/storefront'
+*
+* // Automatically sanitizes
+* // MRT_ENV_BASE_PATH='storefront/' → '/storefront'
+*/
+function getBasePath() {
+	const basePath = process.env.MRT_ENV_BASE_PATH?.trim();
+	if (!basePath) return "";
+	if (!/^\/[a-zA-Z0-9_.+$~"'@:-]{1,63}$/.test(basePath)) throw new Error(`Invalid base path: "${basePath}". Base path must be a single segment starting with '/' (e.g., '/site-a'), contain only URL-safe characters, and be at most 63 characters after the leading slash.`);
+	return basePath;
+}
+/**
 * Get the bundle path for static assets
 */
 function getBundlePath(bundleId) {
-	return `/mobify/bundle/${bundleId}/client/`;
+	return `${getBasePath()}/mobify/bundle/${bundleId}/client/`;
 }
 
 //#endregion
@@ -334,7 +365,7 @@ const managedRuntimeBundlePlugin = () => {
 				} } },
 				environments: { ssr: { resolve: { noExternal: true } } },
 				experimental: { renderBuiltUrl(filename, { type }) {
-					if (mode !== "preview" && (type === "asset" || type === "public")) return { runtime: `(typeof window !== 'undefined' ? window._BUNDLE_PATH : ('/mobify/bundle/'+(process.env.BUNDLE_ID??'local')+'/client/')) + ${JSON.stringify(filename)}` };
+					if (mode !== "preview" && (type === "asset" || type === "public")) return { runtime: `(typeof window !== 'undefined' ? window._BUNDLE_PATH : ((process.env.MRT_ENV_BASE_PATH??'')+'/mobify/bundle/'+(process.env.BUNDLE_ID??'local')+'/client/')) + ${JSON.stringify(filename)}` };
 				} }
 			};
 		},
@@ -2100,6 +2131,11 @@ async function loadProjectConfig(projectDirectory) {
 }
 
 //#endregion
+//#region src/config.ts
+const SFNEXT_BASE_CARTRIDGE_NAME = "app_storefrontnext_base";
+const SFNEXT_BASE_CARTRIDGE_OUTPUT_DIR = `${SFNEXT_BASE_CARTRIDGE_NAME}/cartridge/experience`;
+
+//#endregion
 //#region src/server/middleware/proxy.ts
 /**
 * Create proxy middleware for Commerce Cloud API
@@ -2259,11 +2295,13 @@ function createHostHeaderMiddleware() {
 */
 function patchReactRouterBuild(build, bundleId) {
 	const bundlePath = getBundlePath(bundleId);
+	const basePath = getBasePath();
 	const patchedAssetsJson = JSON.stringify(build.assets).replace(/"\/assets\//g, `"${bundlePath}assets/`);
 	const newAssets = JSON.parse(patchedAssetsJson);
 	return Object.assign({}, build, {
 		publicPath: bundlePath,
-		assets: newAssets
+		assets: newAssets,
+		...basePath && { basename: basePath }
 	});
 }
 
@@ -2568,6 +2606,12 @@ async function createServer(options) {
 	});
 	if (mode === "development" && vite) app.use(vite.middlewares);
 	if (enableProxy) app.use(config.commerce.api.proxy, createCommerceProxyMiddleware(config));
+	const basePath = getBasePath();
+	if (basePath) app.use((req, res, next) => {
+		if (req.path.startsWith(`${basePath}/`) || req.path === basePath) return next();
+		if (req.path.startsWith("/mobify/")) return next();
+		res.redirect(`${basePath}${req.originalUrl}`);
+	});
 	app.use(createHostHeaderMiddleware());
 	app.all("*splat", await createSSRHandler(mode, bundleId, vite, build, enableAssetUrlPatching));
 	return app;

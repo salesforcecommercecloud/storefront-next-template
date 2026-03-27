@@ -110,6 +110,55 @@ describe('server utils', () => {
             expect(patchedBuild.assets.version).toBe('123');
         });
 
+        it('should not set basename when MRT_ENV_BASE_PATH is not set', () => {
+            delete process.env.MRT_ENV_BASE_PATH;
+            const testBuild = {
+                assets: {
+                    url: '/assets/manifest.json',
+                    entry: { module: '/assets/entry.js' },
+                },
+                publicPath: '/assets/',
+            } as unknown as ServerBuild;
+
+            const patchedBuild = patchReactRouterBuild(testBuild, 'test-bundle');
+
+            expect(patchedBuild.basename).toBeUndefined();
+        });
+
+        it('should set basename from MRT_ENV_BASE_PATH when configured', () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            const testBuild = {
+                assets: {
+                    url: '/assets/manifest.json',
+                    entry: { module: '/assets/entry.js' },
+                },
+                publicPath: '/assets/',
+            } as unknown as ServerBuild;
+
+            const patchedBuild = patchReactRouterBuild(testBuild, 'test-bundle');
+
+            expect(patchedBuild.basename).toBe('/shop');
+            delete process.env.MRT_ENV_BASE_PATH;
+        });
+
+        it('should include base path in publicPath and asset URLs when configured', () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            const testBuild = {
+                assets: {
+                    url: '/assets/manifest.json',
+                    entry: { module: '/assets/entry.js', imports: [] },
+                    routes: {},
+                },
+                publicPath: '/assets/',
+            } as unknown as ServerBuild;
+
+            const patchedBuild = patchReactRouterBuild(testBuild, 'test-bundle');
+
+            expect(patchedBuild.publicPath).toBe('/shop/mobify/bundle/test-bundle/client/');
+            expect(patchedBuild.assets.url).toContain('/shop/mobify/bundle/test-bundle/client/assets/');
+            delete process.env.MRT_ENV_BASE_PATH;
+        });
+
         it('should create a deep copy of assets to avoid mutation', () => {
             const bundleId = 'test-bundle';
             const testBuild = {

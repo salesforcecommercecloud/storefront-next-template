@@ -42,6 +42,7 @@ vi.mock('./config', () => ({
 
 vi.mock('../utils/paths', () => ({
     getBundlePath: vi.fn(),
+    getBasePath: vi.fn().mockReturnValue(''),
 }));
 
 vi.mock('./middleware/proxy', () => ({
@@ -85,13 +86,17 @@ vi.mock('./ts-import', () => ({
     importTypescript: vi.fn(),
 }));
 
+vi.mock('../config', () => ({
+    loadRuntimeConfig: vi.fn().mockResolvedValue(undefined),
+}));
+
 // Import after mocks are set up
 const { createServer } = await import('./index');
 import type { ServerOptions } from './index';
 const express = (await import('express')).default;
 const { createRequestHandler } = await import('@react-router/express');
 const { loadConfigFromEnv } = await import('./config');
-const { getBundlePath } = await import('../utils/paths');
+const { getBundlePath, getBasePath } = await import('../utils/paths');
 const { createCommerceProxyMiddleware } = await import('./middleware/proxy');
 const { createStaticMiddleware } = await import('./middleware/static');
 const { createCompressionMiddleware } = await import('./middleware/compression');
@@ -345,6 +350,58 @@ describe('server/index', () => {
 
                 expect(vi.mocked(createCommerceProxyMiddleware)).toHaveBeenCalledWith(mockConfig);
                 expect(mockExpressApp.use).toHaveBeenCalledWith('/api/commerce', mockProxyMiddleware);
+            });
+
+            it('should register redirect middleware when base path is configured', async () => {
+                vi.mocked(getBasePath).mockReturnValue('/shop');
+                const mockVite = {
+                    middlewares: vi.fn(),
+                    environments: {},
+                } as unknown as ViteDevServer;
+
+                const options: ServerOptions = {
+                    mode: 'development',
+                    projectDirectory: '/test/project',
+                    vite: mockVite,
+                };
+
+                await createServer(options);
+
+                // The redirect middleware is registered as a function via app.use
+                const middlewareCalls = mockExpressApp.use.mock.calls;
+                const redirectMiddleware = middlewareCalls.find(
+                    (call: unknown[]) => typeof call[0] === 'function' && call[0].length === 3
+                ) as [(...args: unknown[]) => void] | undefined;
+                expect(redirectMiddleware).toBeDefined();
+
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const handler = redirectMiddleware![0];
+
+                // Test the middleware behavior: non-prefixed path should redirect
+                const mockReq = { path: '/category/womens', originalUrl: '/category/womens' };
+                const mockRes = { redirect: vi.fn() };
+                const mockNext = vi.fn();
+                handler(mockReq, mockRes, mockNext);
+                expect(mockRes.redirect).toHaveBeenCalledWith('/shop/category/womens');
+
+                // Prefixed path should pass through
+                mockRes.redirect.mockClear();
+                mockNext.mockClear();
+                const prefixedReq = { path: '/shop/category/womens', originalUrl: '/shop/category/womens' };
+                handler(prefixedReq, mockRes, mockNext);
+                expect(mockNext).toHaveBeenCalled();
+                expect(mockRes.redirect).not.toHaveBeenCalled();
+
+                // /mobify/ paths should pass through
+                mockNext.mockClear();
+                const mobifyReq = {
+                    path: '/mobify/bundle/local/client/foo.js',
+                    originalUrl: '/mobify/bundle/local/client/foo.js',
+                };
+                handler(mobifyReq, mockRes, mockNext);
+                expect(mockNext).toHaveBeenCalled();
+
+                vi.mocked(getBasePath).mockReturnValue('');
             });
 
             it('should load and apply custom middlewares from middleware-registry.ts if it exists', async () => {

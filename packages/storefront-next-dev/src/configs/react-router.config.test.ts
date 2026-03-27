@@ -92,6 +92,7 @@ describe('react-router.config', () => {
                     routeDiscovery: { mode: 'initial' },
                     serverModuleFormat: 'cjs',
                     ssr: true,
+                    basename: '/',
                     future: {
                         v8_middleware: true,
                         v8_viteEnvironmentApi: true,
@@ -286,6 +287,21 @@ describe('react-router.config', () => {
 
                 expect(errorMessage).toContain('future.v8_middleware: expected true, got undefined');
                 expect(errorMessage).toContain('future.v8_viteEnvironmentApi: expected true, got undefined');
+            });
+
+            it('should throw error when basename is overridden', () => {
+                const preset = storefrontNextPreset();
+                const invalidConfig = createMockResolvedConfig({
+                    basename: '/custom-path',
+                });
+
+                expect(() => {
+                    void preset.reactRouterConfigResolved?.({ reactRouterConfig: invalidConfig });
+                }).toThrow('Storefront Next preset configuration was overridden');
+
+                expect(() => {
+                    void preset.reactRouterConfigResolved?.({ reactRouterConfig: invalidConfig });
+                }).toThrow('basename: expected /, got /custom-path');
             });
 
             it('should not validate appDirectory and buildDirectory', () => {

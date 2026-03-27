@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Preset } from '@react-router/dev/config';
+import { getBasePath } from '../utils/paths';
 
 /**
  * Storefront Next preset for React Router configuration.
@@ -22,6 +23,12 @@ import type { Preset } from '@react-router/dev/config';
  */
 export function storefrontNextPreset(): Preset {
     const sfwFalconInstance = process.env.SFW_FALCON_INSTANCE;
+
+    // Read base path from env var for basename configuration
+    // This sets the base path for all React Router routes (e.g., '/site-a')
+    // In dev: reads from .env at build time
+    // In production: baked into the build, but can be overridden at runtime via patchReactRouterBuild
+    const basePath = getBasePath();
 
     const presetConfig = {
         appDirectory: './src',
@@ -33,6 +40,10 @@ export function storefrontNextPreset(): Preset {
             v8_middleware: true,
             v8_viteEnvironmentApi: true,
         },
+        // Set basename from base path for CDN routing
+        // When set, all routes are served under this base path (e.g., /site-a/category/womens)
+        // React Router automatically handles Link, navigate, .data requests, and redirects
+        basename: basePath || '/',
         // Allow workspace proxy domain for CSRF protection on form actions
         ...(sfwFalconInstance && {
             allowedActionOrigins: [`*.dataplane.cvw-dataplane-test.${sfwFalconInstance}.aws.sfdc.cl`],
@@ -74,6 +85,10 @@ export function storefrontNextPreset(): Preset {
                 errors.push(
                     `future.v8_viteEnvironmentApi: expected ${presetConfig.future.v8_viteEnvironmentApi}, got ${reactRouterConfig.future?.v8_viteEnvironmentApi}`
                 );
+            }
+
+            if (reactRouterConfig.basename !== presetConfig.basename) {
+                errors.push(`basename: expected ${presetConfig.basename}, got ${reactRouterConfig.basename}`);
             }
 
             if (errors.length > 0) {
