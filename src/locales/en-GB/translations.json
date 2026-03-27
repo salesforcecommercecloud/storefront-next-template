@@ -497,7 +497,7 @@
         },
         "payment": {
             "title": "Payment",
-            "changeLabel": "Change",
+            "changeLabel": "Edit",
             "methodTitle": "Payment Method",
             "savedMethodDescription": "Choose a saved payment method or add a new one",
             "addNewPaymentMethod": "Add new payment method",
@@ -532,9 +532,10 @@
             "billingPostalCodeRequired": "Zip code is required",
             "billingStateRequired": "State is required",
             "billingCountryRequired": "Country is required",
-            "billingSameAsShipping": "Billing Address same as Shipping Address",
+            "billingSameAsShipping": "Use a different billing address",
             "billingSameAsShippingDescription": "Use the same address for billing and shipping",
             "sameAsShippingAddress": "Same as Shipping Address",
+            "selectAnAddress": "Select an address",
             "noBillingAddressSaved": "No billing address saved",
             "continue": "Continue to Review",
             "saving": "Saving...",
@@ -554,7 +555,7 @@
             "billingSummaryTitle": "Billing Address",
             "viewAllMore": "View all ({{count}} more)",
             "viewLess": "View less",
-            "savePaymentToProfile": "Save this payment for future use"
+            "savePaymentToProfile": "Save payment method for future use"
         },
         "expressPayments": {
             "separator": "Or",

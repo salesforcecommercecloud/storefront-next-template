@@ -104,7 +104,75 @@ Scenario('Basket context syncs when navigating to checkout', async () => {
     .tag('@basket-context')
     .tag('@checkout-navigation');
 
-Scenario('Guest shopper billing address toggle works and custom billing places order', async () => {
+/**
+ * Billing Address Fields Are Blank When Checking "Use a Different Billing Address"
+ *
+ * Test Flow:
+ * 1. Add product to cart and navigate to checkout
+ * 2. Fill contact info and shipping address
+ * 3. Select shipping method to advance to payment step
+ * 4. Verify "Use a different billing address" checkbox is not selected by default
+ * 5. Check "Use a different billing address" checkbox
+ * 6. Verify all billing address fields are blank
+ * 7. Uncheck "Use a different billing address" checkbox
+ * 8. Verify billing fields are hidden (shipping address is used)
+ *
+ * This validates the acceptance criteria: when checking "Use a different billing address",
+ * billing address fields should be blank, not pre-filled with shipping data.
+ */
+Scenario('Guest shopper billing address fields are blank when checking "Use a different billing address"', async () => {
+    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+    checkoutPage.validatePageLoaded();
+
+    await checkoutPage.fillContactInfo(generateTestEmail('billing-test'), TEST_SHIPPING_ADDRESS.phone);
+
+    await checkoutPage.fillShippingAddress(TEST_SHIPPING_ADDRESS);
+
+    await checkoutPage.selectShippingMethod(0);
+
+    const isDifferentBilling = await checkoutPage.isUseDifferentBillingAddressChecked();
+    expect(isDifferentBilling, '"Use a different billing address" checkbox should not be selected by default').to.be
+        .false;
+
+    const fieldsHiddenByDefault = await checkoutPage.areBillingAddressFieldsVisible();
+    expect(fieldsHiddenByDefault, 'Billing fields should be hidden by default').to.be.false;
+
+    await checkoutPage.checkUseDifferentBillingAddress();
+
+    const fieldsVisibleAfterCheck = await checkoutPage.areBillingAddressFieldsVisible();
+    expect(fieldsVisibleAfterCheck, 'Billing fields should be visible after checking "Use a different billing address"')
+        .to.be.true;
+
+    await checkoutPage.validateBillingAddressFieldsAreBlank();
+
+    await checkoutPage.uncheckUseDifferentBillingAddress();
+
+    const fieldsHiddenAfterUncheck = await checkoutPage.areBillingAddressFieldsVisible();
+    expect(
+        fieldsHiddenAfterUncheck,
+        'Billing fields should be hidden after unchecking "Use a different billing address"'
+    ).to.be.false;
+})
+    .tag('@billing-address')
+    .tag('@guest-checkout');
+
+/**
+ * Billing Address Can Be Filled After Checking "Use a Different Billing Address"
+ *
+ * Test Flow:
+ * 1. Add product to cart and navigate to checkout
+ * 2. Fill contact info and shipping address
+ * 3. Select shipping method to advance to payment step
+ * 4. Check "Use a different billing address" checkbox
+ * 5. Fill custom billing address (different from shipping)
+ * 6. Fill payment details and place order
+ * 7. Verify order is placed successfully
+ *
+ * This validates that after checking "Use a different billing address", the user can
+ * fill a custom billing address and complete checkout successfully.
+ */
+Scenario('Guest shopper can fill custom billing address and place order', async () => {
     const customBillingAddress = {
         firstName: 'Jane',
         lastName: 'Smith',
@@ -122,18 +190,16 @@ Scenario('Guest shopper billing address toggle works and custom billing places o
     await checkoutPage.fillShippingAddress(TEST_SHIPPING_ADDRESS);
     await checkoutPage.selectShippingMethod(0);
 
-    const isChecked = await checkoutPage.isBillingSameAsShippingChecked();
-    expect(isChecked, '"Same as shipping" should be checked by default').to.be.true;
-    expect(await checkoutPage.areBillingAddressFieldsVisible(), 'Billing fields hidden when checked').to.be.false;
+    await checkoutPage.checkUseDifferentBillingAddress();
 
-    await checkoutPage.uncheckBillingSameAsShipping();
-    expect(await checkoutPage.areBillingAddressFieldsVisible(), 'Billing fields visible when unchecked').to.be.true;
+    await checkoutPage.checkUseDifferentBillingAddress();
+    expect(await checkoutPage.areBillingAddressFieldsVisible(), 'Billing fields visible when checked').to.be.true;
     await checkoutPage.validateBillingAddressFieldsAreBlank();
 
-    await checkoutPage.checkBillingSameAsShipping();
-    expect(await checkoutPage.areBillingAddressFieldsVisible(), 'Billing fields hidden when re-checked').to.be.false;
+    await checkoutPage.uncheckUseDifferentBillingAddress();
+    expect(await checkoutPage.areBillingAddressFieldsVisible(), 'Billing fields hidden when unchecked').to.be.false;
 
-    await checkoutPage.uncheckBillingSameAsShipping();
+    await checkoutPage.checkUseDifferentBillingAddress();
     await checkoutPage.validateBillingAddressFieldsAreBlank();
     checkoutPage.fillBillingAddress(customBillingAddress);
 

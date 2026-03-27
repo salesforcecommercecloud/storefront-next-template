@@ -433,7 +433,7 @@
         },
         "shippingAddress": {
             "title": "Shipping Address",
-            "changeLabel": "Change",
+            "changeLabel": "Edit",
             "selectSavedAddress": "Select a saved address",
             "viewAllLink": "View all",
             "viewAllMore": "({{count}} more)",
@@ -496,7 +496,7 @@
         },
         "payment": {
             "title": "Payment",
-            "changeLabel": "Change",
+            "changeLabel": "Edit",
             "methodTitle": "Payment Method",
             "savedMethodDescription": "Choose a saved payment method or add a new one",
             "addNewPaymentMethod": "Add new payment method",
@@ -524,9 +524,10 @@
             "cvvInvalid": "Enter a valid CVV",
             "cvvInvalidFormat": "Enter a valid CVV (3-4 digits).",
             "billingAddressRequired": "Billing address is required when different from shipping.",
-            "billingSameAsShipping": "Billing Address same as Shipping Address",
+            "billingSameAsShipping": "Use a different billing address",
             "billingSameAsShippingDescription": "Use the same address for billing and shipping",
             "sameAsShippingAddress": "Same as shipping address",
+            "selectAnAddress": "Select an address",
             "noBillingAddressSaved": "No billing address saved",
             "continue": "Continue to Review",
             "saving": "Saving...",
@@ -546,7 +547,7 @@
             "billingSummaryTitle": "Billing Address",
             "viewAllMore": "View all ({{count}} more)",
             "viewLess": "View less",
-            "savePaymentToProfile": "Save this payment for future use"
+            "savePaymentToProfile": "Save payment method for future use"
         },
         "expressPayments": {
             "separator": "Or",

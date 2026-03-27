@@ -118,7 +118,7 @@ class CheckoutPage {
             .as('Shipping Options Edit Button'),
         paymentEditButton: locate('[data-testid="sf-toggle-card-payment"]')
             .find('button')
-            .withText('Change')
+            .withText('Edit')
             .as('Payment Edit Button'),
         orderNumberText: locate('span.text-primary').as('Order Number'),
         confirmationMessage: locate('text=/thank you|order placed|order confirmed|your order is confirmed/i').as(
@@ -912,39 +912,38 @@ class CheckoutPage {
     // =========================================================================
 
     /**
-     * Check if the "Same as shipping" checkbox is checked
+     * Check if the "Use a different billing address" checkbox is checked.
      */
-    async isBillingSameAsShippingChecked(): Promise<boolean> {
-        const checkbox = await I.grabAttributeFrom(this.locators.billingSameAsShippingCheckbox, 'aria-checked');
-        return checkbox === 'true';
+    async isUseDifferentBillingAddressChecked(): Promise<boolean> {
+        const ariaChecked = await I.grabAttributeFrom(this.locators.billingSameAsShippingCheckbox, 'aria-checked');
+        return ariaChecked === 'true';
     }
 
     /**
-     * Toggle the "Same as shipping" checkbox
+     * Toggle the "Use a different billing address" checkbox.
      */
-    async toggleBillingSameAsShipping(): Promise<void> {
+    async toggleUseDifferentBillingAddress(): Promise<void> {
         I.click(this.locators.billingSameAsShippingLabel);
-        // Wait a bit for React state to update and fields to render/clear
         await new Promise((resolve) => setTimeout(resolve, 300));
     }
 
     /**
-     * Uncheck the "Same as shipping" checkbox if it's currently checked
+     * Check the "Use a different billing address" checkbox to show billing fields.
      */
-    async uncheckBillingSameAsShipping(): Promise<void> {
-        const isChecked = await this.isBillingSameAsShippingChecked();
-        if (isChecked) {
-            await this.toggleBillingSameAsShipping();
+    async checkUseDifferentBillingAddress(): Promise<void> {
+        const isChecked = await this.isUseDifferentBillingAddressChecked();
+        if (!isChecked) {
+            await this.toggleUseDifferentBillingAddress();
         }
     }
 
     /**
-     * Check the "Same as shipping" checkbox if it's currently unchecked
+     * Uncheck the "Use a different billing address" checkbox to hide billing fields.
      */
-    async checkBillingSameAsShipping(): Promise<void> {
-        const isChecked = await this.isBillingSameAsShippingChecked();
-        if (!isChecked) {
-            await this.toggleBillingSameAsShipping();
+    async uncheckUseDifferentBillingAddress(): Promise<void> {
+        const isChecked = await this.isUseDifferentBillingAddressChecked();
+        if (isChecked) {
+            await this.toggleUseDifferentBillingAddress();
         }
     }
 

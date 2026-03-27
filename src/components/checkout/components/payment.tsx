@@ -17,18 +17,21 @@ import { useForm } from 'react-hook-form';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
-import { Typography } from '@/components/typography';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ChevronDown, Check } from 'lucide-react';
 import { useBasket } from '@/providers/basket';
 import { createPaymentSchema, getPaymentDefaultValues, type PaymentData } from '@/lib/checkout-schemas';
 import { getCardTypeDisplay, getLastFourDigits } from '@/lib/payment-utils';
-import { getAddressKey, isOrderBillingAddressIncomplete } from '@/lib/address-utils';
+import { formatAddress, getAddressKey, isOrderBillingAddressIncomplete } from '@/lib/address-utils';
 import { getCardIcon } from '@/lib/card-icon-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
-import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { AddressFormFields } from '@/components/address-form-fields';
 import { CreditCardInputFields } from '@/components/credit-card-input-fields';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
@@ -39,7 +42,6 @@ import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 import CreditCardOptionIcon from '@/components/icons/credit-card-option-icon';
-import { cn } from '@/lib/utils';
 
 interface PaymentProps {
     onSubmit: (data: PaymentData) => void;
@@ -74,14 +76,18 @@ export default function Payment({
 
     /** When false, show only first INITIAL_VISIBLE_COUNT options and "View all (n more)". See Figma NEXT Design System – Login/Checkout. */
     const [showAllPaymentOptions, setShowAllPaymentOptions] = useState(false);
+    const paymentSectionRef = useRef<HTMLDivElement | null>(null);
+    const shouldScrollToPaymentOnCollapseRef = useRef(false);
 
     const { t } = useTranslation('checkout');
+    const isUpcomingStep = disabled && !isEditing;
 
     const INITIAL_VISIBLE_COUNT = 3;
     const paymentFormError = getCheckoutDisplayError(actionData, 'payment');
 
     // Get customer's saved payment methods
     const savedPaymentMethods = getPaymentMethodsFromCustomer(customerProfile);
+    const savedAddresses = getAddressBookFromCustomer(customerProfile);
 
     // Set default payment method only on mount or when savedPaymentMethods change. Use a ref to read
     // current selection so we don't depend on selectedPaymentMethod and avoid an effect loop.
@@ -116,6 +122,26 @@ export default function Payment({
 
     const selectedSavedMethod =
         paymentRadioValue !== 'new' ? savedPaymentMethods.find((method) => method.id === paymentRadioValue) : undefined;
+    const hasSummaryPaymentMethod = Boolean(paymentMethod || selectedSavedMethod);
+    const summaryMethodLabel = paymentMethod
+        ? getCardTypeDisplay(paymentMethod)
+        : selectedSavedMethod
+          ? getCardTypeDisplay({
+                paymentCard: { cardType: selectedSavedMethod.cardType },
+            } as ShopperBasketsV2.schemas['OrderPaymentInstrument'])
+          : '';
+    const summaryLastFour =
+        getLastFourDigits(paymentMethod?.paymentCard?.numberLastDigits || paymentMethod?.paymentCard?.maskedNumber) ||
+        getLastFourDigits(selectedSavedMethod?.maskedNumber);
+    const summaryExpiryMonthRaw = paymentMethod?.paymentCard?.expirationMonth ?? selectedSavedMethod?.expirationMonth;
+    const summaryExpiryYearRaw = paymentMethod?.paymentCard?.expirationYear ?? selectedSavedMethod?.expirationYear;
+    const summaryExpiryMonth =
+        summaryExpiryMonthRaw !== undefined && summaryExpiryMonthRaw !== null
+            ? String(summaryExpiryMonthRaw).padStart(2, '0')
+            : '';
+    const summaryExpiryYear =
+        summaryExpiryYearRaw !== undefined && summaryExpiryYearRaw !== null ? String(summaryExpiryYearRaw) : '';
+    const hasSummaryExpiry = Boolean(summaryExpiryMonth && summaryExpiryYear);
 
     const allPaymentOptionIds = useMemo(() => [...savedPaymentMethods.map((m) => m.id), 'new'], [savedPaymentMethods]);
     const visiblePaymentOptionIds = useMemo(() => {
@@ -136,11 +162,19 @@ export default function Payment({
         hiddenPaymentCount === 0;
     const handleViewLess = () => {
         setShowAllPaymentOptions(false);
+        shouldScrollToPaymentOnCollapseRef.current = true;
         const firstVisible = allPaymentOptionIds.slice(0, INITIAL_VISIBLE_COUNT);
         if (!firstVisible.includes(paymentRadioValue)) {
             setSelectedPaymentMethod(firstVisible[0]);
         }
     };
+
+    useEffect(() => {
+        if (!showAllPaymentOptions && shouldScrollToPaymentOnCollapseRef.current) {
+            paymentSectionRef.current?.scrollIntoView({ block: 'start' });
+            shouldScrollToPaymentOnCollapseRef.current = false;
+        }
+    }, [showAllPaymentOptions]);
 
     // Helper function to check if billing address is same as shipping address
     const isBillingSameAsShipping = (
@@ -176,6 +210,11 @@ export default function Payment({
             billingAddr.postalCode === shippingAddr.postalCode
         );
     };
+
+    const billingAddressOptions = useMemo(
+        () => savedAddresses.filter((addr) => !isBillingSameAsShipping(addr, shippingAddress)),
+        [savedAddresses, shippingAddress]
+    );
 
     // Memoize default values to prevent infinite re-renders
     // Only use basket payment instrument holder when user has selected that saved method.
@@ -263,15 +302,25 @@ export default function Payment({
     const billingSameAsShippingWatched = form.watch('billingSameAsShipping');
     useEffect(() => {
         if (!showBillingSameAsShipping || !shippingAddress || !shippingAddressSyncKey) return;
-        if (!billingSameAsShippingWatched) return;
-        form.setValue('billingFirstName', shippingAddress.firstName ?? '');
-        form.setValue('billingLastName', shippingAddress.lastName ?? '');
-        form.setValue('billingAddress1', shippingAddress.address1 ?? '');
-        form.setValue('billingAddress2', shippingAddress.address2 ?? '');
-        form.setValue('billingCity', shippingAddress.city ?? '');
-        form.setValue('billingStateCode', shippingAddress.stateCode ?? '');
-        form.setValue('billingPostalCode', shippingAddress.postalCode ?? '');
-        form.setValue('billingCountryCode', shippingAddress.countryCode ?? 'US');
+        if (billingSameAsShippingWatched) {
+            form.setValue('billingFirstName', shippingAddress.firstName ?? '');
+            form.setValue('billingLastName', shippingAddress.lastName ?? '');
+            form.setValue('billingAddress1', shippingAddress.address1 ?? '');
+            form.setValue('billingAddress2', shippingAddress.address2 ?? '');
+            form.setValue('billingCity', shippingAddress.city ?? '');
+            form.setValue('billingStateCode', shippingAddress.stateCode ?? '');
+            form.setValue('billingPostalCode', shippingAddress.postalCode ?? '');
+            form.setValue('billingCountryCode', shippingAddress.countryCode ?? 'US');
+        } else {
+            form.setValue('billingFirstName', '');
+            form.setValue('billingLastName', '');
+            form.setValue('billingAddress1', '');
+            form.setValue('billingAddress2', '');
+            form.setValue('billingCity', '');
+            form.setValue('billingStateCode', '');
+            form.setValue('billingPostalCode', '');
+            form.setValue('billingCountryCode', 'US');
+        }
     }, [showBillingSameAsShipping, shippingAddress, shippingAddressSyncKey, billingSameAsShippingWatched, form]);
 
     // Update form values when selected payment method changes
@@ -301,6 +350,50 @@ export default function Payment({
 
     // Watch billingSameAsShipping for reactive UI updates
     const billingSameAsShipping = form.watch('billingSameAsShipping');
+
+    const [selectedBillingAddressId, setSelectedBillingAddressId] = useState('');
+    const [billingDropdownOpen, setBillingDropdownOpen] = useState(false);
+
+    const setBillingFields = (values: Record<string, string>) => {
+        for (const [key, value] of Object.entries(values)) {
+            form.setValue(key as keyof PaymentData, value, { shouldDirty: false, shouldValidate: false });
+        }
+    };
+
+    const clearBillingFields = () => {
+        setBillingFields({
+            billingFirstName: '',
+            billingLastName: '',
+            billingAddress1: '',
+            billingAddress2: '',
+            billingCity: '',
+            billingStateCode: '',
+            billingPostalCode: '',
+            billingPhone: '',
+            billingCountryCode: 'US',
+        });
+    };
+
+    const handleBillingAddressChange = (addressId: string) => {
+        setSelectedBillingAddressId(addressId);
+        if (addressId === 'new') {
+            clearBillingFields();
+            return;
+        }
+        const addr = savedAddresses.find((a) => a.id === addressId);
+        if (!addr) return;
+        setBillingFields({
+            billingFirstName: addr.firstName ?? '',
+            billingLastName: addr.lastName ?? '',
+            billingAddress1: addr.address1 ?? '',
+            billingAddress2: addr.address2 ?? '',
+            billingCity: addr.city ?? '',
+            billingStateCode: addr.stateCode ?? '',
+            billingPostalCode: addr.postalCode ?? '',
+            billingPhone: addr.phone ?? '',
+            billingCountryCode: addr.countryCode ?? 'US',
+        });
+    };
 
     // Watch credit card and billing fields so we can clear inline errors when the user enters values
     const cardNumber = form.watch('cardNumber');
@@ -392,356 +485,390 @@ export default function Payment({
     // The ToggleCard will handle the collapsed/expanded state based on editing prop
 
     const stepTitle = (
-        <Typography variant="h5" as="span" className="text-card-foreground">
+        <span className="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground">
             {t('payment.title')}
-        </Typography>
+        </span>
     );
 
     return (
-        <ToggleCard
-            id="payment"
-            title={stepTitle as React.ReactNode}
-            editing={isEditing}
-            disabled={disabled}
-            onEdit={onEdit}
-            editLabel={t('payment.changeLabel')}
-            isLoading={isLoading}
-            className={cn('border-border bg-card rounded-[var(--radius)] shadow-sm py-4', !disabled && 'gap-1.5')}>
-            <ToggleCardEdit>
-                <Form {...form}>
-                    <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
-                        {paymentFormError && <CheckoutErrorBanner message={paymentFormError} />}
+        <div ref={paymentSectionRef}>
+            <ToggleCard
+                id="payment"
+                title={stepTitle as React.ReactNode}
+                editing={isEditing}
+                disabled={isUpcomingStep ? false : disabled}
+                disableEdit={isUpcomingStep}
+                onEdit={onEdit}
+                editLabel={t('payment.changeLabel')}
+                isLoading={isLoading}
+                showHeaderSeparator>
+                <ToggleCardEdit>
+                    <Form {...form}>
+                        <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
+                            {paymentFormError && <CheckoutErrorBanner message={paymentFormError} />}
 
-                        {/* Payment Method Section */}
-                        <div className="space-y-4">
-                            <UITarget targetId="checkout.payment.paymentMethods.before" />
-                            <UITarget targetId="checkout.payment.paymentMethods">
-                                {/* Saved Payment Methods + Credit Card, with View All (n more) when > 3 options */}
-                                {savedPaymentMethods.length > 0 && (
-                                    <div className="space-y-3">
-                                        <RadioGroup
-                                            value={paymentRadioValue}
-                                            onValueChange={setSelectedPaymentMethod}
-                                            className="space-y-3">
-                                            {visiblePaymentOptionIds.map((optionId) => {
-                                                if (optionId === 'new') {
+                            {/* Payment Method Section */}
+                            <div className="space-y-4">
+                                <UITarget targetId="checkout.payment.paymentMethods.before" />
+                                <UITarget targetId="checkout.payment.paymentMethods">
+                                    {/* Saved Payment Methods + Credit Card, with View All (n more) when > 3 options */}
+                                    {savedPaymentMethods.length > 0 && (
+                                        <div className="space-y-4">
+                                            <RadioGroup
+                                                value={paymentRadioValue}
+                                                onValueChange={setSelectedPaymentMethod}
+                                                className="space-y-2">
+                                                {visiblePaymentOptionIds.map((optionId) => {
+                                                    if (optionId === 'new') {
+                                                        if (
+                                                            paymentRadioValue === 'new' &&
+                                                            savedPaymentMethods.length > 0
+                                                        ) {
+                                                            return null;
+                                                        }
+                                                        return (
+                                                            <div
+                                                                key="new"
+                                                                className="flex items-center gap-2 border border-input bg-card p-4">
+                                                                <RadioGroupItem value="new" id="new-payment" />
+                                                                <Label
+                                                                    htmlFor="new-payment"
+                                                                    className="flex-1 cursor-pointer flex items-center gap-2">
+                                                                    <span className="text-sm font-medium leading-5 text-foreground">
+                                                                        {t('payment.creditCardOption')}
+                                                                    </span>
+                                                                    <CreditCardOptionIcon className="w-5 h-5 flex-shrink-0 ml-auto text-muted-foreground" />
+                                                                </Label>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    const method = savedPaymentMethods.find((m) => m.id === optionId);
+                                                    if (!method) return null;
+                                                    const cardTypeIdentifier = method.cardType || 'unknown';
+                                                    const CardIcon = getCardIcon(cardTypeIdentifier);
+                                                    const cardTypeLabel = method.cardType
+                                                        ? method.cardType.charAt(0).toUpperCase() +
+                                                          method.cardType.slice(1).toLowerCase()
+                                                        : t('payment.unknownCardType');
                                                     return (
                                                         <div
-                                                            key="new"
-                                                            className="flex items-center gap-3 p-4 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
-                                                            <RadioGroupItem value="new" id="new-payment" />
+                                                            key={method.id}
+                                                            className="flex items-start gap-2 border border-input bg-card p-4">
+                                                            <RadioGroupItem
+                                                                value={method.id}
+                                                                id={method.id}
+                                                                className="mt-0.5"
+                                                            />
                                                             <Label
-                                                                htmlFor="new-payment"
-                                                                className="flex-1 cursor-pointer flex items-center gap-3">
-                                                                <span className="text-base font-medium leading-5 text-foreground">
+                                                                htmlFor={method.id}
+                                                                className="flex-1 cursor-pointer min-w-0">
+                                                                <div className="flex flex-col gap-1">
+                                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                                        <span className="text-sm font-medium leading-5 text-foreground">
+                                                                            {cardTypeLabel}
+                                                                        </span>
+                                                                        {method.preferred && (
+                                                                            <Badge variant="info">
+                                                                                {t('payment.defaultBadge')}
+                                                                            </Badge>
+                                                                        )}
+                                                                    </div>
+                                                                    <span className="text-sm font-normal leading-5 text-muted-foreground">
+                                                                        {t('payment.endingIn', {
+                                                                            lastDigits: getLastFourDigits(
+                                                                                method.maskedNumber
+                                                                            ),
+                                                                        })}
+                                                                    </span>
+                                                                </div>
+                                                            </Label>
+                                                            <CardIcon
+                                                                className="w-6 h-4 flex-shrink-0 text-muted-foreground mt-0.5"
+                                                                aria-hidden
+                                                            />
+                                                        </div>
+                                                    );
+                                                })}
+                                            </RadioGroup>
+                                            {hiddenPaymentCount > 0 ? (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-sm font-medium text-foreground"
+                                                    onClick={() => setShowAllPaymentOptions(true)}
+                                                    aria-expanded={false}>
+                                                    {t('payment.viewAllMore', { count: hiddenPaymentCount })}
+                                                </Button>
+                                            ) : (
+                                                allPaymentOptionIds.length > INITIAL_VISIBLE_COUNT &&
+                                                paymentRadioValue !== 'new' && (
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-sm font-medium text-foreground"
+                                                        onClick={handleViewLess}
+                                                        aria-expanded={true}>
+                                                        {t('payment.viewLess')}
+                                                    </Button>
+                                                )
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Credit Card option (when no saved methods) or form when "new" selected */}
+                                    {(savedPaymentMethods.length === 0 || paymentRadioValue === 'new') && (
+                                        <div className="space-y-2">
+                                            <div className="border border-input bg-card p-4 space-y-4">
+                                                {(savedPaymentMethods.length === 0 || paymentRadioValue === 'new') && (
+                                                    <div className="flex items-center gap-2">
+                                                        <RadioGroup
+                                                            value="new"
+                                                            className="flex items-center gap-2 flex-1"
+                                                            onValueChange={() => setSelectedPaymentMethod('new')}>
+                                                            <RadioGroupItem
+                                                                value="new"
+                                                                id="credit-card-option"
+                                                                checked
+                                                            />
+                                                            <Label
+                                                                htmlFor="credit-card-option"
+                                                                className="flex items-center gap-2 cursor-pointer flex-1">
+                                                                <span className="text-sm font-medium leading-5 text-foreground">
                                                                     {t('payment.creditCardOption')}
                                                                 </span>
                                                                 <CreditCardOptionIcon className="w-5 h-5 flex-shrink-0 ml-auto text-muted-foreground" />
                                                             </Label>
-                                                        </div>
-                                                    );
-                                                }
-                                                const method = savedPaymentMethods.find((m) => m.id === optionId);
-                                                if (!method) return null;
-                                                const cardTypeIdentifier = method.cardType || 'unknown';
-                                                const CardIcon = getCardIcon(cardTypeIdentifier);
-                                                const cardTypeLabel = method.cardType
-                                                    ? method.cardType.charAt(0).toUpperCase() +
-                                                      method.cardType.slice(1).toLowerCase()
-                                                    : t('payment.unknownCardType');
-                                                return (
-                                                    <div
-                                                        key={method.id}
-                                                        className="flex items-start gap-3 p-4 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
-                                                        <RadioGroupItem
-                                                            value={method.id}
-                                                            id={method.id}
-                                                            className="mt-0.5"
-                                                        />
-                                                        <Label
-                                                            htmlFor={method.id}
-                                                            className="flex-1 cursor-pointer min-w-0">
-                                                            <div className="flex flex-col gap-1">
-                                                                <div className="flex items-center gap-2 flex-wrap">
-                                                                    <span className="text-base font-medium leading-5 text-foreground">
-                                                                        {cardTypeLabel}
-                                                                    </span>
-                                                                    {method.preferred && (
-                                                                        <span className="text-xs font-medium leading-none bg-primary text-primary-foreground px-2 py-1 rounded-full">
-                                                                            {t('payment.defaultBadge')}
+                                                        </RadioGroup>
+                                                    </div>
+                                                )}
+
+                                                <CreditCardInputFields
+                                                    form={form}
+                                                    autoFocus={isEditing && paymentRadioValue === 'new'}
+                                                />
+                                                {customerProfile?.customer?.customerId ? (
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="savePaymentToProfile"
+                                                        render={({ field }) => {
+                                                            return (
+                                                                <FormItem className="space-y-0">
+                                                                    <label
+                                                                        htmlFor={field.name}
+                                                                        className="flex cursor-pointer items-start gap-3">
+                                                                        <FormControl>
+                                                                            <Checkbox
+                                                                                id={field.name}
+                                                                                checked={field.value ?? false}
+                                                                                onCheckedChange={(checked) => {
+                                                                                    field.onChange(checked === true);
+                                                                                }}
+                                                                                className="size-5 shrink-0 rounded border-2 border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-primary-foreground"
+                                                                                aria-label={t(
+                                                                                    'payment.savePaymentToProfile'
+                                                                                )}
+                                                                            />
+                                                                        </FormControl>
+                                                                        <span className="text-sm font-normal leading-none text-foreground pt-0.5">
+                                                                            {t('payment.savePaymentToProfile')}
                                                                         </span>
-                                                                    )}
-                                                                </div>
-                                                                <span className="text-sm font-normal leading-5 text-muted-foreground">
-                                                                    {t('payment.endingIn', {
-                                                                        lastDigits: getLastFourDigits(
-                                                                            method.maskedNumber
-                                                                        ),
-                                                                    })}
+                                                                    </label>
+                                                                </FormItem>
+                                                            );
+                                                        }}
+                                                    />
+                                                ) : null}
+                                            </div>
+                                            {showViewLessUnderForm && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-sm font-medium text-foreground"
+                                                    onClick={handleViewLess}
+                                                    aria-expanded={true}>
+                                                    {t('payment.viewLess')}
+                                                </Button>
+                                            )}
+                                        </div>
+                                    )}
+                                </UITarget>
+                                <UITarget targetId="checkout.payment.paymentMethods.after" />
+                            </div>
+                            {/* Billing Address Section */}
+                            <div className="space-y-4">
+                                <UITarget targetId="checkout.payment.billingAddress.before" />
+                                <UITarget targetId="checkout.payment.billingAddress">
+                                    <div className="border-t border-input pt-4 space-y-4">
+                                        {showBillingSameAsShipping && (
+                                            <FormField
+                                                control={form.control}
+                                                name="billingSameAsShipping"
+                                                render={({ field }) => (
+                                                    <FormItem className="space-y-0">
+                                                        <label
+                                                            htmlFor={field.name}
+                                                            className="flex cursor-pointer items-start gap-3">
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    id={field.name}
+                                                                    checked={!field.value}
+                                                                    onCheckedChange={(checked) => {
+                                                                        field.onChange(checked !== true);
+                                                                    }}
+                                                                    aria-label={t('payment.billingSameAsShipping')}
+                                                                />
+                                                            </FormControl>
+                                                            <span className="text-sm font-normal leading-none text-foreground pt-0.5">
+                                                                {t('payment.billingSameAsShipping')}
+                                                            </span>
+                                                        </label>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        )}
+
+                                        {!billingSameAsShipping && (
+                                            <div className="space-y-4">
+                                                {billingAddressOptions.length > 0 && (
+                                                    <Popover
+                                                        open={billingDropdownOpen}
+                                                        onOpenChange={setBillingDropdownOpen}>
+                                                        <PopoverTrigger asChild>
+                                                            <button
+                                                                type="button"
+                                                                className="flex w-full items-center justify-between border border-input bg-card px-4 h-9 text-sm font-medium text-foreground">
+                                                                <span
+                                                                    className={`truncate ${!selectedBillingAddressId ? 'text-muted-foreground' : ''}`}>
+                                                                    {!selectedBillingAddressId
+                                                                        ? t('payment.selectAnAddress')
+                                                                        : selectedBillingAddressId === 'new'
+                                                                          ? `+ ${t('shippingAddress.addNewAddressButton')}`
+                                                                          : formatAddress(
+                                                                                billingAddressOptions.find(
+                                                                                    (a) =>
+                                                                                        a.id ===
+                                                                                        selectedBillingAddressId
+                                                                                )
+                                                                            ).fullAddress}
                                                                 </span>
+                                                                <ChevronDown className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent
+                                                            align="start"
+                                                            sideOffset={4}
+                                                            className="w-[var(--radix-popover-trigger-width)] rounded-none border border-input bg-card p-0 shadow-md">
+                                                            <div className="max-h-[108px] overflow-y-auto">
+                                                                {[...billingAddressOptions]
+                                                                    .sort((a, b) => {
+                                                                        const sel = selectedBillingAddressId;
+                                                                        if (a.id === sel) return -1;
+                                                                        if (b.id === sel) return 1;
+                                                                        return 0;
+                                                                    })
+                                                                    .map((address) => {
+                                                                        const isSelected =
+                                                                            selectedBillingAddressId === address.id;
+                                                                        return (
+                                                                            <button
+                                                                                key={address.id}
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    handleBillingAddressChange(
+                                                                                        address.id
+                                                                                    );
+                                                                                    setBillingDropdownOpen(false);
+                                                                                }}
+                                                                                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-accent">
+                                                                                <span className="flex-1 truncate text-left">
+                                                                                    {formatAddress(address).fullAddress}
+                                                                                </span>
+                                                                                {isSelected && (
+                                                                                    <Check className="h-4 w-4 shrink-0" />
+                                                                                )}
+                                                                            </button>
+                                                                        );
+                                                                    })}
                                                             </div>
-                                                        </Label>
-                                                        <CardIcon
-                                                            className="w-8 h-5 flex-shrink-0 text-muted-foreground"
-                                                            aria-hidden
+                                                            <div className="sticky bottom-0 border-t border-input bg-card">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        handleBillingAddressChange('new');
+                                                                        setBillingDropdownOpen(false);
+                                                                    }}
+                                                                    className="flex w-full items-center px-3 py-2 text-sm text-foreground hover:bg-accent">
+                                                                    {`+ ${t('shippingAddress.addNewAddressButton')}`}
+                                                                </button>
+                                                            </div>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                )}
+                                                {(selectedBillingAddressId === 'new' ||
+                                                    billingAddressOptions.length === 0) && (
+                                                    <div className="bg-muted p-4">
+                                                        <AddressFormFields
+                                                            form={form}
+                                                            fieldPrefix="billing"
+                                                            showPhone={false}
+                                                            showCountry
+                                                            countryCode="US"
+                                                            autoFocus
+                                                            autoFocusField="firstName"
                                                         />
                                                     </div>
-                                                );
-                                            })}
-                                        </RadioGroup>
-                                        {hiddenPaymentCount > 0 ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowAllPaymentOptions(true)}
-                                                className="text-sm font-medium text-foreground focus:outline-none">
-                                                {t('payment.viewAllMore', { count: hiddenPaymentCount })}
-                                            </button>
-                                        ) : (
-                                            allPaymentOptionIds.length > INITIAL_VISIBLE_COUNT &&
-                                            paymentRadioValue !== 'new' && (
-                                                <button
-                                                    type="button"
-                                                    onClick={handleViewLess}
-                                                    className="text-sm font-medium text-muted-foreground hover:text-foreground focus:outline-none">
-                                                    {t('payment.viewLess')}
-                                                </button>
-                                            )
+                                                )}
+                                            </div>
                                         )}
                                     </div>
-                                )}
+                                </UITarget>
+                                <UITarget targetId="checkout.payment.billingAddress.after" />
+                            </div>
+                        </form>
+                    </Form>
+                </ToggleCardEdit>
 
-                                {/* Credit Card option (when no saved methods) or form when "new" selected */}
-                                {(savedPaymentMethods.length === 0 || paymentRadioValue === 'new') && (
-                                    <div className="space-y-3">
-                                        <div className="rounded-lg border border-border bg-card p-4 space-y-4">
-                                            {savedPaymentMethods.length === 0 && (
-                                                <div className="flex items-center gap-3 p-4 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
-                                                    <RadioGroup
-                                                        value="new"
-                                                        className="flex items-center gap-3 flex-1"
-                                                        onValueChange={() => setSelectedPaymentMethod('new')}>
-                                                        <RadioGroupItem value="new" id="credit-card-option" checked />
-                                                        <Label
-                                                            htmlFor="credit-card-option"
-                                                            className="flex items-center gap-3 cursor-pointer flex-1">
-                                                            <span className="text-base font-medium leading-5 text-foreground">
-                                                                {t('payment.creditCardOption')}
-                                                            </span>
-                                                            <CreditCardOptionIcon className="w-5 h-5 flex-shrink-0 ml-auto text-muted-foreground" />
-                                                        </Label>
-                                                    </RadioGroup>
-                                                </div>
-                                            )}
-
-                                            <CreditCardInputFields
-                                                form={form}
-                                                autoFocus={isEditing && paymentRadioValue === 'new'}
-                                            />
-                                            {customerProfile?.customer?.customerId ? (
-                                                <FormField
-                                                    control={form.control}
-                                                    name="savePaymentToProfile"
-                                                    render={({ field }) => {
-                                                        return (
-                                                            <FormItem className="space-y-0">
-                                                                <label
-                                                                    htmlFor={field.name}
-                                                                    className="flex cursor-pointer items-start gap-3">
-                                                                    <FormControl>
-                                                                        <Checkbox
-                                                                            id={field.name}
-                                                                            checked={field.value ?? false}
-                                                                            onCheckedChange={(checked) => {
-                                                                                field.onChange(checked === true);
-                                                                            }}
-                                                                            className="size-5 shrink-0 rounded border-2 border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-primary-foreground"
-                                                                            aria-label={t(
-                                                                                'payment.savePaymentToProfile'
-                                                                            )}
-                                                                        />
-                                                                    </FormControl>
-                                                                    <span className="text-base font-normal leading-5 text-foreground pt-0.5">
-                                                                        {t('payment.savePaymentToProfile')}
-                                                                    </span>
-                                                                </label>
-                                                            </FormItem>
-                                                        );
-                                                    }}
-                                                />
-                                            ) : null}
+                <ToggleCardSummary>
+                    {isUpcomingStep ? (
+                        <p className="text-sm text-muted-foreground">{t('shippingOptions.completePreviousSteps')}</p>
+                    ) : (
+                        <div className="space-y-0.5 w-full">
+                            {hasSummaryPaymentMethod ? (
+                                <>
+                                    <p className="text-sm font-normal leading-5 text-foreground">
+                                        {`${summaryMethodLabel} **** ${summaryLastFour}`}
+                                    </p>
+                                    {hasSummaryExpiry && (
+                                        <p className="text-sm font-normal leading-5 text-foreground">
+                                            {`Expires ${summaryExpiryMonth}/${summaryExpiryYear}`}
+                                        </p>
+                                    )}
+                                    {billingSameAsShipping ||
+                                    !billingAddress ||
+                                    isBillingSameAsShipping(billingAddress, shippingAddress) ? (
+                                        <p className="text-sm font-normal leading-5 text-foreground">
+                                            {`Billing: ${t('payment.sameAsShippingAddress')}`}
+                                        </p>
+                                    ) : (
+                                        <div className="text-sm font-normal leading-5 text-foreground">
+                                            <p>{`Billing: ${formatAddress(billingAddress).nameLine}`}</p>
+                                            <p>{formatAddress(billingAddress).streetLine}</p>
+                                            <p>{formatAddress(billingAddress).cityLine}</p>
                                         </div>
-                                        {showViewLessUnderForm && (
-                                            <button
-                                                type="button"
-                                                onClick={handleViewLess}
-                                                className="text-sm font-medium text-muted-foreground hover:text-foreground focus:outline-none">
-                                                {t('payment.viewLess')}
-                                            </button>
-                                        )}
-                                    </div>
-                                )}
-                            </UITarget>
-                            <UITarget targetId="checkout.payment.paymentMethods.after" />
-                        </div>
-                        {/* Billing Address Section */}
-                        <div className="space-y-4">
-                            <UITarget targetId="checkout.payment.billingAddress.before" />
-                            <UITarget targetId="checkout.payment.billingAddress">
-                                <div className="rounded-xl border border-border p-4 space-y-4">
-                                    {showBillingSameAsShipping && (
-                                        <FormField
-                                            control={form.control}
-                                            name="billingSameAsShipping"
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-0">
-                                                    <label
-                                                        htmlFor={field.name}
-                                                        className="flex cursor-pointer items-start gap-3">
-                                                        <FormControl>
-                                                            <Checkbox
-                                                                id={field.name}
-                                                                checked={field.value}
-                                                                onCheckedChange={(checked) => {
-                                                                    field.onChange(checked === true);
-                                                                    // Clear billing address fields when unchecking "Same as shipping"
-                                                                    if (checked === false) {
-                                                                        form.setValue('billingFirstName', '');
-                                                                        form.setValue('billingLastName', '');
-                                                                        form.setValue('billingAddress1', '');
-                                                                        form.setValue('billingAddress2', '');
-                                                                        form.setValue('billingCity', '');
-                                                                        form.setValue('billingStateCode', '');
-                                                                        form.setValue('billingPostalCode', '');
-                                                                        form.setValue('billingCountryCode', 'US');
-                                                                    }
-                                                                }}
-                                                                className="size-5 shrink-0 rounded border-2 border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-primary-foreground"
-                                                                aria-label={t('payment.billingSameAsShipping')}
-                                                            />
-                                                        </FormControl>
-                                                        <span className="text-base font-medium leading-5 text-foreground pt-0.5">
-                                                            {t('payment.billingSameAsShipping')}
-                                                        </span>
-                                                    </label>
-                                                </FormItem>
-                                            )}
-                                        />
                                     )}
-
-                                    {!billingSameAsShipping && (
-                                        <AddressFormFields
-                                            form={form}
-                                            fieldPrefix="billing"
-                                            showPhone={false}
-                                            showCountry
-                                            countryCode="US"
-                                            labelsAsPlaceholders
-                                            autoFocus
-                                            autoFocusField="firstName"
-                                        />
-                                    )}
-                                </div>
-                            </UITarget>
-                            <UITarget targetId="checkout.payment.billingAddress.after" />
-                        </div>
-                    </form>
-                </Form>
-            </ToggleCardEdit>
-
-            <ToggleCardSummary>
-                {disabled ? null : (
-                    <div className="flex flex-col items-start gap-6 w-full">
-                        {/* Payment Method - Figma: gap 6px between title and details */}
-                        <div className="space-y-1.5 w-full">
-                            {paymentMethod ? (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-normal leading-5 text-muted-foreground">
-                                        {t('payment.summaryLabel', {
-                                            methodLabel: getCardTypeDisplay(paymentMethod),
-                                            lastDigits: getLastFourDigits(
-                                                paymentMethod.paymentCard?.numberLastDigits ||
-                                                    paymentMethod.paymentCard?.maskedNumber
-                                            ),
-                                        })}
-                                    </span>
-                                    {(() => {
-                                        const cardTypeDisplay = getCardTypeDisplay(paymentMethod);
-                                        const SummaryCardIcon = getCardIcon(cardTypeDisplay);
-                                        return (
-                                            <SummaryCardIcon className="w-8 h-5 shrink-0 text-primary" aria-hidden />
-                                        );
-                                    })()}
-                                </div>
-                            ) : savedPaymentMethods.length > 0 ? (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-normal leading-5 text-muted-foreground">
-                                        {t('payment.summarySavedLabel', {
-                                            methodLabel: selectedSavedMethod
-                                                ? getCardTypeDisplay({
-                                                      paymentCard: {
-                                                          cardType: selectedSavedMethod.cardType,
-                                                      },
-                                                  } as ShopperBasketsV2.schemas['OrderPaymentInstrument'])
-                                                : t('payment.defaultCardLabel'),
-                                            lastDigits: getLastFourDigits(selectedSavedMethod?.maskedNumber),
-                                        })}
-                                    </span>
-                                    {selectedSavedMethod &&
-                                        (() => {
-                                            const cardTypeDisplay = getCardTypeDisplay({
-                                                paymentCard: { cardType: selectedSavedMethod.cardType },
-                                            } as ShopperBasketsV2.schemas['OrderPaymentInstrument']);
-                                            const SummaryCardIcon = getCardIcon(cardTypeDisplay);
-                                            return (
-                                                <SummaryCardIcon
-                                                    className="w-8 h-5 shrink-0 text-primary"
-                                                    aria-hidden
-                                                />
-                                            );
-                                        })()}
-                                </div>
+                                </>
                             ) : (
-                                <span className="text-sm font-normal leading-5 text-muted-foreground">
+                                <p className="text-sm font-normal leading-5 text-muted-foreground">
                                     {t('payment.noPaymentMethodSaved')}
-                                </span>
+                                </p>
                             )}
                         </div>
-
-                        {/* Billing Address - Figma: gap 6px between title and content */}
-                        <div className="space-y-1.5 w-full">
-                            <Typography variant="h5" as="h3" className="text-card-foreground">
-                                {t('payment.billingSummaryTitle')}
-                            </Typography>
-                            {billingAddress && !isBillingSameAsShipping(billingAddress, shippingAddress) ? (
-                                <div className="space-y-2">
-                                    <span className="text-sm font-normal leading-5 text-muted-foreground">
-                                        {billingAddress.firstName} {billingAddress.lastName}
-                                    </span>
-                                    <span className="text-sm font-normal leading-5 text-muted-foreground block">
-                                        {billingAddress.address1}
-                                    </span>
-                                    {billingAddress.address2 && (
-                                        <span className="text-sm font-normal leading-5 text-muted-foreground block">
-                                            {billingAddress.address2}
-                                        </span>
-                                    )}
-                                    <span className="text-sm font-normal leading-5 text-muted-foreground block">
-                                        {billingAddress.city}
-                                        {billingAddress.stateCode && `, ${billingAddress.stateCode}`}{' '}
-                                        {billingAddress.postalCode}
-                                    </span>
-                                </div>
-                            ) : (
-                                <span className="text-sm font-normal leading-5 text-muted-foreground">
-                                    {showBillingSameAsShipping
-                                        ? t('payment.sameAsShippingAddress')
-                                        : t('payment.noBillingAddressSaved')}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </ToggleCardSummary>
-        </ToggleCard>
+                    )}
+                </ToggleCardSummary>
+            </ToggleCard>
+        </div>
     );
 }

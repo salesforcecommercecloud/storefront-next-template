@@ -219,16 +219,15 @@ describe('Payment Schema and Validation', () => {
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 savePaymentToProfile: false,
-                // Billing address populated from shipping
-                billingFirstName: 'John',
-                billingLastName: 'Doe',
-                billingAddress1: '123 Main St',
-                billingAddress2: 'Apt 4B',
-                billingCity: 'Anytown',
+                billingFirstName: '',
+                billingLastName: '',
+                billingAddress1: '',
+                billingAddress2: '',
+                billingCity: '',
                 billingCountryCode: 'US',
-                billingStateCode: 'CA',
-                billingPostalCode: '12345',
-                billingPhone: '555-0123',
+                billingStateCode: '',
+                billingPostalCode: '',
+                billingPhone: '',
             });
         });
 
@@ -288,15 +287,14 @@ describe('Payment Schema and Validation', () => {
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 savePaymentToProfile: false,
-                // Billing address still uses shipping address
-                billingFirstName: 'John',
-                billingLastName: 'Doe',
-                billingAddress1: '123 Main St',
+                billingFirstName: '',
+                billingLastName: '',
+                billingAddress1: '',
                 billingAddress2: '',
-                billingCity: 'Anytown',
+                billingCity: '',
                 billingCountryCode: 'US',
-                billingStateCode: 'CA',
-                billingPostalCode: '12345',
+                billingStateCode: '',
+                billingPostalCode: '',
                 billingPhone: '',
             });
         });

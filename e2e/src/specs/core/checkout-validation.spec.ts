@@ -129,7 +129,7 @@ Scenario('Payment rejects empty custom billing address', async () => {
     checkoutPage.waitForPaymentStep();
 
     checkoutPage.fillPaymentFieldsOnly(TEST_PAYMENT);
-    await checkoutPage.uncheckBillingSameAsShipping();
+    await checkoutPage.checkUseDifferentBillingAddress();
 
     const billingFieldsVisible = await checkoutPage.areBillingAddressFieldsVisible();
     expect(billingFieldsVisible, 'Billing address fields should be visible').to.be.true;

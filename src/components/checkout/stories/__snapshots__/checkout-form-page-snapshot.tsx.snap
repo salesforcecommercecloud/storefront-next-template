@@ -509,7 +509,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                     >
                       <button
                         aria-checked="true"
-                        aria-label="Billing Address same as Shipping Address"
+                        aria-label="Use a different billing address"
                         class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 mt-0.5"
                         data-slot="checkbox"
                         data-state="checked"
@@ -548,7 +548,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                         <label
                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          Billing Address same as Shipping Address
+                          Use a different billing address
                         </label>
                         <p
                           class="text-sm font-medium leading-none text-left text-muted-foreground"
@@ -1777,7 +1777,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                     >
                       <button
                         aria-checked="true"
-                        aria-label="Billing Address same as Shipping Address"
+                        aria-label="Use a different billing address"
                         class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 mt-0.5"
                         data-slot="checkbox"
                         data-state="checked"
@@ -1816,7 +1816,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                         <label
                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          Billing Address same as Shipping Address
+                          Use a different billing address
                         </label>
                         <p
                           class="text-sm font-medium leading-none text-left text-muted-foreground"
@@ -2332,7 +2332,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                     >
                       <button
                         aria-checked="true"
-                        aria-label="Billing Address same as Shipping Address"
+                        aria-label="Use a different billing address"
                         class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 mt-0.5"
                         data-slot="checkbox"
                         data-state="checked"
@@ -2371,7 +2371,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                         <label
                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          Billing Address same as Shipping Address
+                          Use a different billing address
                         </label>
                         <p
                           class="text-sm font-medium leading-none text-left text-muted-foreground"
@@ -3515,7 +3515,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                     >
                       <button
                         aria-checked="true"
-                        aria-label="Billing Address same as Shipping Address"
+                        aria-label="Use a different billing address"
                         class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 mt-0.5"
                         data-slot="checkbox"
                         data-state="checked"
@@ -3554,7 +3554,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                         <label
                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          Billing Address same as Shipping Address
+                          Use a different billing address
                         </label>
                         <p
                           class="text-sm font-medium leading-none text-left text-muted-foreground"

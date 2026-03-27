@@ -90,6 +90,7 @@ export default function ShippingOptions({
     }, [selectedMethod, availableShippingMethods]);
     const isGuest = !customerProfile?.customer?.customerId;
     const hideChangeForGuest = isGuest && !selectedMethod;
+    const isUpcomingStep = !isEditing && !selectedMethod;
 
     const defaultShippingMethodId = getDefaultShippingMethod(
         availableShippingMethods,
@@ -161,10 +162,10 @@ export default function ShippingOptions({
             id="shipping-options"
             title={stepTitle}
             editing={isEditing}
-            disabled={!isEditing && !selectedMethod}
+            disabled={false}
             onEdit={onEdit}
             editLabel={t('common.edit')}
-            disableEdit={hideChangeForGuest}
+            disableEdit={hideChangeForGuest || isUpcomingStep}
             showHeaderSeparator
             isLoading={isLoading}>
             <ToggleCardEdit>
@@ -244,8 +245,8 @@ export default function ShippingOptions({
             </ToggleCardEdit>
 
             <ToggleCardSummary>
-                <div className="space-y-1.5">
-                    {summaryMethod ? (
+                {summaryMethod ? (
+                    <div className="space-y-1.5">
                         <div className="space-y-1.5">
                             {summaryMethod.description && (
                                 <p className="text-sm font-normal leading-5 text-foreground">
@@ -264,14 +265,12 @@ export default function ShippingOptions({
                                 })}
                             </p>
                         </div>
-                    ) : (
-                        <p className="text-sm text-muted-foreground">
-                            {isGuest
-                                ? t('shippingOptions.completePreviousSteps')
-                                : t('shippingOptions.enterAddressFirst')}
-                        </p>
-                    )}
-                </div>
+                    </div>
+                ) : (
+                    <p className="text-sm text-muted-foreground">
+                        {isGuest ? t('shippingOptions.completePreviousSteps') : t('shippingOptions.enterAddressFirst')}
+                    </p>
+                )}
             </ToggleCardSummary>
         </ToggleCard>
     );
