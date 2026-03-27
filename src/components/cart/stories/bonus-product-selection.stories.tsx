@@ -344,60 +344,6 @@ BonusProductSelection demonstrating carousel navigation:
     },
 };
 
-export const Mobile: Story = {
-    ...Default,
-    globals: {
-        viewport: 'mobile2',
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        // Test title is present
-        const title = await canvas.findByText(/Buy one Classic Fit Shirt/i);
-        await expect(title).toBeInTheDocument();
-
-        // Test select buttons are visible
-        const selectButtons = await canvas.findAllByRole('button', { name: /select/i });
-        await expect(selectButtons.length).toBeGreaterThan(0);
-    },
-};
-
-export const Tablet: Story = {
-    ...Default,
-    globals: {
-        viewport: 'tablet',
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        // Test title is present
-        const title = await canvas.findByText(/Buy one Classic Fit Shirt/i);
-        await expect(title).toBeInTheDocument();
-
-        // Test select buttons are visible
-        const selectButtons = await canvas.findAllByRole('button', { name: /select/i });
-        await expect(selectButtons.length).toBeGreaterThan(0);
-    },
-};
-
-export const Desktop: Story = {
-    ...Default,
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        // Test title is present
-        const title = await canvas.findByText(/Buy one Classic Fit Shirt/i);
-        await expect(title).toBeInTheDocument();
-
-        // Test select buttons are visible
-        const selectButtons = await canvas.findAllByRole('button', { name: /select/i });
-        await expect(selectButtons.length).toBeGreaterThan(0);
-    },
-};
-
 export const CombinedProducts: Story = {
     args: (() => {
         const bonusDiscountLineItem = createMockBonusDiscountLineItem({

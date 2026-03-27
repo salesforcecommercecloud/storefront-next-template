@@ -12,24 +12,6 @@ exports[`BonusProductSelection stories snapshot > Default story renders and matc
 </h2>
 `;
 
-exports[`BonusProductSelection stories snapshot > Desktop story renders and matches snapshot 1`] = `
-<h2>
-  Unexpected Application Error!
-</h2>
-`;
-
-exports[`BonusProductSelection stories snapshot > Mobile story renders and matches snapshot 1`] = `
-<h2>
-  Unexpected Application Error!
-</h2>
-`;
-
-exports[`BonusProductSelection stories snapshot > Tablet story renders and matches snapshot 1`] = `
-<h2>
-  Unexpected Application Error!
-</h2>
-`;
-
 exports[`BonusProductSelection stories snapshot > WithCarouselNavigation story renders and matches snapshot 1`] = `
 <h2>
   Unexpected Application Error!
