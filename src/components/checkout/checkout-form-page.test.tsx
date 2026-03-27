@@ -261,6 +261,12 @@ vi.mock('@/providers/basket', () => ({
     useBasket: () => mockUseBasket(),
 }));
 
+// Mock auth provider — default to guest; tests for registered users override this
+const mockUseAuth = vi.fn(() => ({ userType: 'guest' }));
+vi.mock('@/providers/auth', () => ({
+    useAuth: () => mockUseAuth(),
+}));
+
 // Mock Form component and hooks at module level
 vi.mock('react-router', async () => {
     const actual = await vi.importActual('react-router');
@@ -658,6 +664,29 @@ describe('CheckoutFormPage', () => {
 
             await renderCheckoutPage();
             expect(screen.queryByTestId('register-customer-checkbox')).not.toBeInTheDocument();
+        });
+
+        test('hides create account checkbox for registered user via auth session even without customerProfile', async () => {
+            mockUseCustomerProfile.mockReturnValue(null);
+            mockUseAuth.mockReturnValue({ userType: 'registered' });
+
+            const mockGetItem = vi.fn((key: string) => {
+                if (key === 'customerLookupResult') {
+                    return JSON.stringify({ recommendation: 'guest' });
+                }
+                return null;
+            });
+            window.sessionStorage.getItem = mockGetItem;
+
+            mockUseCheckoutContext.mockReturnValue(
+                buildCheckoutContext({
+                    step: defaultSteps.PLACE_ORDER,
+                })
+            );
+
+            await renderCheckoutPage();
+            expect(screen.queryByTestId('register-customer-checkbox')).not.toBeInTheDocument();
+            mockUseAuth.mockReturnValue({ userType: 'guest' });
         });
     });
 

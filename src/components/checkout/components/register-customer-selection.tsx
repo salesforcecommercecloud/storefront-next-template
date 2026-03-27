@@ -17,6 +17,7 @@ import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
+import { Checkbox } from '@/components/ui/checkbox';
 import { useBasket } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
@@ -56,8 +57,7 @@ export default function RegisterCustomerSelection({
     const registrationFetcher = useFetcher<InitiateRegistrationResponse>({ key: 'checkout-registration' });
     const lastProcessedDataRef = useRef<InitiateRegistrationResponse | null>(null);
 
-    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const checked = e.target.checked;
+    const handleCheckboxChange = (checked: boolean) => {
         setShouldCreateAccount(checked);
         setError(null);
 
@@ -162,30 +162,15 @@ export default function RegisterCustomerSelection({
 
     if (accountCreated) {
         return (
-            <section className="rounded-lg border bg-card p-6" aria-label={t('registration.accountCreatedTitle')}>
-                <div className="space-y-4">
-                    <div className="flex items-center gap-3 flex-wrap">
-                        <h6 className="text-base font-semibold">{t('registration.accountCreatedTitle')}</h6>
-                        <div className="inline-flex items-center gap-2 border border-primary rounded-sm px-2 py-1">
-                            <svg
-                                className="w-4 h-4 text-primary"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                data-testid="check-icon">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                            <span className="text-sm font-medium text-primary">{t('registration.verified')}</span>
-                        </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                        {t('registration.accountCreatedDescription')}
-                    </p>
+            <section
+                className="flex items-start gap-4 border border-input p-4"
+                aria-label={t('registration.accountCreatedTitle')}>
+                <div className="flex flex-1 flex-col gap-1">
+                    <h6 className="text-sm font-semibold text-foreground">{t('registration.accountCreatedTitle')}</h6>
+                    <p className="text-sm leading-5 text-foreground">{t('registration.accountCreatedDescription')}</p>
+                </div>
+                <div className="inline-flex shrink-0 items-center gap-1.5 rounded-sm border border-active-foreground px-2 py-0.5">
+                    <span className="text-sm font-medium text-active-foreground">{t('registration.verified')}</span>
                 </div>
             </section>
         );
@@ -193,36 +178,31 @@ export default function RegisterCustomerSelection({
 
     return (
         <div data-testid="register-customer-checkbox">
-            <div className="space-y-3">
-                <div className="flex items-start space-x-3">
-                    <input
-                        type="checkbox"
-                        id="create-account-checkbox"
-                        data-testid="create-account-checkbox"
-                        checked={shouldCreateAccount}
-                        onChange={handleCheckboxChange}
-                        className="mt-0.5 h-4 w-4 rounded border-input accent-primary"
-                        aria-label={t('payment.createAccountForFasterCheckout')}
-                        disabled={registrationFetcher.state === 'submitting'}
-                    />
-                    <div className="space-y-1 flex-1">
-                        <label
-                            htmlFor="create-account-checkbox"
-                            className="text-sm font-medium leading-none cursor-pointer">
-                            {t('payment.createAccountForFasterCheckout')}
-                        </label>
-                        {registrationFetcher.state === 'submitting' && (
-                            <p className="text-sm text-muted-foreground">{t('registration.sendingVerificationCode')}</p>
-                        )}
-                        {error && <p className="text-sm text-destructive">{error}</p>}
-                    </div>
+            <label
+                htmlFor="create-account-checkbox"
+                className="flex cursor-pointer items-start gap-2 border border-input p-4">
+                <Checkbox
+                    id="create-account-checkbox"
+                    data-testid="create-account-checkbox"
+                    checked={shouldCreateAccount}
+                    onCheckedChange={(checked) => handleCheckboxChange(checked === true)}
+                    className="mt-0.5 shrink-0"
+                    aria-label={t('payment.saveForFutureUse')}
+                    disabled={registrationFetcher.state === 'submitting'}
+                />
+                <div className="flex flex-1 flex-col gap-1 text-sm">
+                    <span className="font-medium leading-5 text-foreground">{t('payment.saveForFutureUse')}</span>
+                    <span className="leading-5 text-foreground">{t('payment.createAccountForFasterCheckout')}</span>
+                    {registrationFetcher.state === 'submitting' && (
+                        <p className="text-foreground">{t('registration.sendingVerificationCode')}</p>
+                    )}
+                    {shouldCreateAccount && !error && registrationFetcher.state !== 'submitting' && (
+                        <p className="mt-3 leading-5 text-foreground">
+                            {t('registration.checkboxExpandedDescription')}
+                        </p>
+                    )}
                 </div>
-                {shouldCreateAccount && !error && registrationFetcher.state !== 'submitting' && (
-                    <p className="text-sm text-muted-foreground pl-8">
-                        {t('registration.checkboxExpandedDescription')}
-                    </p>
-                )}
-            </div>
+            </label>
 
             {isOtpModalOpen && (
                 <Suspense fallback={null}>

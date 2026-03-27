@@ -292,6 +292,10 @@ vi.mock('@/providers/basket', () => ({
     }),
 }));
 
+vi.mock('@/providers/auth', () => ({
+    useAuth: () => ({ userType: 'guest' }),
+}));
+
 const defaultCheckoutContext = {
     step: 1,
     computedStep: 1,
@@ -813,6 +817,7 @@ describe('Checkout Flow Integration Tests', () => {
                 step: 4, // PAYMENT - create account checkbox shows when Place Order section is visible
                 computedStep: 4,
             });
+            sessionStorage.setItem('customerLookupResult', JSON.stringify({ recommendation: 'guest' }));
             const user = userEvent.setup();
             await act(async () => {
                 render(<CheckoutFormPage {...defaultProps} />);
@@ -830,6 +835,7 @@ describe('Checkout Flow Integration Tests', () => {
             // Test toggle back
             await user.click(checkbox);
             expect(checkbox).not.toBeChecked();
+            sessionStorage.removeItem('customerLookupResult');
         });
 
         test('form validation structure is accessible', async () => {
@@ -1221,6 +1227,7 @@ describe('Checkout Flow Integration Tests', () => {
                 step: 4, // PAYMENT - create account checkbox shows when Place Order section is visible
                 computedStep: 4,
             });
+            sessionStorage.setItem('customerLookupResult', JSON.stringify({ recommendation: 'guest' }));
             const user = userEvent.setup();
 
             await act(async () => {
@@ -1235,6 +1242,7 @@ describe('Checkout Flow Integration Tests', () => {
 
             await user.click(checkbox);
             expect(checkbox).toBeChecked();
+            sessionStorage.removeItem('customerLookupResult');
         });
 
         test('verifies customer profile data structure for returning customers', () => {

@@ -24,6 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
+import { useAuth } from '@/providers/auth';
 import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
 import { Lock } from 'lucide-react';
@@ -118,16 +119,18 @@ function GuestAccountCreation({
     showToast,
     hideCreateAccountOption = false,
 }: GuestAccountCreationProps) {
+    const auth = useAuth();
     const isRegisteredUser = Boolean(customerProfile?.customer?.customerId);
 
-    // Check if user just registered during this checkout session
-    const justRegistered =
-        typeof sessionStorage !== 'undefined' && sessionStorage.getItem('registeredViaCheckout') === 'true';
+    // The ref preserves the state from when the component first rendered
+    const enteredAsRegistered = useRef(auth?.userType === 'registered' || isRegisteredUser);
 
-    // If user was already registered before checkout, don't show
-    if (isRegisteredUser && !justRegistered) {
+    if (enteredAsRegistered.current) {
         return null;
     }
+
+    const justRegistered =
+        typeof sessionStorage !== 'undefined' && sessionStorage.getItem('registeredViaCheckout') === 'true';
 
     // Guest chose to skip passwordless OTP — treat like guest checkout but without create-account checkbox
     if (hideCreateAccountOption && !justRegistered) {
@@ -144,9 +147,7 @@ function GuestAccountCreation({
         // Failed to parse customer lookup result
     }
 
-    // Show registration option for guest users OR users who just registered
-    // Note: cart.customerInfo.customerId may be populated by populateCustomerDetails hook for guest users,
-    // so we rely on customerProfile.customer.customerId (checked above) to determine registered vs guest status
+    // Show for guest shoppers: lookup confirmed 'guest', lookup not yet performed, or just registered in this session.
     const shouldShow = justRegistered || !customerLookupResult || customerLookupResult?.recommendation === 'guest';
 
     if (!shouldShow) {

@@ -304,7 +304,6 @@ describe('RegisterCustomerSelection', () => {
         await waitFor(() => {
             expect(screen.getByText(/Account Created/i)).toBeInTheDocument();
             expect(screen.getAllByText(/Verified/i).length).toBeGreaterThanOrEqual(1);
-            expect(screen.getByTestId('check-icon')).toBeInTheDocument();
         });
 
         // Original checkbox should no longer be visible
