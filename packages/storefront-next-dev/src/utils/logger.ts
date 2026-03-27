@@ -87,7 +87,7 @@ function debugEnablesSfnext(): boolean {
 
 function resolveLevel(): LogLevel {
     if (overrideLevel) return overrideLevel;
-    const envLevel = process.env.SFNEXT_LOG_LEVEL;
+    const envLevel = process.env.MRT_LOG_LEVEL ?? process.env.SFNEXT_LOG_LEVEL;
     if (envLevel && envLevel in LEVEL_PRIORITY) return envLevel as LogLevel;
     if (debugEnablesSfnext()) return 'debug';
     if (process.env.NODE_ENV === 'production') return 'warn';
@@ -131,6 +131,7 @@ export function printServerInfo(mode: ServerMode, port: number, startTime: numbe
     const sfnextVersion = pkg.version;
     const reactVersion = getPackageVersion('react', projectDir);
     const reactRouterVersion = getPackageVersion('react-router', projectDir);
+    const viteVersion = getPackageVersion('vite', projectDir);
 
     const modeLabel = mode === 'development' ? 'Development Mode' : 'Preview Mode';
 
@@ -138,9 +139,21 @@ export function printServerInfo(mode: ServerMode, port: number, startTime: numbe
     console.log(`  ${chalk.cyan.bold('⚡ SFCC Storefront Next')} ${chalk.dim(`v${sfnextVersion}`)}`);
     console.log(`  ${chalk.green.bold(modeLabel)}`);
     console.log();
+    const logLevel = resolveLevel();
+    const logLevelColors: Record<LogLevel, (s: string) => string> = {
+        error: chalk.red,
+        warn: chalk.yellow,
+        info: chalk.cyan,
+        debug: chalk.gray,
+    };
+
     console.log(
         `  ${chalk.dim('react')} ${chalk.green(`v${reactVersion}`)} ${chalk.dim('|')} ` +
             `${chalk.dim('react-router')} ${chalk.green(`v${reactRouterVersion}`)} ${chalk.dim('|')} ` +
+            `${chalk.dim('vite')} ${chalk.green(`v${viteVersion}`)}`
+    );
+    console.log(
+        `  ${chalk.dim('log level')} ${logLevelColors[logLevel](logLevel)} ${chalk.dim('|')} ` +
             `${chalk.green(`ready in ${elapsed}ms`)}`
     );
     console.log();

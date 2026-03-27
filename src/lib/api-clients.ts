@@ -22,6 +22,7 @@ import {
 import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import { AUTH_TOKEN_INVALID_ERROR, authContext, authStorageContext } from '@/middlewares/auth.utils';
 import { correlationContext } from '@/lib/correlation';
+import { getLogger } from '@/lib/logger.server';
 import { maintenanceContext } from '@/lib/maintenance';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
@@ -193,6 +194,52 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         },
     };
 
+    /**
+     * Logging middleware for SCAPI fetch requests.
+     *
+     * Logs all outgoing SCAPI requests on response with method, URL, status, and duration.
+     * - Success responses (< 400): logged at `debug` level
+     * - Error responses (>= 400): logged at `error` level
+     * - Server-side only
+     *
+     * @example
+     * ```
+     * [13:21:24.337] DEBUG: fetch GET /search/shopper-search/v1/.../product-search?q=shoes
+     *     status: 200
+     *     duration: 1280
+     * ```
+     */
+    const requestTimings = new WeakMap<Request, number>();
+    const loggingMiddleware: Middleware = {
+        onRequest({ request }) {
+            requestTimings.set(request, performance.now());
+            return request;
+        },
+        onResponse({ request, response }) {
+            const logger = getLogger(context);
+            const url = new URL(request.url);
+            const startTime = requestTimings.get(request);
+            const duration = startTime != null ? Math.round(performance.now() - startTime) : undefined;
+            const metadata: Record<string, unknown> = {
+                status: response.status,
+                ...(duration != null && { duration }),
+            };
+            const message = `fetch ${request.method} ${url.pathname}`;
+            if (response.status >= 400) {
+                logger.error(message, metadata);
+            } else {
+                logger.debug(message, metadata);
+            }
+            return response;
+        },
+    };
+
+    // Middleware registration order matters: openapi-fetch runs onRequest in registration
+    // order, but onResponse in reverse order. Logging is registered first so its onResponse
+    // runs last, after all other middleware have processed the request/response.
+    if (typeof window === 'undefined') {
+        clients.use(loggingMiddleware);
+    }
     clients.use(correlationMiddleware);
     clients.use(authMiddleware);
     clients.use(identifyingHeadersMiddleware);

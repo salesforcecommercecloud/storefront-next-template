@@ -1,6 +1,6 @@
 import { n as Site$1, r as Url, t as Locale$1 } from "./types.js";
 import { PropsWithChildren } from "react";
-import * as react_jsx_runtime1 from "react/jsx-runtime";
+import * as react_jsx_runtime2 from "react/jsx-runtime";
 import * as react_router0 from "react-router";
 import { Cookie, MiddlewareFunction, RouterContextProvider } from "react-router";
 import { RouteConfigEntry } from "@react-router/dev/routes";
@@ -56,7 +56,7 @@ declare function SiteProvider({
   children
 }: PropsWithChildren<{
   value: Site;
-}>): react_jsx_runtime1.JSX.Element;
+}>): react_jsx_runtime2.JSX.Element;
 /**
  * React hook to get the current site.
  * Returns undefined when no SiteProvider is mounted.

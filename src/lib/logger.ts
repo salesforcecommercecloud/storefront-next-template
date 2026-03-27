@@ -35,7 +35,7 @@ export function resolveLevel(): LogLevel {
     if (overrideLevel) return overrideLevel;
 
     if (typeof process !== 'undefined' && process.env) {
-        const envLevel = process.env.SFNEXT_LOG_LEVEL;
+        const envLevel = process.env.MRT_LOG_LEVEL ?? process.env.SFNEXT_LOG_LEVEL;
         if (envLevel && envLevel in LEVEL_PRIORITY) return envLevel as LogLevel;
         if (process.env.NODE_ENV === 'production') return 'warn';
     }

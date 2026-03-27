@@ -287,9 +287,7 @@ function createLoggingMiddleware() {
 	});
 	return morgan((tokens, req, res) => {
 		return [
-			chalk.gray("["),
 			tokens["method-colored"](req, res),
-			chalk.gray("]"),
 			tokens.url(req, res),
 			"-",
 			tokens["status-colored"](req, res),
