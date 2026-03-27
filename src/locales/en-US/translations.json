@@ -691,6 +691,7 @@
             "wishlist": "Wishlist",
             "orderHistory": "Order History",
             "addresses": "Addresses",
+            "manageAddresses": "Manage Addresses",
             "paymentMethods": "Payment Methods",
             "storePreferences": "Store Preferences",
             "logOut": "Log Out"
@@ -771,10 +772,10 @@
             "defaultName": "there",
             "quickLinks": {
                 "title": "Quick Links",
-                "accountDetailsDesc": "View and edit your profile",
                 "orderHistoryDesc": "Track your orders",
                 "wishlistDesc": "Items you've saved",
-                "addressesDesc": "Manage your addresses"
+                "addressesDesc": "Manage your addresses",
+                "paymentMethodsDesc": "Manage your payment methods"
             },
             "curatedForYou": {
                 "title": "Curated for You",

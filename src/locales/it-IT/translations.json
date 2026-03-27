@@ -660,6 +660,7 @@
             "wishlist": "Lista desideri",
             "orderHistory": "Storico ordini",
             "addresses": "Indirizzi",
+            "manageAddresses": "Gestisci indirizzi",
             "paymentMethods": "Metodi di pagamento",
             "storePreferences": "Preferenze negozio",
             "logOut": "Esci"
