@@ -726,7 +726,10 @@ describe('CategoryPage', () => {
             expect(categorySchema).toBeDefined();
             expect(generateCategorySchema).toHaveBeenCalledWith({
                 category: mockCategory,
-                searchResult: mockSearchResult,
+                searchResult: expect.objectContaining({
+                    ...mockSearchResult,
+                    hits: [...(mockSearchResult.hits || []), ...(mockSearchResult.hits || [])],
+                }),
                 config: mockConfig,
                 pageUrl: 'https://example.com/category/electronics',
                 defaultCurrency: 'GBP',

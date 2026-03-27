@@ -181,7 +181,7 @@ describe('generateCategorySchema', () => {
         expect(items[0].item.offers?.priceCurrency).toBe('USD');
     });
 
-    it('should limit products to 20 items', () => {
+    it('should cap schema items at 24 products', () => {
         const manyProducts = Array.from({ length: 25 }, (_, i) => ({
             productId: `product-${i}`,
             productName: `Product ${i}`,
@@ -209,7 +209,10 @@ describe('generateCategorySchema', () => {
             defaultCurrency,
         });
 
-        expect(schema.mainEntity?.itemListElement).toHaveLength(20);
+        expect(schema.mainEntity?.itemListElement).toHaveLength(24);
+        const items = schema.mainEntity?.itemListElement || [];
+        expect(items[0].item.name).toBe('Product 0');
+        expect(items[23].item.name).toBe('Product 23');
     });
 
     it('should handle products without productId', () => {
@@ -307,117 +310,8 @@ describe('generateCategorySchema', () => {
         expect(items[0].item.offers).toBeUndefined();
     });
 
-    it('should set availability to InStock when config.search.products.refine.orderableOnly is true', () => {
+    it('should include availability when orderable is true', () => {
         const searchResultWithStock: ShopperSearch.schemas['ProductSearchResult'] = {
-            hits: [
-                {
-                    productId: 'product-1',
-                    productName: 'Product 1',
-                    price: 29.99,
-                    currency: 'USD',
-                },
-            ] as ShopperSearch.schemas['ProductSearchHit'][],
-            total: 1,
-            query: '',
-            refinements: [],
-            searchPhraseSuggestions: { suggestedTerms: [] },
-            sortingOptions: [],
-            offset: 0,
-            limit: 1,
-            start: 0,
-            count: 1,
-        } as ShopperSearch.schemas['ProductSearchResult'];
-
-        const schema = generateCategorySchema({
-            category: baseCategory,
-            searchResult: searchResultWithStock,
-            pageUrl: validPageUrl,
-            defaultCurrency,
-            config: createAppConfig({
-                ...mockBuildConfig,
-                ...({ app: { search: { products: { refine: { orderableOnly: true } } } } } as Partial<Config>),
-            }),
-        });
-
-        const items = schema.mainEntity?.itemListElement || [];
-        expect(items[0].item.offers?.availability).toBe('https://schema.org/InStock');
-    });
-
-    it('should omit availability when config.search.products.refine.orderableOnly is false', () => {
-        const searchResultOutOfStock: ShopperSearch.schemas['ProductSearchResult'] = {
-            hits: [
-                {
-                    productId: 'product-1',
-                    productName: 'Product 1',
-                    price: 29.99,
-                    currency: 'USD',
-                },
-            ] as ShopperSearch.schemas['ProductSearchHit'][],
-            total: 1,
-            query: '',
-            refinements: [],
-            searchPhraseSuggestions: { suggestedTerms: [] },
-            sortingOptions: [],
-            offset: 0,
-            limit: 1,
-            start: 0,
-            count: 1,
-        } as ShopperSearch.schemas['ProductSearchResult'];
-
-        const schema = generateCategorySchema({
-            category: baseCategory,
-            searchResult: searchResultOutOfStock,
-            pageUrl: validPageUrl,
-            defaultCurrency,
-            config: createAppConfig({
-                ...mockBuildConfig,
-                ...({ app: { search: { products: { refine: { orderableOnly: false } } } } } as Partial<Config>),
-            }),
-        });
-
-        const items = schema.mainEntity?.itemListElement || [];
-        expect(items[0].item.offers?.availability).toBeUndefined();
-    });
-
-    it('should set availability to OutOfStock when orderable is false, though config.search.products.refine.orderableOnly is true', () => {
-        const searchResultWithoutOrderable: ShopperSearch.schemas['ProductSearchResult'] = {
-            hits: [
-                {
-                    productId: 'product-1',
-                    productName: 'Product 1',
-                    price: 29.99,
-                    currency: 'USD',
-                    orderable: false,
-                },
-            ] as ShopperSearch.schemas['ProductSearchHit'][],
-            total: 1,
-            query: '',
-            refinements: [],
-            searchPhraseSuggestions: { suggestedTerms: [] },
-            sortingOptions: [],
-            offset: 0,
-            limit: 1,
-            start: 0,
-            count: 1,
-        } as ShopperSearch.schemas['ProductSearchResult'];
-
-        const schema = generateCategorySchema({
-            category: baseCategory,
-            searchResult: searchResultWithoutOrderable,
-            pageUrl: validPageUrl,
-            defaultCurrency,
-            config: createAppConfig({
-                ...mockBuildConfig,
-                ...({ app: { search: { products: { refine: { orderableOnly: true } } } } } as Partial<Config>),
-            }),
-        });
-
-        const items = schema.mainEntity?.itemListElement || [];
-        expect(items[0].item.offers?.availability).toBe('https://schema.org/OutOfStock');
-    });
-
-    it('should set availability to X when orderable is true, though config.search.products.refine.orderableOnly is false', () => {
-        const searchResultWithoutOrderable: ShopperSearch.schemas['ProductSearchResult'] = {
             hits: [
                 {
                     productId: 'product-1',
@@ -440,17 +334,183 @@ describe('generateCategorySchema', () => {
 
         const schema = generateCategorySchema({
             category: baseCategory,
-            searchResult: searchResultWithoutOrderable,
+            searchResult: searchResultWithStock,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
+
+        const items = schema.mainEntity?.itemListElement || [];
+        expect(items[0].item.offers?.availability).toBe('https://schema.org/InStock');
+    });
+
+    it('should fallback to InStock availability when orderableOnly is true in config', () => {
+        const searchResultWithUnknownOrderable: ShopperSearch.schemas['ProductSearchResult'] = {
+            hits: [
+                {
+                    productId: 'product-1',
+                    productName: 'Product 1',
+                    price: 29.99,
+                    currency: 'USD',
+                },
+            ] as ShopperSearch.schemas['ProductSearchHit'][],
+            total: 1,
+            query: '',
+            refinements: [],
+            searchPhraseSuggestions: { suggestedTerms: [] },
+            sortingOptions: [],
+            offset: 0,
+            limit: 1,
+            start: 0,
+            count: 1,
+        } as ShopperSearch.schemas['ProductSearchResult'];
+
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithUnknownOrderable,
             pageUrl: validPageUrl,
             defaultCurrency,
             config: createAppConfig({
                 ...mockBuildConfig,
-                ...({ app: { search: { products: { refine: { orderableOnly: false } } } } } as Partial<Config>),
+                ...({ app: { search: { products: { refine: { orderableOnly: true } } } } } as Partial<Config>),
             }),
         });
 
         const items = schema.mainEntity?.itemListElement || [];
         expect(items[0].item.offers?.availability).toBe('https://schema.org/InStock');
+    });
+
+    it('should use promotional price as offer price when available', () => {
+        const searchResultWithPromo: ShopperSearch.schemas['ProductSearchResult'] = {
+            hits: [
+                {
+                    productId: 'product-1',
+                    productName: 'Product 1',
+                    price: 59.99,
+                    currency: 'USD',
+                    productPromotions: [{ promotionalPrice: 39.99 }],
+                },
+            ] as ShopperSearch.schemas['ProductSearchHit'][],
+            total: 1,
+            query: '',
+            refinements: [],
+            searchPhraseSuggestions: { suggestedTerms: [] },
+            sortingOptions: [],
+            offset: 0,
+            limit: 1,
+            start: 0,
+            count: 1,
+        } as ShopperSearch.schemas['ProductSearchResult'];
+
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithPromo,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
+
+        const items = schema.mainEntity?.itemListElement || [];
+        expect(items[0].item.offers?.price).toBe('39.99');
+    });
+
+    it('should use promotional price when present, even if higher than base/sale price', () => {
+        const searchResultWithPromo: ShopperSearch.schemas['ProductSearchResult'] = {
+            hits: [
+                {
+                    productId: 'product-1',
+                    productName: 'Product 1',
+                    price: 29.99,
+                    currency: 'USD',
+                    productPromotions: [{ promotionalPrice: 49.99 }],
+                },
+            ] as ShopperSearch.schemas['ProductSearchHit'][],
+            total: 1,
+            query: '',
+            refinements: [],
+            searchPhraseSuggestions: { suggestedTerms: [] },
+            sortingOptions: [],
+            offset: 0,
+            limit: 1,
+            start: 0,
+            count: 1,
+        } as ShopperSearch.schemas['ProductSearchResult'];
+
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithPromo,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
+
+        const items = schema.mainEntity?.itemListElement || [];
+        expect(items[0].item.offers?.price).toBe('49.99');
+    });
+
+    it('should use lowest variant price when promotional price is absent', () => {
+        const searchResultWithVariants: ShopperSearch.schemas['ProductSearchResult'] = {
+            hits: [
+                {
+                    productId: 'product-1',
+                    productName: 'Product 1',
+                    hitType: 'master',
+                    price: 99.99,
+                    currency: 'USD',
+                    variants: [{ price: 89.99 }, { price: 79.99 }],
+                },
+            ] as ShopperSearch.schemas['ProductSearchHit'][],
+            total: 1,
+            query: '',
+            refinements: [],
+            searchPhraseSuggestions: { suggestedTerms: [] },
+            sortingOptions: [],
+            offset: 0,
+            limit: 1,
+            start: 0,
+            count: 1,
+        } as ShopperSearch.schemas['ProductSearchResult'];
+
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithVariants,
+            pageUrl: validPageUrl,
+            defaultCurrency,
+        });
+
+        const items = schema.mainEntity?.itemListElement || [];
+        expect(items[0].item.offers?.price).toBe('79.99');
+    });
+
+    it('should preserve site/locale prefix in generated product URLs', () => {
+        const prefixedPageUrl = 'https://example.com/en-US/category/test-category-123';
+        const searchResultWithProduct: ShopperSearch.schemas['ProductSearchResult'] = {
+            hits: [
+                {
+                    productId: 'product-1',
+                    productName: 'Product 1',
+                    price: 29.99,
+                    currency: 'USD',
+                },
+            ] as ShopperSearch.schemas['ProductSearchHit'][],
+            total: 1,
+            query: '',
+            refinements: [],
+            searchPhraseSuggestions: { suggestedTerms: [] },
+            sortingOptions: [],
+            offset: 0,
+            limit: 1,
+            start: 0,
+            count: 1,
+        } as ShopperSearch.schemas['ProductSearchResult'];
+
+        const schema = generateCategorySchema({
+            category: baseCategory,
+            searchResult: searchResultWithProduct,
+            pageUrl: prefixedPageUrl,
+            defaultCurrency,
+        });
+
+        const items = schema.mainEntity?.itemListElement || [];
+        expect(items[0].item.url).toBe('https://example.com/en-US/product/product-1');
+        expect(items[0].item.offers?.url).toBe('https://example.com/en-US/product/product-1');
     });
 
     it('should handle invalid pageUrl gracefully', () => {

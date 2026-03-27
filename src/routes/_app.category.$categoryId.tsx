@@ -39,6 +39,7 @@ import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/ut
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
 import { generateCategorySchema } from '@/utils/category-schema';
+import { getPublicOrigin } from '@/utils/schema-url';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import {
     getInitialFiltersOpen,
@@ -165,14 +166,23 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
     const categorySchemaPromise = searchResultNonCritical
         .then((searchResult: ShopperSearch.schemas['ProductSearchResult']) => {
             try {
+                // Use public origin from request headers instead of request.url
+                // to avoid exposing internal AWS Lambda URLs in schema
+                const publicOrigin = getPublicOrigin(request);
+                const url = new URL(request.url);
+                const schemaPageUrl = `${publicOrigin}${url.pathname}${url.search}`;
+                // Validate inputs before generating schema
                 if (!categoryData || !searchResult) {
                     return null;
                 }
                 return generateCategorySchema({
                     category: categoryData,
-                    searchResult,
+                    searchResult: {
+                        ...searchResult,
+                        hits: [...(searchResultCritical.hits || []), ...(searchResult.hits || [])],
+                    },
                     config,
-                    pageUrl,
+                    pageUrl: schemaPageUrl,
                     defaultCurrency: currency,
                 });
             } catch (error) {

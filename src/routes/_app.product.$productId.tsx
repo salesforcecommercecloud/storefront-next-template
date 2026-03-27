@@ -41,6 +41,7 @@ import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/ut
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
 import { generateProductSchema } from '@/utils/product-schema';
+import { getPublicOrigin } from '@/utils/schema-url';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -194,7 +195,12 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
     const productSchemaPromise = productPromise
         .then((product) => {
             try {
-                return generateProductSchema(product, pageUrl);
+                // Use public origin from request headers instead of request.url
+                // to avoid exposing internal AWS Lambda URLs in schema
+                const publicOrigin = getPublicOrigin(request);
+                const url = new URL(request.url);
+                const productUrl = `${publicOrigin}${url.pathname}${url.search}`;
+                return generateProductSchema(product, productUrl);
             } catch (error) {
                 logger.error('Error generating product schema in loader', {
                     error: error instanceof Error ? error : String(error),

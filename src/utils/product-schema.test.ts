@@ -63,14 +63,15 @@ describe('generateProductSchema', () => {
             expect(schema.url).toBe(customUrl);
         });
 
-        it('should fallback to slugUrl when productUrl is not provided', () => {
+        it('should not use slugUrl from API response (may contain internal URLs)', () => {
             const productWithSlug = {
                 ...baseProduct,
-                slugUrl: 'https://example.com/slug-url',
+                slugUrl: 'https://internal.aws.lambda.com/product/123',
             };
             const schema = generateProductSchema(productWithSlug);
 
-            expect(schema.url).toBe('https://example.com/slug-url');
+            // Should be undefined, not using the internal URL from slugUrl
+            expect(schema.url).toBeUndefined();
         });
 
         it('should handle missing productUrl and slugUrl', () => {
