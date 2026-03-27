@@ -108,6 +108,7 @@ export default function StoreLocatorList(): ReactElement | null {
                 </div>
             )}
             <RadioGroup
+                className="store-locator-square-radio-group"
                 name={`selectedStore-${instanceId}`}
                 value={selectedStoreInfo?.id ?? ''}
                 onValueChange={(value: string) => {
@@ -125,19 +126,21 @@ export default function StoreLocatorList(): ReactElement | null {
                                     <RadioGroupItem
                                         id={radioId}
                                         value={s.id}
-                                        className="mt-1"
+                                        className="store-locator-square-radio mt-1"
                                         aria-describedby={`store-info-${s.id}`}
                                         disabled={!s.inventoryId}
                                     />
-                                    <StoreDetails
-                                        store={s}
-                                        showDistance={true}
-                                        distanceUnit={config.radiusUnit}
-                                        showStoreHours={true}
-                                        showPhone={true}
-                                        showEmail={true}
-                                        id={`store-info-${s.id}`}
-                                    />
+                                    <div className="flex-1 min-w-0">
+                                        <StoreDetails
+                                            store={s}
+                                            showDistance={true}
+                                            distanceUnit={config.radiusUnit}
+                                            showStoreHours={true}
+                                            showPhone={true}
+                                            showEmail={true}
+                                            id={`store-info-${s.id}`}
+                                        />
+                                    </div>
                                 </label>
                                 {idx < storesPaginated.length - 1 && <Separator className="my-3" />}
                             </li>
