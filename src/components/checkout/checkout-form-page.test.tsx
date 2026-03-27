@@ -339,6 +339,10 @@ vi.mock('@/components/my-cart', () => ({
     default: () => <div data-testid="my-cart">My Cart</div>,
 }));
 
+vi.mock('@/providers/currency', () => ({
+    useCurrency: () => 'USD',
+}));
+
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: vi.fn(() => ({
         engagement: {
@@ -696,11 +700,7 @@ describe('CheckoutFormPage', () => {
 
             await renderCheckoutPage();
 
-            expect(
-                screen.getByRole('button', {
-                    name: i18next.t('checkout:placeOrder.button'),
-                })
-            ).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /place order/i })).toBeInTheDocument();
         });
 
         test('renders place order button when step is place order (returning shopper)', async () => {
@@ -712,11 +712,7 @@ describe('CheckoutFormPage', () => {
 
             await renderCheckoutPage();
 
-            expect(
-                screen.getByRole('button', {
-                    name: i18next.t('checkout:placeOrder.button'),
-                })
-            ).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /place order/i })).toBeInTheDocument();
         });
 
         test('place order section renders when user has chosen to create account', async () => {
@@ -728,11 +724,7 @@ describe('CheckoutFormPage', () => {
             );
 
             await renderCheckoutPage();
-            expect(
-                screen.getByRole('button', {
-                    name: i18next.t('checkout:placeOrder.button'),
-                })
-            ).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /place order/i })).toBeInTheDocument();
         });
 
         test('disables place order button and shows processing text while submitting', async () => {
@@ -1152,7 +1144,7 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage();
 
             const placeOrderButton = screen.getByRole('button', {
-                name: i18next.t('checkout:placeOrder.button'),
+                name: /Place Order/,
             });
 
             act(() => {
@@ -1189,7 +1181,7 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage();
 
             const placeOrderButton = screen.getByRole('button', {
-                name: i18next.t('checkout:placeOrder.button'),
+                name: /Place Order/,
             });
 
             act(() => {
@@ -1227,7 +1219,7 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage();
 
             const placeOrderButton = screen.getByRole('button', {
-                name: i18next.t('checkout:placeOrder.button'),
+                name: /Place Order/,
             });
 
             act(() => {
@@ -1259,7 +1251,7 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage();
 
             const placeOrderButton = screen.getByRole('button', {
-                name: i18next.t('checkout:placeOrder.button'),
+                name: /Place Order/,
             });
 
             act(() => {

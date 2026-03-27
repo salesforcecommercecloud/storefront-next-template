@@ -289,6 +289,10 @@ vi.mock('@/components/my-cart', () => ({
     default: () => <div data-testid="my-cart">My Cart</div>,
 }));
 
+vi.mock('@/providers/currency', () => ({
+    useCurrency: () => 'USD',
+}));
+
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: vi.fn(() => ({
         engagement: {

@@ -685,7 +685,9 @@ function MockCheckoutFormPage({
                                         <Button disabled={isSubmitting} className="w-full max-w-sm" size="lg">
                                             {isSubmitting
                                                 ? t('checkout:placeOrder.processing')
-                                                : t('checkout:placeOrder.button')}
+                                                : t('checkout:placeOrder.button', {
+                                                      total: `$${(cart.orderTotal ?? 0).toFixed(2)}`,
+                                                  })}
                                         </Button>
                                     </div>
                                 </CardContent>

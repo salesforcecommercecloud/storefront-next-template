@@ -594,7 +594,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                   data-slot="button"
                   data-variant="default"
                 >
-                  Place Order
+                  Place Order - $55.66
                 </button>
               </div>
             </div>
@@ -1862,7 +1862,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                   data-slot="button"
                   data-variant="default"
                 >
-                  Place Order
+                  Place Order - $414.07
                 </button>
               </div>
             </div>
@@ -2417,7 +2417,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                   data-slot="button"
                   data-variant="default"
                 >
-                  Place Order
+                  Place Order - $55.66
                 </button>
               </div>
             </div>
@@ -3600,7 +3600,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                   data-slot="button"
                   data-variant="default"
                 >
-                  Place Order
+                  Place Order - $55.66
                 </button>
               </div>
             </div>
@@ -4020,7 +4020,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
                   data-slot="button"
                   data-variant="default"
                 >
-                  Place Order
+                  Place Order - $55.66
                 </button>
               </div>
             </div>

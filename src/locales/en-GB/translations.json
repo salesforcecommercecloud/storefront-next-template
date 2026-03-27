@@ -589,7 +589,7 @@
             "saved": "Saved {{amount}}"
         },
         "placeOrder": {
-            "button": "Place Order",
+            "button": "Place Order - {{total}}",
             "processing": "Placing Order...",
             "success": "Order was placed!",
             "failed": "An unexpected error occurred during checkout."

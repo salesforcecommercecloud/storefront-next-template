@@ -563,7 +563,7 @@
             "saved": "Risparmiato {{amount}}"
         },
         "placeOrder": {
-            "button": "Effettua ordine",
+            "button": "Effettua ordine - {{total}}",
             "processing": "Elaborazione ordine in corso...",
             "success": "Ordine effettuato con successo!",
             "failed": "Si è verificato un errore imprevisto durante il checkout."

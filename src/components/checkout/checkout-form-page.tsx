@@ -26,6 +26,9 @@ import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
+import { Lock } from 'lucide-react';
+import { formatCurrency } from '@/lib/currency';
+import { useCurrency } from '@/providers/currency';
 import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
@@ -192,7 +195,8 @@ export default function CheckoutFormPage({
     promotionsPromise,
     showToast,
 }: CheckoutFormPageProps) {
-    const { t } = useTranslation('checkout');
+    const { t, i18n } = useTranslation('checkout');
+    const currency = useCurrency();
 
     // Use basket from provider (managed by middleware)
     const cart = useBasket();
@@ -314,6 +318,7 @@ export default function CheckoutFormPage({
     }, [analytics, step, STEPS, cart]);
 
     const isPlacingOrder = placeOrderFetcher.state === 'submitting';
+    const [isPlaceOrderPending, setIsPlaceOrderPending] = useState(false);
 
     // Form submission handlers - delegated to checkout actions hook
     const handleContactSubmit = submitContactInfo;
@@ -355,10 +360,12 @@ export default function CheckoutFormPage({
                 }
             }
 
+            setIsPlaceOrderPending(true);
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = true;
             paymentSubmissionRef.current.options = { savePaymentToProfile: paymentData.savePaymentToProfile ?? false };
             submitPayment(paymentData);
         } else {
+            setIsPlaceOrderPending(true);
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
             paymentSubmissionRef.current.options = null;
             submitPlaceOrder();
@@ -395,10 +402,6 @@ export default function CheckoutFormPage({
         disabled: !isRegisteredUser && step < STEPS.PAYMENT,
     };
 
-    // Note: Order placement success is now handled by action route redirect
-    // The place order action automatically redirects to the confirmation page
-    // Session storage cleanup is also handled in the action route
-
     // Focus place order error without scrolling (prevents CLS while maintaining accessibility)
     useEffect(() => {
         if (
@@ -407,6 +410,7 @@ export default function CheckoutFormPage({
             !placeOrderFetcher.data.success &&
             placeOrderFetcher.data.error
         ) {
+            setIsPlaceOrderPending(false);
             // Find the error banner and focus it without scrolling
             const errorElement = document.querySelector('[role="alert"]');
             if (errorElement instanceof HTMLElement) {
@@ -424,6 +428,7 @@ export default function CheckoutFormPage({
             submitPlaceOrder();
         } else {
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
+            setIsPlaceOrderPending(false);
         }
     }, [paymentFetcher.state, paymentFetcher.data, submitPlaceOrder]);
 
@@ -501,7 +506,7 @@ export default function CheckoutFormPage({
     // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background pb-20 lg:pb-0">
             <UITarget targetId="checkout.page.before" />
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Mobile Order Summary + My Cart */}
@@ -632,7 +637,7 @@ export default function CheckoutFormPage({
 
                         {/* Place Order Section */}
                         {step >= STEPS.PAYMENT && (
-                            <div className="flex flex-col items-end gap-4 w-full lg:w-auto">
+                            <div className="flex flex-col items-end gap-4 w-full lg:-mt-4">
                                 {/* Create Account Option - Show for guest users when Place Order is visible (step >= PAYMENT) */}
                                 {step >= STEPS.PAYMENT && (
                                     <div className="w-full">
@@ -662,19 +667,29 @@ export default function CheckoutFormPage({
                                     )}
                                 <UITarget targetId="checkout.placeOrder.before" />
                                 <UITarget targetId="checkout.placeOrder">
-                                    <form onSubmit={handlePlaceOrderSubmit} className="w-full lg:w-auto">
+                                    <form
+                                        onSubmit={handlePlaceOrderSubmit}
+                                        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
                                         <Button
                                             type="submit"
                                             disabled={
                                                 isPlacingOrder ||
+                                                isPlaceOrderPending ||
                                                 isSubmitting('payment') ||
                                                 paymentFetcher.state === 'submitting'
                                             }
-                                            className="w-full lg:max-w-sm"
+                                            className="w-full shadow-2xs"
                                             size="lg">
-                                            {isPlacingOrder || isSubmitting('payment')
+                                            <Lock className="size-4" />
+                                            {isPlacingOrder || isPlaceOrderPending || isSubmitting('payment')
                                                 ? t('placeOrder.processing')
-                                                : t('placeOrder.button')}
+                                                : t('placeOrder.button', {
+                                                      total: formatCurrency(
+                                                          cart?.orderTotal ?? cart?.productTotal ?? 0,
+                                                          i18n.language,
+                                                          currency
+                                                      ),
+                                                  })}
                                         </Button>
                                     </form>
                                 </UITarget>

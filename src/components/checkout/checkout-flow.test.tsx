@@ -329,6 +329,10 @@ vi.mock('@/hooks/checkout/use-completed-steps', () => ({
     useCompletedSteps: () => [],
 }));
 
+vi.mock('@/providers/currency', () => ({
+    useCurrency: () => 'USD',
+}));
+
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: vi.fn(() => ({
         engagement: {
