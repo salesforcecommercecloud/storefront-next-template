@@ -17,6 +17,7 @@ import { type MiddlewareFunction } from 'react-router';
 import { createMultiSiteMiddleware, type MultiSiteConfig } from '@salesforce/storefront-next-runtime/multi-site';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Creates and returns the multi-site middleware configured with the app's site and locale settings.
@@ -25,9 +26,17 @@ import type { AppConfig } from '@/types/config';
  * Must run BEFORE i18next and currency middlewares.
  */
 export const multiSiteMiddleware: MiddlewareFunction<Response> = async (args, next) => {
+    const logger = getLogger(args.context);
     const config = getConfig<AppConfig>(args.context);
     const sites = config.commerce.sites;
+
+    logger.debug('MultiSite: middleware starting', {
+        siteCount: sites.length,
+        defaultSiteId: config.defaultSiteId,
+    });
+
     if (!sites.length) {
+        logger.error('MultiSite: no sites configured');
         throw new Error('No sites found.');
     }
     const defaultSiteId = config.defaultSiteId;
@@ -35,6 +44,7 @@ export const multiSiteMiddleware: MiddlewareFunction<Response> = async (args, ne
     const localeAliasMap = config.localeAliasMap;
     const defaultSite = sites.find((site) => site.id === defaultSiteId);
     if (!defaultSite?.defaultLocale) {
+        logger.error('MultiSite: default site missing defaultLocale', { defaultSiteId });
         throw new Error(`Site "${config.defaultSiteId}" must have a defaultLocale configured. `);
     }
 

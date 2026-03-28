@@ -28,12 +28,15 @@ import { getAddressKey, isAddressEmpty, isAddressEqual, isOrderBillingAddressInc
 import { handleMultiShipShippingAddress } from '@/extensions/multiship/lib/actions/checkout-submit-multi-address';
 import { assignProductsToDefaultShipment } from '@/extensions/multiship/lib/api/basket';
 // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action for submitting checkout shipping address information.
  */
 export async function action(formData: FormData, context: RouterContextProvider) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('SubmitShippingAddress: starting');
     // Update shipping address in Commerce Cloud (like PWA Kit)
     const basketId = await ensureBasketId(context);
 
@@ -127,6 +130,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         });
         updatedBasket = data;
     } catch (error) {
+        logger.error('SubmitShippingAddress: failed', { error });
         let errorMessage = t('errors:checkout.addressValidationFailed');
         if (error instanceof ApiError) {
             try {
@@ -220,6 +224,8 @@ export async function action(formData: FormData, context: RouterContextProvider)
     } catch {
         // Non-fatal: return success with empty map; revalidation may still provide shipping methods
     }
+
+    logger.info('SubmitShippingAddress: succeeded', { basketId });
 
     // Return success data with updated basket and shipping methods for client-side state update
     return Response.json({

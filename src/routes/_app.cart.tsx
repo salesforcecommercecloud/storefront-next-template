@@ -39,6 +39,9 @@ import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares
 import { createApiClients } from '@/lib/api-clients';
 import { currencyContext } from '@/lib/currency';
 
+// Logging
+import { getLogger } from '@/lib/logger.server';
+
 // Components
 import CartSkeleton from '@/components/cart/cart-skeleton';
 import CartContent from '@/components/cart/cart-content';
@@ -278,6 +281,9 @@ async function fetchProductsInBasket(
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export const loader: LoaderFunction = ({ context, request }: LoaderFunctionArgs): CartPageData => {
+    const logger = getLogger(context);
+    logger.debug('Cart: loader starting');
+
     const requestUrl = new URL(request.url);
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
 

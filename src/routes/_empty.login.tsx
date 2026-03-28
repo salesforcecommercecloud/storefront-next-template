@@ -90,6 +90,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         userType === 'registered' &&
         customerId
     ) {
+        logger.debug('Login: already authenticated, redirecting');
         return redirect(returnUrl || '/');
     }
 
@@ -127,14 +128,14 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
             try {
                 await mergeBasket(context);
             } catch (basketError) {
-                logger.error('Failed to merge basket during passwordless login', {
-                    error: basketError instanceof Error ? basketError : String(basketError),
-                });
+                logger.error('Login: basket merge failed during passwordless login', { error: basketError });
             }
 
+            logger.info('Login: passwordless verification succeeded');
             return redirect(returnUrl || '/');
         } catch (verifyError) {
             // Auto-verification failed - show error with OTP form
+            logger.warn('Login: passwordless auto-verification failed');
             const errorMessage = extractErrorMessage(verifyError);
             const errorKey = getPasswordlessErrorMessageKey(errorMessage);
             const { t } = getTranslation(context);
@@ -210,10 +211,10 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 redirectURI: finalRedirectURI,
             });
             if (result.success && result.redirectUrl) {
-                // Redirect to social login provider (auth happens in callback)
+                logger.info('Login: social redirect initiated', { provider });
                 return { success: true, redirectUrl: result.redirectUrl };
             }
-            // Social login failed - redirect back with generic error
+            logger.warn('Login: social authorization failed', { provider });
             return { success: false, error: genericError };
         } else if (loginMode === 'passwordless') {
             // Passwordless login flow
@@ -243,6 +244,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
             try {
                 await authorizePasswordless(context, { userid: email, redirectPath: finalRedirectPath });
+                logger.info('Login: passwordless code sent');
                 // Passwordless authorization sent - redirect to login page with OTP form
                 const params = new URLSearchParams();
                 params.set('otp', 'true');
@@ -270,10 +272,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             }
             const result = await loginRegisteredUser(context, { email, password });
             if (!result.success) {
-                // Return generic error - don't expose specific login failure reasons
+                logger.warn('Login: standard login failed');
                 return { success: false, error: genericError };
             }
 
+            logger.info('Login: standard login succeeded');
             // Login successful - merge basket on server before redirecting
             try {
                 const mergedBasket = await mergeBasket(context);
@@ -281,7 +284,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                     updateBasketResource(context, mergedBasket);
                 }
             } catch (error) {
-                logger.error('Failed to merge basket', { error: error instanceof Error ? error : String(error) });
+                logger.error('Login: basket merge failed', { error });
             }
 
             // Login successful - redirect to returnUrl if provided, otherwise home

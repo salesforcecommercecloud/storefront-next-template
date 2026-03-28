@@ -53,7 +53,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
             const preferredStore = storesData?.data?.[0] || null;
             return { preferredStore, error: null };
         } catch (error) {
-            logger.error('Failed to fetch preferred store', { error: error instanceof Error ? error : String(error) });
+            logger.error('StorePreferences: failed to fetch preferred store', { error });
             return {
                 preferredStore: null,
                 error: t('storePreferences.preferredStore.error'),

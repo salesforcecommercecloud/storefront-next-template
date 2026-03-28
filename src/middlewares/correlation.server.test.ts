@@ -27,6 +27,15 @@ vi.mock('@/lib/correlation', async (importOriginal) => {
     };
 });
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 describe('middlewares/correlation.server.ts', () => {
     let mockContext: Readonly<RouterContextProvider>;
     let mockNext: Mock<() => Promise<Response>>;

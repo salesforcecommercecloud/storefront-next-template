@@ -29,6 +29,7 @@ import { isPasswordValid } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
 import { getTranslation } from '@/lib/i18next';
 import { useTranslation } from 'react-i18next';
+import { getLogger } from '@/lib/logger.server';
 
 type SignupActionResponse = {
     error?: string;
@@ -50,6 +51,7 @@ export function loader({ context }: LoaderFunctionArgs): null | Response {
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<SignupActionResponse | Response> {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();
     const firstName = formData.get('firstName')?.toString();
@@ -58,15 +60,20 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     const password = formData.get('password')?.toString();
     const confirmPassword = formData.get('confirmPassword')?.toString();
 
+    logger.debug('Signup: starting');
+
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
+        logger.warn('Signup: missing required fields');
         return { error: t('signup:allFieldsRequired') };
     }
 
     if (password !== confirmPassword) {
+        logger.warn('Signup: passwords do not match');
         return { error: t('signup:passwordsDoNotMatch') };
     }
 
     if (!isPasswordValid(password)) {
+        logger.warn('Signup: password not secure');
         return { error: t('signup:passwordNotSecure') };
     }
 
@@ -82,9 +89,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     });
 
     if (!result.success) {
+        logger.warn('Signup: registration failed');
         return { error: result.error || t('errors:genericTryAgain') };
     }
 
+    logger.info('Signup: registration succeeded');
     // Registration and auto-login successful - redirect to return URL
     const url = new URL(request.url);
     const returnUrl = url.searchParams.get('returnUrl') || '/';

@@ -35,6 +35,7 @@ import { useTranslation } from 'react-i18next';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchOrderWithProducts } from '@/lib/api/order';
 import { buildUrlFromContext } from '@/lib/url.server';
+import { getLogger } from '@/lib/logger.server';
 
 type OrderDetailsLoaderData = {
     order: ShopperOrders.schemas['Order'];
@@ -49,7 +50,11 @@ type OrderDetailsPageLoaderData = {
 // eslint-disable-next-line react-refresh/only-export-components -- route file exports loader
 export function loader({ context, params }: LoaderFunctionArgs): OrderDetailsPageLoaderData {
     const { orderNo } = params;
+    const logger = getLogger(context);
+    logger.debug('OrderDetail: loader starting', { orderNo });
+
     if (!orderNo) {
+        logger.warn('OrderDetail: missing orderNo param, redirecting to order list');
         throw redirect(buildUrlFromContext('/account/orders', context));
     }
 

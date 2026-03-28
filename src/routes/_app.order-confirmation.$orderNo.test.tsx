@@ -132,6 +132,15 @@ vi.mock('@/extensions/store-locator/components/store-locator/details', () => ({
 }));
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 // Import the functions we want to test
 import { createApiClients } from '@/lib/api-clients';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS

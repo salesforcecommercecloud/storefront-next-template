@@ -21,6 +21,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer';
 import { getTranslation } from '@/lib/i18next';
 import { getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist';
+import { getLogger } from '@/lib/logger.server';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -212,9 +213,11 @@ async function addToWishlist(
  * Server action to add a product to the wishlist
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
 
     if (request.method !== 'POST') {
+        logger.warn('WishlistAdd: method not allowed', { method: request.method });
         throw new Response(t('product:methodNotAllowed'), { status: 405 });
     }
 
@@ -224,18 +227,30 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const productId = typeof rawProductId === 'string' ? rawProductId.trim() : '';
 
         if (!productId) {
+            logger.warn('WishlistAdd: missing productId');
             throw new Error(t('product:productIdRequired'));
         }
 
         // Basic validation: productId should be a non-empty string
         if (productId.length === 0 || productId.length > 100) {
+            logger.warn('WishlistAdd: invalid productId', { productId });
             throw new Error(t('product:productIdRequired'));
         }
 
+        logger.debug('WishlistAdd: starting', { productId });
+
         const result = await addToWishlist(context, productId);
+
+        if (result.success) {
+            logger.info('WishlistAdd: succeeded', { productId, alreadyInWishlist: result.alreadyInWishlist });
+        } else {
+            logger.warn('WishlistAdd: operation returned failure', { productId, error: result.error });
+        }
 
         return Response.json(result);
     } catch (error) {
+        logger.error('WishlistAdd: failed', { error });
+
         let responseMessage: string | undefined;
         let status_code: string | undefined;
 

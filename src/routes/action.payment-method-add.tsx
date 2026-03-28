@@ -17,13 +17,17 @@ import { type ActionFunctionArgs } from 'react-router';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { savePaymentMethodToCustomer } from '@/lib/api/customer';
 import { getAuth } from '@/middlewares/auth.server';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action for adding a payment method to customer profile.
  * Dialog does validation and parsing (expiry, card type); this action only reads FormData and calls the API.
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
+
     if (request.method !== 'POST') {
+        logger.warn('PaymentMethodAdd: method not allowed', { method: request.method });
         return Response.json({ success: false, error: 'Method not allowed' }, { status: 405 });
     }
 
@@ -31,8 +35,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const customerId = auth?.customerId;
 
     if (!customerId) {
+        logger.warn('PaymentMethodAdd: not authenticated');
         return Response.json({ success: false, error: 'Not authenticated' }, { status: 401 });
     }
+
+    logger.debug('PaymentMethodAdd: starting', { customerId });
 
     try {
         const formData = await request.formData();
@@ -58,11 +65,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const success = await savePaymentMethodToCustomer(context, customerId, paymentInstrument);
 
         if (!success) {
+            logger.error('PaymentMethodAdd: failed to save payment method', { customerId });
             return Response.json({ success: false, error: 'Failed to save payment method' }, { status: 500 });
         }
 
+        logger.info('PaymentMethodAdd: succeeded', { customerId, cardType });
         return Response.json({ success: true });
     } catch (error) {
+        logger.error('PaymentMethodAdd: failed', { error });
         return Response.json(
             { success: false, error: error instanceof Error ? error.message : 'Unknown error' },
             { status: 500 }

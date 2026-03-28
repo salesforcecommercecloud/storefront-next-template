@@ -16,16 +16,21 @@
 import type { MiddlewareFunction } from 'react-router';
 import config from '@/config/server';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { getLogger } from '@/lib/logger.server';
 
 let validationRun = false;
 
 /**
  * Validate required Commerce API configuration on first access
  */
-function validateConfig(): void {
+function validateConfig(logger: ReturnType<typeof getLogger>): void {
     if (validationRun || process.env.NODE_ENV === 'test') {
         return;
     }
+
+    logger.debug('AppConfig: validating configuration', {
+        hasProxyHost: !!process.env.SCAPI_PROXY_HOST,
+    });
 
     const required: Record<string, string> = {
         clientId: config.app.commerce.api.clientId,
@@ -43,6 +48,7 @@ function validateConfig(): void {
         .map(([key]) => key);
 
     if (missing.length > 0) {
+        logger.error('AppConfig: missing required configuration', { missing });
         // Map config keys to env var names
         const envVarMap: Record<string, string> = {
             clientId: 'PUBLIC__app__commerce__api__clientId',
@@ -65,6 +71,7 @@ function validateConfig(): void {
         );
     }
 
+    logger.info('AppConfig: validation succeeded');
     validationRun = true;
 }
 
@@ -76,7 +83,9 @@ function validateConfig(): void {
  * Root and header read it via getConfig(context); the bundler does not trace that back to this module.
  */
 export const appConfigMiddlewareServer: MiddlewareFunction<Response> = ({ context }, next) => {
-    validateConfig();
+    const logger = getLogger(context);
+    logger.debug('AppConfig: middleware starting');
+    validateConfig(logger);
     // Ensure commerceAgent is not tree-shaken from the config (used by root.tsx and header for shopper agent)
     void config.app.commerceAgent;
     context.set(appConfigContext, config.app);

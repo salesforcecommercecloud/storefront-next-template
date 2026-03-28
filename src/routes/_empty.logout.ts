@@ -17,12 +17,14 @@ import { type ActionFunctionArgs, redirect } from 'react-router';
 import { destroyAuth as destroyAuthServer, getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients';
 import { destroyBasket } from '@/middlewares/basket.server';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * This server action is required for authentication, because logout must be handled server-side to properly invalidate
  * server-side sessions and integrate with Salesforce Commerce Cloud's authentication system.
  */
 export async function action({ context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
     const session = getAuth(context);
     const { accessToken, refreshToken } = session;
     if (accessToken && refreshToken) {
@@ -32,11 +34,12 @@ export async function action({ context }: ActionFunctionArgs) {
                 accessToken,
                 refreshToken,
             });
-        } catch {
-            // SLAS logout failed, but continue with redirect
+        } catch (error) {
+            logger.warn('Logout: SLAS logout failed, continuing with session cleanup', { error });
         }
     }
     destroyAuthServer(context);
     destroyBasket(context);
+    logger.info('Logout: session destroyed');
     return redirect('/');
 }

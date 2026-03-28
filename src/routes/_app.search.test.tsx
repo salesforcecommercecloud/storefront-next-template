@@ -38,6 +38,15 @@ vi.mock('react-router', async (importOriginal) => {
     };
 });
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 // Mock data
 const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
     hits: [

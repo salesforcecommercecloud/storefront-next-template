@@ -27,6 +27,7 @@ import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 
 import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import { getLogger } from '@/lib/logger.server';
 
 import hero01 from '/images/hero-01.webp';
 import hero02 from '/images/hero-02.webp';
@@ -74,6 +75,9 @@ export type HomePageData = {
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): HomePageData {
+    const logger = getLogger(args.context);
+    logger.debug('HomePage: loader starting');
+
     const currency = args.context.get(currencyContext) as string;
     const requestUrl = new URL(args.request.url);
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);

@@ -15,16 +15,21 @@
  */
 import { type LoaderFunctionArgs, redirect } from 'react-router';
 import { buildUrlFromContext } from '@/lib/url.server';
+import { getLogger } from '@/lib/logger.server';
 
 // TODO: This is right now just a naive shell to make client-side auth flow at least work. This requires attention.
 export function loader({ request, context }: LoaderFunctionArgs) {
+    const logger = getLogger(context);
     const { searchParams } = new URL(request.url);
+    logger.debug('OAuthCallback: loader starting');
 
     // SLAS sends different parameter names than direct OAuth
     const code = searchParams.get('code');
     const usid = searchParams.get('usid');
     if (code && usid) {
+        logger.debug('OAuthCallback: valid code and usid received');
         return new Response(null, { status: 200 });
     }
+    logger.warn('OAuthCallback: missing code or usid, redirecting to login');
     return redirect(buildUrlFromContext('/login', context));
 }

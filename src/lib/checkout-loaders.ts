@@ -98,7 +98,9 @@ export async function getServerShippingMethodsMapData(
         const basketResource = await getBasket(context);
         const basket = basketResource.current ?? null;
         return fetchShippingMethodsMapForBasket(context, basket);
-    } catch {
+    } catch (error) {
+        const logger = getLogger(context);
+        logger.warn('Checkout: failed to fetch shipping methods map', { error });
         return {};
     }
 }
@@ -129,8 +131,12 @@ export async function fetchShippingMethodsMapForBasket(
             try {
                 const methods = await getShippingMethodsForShipment(context, basketId, shipment.shipmentId);
                 shippingMethodsMap[shipment.shipmentId] = methods;
-            } catch {
-                // Skip this shipment if fetching fails
+            } catch (error) {
+                const logger = getLogger(context);
+                logger.warn('Checkout: failed to fetch shipping methods for shipment', {
+                    shipmentId: shipment.shipmentId,
+                    error,
+                });
             }
         });
 
@@ -293,8 +299,9 @@ async function fetchPromotionsForBasket(
                     }
                 });
             }
-        } catch {
-            // Continue with next batch if this one fails
+        } catch (error) {
+            const logger = getLogger(context);
+            logger.warn('Checkout: failed to fetch promotions batch', { error });
         }
     }
 
@@ -365,6 +372,7 @@ export async function initializeBasketForReturningCustomer(
         }
 
         const basketId = basket.basketId;
+        logger.debug('Checkout: prefilling basket for returning customer', { basketId });
 
         const clients = createApiClients(context);
         let updatedBasket = basket;
@@ -457,8 +465,8 @@ export async function initializeBasketForReturningCustomer(
                 });
                 updatedBasket = data;
                 updateBasketResource(context, updatedBasket);
-            } catch {
-                // Billing address update failed - continue without it
+            } catch (error) {
+                logger.warn('Checkout: billing address prefill failed', { basketId, error });
             }
         }
 
@@ -489,9 +497,9 @@ export async function initializeBasketForReturningCustomer(
                     updateBasketResource(context, updatedBasket);
                 }
             } catch (err) {
-                logger.warn('Prefill: could not set default shipping method on basket', {
+                logger.warn('Checkout: could not set default shipping method on basket', {
                     basketId,
-                    error: err instanceof Error ? err.message : String(err),
+                    error: err,
                 });
             }
         }
@@ -510,7 +518,7 @@ export async function initializeBasketForReturningCustomer(
                     const normalizedCardType = normalizeCardType(preferredMethod.cardType);
 
                     if (!normalizedCardType || normalizedCardType === 'unknown') {
-                        logger.warn('Invalid card type for saved payment method', {
+                        logger.warn('Checkout: invalid card type for saved payment method', {
                             cardType: preferredMethod.cardType,
                         });
                         // Skip auto-applying invalid payment method to avoid incomplete basket payment
@@ -582,8 +590,10 @@ async function handleBasketPrefill(
 export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData> {
     try {
         const { context } = args;
+        const logger = getLogger(context);
         const userIsRegistered = isRegisteredCustomer(context);
         const session = getAuth(context);
+        logger.debug('Checkout: loader starting', { userIsRegistered, hasBasket: Boolean(session.customerId) });
 
         const basket = (await getBasket(context)).current ?? null;
 
@@ -652,7 +662,9 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
             // @sfdc-extension-line SFDC_EXT_BOPIS
             ...(storesByStoreId && { storesByStoreId }),
         };
-    } catch {
+    } catch (error) {
+        const logger = getLogger(args.context);
+        logger.error('Checkout: loader failed', { error });
         return {
             basket: null,
             shippingMethodsMap: Promise.resolve({}),

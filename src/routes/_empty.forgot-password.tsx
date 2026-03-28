@@ -30,6 +30,7 @@ import { buildUrlFromContext } from '@/lib/url.server';
 
 // Middleware
 import { getAuth, getPasswordResetToken } from '@/middlewares/auth.server';
+import { getLogger } from '@/lib/logger.server';
 
 type ForgotPasswordActionData = {
     error?: string;
@@ -50,6 +51,7 @@ export function loader({ context }: LoaderFunctionArgs): Response | void {
 // server-side to maintain security and proper integration with SFCC's authentication system
 // eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<ForgotPasswordActionData> {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();
     const email = formData.get('email')?.toString();
@@ -60,8 +62,10 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     try {
         //Send password reset token using SLAS and Marketing Cloud
         await getPasswordResetToken(context, { email });
+        logger.info('ForgotPassword: reset token sent');
         return { success: true, email };
     } catch (error) {
+        logger.error('ForgotPassword: failed', { error });
         const errorMessage = extractErrorMessage(error);
         const errorKey = getPasswordResetErrorMessageKey(errorMessage);
         return { error: t(errorKey) };

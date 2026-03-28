@@ -41,6 +41,15 @@ vi.mock('@/components/navigation-menu-mega', () => ({
     ),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 describe('_app.tsx - Default Layout Route', () => {
     const mockCategory: ShopperProducts.schemas['Category'] = {
         id: 'root',

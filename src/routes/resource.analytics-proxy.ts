@@ -31,6 +31,7 @@ import type { LoaderFunctionArgs, ActionFunctionArgs } from 'react-router';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getAuth } from '@/middlewares/auth.server';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Rewrite the Domain attribute in a Set-Cookie header string from the ECOM
@@ -45,10 +46,13 @@ function rewriteCookieDomain(setCookieValue: string, ecomHostname: string, appHo
 }
 
 async function proxyAnalytics({ request, context }: LoaderFunctionArgs | ActionFunctionArgs) {
+    const logger = getLogger(context);
     const url = new URL(request.url);
     const targetUrl = url.searchParams.get('url');
+    logger.debug('AnalyticsProxy: request starting', { method: request.method });
 
     if (!targetUrl) {
+        logger.warn('AnalyticsProxy: missing url parameter');
         return new Response('Missing url parameter', { status: 400 });
     }
 
@@ -56,6 +60,7 @@ async function proxyAnalytics({ request, context }: LoaderFunctionArgs | ActionF
     const activeDataHost = config.engagement?.adapters?.activeData?.host;
 
     if (!activeDataHost) {
+        logger.warn('AnalyticsProxy: Active Data host not configured');
         return new Response('Active Data host not configured', { status: 500 });
     }
 
@@ -63,11 +68,16 @@ async function proxyAnalytics({ request, context }: LoaderFunctionArgs | ActionF
     try {
         parsedTarget = new URL(targetUrl);
     } catch {
+        logger.warn('AnalyticsProxy: invalid url parameter', { targetUrl });
         return new Response('Invalid url parameter', { status: 400 });
     }
 
     const parsedHost = new URL(activeDataHost);
     if (parsedTarget.hostname !== parsedHost.hostname) {
+        logger.warn('AnalyticsProxy: target hostname mismatch', {
+            targetHostname: parsedTarget.hostname,
+            expectedHostname: parsedHost.hostname,
+        });
         return new Response('Target URL does not match configured Active Data host', { status: 403 });
     }
 
@@ -105,7 +115,8 @@ async function proxyAnalytics({ request, context }: LoaderFunctionArgs | ActionF
         }
 
         return new Response(null, { status: ecomResponse.status, headers: responseHeaders });
-    } catch {
+    } catch (error) {
+        logger.error('AnalyticsProxy: upstream request failed', { error });
         return new Response(null, { status: 502 });
     }
 }

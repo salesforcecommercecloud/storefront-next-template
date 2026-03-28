@@ -52,6 +52,15 @@ vi.mock('@/components/order-skeleton', () => ({
     default: () => <div data-testid="order-skeleton">Loading order...</div>,
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 import OrderDetailsPage, { loader, ErrorBoundary } from './_app.account.orders.$orderNo';
 import { fetchOrderWithProducts } from '@/lib/api/order';
 

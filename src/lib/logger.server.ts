@@ -24,7 +24,10 @@ import { createLogger, type Logger } from '@/lib/logger';
  * logger here. `getLogger()` checks this context first and returns the injected
  * logger when available, falling back to a console-based logger otherwise.
  */
-export const loggerContext = createRouterContext<Logger | undefined>(undefined);
+// Note: defaultValue must not be `undefined` — React Router's context.get() throws
+// "No value found for context" when defaultValue === undefined. Using `null` allows
+// getLogger() to be called safely before loggingMiddleware has run.
+export const loggerContext = createRouterContext<Logger | null>(null);
 
 /**
  * Get a request-scoped logger from router context.

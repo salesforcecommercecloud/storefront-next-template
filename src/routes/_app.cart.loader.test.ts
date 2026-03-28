@@ -36,6 +36,15 @@ vi.mock('@/lib/api-clients', () => ({
     })),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 import { getBasket, getBasketSnapshot } from '@/middlewares/basket.server';
 
 describe('Cart route loader', () => {

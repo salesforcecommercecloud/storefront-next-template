@@ -20,6 +20,7 @@ import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/pas
 import { handleSocialLoginLanding } from '@/lib/api/auth/social-login';
 import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password';
 import { isAbsoluteURL } from '@/lib/utils';
+import { getLogger } from '@/lib/logger.server';
 
 type LoaderHandler = (args: LoaderFunctionArgs) => Promise<Response> | Response;
 type ActionHandler = (args: ActionFunctionArgs) => Promise<Record<string, unknown>>;
@@ -107,25 +108,33 @@ function getActionHandler(pathname: string, context: Readonly<RouterContextProvi
 }
 
 export async function loader(args: LoaderFunctionArgs) {
+    const logger = getLogger(args.context);
     const url = new URL(args.request.url);
+    logger.debug('CatchAllRoute: loader starting', { pathname: url.pathname });
     const handler = getLoaderHandler(url.pathname, args.context);
 
     if (handler) {
+        logger.debug('CatchAllRoute: matched loader handler', { pathname: url.pathname });
         return handler(args);
     }
 
     // If no match, throw a 404
+    logger.warn('CatchAllRoute: no loader handler matched, returning 404', { pathname: url.pathname });
     throw new Response('Not Found', { status: 404 });
 }
 
 export async function action(args: ActionFunctionArgs) {
+    const logger = getLogger(args.context);
     const url = new URL(args.request.url);
+    logger.debug('CatchAllRoute: action starting', { pathname: url.pathname });
     const handler = getActionHandler(url.pathname, args.context);
 
     if (handler) {
+        logger.debug('CatchAllRoute: matched action handler', { pathname: url.pathname });
         return handler(args);
     }
 
     // If no match, throw a 405 Method Not Allowed
+    logger.warn('CatchAllRoute: no action handler matched, returning 405', { pathname: url.pathname });
     throw new Response('Method Not Allowed', { status: 405 });
 }

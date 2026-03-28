@@ -17,6 +17,7 @@ import { redirect, type ActionFunction } from 'react-router';
 import { getMultiSiteCookies } from '@salesforce/storefront-next-runtime/multi-site';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action to set the site cookie and redirect to the chosen site's homepage.
@@ -30,21 +31,30 @@ import type { AppConfig } from '@/types/config';
  * Instead we build the URL directly from the selected site's config values.
  */
 export const action: ActionFunction = async ({ request, context }) => {
+    const logger = getLogger(context);
     const formData = await request.formData();
     const siteId = formData.get('siteId') as string;
 
+    logger.debug('SetSite: starting', { siteId });
+
     if (!siteId) {
+        logger.warn('SetSite: siteId parameter missing');
         throw new Response('siteId is required', { status: 400 });
     }
 
     const config = getConfig<AppConfig>(context);
     const site = config.commerce.sites.find((s) => s.id === siteId);
     if (!site) {
+        logger.warn('SetSite: site not found', {
+            siteId,
+            availableSites: config.commerce.sites.map((s) => s.id),
+        });
         throw new Response(`Site "${siteId}" not found`, { status: 400 });
     }
 
     const cookies = getMultiSiteCookies(context);
     if (!cookies) {
+        logger.error('SetSite: cookies not initialized');
         throw new Response('Multi-site cookies not initialized', { status: 500 });
     }
 
@@ -54,6 +64,7 @@ export const action: ActionFunction = async ({ request, context }) => {
         cookies.localeCookie.serialize(site.defaultLocale),
     ]);
 
+    logger.info('SetSite: succeeded', { siteId, defaultLocale: site.defaultLocale });
     return redirect('/', {
         headers: [
             ['Set-Cookie', siteCookieHeader],

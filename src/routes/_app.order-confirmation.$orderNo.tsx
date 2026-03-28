@@ -40,6 +40,7 @@ import OrderSkeleton from '@/components/order-skeleton';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import { toImageUrl } from '@/lib/dynamic-image';
+import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores';
 import { getOrderDeliveryShipments, getOrderPickupShipment } from '@/extensions/bopis/lib/order-utils';
@@ -101,6 +102,8 @@ const getPrimaryImageFromProduct = (product: ShopperProducts.schemas['Product'] 
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
     const { orderNo } = params;
+    const logger = getLogger(context);
+    logger.debug('OrderConfirmation: loader starting', { orderNo });
     const { orderDataPromise, orderPromise } = fetchOrderWithProducts(context, orderNo as string);
 
     // @sfdc-extension-line SFDC_EXT_BOPIS

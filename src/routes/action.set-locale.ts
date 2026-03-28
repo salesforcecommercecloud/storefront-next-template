@@ -15,6 +15,7 @@
  */
 import { redirect, type ActionFunction } from 'react-router';
 import { getMultiSiteCookies } from '@salesforce/storefront-next-runtime/multi-site';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action to set the locale cookie and redirect to the new locale URL.
@@ -25,22 +26,28 @@ import { getMultiSiteCookies } from '@salesforce/storefront-next-runtime/multi-s
  * the Set-Cookie HTTP header, which can only be done server-side.
  */
 export const action: ActionFunction = async ({ request, context }) => {
+    const logger = getLogger(context);
     const formData = await request.formData();
     const locale = formData.get('locale') as string;
     const pathname = formData.get('pathname') as string;
 
+    logger.debug('SetLocale: starting', { locale, pathname });
+
     if (!locale) {
+        logger.warn('SetLocale: locale parameter missing');
         throw new Response('Locale is required', { status: 400 });
     }
 
     // Get cookies from multi-site middleware context
     const cookies = getMultiSiteCookies(context);
     if (!cookies) {
+        logger.error('SetLocale: cookies not initialized');
         throw new Response('Site and locale cookies were not initialized', { status: 500 });
     }
 
     const cookieHeader = await cookies.localeCookie.serialize(locale);
 
+    logger.info('SetLocale: succeeded', { locale, redirectTo: pathname || '/' });
     return redirect(pathname || '/', {
         headers: {
             'Set-Cookie': cookieHeader,

@@ -18,6 +18,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 import { bonusProductAddSchema, parseBonusProductAddFromFormData } from '@/lib/basket-schemas';
 import {
     type BasketActionResponse,
@@ -50,11 +51,14 @@ async function addBonusProductsToCart(
         promotionId: string;
     }>
 ): Promise<BasketActionResponse> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('BonusProductAdd: starting addBonusProductsToCart', { itemCount: bonusItems.length });
     const basketResource = await getBasket(context);
     const basket = basketResource.current;
 
     if (!basket) {
+        logger.warn('BonusProductAdd: no basket found');
         return createBasketErrorResponse(t('errors:noBasketFound'));
     }
 
@@ -65,6 +69,9 @@ async function addBonusProductsToCart(
         );
 
         if (!bonusDiscountItem) {
+            logger.warn('BonusProductAdd: invalid bonus discount line item ID', {
+                bonusDiscountLineItemId: item.bonusDiscountLineItemId,
+            });
             return createBasketErrorResponse(
                 `Invalid bonus discount line item ID: ${item.bonusDiscountLineItemId}. The promotion may have expired or changed.`
             );
@@ -72,6 +79,10 @@ async function addBonusProductsToCart(
 
         // Validate promotionId matches (sanity check)
         if (bonusDiscountItem.promotionId !== item.promotionId) {
+            logger.warn('BonusProductAdd: promotion ID mismatch', {
+                expected: bonusDiscountItem.promotionId,
+                received: item.promotionId,
+            });
             return createBasketErrorResponse('Promotion ID mismatch. Please refresh the page and try again.');
         }
     }
@@ -96,8 +107,10 @@ async function addBonusProductsToCart(
         // Update the basket storage
         updateBasketResource(context, updatedBasket);
 
+        logger.info('BonusProductAdd: bonus products added successfully');
         return createBasketSuccessResponse(updatedBasket);
     } catch (error) {
+        logger.error('BonusProductAdd: failed', { error });
         const { responseMessage } = await extractResponseError(error);
         return createBasketErrorResponse(responseMessage || 'Failed to add bonus products to cart');
     }
@@ -139,6 +152,9 @@ async function addBonusProductsToCart(
  * ```
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<BasketActionResponse> {
+    const logger = getLogger(context);
+    logger.debug('BonusProductAdd: action starting');
+
     if (request.method !== 'POST') {
         throw new Response('Method not allowed', { status: 405 });
     }
@@ -151,6 +167,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const validationResult = bonusProductAddSchema.safeParse(rawData);
 
         if (!validationResult.success) {
+            logger.warn('BonusProductAdd: validation failed', { issues: validationResult.error.issues });
             return createBasketErrorResponse(validationResult.error.issues[0]?.message || 'Invalid form data');
         }
 
@@ -158,8 +175,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const { bonusItems } = validationResult.data;
 
         // Call core logic and return result
-        return await addBonusProductsToCart(context, bonusItems);
+        const result = await addBonusProductsToCart(context, bonusItems);
+        logger.info('BonusProductAdd: action succeeded');
+        return result;
     } catch (error) {
+        logger.error('BonusProductAdd: action failed', { error });
         const { responseMessage } = await extractResponseError(error);
         return createBasketErrorResponse(responseMessage || 'Failed to add bonus products to cart');
     }

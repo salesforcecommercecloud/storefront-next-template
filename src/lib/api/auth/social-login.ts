@@ -46,6 +46,9 @@ export const authorizeIDP = async (
     error?: string;
     redirectUrl?: string;
 }> => {
+    const logger = getLogger(context);
+    logger.debug('SocialLogin: authorizing IDP');
+
     try {
         const config = getConfig<AppConfig>(context);
         const session = getAuth(context);
@@ -71,11 +74,13 @@ export const authorizeIDP = async (
             codeVerifier,
         }));
 
+        logger.info('SocialLogin: authorization URL generated', { hint: parameters.hint });
         return {
             success: true,
             redirectUrl: url,
         };
     } catch (error) {
+        logger.error('SocialLogin: authorization failed', { error });
         return {
             success: false,
             error: getErrorMessage(error),
@@ -91,6 +96,8 @@ export const loginIDPUser = async (
     error?: string;
 }> => {
     const { t } = getTranslation(context);
+    const logger = getLogger(context);
+    logger.debug('SocialLogin: IDP login starting');
 
     try {
         const session = getAuth(context);
@@ -100,6 +107,7 @@ export const loginIDPUser = async (
         const usid = parameters.usid || session.usid;
 
         if (!codeVerifier) {
+            logger.error('SocialLogin: code verifier missing from session');
             throw new Error(t('errors:codeVerifierMissing'));
         }
 
@@ -114,7 +122,8 @@ export const loginIDPUser = async (
                 if (authData.trackingConsent) {
                     dnt = trackingConsentToBoolean(authData.trackingConsent);
                 }
-            } catch {
+            } catch (error) {
+                logger.warn('SocialLogin: failed to get tracking consent from auth context', { error });
                 // If getAuth fails (e.g., middleware not initialized), dnt remains undefined
             }
         }
@@ -141,10 +150,12 @@ export const loginIDPUser = async (
             };
         });
 
+        logger.info('SocialLogin: IDP login succeeded');
         return {
             success: true,
         };
     } catch (error) {
+        logger.error('SocialLogin: code exchange failed', { error });
         return {
             success: false,
             error: getErrorMessage(error),
@@ -168,7 +179,7 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
 
         // Handle error from social provider
         if (error) {
-            logger.error('Failed to login', { reason: t('socialCallback:socialError'), error });
+            logger.error('SocialLogin: provider returned error', { error });
             const errorMessage = t('socialCallback:socialError');
             return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
         }
@@ -186,28 +197,29 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
             });
 
             if (result.success) {
+                logger.info('SocialLogin: login succeeded');
                 // Login successful - merge basket on server before redirecting
                 try {
                     await mergeBasket(context);
                 } catch (err) {
-                    logger.error('Failed to merge basket', { error: err });
+                    logger.error('SocialLogin: basket merge failed', { error: err });
                 }
 
                 // Redirect to redirectURL if provided, otherwise redirect to home
                 const redirectTo = redirectUrl ? decodeURIComponent(redirectUrl) : '/';
                 return redirect(redirectTo);
             } else {
-                logger.error('Error during login', { error: result.error });
+                logger.error('SocialLogin: login failed', { error: result.error });
                 const errorMessage = t('errors:genericTryAgain');
                 return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
             }
         } else {
-            logger.error('Error during login', { error: 'Missing Auth code.' });
+            logger.error('SocialLogin: missing authorization code');
             const errorMessage = t('errors:genericTryAgain');
             return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
         }
     } catch (error) {
-        logger.error('Error during login', { error });
+        logger.error('SocialLogin: landing handler failed', { error });
         const errorMessage = t('errors:genericTryAgain');
         return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
     }

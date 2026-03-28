@@ -35,6 +35,7 @@ import { getLogger } from '@/lib/logger.server';
 export async function action(formData: FormData, context: RouterContextProvider) {
     const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('SubmitPayment: starting');
 
     // Parse and validate using shared schema
     // This ensures server-side validation matches client-side validation exactly
@@ -44,6 +45,9 @@ export async function action(formData: FormData, context: RouterContextProvider)
     const result = paymentSchema.safeParse(paymentData);
 
     if (!result.success) {
+        logger.warn('SubmitPayment: validation failed', {
+            fieldErrors: result.error.flatten().fieldErrors,
+        });
         return Response.json(
             {
                 success: false,
@@ -105,11 +109,16 @@ export async function action(formData: FormData, context: RouterContextProvider)
                             : {}),
                     };
                 }
-            } catch {
+            } catch (error) {
+                logger.error('SubmitPayment: failed to fetch saved payment method', { error });
                 // Fall through to error below if paymentInfo is still unset
             }
         }
         if (!paymentInfo) {
+            logger.warn('SubmitPayment: saved payment method not found', {
+                selectedSavedPaymentMethod,
+                customerId: auth?.customerId,
+            });
             return Response.json(
                 {
                     success: false,
@@ -131,6 +140,12 @@ export async function action(formData: FormData, context: RouterContextProvider)
 
         // Validate that we have actual payment data (not just empty/default values)
         if (!cleanCardNumber || cleanCardNumber.length < 13 || !expiryMonth || !expiryYear || !cardholderName?.trim()) {
+            logger.warn('SubmitPayment: incomplete card data', {
+                hasCardNumber: Boolean(cleanCardNumber),
+                cardLength: cleanCardNumber?.length,
+                hasExpiry: Boolean(expiryMonth && expiryYear),
+                hasCardholder: Boolean(cardholderName?.trim()),
+            });
             return Response.json(
                 {
                     success: false,
@@ -159,6 +174,10 @@ export async function action(formData: FormData, context: RouterContextProvider)
     }
 
     if (!basketId || !basket) {
+        logger.error('SubmitPayment: basket not found', {
+            hasBasketId: Boolean(basketId),
+            hasBasket: Boolean(basket),
+        });
         return Response.json(
             {
                 success: false,
@@ -193,12 +212,11 @@ export async function action(formData: FormData, context: RouterContextProvider)
     if (existingPaymentId) {
         try {
             await removePaymentInstrumentFromBasket(context, basketId, existingPaymentId);
-        } catch (err) {
-            logger.error('Failed to remove existing payment instrument from basket; cannot safely add new payment.', {
+        } catch (error) {
+            logger.error('SubmitPayment: failed to remove existing payment instrument', {
                 basketId,
                 existingPaymentId,
-                error: err instanceof Error ? err.message : String(err),
-                stack: err instanceof Error ? err.stack : undefined,
+                error,
             });
             return Response.json(
                 {
@@ -215,20 +233,16 @@ export async function action(formData: FormData, context: RouterContextProvider)
     let updatedBasket: ShopperBasketsV2.schemas['Basket'];
     try {
         updatedBasket = await addPaymentInstrumentToBasket(context, basketId, paymentInfo);
-    } catch (err) {
-        logger.error(
-            'Failed to add payment instrument to basket after removing previous instrument; basket may have no payment.',
-            {
-                basketId,
-                error: err instanceof Error ? err.message : String(err),
-                stack: err instanceof Error ? err.stack : undefined,
-            }
-        );
+    } catch (error) {
+        logger.error('SubmitPayment: failed to add payment instrument', {
+            basketId,
+            error,
+        });
         const apiDetail =
-            err && typeof err === 'object' && 'body' in err
-                ? typeof (err as { body?: unknown }).body === 'object' &&
-                  (err as { body?: { detail?: string } }).body?.detail
-                    ? (err as { body: { detail?: string } }).body.detail
+            error && typeof error === 'object' && 'body' in error
+                ? typeof (error as { body?: unknown }).body === 'object' &&
+                  (error as { body?: { detail?: string } }).body?.detail
+                    ? (error as { body: { detail?: string } }).body.detail
                     : ''
                 : '';
         return Response.json(
@@ -253,6 +267,12 @@ export async function action(formData: FormData, context: RouterContextProvider)
 
         // Check if payment instruments are preserved in the final response
         if (!finalBasket.paymentInstruments?.[0]) {
+            logger.warn(
+                'SubmitPayment: payment instruments missing from billing address response, merging from previous response',
+                {
+                    basketId,
+                }
+            );
             // Payment instruments missing from API response, using updatedBasket data
             // Use the payment instrument from the earlier addPaymentInstrument call
             finalUpdatedBasket = {
@@ -283,7 +303,8 @@ export async function action(formData: FormData, context: RouterContextProvider)
             };
             updateBasketResource(context, finalUpdatedBasket);
         }
-    } catch {
+    } catch (error) {
+        logger.error('SubmitPayment: failed', { error });
         return Response.json(
             {
                 success: false,
@@ -293,6 +314,8 @@ export async function action(formData: FormData, context: RouterContextProvider)
             { status: 500 }
         );
     }
+
+    logger.info('SubmitPayment: succeeded', { basketId });
 
     // Return success data as JSON with updated basket for direct context updates
     return Response.json({

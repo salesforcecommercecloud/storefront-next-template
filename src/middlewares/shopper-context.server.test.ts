@@ -444,8 +444,8 @@ describe('shopper-context.server', () => {
 
             expect(result).toBeInstanceOf(Response);
             expect(mockNext).toHaveBeenCalledOnce();
-            expect(mockLogger.error).toHaveBeenCalledWith('Shopper context server middleware error', {
-                error: 'API Error',
+            expect(mockLogger.error).toHaveBeenCalledWith('ShopperContext: middleware failed', {
+                error: expect.any(Error),
                 usid: 'test-usid',
                 url: url.toString(),
             });
@@ -461,8 +461,8 @@ describe('shopper-context.server', () => {
 
             expect(result).toBeInstanceOf(Response);
             expect(mockNext).toHaveBeenCalledOnce();
-            expect(mockLogger.error).toHaveBeenCalledWith('Shopper context server middleware error', {
-                error: 'Computation error',
+            expect(mockLogger.error).toHaveBeenCalledWith('ShopperContext: middleware failed', {
+                error: expect.any(Error),
                 usid: 'test-usid',
                 url: mockRequest.url,
             });
@@ -483,8 +483,8 @@ describe('shopper-context.server', () => {
 
             expect(result).toBeInstanceOf(Response);
             expect(mockNext).toHaveBeenCalledOnce();
-            expect(mockLogger.error).toHaveBeenCalledWith('Shopper context server middleware error', {
-                error: 'Cookie append error',
+            expect(mockLogger.error).toHaveBeenCalledWith('ShopperContext: middleware failed', {
+                error: expect.any(Error),
                 usid: 'test-usid',
                 url: url.toString(),
             });

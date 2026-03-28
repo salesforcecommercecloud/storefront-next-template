@@ -10,6 +10,7 @@
         "bundlesize:analyze": "cross-env BUNDLES_SIZE_ANALYZE=true pnpm build",
         "dev": "pnpm locales:aggregate-extensions && sfnext dev",
         "dev:debug": "cross-env NODE_OPTIONS=--inspect sfnext dev",
+        "dev:log": "cross-env SFNEXT_LOG_LEVEL=debug sfnext dev",
         "deploy:cartridge": "sfnext deploy-cartridge",
         "deploy:cartridge:clean": "sfnext deploy-cartridge --delete",
         "generate:cartridge": "sfnext generate-cartridge",

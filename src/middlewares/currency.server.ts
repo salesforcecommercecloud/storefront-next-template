@@ -17,6 +17,7 @@ import { type MiddlewareFunction, createContext as createRouterContext } from 'r
 import { currencyContext, COOKIE_CURRENCY } from '@/lib/currency';
 import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Currency storage context for tracking updates (like authStorageContext)
@@ -64,9 +65,12 @@ export const updateCurrency = (context: Parameters<MiddlewareFunction>[0]['conte
  * This must run AFTER multi-site middleware to access locale and site
  */
 export const currencyMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
+    const logger = getLogger(context);
+
     // Before calling the handler: Set currency from cookies or defaults
     const multiSite = context.get(multiSiteContext);
     if (!multiSite) {
+        logger.error('Currency: multi-site context missing');
         throw new Error('Multi-site middleware must run before currency middleware');
     }
 
@@ -81,6 +85,7 @@ export const currencyMiddleware: MiddlewareFunction<Response> = async ({ request
     // Get supported currencies from site configuration
     const supportedCurrencies = site.supportedCurrencies;
     if (!supportedCurrencies || supportedCurrencies.length === 0) {
+        logger.error('Currency: no supported currencies configured', { siteId: site.id });
         throw new Error(`Site "${site.id}" must have supportedCurrencies configured.`);
     }
 
@@ -92,13 +97,19 @@ export const currencyMiddleware: MiddlewareFunction<Response> = async ({ request
 
     // Priority: Cookie → Locale's preferred currency → First supported currency
     let currency: string;
+    let currencySource: string;
     if (userSelectedCurrency && supportedCurrencies.includes(userSelectedCurrency)) {
         currency = userSelectedCurrency;
+        currencySource = 'cookie';
     } else if (locale.preferredCurrency && supportedCurrencies.includes(locale.preferredCurrency)) {
         currency = locale.preferredCurrency;
+        currencySource = 'locale';
     } else {
         currency = site.defaultCurrency;
+        currencySource = 'default';
     }
+
+    logger.debug('Currency: resolved', { currency, source: currencySource });
 
     context.set(currencyContext, currency);
 
@@ -118,6 +129,7 @@ export const currencyMiddleware: MiddlewareFunction<Response> = async ({ request
 
             // Update context immediately for current request (triggers provider update)
             context.set(currencyContext, updatedCurrency);
+            logger.info('Currency: updated via action', { currency: updatedCurrency });
         }
     }
 

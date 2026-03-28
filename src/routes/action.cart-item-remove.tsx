@@ -19,6 +19,7 @@ import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.serve
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action for removing an item from the shopping cart
@@ -61,7 +62,9 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     basket?: ShopperBasketsV2.schemas['Basket'];
     error?: string;
 }> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('CartItemRemove: action starting');
 
     if (request.method !== 'POST') {
         throw new Response(t('errors:methodNotAllowed'), { status: 405 });
@@ -69,6 +72,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
     const basketId = await ensureBasketId(context);
     if (!basketId) {
+        logger.warn('CartItemRemove: no basket found');
         return {
             success: false,
             error: t('errors:noBasketFound'),
@@ -79,12 +83,14 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const formData = await request.formData();
         const itemId = formData.get('itemId') as string;
         if (!itemId) {
+            logger.warn('CartItemRemove: missing itemId in form data');
             return {
                 success: false,
                 error: t('cart:itemIdRequired'),
             };
         }
 
+        logger.debug('CartItemRemove: removing item', { itemId, basketId });
         const clients = createApiClients(context);
         const { data: updatedBasket } = await clients.shopperBasketsV2.removeItemFromBasket({
             params: {
@@ -98,14 +104,17 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         // Update the basket cache to reflect the changes
         updateBasketResource(context, updatedBasket);
 
+        logger.info('CartItemRemove: item removed successfully');
         return { success: true, basket: updatedBasket };
     } catch (error) {
         if (error instanceof ApiError) {
+            logger.error('CartItemRemove: API error removing item', { error });
             return {
                 success: false,
                 error: error.body?.detail || error.statusText,
             };
         }
+        logger.error('CartItemRemove: failed', { error });
         const { responseMessage } = await extractResponseError(error as Error);
         return {
             success: false,

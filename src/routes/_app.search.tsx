@@ -22,6 +22,7 @@ import type { AppConfig } from '@/types/config';
 import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 
 import { currencyContext } from '@/lib/currency';
+import { getLogger } from '@/lib/logger.server';
 import CategoryPagination from '@/components/category-pagination';
 import ActiveFilters from '@/components/category-refinements/active-filters';
 import FiltersButton from '@/components/category-refinements/filters-button';
@@ -106,6 +107,9 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
 
     const criticalCount = config.search.products.hits.critical ?? 2;
 
+    const logger = getLogger(context);
+    logger.debug('Search: loader starting', { q, offset, sort, refineCount: refine.length });
+
     const searchResultCritical = await fetchSearchProducts(context, {
         q,
         limit: criticalCount,
@@ -115,6 +119,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
         currency,
     });
 
+    logger.info('Search: results loaded', { query: q, total: searchResultCritical.total, offset });
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
 
     return {

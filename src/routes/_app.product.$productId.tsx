@@ -91,6 +91,8 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
     const { productId = '' } = params;
     const requestUrl = new URL(request.url);
     const { searchParams } = requestUrl;
+    const variantPid = searchParams.get('pid');
+    logger.debug('Product: loader starting', { productId, variantPid: variantPid || undefined });
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     const selectedStoreInfo = context.get(selectedStoreContext);
@@ -203,7 +205,7 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
                 return generateProductSchema(product, productUrl);
             } catch (error) {
                 logger.error('Error generating product schema in loader', {
-                    error: error instanceof Error ? error : String(error),
+                    error,
                 });
                 return null;
             }

@@ -31,6 +31,15 @@ vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
     })),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 describe('action.set-locale', () => {
     test('should return redirect response with locale cookie when given valid locale', async () => {
         const locale = 'es';

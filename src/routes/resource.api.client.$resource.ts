@@ -21,6 +21,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { ApiError, type Clients, type OperationMethodsOnly } from '@salesforce/storefront-next-runtime/scapi';
 
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Type representing Commerce SDK client names (camelCase)
@@ -116,10 +117,14 @@ export async function loader<
     M extends CommerceSdkMethodName<C>,
     P extends CommerceSdkMethodParameters<C, M>,
 >({ params, context }: LoaderFunctionArgs): Promise<ApiResponse<Awaited<R>>> {
+    const logger = getLogger(context);
+    logger.debug('ApiClientResource: loader starting', { resource: params.resource });
+
     let resource: [C, M, P];
     try {
         resource = parseResourceParameter<[C, M, P]>(params.resource);
     } catch (error) {
+        logger.warn('ApiClientResource: failed to parse resource parameter', { error });
         return {
             success: false,
             errors: [error instanceof Error ? error.message : 'Unknown error'],
@@ -150,6 +155,11 @@ export async function loader<
             data,
         };
     } catch (reason) {
+        logger.error('ApiClientResource: loader method call failed', {
+            error: reason,
+            client: resource[0],
+            method: resource[1],
+        });
         let errorMessage: string;
         // Use getErrorMessage for ApiError instances (new Commerce SDK format)
         if (reason instanceof ApiError) {
@@ -192,10 +202,14 @@ export async function action<
     M extends CommerceSdkMethodName<C>,
     P extends CommerceSdkMethodParameters<C, M>,
 >({ params, context, request }: ActionFunctionArgs): Promise<ApiResponse<Awaited<R>>> {
+    const logger = getLogger(context);
+    logger.debug('ApiClientResource: action starting', { resource: params.resource });
+
     let resource: [C, M, P];
     try {
         resource = parseResourceParameter<[C, M, P]>(params.resource);
     } catch (error) {
+        logger.warn('ApiClientResource: failed to parse resource parameter in action', { error });
         return {
             success: false,
             errors: [error instanceof Error ? error.message : 'Unknown error'],
@@ -261,6 +275,11 @@ export async function action<
             data,
         };
     } catch (reason) {
+        logger.error('ApiClientResource: action method call failed', {
+            error: reason,
+            client: resource[0],
+            method: resource[1],
+        });
         let errorMessage: string;
         // Use getErrorMessage for ApiError instances (new Commerce SDK format)
         if (reason instanceof ApiError) {

@@ -57,6 +57,15 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     })),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 const mockPasswordlessCallback = vi.mocked(handlePasswordlessCallback);
 const mockPasswordlessLanding = vi.mocked(handlePasswordlessLanding);
 const mockSocialLoginCallback = vi.mocked(handleSocialLoginLanding);

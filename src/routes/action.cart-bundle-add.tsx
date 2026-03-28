@@ -20,6 +20,7 @@ import { createApiClients } from '@/lib/api-clients';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Product selection values structure matching client-side ProductSelectionValues
@@ -42,12 +43,19 @@ async function addBundleToCart(
     basket?: ShopperBasketsV2.schemas['Basket'];
     error?: string;
 }> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('CartBundleAdd: starting addBundleToCart', {
+        productId: bundleItem.productId,
+        quantity: bundleItem.quantity,
+        childCount: childSelections.length,
+    });
     const basketResource = await getBasket(context);
     const basket = basketResource.current;
 
     if (!basket) {
         // This state should never happen as it would indicate that the basket middleware is broken
+        logger.warn('CartBundleAdd: no basket found');
         return {
             success: false,
             error: t('errors:noBasketFound'),
@@ -140,17 +148,20 @@ async function addBundleToCart(
         // Update the basket storage
         updateBasketResource(context, updatedBasket);
 
+        logger.info('CartBundleAdd: bundle added successfully');
         return {
             success: true,
             basket: updatedBasket,
         };
     } catch (error) {
         if (error instanceof ApiError) {
+            logger.error('CartBundleAdd: API error adding bundle', { error });
             return {
                 success: false,
                 error: error.body?.detail || error.statusText,
             };
         }
+        logger.error('CartBundleAdd: failed', { error });
         return {
             success: false,
             error: error instanceof Error ? error.message : 'An unexpected error occurred',
@@ -162,7 +173,9 @@ async function addBundleToCart(
  * Server action to add a product bundle to the cart.
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('CartBundleAdd: action starting');
 
     if (request.method !== 'POST') {
         throw new Response(t('product:methodNotAllowed'), { status: 405 });
@@ -174,6 +187,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const childSelectionsJson = formData.get('childSelections') as string;
 
         if (!bundleItemJson || !childSelectionsJson) {
+            logger.warn('CartBundleAdd: missing bundle data in form data');
             throw new Error(t('product:bundleDataRequired'));
         }
 
@@ -182,9 +196,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         const result = await addBundleToCart(context, bundleItem, childSelections);
 
+        logger.info('CartBundleAdd: action succeeded');
         return Response.json(result);
     } catch (error) {
         if (error instanceof ApiError) {
+            logger.error('CartBundleAdd: action API error', { error });
             return data(
                 {
                     success: false,
@@ -193,6 +209,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
                 { status: error.status }
             );
         }
+        logger.error('CartBundleAdd: action failed', { error });
         return data(
             {
                 success: false,

@@ -22,15 +22,23 @@ import { i18nextContext } from '@/lib/i18next';
 import { requestToLocaleMap } from '@salesforce/storefront-next-runtime/multi-site';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { getLogger } from '@/lib/logger.server';
 
 // Lazy-initialized on first request so we can read supported languages from config
 // rather than hard-coding them. Contains [middleware, getLocale, getInstance].
 let cached: ReturnType<typeof createI18nextMiddleware> | null = null;
 
 const i18nextMiddleware: MiddlewareFunction<Response> = async (args, next) => {
+    const logger = getLogger(args.context);
+
     if (!cached) {
         const config = getConfig<AppConfig>(args.context);
         const { supportedLngs: supportedLanguages, fallbackLng: fallbackLanguage } = config.i18n;
+
+        logger.debug('I18next: initializing middleware (first request)', {
+            supportedLanguages,
+            fallbackLanguage,
+        });
 
         cached = createI18nextMiddleware({
             detection: {
@@ -67,6 +75,9 @@ const i18nextMiddleware: MiddlewareFunction<Response> = async (args, next) => {
         getLocale: () => getLocale(args.context),
         getI18nextInstance: () => getInstance(args.context),
     });
+
+    const localeId = requestToLocaleMap.get(args.request);
+    logger.debug('I18next: middleware starting', { locale: localeId ?? 'unknown' });
 
     return originalI18nextMiddleware(args, next);
 };

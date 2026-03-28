@@ -33,16 +33,19 @@ const shopperContextMiddleware: MiddlewareFunction<Response> = async ({ request,
 
     // Check feature flag - skip if shopper context is disabled
     if (!config.features.shopperContext.enabled) {
+        logger.debug('ShopperContext: skipped, feature disabled');
         return await next();
     }
 
     // Skip if Page Designer edit/preview mode
     if (isPageDesignerMode(url)) {
+        logger.debug('ShopperContext: skipped, Page Designer mode');
         return await next();
     }
 
     const session = getAuth(context);
     if (!session.usid) {
+        logger.debug('ShopperContext: skipped, no USID');
         return await next();
     }
 
@@ -64,10 +67,11 @@ const shopperContextMiddleware: MiddlewareFunction<Response> = async ({ request,
             response.headers.append('Set-Cookie', header);
         }
 
+        logger.debug('ShopperContext: middleware succeeded');
         return response;
     } catch (error) {
-        logger.error('Shopper context server middleware error', {
-            error: error instanceof Error ? error.message : String(error),
+        logger.error('ShopperContext: middleware failed', {
+            error,
             usid: session.usid,
             url: request.url,
         });

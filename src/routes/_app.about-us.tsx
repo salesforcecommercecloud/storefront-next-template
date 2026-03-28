@@ -31,6 +31,7 @@ import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { PageType } from '@/lib/decorators/page-type';
 import { useTranslation } from 'react-i18next';
+import { getLogger } from '@/lib/logger.server';
 import visionImage from '/images/hero-02.webp';
 
 @PageType({
@@ -46,7 +47,10 @@ type AboutUsPageData = {
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function loader({ request }: LoaderFunctionArgs): AboutUsPageData {
+export function loader({ context, request }: LoaderFunctionArgs): AboutUsPageData {
+    const logger = getLogger(context);
+    logger.debug('AboutUs: loader starting');
+
     const requestUrl = new URL(request.url);
     return {
         pageUrl: buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search),

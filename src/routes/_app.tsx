@@ -19,6 +19,7 @@ import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi'
 import { fetchCategory } from '@/lib/api/categories';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
+import { getLogger } from '@/lib/logger.server';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
 
 type LoaderData = {
@@ -45,6 +46,9 @@ export function shouldRevalidate() {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context }: LoaderFunctionArgs): LoaderData {
+    const logger = getLogger(context);
+    logger.debug('AppLayout: loader starting');
+
     // Load the root category and its sub categories information
     const rootCategoryPromise = fetchCategory(context, 'root', 1);
 

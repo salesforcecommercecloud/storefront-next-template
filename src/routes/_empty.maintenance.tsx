@@ -17,15 +17,19 @@ import { type LoaderFunctionArgs, useLoaderData, useSearchParams } from 'react-r
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { Link } from '@/components/link';
+import { getLogger } from '@/lib/logger.server';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader(args: LoaderFunctionArgs) {
+    const logger = getLogger(args.context);
+    logger.debug('MaintenancePage: loader starting');
     const config = getConfig<AppConfig>(args.context);
     const { sharedMaintenancePage, cdnUrl, forwardedHost } = config.pages.maintenancePage;
 
     if (sharedMaintenancePage) {
         try {
             // Fetch content from the maintenance CDN with the required header
+            logger.debug('MaintenancePage: fetching shared maintenance page from CDN', { cdnUrl });
             const response = await fetch(cdnUrl, {
                 headers: {
                     'x-dw-forwarded-host': forwardedHost,
@@ -33,6 +37,7 @@ export async function loader(args: LoaderFunctionArgs) {
             });
 
             if (!response.ok) {
+                logger.warn('MaintenancePage: CDN fetch returned non-OK status', { status: response.status });
                 return null;
             }
 
@@ -46,9 +51,8 @@ export async function loader(args: LoaderFunctionArgs) {
             //htmlContent = htmlContent.replace(/<\/?script[^>]*>/gi, '<!--');
             //htmlContent = htmlContent.replace('</script>', '-->');
             return htmlContent;
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
-            /* empty */
+            logger.error('MaintenancePage: failed to fetch CDN content', { error });
         }
     }
     return null;

@@ -61,6 +61,7 @@ export async function handleResetPasswordCallback({ request, context }: ActionFu
         const slasCallbackToken = request.headers.get('x-slas-callback-token');
 
         if (!slasCallbackToken) {
+            logger.warn('ResetPassword: missing SLAS callback token');
             return {
                 success: false,
                 error: t('errors:passwordless.missingCallbackToken'),
@@ -73,6 +74,10 @@ export async function handleResetPasswordCallback({ request, context }: ActionFu
         const { email_id, token } = body as { email_id: string; token: string };
 
         if (!email_id || !token) {
+            logger.warn('ResetPassword: missing required fields', {
+                hasEmailId: Boolean(email_id),
+                hasToken: Boolean(token),
+            });
             return {
                 success: false,
                 error: t('errors:passwordless.missingRequiredFields'),
@@ -81,13 +86,14 @@ export async function handleResetPasswordCallback({ request, context }: ActionFu
 
         const result = await sendResetPasswordEmail(context, email_id, token);
 
+        logger.info('ResetPassword: email sent');
         return {
             success: true,
             result,
         };
     } catch (error) {
         const { responseMessage } = await extractResponseError(error);
-        logger.error('Callback error', { error: responseMessage });
+        logger.error('ResetPassword: callback failed', { error });
 
         return {
             success: false,

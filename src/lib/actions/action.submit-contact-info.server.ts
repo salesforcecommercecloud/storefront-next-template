@@ -24,12 +24,15 @@ import { createContactInfoSchema, parseContactInfoFromFormData } from '@/lib/che
 import { updateBillingAddressForBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
 import type { AppConfig } from '@/types/config';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action for submitting checkout contact information.
  */
 export async function action(formData: FormData, context: RouterContextProvider) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('SubmitContactInfo: starting');
 
     // Parse and validate using shared schema
     // This ensures server-side validation matches client-side validation exactly
@@ -86,7 +89,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         // Update local basket state with API response
         updateBasketResource(context, updatedBasket);
     } catch (error) {
-        // Try to extract a more specific error message
+        logger.error('SubmitContactInfo: failed to update customer email', { error });
         let errorMessage: string = t('checkout.contactInfo.saveError');
 
         if (error instanceof ApiError) {
@@ -138,6 +141,8 @@ export async function action(formData: FormData, context: RouterContextProvider)
             // Do not fail contact step if OTP send fails (e.g. SLAS error, config)
         }
     }
+    logger.info('SubmitContactInfo: succeeded', { basketId });
+
     return Response.json({
         success: true,
         step: 'contactInfo',

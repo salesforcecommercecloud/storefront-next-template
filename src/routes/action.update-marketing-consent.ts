@@ -17,6 +17,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { type UpdateSubscriptionBody, updateSubscriptionsBulk } from '@/lib/api/consent';
 import { getErrorMessage } from '@/lib/utils';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { getLogger } from '@/lib/logger.server';
 
 const VALID_CHANNELS = ['email', 'sms', 'whatsapp'] as const;
 const VALID_STATUSES = ['opt_in', 'opt_out'] as const;
@@ -47,7 +48,12 @@ function validateUpdatesInput(updates: unknown[]): string | null {
  * Validates input via validateUpdatesInput; calls SCAPI bulk endpoint (1–50 per request).
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+    const logger = getLogger(context);
+
+    logger.debug('UpdateMarketingConsent: starting', { method: request.method });
+
     if (request.method !== 'POST') {
+        logger.warn('UpdateMarketingConsent: method not allowed', { method: request.method });
         return Response.json({ success: false, error: 'Method not allowed' } satisfies ResponseBody, { status: 405 });
     }
 
@@ -55,8 +61,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const body = (await request.json()) as { updates?: unknown[] };
         const updates = Array.isArray(body?.updates) ? body.updates : [];
 
+        logger.debug('UpdateMarketingConsent: validating updates', { updateCount: updates.length });
+
         const validationError = validateUpdatesInput(updates);
         if (validationError) {
+            logger.warn('UpdateMarketingConsent: validation failed', { error: validationError });
             return Response.json({ success: false, error: validationError } satisfies ResponseBody, { status: 400 });
         }
 
@@ -78,6 +87,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         if (failures.length > 0) {
             const allFailed = failures.length === results.length;
+            logger.warn('UpdateMarketingConsent: some or all updates failed', {
+                totalUpdates: results.length,
+                failedUpdates: failures.length,
+                allFailed,
+            });
             return Response.json(
                 {
                     success: false,
@@ -90,16 +104,18 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             );
         }
 
+        logger.info('UpdateMarketingConsent: succeeded', { updateCount: results.length });
         return Response.json({ success: true } satisfies ResponseBody);
-    } catch (reason) {
+    } catch (error) {
+        logger.error('UpdateMarketingConsent: failed', { error });
         const errorMessage =
-            reason instanceof ApiError
-                ? getErrorMessage(reason)
-                : reason instanceof Error
-                  ? reason.message
+            error instanceof ApiError
+                ? getErrorMessage(error)
+                : error instanceof Error
+                  ? error.message
                   : 'Failed to update marketing consent';
         return Response.json({ success: false, error: errorMessage } satisfies ResponseBody, {
-            status: reason instanceof ApiError ? reason.status : 500,
+            status: error instanceof ApiError ? error.status : 500,
         });
     }
 }

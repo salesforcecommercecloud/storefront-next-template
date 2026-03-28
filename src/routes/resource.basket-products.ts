@@ -25,6 +25,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { currencyContext } from '@/lib/currency';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Fetches full product details for all items in the basket
@@ -33,9 +34,12 @@ import { currencyContext } from '@/lib/currency';
 export async function loader({
     context,
 }: LoaderFunctionArgs): Promise<Record<string, ShopperProducts.schemas['Product']>> {
+    const logger = getLogger(context);
+    logger.debug('BasketProducts: loader starting');
     const basket = (await getBasket(context)).current;
 
     if (!basket?.productItems?.length) {
+        logger.debug('BasketProducts: no product items in basket');
         return {};
     }
 
@@ -43,6 +47,7 @@ export async function loader({
     const productIds = basket.productItems.map((item) => item.productId).filter((id): id is string => Boolean(id));
 
     if (productIds.length === 0) {
+        logger.debug('BasketProducts: no valid product IDs found');
         return {};
     }
 
@@ -79,7 +84,8 @@ export async function loader({
             },
             {} as Record<string, ShopperProducts.schemas['Product']>
         );
-    } catch {
+    } catch (error) {
+        logger.error('BasketProducts: failed to fetch product details', { error });
         // Return empty object on error - mini cart will show basic data
         return {};
     }

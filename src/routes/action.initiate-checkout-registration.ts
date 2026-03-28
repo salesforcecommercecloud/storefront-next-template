@@ -20,6 +20,7 @@ import { getTranslation } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { getBasket } from '@/middlewares/basket.server';
+import { getLogger } from '@/lib/logger.server';
 
 type InitiateRegistrationResponse = {
     success: boolean;
@@ -32,18 +33,23 @@ type InitiateRegistrationResponse = {
  * This triggers the OTP email to be sent for account creation with email verification
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<InitiateRegistrationResponse> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+
+    logger.debug('InitiateCheckoutRegistration: starting');
 
     try {
         const formData = await request.formData();
         const email = formData.get('email')?.toString();
 
         if (!email) {
+            logger.debug('InitiateCheckoutRegistration: no email in form, checking basket');
             // Try to get email from basket
             const basketResource = await getBasket(context);
             const basketEmail = basketResource.current?.customerInfo?.email;
 
             if (!basketEmail) {
+                logger.warn('InitiateCheckoutRegistration: email not found in form or basket');
                 return {
                     success: false,
                     error: t('errors:customer.emailRequired'),
@@ -58,6 +64,10 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
             // Validate required fields before creating API clients or sending OTP
             if (!firstName || !lastName) {
+                logger.warn('InitiateCheckoutRegistration: customer name missing', {
+                    hasFirstName: !!firstName,
+                    hasLastName: !!lastName,
+                });
                 return {
                     success: false,
                     error:
@@ -84,6 +94,12 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 dnt = trackingConsentToBoolean(session.trackingConsent);
             }
 
+            logger.debug('InitiateCheckoutRegistration: authorizing passwordless with basket email', {
+                hasEmail: Boolean(basketEmail),
+                hasUsid: !!session.usid,
+                dnt,
+            });
+
             await clients.auth.passwordless.authorize({
                 userId: basketEmail,
                 mode: 'email',
@@ -96,11 +112,15 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 ...(dnt !== undefined && { dnt }),
             });
 
+            logger.info('InitiateCheckoutRegistration: succeeded with basket email');
+
             return {
                 success: true,
                 email: basketEmail,
             };
         }
+
+        logger.debug('InitiateCheckoutRegistration: email provided in form');
 
         // Email was provided in form data - get customer info from basket
         const basketResource = await getBasket(context);
@@ -112,6 +132,10 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         // Validate required fields
         if (!firstName || !lastName) {
+            logger.warn('InitiateCheckoutRegistration: customer name missing', {
+                hasFirstName: !!firstName,
+                hasLastName: !!lastName,
+            });
             return {
                 success: false,
                 error:
@@ -127,6 +151,12 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             dnt = trackingConsentToBoolean(session.trackingConsent);
         }
 
+        logger.debug('InitiateCheckoutRegistration: authorizing passwordless with form email', {
+            hasEmail: Boolean(email),
+            hasUsid: !!session.usid,
+            dnt,
+        });
+
         await clients.auth.passwordless.authorize({
             userId: email,
             mode: 'email',
@@ -139,11 +169,14 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             ...(dnt !== undefined && { dnt }),
         });
 
+        logger.info('InitiateCheckoutRegistration: succeeded with form email');
+
         return {
             success: true,
             email,
         };
     } catch (error) {
+        logger.error('InitiateCheckoutRegistration: failed', { error });
         let errorMessage: string = String(t('checkout:registration.initiationFailed'));
 
         // Try to extract the actual error message from the API response

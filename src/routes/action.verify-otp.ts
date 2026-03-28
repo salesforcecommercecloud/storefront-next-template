@@ -88,15 +88,17 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         try {
             await mergeBasket(context);
         } catch (error) {
-            logger.error('Failed to merge basket', { error: error instanceof Error ? error : String(error) });
+            logger.error('VerifyOtp: basket merge failed', { error });
         }
 
+        logger.info('VerifyOtp: succeeded');
         return {
             success: true,
             message: t('checkout:passwordlessLogin.loginSuccess'),
             tokenResponse,
         };
     } catch (error: unknown) {
+        logger.error('VerifyOtp: failed', { error });
         let errorMessage: string = t('checkout:passwordlessLogin.invalidOtp');
 
         // Try to extract the actual error message from the API response
@@ -110,9 +112,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                         errorMessage = parsed.message;
                     }
                 } catch (parseError) {
-                    logger.error('Failed to parse rawBody', {
-                        error: parseError instanceof Error ? parseError : String(parseError),
-                    });
+                    logger.error('VerifyOtp: failed to parse rawBody', { error: parseError });
                 }
             }
             // Only check message if we didn't find rawBody

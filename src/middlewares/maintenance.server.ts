@@ -15,6 +15,7 @@
  */
 import { type MiddlewareFunction, redirect } from 'react-router';
 import { createMaintenance, maintenanceContext } from '@/lib/maintenance';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Middleware that initializes the API ready signal in the context.
@@ -25,6 +26,8 @@ export const maintenanceMiddleware: MiddlewareFunction<Response> = async (
     { context, request, unstable_pattern },
     next
 ) => {
+    const logger = getLogger(context);
+    logger.debug('Maintenance: middleware starting');
     const maintenance = createMaintenance();
     context.set(maintenanceContext, maintenance);
     const response = await next();
@@ -36,6 +39,7 @@ export const maintenanceMiddleware: MiddlewareFunction<Response> = async (
     } catch (e) {
         // 503 Error -> Redirect to maintenance page
         if (e instanceof Response && e.status === 503 && unstable_pattern !== 'maintenance') {
+            logger.info('Maintenance: redirecting to maintenance page');
             // Preserve the `returnPath` and filter out the internal `_routes` parameter
             const url = new URL(request.url);
             url.searchParams.delete('_routes');
@@ -52,6 +56,7 @@ export const maintenanceMiddleware: MiddlewareFunction<Response> = async (
         const url = new URL(request.url);
         const returnTo = url.searchParams.get('returnTo');
         if (returnTo) {
+            logger.info('Maintenance: redirecting back from maintenance page', { returnTo });
             // eslint-disable-next-line @typescript-eslint/only-throw-error
             throw redirect(returnTo);
         }

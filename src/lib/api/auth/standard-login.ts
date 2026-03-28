@@ -48,12 +48,13 @@ export const loginRegisteredUser = async (
             userType: 'registered',
         }));
 
+        logger.info('StandardLogin: succeeded');
         return {
             success: true,
         };
     } catch (error) {
         const errorDetails = error instanceof Error ? error.message : String(error);
-        logger.error('Login error', { error, errorDetails });
+        logger.error('StandardLogin: failed', { error });
 
         const errorMessage = t('errors:loginFailed');
         return {

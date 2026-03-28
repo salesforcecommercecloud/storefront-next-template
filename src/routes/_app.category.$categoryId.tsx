@@ -105,6 +105,10 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
     const requestUrl = new URL(request.url);
     const { searchParams } = requestUrl;
     const logger = getLogger(context);
+    logger.debug('Category: loader starting', {
+        categoryId,
+        offset: parseInt(searchParams.get('offset') || '0', 10),
+    });
     const offset = parseInt(getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.OFFSET) || '0', 10);
     const sort = getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.SORT);
     const refine = getAllQueryParams(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.REFINE);
@@ -187,14 +191,14 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
                 });
             } catch (error) {
                 logger.error('Error generating category schema in loader', {
-                    error: error instanceof Error ? error : String(error),
+                    error,
                 });
                 return null;
             }
         })
         .catch((error) => {
             logger.error('Error in category schema promise chain', {
-                error: error instanceof Error ? error : String(error),
+                error,
             });
             return null;
         });

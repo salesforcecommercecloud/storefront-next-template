@@ -441,7 +441,7 @@ describe('handleSocialLoginCallback', () => {
             const result = await handleSocialLoginLanding(args);
 
             expect(mockMergeBasket).toHaveBeenCalled();
-            expect(mockLogger.error).toHaveBeenCalledWith('Failed to merge basket', {
+            expect(mockLogger.error).toHaveBeenCalledWith('SocialLogin: basket merge failed', {
                 error: expect.any(Error),
             });
             // Should still redirect to home despite basket merge failure

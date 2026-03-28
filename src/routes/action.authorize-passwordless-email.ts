@@ -17,6 +17,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { authorizePasswordless } from '@/middlewares/auth.server';
 import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 
 export type AuthorizePasswordlessEmailResponse = {
     success: boolean;
@@ -30,6 +31,7 @@ export type AuthorizePasswordlessEmailResponse = {
  * Uses passwordless authorize with mode from config (email); does not register a customer.
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<AuthorizePasswordlessEmailResponse> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
 
     if (request.method !== 'POST') {
@@ -49,8 +51,10 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         await authorizePasswordless(context, { userid: email });
 
+        logger.info('AuthorizePasswordlessEmail: OTP sent');
         return { success: true, email };
     } catch (error) {
+        logger.error('AuthorizePasswordlessEmail: failed', { error });
         const errorMessage = extractErrorMessage(error);
         const errorKey = getPasswordlessErrorMessageKey(errorMessage);
         return {

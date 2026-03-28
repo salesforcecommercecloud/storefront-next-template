@@ -18,6 +18,7 @@ import { type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi
 import { createApiClients } from '@/lib/api-clients';
 import { getCookieConfig } from '@/lib/cookie-utils';
 import { currencyContext } from '@/lib/currency';
+import { getLogger } from '@/lib/logger.server';
 
 // Types
 type Basket = ShopperBasketsV2.schemas['Basket'];
@@ -262,6 +263,8 @@ export const createBasketMiddleware = (config: BasketMiddlewareConfig = {}): Mid
     const configCurrency = config.currency;
 
     return async ({ request, context }, next) => {
+        const logger = getLogger(context);
+
         // Resolve currency: explicit config override → currencyContext (set by currency middleware)
         const currency = configCurrency ?? context.get(currencyContext) ?? '';
         let basket: Basket | undefined = undefined;
@@ -280,6 +283,7 @@ export const createBasketMiddleware = (config: BasketMiddlewareConfig = {}): Mid
 
         // Get the snapshot from the cookie.
         snapshot = cookieHeader ? await basketCookie.parse(cookieHeader) : undefined;
+        logger.debug('Basket: middleware starting', { mode, hasSnapshot: !!snapshot });
 
         // Build and set the basket in the context.
         context.set(basketResourceContext, createBasketResource(snapshot, basket));
@@ -292,6 +296,7 @@ export const createBasketMiddleware = (config: BasketMiddlewareConfig = {}): Mid
         // If the mode is eager we'll load the basket into the context. WARNING: If mode is eager, as long as there is a
         // valid basket id, it will be fetched from the API. This will add a non-trivial amount to total request time.
         if (mode === 'eager') {
+            logger.debug('Basket: eager mode, loading basket');
             await getBasket(context, { ensureBasket: true });
         }
 
@@ -357,8 +362,11 @@ export const getBasket = async (
         throw new BasketContextError();
     }
 
+    const logger = getLogger(context);
+
     // If the basket is already loaded, or hydration isn't requested, return the resource.
     if (basketResource.current || !ensureBasket) {
+        logger.debug('Basket: already loaded or hydration not requested');
         return basketResource;
     }
 
@@ -366,6 +374,7 @@ export const getBasket = async (
     const metadata = context.get(basketMetadataContext);
     const currency = metadata?.currency ?? context.get(currencyContext) ?? '';
     const calculateBasketSnapshot = metadata?.calculateSnapshot;
+    logger.debug('Basket: hydration starting', { hasExistingBasketId: Boolean(basketId) });
 
     try {
         const clients = createApiClients(context);
@@ -375,9 +384,11 @@ export const getBasket = async (
         });
         const nextSnapshot = createSnapshot(basket, { calculateSnapshot: calculateBasketSnapshot });
         context.set(basketResourceContext, createBasketResource(nextSnapshot, basket, true, null));
+        logger.debug('Basket: hydration succeeded');
         return context.get(basketResourceContext) as BasketResource;
     } catch (err) {
         const loadError = err instanceof Error ? err : new Error('Failed to load basket');
+        logger.error('Basket: hydration failed', { error: err });
         context.set(basketResourceContext, createBasketResource(basketResource.snapshot, undefined, true, loadError));
         throw loadError;
     }

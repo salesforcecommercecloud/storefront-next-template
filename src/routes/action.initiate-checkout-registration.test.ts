@@ -24,6 +24,14 @@ vi.mock('@/lib/i18next');
 vi.mock('@/middlewares/auth.utils');
 vi.mock('@/types/tracking-consent');
 vi.mock('@/middlewares/basket.server');
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
 
 const mockCreateApiClients = vi.fn();
 const mockGetAuth = vi.fn();

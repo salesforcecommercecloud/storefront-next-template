@@ -23,6 +23,7 @@ import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth
 import { buildUrlFromContext } from '@/lib/url.server';
 import { isPasswordValid } from '@/lib/utils';
 import { resetPasswordWithToken } from '@/middlewares/auth.server';
+import { getLogger } from '@/lib/logger.server';
 
 type ResetPasswordLoaderData = {
     token: string;
@@ -53,6 +54,7 @@ export function loader({ request, context }: LoaderFunctionArgs): ResetPasswordL
 // server-side to maintain security and proper integration with SFCC's authentication system
 // eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<ResetPasswordActionData | Response> {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();
     const token = formData.get('token')?.toString();
@@ -85,9 +87,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             newPassword,
         });
 
+        logger.info('ResetPassword: password reset succeeded');
         // Password reset successful - redirect to login
         return redirect(buildUrlFromContext('/login', context));
     } catch (error) {
+        logger.error('ResetPassword: failed', { error });
         const errorMessage = extractErrorMessage(error);
         const errorKey = getPasswordResetErrorMessageKey(errorMessage);
         return { error: t(errorKey) };

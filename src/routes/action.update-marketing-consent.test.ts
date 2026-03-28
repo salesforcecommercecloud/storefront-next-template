@@ -23,6 +23,15 @@ vi.mock('@/lib/api/consent', () => ({
     updateSubscriptionsBulk: (...args: unknown[]) => mockUpdateSubscriptionsBulk(...args),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 type SingleUpdate = Record<string, string>;
 
 function createJsonRequest(updates: SingleUpdate | SingleUpdate[], method: 'GET' | 'POST' = 'POST'): Request {

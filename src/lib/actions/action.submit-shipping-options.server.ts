@@ -22,18 +22,25 @@ import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { handleMultiShipShippingOptions } from '@/extensions/multiship/lib/actions/checkout-submit-multi-options';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action for submitting checkout shipping options.
  */
 export async function action(formData: FormData, context: RouterContextProvider) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('SubmitShippingOptions: starting');
 
     // Update shipping method in Commerce Cloud (like PWA Kit)
     const basketResource = await getBasket(context);
     const basket = basketResource.current;
 
     if (!basket || !basket.basketId) {
+        logger.error('SubmitShippingOptions: no active basket', {
+            hasBasket: Boolean(basket),
+            hasBasketId: Boolean(basket?.basketId),
+        });
         return Response.json(
             {
                 success: false,
@@ -60,6 +67,9 @@ export async function action(formData: FormData, context: RouterContextProvider)
     const result = shippingOptionsSchema.safeParse(shippingData);
 
     if (!result.success) {
+        logger.warn('SubmitShippingOptions: validation failed', {
+            fieldErrors: result.error.flatten().fieldErrors,
+        });
         return Response.json(
             {
                 success: false,
@@ -93,6 +103,9 @@ export async function action(formData: FormData, context: RouterContextProvider)
         const currentBasket = basket;
 
         if (currentBasket && !updatedBasket.customerInfo?.email && currentBasket.customerInfo?.email) {
+            logger.warn('SubmitShippingOptions: customer info missing from API response, merging with current basket', {
+                basketId: basket.basketId,
+            });
             // Customer info missing from shipping method API response, merging with current basket
             // Selectively update to preserve existing data
             finalBasket = {
@@ -113,6 +126,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
             updateBasketResource(context, updatedBasket);
         }
     } catch (error) {
+        logger.error('SubmitShippingOptions: failed', { error });
         let errorMessage = t('errors:api.serverError');
         if (error instanceof ApiError) {
             try {
@@ -120,7 +134,10 @@ export async function action(formData: FormData, context: RouterContextProvider)
                 if (responseMessage) {
                     errorMessage = responseMessage;
                 }
-            } catch {
+            } catch (extractError) {
+                logger.error('SubmitShippingOptions: failed to extract error message', {
+                    error: extractError,
+                });
                 // Use default error message
             }
         }
@@ -133,6 +150,8 @@ export async function action(formData: FormData, context: RouterContextProvider)
             { status: 500 }
         );
     }
+
+    logger.info('SubmitShippingOptions: succeeded', { basketId: basket.basketId, shippingMethodId });
 
     // Return success data with updated basket for client-side state update
     return Response.json({

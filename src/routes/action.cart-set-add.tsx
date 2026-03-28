@@ -19,6 +19,7 @@ import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
 import { assertAllProductItemsPickup } from '@/extensions/bopis/lib/product-utils';
@@ -36,12 +37,15 @@ async function addMultipleItemsToCart(
     basket?: ShopperBasketsV2.schemas['Basket'];
     error?: string;
 }> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('CartSetAdd: starting addMultipleItemsToCart', { itemCount: productItems.length });
     const basketResource = await getBasket(context);
     const basket = basketResource.current;
 
     if (!basket) {
         // This state should never happen as it would indicate that the basket middleware is broken
+        logger.warn('CartSetAdd: no basket found');
         return {
             success: false,
             error: t('errors:noBasketFound'),
@@ -77,17 +81,20 @@ async function addMultipleItemsToCart(
         // Update the basket storage
         updateBasketResource(context, updatedBasket);
 
+        logger.info('CartSetAdd: items added successfully');
         return {
             success: true,
             basket: updatedBasket,
         };
     } catch (error) {
         if (error instanceof ApiError) {
+            logger.error('CartSetAdd: API error adding items', { error });
             return {
                 success: false,
                 error: error.body?.detail || error.statusText,
             };
         }
+        logger.error('CartSetAdd: failed', { error });
         const { responseMessage } = await extractResponseError(error);
         return {
             success: false,
@@ -100,7 +107,9 @@ async function addMultipleItemsToCart(
  * Server action to add multiple items to the cart (for product sets).
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('CartSetAdd: action starting');
 
     if (request.method !== 'POST') {
         throw new Response(t('product:methodNotAllowed'), { status: 405 });
@@ -111,14 +120,17 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const productItemsJson = formData.get('productItems') as string;
 
         if (!productItemsJson) {
+            logger.warn('CartSetAdd: missing productItems in form data');
             throw new Error(t('product:productItemsRequired'));
         }
 
         const productItems = JSON.parse(productItemsJson);
         const result = await addMultipleItemsToCart(context, productItems);
 
+        logger.info('CartSetAdd: action succeeded');
         return Response.json(result);
     } catch (error) {
+        logger.error('CartSetAdd: action failed', { error });
         const { responseMessage, status_code } = await extractResponseError(error);
         return data(
             {

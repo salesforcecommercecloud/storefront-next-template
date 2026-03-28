@@ -27,6 +27,14 @@ vi.mock('@/lib/shopper-context-utils', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@/lib/shopper-context-utils')>();
     return { ...actual, updateShopperContext: vi.fn() };
 });
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
 
 const mockGetAuth = vi.mocked(getAuth);
 const mockGetTranslation = vi.mocked(getTranslation);

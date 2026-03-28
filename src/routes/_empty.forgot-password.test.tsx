@@ -36,6 +36,15 @@ vi.mock('@/lib/url.server', () => ({
     buildUrlFromContext: vi.fn((to: string) => to),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 // Mock the form component
 vi.mock('@/components/forgot-password-form', () => ({
     ForgotPasswordForm: ({ error }: { error?: string }) => (

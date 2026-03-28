@@ -19,6 +19,7 @@ import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.serve
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action for removing a promo code from the shopping basket.
@@ -50,14 +51,17 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     basket?: ShopperBasketsV2.schemas['Basket'];
     error?: string;
 }> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
 
     if (request.method !== 'POST') {
+        logger.warn('PromoCodeRemove: method not allowed', { method: request.method });
         throw new Response(t('errors:methodNotAllowed'), { status: 405 });
     }
 
     const basketId = await ensureBasketId(context);
     if (!basketId) {
+        logger.warn('PromoCodeRemove: no basket found');
         return {
             success: false,
             error: t('errors:noBasketFound'),
@@ -68,11 +72,14 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const formData = await request.formData();
         const couponItemId = formData.get('couponItemId') as string;
         if (!couponItemId) {
+            logger.warn('PromoCodeRemove: missing couponItemId');
             return {
                 success: false,
                 error: t('errors:couponItemIdRequired'),
             };
         }
+
+        logger.debug('PromoCodeRemove: starting', { basketId, couponItemId });
 
         const clients = createApiClients(context);
         const { data: updatedBasket } = await clients.shopperBasketsV2.removeCouponFromBasket({
@@ -87,8 +94,10 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         // Update the basket cache to reflect the changes
         updateBasketResource(context, updatedBasket);
 
+        logger.info('PromoCodeRemove: succeeded', { basketId, couponItemId });
         return { success: true, basket: updatedBasket };
     } catch (error) {
+        logger.error('PromoCodeRemove: failed', { error });
         if (error instanceof ApiError) {
             return {
                 success: false,

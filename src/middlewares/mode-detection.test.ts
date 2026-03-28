@@ -23,6 +23,15 @@ vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
     isPreviewModeActive: vi.fn(),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 describe('modeDetectionMiddleware', () => {
     let mockContext: Readonly<RouterContextProvider>;
     let mockNext: Mock<() => Promise<Response>>;

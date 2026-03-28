@@ -20,6 +20,7 @@ import { getAuth } from '@/middlewares/auth.server';
 import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist';
 import { WishlistPageContent, WishlistSkeleton } from '@/components/wishlist/wishlist-page';
 import { SeoMeta } from '@/components/seo-meta';
+import { getLogger } from '@/lib/logger.server';
 import { useTranslation } from 'react-i18next';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
@@ -37,6 +38,9 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
     items: CustomerProductListItem[];
     productsByProductId: Promise<Record<string, Product>>;
 }> {
+    const logger = getLogger(context);
+    logger.debug('Wishlist: loader starting');
+
     const session = getAuth(context);
 
     const isRegistered =
@@ -47,6 +51,7 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
         session.accessTokenExpiry > Date.now();
 
     if (!isRegistered || !session.customerId) {
+        logger.warn('Wishlist: user not registered, returning empty wishlist');
         return {
             wishlist: null,
             items: [],
@@ -76,6 +81,8 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
             productsByProductId: fetchProductsForWishlist(context, items),
         };
     } catch (error) {
+        logger.error('Wishlist: failed to load wishlist', { error });
+
         let status_code: string | undefined;
 
         if (error instanceof ApiError) {
@@ -83,6 +90,7 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
         }
 
         if (status_code === '401' || status_code === '403') {
+            logger.warn('Wishlist: auth error, returning empty wishlist', { status_code });
             return {
                 wishlist: null,
                 items: [],

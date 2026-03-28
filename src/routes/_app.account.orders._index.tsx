@@ -29,6 +29,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildUrlFromContext } from '@/lib/url.server';
+import { getLogger } from '@/lib/logger.server';
 import { getAuth } from '@/middlewares/auth.server';
 
 type OrderListLoaderData = {
@@ -41,9 +42,13 @@ type OrderListLoaderData = {
  */
 // eslint-disable-next-line react-refresh/only-export-components -- route file exports loader
 export function loader({ context, request }: LoaderFunctionArgs): OrderListLoaderData {
+    const logger = getLogger(context);
+    logger.debug('OrderList: loader starting');
+
     // Get customer ID from auth session
     const session = getAuth(context);
     if (!session.customerId) {
+        logger.warn('OrderList: no customerId, redirecting to login');
         throw redirect(buildUrlFromContext('/login', context));
     }
 

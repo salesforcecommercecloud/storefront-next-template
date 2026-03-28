@@ -27,6 +27,17 @@ import createBasketMiddleware, {
     type BasketSnapshot,
 } from './basket.server';
 
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => mockLogger),
+}));
+
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(),
 }));

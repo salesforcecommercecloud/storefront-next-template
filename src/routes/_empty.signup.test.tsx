@@ -45,6 +45,15 @@ vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 // Mock PasswordRequirement component to avoid needing to deal with its complexity
 vi.mock('@/components/password-requirements', () => ({
     PasswordRequirement: () => null,

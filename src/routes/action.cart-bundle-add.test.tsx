@@ -46,6 +46,14 @@ vi.mock('react-router', () => {
         data: (body: any, init?: ResponseInit) => Response.json(body, init),
     };
 });
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
 
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 import { createActionArgs } from '@/lib/test-utils';

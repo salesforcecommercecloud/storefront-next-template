@@ -59,6 +59,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         // Get current basket
         const basketResource = await getBasket(context);
         const basket = basketResource.current;
+        logger.debug('PlaceOrder: starting', { basketId: basket?.basketId });
 
         if (!basket || !basket.basketId) {
             return placeOrderErrorResponse({
@@ -238,6 +239,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         });
 
         if (!order || !order.orderNo) {
+            logger.error('PlaceOrder: empty order response', { basketId: calculatedBasket.basketId });
             return Response.json(
                 {
                     success: false,
@@ -247,6 +249,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
                 { status: 500 }
             );
         }
+
+        logger.info('PlaceOrder: order created', { orderNo: order.orderNo, basketId: calculatedBasket.basketId });
 
         // Check if user registered via email verification during checkout (passwordless flow)
         const auth = getAuth(context);
@@ -275,9 +279,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
                             auth.customerId,
                             order.paymentInstruments[0] as PaymentInstrumentForSave
                         ).catch((error) => {
-                            logger.error('Failed to save payment method for new customer', {
-                                error: error instanceof Error ? error : String(error),
-                            });
+                            logger.error('PlaceOrder: failed to save payment method', { error });
                         })
                     );
                 }
@@ -290,9 +292,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
                             auth.customerId,
                             order.shipments[0].shippingAddress
                         ).catch((error) => {
-                            logger.error('Failed to save shipping address for new customer', {
-                                error: error instanceof Error ? error : String(error),
-                            });
+                            logger.error('PlaceOrder: failed to save shipping address', { error });
                         })
                     );
                 }
@@ -301,9 +301,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
                 if (order.billingAddress) {
                     savePromises.push(
                         saveBillingAddressToCustomer(context, auth.customerId, order.billingAddress).catch((error) => {
-                            logger.error('Failed to save billing address for new customer', {
-                                error: error instanceof Error ? error : String(error),
-                            });
+                            logger.error('PlaceOrder: failed to save billing address', { error });
                         })
                     );
                 }
@@ -330,9 +328,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
                         auth.customerId,
                         order.paymentInstruments[0] as PaymentInstrumentForSave
                     ).catch((error) => {
-                        logger.error('Failed to save payment method', {
-                            error: error instanceof Error ? error : String(error),
-                        });
+                        logger.error('PlaceOrder: failed to save payment method', { error });
                     })
                 );
             }

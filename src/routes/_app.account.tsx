@@ -30,6 +30,9 @@ import { getSubscriptions } from '@/lib/api/consent';
 import { getCustomer } from '@/lib/api/customer';
 import { buildUrlFromContext } from '@/lib/url.server';
 
+// Logging
+import { getLogger } from '@/lib/logger.server';
+
 // middleware
 import { getAuth as getAuthServer } from '@/middlewares/auth.server';
 
@@ -50,6 +53,9 @@ type AccountPageData = {
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs) {
+    const logger = getLogger(args.context);
+    logger.debug('Account: loader starting');
+
     const session = getAuthServer(args.context);
     const { accessToken, accessTokenExpiry, userType, customerId } = session;
 
@@ -60,6 +66,7 @@ export function loader(args: LoaderFunctionArgs) {
         userType !== 'registered' ||
         !customerId
     ) {
+        logger.warn('Account: authentication validation failed, redirecting to login');
         throw redirect(buildUrlFromContext('/login', args.context));
     }
 

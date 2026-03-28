@@ -45,6 +45,15 @@ vi.mock('@/components/password-requirements', () => ({
     PasswordRequirement: () => null,
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 // Mock buildUrlFromContext to pass-through (avoids needing full context setup)
 vi.mock('@/lib/url.server', () => ({
     buildUrlFromContext: vi.fn((to: string) => to),
