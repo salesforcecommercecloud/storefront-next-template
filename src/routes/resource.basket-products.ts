@@ -24,6 +24,7 @@ import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import { currencyContext } from '@/lib/currency';
 import { getLogger } from '@/lib/logger.server';
 
@@ -54,6 +55,7 @@ export async function loader({
     try {
         const config = getConfig<AppConfig>(context);
         const clients = createApiClients(context);
+        const { site } = context.get(multiSiteContext) as MultiSiteContext;
         const currency = context.get(currencyContext) as string;
 
         // Fetch product details
@@ -63,7 +65,7 @@ export async function loader({
                     organizationId: config.commerce.api.organizationId,
                 },
                 query: {
-                    siteId: config.commerce.api.siteId,
+                    siteId: site.id,
                     ids: productIds,
                     allImages: true,
                     perPricebook: true,

@@ -35,7 +35,6 @@ function validateConfig(logger: ReturnType<typeof getLogger>): void {
     const required: Record<string, string> = {
         clientId: config.app.commerce.api.clientId,
         organizationId: config.app.commerce.api.organizationId,
-        siteId: config.app.commerce.api.siteId,
     };
 
     // shortCode is only required when not using a proxy host override
@@ -53,7 +52,6 @@ function validateConfig(logger: ReturnType<typeof getLogger>): void {
         const envVarMap: Record<string, string> = {
             clientId: 'PUBLIC__app__commerce__api__clientId',
             organizationId: 'PUBLIC__app__commerce__api__organizationId',
-            siteId: 'PUBLIC__app__commerce__api__siteId',
             shortCode: 'PUBLIC__app__commerce__api__shortCode',
         };
 
@@ -65,9 +63,57 @@ function validateConfig(logger: ReturnType<typeof getLogger>): void {
                 `Example .env file:\n` +
                 `PUBLIC__app__commerce__api__clientId=your-client-id\n` +
                 `PUBLIC__app__commerce__api__organizationId=your-org-id\n` +
-                `PUBLIC__app__commerce__api__siteId=your-site-id\n` +
                 `PUBLIC__app__commerce__api__shortCode=your-short-code\n\n` +
                 `See docs/README-CONFIG.md for complete configuration documentation.`
+        );
+    }
+
+    // Validate multi-site configuration
+    const { sites } = config.app.commerce;
+
+    if (!Array.isArray(sites) || sites.length === 0) {
+        throw new Error(
+            `Missing required multi-site configuration: commerce.sites\n\n` +
+                `Set sites in your MRT deployment, .env file, or config.server.ts.\n` +
+                `commerce.sites must be a non-empty array with at least one site definition.\n\n` +
+                `Example .env file:\n` +
+                `PUBLIC__app__commerce__sites=[{"id":"YourSiteId","defaultLocale":"en-GB","defaultCurrency":"GBP","supportedLocales":[{"id":"en-GB","preferredCurrency":"GBP"},{"id":"it-IT","preferredCurrency":"EUR"}],"supportedCurrencies":["EUR","GBP"]}]\n\n` +
+                `Example config.server.ts:\n` +
+                `commerce: {\n` +
+                `  sites: [\n` +
+                `    {\n` +
+                `      id: 'YourSiteId',\n` +
+                `      defaultLocale: 'en-US',\n` +
+                `      defaultCurrency: 'USD',\n` +
+                `      supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],\n` +
+                `      supportedCurrencies: ['USD'],\n` +
+                `    },\n` +
+                `  ],\n` +
+                `}\n\n` +
+                `See docs/README-MULTI-SITE.md for multi-site configuration documentation.`
+        );
+    }
+
+    if (!config.app.defaultSiteId) {
+        throw new Error(
+            `Missing required configuration: defaultSiteId\n\n` +
+                `Set defaultSiteId in your MRT deployment, .env file, or config.server.ts:\n` +
+                `  PUBLIC__app__defaultSiteId=your-site-id\n\n` +
+                `Example config.server.ts:\n` +
+                `defaultSiteId: 'YourSiteId',\n\n` +
+                `See docs/README-MULTI-SITE.md for multi-site configuration documentation.`
+        );
+    }
+
+    // defaultSiteId needs to be part of sites list, otherwise, it is invalid
+    const siteIds = sites.map((site: { id: string }) => site.id);
+    if (!siteIds.includes(config.app.defaultSiteId)) {
+        throw new Error(
+            `Invalid configuration: defaultSiteId "${config.app.defaultSiteId}" does not match any site in commerce.sites.\n\n` +
+                `Available site IDs: ${siteIds.join(', ')}\n\n` +
+                `Set defaultSiteId to one of the configured site IDs in your MRT deployment, .env file, or config.server.ts:\n` +
+                `  PUBLIC__app__defaultSiteId=${siteIds[0]}\n\n` +
+                `See docs/README-MULTI-SITE.md for multi-site configuration documentation.`
         );
     }
 

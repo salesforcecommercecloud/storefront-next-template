@@ -17,6 +17,7 @@ import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import { createApiClients } from '@/lib/api-clients';
 
 /** Expand param for getSubscriptions: include consentStatus so responses have per-channel opt-in/opt-out. */
@@ -40,10 +41,11 @@ export async function getSubscriptions(
     try {
         const config = getConfig<AppConfig>(context);
         const clients = createApiClients(context);
+        const { site } = context.get(multiSiteContext) as MultiSiteContext;
         const { data } = await clients.shopperConsents.getSubscriptions({
             params: {
                 path: { organizationId: config.commerce.api.organizationId },
-                query: { siteId: config.commerce.api.siteId, expand: [...GET_SUBSCRIPTIONS_EXPAND] },
+                query: { siteId: site.id, expand: [...GET_SUBSCRIPTIONS_EXPAND] },
             },
         });
         return data ?? null;
@@ -70,10 +72,11 @@ export async function updateSubscriptionsBulk(
 ): Promise<ShopperConsents.schemas['ConsentSubscriptionBulkResponse']> {
     const config = getConfig<AppConfig>(context);
     const clients = createApiClients(context);
+    const { site } = context.get(multiSiteContext) as MultiSiteContext;
     const { data } = await clients.shopperConsents.updateSubscriptions({
         params: {
             path: { organizationId: config.commerce.api.organizationId },
-            query: { siteId: config.commerce.api.siteId },
+            query: { siteId: site.id },
         },
         body: { subscriptions: bodies },
     });

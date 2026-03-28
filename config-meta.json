@@ -13,8 +13,8 @@
             "key": "PUBLIC__app__commerce__api__shortCode"
         },
         {
-            "name": "API Site ID",
-            "key": "PUBLIC__app__commerce__api__siteId"
+            "name": "Default Site ID",
+            "key": "PUBLIC__app__defaultSiteId"
         }
     ]
 }

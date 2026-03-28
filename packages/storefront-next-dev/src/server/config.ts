@@ -26,7 +26,6 @@ export interface ServerConfig {
             shortCode: string;
             organizationId: string;
             clientId: string;
-            siteId: string;
             proxy: string;
             proxyHost?: string;
         };
@@ -45,7 +44,6 @@ export function loadConfigFromEnv(): ServerConfig {
     const shortCode = process.env.PUBLIC__app__commerce__api__shortCode;
     const organizationId = process.env.PUBLIC__app__commerce__api__organizationId;
     const clientId = process.env.PUBLIC__app__commerce__api__clientId;
-    const siteId = process.env.PUBLIC__app__commerce__api__siteId;
     const proxy = process.env.PUBLIC__app__commerce__api__proxy || '/mobify/proxy/api';
     const proxyHost = process.env.SCAPI_PROXY_HOST;
 
@@ -70,20 +68,12 @@ export function loadConfigFromEnv(): ServerConfig {
         );
     }
 
-    if (!siteId) {
-        throw new Error(
-            'Missing PUBLIC__app__commerce__api__siteId environment variable.\n' +
-                'Please set it in your .env file or environment.'
-        );
-    }
-
     return {
         commerce: {
             api: {
                 shortCode: shortCode || '',
                 organizationId,
                 clientId,
-                siteId,
                 proxy,
                 proxyHost,
             },
@@ -117,7 +107,6 @@ export async function loadProjectConfig(projectDirectory: string): Promise<Serve
                         shortCode?: string;
                         organizationId?: string;
                         clientId?: string;
-                        siteId?: string;
                         proxy?: string;
                     };
                 };
@@ -152,17 +141,12 @@ export async function loadProjectConfig(projectDirectory: string): Promise<Serve
     if (!api.clientId) {
         throw new Error('Missing clientId in config.server.ts commerce.api configuration');
     }
-    if (!api.siteId) {
-        throw new Error('Missing siteId in config.server.ts commerce.api configuration');
-    }
-
     return {
         commerce: {
             api: {
                 shortCode: api.shortCode || '',
                 organizationId: api.organizationId,
                 clientId: api.clientId,
-                siteId: api.siteId,
                 proxy: api.proxy || '/mobify/proxy/api',
                 proxyHost,
             },

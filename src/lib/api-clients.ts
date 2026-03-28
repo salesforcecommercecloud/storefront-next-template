@@ -56,12 +56,14 @@ const getSlasClientSecret = (): string | undefined => {
 export function createApiClients(context: RouterContextProvider | Readonly<RouterContextProvider>) {
     const appOrigin = getAppOrigin();
     const config = getConfig<AppConfig>(context);
-    const { shortCode, callback, organizationId, siteId: configSiteId, clientId } = config.commerce.api;
+    const { shortCode, callback, organizationId, clientId } = config.commerce.api;
 
-    // Use the site from multi-site context (set by multi-site middleware on the server)
-    // Falls back to config.commerce.api.siteId on the client where multi-site context is not available
+    // Site ID is always resolved by multi-site middleware
     const multiSite = context.get(multiSiteContext);
-    const siteId = multiSite?.site.id ?? configSiteId;
+    if (!multiSite?.site?.id) {
+        throw new Error('Multi-site context not initialized. Ensure multi-site middleware is configured.');
+    }
+    const siteId = multiSite.site.id;
     const scapiProxyHost = typeof window === 'undefined' ? process.env.SCAPI_PROXY_HOST : undefined;
 
     const baseUrl = scapiProxyHost || getScapiBaseUrl(shortCode);

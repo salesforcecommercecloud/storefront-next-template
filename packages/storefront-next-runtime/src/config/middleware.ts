@@ -67,7 +67,6 @@ export function createAppConfigMiddleware<T extends BaseConfig>(
         const required: Record<string, string> = {
             clientId: api?.clientId ?? '',
             organizationId: api?.organizationId ?? '',
-            siteId: api?.siteId ?? '',
         };
 
         if (!process.env.SCAPI_PROXY_HOST) {
@@ -82,7 +81,6 @@ export function createAppConfigMiddleware<T extends BaseConfig>(
             const envVarMap: Record<string, string> = {
                 clientId: 'PUBLIC__app__commerce__api__clientId',
                 organizationId: 'PUBLIC__app__commerce__api__organizationId',
-                siteId: 'PUBLIC__app__commerce__api__siteId',
                 shortCode: 'PUBLIC__app__commerce__api__shortCode',
             };
 
@@ -94,7 +92,6 @@ export function createAppConfigMiddleware<T extends BaseConfig>(
                     `Example .env file:\n` +
                     `PUBLIC__app__commerce__api__clientId=your-client-id\n` +
                     `PUBLIC__app__commerce__api__organizationId=your-org-id\n` +
-                    `PUBLIC__app__commerce__api__siteId=your-site-id\n` +
                     `PUBLIC__app__commerce__api__shortCode=your-short-code\n\n` +
                     `See docs/README-CONFIG.md for complete configuration documentation.`
             );

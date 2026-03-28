@@ -148,7 +148,7 @@ export default defineConfig(({ mode }) => {
                         '',
                     routingRules: process.env.HYBRID_ROUTING_RULES ?? '',
                     routeMatcher: shouldRouteToNext,
-                    siteId: environment.PUBLIC__app__commerce__api__siteId,
+                    siteId: environment.PUBLIC__app__defaultSiteId,
                     // Locale for SFRA path transformation
                     // Priority: HYBRID_PROXY_LOCALE > fallbackLng > 'default' (plugin fallback)
                     locale: process.env.HYBRID_PROXY_LOCALE || environment.PUBLIC__app__i18n__fallbackLng,

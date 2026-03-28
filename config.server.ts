@@ -111,7 +111,6 @@ export default defineConfig<Config>(
                     // Commerce Cloud API credentials (required, set via env vars)
                     clientId: '',
                     organizationId: '',
-                    siteId: '',
                     shortCode: '',
                     // Optional API settings
                     proxy: '/mobify/proxy/api',

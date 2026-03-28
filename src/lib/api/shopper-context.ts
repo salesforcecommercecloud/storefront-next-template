@@ -16,6 +16,7 @@
 import type { RouterContextProvider } from 'react-router';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import { createApiClients } from '@/lib/api-clients';
 import type { ShopperContext as ShopperContextNamespace } from '@salesforce/storefront-next-runtime/scapi';
 
@@ -66,6 +67,7 @@ export async function createShopperContext(
     try {
         const config = getConfig<AppConfig>(context);
         const clients = createApiClients(context);
+        const { site } = context.get(multiSiteContext) as MultiSiteContext;
 
         await clients.shopperContext.createShopperContext({
             params: {
@@ -74,7 +76,7 @@ export async function createShopperContext(
                     usid,
                 },
                 query: {
-                    siteId: config.commerce.api.siteId,
+                    siteId: site.id,
                 },
             },
             body,

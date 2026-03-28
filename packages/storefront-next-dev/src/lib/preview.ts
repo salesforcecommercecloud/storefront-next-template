@@ -116,7 +116,6 @@ export async function preview(options: ServeOptions = {}): Promise<void> {
             shortCode: config.commerce.api.shortCode,
             organizationId: config.commerce.api.organizationId,
             clientId: config.commerce.api.clientId,
-            siteId: config.commerce.api.siteId,
         });
     });
 

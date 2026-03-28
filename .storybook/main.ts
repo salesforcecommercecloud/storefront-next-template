@@ -69,7 +69,7 @@ const config: StorybookConfig = {
         const mockDefaults: Record<string, string> = {
             'PUBLIC__app__commerce__api__clientId': 'storybook-mock-client-id',
             'PUBLIC__app__commerce__api__organizationId': 'storybook-mock-org',
-            'PUBLIC__app__commerce__api__siteId': 'RefArchGlobal',
+            'PUBLIC__app__defaultSiteId': 'RefArchGlobal',
             'PUBLIC__app__commerce__api__shortCode': 'kv7kzm78',
             'PUBLIC__app__commerce__api__proxy': '/mobify/proxy/api',
             'PUBLIC__app__commerce__api__callback': '/callback',

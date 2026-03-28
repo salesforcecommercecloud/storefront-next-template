@@ -42,7 +42,6 @@ export type AppConfig = {
         api: {
             clientId: string;
             organizationId: string;
-            siteId: string;
             shortCode: string;
             proxy?: string;
             callback?: string;

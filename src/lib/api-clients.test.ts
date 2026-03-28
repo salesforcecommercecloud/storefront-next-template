@@ -182,17 +182,11 @@ describe('createApiClients', () => {
             );
         });
 
-        it('should fall back to config siteId when multi-site context is not set', () => {
+        it('should throw when multi-site context is not set', () => {
             // Explicitly clear multi-site context to simulate no multi-site middleware
             mockContextProvider.set(multiSiteContext, null);
 
-            createApiClients(mockContextProvider);
-
-            expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    siteId: 'test-site-id',
-                })
-            );
+            expect(() => createApiClients(mockContextProvider)).toThrow('Multi-site context not initialized');
         });
     });
 

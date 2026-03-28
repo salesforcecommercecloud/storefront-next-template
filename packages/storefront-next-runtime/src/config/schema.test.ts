@@ -23,7 +23,6 @@ type TestApp = {
         api: {
             clientId: string;
             organizationId: string;
-            siteId: string;
             shortCode: string;
         };
         sites: Site[];
@@ -40,7 +39,6 @@ const minimalConfig: TestConfig = {
             api: {
                 clientId: 'test-client',
                 organizationId: 'test-org',
-                siteId: 'test-site',
                 shortCode: 'test-short',
             },
             sites: [

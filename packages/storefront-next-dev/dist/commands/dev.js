@@ -82,8 +82,7 @@ async function dev(options = {}) {
 			proxyHost: getCommerceCloudApiUrl(config.commerce.api.shortCode, config.commerce.api.proxyHost),
 			shortCode: config.commerce.api.shortCode,
 			organizationId: config.commerce.api.organizationId,
-			clientId: config.commerce.api.clientId,
-			siteId: config.commerce.api.siteId
+			clientId: config.commerce.api.clientId
 		});
 	});
 	["SIGTERM", "SIGINT"].forEach((signal) => {

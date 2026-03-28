@@ -66,63 +66,45 @@ describe('cookie-utils', () => {
     });
 
     describe('getCookieNameWithSiteId', () => {
-        beforeEach(() => {
-            vi.stubGlobal('window', undefined);
-            vi.mocked(getConfig).mockReturnValue(mockAppConfig);
-        });
+        const createMockContextWithSite = (siteId: string) =>
+            ({
+                get: vi.fn(() => ({ site: { id: siteId } })),
+            }) as any;
+
+        const mockContext = createMockContextWithSite('RefArch');
 
         afterEach(() => {
-            vi.unstubAllGlobals();
             vi.clearAllMocks();
         });
 
         it('should return excluded cookie names as-is', () => {
-            expect(getCookieNameWithSiteId('dwsid')).toBe('dwsid');
+            expect(getCookieNameWithSiteId('dwsid', mockContext)).toBe('dwsid');
         });
 
-        it('should namespace non-excluded cookies with siteId', () => {
-            expect(getCookieNameWithSiteId('refresh-token')).toBe('refresh-token_RefArch');
-            expect(getCookieNameWithSiteId('access-token')).toBe('access-token_RefArch');
+        it('should namespace non-excluded cookies with siteId from multi-site context', () => {
+            expect(getCookieNameWithSiteId('refresh-token', mockContext)).toBe('refresh-token_RefArch');
+            expect(getCookieNameWithSiteId('access-token', mockContext)).toBe('access-token_RefArch');
         });
 
-        it('should use getConfig to get siteId', () => {
-            vi.mocked(getConfig).mockReturnValue({
-                commerce: {
-                    api: {
-                        siteId: 'ClientSite',
-                    },
-                },
-            } as AppConfig);
-
-            expect(getCookieNameWithSiteId('refresh-token')).toBe('refresh-token_ClientSite');
-        });
-
-        it('should throw error when siteId is not available', () => {
-            vi.mocked(getConfig).mockReturnValue({
-                commerce: {
-                    api: {},
-                },
-            } as AppConfig);
-
-            expect(() => getCookieNameWithSiteId('refresh-token')).toThrow(
-                'siteId not available for cookie namespacing'
-            );
+        it('should use siteId from multi-site context', () => {
+            const context = createMockContextWithSite('ClientSite');
+            expect(getCookieNameWithSiteId('refresh-token', context)).toBe('refresh-token_ClientSite');
         });
 
         it('should handle cookies with special characters', () => {
-            expect(getCookieNameWithSiteId('my-cookie_name.v2')).toBe('my-cookie_name.v2_RefArch');
+            expect(getCookieNameWithSiteId('my-cookie_name.v2', mockContext)).toBe('my-cookie_name.v2_RefArch');
         });
 
         it('should handle empty string cookie name', () => {
-            expect(getCookieNameWithSiteId('')).toBe('_RefArch');
+            expect(getCookieNameWithSiteId('', mockContext)).toBe('_RefArch');
         });
 
         it('should work with different siteIds', () => {
-            vi.mocked(getConfig).mockReturnValueOnce({ commerce: { api: { siteId: 'Site1' } } } as AppConfig);
-            expect(getCookieNameWithSiteId('auth')).toBe('auth_Site1');
+            const context1 = createMockContextWithSite('Site1');
+            expect(getCookieNameWithSiteId('auth', context1)).toBe('auth_Site1');
 
-            vi.mocked(getConfig).mockReturnValueOnce({ commerce: { api: { siteId: 'Site2' } } } as AppConfig);
-            expect(getCookieNameWithSiteId('auth')).toBe('auth_Site2');
+            const context2 = createMockContextWithSite('Site2');
+            expect(getCookieNameWithSiteId('auth', context2)).toBe('auth_Site2');
         });
     });
 
@@ -544,7 +526,7 @@ describe('cookie-utils', () => {
 
     describe('createCookie', () => {
         const mockContext = {
-            get: vi.fn(() => undefined),
+            get: vi.fn(() => ({ site: { id: 'RefArch' } })),
         } as any;
 
         beforeEach(() => {

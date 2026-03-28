@@ -87,18 +87,15 @@ function loadConfigFromEnv() {
 	const shortCode = process.env.PUBLIC__app__commerce__api__shortCode;
 	const organizationId = process.env.PUBLIC__app__commerce__api__organizationId;
 	const clientId = process.env.PUBLIC__app__commerce__api__clientId;
-	const siteId = process.env.PUBLIC__app__commerce__api__siteId;
 	const proxy = process.env.PUBLIC__app__commerce__api__proxy || "/mobify/proxy/api";
 	const proxyHost = process.env.SCAPI_PROXY_HOST;
 	if (!shortCode && !proxyHost) throw new Error("Missing PUBLIC__app__commerce__api__shortCode environment variable.\nPlease set it in your .env file or environment.");
 	if (!organizationId) throw new Error("Missing PUBLIC__app__commerce__api__organizationId environment variable.\nPlease set it in your .env file or environment.");
 	if (!clientId) throw new Error("Missing PUBLIC__app__commerce__api__clientId environment variable.\nPlease set it in your .env file or environment.");
-	if (!siteId) throw new Error("Missing PUBLIC__app__commerce__api__siteId environment variable.\nPlease set it in your .env file or environment.");
 	return { commerce: { api: {
 		shortCode: shortCode || "",
 		organizationId,
 		clientId,
-		siteId,
 		proxy,
 		proxyHost
 	} } };
@@ -124,12 +121,10 @@ async function loadProjectConfig(projectDirectory) {
 	if (!api.shortCode && !proxyHost) throw new Error("Missing shortCode in config.server.ts commerce.api configuration");
 	if (!api.organizationId) throw new Error("Missing organizationId in config.server.ts commerce.api configuration");
 	if (!api.clientId) throw new Error("Missing clientId in config.server.ts commerce.api configuration");
-	if (!api.siteId) throw new Error("Missing siteId in config.server.ts commerce.api configuration");
 	return { commerce: { api: {
 		shortCode: api.shortCode || "",
 		organizationId: api.organizationId,
 		clientId: api.clientId,
-		siteId: api.siteId,
 		proxy: api.proxy || "/mobify/proxy/api",
 		proxyHost
 	} } };

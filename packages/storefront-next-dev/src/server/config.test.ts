@@ -46,7 +46,6 @@ describe('server config', () => {
             process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
             process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
             process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
-            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
             process.env.PUBLIC__app__commerce__api__proxy = '/custom/proxy';
 
             const config = loadConfigFromEnv();
@@ -57,7 +56,6 @@ describe('server config', () => {
                         shortCode: 'test-short-code',
                         organizationId: 'test-org-id',
                         clientId: 'test-client-id',
-                        siteId: 'test-site-id',
                         proxy: '/custom/proxy',
                     },
                 },
@@ -68,7 +66,7 @@ describe('server config', () => {
             process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
             process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
             process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
-            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
+
             delete process.env.PUBLIC__app__commerce__api__proxy;
 
             const config = loadConfigFromEnv();
@@ -80,7 +78,7 @@ describe('server config', () => {
             process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
             process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
             process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
-            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
+
             process.env.SCAPI_PROXY_HOST = 'https://scw:25010';
 
             const config = loadConfigFromEnv();
@@ -92,7 +90,7 @@ describe('server config', () => {
             delete process.env.PUBLIC__app__commerce__api__shortCode;
             process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
             process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
-            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
+
             process.env.SCAPI_PROXY_HOST = 'https://scw:25010';
 
             const config = loadConfigFromEnv();
@@ -106,7 +104,6 @@ describe('server config', () => {
             delete process.env.SCAPI_PROXY_HOST;
             process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
             process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
-            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
 
             expect(() => loadConfigFromEnv()).toThrow(
                 'Missing PUBLIC__app__commerce__api__shortCode environment variable'
@@ -117,7 +114,6 @@ describe('server config', () => {
             process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
             delete process.env.PUBLIC__app__commerce__api__organizationId;
             process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
-            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
 
             expect(() => loadConfigFromEnv()).toThrow(
                 'Missing PUBLIC__app__commerce__api__organizationId environment variable'
@@ -128,21 +124,9 @@ describe('server config', () => {
             process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
             process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
             delete process.env.PUBLIC__app__commerce__api__clientId;
-            process.env.PUBLIC__app__commerce__api__siteId = 'test-site-id';
 
             expect(() => loadConfigFromEnv()).toThrow(
                 'Missing PUBLIC__app__commerce__api__clientId environment variable'
-            );
-        });
-
-        it('should throw error when PUBLIC__app__commerce__api__siteId is missing', () => {
-            process.env.PUBLIC__app__commerce__api__shortCode = 'test-short-code';
-            process.env.PUBLIC__app__commerce__api__organizationId = 'test-org-id';
-            process.env.PUBLIC__app__commerce__api__clientId = 'test-client-id';
-            delete process.env.PUBLIC__app__commerce__api__siteId;
-
-            expect(() => loadConfigFromEnv()).toThrow(
-                'Missing PUBLIC__app__commerce__api__siteId environment variable'
             );
         });
     });
@@ -168,7 +152,7 @@ describe('server config', () => {
                                 shortCode: 'config-short-code',
                                 organizationId: 'config-org-id',
                                 clientId: 'config-client-id',
-                                siteId: 'config-site-id',
+
                                 proxy: '/config/proxy',
                             },
                         },
@@ -184,7 +168,7 @@ describe('server config', () => {
                         shortCode: 'config-short-code',
                         organizationId: 'config-org-id',
                         clientId: 'config-client-id',
-                        siteId: 'config-site-id',
+
                         proxy: '/config/proxy',
                     },
                 },
@@ -209,7 +193,6 @@ describe('server config', () => {
                                 shortCode: 'config-short-code',
                                 organizationId: 'config-org-id',
                                 clientId: 'config-client-id',
-                                siteId: 'config-site-id',
                             },
                         },
                     },
@@ -253,7 +236,6 @@ describe('server config', () => {
                             api: {
                                 organizationId: 'config-org-id',
                                 clientId: 'config-client-id',
-                                siteId: 'config-site-id',
                             },
                         },
                     },
@@ -277,7 +259,6 @@ describe('server config', () => {
                             api: {
                                 organizationId: 'config-org-id',
                                 clientId: 'config-client-id',
-                                siteId: 'config-site-id',
                             },
                         },
                     },
@@ -298,7 +279,6 @@ describe('server config', () => {
                             api: {
                                 shortCode: 'config-short-code',
                                 clientId: 'config-client-id',
-                                siteId: 'config-site-id',
                             },
                         },
                     },
@@ -319,7 +299,6 @@ describe('server config', () => {
                             api: {
                                 shortCode: 'config-short-code',
                                 organizationId: 'config-org-id',
-                                siteId: 'config-site-id',
                             },
                         },
                     },
@@ -328,27 +307,6 @@ describe('server config', () => {
 
             await expect(loadProjectConfig('/test/project')).rejects.toThrow(
                 'Missing clientId in config.server.ts commerce.api configuration'
-            );
-        });
-
-        it('should throw error when siteId is missing', async () => {
-            mockExistsSync.mockReturnValue(true);
-            mockImportTypescript.mockResolvedValue({
-                default: {
-                    app: {
-                        commerce: {
-                            api: {
-                                shortCode: 'config-short-code',
-                                organizationId: 'config-org-id',
-                                clientId: 'config-client-id',
-                            },
-                        },
-                    },
-                },
-            });
-
-            await expect(loadProjectConfig('/test/project')).rejects.toThrow(
-                'Missing siteId in config.server.ts commerce.api configuration'
             );
         });
     });

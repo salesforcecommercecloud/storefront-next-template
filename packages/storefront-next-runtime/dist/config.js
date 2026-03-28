@@ -274,7 +274,7 @@ const mergeEnvConfig = (env = typeof process !== "undefined" ? process.env : {},
 * export default defineConfig({
 *     metadata: { projectName: 'My Store', projectSlug: 'my-store' },
 *     app: {
-*         commerce: { api: { clientId: '', organizationId: '', siteId: '', shortCode: '' }, sites: [] },
+*         commerce: { api: { clientId: '', organizationId: '', shortCode: '' }, sites: [] },
 *         defaultSiteId: 'RefArch',
 *     },
 * }, { protectedPaths: ['app__engagement'] });
@@ -393,8 +393,7 @@ function createAppConfigMiddleware(config) {
 		const api = config.app.commerce?.api;
 		const required = {
 			clientId: api?.clientId ?? "",
-			organizationId: api?.organizationId ?? "",
-			siteId: api?.siteId ?? ""
+			organizationId: api?.organizationId ?? ""
 		};
 		if (!process.env.SCAPI_PROXY_HOST) required.shortCode = api?.shortCode ?? "";
 		const missing = Object.entries(required).filter(([_, value]) => !value).map(([key]) => key);
@@ -402,10 +401,9 @@ function createAppConfigMiddleware(config) {
 			const envVarMap = {
 				clientId: "PUBLIC__app__commerce__api__clientId",
 				organizationId: "PUBLIC__app__commerce__api__organizationId",
-				siteId: "PUBLIC__app__commerce__api__siteId",
 				shortCode: "PUBLIC__app__commerce__api__shortCode"
 			};
-			throw new Error(`Missing required Commerce API configuration: ${missing.join(", ")}\n\nSet these environment variables in your MRT deployment or .env file:\n${missing.map((key) => `  ${envVarMap[key]}=your-value`).join("\n")}\n\nExample .env file:\nPUBLIC__app__commerce__api__clientId=your-client-id\nPUBLIC__app__commerce__api__organizationId=your-org-id\nPUBLIC__app__commerce__api__siteId=your-site-id\nPUBLIC__app__commerce__api__shortCode=your-short-code\n\nSee docs/README-CONFIG.md for complete configuration documentation.`);
+			throw new Error(`Missing required Commerce API configuration: ${missing.join(", ")}\n\nSet these environment variables in your MRT deployment or .env file:\n${missing.map((key) => `  ${envVarMap[key]}=your-value`).join("\n")}\n\nExample .env file:\nPUBLIC__app__commerce__api__clientId=your-client-id\nPUBLIC__app__commerce__api__organizationId=your-org-id\nPUBLIC__app__commerce__api__shortCode=your-short-code\n\nSee docs/README-CONFIG.md for complete configuration documentation.`);
 		}
 		validationRun = true;
 	}

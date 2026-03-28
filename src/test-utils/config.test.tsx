@@ -128,7 +128,6 @@ describe('Config Test Utils', () => {
         it('should have expected test values', () => {
             expect(mockConfig.commerce.api.clientId).toBe('test-client');
             expect(mockConfig.commerce.api.organizationId).toBe('test-org');
-            expect(mockConfig.commerce.api.siteId).toBe('test-site');
             expect(mockConfig.commerce.sites[0].defaultLocale).toBe('en-GB');
             expect(mockConfig.commerce.sites[0].defaultCurrency).toBe('GBP');
         });
@@ -160,7 +159,6 @@ describe('Config Test Utils', () => {
         it('should have valid commerce API configuration', () => {
             expect(mockBuildConfig.app.commerce.api.clientId).toBe('test-client');
             expect(mockBuildConfig.app.commerce.api.organizationId).toBe('test-org');
-            expect(mockBuildConfig.app.commerce.api.siteId).toBe('test-site');
             expect(mockBuildConfig.app.commerce.api.shortCode).toBe('test123');
         });
 

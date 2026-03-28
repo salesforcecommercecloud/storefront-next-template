@@ -67,7 +67,7 @@ interface DefineConfigOptions {
  * export default defineConfig({
  *     metadata: { projectName: 'My Store', projectSlug: 'my-store' },
  *     app: {
- *         commerce: { api: { clientId: '', organizationId: '', siteId: '', shortCode: '' }, sites: [] },
+ *         commerce: { api: { clientId: '', organizationId: '', shortCode: '' }, sites: [] },
  *         defaultSiteId: 'RefArch',
  *     },
  * }, { protectedPaths: ['app__engagement'] });

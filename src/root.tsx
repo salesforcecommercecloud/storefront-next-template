@@ -274,10 +274,12 @@ export function Layout({ children }: PropsWithChildren) {
     const appConfigScript = appConfig ? `window.__APP_CONFIG__ = ${JSON.stringify(appConfig)};` : '';
 
     const data = useRouteLoaderData<LoaderData>('root');
-    const i18next = (typeof window === 'undefined' ? data?.getI18next?.() : i18nextOnClient) as i18n;
+    const i18next = typeof window === 'undefined' ? data?.getI18next?.() : i18nextOnClient;
+    const lang = i18next?.language ?? 'en';
+    const dir = i18next?.dir(lang) ?? 'ltr';
 
     return (
-        <html lang={i18next.language} dir={i18next.dir(i18next.language)}>
+        <html lang={lang} dir={dir}>
             <head>
                 <meta charSet="utf-8" />
                 {appConfig?.links?.preconnect?.map((origin: string) => (

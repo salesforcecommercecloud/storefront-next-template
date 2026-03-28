@@ -379,19 +379,6 @@ PUBLIC__app__commerce__api__organizationId="f_ecom_aaaa_001"
 
 ---
 
-### commerce.api.siteId
-
-Type: `string` Required | Default: `''`
-
-The ID for your site. You can find this ID in Business Manager. See [Configuration Values](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#configuration-values) in the _B2C Commerce API Guide_.
-
-Example:
-```bash
-PUBLIC__app__commerce__api__siteId="RefArch"
-```
-
----
-
 ### commerce.api.shortCode
 
 Type: `string` Required | Default: `''`
@@ -1466,7 +1453,6 @@ Minimum required configuration for a new site.
 # Commerce Cloud credentials (required)
 PUBLIC__app__commerce__api__clientId="your-client-id"
 PUBLIC__app__commerce__api__organizationId="your-org-id"
-PUBLIC__app__commerce__api__siteId="your-site-id"
 PUBLIC__app__commerce__api__shortCode="your-short-code"
 
 # Basic branding
@@ -1602,7 +1588,6 @@ PUBLIC__app__global__productListing__enableQuickView=false
    ```bash
    PUBLIC__app__commerce__api__clientId=your-id
    PUBLIC__app__commerce__api__organizationId=your-org
-   PUBLIC__app__commerce__api__siteId=your-site
    PUBLIC__app__commerce__api__shortCode=your-code
    ```
 3. Verify credentials match your Business Manager configuration.

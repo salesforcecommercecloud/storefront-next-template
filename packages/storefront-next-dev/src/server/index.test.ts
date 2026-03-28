@@ -121,7 +121,7 @@ describe('server/index', () => {
                 shortCode: 'test-short-code',
                 organizationId: 'test-org-id',
                 clientId: 'test-client-id',
-                siteId: 'test-site-id',
+
                 proxy: '/api/commerce',
             },
         },
@@ -228,7 +228,6 @@ describe('server/index', () => {
                             shortCode: 'custom-short-code',
                             organizationId: 'custom-org-id',
                             clientId: 'custom-client-id',
-                            siteId: 'custom-site-id',
                             proxy: '/custom/api',
                         },
                     },

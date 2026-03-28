@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import type { RouterContextProvider } from 'react-router';
 import { COOKIE_TRACKING_CONSENT, COOKIE_DWSID } from '@/middlewares/auth.utils';
 import { modeDetectionContext } from '@/middlewares/mode-detection';
@@ -58,38 +56,30 @@ export interface CookieConfig {
  * If the cookie name is in COOKIE_NAMESPACE_EXCLUSIONS, returns the name as-is.
  *
  * @param name - Base cookie name
- * @param context - Optional router context (server loaders/actions only, omit for client-side)
+ * @param context - Router context provider (required for multi-site resolution)
  * @returns Namespaced cookie name in format: `${name}_${siteId}`, or original name if excluded
  *
  * @example
- * // Server-side with context
  * getCookieNameWithSiteId('cc-nx-g', context); // Returns "cc-nx-g_RefArch"
  *
  * @example
- * // Client-side without context
- * getCookieNameWithSiteId('cc-nx-g'); // Returns "cc-nx-g_RefArch"
- *
- * @example
  * // Returns "dwsid" (if in exclusions array)
- * getCookieNameWithSiteId(COOKIE_DWSID);
+ * getCookieNameWithSiteId(COOKIE_DWSID, context);
  */
-export const getCookieNameWithSiteId = (name: string, context?: Readonly<RouterContextProvider>): string => {
+export const getCookieNameWithSiteId = (name: string, context: Readonly<RouterContextProvider>): string => {
     // Check if this cookie should be excluded from namespacing
     if (COOKIE_NAMESPACE_EXCLUSIONS.includes(name)) {
         return name;
     }
 
-    // Get config using getConfig() - handles both server (with context) and client (without)
-    const config = getConfig<AppConfig>(context);
-    const siteId = config.commerce.api.siteId;
-
-    if (!siteId) {
-        throw new Error(
-            'siteId not available for cookie namespacing. ' + 'Ensure configuration is properly initialized.'
-        );
+    // Site ID is always resolved by multi-site middleware
+    const multiSite = context.get(multiSiteContext);
+    if (!multiSite?.site?.id) {
+        throw new Error('Multi-site context not initialized for cookie namespacing');
     }
+    const { site } = multiSite;
 
-    return `${name}_${siteId}`;
+    return `${name}_${site.id}`;
 };
 
 /**

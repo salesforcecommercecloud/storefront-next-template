@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from "url";
 import { parse } from "@babel/parser";
 import { isArrayPattern, isClassDeclaration, isExportSpecifier, isFunctionDeclaration, isIdentifier, isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, isMemberExpression, isObjectPattern, isObjectProperty, isRestElement, isVariableDeclaration, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
 import { generate } from "@babel/generator";
-import traverseModule from "@babel/traverse";
+import _traverse from "@babel/traverse";
 import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
@@ -428,7 +428,7 @@ const patchReactRouterPlugin = () => {
 
 //#endregion
 //#region src/extensibility/target-utils.ts
-const traverse$1 = traverseModule.default || traverseModule;
+const traverse$1 = _traverse.default || _traverse;
 const TARGET_COMPONENT_TAG = "UITarget";
 const TARGET_PROVIDERS_TAG = "TargetProviders";
 const TARGET_ID_ATTRIBUTE = "targetId";
@@ -1364,7 +1364,7 @@ const workspacePlugin = () => {
 
 //#endregion
 //#region src/plugins/componentLoaders.ts
-const traverse = traverseModule.default || traverseModule;
+const traverse = _traverse.default || _traverse;
 const generate$1 = generate.default || generate;
 /**
 * Names of exports to strip per environment.
@@ -2082,18 +2082,15 @@ function loadConfigFromEnv() {
 	const shortCode = process.env.PUBLIC__app__commerce__api__shortCode;
 	const organizationId = process.env.PUBLIC__app__commerce__api__organizationId;
 	const clientId = process.env.PUBLIC__app__commerce__api__clientId;
-	const siteId = process.env.PUBLIC__app__commerce__api__siteId;
 	const proxy = process.env.PUBLIC__app__commerce__api__proxy || "/mobify/proxy/api";
 	const proxyHost = process.env.SCAPI_PROXY_HOST;
 	if (!shortCode && !proxyHost) throw new Error("Missing PUBLIC__app__commerce__api__shortCode environment variable.\nPlease set it in your .env file or environment.");
 	if (!organizationId) throw new Error("Missing PUBLIC__app__commerce__api__organizationId environment variable.\nPlease set it in your .env file or environment.");
 	if (!clientId) throw new Error("Missing PUBLIC__app__commerce__api__clientId environment variable.\nPlease set it in your .env file or environment.");
-	if (!siteId) throw new Error("Missing PUBLIC__app__commerce__api__siteId environment variable.\nPlease set it in your .env file or environment.");
 	return { commerce: { api: {
 		shortCode: shortCode || "",
 		organizationId,
 		clientId,
-		siteId,
 		proxy,
 		proxyHost
 	} } };
@@ -2119,12 +2116,10 @@ async function loadProjectConfig(projectDirectory) {
 	if (!api.shortCode && !proxyHost) throw new Error("Missing shortCode in config.server.ts commerce.api configuration");
 	if (!api.organizationId) throw new Error("Missing organizationId in config.server.ts commerce.api configuration");
 	if (!api.clientId) throw new Error("Missing clientId in config.server.ts commerce.api configuration");
-	if (!api.siteId) throw new Error("Missing siteId in config.server.ts commerce.api configuration");
 	return { commerce: { api: {
 		shortCode: api.shortCode || "",
 		organizationId: api.organizationId,
 		clientId: api.clientId,
-		siteId: api.siteId,
 		proxy: api.proxy || "/mobify/proxy/api",
 		proxyHost
 	} } };

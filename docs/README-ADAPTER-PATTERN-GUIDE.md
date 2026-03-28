@@ -1023,7 +1023,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
                     host: engagementAdapterConfigs.einstein.host || '',
                     einsteinId: engagementAdapterConfigs.einstein.einsteinId || '',
                     realm: engagementAdapterConfigs.einstein.realm || '',
-                    siteId: engagementAdapterConfigs.einstein.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.einstein.siteId || '',
                     isProduction: engagementAdapterConfigs.einstein.isProduction || false,
                     eventToggles: engagementAdapterConfigs.einstein.eventToggles || {},
                 })
@@ -1039,7 +1039,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
                 'active-data',
                 createActiveDataAdapter({
                     host: engagementAdapterConfigs.activeData.host || '',
-                    siteId: engagementAdapterConfigs.activeData.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.activeData.siteId || '',
                     locale: engagementAdapterConfigs.activeData.locale || appConfig.site.locale,
                     siteUUID: engagementAdapterConfigs.activeData.siteUUID || '',
                     eventToggles: engagementAdapterConfigs.activeData.eventToggles || {},
@@ -1845,7 +1845,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
                     host: engagementAdapterConfigs.einstein.host || '',
                     einsteinId: engagementAdapterConfigs.einstein.einsteinId || '',
                     realm: engagementAdapterConfigs.einstein.realm || '',
-                    siteId: engagementAdapterConfigs.einstein.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.einstein.siteId || '',
                     isProduction: engagementAdapterConfigs.einstein.isProduction || false,
                     eventToggles: engagementAdapterConfigs.einstein.eventToggles || {},
                 })
@@ -1861,7 +1861,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
                 'active-data',
                 createActiveDataAdapter({
                     host: engagementAdapterConfigs.activeData.host || '',
-                    siteId: engagementAdapterConfigs.activeData.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.activeData.siteId || '',
                     locale: engagementAdapterConfigs.activeData.locale || appConfig.site.locale,
                     siteUUID: engagementAdapterConfigs.activeData.siteUUID || '',
                     eventToggles: engagementAdapterConfigs.activeData.eventToggles || {},
@@ -2623,7 +2623,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
                     host: engagementAdapterConfigs.einstein.host,
                     einsteinId: engagementAdapterConfigs.einstein.einsteinId,
                     realm: engagementAdapterConfigs.einstein.realm || '',
-                    siteId: engagementAdapterConfigs.einstein.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.einstein.siteId || '',
                     isProduction: engagementAdapterConfigs.einstein.isProduction || false,
                     eventToggles: engagementAdapterConfigs.einstein.eventToggles || {},
                 })

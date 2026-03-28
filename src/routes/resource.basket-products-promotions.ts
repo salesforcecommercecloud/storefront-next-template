@@ -19,6 +19,7 @@ import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import type { ProductWithPromotions } from '@/hooks/use-basket-with-promotions';
 import { getLogger } from '@/lib/logger.server';
 
@@ -48,6 +49,7 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<Record<st
     try {
         const config = getConfig<AppConfig>(context);
         const clients = createApiClients(context);
+        const { site } = context.get(multiSiteContext) as MultiSiteContext;
 
         // Fetch product details with promotions expanded
         const { data: productsData } = await clients.shopperProducts.getProducts({
@@ -56,7 +58,7 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<Record<st
                     organizationId: config.commerce.api.organizationId,
                 },
                 query: {
-                    siteId: config.commerce.api.siteId,
+                    siteId: site.id,
                     ids: uniqueProductIds,
                     expand: ['promotions'],
                     perPricebook: true,

@@ -340,14 +340,12 @@ describe('logger utils', () => {
                 shortCode: 'test-sc',
                 organizationId: 'org-123',
                 clientId: 'client-456',
-                siteId: 'site-789',
             });
 
             expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Proxy:'));
             expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('test-sc'));
             expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('org-123'));
             expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('client-456'));
-            expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('site-789'));
         });
 
         it('should print disabled proxy when not enabled', () => {

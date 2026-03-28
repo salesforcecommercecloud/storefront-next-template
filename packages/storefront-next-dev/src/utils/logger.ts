@@ -173,7 +173,6 @@ export function printServerConfig(config: {
     shortCode?: string;
     organizationId?: string;
     clientId?: string;
-    siteId?: string;
 }): void {
     const {
         port,
@@ -185,7 +184,6 @@ export function printServerConfig(config: {
         shortCode,
         organizationId,
         clientId,
-        siteId,
     } = config;
 
     console.log(`  ${chalk.bold('Environment Configuration:')}`);
@@ -200,9 +198,6 @@ export function printServerConfig(config: {
         }
         if (clientId) {
             console.log(`      ${chalk.dim('Client ID:       ')}${chalk.dim(clientId)}`);
-        }
-        if (siteId) {
-            console.log(`      ${chalk.dim('Site ID:         ')}${chalk.dim(siteId)}`);
         }
     } else {
         console.log(`    ${chalk.bold('Proxy:           ')} ${chalk.dim('disabled')}`);

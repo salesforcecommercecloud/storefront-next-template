@@ -41,7 +41,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig): void {
                     host: engagementAdapterConfigs.einstein.host || '',
                     einsteinId: engagementAdapterConfigs.einstein.einsteinId || '',
                     realm: engagementAdapterConfigs.einstein.realm || '',
-                    siteId: engagementAdapterConfigs.einstein.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.einstein.siteId || '',
                     isProduction: engagementAdapterConfigs.einstein.isProduction || false,
                     eventToggles: engagementAdapterConfigs.einstein.eventToggles || {},
                 })

@@ -92,7 +92,6 @@ export async function dev(options: DevOptions = {}): Promise<void> {
             shortCode: config.commerce.api.shortCode,
             organizationId: config.commerce.api.organizationId,
             clientId: config.commerce.api.clientId,
-            siteId: config.commerce.api.siteId,
         });
     });
 

@@ -46,7 +46,7 @@
  * - HYBRID_PROXY_ENABLED (required) - 'true' to enable the plugin
  * - HYBRID_ROUTING_RULES (required) - Cloudflare routing expression (routes matching go to Next)
  * - SFCC_ORIGIN (required) - SFCC sandbox URL (e.g., https://zzrf-001.dx.commercecloud.salesforce.com)
- * - PUBLIC__app__commerce__api__siteId (required) - Site ID for SFRA path transformation (e.g., 'RefArchGlobal')
+ * - PUBLIC__app__defaultSiteId (required) - Site ID for SFRA path transformation (e.g., 'RefArchGlobal')
  * - HYBRID_PROXY_LOCALE (optional) - Locale for SFRA path transformation (e.g., 'en-GB')
  * - PUBLIC__app__i18n__fallbackLng (fallback) - Used if HYBRID_PROXY_LOCALE not set
  */

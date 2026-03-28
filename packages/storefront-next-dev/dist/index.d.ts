@@ -273,7 +273,6 @@ interface ServerConfig {
       shortCode: string;
       organizationId: string;
       clientId: string;
-      siteId: string;
       proxy: string;
       proxyHost?: string;
     };

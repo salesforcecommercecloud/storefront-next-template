@@ -120,12 +120,12 @@ See [Writing Routing Rules](#writing-routing-rules) below for a full breakdown.
 
 ---
 
-#### `PUBLIC__app__commerce__api__siteId`
+#### `PUBLIC__app__defaultSiteId`
 
 Your Commerce Cloud site ID. Used to build the SFRA path prefix (`/s/{siteId}/{locale}/...`). This is already required for the storefront to work and is likely already set in your `.env`.
 
 ```bash
-PUBLIC__app__commerce__api__siteId=RefArchGlobal
+PUBLIC__app__defaultSiteId=RefArchGlobal
 ```
 
 ---
@@ -224,7 +224,7 @@ The proxy automatically rewrites paths to SFRA's expected URL format. You never 
 | `/checkout`                 | `/s/RefArchGlobal/en-GB/checkout`               |
 | `/on/demandware.static/...` | `/on/demandware.static/...` (no transformation) |
 
-The `siteId` comes from `PUBLIC__app__commerce__api__siteId`. The `locale` uses `HYBRID_PROXY_LOCALE` → `PUBLIC__app__i18n__fallbackLng` → `default`.
+The `siteId` comes from `PUBLIC__app__defaultSiteId`. The `locale` uses `HYBRID_PROXY_LOCALE` → `PUBLIC__app__i18n__fallbackLng` → `default`.
 
 ---
 
@@ -344,5 +344,5 @@ HYBRID_PROXY_LOCALE=en-GB
 HYBRID_ROUTING_RULES='(http.request.uri.path matches "^/$" or http.request.uri.path matches "^/reset-password.*" or http.request.uri.path matches "^/signup.*" or http.request.uri.path matches "^/logout.*" or http.request.uri.path matches "^/login.*" or http.request.uri.path matches "^/category.*" or http.request.uri.path matches "^/product.*" or http.request.uri.path matches "^/search.*" or http.request.uri.path matches "^/account.*" or http.request.uri.path matches "^/social-callback.*" or http.request.uri.path matches "^/resource.*" or http.request.uri.path matches "^/action/.*")'
 
 # Commerce Cloud site ID (already required for the storefront — just make sure it's set)
-PUBLIC__app__commerce__api__siteId=RefArchGlobal
+PUBLIC__app__defaultSiteId=RefArchGlobal
 ```

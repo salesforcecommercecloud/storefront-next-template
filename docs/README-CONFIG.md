@@ -68,7 +68,6 @@ Copy `.env.default` to `.env` and set these required Commerce Cloud credentials:
 ```bash
 PUBLIC__app__commerce__api__clientId=your-client-id
 PUBLIC__app__commerce__api__organizationId=your-org-id
-PUBLIC__app__commerce__api__siteId=your-site-id
 PUBLIC__app__commerce__api__shortCode=your-short-code
 ```
 
@@ -368,7 +367,6 @@ For tests that need all providers (config + currency + store locator), use `AllP
   ```bash
   PUBLIC__app__commerce__api__clientId=your-id
   PUBLIC__app__commerce__api__organizationId=your-org
-  PUBLIC__app__commerce__api__siteId=your-site
   PUBLIC__app__commerce__api__shortCode=your-code
   ```
 

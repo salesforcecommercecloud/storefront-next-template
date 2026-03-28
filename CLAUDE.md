@@ -282,7 +282,6 @@ See `src/extensions/README.md` for details.
    PUBLIC__app__commerce__api__clientId=your-client-id
    PUBLIC__app__commerce__api__organizationId=your-org-id
    PUBLIC__app__commerce__api__shortCode=your-short-code
-   PUBLIC__app__commerce__api__siteId=your-site-id
    ```
 
 3. **Install and run:**

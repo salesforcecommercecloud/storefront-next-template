@@ -74,7 +74,6 @@ export const mockBuildConfig: Config = {
             api: {
                 clientId: 'test-client',
                 organizationId: 'test-org',
-                siteId: 'test-site',
                 shortCode: 'test123',
                 proxy: '/mobify/proxy/api',
                 callback: '/callback',

@@ -46,7 +46,6 @@ const mockConfig: ServerConfig = {
             shortCode: 'test-short-code',
             organizationId: 'test-org-id',
             clientId: 'test-client-id',
-            siteId: 'test-site-id',
             proxy: '/mobify/proxy/api',
         },
     },
@@ -191,7 +190,6 @@ describe('preview command', () => {
                 shortCode: 'test-short-code',
                 organizationId: 'test-org-id',
                 clientId: 'test-client-id',
-                siteId: 'test-site-id',
             });
         });
 

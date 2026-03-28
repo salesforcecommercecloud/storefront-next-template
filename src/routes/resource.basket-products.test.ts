@@ -36,7 +36,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
             commerce: {
                 api: {
                     organizationId: 'test-org',
-                    siteId: 'test-site',
+                    siteId: 'RefArchGlobal',
                 },
             },
         })),
@@ -159,7 +159,7 @@ describe('resource.basket-products', () => {
                     organizationId: 'test-org',
                 },
                 query: {
-                    siteId: 'test-site',
+                    siteId: 'RefArchGlobal',
                     ids: ['product-1', 'product-2'],
                     allImages: true,
                     perPricebook: true,
