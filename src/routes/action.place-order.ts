@@ -28,6 +28,7 @@ import {
     type PaymentInstrumentForSave,
     saveShippingAddressToCustomer,
     saveBillingAddressToCustomer,
+    updateCustomerContactInfo,
     getCustomerProfileForCheckout,
 } from '@/lib/api/customer';
 import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
@@ -251,14 +252,23 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const auth = getAuth(context);
         const registeredViaCheckout = auth.userType === 'registered' && auth.customerId && shouldCreateAccount;
 
+        // The contact-info phone is passed from the client as a form field because basket
+        // transfers during OTP registration can strip phone from the billing address.
+        // Fall back to the basket/order billing address if the form field is absent.
+        const contactPhone =
+            formData.get('contactPhone')?.toString() ||
+            updatedBasket.billingAddress?.phone ||
+            order.billingAddress?.phone;
+
         // Save checkout information to customer profile
         if (auth.customerId) {
             const savePromises: Promise<unknown>[] = [];
 
             // For newly registered customers (via OTP), save all their checkout info
             if (registeredViaCheckout) {
-                // Save payment method if opted in
-                if (savePaymentToProfile && order.paymentInstruments?.[0]) {
+                // Always save payment for checkout-registration: the "Save for future use"
+                // checkbox implies saving all checkout data to the new profile.
+                if (order.paymentInstruments?.[0]) {
                     savePromises.push(
                         savePaymentMethodToCustomer(
                             context,
@@ -272,7 +282,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
                     );
                 }
 
-                // Save shipping address (includes phone number)
+                // Save shipping address
                 if (order.shipments?.[0]?.shippingAddress) {
                     savePromises.push(
                         saveShippingAddressToCustomer(
@@ -292,6 +302,19 @@ export async function action({ request, context }: ActionFunctionArgs) {
                     savePromises.push(
                         saveBillingAddressToCustomer(context, auth.customerId, order.billingAddress).catch((error) => {
                             logger.error('Failed to save billing address for new customer', {
+                                error: error instanceof Error ? error : String(error),
+                            });
+                        })
+                    );
+                }
+
+                // Save phone number to customer profile (phoneHome)
+                if (contactPhone) {
+                    savePromises.push(
+                        updateCustomerContactInfo(context, auth.customerId, {
+                            phone: contactPhone,
+                        }).catch((error) => {
+                            logger.error('Failed to save phone number for new customer', {
                                 error: error instanceof Error ? error : String(error),
                             });
                         })

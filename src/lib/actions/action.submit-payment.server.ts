@@ -170,10 +170,11 @@ export async function action(formData: FormData, context: RouterContextProvider)
     }
 
     // Prepare billing address (basket is non-null)
+    const contactPhone = basket.billingAddress?.phone;
     const shippingAddress = basket.shipments?.[0]?.shippingAddress;
     const billingAddress =
         billingSameAsShipping && shippingAddress
-            ? shippingAddress
+            ? { ...shippingAddress, phone: contactPhone || shippingAddress.phone }
             : {
                   firstName: result.data.billingFirstName || '',
                   lastName: result.data.billingLastName || '',
@@ -182,7 +183,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
                   city: result.data.billingCity || '',
                   stateCode: result.data.billingStateCode || '',
                   postalCode: result.data.billingPostalCode || '',
-                  phone: result.data.billingPhone || '',
+                  phone: result.data.billingPhone || contactPhone || '',
                   countryCode: result.data.billingCountryCode || 'US',
               };
 

@@ -159,6 +159,8 @@ export async function action(formData: FormData, context: RouterContextProvider)
     updateBasketResource(context, updatedBasket);
 
     // Fallback: copy shipping to billing when still incomplete (e.g. API did not apply useAsBilling).
+    // Preserve the contact-info phone that was stored on the billing address during the contact step.
+    const existingBillingPhone = updatedBasket.billingAddress?.phone;
     const shippingAddr = updatedBasket.shipments?.[0]?.shippingAddress;
     if (
         isOrderBillingAddressIncomplete(updatedBasket.billingAddress) &&
@@ -182,7 +184,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
                     stateCode: shippingAddr.stateCode,
                     postalCode: shippingAddr.postalCode,
                     countryCode: shippingAddr.countryCode,
-                    phone: shippingAddr.phone,
+                    phone: existingBillingPhone || shippingAddr.phone,
                 },
             });
             updatedBasket = billingSyncedBasket;

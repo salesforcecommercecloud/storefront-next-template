@@ -112,6 +112,9 @@ export function useCheckoutActions(options?: {
     const [shouldCreateAccount, setShouldCreateAccount] = useState(false);
     const [savedPaymentMethods, setSavedPaymentMethods] = useState(new Set<string>());
 
+    // Stores the contact phone across basket mutations
+    const contactPhoneRef = useRef<string | null>(null);
+
     // Reset lifecycle when entering a new edit step
     useEffect(() => {
         if (editingStep !== null) {
@@ -189,6 +192,11 @@ export function useCheckoutActions(options?: {
 
         // Transition: IDLE -> SUBMITTED
         actionRef.current = { step: CHECKOUT_STEPS.CONTACT_INFO, state: ActionState.SUBMITTED };
+
+        // Persist the full phone (with country code)
+        if (data.phone) {
+            contactPhoneRef.current = `${data.countryCode || '+1'} ${data.phone}`;
+        }
 
         // Convert typed data to FormData for fetcher submission
         const formData = new FormData();
@@ -350,6 +358,12 @@ export function useCheckoutActions(options?: {
             options?.paymentSubmissionRef?.current?.options ?? options?.placeOrderOptionsRef?.current;
         if (placeOrderOpts?.savePaymentToProfile) {
             formData.append('savePaymentToProfile', 'true');
+        }
+        // Pass the contact phone captured at submission time
+        const contactPhone =
+            contactPhoneRef.current || basket?.billingAddress?.phone || basket?.shipments?.[0]?.shippingAddress?.phone;
+        if (contactPhone) {
+            formData.append('contactPhone', contactPhone);
         }
         void placeOrderFetcher.submit(formData, {
             method: 'post',
