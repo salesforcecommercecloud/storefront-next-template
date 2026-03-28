@@ -38,7 +38,7 @@ console.log('[A11Y] Violations will be written to a11y-baseline.json');
 
 // Snapshot the existing baseline so we can restore it if any pass fails.
 // This prevents a partial run from leaving the baseline in a broken state.
-const baselineFile = join(__dirname, '../a11y-baseline.json');
+const baselineFile = join(__dirname, '../../a11y-baseline.json');
 let previousBaseline = '{}\n';
 try {
     previousBaseline = readFileSync(baselineFile, 'utf-8');
