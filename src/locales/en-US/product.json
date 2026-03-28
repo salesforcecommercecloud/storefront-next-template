@@ -112,6 +112,7 @@
     "outOfStockStatus": "Out of stock",
     "selected": "✓ Selected",
     "selectOptionsAbove": "Select options above",
+    "selectOptions": "Select Options",
     "bonusProduct": "Bonus Product",
     "bonusProductAriaLabel": "This item is a free bonus product",
     "addedToCart": "{{productName}} added to cart",

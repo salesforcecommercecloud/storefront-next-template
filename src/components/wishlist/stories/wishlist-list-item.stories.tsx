@@ -25,6 +25,7 @@ import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { CurrencyProvider } from '@/providers/currency';
 import { mockConfig } from '@/test-utils/config';
+import BasketProvider from '@/providers/basket';
 
 // -- Shared mock data --
 
@@ -127,9 +128,11 @@ Horizontal card row for a single wishlist product.
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <CurrencyProvider value="USD">
-                    <Story />
-                </CurrencyProvider>
+                <BasketProvider>
+                    <CurrencyProvider value="USD">
+                        <Story />
+                    </CurrencyProvider>
+                </BasketProvider>
             </ConfigProvider>
         ),
     ],

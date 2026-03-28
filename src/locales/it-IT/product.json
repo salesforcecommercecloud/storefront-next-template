@@ -108,6 +108,7 @@
     "outOfStockStatus": "Esaurito",
     "selected": "✓ Selezionato",
     "selectOptionsAbove": "Selezioni le opzioni sopra",
+    "selectOptions": "Selezioni Opzioni",
     "bonusProduct": "Prodotto bonus",
     "bonusProductAriaLabel": "Questo articolo è un prodotto bonus gratuito",
     "addedToCart": "{{productName}} aggiunto al carrello",

@@ -48,6 +48,7 @@ interface UseProductActionsProps {
     initialQuantity?: number;
     maxQuantity?: number; // Max quantity allowed (for bonus products, etc.)
     itemId?: string; // Cart item ID for update operations
+    skipInventoryValidation?: boolean; // Skip inventory/orderable validation in canAddToCart (for wishlist)
 }
 
 /**
@@ -92,6 +93,7 @@ export function useProductActions({
     initialQuantity,
     maxQuantity,
     itemId,
+    skipInventoryValidation = false,
 }: UseProductActionsProps) {
     const { t } = useTranslation();
     const location = useLocation();
@@ -234,6 +236,17 @@ export function useProductActions({
 
     // Can add to cart validation - defaults to false, only true when explicitly allowed
     const canAddToCart = useMemo(() => {
+        // Skip inventory/orderable validation if requested (for wishlist use case)
+        // For wishlist, check quantity > 0 and variant selection (if needed), but ignore stock levels
+        if (skipInventoryValidation) {
+            if (quantity <= 0) return false;
+
+            // Master/variant products still need a variant selected
+            if (isMasterOrVariantProduct && !currentVariant) return false;
+
+            return true;
+        }
+
         // Quantity must be valid
         // For bonus products with maxQuantity, use that instead of actualStockLevel
         const maxAllowed = maxQuantity !== undefined ? maxQuantity : actualStockLevel;
@@ -252,6 +265,7 @@ export function useProductActions({
         if (isMasterOrVariantProduct) {
             // Master products cannot be added to cart without a variant selection
             if (!currentVariant) return false;
+
             // Variant must be orderable from effective inventory (store or site)
             return effectiveInventory?.orderable === true;
         }
@@ -286,6 +300,7 @@ export function useProductActions({
         isMasterOrVariantProduct,
         isProductASet,
         isProductABundle,
+        skipInventoryValidation,
     ]);
 
     // Handle successful cart updates

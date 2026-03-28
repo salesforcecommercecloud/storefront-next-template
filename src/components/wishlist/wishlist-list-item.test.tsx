@@ -24,6 +24,7 @@ import { WishlistListItem } from './wishlist-list-item';
 import { getTranslation } from '@/lib/i18next';
 import { masterProduct, variantProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
+import { useProductActions } from '@/hooks/product/use-product-actions';
 
 const { t } = getTranslation();
 
@@ -39,6 +40,12 @@ vi.mock('react-i18next', () => ({
         },
         i18n: { language: 'en-GB' },
     }),
+}));
+
+// Mock useProductActions hook
+const mockHandleAddToCart = vi.fn();
+vi.mock('@/hooks/product/use-product-actions', () => ({
+    useProductActions: vi.fn(),
 }));
 
 // Mock toast
@@ -81,11 +88,21 @@ vi.mock('@/components/inventory-message', () => ({
     ),
 }));
 
+// Mock basket providers
+const mockSetMiniCartOpen = vi.fn();
+const mockUpdateBasket = vi.fn();
+vi.mock('@/providers/basket', () => ({
+    useMiniCart: () => ({
+        setMiniCartOpen: mockSetMiniCartOpen,
+    }),
+    useBasketUpdater: () => mockUpdateBasket,
+}));
+
 // Default useFetcher mock
 const mockSubmit = vi.fn();
 const mockFetcher = {
     state: 'idle' as 'idle' | 'loading' | 'submitting',
-    data: null as { success: boolean; error?: string } | null,
+    data: null as { success: boolean; error?: string; basket?: unknown } | null,
     submit: mockSubmit,
     load: vi.fn(),
     Form: ({ children, ...props }: React.FormHTMLAttributes<HTMLFormElement> & { children: React.ReactNode }) => (
@@ -137,7 +154,15 @@ describe('WishlistListItem', () => {
                 },
             },
         });
+        // Setup default fetcher for remove action (cart now uses useProductActions hook)
         vi.spyOn(ReactRouter, 'useFetcher').mockReturnValue(mockFetcher as any);
+
+        // Setup default useProductActions mock
+        vi.mocked(useProductActions).mockReturnValue({
+            handleAddToCart: mockHandleAddToCart,
+            isAddingToOrUpdatingCart: false,
+            canAddToCart: true, // Default to true for most tests
+        } as any);
     });
 
     describe('rendering', () => {
@@ -311,6 +336,7 @@ describe('WishlistListItem', () => {
 
         test('calls onRemove and shows success toast when remove succeeds', async () => {
             const onRemove = vi.fn();
+            // Remove fetcher returns success
             vi.spyOn(ReactRouter, 'useFetcher').mockReturnValue({
                 ...mockFetcher,
                 state: 'idle',
@@ -371,6 +397,118 @@ describe('WishlistListItem', () => {
             );
 
             expect(screen.getByRole('button', { name: t('product:removeFromWishlist') })).toBeDisabled();
+        });
+    });
+
+    describe('add to cart button', () => {
+        test('renders "Add to Cart" button for items with specific variant selected', () => {
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
+            );
+
+            expect(screen.getByRole('button', { name: t('product:addToCart') })).toBeInTheDocument();
+        });
+
+        test('does not render "Add to Cart" button for master product without variant selection', () => {
+            vi.mocked(useProductActions).mockReturnValue({
+                handleAddToCart: mockHandleAddToCart,
+                isAddingToOrUpdatingCart: false,
+                canAddToCart: false, // Master without variant cannot add to cart
+            } as any);
+
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
+            );
+
+            expect(screen.queryByRole('button', { name: t('product:addToCart') })).not.toBeInTheDocument();
+        });
+
+        test('submits add to cart action when button is clicked', () => {
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
+            );
+
+            fireEvent.click(screen.getByRole('button', { name: t('product:addToCart') }));
+
+            expect(mockHandleAddToCart).toHaveBeenCalled();
+        });
+
+        test('calls handleAddToCart from useProductActions hook', () => {
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
+            );
+
+            fireEvent.click(screen.getByRole('button', { name: t('product:addToCart') }));
+
+            expect(mockHandleAddToCart).toHaveBeenCalled();
+        });
+
+        test('useProductActions hook handles errors internally', () => {
+            // The hook is responsible for error handling (toasts, basket updates, etc.)
+            // This test just verifies the component uses the hook correctly
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
+            );
+
+            expect(useProductActions).toHaveBeenCalledWith({
+                product: masterProduct,
+                currentVariant: expect.objectContaining({ productId: '640188017041M' }),
+                initialQuantity: 1,
+                skipInventoryValidation: true,
+            });
+        });
+
+        test('"Add to Cart" button is disabled while adding to cart', () => {
+            vi.mocked(useProductActions).mockReturnValue({
+                handleAddToCart: mockHandleAddToCart,
+                isAddingToOrUpdatingCart: true,
+                canAddToCart: true,
+            } as any);
+
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
+            );
+
+            expect(screen.getByRole('button', { name: t('product:addingToCart') })).toBeDisabled();
+        });
+    });
+
+    describe('select options button', () => {
+        test('renders "Select Options" link for master product without variant selection', () => {
+            vi.mocked(useProductActions).mockReturnValue({
+                handleAddToCart: mockHandleAddToCart,
+                isAddingToOrUpdatingCart: false,
+                canAddToCart: false, // Master without variant cannot add to cart
+            } as any);
+
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
+            );
+
+            expect(screen.getByRole('link', { name: t('product:selectOptions') })).toBeInTheDocument();
+        });
+
+        test('"Select Options" link navigates to PDP', () => {
+            vi.mocked(useProductActions).mockReturnValue({
+                handleAddToCart: mockHandleAddToCart,
+                isAddingToOrUpdatingCart: false,
+                canAddToCart: false, // Master without variant cannot add to cart
+            } as any);
+
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
+            );
+
+            const link = screen.getByRole('link', { name: t('product:selectOptions') });
+            expect(link).toHaveAttribute('href', expect.stringContaining('/product/'));
+        });
+
+        test('does not render "Select Options" button when specific variant is selected', () => {
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
+            );
+
+            expect(screen.queryByRole('link', { name: t('product:selectOptions') })).not.toBeInTheDocument();
         });
     });
 });
