@@ -871,7 +871,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               </span>
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -1169,7 +1169,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -2011,7 +2011,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               </span>
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -2309,7 +2309,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -3196,7 +3196,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               </span>
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -3494,7 +3494,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -4336,7 +4336,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               </span>
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -4634,7 +4634,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -12080,7 +12080,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               </span>
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -12378,7 +12378,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -13220,7 +13220,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               </span>
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"
@@ -13518,7 +13518,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                
             </div>
             <div
-              class="items-center gap-2 text-xs text-status-positive mt-1"
+              class="items-center gap-2 text-xs text-active-foreground mt-1"
             >
               <span
                 class="line-clamp-2 text-[inherit] font-medium"

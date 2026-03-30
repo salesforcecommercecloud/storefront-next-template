@@ -296,7 +296,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
            
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -675,7 +675,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
           </span>
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -999,7 +999,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
            
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -1315,7 +1315,7 @@ exports[`ProductTile stories snapshot > WithLongDescription story renders and ma
            
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -1661,7 +1661,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
            
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -1971,7 +1971,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
            
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -2287,7 +2287,7 @@ exports[`ProductTile stories snapshot > WithShortDescription story renders and m
            
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -2597,7 +2597,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
            
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -2926,7 +2926,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
           </span>
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -3249,7 +3249,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
           </span>
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -3564,7 +3564,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
            
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"
@@ -3874,7 +3874,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
            
         </div>
         <div
-          class="items-center gap-2 text-xs text-status-positive mt-1"
+          class="items-center gap-2 text-xs text-active-foreground mt-1"
         >
           <span
             class="line-clamp-2 text-[inherit] font-medium"

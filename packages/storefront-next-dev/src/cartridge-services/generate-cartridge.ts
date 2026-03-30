@@ -380,7 +380,15 @@ function extractAttributesFromSource(sourceFile: SourceFile, className: string):
     return attributes;
 }
 
-function extractRegionDefinitionsFromSource(sourceFile: SourceFile, className: string): Record<string, unknown>[] {
+function normalizeComponentTypeId(typeId: string, defaultGroup: string): string {
+    return typeId.includes('.') ? typeId : `${defaultGroup}.${typeId}`;
+}
+
+function extractRegionDefinitionsFromSource(
+    sourceFile: SourceFile,
+    className: string,
+    defaultComponentGroup = DEFAULT_COMPONENT_GROUP
+): Record<string, unknown>[] {
     const regionDefinitions: Record<string, unknown>[] = [];
 
     try {
@@ -419,7 +427,7 @@ function extractRegionDefinitionsFromSource(sourceFile: SourceFile, className: s
                             if (Array.isArray(regionConfig.componentTypeInclusions)) {
                                 regionDefinition.component_type_inclusions = regionConfig.componentTypeInclusions.map(
                                     (incl) => ({
-                                        type_id: incl,
+                                        type_id: normalizeComponentTypeId(String(incl), defaultComponentGroup),
                                     })
                                 );
                             }
@@ -427,7 +435,7 @@ function extractRegionDefinitionsFromSource(sourceFile: SourceFile, className: s
                             if (Array.isArray(regionConfig.componentTypeExclusions)) {
                                 regionDefinition.component_type_exclusions = regionConfig.componentTypeExclusions.map(
                                     (excl) => ({
-                                        type_id: excl,
+                                        type_id: normalizeComponentTypeId(String(excl), defaultComponentGroup),
                                     })
                                 );
                             }
@@ -501,14 +509,15 @@ async function processComponentFile(filePath: string, _projectRoot: string): Pro
                 }
 
                 const componentConfig = parseDecoratorArgs(componentDecorator);
+                const componentGroup = String(componentConfig.group || DEFAULT_COMPONENT_GROUP);
 
                 const attributes = extractAttributesFromSource(sourceFile, className);
-                const regionDefinitions = extractRegionDefinitionsFromSource(sourceFile, className);
+                const regionDefinitions = extractRegionDefinitionsFromSource(sourceFile, className, componentGroup);
 
                 const componentMetadata = {
                     typeId: componentConfig.id || className.toLowerCase(),
                     name: componentConfig.name || toHumanReadableName(className),
-                    group: componentConfig.group || DEFAULT_COMPONENT_GROUP,
+                    group: componentGroup,
                     description: componentConfig.description || `Custom component: ${className}`,
                     regionDefinitions,
                     attributes,

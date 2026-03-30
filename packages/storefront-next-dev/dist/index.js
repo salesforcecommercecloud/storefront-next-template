@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from "url";
 import { parse } from "@babel/parser";
 import { isArrayPattern, isClassDeclaration, isExportSpecifier, isFunctionDeclaration, isIdentifier, isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, isMemberExpression, isObjectPattern, isObjectProperty, isRestElement, isVariableDeclaration, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
 import { generate } from "@babel/generator";
-import _traverse from "@babel/traverse";
+import traverseModule from "@babel/traverse";
 import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
@@ -428,7 +428,7 @@ const patchReactRouterPlugin = () => {
 
 //#endregion
 //#region src/extensibility/target-utils.ts
-const traverse$1 = _traverse.default || _traverse;
+const traverse$1 = traverseModule.default || traverseModule;
 const TARGET_COMPONENT_TAG = "UITarget";
 const TARGET_PROVIDERS_TAG = "TargetProviders";
 const TARGET_ID_ATTRIBUTE = "targetId";
@@ -1364,7 +1364,7 @@ const workspacePlugin = () => {
 
 //#endregion
 //#region src/plugins/componentLoaders.ts
-const traverse = _traverse.default || _traverse;
+const traverse = traverseModule.default || traverseModule;
 const generate$1 = generate.default || generate;
 /**
 * Names of exports to strip per environment.
@@ -3116,7 +3116,10 @@ function extractAttributesFromSource(sourceFile, className) {
 	}
 	return attributes;
 }
-function extractRegionDefinitionsFromSource(sourceFile, className) {
+function normalizeComponentTypeId(typeId, defaultGroup) {
+	return typeId.includes(".") ? typeId : `${defaultGroup}.${typeId}`;
+}
+function extractRegionDefinitionsFromSource(sourceFile, className, defaultComponentGroup = DEFAULT_COMPONENT_GROUP) {
 	const regionDefinitions = [];
 	try {
 		const classDeclaration = sourceFile.getClass(className);
@@ -3135,8 +3138,8 @@ function extractRegionDefinitionsFromSource(sourceFile, className) {
 							name: regionConfig.name || "Region"
 						};
 						if (regionConfig.componentTypes) regionDefinition.component_types = regionConfig.componentTypes;
-						if (Array.isArray(regionConfig.componentTypeInclusions)) regionDefinition.component_type_inclusions = regionConfig.componentTypeInclusions.map((incl) => ({ type_id: incl }));
-						if (Array.isArray(regionConfig.componentTypeExclusions)) regionDefinition.component_type_exclusions = regionConfig.componentTypeExclusions.map((excl) => ({ type_id: excl }));
+						if (Array.isArray(regionConfig.componentTypeInclusions)) regionDefinition.component_type_inclusions = regionConfig.componentTypeInclusions.map((incl) => ({ type_id: normalizeComponentTypeId(String(incl), defaultComponentGroup) }));
+						if (Array.isArray(regionConfig.componentTypeExclusions)) regionDefinition.component_type_exclusions = regionConfig.componentTypeExclusions.map((excl) => ({ type_id: normalizeComponentTypeId(String(excl), defaultComponentGroup) }));
 						if (regionConfig.maxComponents !== void 0) regionDefinition.max_components = regionConfig.maxComponents;
 						if (regionConfig.minComponents !== void 0) regionDefinition.min_components = regionConfig.minComponents;
 						if (regionConfig.allowMultiple !== void 0) regionDefinition.allow_multiple = regionConfig.allowMultiple;
@@ -3168,12 +3171,13 @@ async function processComponentFile(filePath, _projectRoot) {
 				const className = classDeclaration.getName();
 				if (!className) continue;
 				const componentConfig = parseDecoratorArgs(componentDecorator);
+				const componentGroup = String(componentConfig.group || DEFAULT_COMPONENT_GROUP);
 				const attributes = extractAttributesFromSource(sourceFile, className);
-				const regionDefinitions = extractRegionDefinitionsFromSource(sourceFile, className);
+				const regionDefinitions = extractRegionDefinitionsFromSource(sourceFile, className, componentGroup);
 				const componentMetadata = {
 					typeId: componentConfig.id || className.toLowerCase(),
 					name: componentConfig.name || toHumanReadableName(className),
-					group: componentConfig.group || DEFAULT_COMPONENT_GROUP,
+					group: componentGroup,
 					description: componentConfig.description || `Custom component: ${className}`,
 					regionDefinitions,
 					attributes

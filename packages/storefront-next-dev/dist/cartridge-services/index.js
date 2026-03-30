@@ -383,7 +383,10 @@ function extractAttributesFromSource(sourceFile, className) {
 	}
 	return attributes;
 }
-function extractRegionDefinitionsFromSource(sourceFile, className) {
+function normalizeComponentTypeId(typeId, defaultGroup) {
+	return typeId.includes(".") ? typeId : `${defaultGroup}.${typeId}`;
+}
+function extractRegionDefinitionsFromSource(sourceFile, className, defaultComponentGroup = DEFAULT_COMPONENT_GROUP) {
 	const regionDefinitions = [];
 	try {
 		const classDeclaration = sourceFile.getClass(className);
@@ -402,8 +405,8 @@ function extractRegionDefinitionsFromSource(sourceFile, className) {
 							name: regionConfig.name || "Region"
 						};
 						if (regionConfig.componentTypes) regionDefinition.component_types = regionConfig.componentTypes;
-						if (Array.isArray(regionConfig.componentTypeInclusions)) regionDefinition.component_type_inclusions = regionConfig.componentTypeInclusions.map((incl) => ({ type_id: incl }));
-						if (Array.isArray(regionConfig.componentTypeExclusions)) regionDefinition.component_type_exclusions = regionConfig.componentTypeExclusions.map((excl) => ({ type_id: excl }));
+						if (Array.isArray(regionConfig.componentTypeInclusions)) regionDefinition.component_type_inclusions = regionConfig.componentTypeInclusions.map((incl) => ({ type_id: normalizeComponentTypeId(String(incl), defaultComponentGroup) }));
+						if (Array.isArray(regionConfig.componentTypeExclusions)) regionDefinition.component_type_exclusions = regionConfig.componentTypeExclusions.map((excl) => ({ type_id: normalizeComponentTypeId(String(excl), defaultComponentGroup) }));
 						if (regionConfig.maxComponents !== void 0) regionDefinition.max_components = regionConfig.maxComponents;
 						if (regionConfig.minComponents !== void 0) regionDefinition.min_components = regionConfig.minComponents;
 						if (regionConfig.allowMultiple !== void 0) regionDefinition.allow_multiple = regionConfig.allowMultiple;
@@ -435,12 +438,13 @@ async function processComponentFile(filePath, _projectRoot) {
 				const className = classDeclaration.getName();
 				if (!className) continue;
 				const componentConfig = parseDecoratorArgs(componentDecorator);
+				const componentGroup = String(componentConfig.group || DEFAULT_COMPONENT_GROUP);
 				const attributes = extractAttributesFromSource(sourceFile, className);
-				const regionDefinitions = extractRegionDefinitionsFromSource(sourceFile, className);
+				const regionDefinitions = extractRegionDefinitionsFromSource(sourceFile, className, componentGroup);
 				const componentMetadata = {
 					typeId: componentConfig.id || className.toLowerCase(),
 					name: componentConfig.name || toHumanReadableName(className),
-					group: componentConfig.group || DEFAULT_COMPONENT_GROUP,
+					group: componentGroup,
 					description: componentConfig.description || `Custom component: ${className}`,
 					regionDefinitions,
 					attributes

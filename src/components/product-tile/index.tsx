@@ -517,7 +517,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                                 className: 'text-muted-foreground text-sm leading-none line-through',
                             }}
                             promoCalloutProps={{
-                                className: 'text-xs text-status-positive mt-1',
+                                className: 'text-xs text-active-foreground mt-1',
                             }}
                             className="text-sm"
                         />

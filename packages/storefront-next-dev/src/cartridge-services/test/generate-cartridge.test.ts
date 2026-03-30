@@ -1585,6 +1585,12 @@ describe('generateMetadata integration tests', () => {
         await generateMetadata(projectDir, metadataDir);
 
         expect(writeFile).toHaveBeenCalled();
+        const writeCall = vi.mocked(writeFile).mock.calls[0];
+        const writtenData = JSON.parse(writeCall[1] as string);
+        expect(writtenData.region_definitions?.[0]?.component_type_inclusions).toEqual([
+            { type_id: 'odyssey_base.HeaderComponent' },
+            { type_id: 'odyssey_base.NavComponent' },
+        ]);
     });
 
     test('should handle region definition with componentTypeExclusions', async () => {
@@ -1621,6 +1627,11 @@ describe('generateMetadata integration tests', () => {
         await generateMetadata(projectDir, metadataDir);
 
         expect(writeFile).toHaveBeenCalled();
+        const writeCall = vi.mocked(writeFile).mock.calls[0];
+        const writtenData = JSON.parse(writeCall[1] as string);
+        expect(writtenData.region_definitions?.[0]?.component_type_exclusions).toEqual([
+            { type_id: 'odyssey_base.FooterComponent' },
+        ]);
     });
 
     test('should handle region definition with defaultComponentConstructors', async () => {

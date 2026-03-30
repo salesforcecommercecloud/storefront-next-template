@@ -25,6 +25,7 @@ import { loader as loaders } from './loaders';
 import PopularCategory from '@/components/home/popular-category';
 import { type ComponentType, Region } from '@/components/region';
 import { CategoryScrollContainer } from './scroll-container';
+import { cn } from '@/lib/utils';
 
 interface PopularCategoriesProps {
     categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>;
@@ -48,18 +49,21 @@ interface PopularCategoriesProps {
         name: 'Categories',
         description: 'Add Popular Category components to display in the scrollable row',
         maxComponents: 4,
+        componentTypeInclusions: ['popularCategory'],
     },
 ])
 export class PopularCategoriesMetadata {
     @AttributeDefinition({
         name: 'Parent Category ID',
         description: 'The parent category ID to fetch child categories from (e.g., root, mens, womens)',
+        type: 'category',
     })
     parentId?: string;
 
     @AttributeDefinition({
         name: 'Horizontal Padding',
         description: 'Horizontal padding classes (e.g., px-4 sm:px-6 lg:px-8)',
+        defaultValue: 'px-4 sm:px-6 lg:px-8',
     })
     paddingX?: string;
 }
@@ -118,10 +122,12 @@ function CategoryGridContent({
     data,
     categoriesPromise,
     component,
+    horizontalPadding,
 }: {
     data?: ShopperProducts.schemas['Category'][];
     categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>;
     component?: ComponentType;
+    horizontalPadding?: string;
 }) {
     // If component is not provided, show fallback categories
     if (!component) {
@@ -162,22 +168,28 @@ function CategoryGridContent({
     if (!hasRegions) {
         if (data && Array.isArray(data) && data.length > 0) {
             return (
-                <CategoryScrollContainer ariaLabel="Step into Elegance">
-                    <CategoryCards categories={data} />
-                </CategoryScrollContainer>
+                <>
+                    <CategorySectionHeader />
+                    <CategoryScrollContainer ariaLabel="Step into Elegance">
+                        <CategoryCards categories={data} />
+                    </CategoryScrollContainer>
+                </>
             );
         }
         if (categoriesPromise) {
             return (
-                <Suspense fallback={<CategoryCardsSkeleton />}>
-                    <Await resolve={categoriesPromise} errorElement={null}>
-                        {(categories) => (
-                            <CategoryScrollContainer ariaLabel="Step into Elegance">
-                                <CategoryCards categories={categories} />
-                            </CategoryScrollContainer>
-                        )}
-                    </Await>
-                </Suspense>
+                <>
+                    <CategorySectionHeader />
+                    <Suspense fallback={<CategoryCardsSkeleton />}>
+                        <Await resolve={categoriesPromise} errorElement={null}>
+                            {(categories) => (
+                                <CategoryScrollContainer ariaLabel="Step into Elegance">
+                                    <CategoryCards categories={categories} />
+                                </CategoryScrollContainer>
+                            )}
+                        </Await>
+                    </Suspense>
+                </>
             );
         }
         return null;
@@ -191,22 +203,28 @@ function CategoryGridContent({
     if (!hasComponents) {
         if (data && Array.isArray(data) && data.length > 0) {
             return (
-                <CategoryScrollContainer ariaLabel="Step into Elegance">
-                    <CategoryCards categories={data} />
-                </CategoryScrollContainer>
+                <>
+                    <CategorySectionHeader />
+                    <CategoryScrollContainer ariaLabel="Step into Elegance">
+                        <CategoryCards categories={data} />
+                    </CategoryScrollContainer>
+                </>
             );
         }
         if (categoriesPromise) {
             return (
-                <Suspense fallback={<CategoryCardsSkeleton />}>
-                    <Await resolve={categoriesPromise} errorElement={null}>
-                        {(categories) => (
-                            <CategoryScrollContainer ariaLabel="Step into Elegance">
-                                <CategoryCards categories={categories} />
-                            </CategoryScrollContainer>
-                        )}
-                    </Await>
-                </Suspense>
+                <>
+                    <CategorySectionHeader />
+                    <Suspense fallback={<CategoryCardsSkeleton />}>
+                        <Await resolve={categoriesPromise} errorElement={null}>
+                            {(categories) => (
+                                <CategoryScrollContainer ariaLabel="Step into Elegance">
+                                    <CategoryCards categories={categories} />
+                                </CategoryScrollContainer>
+                            )}
+                        </Await>
+                    </Suspense>
+                </>
             );
         }
         return null;
@@ -217,7 +235,7 @@ function CategoryGridContent({
         <>
             <CategorySectionHeader />
             <CategoryScrollContainer ariaLabel="Step into Elegance">
-                <Region regionId="categories" component={component} className="flex gap-4 md:gap-6" />
+                <Region regionId="categories" component={component} className={cn('flex', horizontalPadding)} />
             </CategoryScrollContainer>
         </>
     );
@@ -235,11 +253,19 @@ export const loader = loaders.server;
  * 2. With data prop - receives categories from Page Designer component loader
  * 3. With parentId - triggers component loader to fetch categories (used in Page Designer)
  */
-export default function PopularCategories({ categoriesPromise, data, component }: PopularCategoriesProps) {
+export default function PopularCategories({ categoriesPromise, data, component, paddingX }: PopularCategoriesProps) {
+    // Default to React default padding when not specified
+    const horizontalPadding = paddingX || 'px-4 sm:px-6 lg:px-8';
+
     return (
         <section className="py-12 md:py-16 lg:py-24 bg-muted/50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <CategoryGridContent data={data} categoriesPromise={categoriesPromise} component={component} />
+                <CategoryGridContent
+                    data={data}
+                    categoriesPromise={categoriesPromise}
+                    component={component}
+                    horizontalPadding={horizontalPadding}
+                />
             </div>
         </section>
     );
