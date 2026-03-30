@@ -38,7 +38,7 @@ function debugEnablesSfnext() {
 }
 function resolveLevel() {
 	if (overrideLevel) return overrideLevel;
-	const envLevel = process.env.MRT_LOG_LEVEL ?? process.env.SFNEXT_LOG_LEVEL;
+	const envLevel = process.env.MRT_LOG_LEVEL ?? process.env.SFCC_LOG_LEVEL;
 	if (envLevel && envLevel in LEVEL_PRIORITY) return envLevel;
 	if (debugEnablesSfnext()) return "debug";
 	if (process.env.NODE_ENV === "production") return "warn";

@@ -195,61 +195,61 @@ describe('logger utils', () => {
     describe('logger object', () => {
         it('should default to info level in non-production', () => {
             delete process.env.NODE_ENV;
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             delete process.env.DEBUG;
             expect(logger.getLevel()).toBe('info');
         });
 
-        it('should respect SFNEXT_LOG_LEVEL env var', () => {
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+        it('should respect SFCC_LOG_LEVEL env var', () => {
+            process.env.SFCC_LOG_LEVEL = 'debug';
             expect(logger.getLevel()).toBe('debug');
         });
 
         it('should fall back to debug when DEBUG=true', () => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             process.env.DEBUG = 'true';
             expect(logger.getLevel()).toBe('debug');
         });
 
         it.each(['1', 'yes', 'on', 'TRUE', 'Yes'])('should fall back to debug when DEBUG=%s', (value) => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             process.env.DEBUG = value;
             expect(logger.getLevel()).toBe('debug');
         });
 
         it('should fall back to debug when DEBUG=* (wildcard)', () => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             process.env.DEBUG = '*';
             expect(logger.getLevel()).toBe('debug');
         });
 
         it('should fall back to debug when DEBUG targets sfnext', () => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             process.env.DEBUG = 'sfnext';
             expect(logger.getLevel()).toBe('debug');
         });
 
         it('should fall back to debug when DEBUG targets sfnext:*', () => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             process.env.DEBUG = 'sfnext:*';
             expect(logger.getLevel()).toBe('debug');
         });
 
         it('should fall back to debug when DEBUG contains sfnext in a comma list', () => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             process.env.DEBUG = 'express:*,sfnext,other';
             expect(logger.getLevel()).toBe('debug');
         });
 
         it('should NOT fall back to debug when DEBUG targets unrelated libraries', () => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             delete process.env.NODE_ENV;
             process.env.DEBUG = 'express:*';
             expect(logger.getLevel()).toBe('info');
         });
 
         it('should fall back to warn in production', () => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             delete process.env.DEBUG;
             process.env.NODE_ENV = 'production';
             expect(logger.getLevel()).toBe('warn');
@@ -279,7 +279,7 @@ describe('logger utils', () => {
         });
 
         it('debug should not log at default info level', () => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             delete process.env.DEBUG;
             delete process.env.NODE_ENV;
             const callCount = mockConsoleLog.mock.calls.length;
@@ -288,13 +288,13 @@ describe('logger utils', () => {
         });
 
         it('debug should log when level is debug', () => {
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             logger.debug('visible debug');
             expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('[sfnext:debug]'), 'visible debug');
         });
 
         it('should gate lower-priority levels', () => {
-            process.env.SFNEXT_LOG_LEVEL = 'error';
+            process.env.SFCC_LOG_LEVEL = 'error';
             const logBefore = mockConsoleLog.mock.calls.length;
             const warnBefore = mockConsoleWarn.mock.calls.length;
             logger.info('should not appear');

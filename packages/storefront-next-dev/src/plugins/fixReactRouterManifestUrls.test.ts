@@ -52,11 +52,11 @@ function callHook(hook: any, ...args: any[]) {
 describe('fixReactRouterManifestUrlsPlugin', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        process.env.SFNEXT_LOG_LEVEL = 'debug';
+        process.env.SFCC_LOG_LEVEL = 'debug';
     });
 
     afterEach(() => {
-        delete process.env.SFNEXT_LOG_LEVEL;
+        delete process.env.SFCC_LOG_LEVEL;
     });
 
     it('should return a plugin with correct name', () => {

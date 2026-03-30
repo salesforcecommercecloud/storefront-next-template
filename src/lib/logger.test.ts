@@ -36,18 +36,18 @@ describe('createLogger', () => {
 
     describe('level resolution', () => {
         it('defaults to info in non-production', () => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             delete process.env.NODE_ENV;
             expect(getLogLevel()).toBe('info');
         });
 
-        it('respects SFNEXT_LOG_LEVEL env var', () => {
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+        it('respects SFCC_LOG_LEVEL env var', () => {
+            process.env.SFCC_LOG_LEVEL = 'debug';
             expect(getLogLevel()).toBe('debug');
         });
 
         it('defaults to warn in production', () => {
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             process.env.NODE_ENV = 'production';
             expect(getLogLevel()).toBe('warn');
         });

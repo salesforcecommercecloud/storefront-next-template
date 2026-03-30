@@ -35,7 +35,7 @@ afterEach(() => {
     console.log = originalConsole.log;
     console.warn = originalConsole.warn;
     console.error = originalConsole.error;
-    delete process.env.SFNEXT_LOG_LEVEL;
+    delete process.env.SFCC_LOG_LEVEL;
 });
 
 // Mock fs to use memfs
@@ -326,7 +326,7 @@ export function PageViewTracker() {
             mockGlob.mockResolvedValue(['/test/project/src/hooks/use-analytics.ts']);
             mockReadFileSync.mockReturnValue(COMPLEX_ANALYTICS_FILE);
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
@@ -356,7 +356,7 @@ export function PageViewTracker() {
             mockGlob.mockResolvedValue(['/test/project/src/hooks/use-analytics.ts']);
             mockReadFileSync.mockReturnValue(COMPLEX_ANALYTICS_FILE);
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
@@ -414,7 +414,7 @@ export const useAnalytics = () => {
 };
             `);
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
@@ -440,7 +440,7 @@ export const useAnalytics = () => {
             mockGlob.mockResolvedValue(['/test/project/src/lib/page-view-tracker.tsx']);
             mockReadFileSync.mockReturnValue(COMPLEX_PAGE_VIEW_TRACKER_FILE);
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
@@ -486,7 +486,7 @@ export const useAnalytics = () => {
                 return '';
             });
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
@@ -531,7 +531,7 @@ export function CartTracker({ items, onAdd }) {
 }
             `);
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
@@ -549,7 +549,7 @@ export function CartTracker({ items, onAdd }) {
             mockLoadEngagementConfig.mockResolvedValue(null);
             mockGlob.mockResolvedValue([]);
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
@@ -574,7 +574,7 @@ export function CartTracker({ items, onAdd }) {
             });
             mockGlob.mockResolvedValue([]);
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
@@ -829,7 +829,7 @@ export function CartTracker({ items, onAdd }) {
                 trackEvent(a, b, c, 'view_product', {});
             `);
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({
                 failOnMissing: true,
             });
@@ -850,7 +850,7 @@ export function CartTracker({ items, onAdd }) {
             mockGlob.mockResolvedValue(['/test/project/src/hooks/use-analytics.ts']);
             mockReadFileSync.mockReturnValue(`trackEvent(a, b, c, 'view_page', {});`);
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');
@@ -873,7 +873,7 @@ export function CartTracker({ items, onAdd }) {
                 throw new Error('Permission denied');
             });
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = eventInstrumentationValidatorPlugin({});
 
             const path = normalizePath('/test/project');

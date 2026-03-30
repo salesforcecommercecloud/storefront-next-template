@@ -409,8 +409,8 @@ describe('trim-extensions', () => {
     describe('file markers', () => {
         it('removes entire file when marked by @sfdc-extension-file marker and extension is disabled', async () => {
             const consoleSpy = mockConsole('log');
-            const originalLogLevel = process.env.SFNEXT_LOG_LEVEL;
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const originalLogLevel = process.env.SFCC_LOG_LEVEL;
+            process.env.SFCC_LOG_LEVEL = 'debug';
             vol.mkdirSync('/mock/dir/src/routes', { recursive: true });
             vol.writeFileSync(
                 '/mock/dir/src/routes/featureARoute.tsx',
@@ -432,7 +432,7 @@ describe('trim-extensions', () => {
                 expect.stringContaining('[sfnext:debug]'),
                 expect.stringMatching(createPathRegex('Deleted file /mock/dir/src/routes/featureARoute.tsx'))
             );
-            process.env.SFNEXT_LOG_LEVEL = originalLogLevel || '';
+            process.env.SFCC_LOG_LEVEL = originalLogLevel || '';
             consoleSpy.mockRestore();
         });
 
@@ -502,8 +502,8 @@ describe('trim-extensions', () => {
     describe('extension folder deletion', () => {
         it('deletes extension folder when extension is disabled and has folder property', async () => {
             const consoleSpy = mockConsole('log');
-            const originalLogLevel = process.env.SFNEXT_LOG_LEVEL;
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const originalLogLevel = process.env.SFCC_LOG_LEVEL;
+            process.env.SFCC_LOG_LEVEL = 'debug';
             vol.mkdirSync('/mock/dir/src/extensions/feature-a/components', { recursive: true });
             vol.mkdirSync('/mock/dir/src/extensions/feature-a/pages', { recursive: true });
             vol.writeFileSync(
@@ -524,7 +524,7 @@ describe('trim-extensions', () => {
                 expect.stringContaining('[sfnext:debug]'),
                 expect.stringContaining('Deleted extension folder')
             );
-            process.env.SFNEXT_LOG_LEVEL = originalLogLevel || '';
+            process.env.SFCC_LOG_LEVEL = originalLogLevel || '';
             consoleSpy.mockRestore();
         });
 
@@ -815,8 +815,8 @@ describe('trim-extensions', () => {
     describe('edge cases and error handling', () => {
         it('skips processing when no extensions configured', async () => {
             const consoleSpy = mockConsole('log');
-            const originalLogLevel = process.env.SFNEXT_LOG_LEVEL;
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const originalLogLevel = process.env.SFCC_LOG_LEVEL;
+            process.env.SFCC_LOG_LEVEL = 'debug';
             vol.writeFileSync(
                 '/mock/dir/src/components/test.tsx',
                 `// @sfdc-extension-line SFDC_EXT_featureA
@@ -834,7 +834,7 @@ describe('trim-extensions', () => {
             );
             const content = readFile('/mock/dir/src/components/test.tsx');
             expect(content).toContain('@sfdc-extension-line SFDC_EXT_featureA');
-            process.env.SFNEXT_LOG_LEVEL = originalLogLevel || '';
+            process.env.SFCC_LOG_LEVEL = originalLogLevel || '';
             consoleSpy.mockRestore();
         });
 
@@ -856,10 +856,10 @@ describe('trim-extensions', () => {
             }).not.toThrow();
         });
 
-        it('emits debug logs when SFNEXT_LOG_LEVEL=debug', async () => {
+        it('emits debug logs when SFCC_LOG_LEVEL=debug', async () => {
             const consoleSpy = mockConsole('log');
-            const originalLogLevel = process.env.SFNEXT_LOG_LEVEL;
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            const originalLogLevel = process.env.SFCC_LOG_LEVEL;
+            process.env.SFCC_LOG_LEVEL = 'debug';
 
             vol.writeFileSync('/mock/dir/src/components/test.tsx', `export const Test = 'test';`);
 
@@ -870,7 +870,7 @@ describe('trim-extensions', () => {
             expect(fileExists('/mock/dir/src/components/test.tsx')).toBe(true);
             expect(console.log).toHaveBeenCalled();
 
-            process.env.SFNEXT_LOG_LEVEL = originalLogLevel || '';
+            process.env.SFCC_LOG_LEVEL = originalLogLevel || '';
             consoleSpy.mockRestore();
         });
 

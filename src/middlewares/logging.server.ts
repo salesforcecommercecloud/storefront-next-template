@@ -27,7 +27,7 @@ const isProduction = process.env.NODE_ENV === 'production';
  * - Production: raw ndjson to stdout (for log aggregators)
  * - Development: pretty-printed with colors via `pino-pretty`
  *
- * @env SFNEXT_LOG_LEVEL - Optional. Log level override (`error` | `warn` | `info` | `debug`).
+ * @env SFCC_LOG_LEVEL - Optional. Log level override (`error` | `warn` | `info` | `debug`).
  *   Defaults to `warn` in production, `info` in development.
  * @env NODE_ENV - Used to determine default level and transport. Example: `production`
  */

@@ -38,7 +38,7 @@ afterEach(() => {
     console.log = originalConsole.log;
     console.warn = originalConsole.warn;
     console.error = originalConsole.error;
-    delete process.env.SFNEXT_LOG_LEVEL;
+    delete process.env.SFCC_LOG_LEVEL;
 });
 
 // Mock fs to use memfs but keep some functions mockable
@@ -402,7 +402,7 @@ export default class NewComponent {}`,
             mockExistsSync.mockReturnValue(false);
             mockGlob.mockResolvedValue([]);
 
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const plugin = staticRegistryPlugin();
             await callPluginHooks(plugin, mockProjectRoot);
 
@@ -581,7 +581,7 @@ export const fallback = () => <div>Loading...</div>;`,
             },
         ])('$description', async ({ logLevel, files, expectedLogs, shouldLog }) => {
             const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-            process.env.SFNEXT_LOG_LEVEL = logLevel;
+            process.env.SFCC_LOG_LEVEL = logLevel;
             const componentFiles = Object.keys(files);
 
             const fileSystem: Record<string, string> = {

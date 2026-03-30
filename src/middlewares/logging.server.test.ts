@@ -32,7 +32,7 @@ describe('logging.server', () => {
     describe('pinoLogger', () => {
         it('creates a pino logger with info level in development', async () => {
             process.env.NODE_ENV = 'development';
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             const { pinoLogger } = await importModule();
             expect(pinoLogger).toBeDefined();
             expect(pinoLogger.level).toBe('info');
@@ -40,20 +40,20 @@ describe('logging.server', () => {
 
         it('creates a pino logger with warn level in production', async () => {
             process.env.NODE_ENV = 'production';
-            delete process.env.SFNEXT_LOG_LEVEL;
+            delete process.env.SFCC_LOG_LEVEL;
             const { pinoLogger } = await importModule();
             expect(pinoLogger.level).toBe('warn');
         });
 
-        it('respects SFNEXT_LOG_LEVEL env var', async () => {
-            process.env.SFNEXT_LOG_LEVEL = 'debug';
+        it('respects SFCC_LOG_LEVEL env var', async () => {
+            process.env.SFCC_LOG_LEVEL = 'debug';
             const { pinoLogger } = await importModule();
             expect(pinoLogger.level).toBe('debug');
         });
 
-        it('ignores invalid SFNEXT_LOG_LEVEL values', async () => {
+        it('ignores invalid SFCC_LOG_LEVEL values', async () => {
             process.env.NODE_ENV = 'production';
-            process.env.SFNEXT_LOG_LEVEL = 'verbose';
+            process.env.SFCC_LOG_LEVEL = 'verbose';
             const { pinoLogger } = await importModule();
             expect(pinoLogger.level).toBe('warn');
         });
@@ -123,7 +123,7 @@ describe('logging.server', () => {
     describe('error serialization', () => {
         it('serializes Error instances in metadata', async () => {
             process.env.NODE_ENV = 'development';
-            process.env.SFNEXT_LOG_LEVEL = 'error';
+            process.env.SFCC_LOG_LEVEL = 'error';
             const { pinoLogger } = await importModule();
 
             // Verify that pinoLogger can log with Error metadata without throwing

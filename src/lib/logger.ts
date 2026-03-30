@@ -35,7 +35,7 @@ export function resolveLevel(): LogLevel {
     if (overrideLevel) return overrideLevel;
 
     if (typeof process !== 'undefined' && process.env) {
-        const envLevel = process.env.MRT_LOG_LEVEL ?? process.env.SFNEXT_LOG_LEVEL;
+        const envLevel = process.env.MRT_LOG_LEVEL ?? process.env.SFCC_LOG_LEVEL;
         if (envLevel && envLevel in LEVEL_PRIORITY) return envLevel as LogLevel;
         if (process.env.NODE_ENV === 'production') return 'warn';
     }
@@ -105,7 +105,7 @@ export interface Logger {
  *
  * Output format: `LEVEL message {JSON metadata?}`
  *
- * Log level is controlled by `SFNEXT_LOG_LEVEL` env var (`error` | `warn` | `info` | `debug`).
+ * Log level is controlled by `SFCC_LOG_LEVEL` env var (`error` | `warn` | `info` | `debug`).
  * Defaults to `warn` in production, `info` otherwise.
  *
  * Use this for client-side code or when router context is not available.

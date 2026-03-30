@@ -893,9 +893,9 @@ describe('generateMetadata integration tests', () => {
         vi.mocked(access).mockResolvedValue(undefined);
         vi.mocked(writeFile).mockResolvedValue(undefined);
 
-        process.env.SFNEXT_LOG_LEVEL = 'debug';
+        process.env.SFCC_LOG_LEVEL = 'debug';
         await generateMetadata(projectDir, metadataDir);
-        delete process.env.SFNEXT_LOG_LEVEL;
+        delete process.env.SFCC_LOG_LEVEL;
 
         expect(readdir).toHaveBeenCalled();
         expect(readFile).toHaveBeenCalled();
@@ -954,9 +954,9 @@ describe('generateMetadata integration tests', () => {
         vi.mocked(access).mockResolvedValue(undefined);
         vi.mocked(readdir).mockResolvedValueOnce([]);
 
-        process.env.SFNEXT_LOG_LEVEL = 'debug';
+        process.env.SFCC_LOG_LEVEL = 'debug';
         await generateMetadata(projectDir, metadataDir);
-        delete process.env.SFNEXT_LOG_LEVEL;
+        delete process.env.SFCC_LOG_LEVEL;
 
         expect(consoleLogSpy).toHaveBeenCalledWith(
             expect.stringContaining('[sfnext:debug]'),
@@ -999,9 +999,9 @@ describe('generateMetadata integration tests', () => {
         vi.mocked(access).mockResolvedValue(undefined);
         vi.mocked(writeFile).mockResolvedValue(undefined);
 
-        process.env.SFNEXT_LOG_LEVEL = 'debug';
+        process.env.SFCC_LOG_LEVEL = 'debug';
         await generateMetadata(projectDir, metadataDir);
-        delete process.env.SFNEXT_LOG_LEVEL;
+        delete process.env.SFCC_LOG_LEVEL;
 
         expect(writeFile).toHaveBeenCalled();
         expect(consoleLogSpy).toHaveBeenCalledWith(
@@ -1030,9 +1030,9 @@ describe('generateMetadata integration tests', () => {
         vi.mocked(access).mockResolvedValue(undefined);
         vi.mocked(writeFile).mockResolvedValue(undefined);
 
-        process.env.SFNEXT_LOG_LEVEL = 'debug';
+        process.env.SFCC_LOG_LEVEL = 'debug';
         await generateMetadata(projectDir, metadataDir);
-        delete process.env.SFNEXT_LOG_LEVEL;
+        delete process.env.SFCC_LOG_LEVEL;
 
         expect(writeFile).toHaveBeenCalled();
         expect(consoleLogSpy).toHaveBeenCalledWith(
