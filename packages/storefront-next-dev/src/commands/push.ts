@@ -36,10 +36,10 @@ import path from 'path';
  * MRT Push command - builds and pushes bundle to Managed Runtime.
  *
  * Inherits MRT flags from MrtCommand:
- * - --api-key: MRT API key (env: SFCC_MRT_API_KEY)
- * - --project/-p: MRT project slug (env: SFCC_MRT_PROJECT)
- * - --environment/-e: MRT target environment (env: SFCC_MRT_ENVIRONMENT)
- * - --cloud-origin: MRT cloud origin URL (env: SFCC_MRT_CLOUD_ORIGIN)
+ * - --api-key: MRT API key (env: MRT_API_KEY, fallback: SFCC_MRT_API_KEY)
+ * - --project/-p: MRT project slug (env: MRT_PROJECT, fallback: SFCC_MRT_PROJECT)
+ * - --environment/-e: MRT target environment (env: MRT_TARGET, fallback: SFCC_MRT_ENVIRONMENT)
+ * - --cloud-origin: MRT cloud origin URL (env: MRT_CLOUD_ORIGIN, fallback: SFCC_MRT_CLOUD_ORIGIN)
  * - --credentials-file: Path to MRT credentials file (env: MRT_CREDENTIALS_FILE)
  * - --config: Path to dw.json config file (env: SFCC_CONFIG)
  * - --instance/-i: Named instance from config (env: SFCC_INSTANCE)
@@ -93,14 +93,14 @@ export default class Push extends MrtCommand<typeof Push> {
             this.warn('Flag --target is deprecated. Use --environment instead.');
         }
 
-        // Precedence (via oclif + SDK): CLI flag > SFCC_* env > MRT_* legacy env > dw.json
+        // Precedence: CLI flag > MRT_* env > SFCC_MRT_* env (fallback) > dw.json
         // flags.environment includes all oclif-resolved sources; resolvedConfig adds dw.json
         const target = flags.environment || flags.target || this.resolvedConfig.values.mrtEnvironment;
 
         // Input validation
         if (flags.wait && !target) {
             this.error(
-                'You must provide a target environment when using --wait (via --environment flag, SFCC_MRT_ENVIRONMENT env var, or dw.json)'
+                'You must provide a target environment when using --wait (via --environment flag, MRT_TARGET env var, or dw.json)'
             );
         }
 
@@ -109,11 +109,11 @@ export default class Push extends MrtCommand<typeof Push> {
             this.error(`Project directory "${projectDirectory}" does not exist!`);
         }
 
-        // Precedence (via oclif + SDK): CLI flag > SFCC_* env > MRT_* legacy env > dw.json
+        // Precedence: CLI flag > MRT_* env > SFCC_MRT_* env (fallback) > dw.json
         const projectSlug = flags.project || flags['project-slug'] || this.resolvedConfig.values.mrtProject;
         if (!projectSlug || projectSlug.trim() === '') {
             this.error(
-                'Project slug is required. Provide --project, set SFCC_MRT_PROJECT env var, or configure mrtProject in dw.json'
+                'Project slug is required. Provide --project, set MRT_PROJECT env var, or configure mrtProject in dw.json'
             );
         }
 
@@ -162,25 +162,29 @@ export default class Push extends MrtCommand<typeof Push> {
         const origin = this.resolvedConfig.values.mrtOrigin || DEFAULT_MRT_ORIGIN;
         const client = createMrtClient({ origin }, this.getMrtAuth());
 
-        this.log(`Beginning upload to ${origin}`);
+        this.log(`Uploading bundle to ${origin}`);
         const result = await uploadBundle(client, projectSlug, bundle, target);
+        this.log(`Bundle ${result.bundleId} uploaded`);
 
         if (flags.wait && target) {
-            this.log('Bundle uploaded - waiting for deployment to complete');
+            this.log(`Waiting for deployment to ${target}...`);
+            let lastState = '';
             await waitForEnv(
                 {
                     projectSlug,
                     slug: target,
                     origin,
+                    onPoll: (info) => {
+                        if (info.state !== lastState) {
+                            lastState = info.state;
+                            this.log(`  ${target}: ${info.state} (${info.elapsedSeconds}s)`);
+                        }
+                    },
                 },
                 this.getMrtAuth()
             );
-            this.log('Deployment complete!');
-        } else {
-            this.log('Bundle uploaded successfully!');
+            this.log(`Deployment complete — bundle ${result.bundleId} is live on ${target}`);
         }
-
-        this.log(`Bundle ID: ${result.bundleId}`);
     }
 
     /**

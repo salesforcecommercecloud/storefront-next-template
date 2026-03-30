@@ -17,10 +17,10 @@ import { DEFAULT_MRT_ORIGIN, createMrtClient } from "@salesforce/b2c-tooling-sdk
 * MRT Push command - builds and pushes bundle to Managed Runtime.
 *
 * Inherits MRT flags from MrtCommand:
-* - --api-key: MRT API key (env: SFCC_MRT_API_KEY)
-* - --project/-p: MRT project slug (env: SFCC_MRT_PROJECT)
-* - --environment/-e: MRT target environment (env: SFCC_MRT_ENVIRONMENT)
-* - --cloud-origin: MRT cloud origin URL (env: SFCC_MRT_CLOUD_ORIGIN)
+* - --api-key: MRT API key (env: MRT_API_KEY, fallback: SFCC_MRT_API_KEY)
+* - --project/-p: MRT project slug (env: MRT_PROJECT, fallback: SFCC_MRT_PROJECT)
+* - --environment/-e: MRT target environment (env: MRT_TARGET, fallback: SFCC_MRT_ENVIRONMENT)
+* - --cloud-origin: MRT cloud origin URL (env: MRT_CLOUD_ORIGIN, fallback: SFCC_MRT_CLOUD_ORIGIN)
 * - --credentials-file: Path to MRT credentials file (env: MRT_CREDENTIALS_FILE)
 * - --config: Path to dw.json config file (env: SFCC_CONFIG)
 * - --instance/-i: Named instance from config (env: SFCC_INSTANCE)
@@ -65,10 +65,10 @@ var Push = class Push extends MrtCommand {
 		if (flags["project-slug"]) this.warn("Flag --project-slug is deprecated. Use --project instead.");
 		if (flags.target) this.warn("Flag --target is deprecated. Use --environment instead.");
 		const target = flags.environment || flags.target || this.resolvedConfig.values.mrtEnvironment;
-		if (flags.wait && !target) this.error("You must provide a target environment when using --wait (via --environment flag, SFCC_MRT_ENVIRONMENT env var, or dw.json)");
+		if (flags.wait && !target) this.error("You must provide a target environment when using --wait (via --environment flag, MRT_TARGET env var, or dw.json)");
 		if (!fs.existsSync(projectDirectory)) this.error(`Project directory "${projectDirectory}" does not exist!`);
 		const projectSlug = flags.project || flags["project-slug"] || this.resolvedConfig.values.mrtProject;
-		if (!projectSlug || projectSlug.trim() === "") this.error("Project slug is required. Provide --project, set SFCC_MRT_PROJECT env var, or configure mrtProject in dw.json");
+		if (!projectSlug || projectSlug.trim() === "") this.error("Project slug is required. Provide --project, set MRT_PROJECT env var, or configure mrtProject in dw.json");
 		const buildDirectory = flags["build-directory"] ?? getDefaultBuildDir(projectDirectory);
 		if (!fs.existsSync(buildDirectory)) this.error(`Build directory "${buildDirectory}" does not exist!`);
 		if (GENERATE_AND_DEPLOY_CARTRIDGE_ON_MRT_PUSH) await this.generateAndDeployCartridge(projectDirectory);
@@ -89,18 +89,25 @@ var Push = class Push extends MrtCommand {
 		});
 		const origin = this.resolvedConfig.values.mrtOrigin || DEFAULT_MRT_ORIGIN;
 		const client = createMrtClient({ origin }, this.getMrtAuth());
-		this.log(`Beginning upload to ${origin}`);
+		this.log(`Uploading bundle to ${origin}`);
 		const result = await uploadBundle(client, projectSlug, bundle, target);
+		this.log(`Bundle ${result.bundleId} uploaded`);
 		if (flags.wait && target) {
-			this.log("Bundle uploaded - waiting for deployment to complete");
+			this.log(`Waiting for deployment to ${target}...`);
+			let lastState = "";
 			await waitForEnv({
 				projectSlug,
 				slug: target,
-				origin
+				origin,
+				onPoll: (info) => {
+					if (info.state !== lastState) {
+						lastState = info.state;
+						this.log(`  ${target}: ${info.state} (${info.elapsedSeconds}s)`);
+					}
+				}
 			}, this.getMrtAuth());
-			this.log("Deployment complete!");
-		} else this.log("Bundle uploaded successfully!");
-		this.log(`Bundle ID: ${result.bundleId}`);
+			this.log(`Deployment complete — bundle ${result.bundleId} is live on ${target}`);
+		}
 	}
 	/**
 	* Generate and deploy cartridge metadata to B2C instance.

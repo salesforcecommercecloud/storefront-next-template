@@ -371,8 +371,8 @@ describe('push command', () => {
         );
     });
 
-    it('should fall back to MRT_PROJECT and MRT_TARGET env vars (via oclif default)', async () => {
-        // SDK 0.5.2+ resolves MRT_PROJECT/MRT_TARGET via oclif flag defaults,
+    it('should resolve MRT_PROJECT and MRT_TARGET env vars as primary', async () => {
+        // SDK 0.5.5+ resolves MRT_PROJECT/MRT_TARGET as primary env vars,
         // so they appear in flags.project/flags.environment after parsing
         const cmd = new Push([], {} as never);
         const cmdAny = cmd as unknown as { run: () => Promise<void> };
