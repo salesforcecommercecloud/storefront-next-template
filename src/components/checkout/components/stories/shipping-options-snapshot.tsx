@@ -81,6 +81,7 @@ vi.mock('@/providers/basket', () => ({
         isLoading: false,
     }),
 }));
+vi.mock('@/providers/currency', () => ({ useCurrency: () => 'USD' }));
 vi.mock('@/hooks/checkout/use-customer-profile', () => ({
     useCustomerProfile: () => ({
         customerProfile: {

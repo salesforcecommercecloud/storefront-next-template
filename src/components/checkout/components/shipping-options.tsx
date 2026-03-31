@@ -28,6 +28,8 @@ import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi
 import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '@/providers/currency';
+import { formatCurrency } from '@/lib/currency';
 
 interface ShippingMethod {
     id: string;
@@ -58,6 +60,8 @@ export default function ShippingOptions({
 }: ShippingOptionsProps) {
     const cart = useBasket();
     const customerProfile = useCustomerProfile();
+    const currency = useCurrency();
+    const { i18n } = useTranslation();
 
     const availableShippingMethods: ShippingMethod[] = useMemo(
         () =>
@@ -199,7 +203,7 @@ export default function ShippingOptions({
                                             <span className="shrink-0 text-sm font-semibold leading-none">
                                                 {method.price === 0
                                                     ? t('shippingOptions.free')
-                                                    : `$${method.price.toFixed(2)}`}
+                                                    : formatCurrency(method.price, i18n.language, currency)}
                                             </span>
                                         </div>
                                         {method.description && (
@@ -260,7 +264,7 @@ export default function ShippingOptions({
                                     price:
                                         summaryMethod.price === 0
                                             ? t('shippingOptions.free')
-                                            : `$${(summaryMethod.price ?? 0).toFixed(2)}`,
+                                            : formatCurrency(summaryMethod.price ?? 0, i18n.language, currency),
                                     methodName: summaryMethod.name || '',
                                 })}
                             </p>

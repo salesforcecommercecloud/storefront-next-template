@@ -25,6 +25,7 @@ vi.mock('@/providers/basket', () => ({ useBasket: vi.fn() }));
 vi.mock('@/hooks/checkout/use-customer-profile', () => ({
     useCustomerProfile: vi.fn(() => null),
 }));
+vi.mock('@/providers/currency', () => ({ useCurrency: vi.fn(() => 'USD') }));
 
 const createMockBasket = (overrides = {}) => ({
     basketId: 'test-basket-123',
