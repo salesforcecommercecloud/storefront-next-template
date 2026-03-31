@@ -47,10 +47,12 @@ function hasBanner(category?: ShopperProducts.schemas['Category']): category is 
 }
 
 function isVertical(category?: ShopperProducts.schemas['Category']): category is ShopperProducts.schemas['Category'] {
-    return (
-        typeof category?.c_headerMenuOrientation === 'string' &&
-        category?.c_headerMenuOrientation?.toLowerCase() === 'vertical'
-    );
+    // Default to vertical if not set
+    if (!category?.c_headerMenuOrientation) {
+        return true;
+    }
+    // Only horizontal if explicitly set to "horizontal"
+    return category.c_headerMenuOrientation.toLowerCase() !== 'horizontal';
 }
 
 function CategoryBanner({
@@ -237,8 +239,10 @@ export default function ResponsiveNavigationMenu({
                         <div className="hidden lg:flex items-center h-full">
                             <CategoryNavigationMenu
                                 categories={categories}
+                                delayDuration={0}
                                 propsViewport={() => ({
-                                    className: 'rounded-none border-0 border-b border-border shadow-lg',
+                                    className:
+                                        'rounded-none border-0 border-b border-border shadow-lg [&[data-state=open]]:animate-[menuSlideDown_0.15s_ease-in] [&[data-state=closed]]:animate-none will-change-transform',
                                     style: {
                                         position: 'fixed',
                                         top: 'var(--header-height)',
@@ -248,7 +252,8 @@ export default function ResponsiveNavigationMenu({
                                     },
                                 })}
                                 propsContentContainer={() => ({
-                                    className: '!p-0 !left-auto !right-auto !w-full md:!w-full',
+                                    className:
+                                        '!p-0 !left-auto !right-auto !w-full md:!w-full !animate-none !transition-none',
                                 })}
                                 propsContent={({ category }) => ({
                                     className: cn(
@@ -261,10 +266,10 @@ export default function ResponsiveNavigationMenu({
                                 })}
                                 propsList={({ parent, categories: subCategories, level }) => {
                                     if (level === 1) {
-                                        if (hasBanner(parent) && isVertical(parent)) {
+                                        if (isVertical(parent)) {
                                             return {
                                                 style: defaultListStyle,
-                                                className: 'p-0 -mx-2 -mt-2',
+                                                className: 'flex flex-col gap-0 p-0 -mx-2 -mt-2',
                                             };
                                         }
                                         return {
