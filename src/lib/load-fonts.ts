@@ -21,44 +21,20 @@ import sen600 from '@fonts/sen/sen-600.woff2?url';
 import sen700 from '@fonts/sen/sen-700.woff2?url';
 
 /**
- * Detects if the current user agent is a bot/crawler.
- * Bots should use 'swap' to ensure they capture the correct fonts in screenshots.
- */
-function isBot(): boolean {
-    if (typeof navigator === 'undefined') return false;
-
-    const botPatterns = [
-        /bot/i,
-        /crawl/i,
-        /spider/i,
-        /slurp/i,
-        /mediapartners/i,
-        /facebookexternalhit/i,
-        /twitterbot/i,
-        /linkedinbot/i,
-        /whatsapp/i,
-        /telegrambot/i,
-    ];
-
-    return botPatterns.some((pattern) => pattern.test(navigator.userAgent));
-}
-
-/**
  * Loads self-hosted Sen fonts using the FontFace API.
  * This approach is required for GDPR compliance (no external requests to Google Fonts)
  * and works with Managed Runtime's bundle path system.
  *
- * Uses 'swap' for bots (ensures correct fonts in screenshots/previews)
- * and 'optional' for users (prevents layout shifts, better UX).
+ * Uses 'optional' for optimal performance - prevents layout shifts and reduces TBT.
+ * Font either loads within ~100ms or fallback is used permanently (no late swaps).
  */
 export function loadFonts() {
     if (typeof window === 'undefined' || typeof FontFace === 'undefined') {
         return;
     }
 
-    // Bots get 'swap' to ensure correct fonts in screenshots/SEO
-    // Users get 'optional' for better UX (no layout shift)
-    const display = isBot() ? 'swap' : 'optional';
+    // Use 'optional' for all contexts to optimize TBT and prevent layout shifts
+    const display = 'optional';
 
     const fonts = [
         new FontFace('Sen', `url(${sen400})`, { weight: '400', style: 'normal', display }),

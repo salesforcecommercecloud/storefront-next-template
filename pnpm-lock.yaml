@@ -6565,8 +6565,8 @@ packages:
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
-  lodash@4.18.0:
-    resolution: {integrity: sha512-l1mfj2atMqndAHI3ls7XqPxEjV2J9ZkcNyHpoZA3r2T1LLwDB69jgkMWh71YKwhBbK0G2f4WSn05ahmQXVxupA==}
+  lodash@4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
   loglevel@1.9.2:
     resolution: {integrity: sha512-HgMmCqIJSAKqo68l0rS2AanEWfkxaZ5wNiEFb5ggm08lDs9Xl2KxBlX3PTcaD2chBM1gXAYf491/M2Rv8Jwayg==}
@@ -11175,7 +11175,7 @@ snapshots:
       exit-hook: 2.2.1
       isbot: 5.1.31
       jsesc: 3.0.2
-      lodash: 4.18.0
+      lodash: 4.17.21
       p-map: 7.0.4
       pathe: 1.1.2
       picocolors: 1.1.1
@@ -11453,7 +11453,7 @@ snapshots:
   '@serverless/event-mocks@1.1.1':
     dependencies:
       '@types/lodash': 4.17.24
-      lodash: 4.18.0
+      lodash: 4.17.21
 
   '@sideway/address@4.1.5':
     dependencies:
@@ -12461,7 +12461,7 @@ snapshots:
       graceful-fs: 4.2.11
       is-stream: 2.0.1
       lazystream: 1.0.1
-      lodash: 4.18.0
+      lodash: 4.17.21
       normalize-path: 3.0.0
       readable-stream: 4.7.0
 
@@ -14539,7 +14539,7 @@ snapshots:
       cli-width: 2.2.1
       external-editor: 3.1.0
       figures: 2.0.0
-      lodash: 4.18.0
+      lodash: 4.17.21
       mute-stream: 0.0.7
       run-async: 2.4.1
       rxjs: 6.6.7
@@ -15771,7 +15771,7 @@ snapshots:
 
   lodash.merge@4.6.2: {}
 
-  lodash@4.18.0: {}
+  lodash@4.17.21: {}
 
   loglevel@1.9.2: {}
 
@@ -17949,7 +17949,7 @@ snapshots:
     dependencies:
       axios: 1.14.0
       joi: 17.13.3
-      lodash: 4.18.0
+      lodash: 4.17.21
       minimist: 1.2.8
       rxjs: 7.8.2
     transitivePeerDependencies:
@@ -17959,7 +17959,7 @@ snapshots:
     dependencies:
       axios: 1.14.0
       joi: 18.1.2
-      lodash: 4.18.0
+      lodash: 4.17.21
       minimist: 1.2.8
       rxjs: 7.8.2
     transitivePeerDependencies:
