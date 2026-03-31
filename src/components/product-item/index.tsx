@@ -47,6 +47,8 @@ import type { AppConfig } from '@/types/config';
 import { formatCurrency } from '@/lib/currency';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
 import { createProductUrl, getDisplayVariationValues, type EnrichedProductItem } from '@/lib/product-utils';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { getEffectiveStockLevel } from '@/lib/inventory-utils';
 import { cn } from '@/lib/utils';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { useTranslation } from 'react-i18next';
@@ -241,6 +243,10 @@ interface ProductItemProps {
     deliveryActions?: (productItem: EnrichedProductItem) => ReactElement | undefined;
     bonusDiscountLineItems?: ShopperBasketsV2.schemas['BonusDiscountLineItem'][];
     maxBonusQuantity?: number;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    /** Whether this item is a pickup item (affects stock level calculation) */
+    isPickup?: boolean;
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 }
 
 /**
@@ -268,6 +274,8 @@ function ProductItem({
     deliveryActions,
     bonusDiscountLineItems,
     maxBonusQuantity,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    isPickup = false,
 }: ProductItemProps): ReactElement {
     // Track loading state for all fetchers related to this item
     const isItemFetcherLoading = useItemFetcherLoading(productItem?.itemId);
@@ -290,6 +298,18 @@ function ProductItem({
     }, [productItem, isBonusProduct, bonusDiscountLineItems]);
 
     const isAutoBonusProduct = isBonusProduct && !isChoiceBasedBonusProduct;
+
+    // Determine stock level: site-level ATS by default, store-specific for pickup items
+    let stockLevel = productItem?.inventory?.ats;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    if (isPickup && productItem) {
+        stockLevel = getEffectiveStockLevel({
+            product: productItem as unknown as ShopperProducts.schemas['Product'],
+            isPickup: true,
+            storeInventoryId: productItem.inventoryId,
+        });
+    }
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     if (!productItem || typeof productItem !== 'object') {
         return <div data-testid="product-item-error">Product data not available</div>;
@@ -430,7 +450,7 @@ function ProductItem({
                                     <CartQuantityPicker
                                         value={String(productItem.quantity)}
                                         itemId={productItem.itemId || ''}
-                                        stockLevel={productItem.inventory?.ats}
+                                        stockLevel={stockLevel}
                                         max={isBonusProduct ? maxBonusQuantity : undefined}
                                         disabled={isAutoBonusProduct}
                                     />

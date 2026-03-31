@@ -281,7 +281,8 @@
         "quantityUpdated": "Quantità aggiornata",
         "quantityUpdateFailed": "Impossibile aggiornare la quantità",
         "onlyLeft": "Ne rimangono solo {{stockLevel}}!",
-        "onlyLeftForProduct": "Ne rimangono solo {{stockLevel}} per {{productName}}!"
+        "onlyLeftForProduct": "Ne rimangono solo {{stockLevel}} per {{productName}}!",
+        "maxStockReached": "Scorta massima raggiunta"
     },
     "_NOTICE_product": "Le traduzioni dei prodotti sono state spostate in product.json come namespace separato. Usa t('product:key') per accedervi.",
     "cart": {

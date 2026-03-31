@@ -35,6 +35,8 @@ import { useTranslation } from 'react-i18next';
 // Utils
 import { findImageGroupBy } from '@/lib/image-groups-utils';
 import { getDisplayVariationValues } from '@/lib/product-utils';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { getEffectiveStockLevel } from '@/lib/inventory-utils';
 import { useCurrency } from '@/providers/currency';
 import { toImageUrl } from '@/lib/dynamic-image';
 import ProductPrice from '@/components/product-price';
@@ -66,6 +68,10 @@ interface MiniCartItemProps {
     onRemove?: () => void;
     /** Optional bonus product selection card to display in right section */
     bonusProductSlot?: ReactElement;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    /** Whether this item is a pickup item (affects stock level calculation) */
+    isPickup?: boolean;
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 }
 
 /**
@@ -97,7 +103,13 @@ interface MiniCartItemProps {
  * />
  * ```
  */
-export default function MiniCartItem({ product, onRemove, bonusProductSlot }: MiniCartItemProps): ReactElement {
+export default function MiniCartItem({
+    product,
+    onRemove,
+    bonusProductSlot,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    isPickup = false,
+}: MiniCartItemProps): ReactElement {
     const config = useConfig<AppConfig>();
     const { t: tMiniCart } = useTranslation('miniCart');
     const { t: tRemoveItem } = useTranslation('removeItem');
@@ -109,9 +121,20 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
         componentName: 'mini-cart-item',
     });
 
-    const { quantity, handleQuantityChange } = useCartQuantityUpdate({
+    let stockLevel = product.inventory?.ats;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    if (isPickup) {
+        stockLevel = getEffectiveStockLevel({
+            product: product as unknown as ShopperProducts.schemas['Product'],
+            isPickup: true,
+            storeInventoryId: product.inventoryId,
+        });
+    }
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    const { quantity, stockValidationError, stockMax, handleQuantityChange } = useCartQuantityUpdate({
         itemId: product.itemId || '',
         initialValue: product.quantity || 1,
+        stockLevel,
         fetcher,
     });
 
@@ -225,8 +248,14 @@ export default function MiniCartItem({ product, onRemove, bonusProductSlot }: Mi
                         value={String(quantity)}
                         onChange={handleQuantityChange}
                         min={1}
+                        max={stockMax}
                         productName={product.productName}
                     />
+                    {stockValidationError && (
+                        <Typography variant="small" className="text-destructive mt-1" role="alert" aria-live="polite">
+                            {stockValidationError}
+                        </Typography>
+                    )}
                 </div>
 
                 {/* Bonus Product Selection Card */}

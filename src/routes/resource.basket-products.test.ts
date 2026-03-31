@@ -232,4 +232,67 @@ describe('resource.basket-products', () => {
             })
         );
     });
+
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    it('should include inventoryIds when basket has pickup shipments', async () => {
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'basket-123',
+                productItems: [
+                    {
+                        itemId: 'item-1',
+                        productId: 'product-1',
+                        quantity: 3,
+                        shipmentId: 'pickup-shipment-1',
+                        inventoryId: 'store-inventory-001',
+                    },
+                ],
+                shipments: [
+                    {
+                        shipmentId: 'pickup-shipment-1',
+                        c_fromStoreId: 'store-burlington',
+                    },
+                ],
+            },
+        } as any);
+
+        mockGetProducts.mockResolvedValue({
+            data: { data: [mockProduct1] },
+        });
+
+        await loader(getLoaderArgs());
+
+        expect(mockGetProducts).toHaveBeenCalledWith(
+            expect.objectContaining({
+                params: expect.objectContaining({
+                    query: expect.objectContaining({
+                        ids: ['product-1'],
+                        inventoryIds: expect.arrayContaining(['store-inventory-001']),
+                    }),
+                }),
+            })
+        );
+    });
+
+    it('should not include inventoryIds when basket has no pickup shipments', async () => {
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'basket-123',
+                productItems: [
+                    { itemId: 'item-1', productId: 'product-1', quantity: 1, shipmentId: 'delivery-shipment' },
+                ],
+                shipments: [{ shipmentId: 'delivery-shipment' }],
+            },
+        } as any);
+
+        mockGetProducts.mockResolvedValue({
+            data: { data: [mockProduct1] },
+        });
+
+        await loader(getLoaderArgs());
+
+        const callQuery = mockGetProducts.mock.calls[0][0].params.query;
+        expect(callQuery).not.toHaveProperty('inventoryIds');
+    });
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 });

@@ -792,6 +792,47 @@ Empty cart state within the mini cart sheet. Shows:
     },
 };
 
+export const AtStockLimit: Story = {
+    render: () => (
+        <MiniCartShell>
+            <MiniCartItem
+                product={{ ...mockProduct, quantity: 4, inventory: { ats: 4 } }}
+                onRemove={action('remove-clicked')}
+            />
+        </MiniCartShell>
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: `
+Product at the stock/allocation limit. Demonstrates:
+- Quantity set to the maximum available (4)
+- "Maximum stock reached" message shown on initial render
+- Increment button is disabled — cannot exceed allocation limit
+- Decrement button remains active
+                `,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        // Verify quantity is at stock limit
+        const quantityInput = await canvas.findByLabelText('Quantity:');
+        await expect(quantityInput).toBeInTheDocument();
+        await expect(quantityInput).toHaveValue(4);
+
+        // Verify increment button is disabled
+        const incrementButton = await canvas.findByTestId('quantity-increment');
+        await expect(incrementButton).toBeDisabled();
+
+        // Verify "Maximum stock reached" message is shown
+        const stockMessage = await canvas.findByRole('alert');
+        await expect(stockMessage).toBeInTheDocument();
+        await expect(stockMessage).toHaveTextContent('Maximum stock reached');
+    },
+};
+
 export const WithDeliveryBadge: Story = {
     render: () => (
         <MiniCartShell>

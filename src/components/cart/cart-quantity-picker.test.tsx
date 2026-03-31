@@ -78,6 +78,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 2,
             stockValidationError: null,
+            stockMax: undefined,
             showRemoveConfirmation: false,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,
@@ -105,6 +106,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 5,
             stockValidationError: 'Only 3 left in stock',
+            stockMax: 3,
             showRemoveConfirmation: false,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,
@@ -130,6 +132,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 0,
             stockValidationError: null,
+            stockMax: undefined,
             showRemoveConfirmation: true,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,
@@ -158,6 +161,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 0,
             stockValidationError: null,
+            stockMax: undefined,
             showRemoveConfirmation: true,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,
@@ -180,6 +184,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 0,
             stockValidationError: null,
+            stockMax: undefined,
             showRemoveConfirmation: true,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,
@@ -238,6 +243,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 0,
             stockValidationError: null,
+            stockMax: undefined,
             showRemoveConfirmation: true,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,

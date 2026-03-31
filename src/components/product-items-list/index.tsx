@@ -92,6 +92,10 @@ interface ProductItemsListProps {
      * individual tiles instead of a single stacked list.
      */
     separateCards?: boolean;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    /** Whether items in this list are pickup items (affects stock level calculation) */
+    isPickup?: boolean;
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 }
 
 /**
@@ -159,6 +163,8 @@ export default function ProductItemsList({
     basket,
     onSelectBonusProducts,
     separateCards = false,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    isPickup = false,
 }: ProductItemsListProps): ReactElement {
     /**
      * Build bonus promotion map and get attached promotions
@@ -243,6 +249,8 @@ export default function ProductItemsList({
                         promotions={promotions}
                         bonusDiscountLineItems={bonusDiscountLineItems}
                         maxBonusQuantity={maxQuantity}
+                        // @sfdc-extension-line SFDC_EXT_BOPIS
+                        isPickup={isPickup}
                     />
 
                     {/* Render bonus product selection card if eligible */}
@@ -277,6 +285,8 @@ export default function ProductItemsList({
         variant,
         attachedPromotions,
         bonusProductMaxQuantities,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        isPickup,
     ]);
 
     return <div className={variant === 'summary' ? SUMMARY_SPACING : DEFAULT_SPACING}>{memoizedItems}</div>;

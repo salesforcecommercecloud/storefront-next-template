@@ -110,7 +110,9 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                       </div>
                     </div>
                   </div>
-                  <div>
+                  <div
+                    class=" relative"
+                  >
                     <label
                       class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                       data-slot="label"
@@ -133,6 +135,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                         aria-label="Quantity:"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         disabled=""
+                        max="98"
                         min="0"
                         step="1"
                         type="number"
@@ -272,7 +275,9 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       </div>
                     </div>
                   </div>
-                  <div>
+                  <div
+                    class=" relative"
+                  >
                     <label
                       class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                       data-slot="label"
@@ -455,7 +460,9 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       </div>
                     </div>
                   </div>
-                  <div>
+                  <div
+                    class=" relative"
+                  >
                     <label
                       class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                       data-slot="label"
@@ -477,6 +484,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       <input
                         aria-label="Quantity:"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        max="98"
                         min="0"
                         step="1"
                         type="number"
@@ -707,7 +715,9 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       </div>
                     </div>
                   </div>
-                  <div>
+                  <div
+                    class=" relative"
+                  >
                     <label
                       class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                       data-slot="label"
@@ -729,6 +739,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       <input
                         aria-label="Quantity:"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        max="98"
                         min="0"
                         step="1"
                         type="number"

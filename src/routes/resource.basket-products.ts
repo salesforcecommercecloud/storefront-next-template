@@ -26,6 +26,9 @@ import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import { currencyContext } from '@/lib/currency';
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -52,6 +55,11 @@ export async function loader({
         return {};
     }
 
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    // Collect unique inventory IDs from pickup shipments to fetch store-level inventory
+    const inventoryIds = getInventoryIdsFromPickupShipments(basket);
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
     try {
         const config = getConfig<AppConfig>(context);
         const clients = createApiClients(context);
@@ -70,6 +78,10 @@ export async function loader({
                     allImages: true,
                     perPricebook: true,
                     ...(currency ? { currency } : {}),
+                    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                    // Include store inventory IDs for pickup items
+                    ...(inventoryIds.length > 0 ? { inventoryIds } : {}),
+                    // @sfdc-extension-block-end SFDC_EXT_BOPIS
                 },
             },
         });

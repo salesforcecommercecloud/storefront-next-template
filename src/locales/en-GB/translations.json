@@ -300,7 +300,8 @@
         "quantityUpdated": "Quantity updated",
         "quantityUpdateFailed": "Failed to update quantity",
         "onlyLeft": "Only {{stockLevel}} left!",
-        "onlyLeftForProduct": "Only {{stockLevel}} left for {{productName}}!"
+        "onlyLeftForProduct": "Only {{stockLevel}} left for {{productName}}!",
+        "maxStockReached": "Maximum stock reached"
     },
     "_NOTICE_product": "Product translations have been moved to product.json as a separate namespace. Use t('product:key') to access them.",
     "cart": {

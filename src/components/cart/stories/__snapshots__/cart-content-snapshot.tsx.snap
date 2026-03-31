@@ -362,7 +362,9 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                               >
                                 Saved $57.99
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -384,6 +386,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -1231,7 +1234,9 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                               >
                                 Saved $64.99
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -1253,6 +1258,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -1640,7 +1646,9 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                               >
                                 Saved $54.99
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -1662,6 +1670,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -2002,7 +2011,9 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                               >
                                 Saved $139.98
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -2023,6 +2034,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -2879,7 +2891,9 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                               >
                                 Saved $54.99
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -2901,6 +2915,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -3234,7 +3249,9 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                               >
                                 Saved $69.99
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -3256,6 +3273,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -4169,7 +4187,9 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                               >
                                 Saved $579.90
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -4190,6 +4210,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -5053,7 +5074,9 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               >
                                 Saved $109.98
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -5074,6 +5097,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -5407,7 +5431,9 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               >
                                 Saved $69.99
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -5429,6 +5455,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -5769,7 +5796,9 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               >
                                 Saved $224.97
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -5790,6 +5819,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -6123,7 +6153,9 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               >
                                 Saved $39.99
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -6145,6 +6177,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -7001,7 +7034,9 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                               >
                                 Saved $57.99
                               </span>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -7023,6 +7058,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   <input
                                     aria-label="Quantity:"
                                     class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    max="98"
                                     min="0"
                                     step="1"
                                     type="number"
@@ -7843,7 +7879,9 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                   </div>
                                 </div>
                               </div>
-                              <div>
+                              <div
+                                class=" relative"
+                              >
                                 <label
                                   class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                   data-slot="label"
@@ -9096,7 +9134,9 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                             >
                               Saved $57.99
                             </span>
-                            <div>
+                            <div
+                              class=" relative"
+                            >
                               <label
                                 class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
                                 data-slot="label"
@@ -9118,6 +9158,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 <input
                                   aria-label="Quantity:"
                                   class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  max="98"
                                   min="0"
                                   step="1"
                                   type="number"

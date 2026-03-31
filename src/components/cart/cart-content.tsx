@@ -226,6 +226,7 @@ export default function CartContent({
                                         bonusDiscountLineItems={bonusDiscountItems}
                                         secondaryActions={cartSecondaryActions}
                                         deliveryActions={cartDeliveryActions}
+                                        isPickup={true}
                                     />
                                 </div>
                             </div>

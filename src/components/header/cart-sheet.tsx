@@ -31,6 +31,8 @@ import { formatCurrency } from '@/lib/currency';
 import { useBasketWithProducts, type BasketItemWithProduct } from '@/hooks/use-basket-with-products';
 import { useBasketWithPromotions } from '@/hooks/use-basket-with-promotions';
 import { buildBonusPromotionMap, getAttachedBonusPromotions } from '@/lib/bonus-product-utils';
+// @sfdc-extension-line SFDC_EXT_BOPIS
+import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
 import { useToast } from '@/components/toast';
 import type { ActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
@@ -43,10 +45,14 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
     item,
     removeAction,
     bonusProductSlot,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    isPickup,
 }: {
     item: BasketItemWithProduct;
     removeAction: string;
     bonusProductSlot?: ReactElement;
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    isPickup?: boolean;
 }) {
     const fetcher = useFetcher<ActionResponse>();
     const { addToast } = useToast();
@@ -74,7 +80,15 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetcher.state, fetcher.data, t]);
 
-    return <MiniCartItem product={item} onRemove={handleRemove} bonusProductSlot={bonusProductSlot} />;
+    return (
+        <MiniCartItem
+            product={item}
+            onRemove={handleRemove}
+            bonusProductSlot={bonusProductSlot}
+            // @sfdc-extension-line SFDC_EXT_BOPIS
+            isPickup={isPickup}
+        />
+    );
 });
 
 const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => void }): ReactElement {
@@ -159,6 +173,11 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                                                 item={item}
                                                 removeAction={config.pages.cart.removeAction}
                                                 bonusProductSlot={bonusProductCard}
+                                                // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                                                // getStoreIdForBasketItem returns truthy if the item is in a pickup shipment
+                                                // and falsy (undefined) if it is in a delivery shipment
+                                                isPickup={Boolean(getStoreIdForBasketItem(basket, item.itemId))}
+                                                // @sfdc-extension-block-end SFDC_EXT_BOPIS
                                             />
                                         </div>
                                     );

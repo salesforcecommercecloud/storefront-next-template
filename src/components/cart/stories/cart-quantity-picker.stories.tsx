@@ -396,6 +396,52 @@ CartQuantityPicker with stock level validation:
     },
 };
 
+export const AtStockLimit: Story = {
+    args: {
+        value: '10',
+        itemId: 'item-123',
+        stockLevel: 10,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: `
+CartQuantityPicker at the stock limit:
+
+### Stock Limit Features:
+- **Increment disabled**: Cannot increase beyond available stock
+- **Stock message**: Shows "Maximum stock reached" when at the limit
+- **Decrement available**: Can still decrease quantity
+- **Clear feedback**: Shopper understands why they cannot add more
+
+### Use Cases:
+- Items at maximum available quantity
+- Allocation-limited products
+- Stock-constrained items
+                `,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test quantity input shows stock level value
+        const quantityInput = canvasElement.querySelector('input[type="number"]') as HTMLInputElement;
+        await expect(quantityInput).toBeInTheDocument();
+        await expect(quantityInput).toHaveValue(10);
+
+        // Test increment button is disabled at stock limit
+        const incrementButton = await canvas.findByRole('button', { name: /increment/i }, { timeout: 5000 });
+        await expect(incrementButton).toBeDisabled();
+
+        // Test "Maximum stock reached" message is shown
+        const stockMessage = await canvas.findByRole('alert');
+        await expect(stockMessage).toBeInTheDocument();
+        await expect(stockMessage).toHaveTextContent('Maximum stock reached');
+    },
+};
+
 export const Disabled: Story = {
     args: {
         value: '1',
