@@ -25,6 +25,12 @@ vi.mock('@/hooks/product-content/use-product-content', () => ({
 
 import { useProductContent } from '@/hooks/product-content/use-product-content';
 
+import { mockConfig } from '@/test-utils/config';
+
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
+    useConfig: () => mockConfig,
+}));
+
 const mockUseProductContent = vi.mocked(useProductContent);
 
 describe('ProductAdapterSection', () => {
