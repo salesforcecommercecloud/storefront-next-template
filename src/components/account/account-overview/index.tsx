@@ -24,6 +24,7 @@ import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi
 import { useTranslation } from 'react-i18next';
 import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
 import { AppDownloadSection } from '@/components/account/app-download-section';
+import { AccountHelp } from '@/components/account/account-help';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -218,6 +219,7 @@ export function AccountOverview({ customer }: AccountOverviewProps): ReactElemen
         <div className="space-y-5">
             <WelcomeSection customer={customer} />
             <CuratedForYouSection />
+            <AccountHelp />
             <AppDownloadSection />
             <QuickLinksSection />
         </div>
@@ -251,6 +253,25 @@ export function AppDownloadSectionSkeleton(): ReactElement {
 }
 
 /**
+ * Skeleton for the Account Help section
+ */
+export function AccountHelpSkeleton(): ReactElement {
+    return (
+        <Card className="py-0">
+            <CardContent className="p-6">
+                <Skeleton className="h-7 w-48 mb-2" />
+                <Skeleton className="h-4 w-full max-w-xl mb-4" />
+                <div className="flex flex-wrap gap-3">
+                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-10 w-36" />
+                    <Skeleton className="h-10 w-32" />
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+/**
  * Account overview skeleton for loading state
  */
 export function AccountOverviewSkeleton(): ReactElement {
@@ -258,6 +279,7 @@ export function AccountOverviewSkeleton(): ReactElement {
         <div className="space-y-5">
             <WelcomeSectionSkeleton />
             <CuratedForYouSectionSkeleton />
+            <AccountHelpSkeleton />
             <AppDownloadSectionSkeleton />
             <QuickLinksSectionSkeleton />
         </div>

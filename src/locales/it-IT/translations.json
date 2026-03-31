@@ -771,6 +771,13 @@
                 "qrCode": "Codice QR"
             }
         },
+        "shopperAgentEntry": {
+            "title": "Hai bisogno di aiuto?",
+            "description": "Siamo qui per assisterti con qualsiasi domanda o dubbio",
+            "askQuestion": "Fai una domanda",
+            "contactInfo": "Informazioni di contatto",
+            "browseFaq": "Sfoglia le FAQ"
+        },
         "wishlist": {
             "pageTitle": "La mia lista desideri",
             "pageSubtitle": "I Suoi articoli salvati per dopo",

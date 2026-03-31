@@ -791,6 +791,13 @@
                 "qrCode": "QR Code"
             }
         },
+        "shopperAgentEntry": {
+            "title": "Need Help?",
+            "description": "We're here to assist you with any questions or concerns",
+            "askQuestion": "Ask a question",
+            "contactInfo": "Contact info",
+            "browseFaq": "Browse FAQ"
+        },
         "wishlist": {
             "pageTitle": "My Wishlist",
             "pageSubtitle": "Your saved items for later",

@@ -875,6 +875,40 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
       data-slot="card-content"
     >
       <div
+        class="bg-accent animate-pulse rounded-md h-7 w-48 mb-2"
+        data-slot="skeleton"
+      />
+      <div
+        class="bg-accent animate-pulse rounded-md h-4 w-full max-w-xl mb-4"
+        data-slot="skeleton"
+      />
+      <div
+        class="flex flex-wrap gap-3"
+      >
+        <div
+          class="bg-accent animate-pulse rounded-md h-10 w-32"
+          data-slot="skeleton"
+        />
+        <div
+          class="bg-accent animate-pulse rounded-md h-10 w-36"
+          data-slot="skeleton"
+        />
+        <div
+          class="bg-accent animate-pulse rounded-md h-10 w-32"
+          data-slot="skeleton"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
+      <div
         class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
       >
         <div
