@@ -649,6 +649,19 @@
                 "description": "Questa sezione non è riuscita a caricarsi correttamente. Può continuare con il checkout o provare ad aggiornare.",
                 "tryAgain": "Riprovi"
             }
+        },
+        "registration": {
+            "emailNotFound": "L'indirizzo email è necessario per creare un account. Inserisca la Sua email nella sezione delle informazioni di contatto.",
+            "initiationFailed": "Impossibile inviare il codice di verifica. Riprovi.",
+            "sendingVerificationCode": "Invio del codice di verifica in corso...",
+            "accountCreatedSuccess": "Account creato con successo!",
+            "checkboxExpandedDescription": "Quando effettua l'ordine, creiamo un account per Lei e salviamo le Sue informazioni di pagamento e altri dettagli per acquisti futuri. Durante il prossimo checkout, confermi il Suo account utilizzando il codice che Le invieremo.",
+            "accountCreatedTitle": "Account creato",
+            "verified": "Verificato",
+            "accountCreatedDescription": "Abbiamo creato e verificato il Suo account utilizzando le informazioni del Suo ordine. La prossima volta che effettua il checkout, inserisca semplicemente il codice che Le invieremo per accedere, senza bisogno di password.",
+            "accountCreationLabel": "Creazione account",
+            "accountWillBeCreated": "L'account verrà creato",
+            "continueAsGuest": "Continua come ospite"
         }
     },
     "account": {

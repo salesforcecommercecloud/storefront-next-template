@@ -675,6 +675,19 @@
                 "description": "This section couldn't load properly. You can continue with checkout or try refreshing the page.",
                 "tryAgain": "Try again"
             }
+        },
+        "registration": {
+            "emailNotFound": "Email address is required to create an account. Please provide your email in the contact information section.",
+            "initiationFailed": "Unable to send verification code. Please try again.",
+            "sendingVerificationCode": "Sending verification code...",
+            "accountCreatedSuccess": "Account created successfully!",
+            "checkboxExpandedDescription": "When you place your order, we create an account for you and save your payment information and other details for future purchases. During your next checkout, confirm your account using the code we'll send to you.",
+            "accountCreatedTitle": "Account Created",
+            "verified": "Verified",
+            "accountCreatedDescription": "We've created and verified your account using the information from your order. Next time you checkout, just enter the code we send to log in - no password needed.",
+            "accountCreationLabel": "Account Creation",
+            "accountWillBeCreated": "Account will be created",
+            "continueAsGuest": "Continue as guest"
         }
     },
     "account": {
