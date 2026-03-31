@@ -31,7 +31,7 @@ export default function HeroSkeleton() {
             {/* Content skeleton */}
             <div className="absolute inset-0 z-10 flex items-center">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-2xl" data-theme="foundations-light">
+                    <div className="max-w-2xl">
                         {/* Title skeleton */}
                         <div className="h-8 sm:h-10 md:h-12 lg:h-16 bg-white/20 w-3/4 rounded mb-3 sm:mb-4 md:mb-6" />
 

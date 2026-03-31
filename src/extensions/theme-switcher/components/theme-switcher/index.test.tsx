@@ -31,7 +31,6 @@ describe('ThemeSwitcher', () => {
         expect(selects).toHaveLength(2);
 
         // Verify theme family options
-        expect(screen.getByRole('option', { name: /foundations/i })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: /market street/i })).toBeInTheDocument();
 
         // Verify theme mode options
@@ -77,46 +76,13 @@ describe('ThemeSwitcher', () => {
         });
     });
 
-    it('should apply data-theme attribute for foundations theme', async () => {
-        render(<ThemeSwitcher />);
-
-        const selects = screen.getAllByRole('combobox');
-        const [familySelect] = selects;
-
-        await userEvent.selectOptions(familySelect, 'foundations');
-
-        await waitFor(() => {
-            expect(document.documentElement.getAttribute('data-theme')).toBe('foundations-light');
-        });
-    });
-
-    it('should remove data-theme attribute for market-street theme', async () => {
-        document.documentElement.setAttribute('data-theme', 'foundations-light');
+    it('should not set data-theme attribute for market-street theme', async () => {
+        document.documentElement.setAttribute('data-theme', 'some-old-theme');
 
         render(<ThemeSwitcher />);
-
-        const selects = screen.getAllByRole('combobox');
-        const [familySelect] = selects;
-
-        await userEvent.selectOptions(familySelect, 'market-street');
 
         await waitFor(() => {
             expect(document.documentElement.getAttribute('data-theme')).toBeNull();
-        });
-    });
-
-    it('should combine theme family and mode in data-theme attribute', async () => {
-        render(<ThemeSwitcher />);
-
-        const selects = screen.getAllByRole('combobox');
-        const [familySelect, modeSelect] = selects;
-
-        await userEvent.selectOptions(familySelect, 'foundations');
-        await userEvent.selectOptions(modeSelect, 'dark');
-
-        await waitFor(() => {
-            expect(document.documentElement.getAttribute('data-theme')).toBe('foundations-dark');
-            expect(document.documentElement.classList.contains('dark')).toBe(true);
         });
     });
 

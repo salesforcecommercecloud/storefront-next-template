@@ -28,11 +28,6 @@ exports[`ThemeSwitcher stories snapshot > Default story renders and matches snap
           >
             marketStreet
           </option>
-          <option
-            value="foundations"
-          >
-            foundations
-          </option>
         </select>
         <svg
           aria-hidden="true"
@@ -134,11 +129,6 @@ exports[`ThemeSwitcher stories snapshot > DesktopLayout story renders and matche
             value="market-street"
           >
             marketStreet
-          </option>
-          <option
-            value="foundations"
-          >
-            foundations
           </option>
         </select>
         <svg
@@ -242,11 +232,6 @@ exports[`ThemeSwitcher stories snapshot > MobileLayout story renders and matches
           >
             marketStreet
           </option>
-          <option
-            value="foundations"
-          >
-            foundations
-          </option>
         </select>
         <svg
           aria-hidden="true"
@@ -348,11 +333,6 @@ exports[`ThemeSwitcher stories snapshot > WithThemeChange story renders and matc
             value="market-street"
           >
             marketStreet
-          </option>
-          <option
-            value="foundations"
-          >
-            foundations
           </option>
         </select>
         <svg

@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 import { NativeSelect } from '@/components/ui/native-select';
 
-type ThemeFamily = 'market-street' | 'foundations';
+type ThemeFamily = 'market-street';
 type ThemeMode = 'light' | 'dark';
 
 export default function ThemeSwitcher(): ReactElement {
@@ -38,12 +38,8 @@ export default function ThemeSwitcher(): ReactElement {
         // Handle dark mode class
         html.classList.toggle('dark', themeMode === 'dark');
 
-        // Handle data-theme attribute for foundations
-        if (themeFamily === 'foundations') {
-            html.setAttribute('data-theme', `foundations-${themeMode}`);
-        } else {
-            html.removeAttribute('data-theme');
-        }
+        // Market Street doesn't use data-theme attribute
+        html.removeAttribute('data-theme');
     }, [themeFamily, themeMode]);
 
     const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -66,7 +62,6 @@ export default function ThemeSwitcher(): ReactElement {
                     onChange={handleFamilyChange}
                     aria-label={t('themeFamilyAriaLabel')}>
                     <option value="market-street">{t('marketStreet')}</option>
-                    <option value="foundations">{t('foundations')}</option>
                 </NativeSelect>
             </div>
             <div>

@@ -72,13 +72,12 @@ const meta: Meta<typeof ThemeSwitcher> = {
         docs: {
             description: {
                 component: `
-The ThemeSwitcher component allows users to switch between theme families (Market Street, Foundations) and theme modes (light, dark).
+The ThemeSwitcher component allows users to switch between light and dark theme modes.
 
 ## Features
 
-- **Theme Family Selection**: Switch between Market Street and Foundations themes
 - **Theme Mode Selection**: Switch between light and dark modes
-- **Theme Toggle**: Automatically applies theme via data-theme attribute and dark class
+- **Theme Toggle**: Automatically applies theme via dark class
 - **Accessibility**: Proper ARIA labels and semantic HTML
 - **Internationalization**: Supports translation keys
 - **Session-only**: Theme preference lasts for the current session only (resets on page refresh)
@@ -109,7 +108,7 @@ export const Default: Story = {
                 story: `
 Default theme switcher showing:
 - Two native select dropdowns (theme family and theme mode)
-- Market Street and Foundations theme family options
+- Market Street theme family option
 - Light and dark theme mode options
 - Proper accessibility labels
 
@@ -131,9 +130,6 @@ This is the standard theme switcher component.
         const marketStreetOption = canvas.getByRole('option', { name: /market street/i });
         await expect(marketStreetOption).toBeInTheDocument();
 
-        const foundationsOption = canvas.getByRole('option', { name: /foundations/i });
-        await expect(foundationsOption).toBeInTheDocument();
-
         // Verify theme mode options are present
         const lightOption = canvas.getByRole('option', { name: /^light$/i });
         await expect(lightOption).toBeInTheDocument();
@@ -149,10 +145,9 @@ export const WithThemeChange: Story = {
             description: {
                 story: `
 Theme switcher with theme change interaction. Shows:
-- User can select different theme families
 - User can select different theme modes
 - Theme changes are logged
-- Document attributes and classes are updated
+- Document classes are updated
 
 This demonstrates the interactive behavior of the theme switcher.
                 `,
@@ -168,11 +163,7 @@ This demonstrates the interactive behavior of the theme switcher.
         const selects = await canvas.findAllByRole('combobox', {}, { timeout: 5000 });
         await expect(selects).toHaveLength(2);
 
-        const [familySelect, modeSelect] = selects;
-
-        // Change theme family to foundations
-        await userEvent.selectOptions(familySelect, 'foundations');
-        await expect(familySelect).toHaveValue('foundations');
+        const [, modeSelect] = selects;
 
         // Change theme mode to dark
         await userEvent.selectOptions(modeSelect, 'dark');
@@ -181,10 +172,6 @@ This demonstrates the interactive behavior of the theme switcher.
         // Change theme mode back to light
         await userEvent.selectOptions(modeSelect, 'light');
         await expect(modeSelect).toHaveValue('light');
-
-        // Change theme family back to market-street
-        await userEvent.selectOptions(familySelect, 'market-street');
-        await expect(familySelect).toHaveValue('market-street');
     },
 };
 
