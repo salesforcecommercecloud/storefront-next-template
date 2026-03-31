@@ -681,6 +681,78 @@ describe('Payment Integration Tests', () => {
                 spy.mockRestore();
             }
         });
+
+        test('switches "new" selection to preferred saved method after profile hydration', async () => {
+            let profile: any = null;
+            useCustomerProfile.mockImplementation(() => profile);
+
+            const { rerender } = render(<Payment {...createDefaultProps()} />);
+
+            // Initial bootstrap state before saved methods arrive.
+            const newCardRadio = document.getElementById('credit-card-option');
+            expect(newCardRadio).toBeTruthy();
+            expect(newCardRadio?.getAttribute('aria-checked')).toBe('true');
+
+            profile = {
+                customer: { email: 'hydrated@example.com' },
+                addresses: [],
+                paymentInstruments: [
+                    {
+                        paymentInstrumentId: 'saved-preferred',
+                        paymentMethodId: 'CREDIT_CARD',
+                        paymentCard: {
+                            cardType: 'Visa',
+                            maskedNumber: '************1111',
+                        },
+                        preferred: true,
+                    },
+                    {
+                        paymentInstrumentId: 'saved-secondary',
+                        paymentMethodId: 'CREDIT_CARD',
+                        paymentCard: {
+                            cardType: 'Mastercard',
+                            maskedNumber: '************2222',
+                        },
+                        preferred: false,
+                    },
+                ],
+            };
+
+            rerender(<Payment {...createDefaultProps()} />);
+
+            await waitFor(() => {
+                // After hydration, the preferred saved card should become selected automatically.
+                expect(screen.getByRole('radio', { name: /visa/i })).toHaveAttribute('aria-checked', 'true');
+            });
+        });
+
+        test('preserves distinct billing address on initial load when billing differs from shipping', async () => {
+            const basketWithDistinctBilling = createMockBasket({
+                billingAddress: {
+                    firstName: 'Jane',
+                    lastName: 'Shopper',
+                    address1: '456 Billing Ave',
+                    city: 'Los Angeles',
+                    stateCode: 'CA',
+                    postalCode: '90001',
+                    countryCode: 'US',
+                },
+            });
+
+            useBasket.mockReturnValue(basketWithDistinctBilling);
+
+            render(<Payment {...createDefaultProps({ showBillingSameAsShipping: true })} />);
+
+            await waitFor(() => {
+                // "Use a different billing address" should be selected when basket has distinct billing.
+                expect(screen.getByRole('checkbox', { name: /different billing address/i })).toBeChecked();
+            });
+
+            // Billing form should show pre-existing billing values (not cleared on mount).
+            expect(screen.getByRole('textbox', { name: /first name/i })).toHaveValue('Jane');
+            expect(screen.getByRole('textbox', { name: /last name/i })).toHaveValue('Shopper');
+            expect(screen.getByRole('textbox', { name: /address line 1/i })).toHaveValue('456 Billing Ave');
+        });
     });
 
     describe('View All (n more) / View less', () => {

@@ -72,6 +72,7 @@ export default function Payment({
     // 'new' or payment method ID. Use '' so we can detect "not yet initialized" and set preferred saved method once.
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
     const selectedPaymentMethodRef = useRef(selectedPaymentMethod);
+    const userHasChosenPaymentMethodRef = useRef(false);
     selectedPaymentMethodRef.current = selectedPaymentMethod;
 
     /** When false, show only first INITIAL_VISIBLE_COUNT options and "View all (n more)". See Figma NEXT Design System – Login/Checkout. */
@@ -100,7 +101,9 @@ export default function Payment({
         const validIds = new Set(savedPaymentMethods.map((m) => m.id));
         const current = selectedPaymentMethodRef.current;
         const isValidSelection = current === 'new' || validIds.has(current);
-        if (isValidSelection && current !== '') {
+        const shouldReplaceBootstrapNewSelection =
+            current === 'new' && savedPaymentMethods.length > 0 && !userHasChosenPaymentMethodRef.current;
+        if (isValidSelection && current !== '' && !shouldReplaceBootstrapNewSelection) {
             return; // Preserve user's choice
         }
 
@@ -165,8 +168,14 @@ export default function Payment({
         shouldScrollToPaymentOnCollapseRef.current = true;
         const firstVisible = allPaymentOptionIds.slice(0, INITIAL_VISIBLE_COUNT);
         if (!firstVisible.includes(paymentRadioValue)) {
+            userHasChosenPaymentMethodRef.current = true;
             setSelectedPaymentMethod(firstVisible[0]);
         }
+    };
+
+    const handlePaymentMethodSelectionChange = (value: string) => {
+        userHasChosenPaymentMethodRef.current = true;
+        setSelectedPaymentMethod(value);
     };
 
     useEffect(() => {
@@ -297,11 +306,17 @@ export default function Payment({
         () => (shippingAddress ? getAddressKey(shippingAddress) : ''),
         [shippingAddress]
     );
+    const previousBillingSameAsShippingRef = useRef<boolean | null>(null);
 
     // Keep billing fields aligned with cart shipping while "same as shipping" is checked (e.g. after OTP / loader prefill).
     const billingSameAsShippingWatched = form.watch('billingSameAsShipping');
     useEffect(() => {
         if (!showBillingSameAsShipping || !shippingAddress || !shippingAddressSyncKey) return;
+
+        const previousValue = previousBillingSameAsShippingRef.current;
+        const toggledFromSameToDifferent = previousValue === true && billingSameAsShippingWatched === false;
+        previousBillingSameAsShippingRef.current = billingSameAsShippingWatched;
+
         if (billingSameAsShippingWatched) {
             form.setValue('billingFirstName', shippingAddress.firstName ?? '');
             form.setValue('billingLastName', shippingAddress.lastName ?? '');
@@ -311,7 +326,10 @@ export default function Payment({
             form.setValue('billingStateCode', shippingAddress.stateCode ?? '');
             form.setValue('billingPostalCode', shippingAddress.postalCode ?? '');
             form.setValue('billingCountryCode', shippingAddress.countryCode ?? 'US');
-        } else {
+            return;
+        }
+
+        if (toggledFromSameToDifferent) {
             form.setValue('billingFirstName', '');
             form.setValue('billingLastName', '');
             form.setValue('billingAddress1', '');
@@ -516,7 +534,7 @@ export default function Payment({
                                         <div className="space-y-4">
                                             <RadioGroup
                                                 value={paymentRadioValue}
-                                                onValueChange={setSelectedPaymentMethod}
+                                                onValueChange={handlePaymentMethodSelectionChange}
                                                 className="space-y-2">
                                                 {visiblePaymentOptionIds.map((optionId) => {
                                                     if (optionId === 'new') {
@@ -626,7 +644,10 @@ export default function Payment({
                                                         <RadioGroup
                                                             value="new"
                                                             className="flex items-center gap-2 flex-1"
-                                                            onValueChange={() => setSelectedPaymentMethod('new')}>
+                                                            onValueChange={() => {
+                                                                userHasChosenPaymentMethodRef.current = true;
+                                                                setSelectedPaymentMethod('new');
+                                                            }}>
                                                             <RadioGroupItem
                                                                 value="new"
                                                                 id="credit-card-option"
