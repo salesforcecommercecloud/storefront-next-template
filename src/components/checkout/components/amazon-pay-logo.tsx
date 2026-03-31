@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import googlePayLogo from '/images/google-pay-logo.svg';
+import amazonPayLogo from '/images/amazon-pay-logo.svg';
 import { useTranslation } from 'react-i18next';
 
 /**
- * Google Pay Logo SVG Component
- * Official Google Pay logo matching SDK button appearance
- * Uses local Google Pay SVG file from public/images
+ * Amazon Pay Logo SVG Component
+ * Official Amazon Pay logo matching SDK button appearance
+ * Uses local Amazon Pay SVG file from public/images
  */
-export default function GooglePayLogo({
+export default function AmazonPayLogo({
     className,
     decorative = false,
 }: {
@@ -31,15 +31,15 @@ export default function GooglePayLogo({
     decorative?: boolean;
 }) {
     const { t } = useTranslation('checkout');
-    const label = t('expressPayments.googlePayLabel') || 'Google Pay';
+    const label = t('expressPayments.amazonPayLabel') || 'Amazon Pay';
     return (
         <img
-            src={googlePayLogo}
+            src={amazonPayLogo}
             alt={decorative ? '' : label}
-            width="48"
-            height="16"
+            width="62"
+            height="20"
             {...(decorative ? { 'aria-hidden': true } : {})}
-            className={`${className || ''} h-4 w-auto object-contain`}
+            className={`${className || ''} h-5 w-auto object-contain`}
         />
     );
 }

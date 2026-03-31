@@ -206,6 +206,12 @@ export const useBasketSnapshot = (): BasketSnapshot | null | undefined => {
     return useContext(BasketContext).snapshot;
 };
 
+/** Whether the full basket has been fetched at least once. */
+// eslint-disable-next-line react-refresh/only-export-components
+export const useBasketHydrated = (): boolean => {
+    return useContext(BasketContext).hydrated ?? false;
+};
+
 /* Returns a setter for updating the basket in context. */
 // eslint-disable-next-line react-refresh/only-export-components
 export const useBasketUpdater = (): ((basket?: ShopperBasketsV2.schemas['Basket']) => void) => {

@@ -239,7 +239,7 @@
             },
             {
                 "name": "assets/\\(components\\)-\\(checkout\\)-*.js",
-                "limit": "555 kB",
+                "limit": "560 kB",
                 "comment": "Checkout components with dependencies. Lazy loaded on /checkout route only. @see W-21553426"
             },
             {

@@ -7,7 +7,7 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
     >
       <button
         aria-label="Apple Pay"
@@ -19,10 +19,10 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -36,16 +36,15 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
       <button
         aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
         data-size="lg"
         data-slot="button"
         data-variant="default"
@@ -53,10 +52,9 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         <img
           alt=""
           aria-hidden="true"
-          class="h-5"
+          class="flex-shrink-0 h-5 w-auto object-contain"
           height="20"
-          src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-          style="object-fit: contain;"
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           width="62"
         />
       </button>
@@ -70,10 +68,9 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
@@ -87,10 +84,10 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto"
+          class="flex-shrink-0 h-3 w-auto object-contain"
           height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -122,7 +119,7 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
     >
       <button
         aria-label="Apple Pay"
@@ -134,10 +131,10 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -151,16 +148,15 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
       <button
         aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
         data-size="lg"
         data-slot="button"
         data-variant="default"
@@ -168,10 +164,9 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         <img
           alt=""
           aria-hidden="true"
-          class="h-5"
+          class="flex-shrink-0 h-5 w-auto object-contain"
           height="20"
-          src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-          style="object-fit: contain;"
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           width="62"
         />
       </button>
@@ -185,10 +180,9 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
@@ -202,10 +196,10 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto"
+          class="flex-shrink-0 h-3 w-auto object-contain"
           height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -237,7 +231,7 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
     >
       <button
         aria-label="Apple Pay"
@@ -250,10 +244,10 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -268,16 +262,15 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
       <button
         aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
         data-size="lg"
         data-slot="button"
         data-variant="default"
@@ -286,10 +279,9 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         <img
           alt=""
           aria-hidden="true"
-          class="h-5"
+          class="flex-shrink-0 h-5 w-auto object-contain"
           height="20"
-          src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-          style="object-fit: contain;"
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           width="62"
         />
       </button>
@@ -304,10 +296,9 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
@@ -322,10 +313,10 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto"
+          class="flex-shrink-0 h-3 w-auto object-contain"
           height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -373,7 +364,7 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
       />
     </div>
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
     >
       <button
         aria-label="Apple Pay"
@@ -385,10 +376,10 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -402,16 +393,15 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
       <button
         aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
         data-size="lg"
         data-slot="button"
         data-variant="default"
@@ -419,10 +409,9 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         <img
           alt=""
           aria-hidden="true"
-          class="h-5"
+          class="flex-shrink-0 h-5 w-auto object-contain"
           height="20"
-          src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-          style="object-fit: contain;"
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           width="62"
         />
       </button>
@@ -436,10 +425,9 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
@@ -453,10 +441,10 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto"
+          class="flex-shrink-0 h-3 w-auto object-contain"
           height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -472,7 +460,7 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
     >
       <button
         aria-label="Apple Pay"
@@ -484,10 +472,10 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -501,16 +489,15 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
       <button
         aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
         data-size="lg"
         data-slot="button"
         data-variant="default"
@@ -518,10 +505,9 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
         <img
           alt=""
           aria-hidden="true"
-          class="h-5"
+          class="flex-shrink-0 h-5 w-auto object-contain"
           height="20"
-          src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-          style="object-fit: contain;"
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           width="62"
         />
       </button>
@@ -535,10 +521,9 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
@@ -552,10 +537,10 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto"
+          class="flex-shrink-0 h-3 w-auto object-contain"
           height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -599,10 +584,10 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -616,16 +601,15 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
       <button
         aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
         data-size="lg"
         data-slot="button"
         data-variant="default"
@@ -633,10 +617,9 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         <img
           alt=""
           aria-hidden="true"
-          class="h-5"
+          class="flex-shrink-0 h-5 w-auto object-contain"
           height="20"
-          src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-          style="object-fit: contain;"
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           width="62"
         />
       </button>
@@ -650,10 +633,9 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
@@ -667,10 +649,10 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto"
+          class="flex-shrink-0 h-3 w-auto object-contain"
           height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -730,10 +712,10 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -747,16 +729,15 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
       <button
         aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
         data-size="lg"
         data-slot="button"
         data-variant="default"
@@ -764,10 +745,9 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         <img
           alt=""
           aria-hidden="true"
-          class="h-5"
+          class="flex-shrink-0 h-5 w-auto object-contain"
           height="20"
-          src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-          style="object-fit: contain;"
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           width="62"
         />
       </button>
@@ -781,10 +761,9 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
@@ -798,10 +777,10 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto"
+          class="flex-shrink-0 h-3 w-auto object-contain"
           height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -817,7 +796,7 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
     >
       <button
         aria-label="Apple Pay"
@@ -829,10 +808,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -846,16 +825,15 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
       <button
         aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
         data-size="lg"
         data-slot="button"
         data-variant="default"
@@ -863,10 +841,9 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
         <img
           alt=""
           aria-hidden="true"
-          class="h-5"
+          class="flex-shrink-0 h-5 w-auto object-contain"
           height="20"
-          src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-          style="object-fit: contain;"
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           width="62"
         />
       </button>
@@ -880,10 +857,9 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
@@ -897,10 +873,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto"
+          class="flex-shrink-0 h-3 w-auto object-contain"
           height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -932,7 +908,7 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
     >
       <button
         aria-label="Apple Pay"
@@ -944,10 +920,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>
@@ -961,16 +937,15 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
       <button
         aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
         data-size="lg"
         data-slot="button"
         data-variant="default"
@@ -978,10 +953,9 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
         <img
           alt=""
           aria-hidden="true"
-          class="h-5"
+          class="flex-shrink-0 h-5 w-auto object-contain"
           height="20"
-          src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-          style="object-fit: contain;"
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
           width="62"
         />
       </button>
@@ -995,10 +969,9 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto"
+          class="flex-shrink-0 h-4 w-auto object-contain"
           height="16"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain;"
           width="48"
         />
       </button>
@@ -1012,10 +985,10 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders a
         <img
           alt=""
           aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto"
+          class="flex-shrink-0 h-3 w-auto object-contain"
           height="12"
           src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="object-fit: contain; filter: brightness(0) invert(1);"
+          style="filter: brightness(0) invert(1);"
           width="48"
         />
       </button>

@@ -17,7 +17,7 @@
 
 import { useCallback, useEffect, lazy, Suspense, use, useRef, useState, type FormEvent } from 'react';
 import { useCheckoutContext } from '@/hooks/use-checkout';
-import { useBasket } from '@/providers/basket';
+import { useBasket, useBasketHydrated } from '@/providers/basket';
 import { useCheckoutActions, type PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -199,8 +199,8 @@ export default function CheckoutFormPage({
     const { t, i18n } = useTranslation('checkout');
     const currency = useCurrency();
 
-    // Use basket from provider (managed by middleware)
     const cart = useBasket();
+    const basketHydrated = useBasketHydrated();
     const { step, STEPS, goToStep, editingStep, shipmentDistribution, exitEditMode } = useCheckoutContext();
     const customerProfile = useCustomerProfile();
     const isRegisteredUser = Boolean(customerProfile?.customer?.customerId);
@@ -433,12 +433,10 @@ export default function CheckoutFormPage({
         }
     }, [paymentFetcher.state, paymentFetcher.data, submitPlaceOrder]);
 
-    // Show loading state while basket is being fetched (prevents race condition errors)
-    if (!cart) {
+    if (!cart || !basketHydrated) {
         return <CheckoutSkeleton />;
     }
 
-    // Check if cart is empty (no items) - only after basket is fully loaded
     if (!cart.basketId || !cart.productItems || cart.productItems.length === 0) {
         return (
             <div className="min-h-screen bg-muted flex items-center justify-center">

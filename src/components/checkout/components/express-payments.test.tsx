@@ -175,8 +175,8 @@ describe('ExpressPayments Integration Tests', () => {
             const { container } = render(<ExpressPayments {...createDefaultProps()} />);
 
             const gridContainer = container.querySelector('.grid');
-            expect(gridContainer).toHaveClass('sm:grid-cols-2');
-            expect(gridContainer).toHaveClass('lg:grid-cols-4');
+            expect(gridContainer).toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).toHaveClass('lg:grid-cols-5');
         });
 
         test('renders vertical layout when layout prop is "vertical"', () => {
@@ -184,8 +184,8 @@ describe('ExpressPayments Integration Tests', () => {
 
             const gridContainer = container.querySelector('.grid');
             expect(gridContainer).toHaveClass('grid-cols-1');
-            expect(gridContainer).not.toHaveClass('sm:grid-cols-2');
-            expect(gridContainer).not.toHaveClass('lg:grid-cols-4');
+            expect(gridContainer).not.toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).not.toHaveClass('lg:grid-cols-5');
         });
 
         test('vertical layout has tighter spacing', () => {
@@ -521,15 +521,15 @@ describe('ExpressPayments Integration Tests', () => {
             );
 
             let gridContainer = container.querySelector('.grid');
-            expect(gridContainer).toHaveClass('sm:grid-cols-2');
-            expect(gridContainer).toHaveClass('lg:grid-cols-4');
+            expect(gridContainer).toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).toHaveClass('lg:grid-cols-5');
 
             // Change to vertical
             rerender(<ExpressPayments {...createDefaultProps({ layout: 'vertical' })} />);
 
             gridContainer = container.querySelector('.grid');
             expect(gridContainer).toHaveClass('grid-cols-1');
-            expect(gridContainer).not.toHaveClass('sm:grid-cols-2');
+            expect(gridContainer).not.toHaveClass('sm:grid-cols-3');
         });
 
         test('updates separator position prop correctly', () => {
@@ -626,7 +626,7 @@ describe('ExpressPayments Integration Tests', () => {
             test('has white logo styling (brightness and invert filter)', () => {
                 render(<ApplePayLogo />);
                 const image = screen.getByAltText('Apple Pay');
-                expect(image.style.objectFit).toBe('contain');
+                expect(image).toHaveClass('object-contain');
                 expect(image.style.filter).toBe('brightness(0) invert(1)');
             });
         });
@@ -652,7 +652,7 @@ describe('ExpressPayments Integration Tests', () => {
             test('has correct styling', () => {
                 render(<GooglePayLogo />);
                 const image = screen.getByAltText('Google Pay');
-                expect(image.style.objectFit).toBe('contain');
+                expect(image).toHaveClass('object-contain');
             });
         });
 
@@ -677,7 +677,7 @@ describe('ExpressPayments Integration Tests', () => {
             test('has correct styling', () => {
                 render(<PayPalLogo />);
                 const image = screen.getByAltText('PayPal');
-                expect(image.style.objectFit).toBe('contain');
+                expect(image).toHaveClass('object-contain');
             });
         });
 
@@ -702,7 +702,7 @@ describe('ExpressPayments Integration Tests', () => {
             test('has white logo styling (brightness and invert filter)', () => {
                 render(<VenmoLogo />);
                 const image = screen.getByAltText('Venmo');
-                expect(image.style.objectFit).toBe('contain');
+                expect(image).toHaveClass('object-contain');
                 expect(image.style.filter).toBe('brightness(0) invert(1)');
             });
         });

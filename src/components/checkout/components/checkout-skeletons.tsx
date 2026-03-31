@@ -21,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export function ExpressPaymentsSkeleton(): ReactElement {
     return (
         <div className="space-y-2" data-testid="express-payments-skeleton">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {[1, 2, 3, 4, 5].map((i) => (
                     <Skeleton key={i} className="h-12 w-full rounded-lg" />
                 ))}

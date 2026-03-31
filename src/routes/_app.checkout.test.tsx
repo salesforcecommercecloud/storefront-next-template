@@ -54,6 +54,7 @@ vi.mock('@/providers/basket', () => ({
         </div>
     ),
     useBasketUpdater: () => vi.fn(),
+    useBasketHydrated: () => true,
 }));
 
 vi.mock('@/components/checkout-error-boundary', () => ({

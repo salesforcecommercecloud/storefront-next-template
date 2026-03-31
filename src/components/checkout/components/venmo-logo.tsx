@@ -39,11 +39,8 @@ export default function VenmoLogo({
             width="48"
             height="12"
             {...(decorative ? { 'aria-hidden': true } : {})}
-            className={`${className || ''} h-3 w-auto`}
-            style={{
-                objectFit: 'contain',
-                filter: 'brightness(0) invert(1)', // Convert to white
-            }}
+            className={`${className || ''} h-3 w-auto object-contain`}
+            style={{ filter: 'brightness(0) invert(1)' }}
         />
     );
 }

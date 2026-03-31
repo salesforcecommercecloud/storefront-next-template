@@ -290,6 +290,7 @@ vi.mock('@/providers/basket', () => ({
         shipments: [{ shipmentId: 'me' }],
         paymentInstruments: [],
     }),
+    useBasketHydrated: () => true,
 }));
 
 vi.mock('@/providers/auth', () => ({

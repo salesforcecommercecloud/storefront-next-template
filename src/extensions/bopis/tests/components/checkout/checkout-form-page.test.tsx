@@ -261,6 +261,7 @@ vi.mock('@/providers/cart-store', () => ({
 // Mock basket provider
 vi.mock('@/providers/basket', () => ({
     useBasket: () => mockUseBasket(),
+    useBasketHydrated: () => true,
 }));
 
 // Mock React Router hooks
