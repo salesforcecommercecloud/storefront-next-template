@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { decodeBase64Url } from '@/lib/url';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
@@ -24,10 +23,36 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { getLogger } from '@/lib/logger.server';
 
 /**
- * Type representing Commerce SDK client names (camelCase)
- * These are the keys from the Clients object
+ * Single source of truth for which Clients namespaces are helpers.
+ * Runtime allow-list that also drives the type-level allow-list below.
+ * Prevents crafted URLs from accessing non-helper namespaces (e.g., shopperCustomers).
+ *
+ * To expose a new helper namespace via `useScapiFetcher('helpers', ...)`:
+ *   1. Add the namespace to the `Clients` type in storefront-next-runtime/scapi
+ *   2. Add it to this record — types and runtime validation update automatically
+ *
+ * `Pick<Clients, ...>` will error if a key here doesn't exist on `Clients`.
  */
-export type CommerceSdkKeyMap = Exclude<keyof Clients, 'use'>;
+const HELPER_NAMESPACE_MAP = { auth: true, basket: true } as const;
+const HELPER_NAMESPACES = new Set(Object.keys(HELPER_NAMESPACE_MAP));
+
+/**
+ * Keys for helper namespaces (e.g., 'auth', 'basket'), derived from the runtime allow-list.
+ */
+export type HelperNamespaceKeyMap = keyof typeof HELPER_NAMESPACE_MAP;
+
+/**
+ * Helper namespaces available on the Clients object from `@salesforce/storefront-next-runtime/scapi`.
+ * Unlike SCAPI proxy clients (e.g. `shopperProducts`, `shopperCustomers`), helper namespaces
+ * expose domain-specific utility methods that aren't direct 1:1 SCAPI endpoint proxies.
+ */
+export type HelperNamespaces = Pick<Clients, HelperNamespaceKeyMap>;
+
+/**
+ * Type representing Commerce SDK client names (camelCase).
+ * These are the keys from the Clients object, excluding 'use' and helper namespaces.
+ */
+export type CommerceSdkKeyMap = Exclude<keyof Clients, 'use' | HelperNamespaceKeyMap>;
 
 /**
  * Type helper to get the client type from a client name
@@ -53,7 +78,7 @@ export type CommerceSdkMethodName<C extends CommerceSdkKeyMap> = Exclude<
  * @template M - The method name on the Commerce SDK client
  */
 export type CommerceSdkMethodReturnType<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> = ReturnType<
-    CommerceSdkCtorFromKey<C>[M] extends (...a: any[]) => any ? CommerceSdkCtorFromKey<C>[M] : never
+    CommerceSdkCtorFromKey<C>[M] extends (...a: any[]) => any ? CommerceSdkCtorFromKey<C>[M] : never // eslint-disable-line @typescript-eslint/no-explicit-any
 >;
 
 /**
@@ -62,8 +87,38 @@ export type CommerceSdkMethodReturnType<C extends CommerceSdkKeyMap, M extends C
  * @template M - The method name on the Commerce SDK client
  */
 export type CommerceSdkMethodParameters<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> = Parameters<
-    CommerceSdkCtorFromKey<C>[M] extends (...a: any[]) => any ? CommerceSdkCtorFromKey<C>[M] : never
+    CommerceSdkCtorFromKey<C>[M] extends (...a: any[]) => any ? CommerceSdkCtorFromKey<C>[M] : never // eslint-disable-line @typescript-eslint/no-explicit-any
 >;
+
+/**
+ * Type representing valid callable method names for a helper namespace.
+ * Filters to only include functions (excludes sub-namespaces which are objects).
+ * @template H - The helper namespace key
+ */
+export type HelperMethodName<H extends HelperNamespaceKeyMap> = {
+    [K in keyof Clients[H]]: Clients[H][K] extends (...args: any[]) => any ? K : never; // eslint-disable-line @typescript-eslint/no-explicit-any
+}[keyof Clients[H]] &
+    string;
+
+/**
+ * Type helper to extract the return type of a helper method.
+ * @template H - The helper namespace key
+ * @template M - The method name on the helper namespace
+ */
+export type HelperMethodReturnType<
+    H extends HelperNamespaceKeyMap,
+    M extends HelperMethodName<H>,
+> = M extends keyof Clients[H] ? (Clients[H][M] extends (...args: any[]) => infer R ? R : never) : never; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+/**
+ * Type helper to extract the parameters of a helper method.
+ * @template H - The helper namespace key
+ * @template M - The method name on the helper namespace
+ */
+export type HelperMethodParameters<
+    H extends HelperNamespaceKeyMap,
+    M extends HelperMethodName<H>,
+> = M extends keyof Clients[H] ? (Clients[H][M] extends (...args: infer P) => any ? P : never) : never; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /**
  * Structured response type for API operations
@@ -96,6 +151,30 @@ function parseResourceParameter<T = [unknown, string, unknown[]]>(resourceParam:
     }
 
     return resource as T;
+}
+
+/**
+ * Resolves a helper namespace function and parsed options from a resource tuple.
+ * Used by both loader and action to avoid duplicating validation logic.
+ * @param clients - The Clients object from createApiClients
+ * @param resource - The parsed resource tuple [client, method, payload]
+ * @returns The resolved helper function (bound), helper name, and parsed options
+ */
+function resolveHelper(clients: ReturnType<typeof createApiClients>, resource: [unknown, unknown, unknown]) {
+    const namespace = resource[1] as string;
+    if (!HELPER_NAMESPACES.has(namespace)) {
+        throw new TypeError(`Unknown helper namespace: "${namespace}"`);
+    }
+    const { helperName, ...options } = (resource[2] as Record<string, unknown>) || {};
+    const helper = clients[namespace as HelperNamespaceKeyMap] as unknown as Record<string, unknown>;
+    const methodName = String(helperName);
+
+    if (!helper || typeof helper[methodName] !== 'function') {
+        throw new TypeError(`Helper method not found: "helpers.${namespace}.${methodName}"`);
+    }
+
+    const fn = helper[methodName].bind(helper) as (...args: unknown[]) => Promise<unknown>;
+    return { fn, helperName: methodName, options };
 }
 
 /**
@@ -133,8 +212,17 @@ export async function loader<
 
     try {
         const clients = createApiClients(context);
+
+        // Handle helper namespace calls (e.g., ['helpers', 'basket', { helperName: 'getOrCreateBasket', ...options }])
+        if ((resource[0] as string) === 'helpers') {
+            const { fn, options } = resolveHelper(clients, resource as [unknown, unknown, unknown]);
+            // Helpers return data directly (not { data, response })
+            const data = (await fn(Object.keys(options).length > 0 ? options : undefined)) as Awaited<R>;
+            return { success: true, data };
+        }
+
         const clientKey = resource[0] as keyof Clients;
-        const client = clients[clientKey] as any;
+        const client = clients[clientKey] as Record<string, unknown>;
         const methodName = resource[1] as string;
 
         if (!client || typeof client[methodName] !== 'function') {
@@ -142,13 +230,13 @@ export async function loader<
         }
 
         // Parameters are already in the new format: { params: { path: {...}, query: {...} }, body: {...} }
-        const options = (resource[2] as any) || {};
+        const options = (resource[2] as Record<string, unknown>) || {};
 
         // Call the method - new API returns { data, response }
-        const result = await client[methodName](options);
+        const result = (await client[methodName](options)) as Record<string, unknown>;
 
         // Extract data from the new response format
-        const data = result?.data;
+        const data = result?.data as Awaited<R>;
 
         return {
             success: true,
@@ -159,6 +247,9 @@ export async function loader<
             error: reason,
             client: resource[0],
             method: resource[1],
+            ...((resource[0] as string) === 'helpers' && {
+                helper: (resource[2] as Record<string, unknown>)?.helperName,
+            }),
         });
         let errorMessage: string;
         // Use getErrorMessage for ApiError instances (new Commerce SDK format)
@@ -243,21 +334,39 @@ export async function action<
             }
         }
 
+        const clients = createApiClients(context);
+
+        // Handle helper namespace calls
+        if ((resource[0] as string) === 'helpers') {
+            const { fn, options } = resolveHelper(clients, resource as [unknown, unknown, unknown]);
+
+            // Merge strategy depends on the helper's argument shape:
+            // - If options already has a `body` key (e.g., basket helpers), merge form data into body
+            // - Otherwise (e.g., auth helpers with flat args), merge form data at top level
+            const mergedOptions =
+                'body' in options
+                    ? { ...options, body: { ...(options.body as Record<string, unknown>), ...bodyData } }
+                    : { ...options, ...bodyData };
+
+            // Helpers return data directly (not { data, response })
+            const data = (await fn(Object.keys(mergedOptions).length > 0 ? mergedOptions : undefined)) as Awaited<R>;
+            return { success: true, data };
+        }
+
         // Parameters are already in the new format: { params: { path: {...}, query: {...} }, body: {...} }
-        const options = (resource[2] as any) || {};
+        const options = (resource[2] as Record<string, unknown>) || {};
 
         // Merge form data into the body
         const newParams = {
             ...options,
             body: {
-                ...(options.body || {}),
+                ...((options.body as Record<string, unknown>) || {}),
                 ...bodyData,
             },
         };
 
-        const clients = createApiClients(context);
         const clientKey = resource[0] as keyof Clients;
-        const client = clients[clientKey] as any;
+        const client = clients[clientKey] as Record<string, unknown>;
         const methodName = resource[1] as string;
 
         if (!client || typeof client[methodName] !== 'function') {
@@ -265,10 +374,10 @@ export async function action<
         }
 
         // Call the method - new API returns { data, response }
-        const result = await client[methodName](newParams);
+        const result = (await client[methodName](newParams)) as Record<string, unknown>;
 
         // Extract data from the new response format
-        const data = result?.data;
+        const data = result?.data as Awaited<R>;
 
         return {
             success: true,
@@ -279,6 +388,9 @@ export async function action<
             error: reason,
             client: resource[0],
             method: resource[1],
+            ...((resource[0] as string) === 'helpers' && {
+                helper: (resource[2] as Record<string, unknown>)?.helperName,
+            }),
         });
         let errorMessage: string;
         // Use getErrorMessage for ApiError instances (new Commerce SDK format)

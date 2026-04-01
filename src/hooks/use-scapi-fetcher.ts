@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 import { useCallback, useMemo, useRef } from 'react';
-import { useFetcher, type FetcherWithComponents, type FetcherSubmitOptions } from 'react-router';
+import { useFetcher, type FetcherWithComponents, type FetcherSubmitOptions, type SubmitTarget } from 'react-router';
 import type {
     CommerceSdkKeyMap,
     CommerceSdkMethodName,
     CommerceSdkMethodReturnType,
     CommerceSdkMethodParameters,
+    HelperNamespaceKeyMap,
+    HelperMethodName,
+    HelperMethodReturnType,
+    HelperMethodParameters,
     ApiResponse,
 } from '@/routes/resource.api.client.$resource';
 import { encodeBase64Url } from '@/lib/url';
@@ -46,6 +50,18 @@ type CommerceSdkMethodBody<C extends CommerceSdkKeyMap, M extends CommerceSdkMet
 /** Resolves the return payload type for a given Commerce SDK client and method */
 type CommerceSdkMethodPayload<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> = UnwrapApiResponse<
     Awaited<CommerceSdkMethodReturnType<C, M>>
+>;
+
+/** Infers the first argument type for a helper method */
+type HelperMethodArgs<H extends HelperNamespaceKeyMap, M extends HelperMethodName<H>> = HelperMethodParameters<H, M>[0];
+
+/** Extracts the request body type from a helper method, or falls back to args */
+type HelperMethodBody<H extends HelperNamespaceKeyMap, M extends HelperMethodName<H>> =
+    HelperMethodArgs<H, M> extends { body: infer B } ? B : HelperMethodArgs<H, M>;
+
+/** Resolves the return payload type for a helper method */
+type HelperMethodPayload<H extends HelperNamespaceKeyMap, M extends HelperMethodName<H>> = Awaited<
+    HelperMethodReturnType<H, M>
 >;
 
 /**
@@ -144,17 +160,60 @@ export type ScapiFetcher<TData = unknown, TSubmitPayload = unknown> = Omit<
  *   };
  * }
  */
+/**
+ * Overload for calling helper namespace methods.
+ * Helpers are domain-specific utility methods (e.g., basket, auth) that are not direct SCAPI proxy operations.
+ *
+ * @example
+ * ```typescript
+ * const fetcher = useScapiFetcher('helpers', 'basket', 'getOrCreateBasket', {
+ *   params: { path: { basketId: 'basket-123' } },
+ *   body: { currency: 'USD' }
+ * });
+ * ```
+ */
+export function useScapiFetcher<H extends HelperNamespaceKeyMap, M extends HelperMethodName<H>>(
+    type: 'helpers',
+    namespace: H,
+    method: M,
+    // Options is required when the helper method's first parameter is required,
+    // and optional when the method accepts no args or has an optional parameter.
+    ...args: [] extends HelperMethodParameters<H, M>
+        ? [options?: HelperMethodArgs<H, M>]
+        : [options: HelperMethodArgs<H, M>]
+): ScapiFetcher<HelperMethodPayload<H, M>, HelperMethodBody<H, M>>;
+
+/**
+ * Overload for calling regular Commerce SDK client methods.
+ *
+ * @example
+ * ```typescript
+ * const fetcher = useScapiFetcher('shopperProducts', 'getCategory', {
+ *   params: { query: { id: 'test', levels: 2 } }
+ * });
+ * ```
+ */
 export function useScapiFetcher<
     C extends CommerceSdkKeyMap,
     M extends CommerceSdkMethodName<C>,
     P extends CommerceSdkMethodArgs<C, M> = CommerceSdkMethodArgs<C, M>,
     B extends CommerceSdkMethodBody<C, M> = CommerceSdkMethodBody<C, M>,
->(client: C, method: M, options: P): ScapiFetcher<CommerceSdkMethodPayload<C, M>, B> {
+>(client: C, method: M, options: P): ScapiFetcher<CommerceSdkMethodPayload<C, M>, B>;
+
+export function useScapiFetcher(
+    clientOrHelpers: string,
+    methodOrNamespace: string,
+    optionsOrMethod?: Record<string, unknown> | string,
+    helperOptions?: Record<string, unknown>
+): ScapiFetcher<unknown, unknown> {
+    const isHelper = clientOrHelpers === 'helpers';
+    const options = isHelper ? (helperOptions ?? {}) : optionsOrMethod;
+
     // Memoize the method parameters to prevent creating new fetchers on every render
     // We use refs to track the previous options string and params for deep comparison
     const prevOptionsStringRef = useRef<string>('');
-    const prevMethodParamsRef = useRef<P>(options);
-    const currentOptionsRef = useRef<P>(options);
+    const prevMethodParamsRef = useRef(options);
+    const currentOptionsRef = useRef(options);
 
     // Update the current options ref on every render
     currentOptionsRef.current = options;
@@ -169,9 +228,18 @@ export function useScapiFetcher<
         return prevMethodParamsRef.current;
     }, [optionsString]);
 
-    const parameters = JSON.stringify(methodParams);
-    const resource = encodeBase64Url(`["${client}","${method}",${parameters}]`);
-    const fetcher = useFetcher<ApiResponse<CommerceSdkMethodPayload<C, M>>>({ key: resource });
+    // Build the resource encoding
+    const resource = isHelper
+        ? encodeBase64Url(
+              JSON.stringify([
+                  'helpers',
+                  methodOrNamespace,
+                  { helperName: optionsOrMethod as string, ...(methodParams as Record<string, unknown>) },
+              ])
+          )
+        : encodeBase64Url(JSON.stringify([clientOrHelpers, methodOrNamespace, methodParams]));
+
+    const fetcher = useFetcher<ApiResponse<unknown>>({ key: resource });
 
     /**
      * Load method for handling GET requests using loader/clientLoader functions.
@@ -195,9 +263,9 @@ export function useScapiFetcher<
      * @returns Promise that resolves when the request completes
      */
     const submit = useCallback(
-        (payload?: B, _opts?: Omit<FetcherSubmitOptions, 'action' | 'method'>): Promise<void> => {
+        (payload?: unknown, _opts?: Omit<FetcherSubmitOptions, 'action' | 'method'>): Promise<void> => {
             // Invoke fetcher submit method for actions with the provided target data
-            return fetcher.submit(payload ?? {}, {
+            return fetcher.submit((payload ?? {}) as SubmitTarget, {
                 ..._opts,
                 method: 'POST',
                 action: `${RESOURCE_API_ROUTE}/${resource}`,
@@ -207,7 +275,6 @@ export function useScapiFetcher<
     );
 
     return {
-        // ...(fetcher as unknown as FetcherWithComponents<CommerceSdkMethodPayload<C, M>>),
         ...fetcher,
         load,
         submit,
