@@ -34,7 +34,7 @@ export function initializeRegistry(targetRegistry = registry): void {
     targetRegistry.registerImporter('odyssey_base.pdImage', () => import('../components/dynamic-image/index'));
     targetRegistry.registerImporter('odyssey_base.popularCategories', () => import('../components/home/popular-categories/index'), { loader: 'loader' });
     targetRegistry.registerImporter('odyssey_base.popularCategory', () => import('../components/home/popular-category/index'), { loader: 'loader' });
-    targetRegistry.registerImporter('odyssey_base.productCarousel', () => import('../components/product-carousel/index'), { loader: 'loader', fallback: 'fallback' });
+    targetRegistry.registerImporter('odyssey_base.productCarousel', () => import('../components/product-carousel/index'), { fallback: 'fallback' });
     targetRegistry.registerImporter('odyssey_base.productRecommendations', () => import('../components/product-recommendations/index'));
     targetRegistry.registerImporter('odyssey_base.productTile', () => import('../components/product-tile/index'));
 }

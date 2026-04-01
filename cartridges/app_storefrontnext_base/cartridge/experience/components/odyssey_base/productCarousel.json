@@ -3,7 +3,18 @@
     "description": "A responsive, interactive carousel that displays a collection of product cards in a horizontally scrollable layout.",
     "group": "odyssey_base",
     "arch_type": "headless",
-    "region_definitions": [],
+    "region_definitions": [
+        {
+            "id": "products",
+            "name": "Products",
+            "component_type_inclusions": [
+                {
+                    "type_id": "odyssey_base.productTile"
+                }
+            ],
+            "max_components": 12
+        }
+    ],
     "attribute_definition_groups": [
         {
             "id": "productCarousel",
@@ -15,7 +26,16 @@
                     "name": "Title",
                     "type": "string",
                     "required": false,
-                    "description": "Field: title"
+                    "description": "Field: title",
+                    "default_value": ""
+                },
+                {
+                    "id": "limit",
+                    "name": "Product Limit",
+                    "type": "integer",
+                    "required": false,
+                    "description": "Maximum number of products to fetch for the carousel.",
+                    "default_value": 12
                 }
             ]
         }

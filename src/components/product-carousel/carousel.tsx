@@ -25,6 +25,8 @@ import DynamicImageProvider from '@/providers/dynamic-image';
 import withSuspense from '@/components/with-suspense';
 import ProductCarouselSkeleton from './skeleton';
 import { cn } from '@/lib/utils';
+import type { ComponentType } from '@/components/region';
+import { Component } from '@/components/region/component';
 
 export interface ProductCarouselProps {
     /** Array of product search hits to display in the carousel */
@@ -41,6 +43,8 @@ export interface ProductCarouselProps {
     titleClassName?: string;
     /** Optional className to apply to the carousel wrapper */
     className?: string;
+    /** Optional Page Designer component for container rendering mode */
+    component?: ComponentType;
 }
 
 // Responsive size of the product images in the product carousel
@@ -94,40 +98,51 @@ export default function ProductCarousel({
     shopAllText,
     titleClassName,
     className,
+    component,
 }: ProductCarouselProps): ReactNode {
     const { t } = useTranslation('common');
+    const productsRegion = component?.regions?.find((region) => region.id === 'products');
+    const regionComponents = productsRegion?.components ?? [];
+    const resolvedTitle = title || ''; // put empty string as the title since dont currently have i18n for these default values.
 
-    // Safety check for undefined or null products
-    if (!products || products.length === 0) {
-        return (
-            <div className={cn(className)} role="status" aria-live="polite">
-                {t('noProductsFound')}
-            </div>
-        );
-    }
-
-    const titleSection = title && (
+    const titleSection = (
         <div className="flex items-center justify-between mb-6">
             {subtitle ? (
                 <div>
-                    <h2 className={titleClassName ?? defaultTitleClassName}>{title}</h2>
+                    <h2 className={titleClassName ?? defaultTitleClassName}>{resolvedTitle}</h2>
                     <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
                 </div>
             ) : (
-                <h2 className={titleClassName ?? defaultTitleClassName}>{title}</h2>
+                <h2 className={titleClassName ?? defaultTitleClassName}>{resolvedTitle}</h2>
             )}
-            {shopAllText &&
-                (shopAllUrl ? (
-                    <Link
-                        to={shopAllUrl}
-                        className="text-sm font-medium text-primary hover:text-primary/80 transition-colors shrink-0 ml-4">
-                        {shopAllText}
-                    </Link>
-                ) : (
-                    <span className="text-sm font-medium text-primary shrink-0 ml-4">{shopAllText}</span>
-                ))}
+            {shopAllText && (
+                <div>
+                    {shopAllUrl ? (
+                        <Link
+                            to={shopAllUrl}
+                            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors shrink-0 ml-4">
+                            {shopAllText}
+                        </Link>
+                    ) : (
+                        <span className="text-sm font-medium text-primary shrink-0 ml-4">{shopAllText}</span>
+                    )}
+                </div>
+            )}
         </div>
     );
+
+    // Safety check for undefined or null products.
+    // In Page Designer container mode, region components are the source of truth.
+    if ((!products || products.length === 0) && regionComponents.length === 0) {
+        return (
+            <div className={cn('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12', className)}>
+                {titleSection}
+                <div role="status" aria-live="polite">
+                    {t('selectProduct')}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={cn('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12', className)}>
@@ -138,21 +153,41 @@ export default function ProductCarousel({
                 opts={{
                     align: 'start',
                 }}
-                aria-label={title ? `${title} carousel` : t('productCarousel')}>
+                aria-label={`${resolvedTitle} carousel`}>
                 <CarouselContent className="-ml-4 items-stretch flex-nowrap">
-                    <ProductTileProvider>
-                        <DynamicImageProvider value={{ widths: responsiveImageWidths }}>
-                            {products.map((product) => (
+                    {regionComponents.length > 0 && productsRegion ? (
+                        regionComponents.map((comp) => {
+                            const typedComp = comp as ComponentType;
+                            const key = typedComp.contentLinkUuid ?? typedComp.id;
+                            return (
                                 <CarouselItem
-                                    key={product.productId}
+                                    key={key}
                                     className="basis-1/2 sm:basis-1/3 md:basis-1/4 py-1 flex pl-4 min-w-0">
                                     <div className="w-full max-w-full min-w-0 flex">
-                                        <ProductTile product={product} className="h-full w-full" />
+                                        <Component
+                                            component={typedComp}
+                                            regionId={productsRegion.id}
+                                            className="h-full w-full"
+                                        />
                                     </div>
                                 </CarouselItem>
-                            ))}
-                        </DynamicImageProvider>
-                    </ProductTileProvider>
+                            );
+                        })
+                    ) : (
+                        <ProductTileProvider>
+                            <DynamicImageProvider value={{ widths: responsiveImageWidths }}>
+                                {products.map((product) => (
+                                    <CarouselItem
+                                        key={product.productId}
+                                        className="basis-1/2 sm:basis-1/3 md:basis-1/4 py-1 flex pl-4 min-w-0">
+                                        <div className="w-full max-w-full min-w-0 flex">
+                                            <ProductTile product={product} className="h-full w-full" />
+                                        </div>
+                                    </CarouselItem>
+                                ))}
+                            </DynamicImageProvider>
+                        </ProductTileProvider>
+                    )}
                 </CarouselContent>
                 <CarouselPrevious className="flex left-0 -translate-x-1/2 size-9 rounded-lg shadow-md" />
                 <CarouselNext className="flex right-0 translate-x-1/2 size-9 rounded-lg shadow-md" />

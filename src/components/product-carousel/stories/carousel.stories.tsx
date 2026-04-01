@@ -122,8 +122,7 @@ export const NoTitle: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const title = canvas.queryByRole('heading', { level: 2 });
-        await expect(title).not.toBeInTheDocument();
+        await expect(canvas.queryByText('Featured Products')).not.toBeInTheDocument();
     },
 };
 
@@ -135,7 +134,7 @@ export const Empty: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText('No products found')).toBeInTheDocument();
+        await expect(canvas.getByText('Select a product')).toBeInTheDocument();
     },
 };
 
