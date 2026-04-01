@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, useRef } from 'react';
-import { Form } from 'react-router';
+import { type ReactElement, useMemo, useRef } from 'react';
+import { Form, useLocation } from 'react-router';
 import { Link } from '@/components/link';
 import { Input } from '@/components/ui/input';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
 import { useTranslation } from 'react-i18next';
+import { getLoginModeHref } from './get-login-mode-href';
 
 interface StandardLoginFormProps {
     error?: string;
@@ -36,7 +37,11 @@ export default function StandardLoginForm({
     actionParams,
 }: StandardLoginFormProps): ReactElement {
     const formRef = useRef<HTMLFormElement>(null);
+    const location = useLocation();
     const { t } = useTranslation('login');
+    const passwordlessModeHref = useMemo(() => {
+        return getLoginModeHref(location.search, 'passwordless');
+    }, [location.search]);
 
     return (
         <Form method="post" className="space-y-6" ref={formRef}>
@@ -88,7 +93,7 @@ export default function StandardLoginForm({
             <FormSubmitButton defaultText={t('signIn')} submittingText={t('signingIn')} />
             {isPasswordlessEnabled && (
                 <div className="text-center">
-                    <Link to="/login?mode=passwordless" className="text-primary hover:text-primary/80 text-sm">
+                    <Link to={passwordlessModeHref} className="text-primary hover:text-primary/80 text-sm">
                         {t('loginWithoutPassword')}
                     </Link>
                 </div>

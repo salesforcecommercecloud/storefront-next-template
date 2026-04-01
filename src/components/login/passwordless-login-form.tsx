@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ReactElement } from 'react';
-import { Form } from 'react-router';
+import { type ReactElement, useMemo } from 'react';
+import { Form, useLocation } from 'react-router';
 import { Link } from '@/components/link';
 import { Input } from '@/components/ui/input';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
 import { useTranslation } from 'react-i18next';
+import { getLoginModeHref } from './get-login-mode-href';
 
 interface PasswordlessLoginFormProps {
     error?: string;
@@ -31,7 +32,12 @@ export default function PasswordlessLoginForm({
     isPasswordlessEnabled,
     redirectPath,
 }: PasswordlessLoginFormProps): ReactElement {
+    const location = useLocation();
     const { t } = useTranslation('login');
+    const passwordModeHref = useMemo(() => {
+        return getLoginModeHref(location.search, 'password');
+    }, [location.search]);
+
     return (
         <Form method="post" className="space-y-6">
             {error && (
@@ -66,7 +72,7 @@ export default function PasswordlessLoginForm({
             {/* Toggle to password login if enabled */}
             {isPasswordlessEnabled && (
                 <div className="text-center">
-                    <Link to="/login?mode=password" className="text-primary hover:text-primary/80 text-sm">
+                    <Link to={passwordModeHref} className="text-primary hover:text-primary/80 text-sm">
                         {t('loginWithPassword')}
                     </Link>
                 </div>

@@ -31,9 +31,9 @@ const mockNavigation = {
 };
 
 // Helper to render with router context
-function renderWithRouter(ui: React.ReactElement) {
+function renderWithRouter(ui: React.ReactElement, initialEntries: string[] = ['/']) {
     const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{ui}</AllProvidersWrapper> }], {
-        initialEntries: ['/'],
+        initialEntries,
     });
     return render(<RouterProvider router={router} />);
 }
@@ -159,6 +159,19 @@ describe('StandardLoginForm', () => {
             });
             expect(passwordlessLink).toBeInTheDocument();
             expect(passwordlessLink).toHaveAttribute('href', '/global/en-GB/login?mode=passwordless');
+        });
+
+        test('preserves returnUrl and pending action params when switching mode', () => {
+            renderWithRouter(<StandardLoginForm isPasswordlessEnabled={true} />, [
+                '/login?returnUrl=%2Fproduct%2F123&action=addToWishlist&actionParams=%7B%22productId%22%3A%22123%22%7D',
+            ]);
+            const passwordlessLink = screen.getByRole('link', {
+                name: t('login:loginWithoutPassword'),
+            });
+            expect(passwordlessLink).toHaveAttribute(
+                'href',
+                '/global/en-GB/login?returnUrl=%2Fproduct%2F123&action=addToWishlist&actionParams=%7B%22productId%22%3A%22123%22%7D&mode=passwordless'
+            );
         });
 
         test('does not render passwordless login link when disabled', () => {
