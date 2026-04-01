@@ -62,9 +62,6 @@ function CategoryBanner({
     const config = useConfig<AppConfig>();
     const imageSrc = toImageUrl({ src: (category?.c_slotBannerImage as string) ?? '', config });
 
-    // Transform any image URLs in the HTML banner to use DIS with WebP optimization
-    const transformedBannerHtml = transformHtmlImageUrls(category.c_headerMenuBanner || '', config);
-
     return (
         <NavigationMenuLink asChild>
             <NavLink {...props} to={`/category/${category.id}`}>
@@ -76,7 +73,7 @@ function CategoryBanner({
                     />
                 ) : (
                     // eslint-disable-next-line react/no-danger
-                    <div className="ml-auto" dangerouslySetInnerHTML={{ __html: transformedBannerHtml }} />
+                    <div className="ml-auto" dangerouslySetInnerHTML={{ __html: category.c_headerMenuBanner || '' }} />
                 )}
             </NavLink>
         </NavigationMenuLink>

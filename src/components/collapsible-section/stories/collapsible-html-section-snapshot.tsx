@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { expect, test, describe, afterEach, vi } from 'vitest';
+import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
-import { mockConfig } from '@/test-utils/config';
-
-vi.mock('@salesforce/storefront-next-runtime/config', () => ({
-    useConfig: () => mockConfig,
-}));
 // eslint-disable-next-line import/no-namespace
 import * as CollapsibleHtmlSectionStories from './collapsible-html-section.stories';
 import { render, cleanup } from '@testing-library/react';

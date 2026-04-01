@@ -15,14 +15,9 @@
  */
 
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect } from 'vitest';
 import CollapsibleHtmlSection from './collapsible-html-section';
 import { HTML_CONTENT_STYLES } from '@/components/html-fragment/styles';
-import { mockConfig } from '@/test-utils/config';
-
-vi.mock('@salesforce/storefront-next-runtime/config', () => ({
-    useConfig: () => mockConfig,
-}));
 
 /** Click the summary and wait for all React effects to flush. */
 const openSection = (container: HTMLElement): Promise<void> =>

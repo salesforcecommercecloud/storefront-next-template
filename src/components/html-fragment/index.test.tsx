@@ -15,15 +15,10 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect } from 'vitest';
 import { createRoutesStub } from 'react-router';
 import HtmlFragment from '.';
 import { HTML_CONTENT_STYLES } from './styles';
-import { mockConfig } from '@/test-utils/config';
-
-vi.mock('@salesforce/storefront-next-runtime/config', () => ({
-    useConfig: () => mockConfig,
-}));
 
 const renderHtmlFragment = (props: React.ComponentProps<typeof HtmlFragment>) => {
     const Stub = createRoutesStub([
