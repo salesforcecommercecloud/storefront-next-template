@@ -4864,8 +4864,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.5.329:
-    resolution: {integrity: sha512-/4t+AS1l4S3ZC0Ja7PHFIWeBIxGA3QGqV8/yKsP36v7NcyUCl+bIcmw6s5zVuMIECWwBrAK/6QLzTmbJChBboQ==}
+  electron-to-chromium@1.5.330:
+    resolution: {integrity: sha512-jFNydB5kFtYUobh4IkWUnXeyDbjf/r9gcUEXe1xcrcUxIGfTdzPXA+ld6zBRbwvgIGVzDll/LTIiDztEtckSnA==}
 
   embla-carousel-react@8.6.0:
     resolution: {integrity: sha512-0/PjqU7geVmo6F734pmPqpyHqiM99olvyecY7zdweCw+6tKEXnrE90pBiBbMMU8s5tICemzpQ3hi5EpxzGW+JA==}
@@ -7248,8 +7248,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright-core@1.58.2:
-    resolution: {integrity: sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg==}
+  playwright-core@1.59.0:
+    resolution: {integrity: sha512-PW/X/IoZ6BMUUy8rpwHEZ8Kc0IiLIkgKYGNFaMs5KmQhcfLILNx9yCQD0rnWeWfz1PNeqcFP1BsihQhDOBCwZw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -11606,7 +11606,7 @@ snapshots:
       jest-watch-typeahead: 3.0.1(jest@30.3.0(@types/node@24.12.0))
       nyc: 15.1.0
       playwright: 1.58.0
-      playwright-core: 1.58.2
+      playwright-core: 1.59.0
       rimraf: 3.0.2
       storybook: 10.0.6(@testing-library/dom@10.4.1)(msw@2.11.3(@types/node@24.12.0)(typescript@5.9.3))(prettier@3.6.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.1.7(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.21.0))
       uuid: 8.3.2
@@ -12827,7 +12827,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.10.13
       caniuse-lite: 1.0.30001782
-      electron-to-chromium: 1.5.329
+      electron-to-chromium: 1.5.330
       node-releases: 2.0.36
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
 
@@ -13374,7 +13374,7 @@ snapshots:
     dependencies:
       jake: 10.9.4
 
-  electron-to-chromium@1.5.329: {}
+  electron-to-chromium@1.5.330: {}
 
   embla-carousel-react@8.6.0(react@19.2.3):
     dependencies:
@@ -16413,7 +16413,7 @@ snapshots:
 
   playwright-core@1.58.0: {}
 
-  playwright-core@1.58.2: {}
+  playwright-core@1.59.0: {}
 
   playwright@1.58.0:
     dependencies:

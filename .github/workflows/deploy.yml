@@ -17,6 +17,18 @@ name: Deploy
 #                SFCC_CODE_VERSION (optional, auto-generated if unset),
 #                SFCC_ACCOUNT_MANAGER_HOST (optional)
 #
+#     Prerequisites:
+#       The SFCC_CLIENT_ID / SFCC_CLIENT_SECRET API client must be configured
+#       with the following permissions in Business Manager:
+#
+#       1. WebDAV file access (for uploading cartridge code):
+#          https://salesforcecommercecloud.github.io/b2c-developer-tooling/guide/authentication.html#option-b-oauth-based-webdav
+#
+#       2. OCAPI Data API access for code version activation (reload: true):
+#          The `reload` flag activates the deployed code version on the instance,
+#          which requires the code_versions OCAPI resource to be configured.
+#          https://salesforcecommercecloud.github.io/b2c-developer-tooling/guide/authentication.html#configuring-ocapi-in-business-manager
+#
 # Shared (optional):
 #   Variables: SFCC_LOG_LEVEL (trace, debug, info, warn, error, silent)
 #
@@ -155,4 +167,6 @@ jobs:
           client-id: ${{ vars.SFCC_CLIENT_ID }}
           client-secret: ${{ secrets.SFCC_CLIENT_SECRET }}
           account-manager-host: ${{ vars.SFCC_ACCOUNT_MANAGER_HOST }}
+          # Activate the deployed code version on the instance (requires OCAPI code_versions access).
+          # Note: this flag will be renamed to `activate` in a future version of the action.
           reload: 'true'
