@@ -54,6 +54,8 @@ interface PaymentProps {
     disabled?: boolean;
     showBillingSameAsShipping?: boolean;
     paymentSubmissionRef?: PaymentSubmissionRef;
+    /** When true, hide the "save payment to profile" checkbox */
+    hidePaymentSaveCheckbox?: boolean;
 }
 
 export default function Payment({
@@ -66,6 +68,7 @@ export default function Payment({
     disabled = false,
     showBillingSameAsShipping = true,
     paymentSubmissionRef,
+    hidePaymentSaveCheckbox = false,
 }: PaymentProps) {
     const cart = useBasket();
     const customerProfile = useCustomerProfile();
@@ -499,9 +502,6 @@ export default function Payment({
         }
     }, [actionData?.fieldErrors, form]);
 
-    // For single page layout, always show the component but in collapsed state when not editing
-    // The ToggleCard will handle the collapsed/expanded state based on editing prop
-
     const stepTitle = (
         <span className="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground">
             {t('payment.title')}
@@ -669,7 +669,7 @@ export default function Payment({
                                                     form={form}
                                                     autoFocus={isEditing && paymentRadioValue === 'new'}
                                                 />
-                                                {customerProfile?.customer?.customerId ? (
+                                                {customerProfile?.customer?.customerId && !hidePaymentSaveCheckbox ? (
                                                     <FormField
                                                         control={form.control}
                                                         name="savePaymentToProfile"

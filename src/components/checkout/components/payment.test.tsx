@@ -436,6 +436,21 @@ describe('Payment Integration Tests', () => {
             ).not.toBeInTheDocument();
         });
 
+        test('does not show save payment checkbox when hidePaymentSaveCheckbox is true', () => {
+            const profileWithCustomerId = {
+                customer: { email: 'test@example.com', customerId: 'cust-123' },
+                addresses: [],
+                paymentInstruments: [],
+            };
+            useCustomerProfile.mockReturnValue(profileWithCustomerId);
+
+            render(<Payment {...createDefaultProps({ hidePaymentSaveCheckbox: true })} />);
+
+            expect(
+                screen.queryByRole('checkbox', { name: /save this payment|savePaymentToProfile|future use/i })
+            ).not.toBeInTheDocument();
+        });
+
         test('save payment checkbox can be toggled when visible', async () => {
             const user = userEvent.setup();
             const profileWithCustomerId = {

@@ -229,6 +229,7 @@ export default function CheckoutFormPage({
         placeOrderFetcher,
         isSubmitting,
         handleCreateAccountPreferenceChange,
+        shouldCreateAccount,
     } = useCheckoutActions({ paymentSubmissionRef, otpFlowActiveRef });
 
     /**
@@ -628,6 +629,7 @@ export default function CheckoutFormPage({
                                     actionData={paymentFetcher.data}
                                     showBillingSameAsShipping={showAddressAndOptions}
                                     paymentSubmissionRef={paymentSubmissionRef}
+                                    hidePaymentSaveCheckbox={shouldCreateAccount}
                                     {...paymentState}
                                 />
                             </UITarget>
