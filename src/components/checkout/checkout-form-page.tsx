@@ -364,12 +364,20 @@ export default function CheckoutFormPage({
 
             setIsPlaceOrderPending(true);
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = true;
-            paymentSubmissionRef.current.options = { savePaymentToProfile: paymentData.savePaymentToProfile ?? false };
+            paymentSubmissionRef.current.options = {
+                savePaymentToProfile: paymentData.savePaymentToProfile ?? false,
+                useDifferentBilling: paymentData.useDifferentBilling,
+            };
             submitPayment(paymentData);
         } else {
             setIsPlaceOrderPending(true);
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
-            paymentSubmissionRef.current.options = null;
+            paymentSubmissionRef.current.options = paymentData
+                ? {
+                      savePaymentToProfile: paymentData.savePaymentToProfile ?? false,
+                      useDifferentBilling: paymentData.useDifferentBilling,
+                  }
+                : null;
             submitPlaceOrder();
         }
     };
@@ -627,7 +635,7 @@ export default function CheckoutFormPage({
                                     onSubmit={handlePaymentSubmit}
                                     isLoading={isSubmitting('payment')}
                                     actionData={paymentFetcher.data}
-                                    showBillingSameAsShipping={showAddressAndOptions}
+                                    showUseDifferentBilling={showAddressAndOptions}
                                     paymentSubmissionRef={paymentSubmissionRef}
                                     hidePaymentSaveCheckbox={shouldCreateAccount}
                                     {...paymentState}

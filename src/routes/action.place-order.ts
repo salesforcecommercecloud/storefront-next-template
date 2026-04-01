@@ -31,7 +31,7 @@ import {
     updateCustomerContactInfo,
     getCustomerProfileForCheckout,
 } from '@/lib/api/customer';
-import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { createErrorResponse } from '@/lib/error-handler';
 import { getTranslation } from '@/lib/i18next';
 import { buildUrlFromContext } from '@/lib/url.server';
@@ -42,6 +42,47 @@ import { getLogger } from '@/lib/logger.server';
 function placeOrderErrorResponse(body: { success: false; error: string; step: string }) {
     return Response.json(body, { status: 400 });
 }
+
+const normalizeAddressField = (value: string | undefined) => (value ?? '').trim().toLowerCase();
+
+const isSameAddress = (
+    a:
+        | {
+              firstName?: string;
+              lastName?: string;
+              address1?: string;
+              address2?: string;
+              city?: string;
+              stateCode?: string;
+              postalCode?: string;
+              countryCode?: string;
+          }
+        | undefined,
+    b:
+        | {
+              firstName?: string;
+              lastName?: string;
+              address1?: string;
+              address2?: string;
+              city?: string;
+              stateCode?: string;
+              postalCode?: string;
+              countryCode?: string;
+          }
+        | undefined
+) => {
+    if (!a || !b) return false;
+    return (
+        normalizeAddressField(a.firstName) === normalizeAddressField(b.firstName) &&
+        normalizeAddressField(a.lastName) === normalizeAddressField(b.lastName) &&
+        normalizeAddressField(a.address1) === normalizeAddressField(b.address1) &&
+        normalizeAddressField(a.address2) === normalizeAddressField(b.address2) &&
+        normalizeAddressField(a.city) === normalizeAddressField(b.city) &&
+        normalizeAddressField(a.stateCode) === normalizeAddressField(b.stateCode) &&
+        normalizeAddressField(a.postalCode) === normalizeAddressField(b.postalCode) &&
+        normalizeAddressField(a.countryCode) === normalizeAddressField(b.countryCode)
+    );
+};
 
 /**
  * Server action for placing an order.
@@ -55,6 +96,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const formData = await request.formData();
         const shouldCreateAccount = formData.get('shouldCreateAccount') === 'true';
         const savePaymentToProfile = formData.get('savePaymentToProfile') === 'true';
+        const useDifferentBilling = formData.get('useDifferentBilling') === 'true';
 
         // Get current basket
         const basketResource = await getBasket(context);
@@ -266,6 +308,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         // Save checkout information to customer profile
         if (auth.customerId) {
+            const customerId = auth.customerId;
             const savePromises: Promise<unknown>[] = [];
 
             // Detect newly registered shoppers whose profile is still empty (in case they exit checkout without saving)
@@ -294,7 +337,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
                     savePromises.push(
                         savePaymentMethodToCustomer(
                             context,
-                            auth.customerId,
+                            customerId,
                             order.paymentInstruments[0] as PaymentInstrumentForSave
                         ).catch((error) => {
                             logger.error('PlaceOrder: failed to save payment method', { error });
@@ -307,18 +350,30 @@ export async function action({ request, context }: ActionFunctionArgs) {
                     savePromises.push(
                         saveShippingAddressToCustomer(
                             context,
-                            auth.customerId,
-                            order.shipments[0].shippingAddress
+                            customerId,
+                            order.shipments[0].shippingAddress,
+                            true
                         ).catch((error) => {
                             logger.error('PlaceOrder: failed to save shipping address', { error });
                         })
                     );
                 }
 
-                // Save billing address
-                if (order.billingAddress) {
+                // Save billing address only when shopper explicitly selected
+                // "use different billing address" in checkout payment.
+                if (useDifferentBilling && order.billingAddress) {
+                    const orderBillingAddress = order.billingAddress;
                     savePromises.push(
-                        saveBillingAddressToCustomer(context, auth.customerId, order.billingAddress).catch((error) => {
+                        (async () => {
+                            const customerProfile = await getCustomerProfileForCheckout(context, customerId);
+                            const existingAddresses = getAddressBookFromCustomer(customerProfile ?? undefined);
+                            const alreadySaved = existingAddresses.some((address) =>
+                                isSameAddress(address, orderBillingAddress)
+                            );
+                            if (!alreadySaved) {
+                                await saveBillingAddressToCustomer(context, customerId, orderBillingAddress);
+                            }
+                        })().catch((error) => {
                             logger.error('PlaceOrder: failed to save billing address', { error });
                         })
                     );
@@ -327,7 +382,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
                 // Save phone number to customer profile (phoneHome)
                 if (contactPhone) {
                     savePromises.push(
-                        updateCustomerContactInfo(context, auth.customerId, {
+                        updateCustomerContactInfo(context, customerId, {
                             phone: contactPhone,
                         }).catch((error) => {
                             logger.error('Failed to save phone number for new customer', {
@@ -343,7 +398,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
                 savePromises.push(
                     savePaymentMethodToCustomer(
                         context,
-                        auth.customerId,
+                        customerId,
                         order.paymentInstruments[0] as PaymentInstrumentForSave
                     ).catch((error) => {
                         logger.error('PlaceOrder: failed to save payment method', { error });

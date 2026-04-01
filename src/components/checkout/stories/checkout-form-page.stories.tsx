@@ -619,14 +619,14 @@ function MockCheckoutFormPage({
                                                     <Checkbox
                                                         checked={true}
                                                         className="mt-0.5"
-                                                        aria-label={t('checkout:payment.billingSameAsShipping')}
+                                                        aria-label={t('checkout:payment.useDifferentBilling')}
                                                     />
                                                     <div className="space-y-1 leading-none">
                                                         <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                                            {t('checkout:payment.billingSameAsShipping')}
+                                                            {t('checkout:payment.useDifferentBilling')}
                                                         </label>
                                                         <Typography variant="small" className="text-muted-foreground">
-                                                            {t('checkout:payment.billingSameAsShippingDescription')}
+                                                            {t('checkout:payment.useDifferentBillingDescription')}
                                                         </Typography>
                                                     </div>
                                                 </div>

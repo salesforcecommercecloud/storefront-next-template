@@ -30,7 +30,7 @@ describe('Payment Schema and Validation', () => {
                 expiryDate: '12/28',
                 cvv: '123',
                 cardholderName: 'John Doe', // Updated field name
-                billingSameAsShipping: true, // Required field
+                useDifferentBilling: false, // Same as shipping by default
             };
 
             const result = paymentSchema.safeParse(validNewCardData);
@@ -47,7 +47,7 @@ describe('Payment Schema and Validation', () => {
                 expiryDate: '',
                 cvv: '',
                 cardholderName: '', // Updated field name
-                billingSameAsShipping: true, // Required field
+                useDifferentBilling: false, // Same as shipping by default
             };
 
             const result = paymentSchema.safeParse(validSavedPaymentData);
@@ -63,7 +63,7 @@ describe('Payment Schema and Validation', () => {
                 expiryDate: '12/28',
                 cvv: '123',
                 cardholderName: 'John Doe', // Updated field name
-                billingSameAsShipping: true, // Required field
+                useDifferentBilling: false, // Same as shipping by default
             };
 
             const result = paymentSchema.safeParse(invalidNewCardData);
@@ -86,7 +86,7 @@ describe('Payment Schema and Validation', () => {
                 expiryDate: '',
                 cvv: '',
                 cardholderName: '', // Updated field name
-                billingSameAsShipping: true, // Required field
+                useDifferentBilling: false, // Same as shipping by default
             };
 
             const result = paymentSchema.safeParse(invalidSavedPaymentData);
@@ -109,7 +109,7 @@ describe('Payment Schema and Validation', () => {
                 expiryDate: '12/28',
                 cvv: '123',
                 cardholderName: 'John Doe', // Updated field name
-                billingSameAsShipping: true, // Required field
+                useDifferentBilling: false, // Same as shipping by default
             };
 
             const result = paymentSchema.safeParse(invalidCardNumber);
@@ -132,7 +132,7 @@ describe('Payment Schema and Validation', () => {
                 expiryDate: '13/28', // Invalid month
                 cvv: '123',
                 cardholderName: 'John Doe', // Updated field name
-                billingSameAsShipping: true, // Required field
+                useDifferentBilling: false, // Same as shipping by default
             };
 
             const result = paymentSchema.safeParse(invalidExpiryDate);
@@ -155,7 +155,7 @@ describe('Payment Schema and Validation', () => {
                 expiryDate: '12/28',
                 cvv: '12', // Too short
                 cardholderName: 'John Doe', // Updated field name
-                billingSameAsShipping: true, // Required field
+                useDifferentBilling: false, // Same as shipping by default
             };
 
             const result = paymentSchema.safeParse(invalidCVV);
@@ -179,7 +179,7 @@ describe('Payment Schema and Validation', () => {
                 cardholderName: '', // Updated field name
                 expiryDate: '',
                 cvv: '',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 savePaymentToProfile: false,
@@ -215,7 +215,7 @@ describe('Payment Schema and Validation', () => {
                 cardholderName: 'John Doe', // Composed from shipping address
                 expiryDate: '',
                 cvv: '',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 savePaymentToProfile: false,
@@ -243,7 +243,7 @@ describe('Payment Schema and Validation', () => {
                 cardholderName: 'Jane Smith', // Uses payment method holder
                 expiryDate: '',
                 cvv: '',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 savePaymentToProfile: false,
@@ -283,7 +283,7 @@ describe('Payment Schema and Validation', () => {
                 cardholderName: 'Jane Smith', // Payment method holder takes priority
                 expiryDate: '',
                 cvv: '',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
                 savePaymentToProfile: false,
@@ -332,7 +332,7 @@ describe('Payment Schema and Validation', () => {
                 expiryDate: '12/28',
                 cvv: '123',
                 cardholderName: 'John Doe',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 savePaymentToProfile: true,
             };
 

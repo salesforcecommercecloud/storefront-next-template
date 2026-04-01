@@ -55,13 +55,16 @@ type ActionLifecycle = {
 };
 
 /** Options passed when placing order (e.g. from payment form at time of Place Order click) */
-export type PlaceOrderOptionsRef = MutableRefObject<{ savePaymentToProfile?: boolean } | null>;
+export type PlaceOrderOptionsRef = MutableRefObject<{
+    savePaymentToProfile?: boolean;
+    useDifferentBilling?: boolean;
+} | null>;
 
 /** Single ref coordinating payment submission and place-order flow to avoid race conditions */
 export type PaymentSubmissionRef = MutableRefObject<{
     formDataGetter: (() => PaymentData) | null;
     shouldPlaceOrderAfterPayment: boolean;
-    options: { savePaymentToProfile?: boolean } | null;
+    options: { savePaymentToProfile?: boolean; useDifferentBilling?: boolean } | null;
     setFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null;
 }>;
 
@@ -275,7 +278,7 @@ export function useCheckoutActions(options?: {
         formData.append('cardholderName', data.cardholderName || '');
         formData.append('expiryDate', data.expiryDate || '');
         formData.append('cvv', data.cvv || '');
-        formData.append('billingSameAsShipping', data.billingSameAsShipping.toString());
+        formData.append('useDifferentBilling', data.useDifferentBilling.toString());
 
         // Include saved payment method fields
         formData.append('useSavedPaymentMethod', data.useSavedPaymentMethod?.toString() || 'false');
@@ -283,7 +286,7 @@ export function useCheckoutActions(options?: {
             formData.append('selectedSavedPaymentMethod', data.selectedSavedPaymentMethod);
         }
 
-        if (!data.billingSameAsShipping) {
+        if (data.useDifferentBilling) {
             formData.append('billingFirstName', data.billingFirstName || '');
             formData.append('billingLastName', data.billingLastName || '');
             formData.append('billingAddress1', data.billingAddress1 || '');
@@ -358,6 +361,9 @@ export function useCheckoutActions(options?: {
             options?.paymentSubmissionRef?.current?.options ?? options?.placeOrderOptionsRef?.current;
         if (placeOrderOpts?.savePaymentToProfile) {
             formData.append('savePaymentToProfile', 'true');
+        }
+        if (typeof placeOrderOpts?.useDifferentBilling === 'boolean') {
+            formData.append('useDifferentBilling', String(placeOrderOpts.useDifferentBilling));
         }
         // Pass the contact phone captured at submission time
         const contactPhone =

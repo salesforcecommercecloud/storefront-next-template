@@ -70,7 +70,7 @@ export function AddPaymentMethodDialog({
             cardNumber: '',
             expiryDate: '',
             cvv: '',
-            billingSameAsShipping: true,
+            useDifferentBilling: false,
             useSavedPaymentMethod: false,
             saveAsDefault: false,
             billingFirstName: '',

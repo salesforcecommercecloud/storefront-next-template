@@ -52,7 +52,7 @@ interface PaymentProps {
     isEditing: boolean;
     onEdit: () => void;
     disabled?: boolean;
-    showBillingSameAsShipping?: boolean;
+    showUseDifferentBilling?: boolean;
     paymentSubmissionRef?: PaymentSubmissionRef;
     /** When true, hide the "save payment to profile" checkbox */
     hidePaymentSaveCheckbox?: boolean;
@@ -66,7 +66,7 @@ export default function Payment({
     isEditing,
     onEdit,
     disabled = false,
-    showBillingSameAsShipping = true,
+    showUseDifferentBilling = true,
     paymentSubmissionRef,
     hidePaymentSaveCheckbox = false,
 }: PaymentProps) {
@@ -188,8 +188,8 @@ export default function Payment({
         }
     }, [showAllPaymentOptions]);
 
-    // Helper function to check if billing address is same as shipping address
-    const isBillingSameAsShipping = (
+    // Helper function to check if billing address matches shipping address
+    const isSameBillingAndShippingAddress = (
         billingAddr:
             | {
                   firstName?: string;
@@ -224,7 +224,7 @@ export default function Payment({
     };
 
     const billingAddressOptions = useMemo(
-        () => savedAddresses.filter((addr) => !isBillingSameAsShipping(addr, shippingAddress)),
+        () => savedAddresses.filter((addr) => !isSameBillingAndShippingAddress(addr, shippingAddress)),
         [savedAddresses, shippingAddress]
     );
 
@@ -244,13 +244,13 @@ export default function Payment({
         // Default "same as shipping" ON for delivery checkout, but OFF when the basket already has a complete
         // billing address that differs from shipping — avoids submitting with true and overwriting that address.
         const basketHasDistinctBilling = Boolean(
-            showBillingSameAsShipping &&
+            showUseDifferentBilling &&
                 billingAddress &&
                 !isOrderBillingAddressIncomplete(billingAddress) &&
                 shippingAddress &&
-                !isBillingSameAsShipping(billingAddress, shippingAddress)
+                !isSameBillingAndShippingAddress(billingAddress, shippingAddress)
         );
-        const defaultBillingSameAsShipping = showBillingSameAsShipping ? !basketHasDistinctBilling : false;
+        const defaultUseDifferentBilling = showUseDifferentBilling ? basketHasDistinctBilling : true;
 
         const computedDefaults = {
             ...baseDefaults,
@@ -258,7 +258,7 @@ export default function Payment({
             cardholderName: '',
             useSavedPaymentMethod: isUsingSavedPayment,
             selectedSavedPaymentMethod: isUsingSavedPayment ? paymentRadioValue : undefined,
-            billingSameAsShipping: defaultBillingSameAsShipping,
+            useDifferentBilling: defaultUseDifferentBilling,
             ...(basketHasDistinctBilling && billingAddress
                 ? {
                       billingFirstName: billingAddress.firstName ?? '',
@@ -273,7 +273,7 @@ export default function Payment({
                 : {}),
             // @sfdc-extension-block-start SFDC_EXT_BOPIS
             // For BOPIS orders, don't pre-fill billing address or cardholder name from shipping (which is the store address)
-            ...(!showBillingSameAsShipping && {
+            ...(!showUseDifferentBilling && {
                 cardholderName: '',
                 billingFirstName: '',
                 billingLastName: '',
@@ -293,7 +293,7 @@ export default function Payment({
         shippingAddress,
         paymentMethod,
         savedPaymentMethods.length,
-        showBillingSameAsShipping,
+        showUseDifferentBilling,
         billingAddress,
     ]);
 
@@ -309,18 +309,18 @@ export default function Payment({
         () => (shippingAddress ? getAddressKey(shippingAddress) : ''),
         [shippingAddress]
     );
-    const previousBillingSameAsShippingRef = useRef<boolean | null>(null);
+    const previousUseDifferentBillingRef = useRef<boolean | null>(null);
 
-    // Keep billing fields aligned with cart shipping while "same as shipping" is checked (e.g. after OTP / loader prefill).
-    const billingSameAsShippingWatched = form.watch('billingSameAsShipping');
+    // Keep billing fields aligned with cart shipping while "use different billing" is not selected.
+    const useDifferentBillingWatched = form.watch('useDifferentBilling');
     useEffect(() => {
-        if (!showBillingSameAsShipping || !shippingAddress || !shippingAddressSyncKey) return;
+        if (!showUseDifferentBilling || !shippingAddress || !shippingAddressSyncKey) return;
 
-        const previousValue = previousBillingSameAsShippingRef.current;
-        const toggledFromSameToDifferent = previousValue === true && billingSameAsShippingWatched === false;
-        previousBillingSameAsShippingRef.current = billingSameAsShippingWatched;
+        const previousValue = previousUseDifferentBillingRef.current;
+        const toggledFromSameToDifferent = previousValue === false && useDifferentBillingWatched === true;
+        previousUseDifferentBillingRef.current = useDifferentBillingWatched;
 
-        if (billingSameAsShippingWatched) {
+        if (!useDifferentBillingWatched) {
             form.setValue('billingFirstName', shippingAddress.firstName ?? '');
             form.setValue('billingLastName', shippingAddress.lastName ?? '');
             form.setValue('billingAddress1', shippingAddress.address1 ?? '');
@@ -342,7 +342,7 @@ export default function Payment({
             form.setValue('billingPostalCode', '');
             form.setValue('billingCountryCode', 'US');
         }
-    }, [showBillingSameAsShipping, shippingAddress, shippingAddressSyncKey, billingSameAsShippingWatched, form]);
+    }, [showUseDifferentBilling, shippingAddress, shippingAddressSyncKey, useDifferentBillingWatched, form]);
 
     // Update form values when selected payment method changes
     useEffect(() => {
@@ -369,8 +369,8 @@ export default function Payment({
         onSubmit(paymentData);
     };
 
-    // Watch billingSameAsShipping for reactive UI updates
-    const billingSameAsShipping = form.watch('billingSameAsShipping');
+    // Watch useDifferentBilling for reactive UI updates
+    const useDifferentBilling = form.watch('useDifferentBilling');
 
     const [selectedBillingAddressId, setSelectedBillingAddressId] = useState('');
     const [billingDropdownOpen, setBillingDropdownOpen] = useState(false);
@@ -723,10 +723,10 @@ export default function Payment({
                                 <UITarget targetId="checkout.payment.billingAddress.before" />
                                 <UITarget targetId="checkout.payment.billingAddress">
                                     <div className="border-t border-input pt-4 space-y-4">
-                                        {showBillingSameAsShipping && (
+                                        {showUseDifferentBilling && (
                                             <FormField
                                                 control={form.control}
-                                                name="billingSameAsShipping"
+                                                name="useDifferentBilling"
                                                 render={({ field }) => (
                                                     <FormItem className="space-y-0">
                                                         <label
@@ -735,15 +735,15 @@ export default function Payment({
                                                             <FormControl>
                                                                 <Checkbox
                                                                     id={field.name}
-                                                                    checked={!field.value}
+                                                                    checked={Boolean(field.value)}
                                                                     onCheckedChange={(checked) => {
-                                                                        field.onChange(checked !== true);
+                                                                        field.onChange(checked === true);
                                                                     }}
-                                                                    aria-label={t('payment.billingSameAsShipping')}
+                                                                    aria-label={t('payment.useDifferentBilling')}
                                                                 />
                                                             </FormControl>
                                                             <span className="text-sm font-normal leading-none text-foreground pt-0.5">
-                                                                {t('payment.billingSameAsShipping')}
+                                                                {t('payment.useDifferentBilling')}
                                                             </span>
                                                         </label>
                                                     </FormItem>
@@ -751,7 +751,7 @@ export default function Payment({
                                             />
                                         )}
 
-                                        {!billingSameAsShipping && (
+                                        {useDifferentBilling && (
                                             <div className="space-y-4">
                                                 {billingAddressOptions.length > 0 && (
                                                     <Popover
@@ -867,9 +867,9 @@ export default function Payment({
                                             {`Expires ${summaryExpiryMonth}/${summaryExpiryYear}`}
                                         </p>
                                     )}
-                                    {billingSameAsShipping ||
+                                    {!useDifferentBilling ||
                                     !billingAddress ||
-                                    isBillingSameAsShipping(billingAddress, shippingAddress) ? (
+                                    isSameBillingAndShippingAddress(billingAddress, shippingAddress) ? (
                                         <p className="text-sm font-normal leading-5 text-foreground">
                                             {`Billing: ${t('payment.sameAsShippingAddress')}`}
                                         </p>

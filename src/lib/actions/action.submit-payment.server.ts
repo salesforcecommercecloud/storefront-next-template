@@ -25,9 +25,50 @@ import {
 import { detectCardType, normalizeCardType } from '@/lib/payment-utils';
 import { getTranslation } from '@/lib/i18next';
 import { getAuth } from '@/middlewares/auth.server';
-import { getCustomerProfileForCheckout } from '@/lib/api/customer';
-import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { getCustomerProfileForCheckout, saveBillingAddressToCustomer } from '@/lib/api/customer';
+import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { getLogger } from '@/lib/logger.server';
+
+const normalizeAddressField = (value: string | undefined) => (value ?? '').trim().toLowerCase();
+
+const isSameAddress = (
+    a:
+        | {
+              firstName?: string;
+              lastName?: string;
+              address1?: string;
+              address2?: string;
+              city?: string;
+              stateCode?: string;
+              postalCode?: string;
+              countryCode?: string;
+          }
+        | undefined,
+    b:
+        | {
+              firstName?: string;
+              lastName?: string;
+              address1?: string;
+              address2?: string;
+              city?: string;
+              stateCode?: string;
+              postalCode?: string;
+              countryCode?: string;
+          }
+        | undefined
+) => {
+    if (!a || !b) return false;
+    return (
+        normalizeAddressField(a.firstName) === normalizeAddressField(b.firstName) &&
+        normalizeAddressField(a.lastName) === normalizeAddressField(b.lastName) &&
+        normalizeAddressField(a.address1) === normalizeAddressField(b.address1) &&
+        normalizeAddressField(a.address2) === normalizeAddressField(b.address2) &&
+        normalizeAddressField(a.city) === normalizeAddressField(b.city) &&
+        normalizeAddressField(a.stateCode) === normalizeAddressField(b.stateCode) &&
+        normalizeAddressField(a.postalCode) === normalizeAddressField(b.postalCode) &&
+        normalizeAddressField(a.countryCode) === normalizeAddressField(b.countryCode)
+    );
+};
 
 /**
  * Server action for submitting checkout payment information.
@@ -63,7 +104,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         cardNumber,
         expiryDate,
         cardholderName,
-        billingSameAsShipping,
+        useDifferentBilling,
         selectedSavedPaymentMethod,
         useSavedPaymentMethod,
     } = result.data;
@@ -192,7 +233,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
     const contactPhone = basket.billingAddress?.phone;
     const shippingAddress = basket.shipments?.[0]?.shippingAddress;
     const billingAddress =
-        billingSameAsShipping && shippingAddress
+        !useDifferentBilling && shippingAddress
             ? { ...shippingAddress, phone: contactPhone || shippingAddress.phone }
             : {
                   firstName: result.data.billingFirstName || '',
@@ -313,6 +354,35 @@ export async function action(formData: FormData, context: RouterContextProvider)
             },
             { status: 500 }
         );
+    }
+
+    // Existing registered customers: if they explicitly choose a different billing
+    // address and enter a new one, persist it to their address book.
+    const auth = getAuth(context as Parameters<typeof getAuth>[0]);
+    if (auth.customerId && useDifferentBilling) {
+        try {
+            const customerProfile = await getCustomerProfileForCheckout(
+                context as Parameters<typeof getCustomerProfileForCheckout>[0],
+                auth.customerId
+            );
+            const savedAddresses = getAddressBookFromCustomer(customerProfile ?? undefined);
+            const alreadySaved = savedAddresses.some((address) => isSameAddress(address, billingAddress));
+            if (!alreadySaved) {
+                await saveBillingAddressToCustomer(
+                    context as Parameters<typeof saveBillingAddressToCustomer>[0],
+                    auth.customerId,
+                    billingAddress
+                );
+                logger.info('SubmitPayment: saved new billing address to customer profile', {
+                    customerId: auth.customerId,
+                });
+            }
+        } catch (error) {
+            logger.error('SubmitPayment: failed to save billing address to customer profile', {
+                customerId: auth.customerId,
+                error,
+            });
+        }
     }
 
     logger.info('SubmitPayment: succeeded', { basketId });

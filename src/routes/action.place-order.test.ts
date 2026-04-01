@@ -29,6 +29,7 @@ import {
 } from '@/lib/api/customer';
 import { getBasketCurrency, calculateBasket } from '@/lib/api/basket';
 import { createApiClients } from '@/lib/api-clients';
+import { getAddressBookFromCustomer } from '@/lib/customer-profile-utils';
 
 vi.mock('@/middlewares/basket.server', () => ({
     getBasket: vi.fn(),
@@ -77,6 +78,8 @@ describe('action.place-order action', () => {
             i18next: {} as any,
             t: ((key: string) => key) as any,
         });
+        vi.mocked(getCustomerProfileForCheckout).mockResolvedValue({} as any);
+        vi.mocked(getAddressBookFromCustomer).mockReturnValue([]);
     });
 
     test('returns noActiveBasket when basket is missing', async () => {
@@ -337,6 +340,7 @@ describe('action.place-order action', () => {
         const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
             shouldCreateAccount: 'true',
             savePaymentToProfile: 'false',
+            useDifferentBilling: 'true',
         });
         const response = await action({
             request,
@@ -362,8 +366,10 @@ describe('action.place-order action', () => {
         expect(vi.mocked(saveShippingAddressToCustomer)).toHaveBeenCalledWith(
             mockContext,
             'new-cust-1',
-            shippingAddress
+            shippingAddress,
+            true
         );
+        await Promise.resolve();
         expect(vi.mocked(saveBillingAddressToCustomer)).toHaveBeenCalledWith(mockContext, 'new-cust-1', billingAddress);
         expect(vi.mocked(updateCustomerContactInfo)).toHaveBeenCalledWith(mockContext, 'new-cust-1', {
             phone: '+1 555-123-4567',
@@ -456,17 +462,15 @@ describe('action.place-order action', () => {
         // Payment should NOT be saved (shouldCreateAccount=false and savePaymentToProfile=false)
         expect(vi.mocked(savePaymentMethodToCustomer)).not.toHaveBeenCalled();
 
-        // Shipping address, billing address, and phone SHOULD be saved (empty profile)
+        // Shipping address and phone SHOULD be saved (empty profile)
         expect(vi.mocked(saveShippingAddressToCustomer)).toHaveBeenCalledWith(
             mockContext,
             'new-otp-cust',
-            shippingAddress
+            shippingAddress,
+            true
         );
-        expect(vi.mocked(saveBillingAddressToCustomer)).toHaveBeenCalledWith(
-            mockContext,
-            'new-otp-cust',
-            billingAddress
-        );
+        // Billing address should NOT be saved because useDifferentBilling is not set
+        expect(vi.mocked(saveBillingAddressToCustomer)).not.toHaveBeenCalled();
         expect(vi.mocked(updateCustomerContactInfo)).toHaveBeenCalledWith(mockContext, 'new-otp-cust', {
             phone: '+1 5559998888',
         });

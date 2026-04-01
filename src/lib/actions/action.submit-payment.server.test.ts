@@ -52,7 +52,7 @@ function createSavedPaymentFormData(): FormData {
     const formData = new FormData();
     formData.append('useSavedPaymentMethod', 'true');
     formData.append('selectedSavedPaymentMethod', 'card_1');
-    formData.append('billingSameAsShipping', 'true');
+    formData.append('useDifferentBilling', 'false');
     formData.append('cardNumber', '');
     formData.append('cardholderName', '');
     formData.append('expiryDate', '');

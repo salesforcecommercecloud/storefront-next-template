@@ -51,7 +51,7 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
 
         mockedUseBasket.mockReturnValue(basketWithPickup);
 
-        render(<Payment {...createDefaultProps({ showBillingSameAsShipping: false })} />);
+        render(<Payment {...createDefaultProps({ showUseDifferentBilling: false })} />);
 
         // The checkbox should NOT be rendered for store pickup
         expect(screen.queryByRole('checkbox', { name: /billing same as shipping/i })).not.toBeInTheDocument();
@@ -66,7 +66,7 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
 
         mockedUseBasket.mockReturnValue(basketWithPickup);
 
-        render(<Payment {...createDefaultProps({ showBillingSameAsShipping: false })} />);
+        render(<Payment {...createDefaultProps({ showUseDifferentBilling: false })} />);
 
         // Check that billing address fields are NOT pre-filled with store address
         // Billing uses placeholders: "First Name*", "Address*", etc.
@@ -94,7 +94,7 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
 
         mockedUseBasket.mockReturnValue(basketWithPickup);
 
-        render(<Payment {...createDefaultProps({ isEditing: false, showBillingSameAsShipping: false })} />);
+        render(<Payment {...createDefaultProps({ isEditing: false, showUseDifferentBilling: false })} />);
 
         // For store pickup with no billing address and no payment, show no payment method message
         // Should NOT show "Same as shipping address" for store pickup
@@ -110,7 +110,7 @@ describe('Payment Component - BOPIS/Store Pickup Scenarios', () => {
         mockedUseBasket.mockReturnValue(basketWithPickup);
 
         const onSubmitMock = vi.fn();
-        render(<Payment {...createDefaultProps({ onSubmit: onSubmitMock, showBillingSameAsShipping: false })} />);
+        render(<Payment {...createDefaultProps({ onSubmit: onSubmitMock, showUseDifferentBilling: false })} />);
 
         // Verify billing address fields are visible (not hidden by "same as shipping" checkbox)
         // Billing uses placeholders-only UX: "First Name*", "Address*", etc. State is a dropdown (combobox).

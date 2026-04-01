@@ -131,7 +131,7 @@ Scenario('Guest shopper billing address fields are blank when checking "Use a di
 
     await checkoutPage.selectShippingMethod(0);
 
-    const isDifferentBilling = await checkoutPage.isUseDifferentBillingAddressChecked();
+    const isDifferentBilling = await checkoutPage.isUsingDifferentBillingAddress();
     expect(isDifferentBilling, '"Use a different billing address" checkbox should not be selected by default').to.be
         .false;
 

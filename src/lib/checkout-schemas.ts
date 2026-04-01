@@ -81,7 +81,7 @@ export const createPaymentSchema = (t: SchemaTFunction) => {
             cardholderName: z.string().optional(),
             expiryDate: z.string().optional(),
             cvv: z.string().optional(),
-            billingSameAsShipping: z.boolean(),
+            useDifferentBilling: z.boolean(),
             // Saved payment method fields
             selectedSavedPaymentMethod: z.string().optional(),
             useSavedPaymentMethod: z.boolean().optional(),
@@ -242,7 +242,7 @@ export const createPaymentSchema = (t: SchemaTFunction) => {
                 if (value === key || value === keyWithoutNs || value.includes(':')) return fallback;
                 return value;
             };
-            if (!data.billingSameAsShipping) {
+            if (data.useDifferentBilling) {
                 if (!data.billingFirstName?.trim()) {
                     ctx.addIssue({
                         code: 'custom',
@@ -321,7 +321,7 @@ export const getPaymentDefaultValues = (params: {
             paymentMethod?.holder || `${shippingAddress?.firstName || ''} ${shippingAddress?.lastName || ''}`.trim(),
         expiryDate: '',
         cvv: '',
-        billingSameAsShipping: true,
+        useDifferentBilling: false,
         // Saved payment method fields - default to new payment method
         useSavedPaymentMethod: false,
         selectedSavedPaymentMethod: undefined,
@@ -375,7 +375,7 @@ export const parsePaymentFromFormData = (formData: FormData): PaymentData => {
         cardholderName: formData.get('cardholderName')?.toString() || '',
         expiryDate: formData.get('expiryDate')?.toString() || '',
         cvv: formData.get('cvv')?.toString() || '',
-        billingSameAsShipping: formData.get('billingSameAsShipping') === 'true',
+        useDifferentBilling: formData.get('useDifferentBilling') === 'true',
         billingFirstName: formData.get('billingFirstName')?.toString() || '',
         billingLastName: formData.get('billingLastName')?.toString() || '',
         billingAddress1: formData.get('billingAddress1')?.toString() || '',

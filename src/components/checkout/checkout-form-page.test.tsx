@@ -1166,7 +1166,7 @@ describe('CheckoutFormPage', () => {
                 cardholderName: '',
                 expiryDate: '',
                 cvv: '',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
             });
@@ -1203,7 +1203,7 @@ describe('CheckoutFormPage', () => {
                 cardholderName: 'Jane Smith',
                 expiryDate: '12/28',
                 cvv: '123',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
             });
@@ -1241,7 +1241,7 @@ describe('CheckoutFormPage', () => {
                 cardholderName: '',
                 expiryDate: '',
                 cvv: '',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: true,
                 selectedSavedPaymentMethod: 'pi-1',
             });
@@ -1261,7 +1261,7 @@ describe('CheckoutFormPage', () => {
         });
 
         test('submits payment when basket has no payment instrument (guest flow)', async () => {
-            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PAYMENT }));
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
             mockUseBasket.mockReturnValue({
                 basketId: 'test-basket',
                 productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
@@ -1273,7 +1273,7 @@ describe('CheckoutFormPage', () => {
                 cardholderName: 'Guest User',
                 expiryDate: '12/28',
                 cvv: '456',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
             });

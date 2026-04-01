@@ -756,7 +756,7 @@ describe('Payment Integration Tests', () => {
 
             useBasket.mockReturnValue(basketWithDistinctBilling);
 
-            render(<Payment {...createDefaultProps({ showBillingSameAsShipping: true })} />);
+            render(<Payment {...createDefaultProps({ showUseDifferentBilling: true })} />);
 
             await waitFor(() => {
                 // "Use a different billing address" should be selected when basket has distinct billing.

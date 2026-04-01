@@ -76,8 +76,8 @@ class CheckoutPage {
         ),
         shippingMethodLabel: locate('label').as('Shipping Method Label'),
         // Payment section - billing address fields (Radix UI renders button with role="checkbox")
-        billingSameAsShippingCheckbox: locate('#billingSameAsShipping').as('Billing Same As Shipping Checkbox'),
-        billingSameAsShippingLabel: locate('label[for="billingSameAsShipping"]').as('Billing Same As Shipping Label'),
+        useDifferentBillingCheckbox: locate('#useDifferentBilling').as('Use Different Billing Checkbox'),
+        useDifferentBillingLabel: locate('label[for="useDifferentBilling"]').as('Use Different Billing Label'),
         billingFirstNameInput: locate('[data-testid="sf-toggle-card-payment"] input[name="billingFirstName"]').as(
             'Billing First Name Input'
         ),
@@ -914,16 +914,21 @@ class CheckoutPage {
     /**
      * Check if the "Use a different billing address" checkbox is checked.
      */
-    async isUseDifferentBillingAddressChecked(): Promise<boolean> {
-        const ariaChecked = await I.grabAttributeFrom(this.locators.billingSameAsShippingCheckbox, 'aria-checked');
+    async isUsingDifferentBillingAddress(): Promise<boolean> {
+        const ariaChecked = await I.grabAttributeFrom(this.locators.useDifferentBillingCheckbox, 'aria-checked');
         return ariaChecked === 'true';
+    }
+
+    // Backward-compatible alias; prefer isUsingDifferentBillingAddress().
+    async isUseDifferentBillingAddressChecked(): Promise<boolean> {
+        return this.isUsingDifferentBillingAddress();
     }
 
     /**
      * Toggle the "Use a different billing address" checkbox.
      */
     async toggleUseDifferentBillingAddress(): Promise<void> {
-        I.click(this.locators.billingSameAsShippingLabel);
+        I.click(this.locators.useDifferentBillingLabel);
         await new Promise((resolve) => setTimeout(resolve, 300));
     }
 
@@ -931,7 +936,7 @@ class CheckoutPage {
      * Check the "Use a different billing address" checkbox to show billing fields.
      */
     async checkUseDifferentBillingAddress(): Promise<void> {
-        const isChecked = await this.isUseDifferentBillingAddressChecked();
+        const isChecked = await this.isUsingDifferentBillingAddress();
         if (!isChecked) {
             await this.toggleUseDifferentBillingAddress();
         }
@@ -941,7 +946,7 @@ class CheckoutPage {
      * Uncheck the "Use a different billing address" checkbox to hide billing fields.
      */
     async uncheckUseDifferentBillingAddress(): Promise<void> {
-        const isChecked = await this.isUseDifferentBillingAddressChecked();
+        const isChecked = await this.isUsingDifferentBillingAddress();
         if (isChecked) {
             await this.toggleUseDifferentBillingAddress();
         }
