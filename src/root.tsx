@@ -97,18 +97,14 @@ import { initializeRegistry } from '@/lib/static-registry';
 import { currencyContext } from '@/lib/currency';
 import { buildSeoMetaDescriptors } from '@/utils/seo';
 
-// Import load-fonts to trigger module-level font loading
-import '@/lib/load-fonts';
-
 // Adapters
 import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
 
 // Assets
 import favicon from '/favicon.ico';
 
-// Fonts (preload only the most-used weights: 500 and 600)
-import sen500 from '@fonts/sen/sen-500.woff2?url';
-import sen600 from '@fonts/sen/sen-600.woff2?url';
+// Fonts
+import sen from '/fonts/sen-variable.woff2';
 
 // Styles
 import { PageDesignerInit } from '@/page-designer-init';
@@ -125,8 +121,7 @@ import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 export const links: LinksFunction = () => {
     return [
         // Preload critical fonts
-        { rel: 'preload', href: sen500, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
-        { rel: 'preload', href: sen600, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
+        { rel: 'preload', href: sen, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
         { rel: 'preload', href: appStylesHref, as: 'style' },
         { rel: 'stylesheet', href: appStylesHref },
     ];
@@ -282,6 +277,7 @@ export function Layout({ children }: PropsWithChildren) {
         <html lang={lang} dir={dir}>
             <head>
                 <meta charSet="utf-8" />
+                <link rel="icon" type="image/x-icon" href={favicon} />
                 {appConfig?.links?.preconnect?.map((origin: string) => (
                     <link key={origin} rel="preconnect" href={origin} />
                 ))}
@@ -291,6 +287,12 @@ export function Layout({ children }: PropsWithChildren) {
                 {appConfig?.links?.prefetch?.map((href: string) => (
                     <link key={href} rel="prefetch" href={href} />
                 ))}
+                <style
+                    // eslint-disable-next-line react/no-danger
+                    dangerouslySetInnerHTML={{
+                        __html: `@font-face{font-family:'Sen';src:url(${sen}) format('woff2');font-weight:400 800;font-style:normal;font-display:swap}`,
+                    }}
+                />
                 <script
                     // eslint-disable-next-line react/no-danger
                     dangerouslySetInnerHTML={{
@@ -300,7 +302,6 @@ export function Layout({ children }: PropsWithChildren) {
                     }}
                 />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <link rel="icon" type="image/x-icon" href={favicon} />
                 <Meta />
                 <Links />
             </head>

@@ -87,7 +87,7 @@ describe('QuickAddButton', () => {
 
         await user.click(screen.getByRole('button', { name: /quick add/i }));
 
-        expect(screen.getByTestId('cart-item-modal')).toBeInTheDocument();
+        expect(await screen.findByTestId('cart-item-modal')).toBeInTheDocument();
     });
 
     test('closing the modal via onOpenChange hides the modal', async () => {

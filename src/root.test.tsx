@@ -68,17 +68,9 @@ vi.mock('@/lib/i18next.client', async () => {
     };
 });
 
-vi.mock('@/lib/load-fonts', () => ({
-    loadFonts: vi.fn(),
-}));
-
-// Mock font file imports (used in root.tsx links function)
-vi.mock('@fonts/sen/sen-500.woff2?url', () => ({
-    default: '/mocked-fonts/sen-500.woff2',
-}));
-
-vi.mock('@fonts/sen/sen-600.woff2?url', () => ({
-    default: '/mocked-fonts/sen-600.woff2',
+// Mock font file imports (used in root.tsx links function and inline @font-face)
+vi.mock('/fonts/sen-variable.woff2', () => ({
+    default: '/mocked-fonts/sen-variable.woff2',
 }));
 
 vi.mock('@/components/toast', async () => ({

@@ -207,6 +207,35 @@ export default function ClientComponent() {
 }
 ```
 
+**Lazy Loading for Overlays (Modals, Drawers, Dialogs):**
+
+Overlay components that are hidden on initial render **must** use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction:
+
+```typescript
+const MyModal = lazy(() => import('@/components/my-modal').then((m) => ({ default: m.MyModal })));
+
+function MyComponent() {
+    const [loaded, setLoaded] = useState(false);
+    const [open, setOpen] = useState(false);
+
+    return (
+        <>
+            <Button onClick={() => { setLoaded(true); setOpen(true); }}>Open</Button>
+            {loaded && (
+                <Suspense fallback={null}>
+                    <MyModal open={open} onOpenChange={setOpen} />
+                </Suspense>
+            )}
+        </>
+    );
+}
+```
+
+- `loaded` flips once on first click → controls when the chunk is fetched and the component mounts
+- `open` toggles visibility → re-opening after first load is instant
+- **Anti-pattern:** Importing overlay components synchronously (non-lazy) bundles them into the main chunk, increasing page load size and Total Blocking Time (TBT)
+- **Discouraged:** `<Suspense><LazyComponent /></Suspense>` without a guard — the chunk is separate but still fetched and parsed on mount, adding to TBT during page startup
+
 **Styling:**
 - Use Tailwind utility classes
 - Use design tokens: `bg-foreground`, `text-muted-foreground` (not hard-coded colors)

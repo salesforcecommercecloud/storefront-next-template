@@ -16,10 +16,9 @@
 
 'use client';
 
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from '@/hooks/use-navigate';
 import { useTranslation } from 'react-i18next';
-import { CartItemModal } from '@/components/cart-item-modal';
 import { Button } from '@/components/ui/button';
 import { createProductUrl } from '@/lib/product-utils';
 
@@ -32,6 +31,10 @@ interface QuickAddButtonProps {
     label?: string;
 }
 
+const CartItemModal = lazy(() =>
+    import('@/components/cart-item-modal').then((module) => ({ default: module.CartItemModal }))
+);
+
 /**
  * Client component that renders the "Quick Add" hover button on a product tile and manages
  * the add-mode CartItemModal lifecycle.
@@ -40,6 +43,7 @@ interface QuickAddButtonProps {
  * "Buy it Now" closes the modal and navigates to the PDP with the selected color pre-seeded.
  */
 export function QuickAddButton({ productId, productName, selectedColorValue, label }: QuickAddButtonProps) {
+    const [loaded, setLoaded] = useState(false);
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const { t } = useTranslation('product');
@@ -61,18 +65,23 @@ export function QuickAddButton({ productId, productName, selectedColorValue, lab
                 aria-label={`${resolvedLabel} ${productName}`}
                 onClick={(e) => {
                     e.preventDefault();
+                    setLoaded(true);
                     setOpen(true);
                 }}>
                 {resolvedLabel}
             </Button>
 
-            <CartItemModal
-                productId={productId}
-                open={open}
-                onOpenChange={setOpen}
-                onBuyNow={handleBuyItNow}
-                initialVariantSelections={selectedColorValue ? { color: selectedColorValue } : undefined}
-            />
+            {loaded && (
+                <Suspense fallback={null}>
+                    <CartItemModal
+                        productId={productId}
+                        open={open}
+                        onOpenChange={setOpen}
+                        onBuyNow={handleBuyItNow}
+                        initialVariantSelections={selectedColorValue ? { color: selectedColorValue } : undefined}
+                    />
+                </Suspense>
+            )}
         </>
     );
 }
