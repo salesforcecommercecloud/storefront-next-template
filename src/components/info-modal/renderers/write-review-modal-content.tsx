@@ -27,37 +27,12 @@ import { cn } from '@/lib/utils';
 import type { ReviewItem, WriteReviewFormData } from '@/lib/adapters/product-content-data-types';
 import { useProductReviews } from '@/hooks/product-reviews/use-product-reviews';
 
-const VALIDATION_ORANGE = '#f97316';
-
-/**
- * Custom validation popup (no native HTML5 popup): white background, grey border,
- * exclamation inside orange square (same orange as HTML5 alert), dark text, speech-bubble pointer.
- */
-function FieldValidationPopup({ id, message }: { id?: string; message: string }): ReactElement {
+/** Inline field error — plain text, no border or padding. */
+function FieldError({ id, message }: { id?: string; message: string }): ReactElement {
     return (
-        <div
-            id={id}
-            role="alert"
-            className="relative mt-2 w-max max-w-[280px] flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground shadow-lg">
-            {/* Pointer border */}
-            <span
-                className="absolute -top-2 left-5 h-0 w-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent border-b-border"
-                aria-hidden
-            />
-            {/* Pointer fill */}
-            <span
-                className="absolute -top-[7px] left-5 h-0 w-0 border-l-[5px] border-r-[5px] border-b-[5px] border-l-transparent border-r-transparent border-b-background"
-                aria-hidden
-            />
-            {/* Exclamation inside orange square (design-specified; high contrast on orange) */}
-            <span
-                className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-xs font-bold text-primary-foreground"
-                style={{ backgroundColor: VALIDATION_ORANGE }}
-                aria-hidden>
-                !
-            </span>
-            <span>{message}</span>
-        </div>
+        <p id={id} className="mt-1 text-sm text-status-critical-strong">
+            {message}
+        </p>
     );
 }
 
@@ -112,48 +87,26 @@ export function WriteReviewModalContent({
         (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
             const form = formRef.current;
-            const textarea = reviewBodyRef.current;
             if (!form) return;
 
-            // Clear custom validity so we can re-validate
-            if (textarea) textarea.setCustomValidity('');
+            // Validate all fields at once
+            const hasRatingError = selectedRating <= 0;
+            const hasTitleError = typeof maxTitleLength === 'number' && reviewTitleTrimmed.length > maxTitleLength;
+            const hasReviewError =
+                reviewBodyTrimmed.length < minReviewLength ||
+                (typeof maxReviewLength === 'number' && reviewBodyTrimmed.length > maxReviewLength);
 
-            // Require overall rating - show custom popup and scroll to rating so user sees the alert
-            if (selectedRating <= 0) {
-                setShowRatingValidation(true);
-                setShowReviewValidation(false);
-                setShowTitleValidation(false);
+            setShowRatingValidation(hasRatingError);
+            setShowTitleValidation(hasTitleError);
+            setShowReviewValidation(hasReviewError);
+
+            if (hasRatingError || hasTitleError || hasReviewError) {
                 if (typeof ratingSectionRef.current?.scrollIntoView === 'function') {
                     ratingSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
-                ratingGroupRef.current?.focus();
                 return;
             }
 
-            const titleOverMax = typeof maxTitleLength === 'number' && reviewTitleTrimmed.length > maxTitleLength;
-            if (titleOverMax) {
-                setShowTitleValidation(true);
-                setShowRatingValidation(false);
-                setShowReviewValidation(false);
-                form.querySelector<HTMLInputElement>('#write-review-title')?.focus();
-                return;
-            }
-
-            if (reviewBodyTrimmed.length < minReviewLength) {
-                setShowReviewValidation(true);
-                setShowTitleValidation(false);
-                setShowRatingValidation(false);
-                if (textarea) textarea.focus();
-                return;
-            }
-            const bodyOverMax = typeof maxReviewLength === 'number' && reviewBodyTrimmed.length > maxReviewLength;
-            if (bodyOverMax) {
-                setShowReviewValidation(true);
-                setShowTitleValidation(false);
-                setShowRatingValidation(false);
-                if (textarea) textarea.focus();
-                return;
-            }
             const newReview: ReviewItem = {
                 id: `new-${Date.now()}`,
                 authorName: 'You',
@@ -263,19 +216,39 @@ export function WriteReviewModalContent({
 
     const reviewValidationMessage = !showReviewValidation
         ? null
-        : reviewBodyTrimmed.length === 0
-          ? t('validation.reviewRequired')
-          : reviewBodyTrimmed.length < minReviewLength
-            ? t('validation.reviewMinLength', { count: minReviewLength })
-            : typeof maxReviewLength === 'number' && reviewBodyTrimmed.length > maxReviewLength
-              ? t('validation.reviewMaxLength', { count: maxReviewLength })
-              : t('validation.reviewRequired');
+        : reviewBodyTrimmed.length < minReviewLength
+          ? t('validation.reviewMinLength', { count: minReviewLength })
+          : typeof maxReviewLength === 'number' && reviewBodyTrimmed.length > maxReviewLength
+            ? t('validation.reviewMaxLength', { count: maxReviewLength })
+            : null;
+
+    const validationErrors: string[] = [];
+    if (showRatingValidation) validationErrors.push(t('validation.ratingRequired'));
+    if (showTitleValidation && maxTitleLength != null)
+        validationErrors.push(t('validation.titleMaxLength', { count: maxTitleLength }));
+    if (showReviewValidation && reviewValidationMessage) validationErrors.push(reviewValidationMessage);
 
     if (!formConfig) return null;
 
     return (
         <form ref={formRef} onSubmit={handleFormSubmit} noValidate>
             <div className="space-y-6 p-6">
+                {/* Error summary */}
+                {validationErrors.length > 0 && (
+                    <div
+                        role="alert"
+                        className="rounded-md border border-status-critical-border bg-status-critical-bg p-4">
+                        <p className="text-sm font-medium text-status-critical-foreground">
+                            {t('validation.pleaseFixFollowing')}
+                        </p>
+                        <ul className="mt-2 list-disc pl-5 text-sm text-status-critical-foreground">
+                            {validationErrors.map((msg) => (
+                                <li key={msg}>{msg}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
                 {/* Overall Rating - accessible radiogroup */}
                 <div ref={ratingSectionRef} className="space-y-2">
                     <Label className="text-foreground" id="rating-label">
@@ -343,7 +316,7 @@ export function WriteReviewModalContent({
                         ) : null}
                     </div>
                     {showRatingValidation && (
-                        <FieldValidationPopup id="rating-validation-message" message={t('validation.ratingRequired')} />
+                        <FieldError id="rating-validation-message" message={t('validation.ratingRequired')} />
                     )}
                 </div>
 
@@ -361,10 +334,13 @@ export function WriteReviewModalContent({
                         maxLength={formConfig.reviewTitle.maxCharacters}
                         aria-invalid={reviewTitleInvalid || showTitleValidation}
                         aria-describedby={showTitleValidation ? 'title-validation-message' : undefined}
-                        className={cn('w-full', (reviewTitleInvalid || showTitleValidation) && 'border-destructive')}
+                        className={cn(
+                            'w-full',
+                            (reviewTitleInvalid || showTitleValidation) && 'border-status-critical'
+                        )}
                     />
                     {showTitleValidation && maxTitleLength != null && (
-                        <FieldValidationPopup
+                        <FieldError
                             id="title-validation-message"
                             message={t('validation.titleMaxLength', { count: maxTitleLength })}
                         />
@@ -388,7 +364,7 @@ export function WriteReviewModalContent({
                         aria-describedby={showReviewValidation ? 'review-validation-message' : undefined}
                         className={cn(
                             'flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-                            (reviewBodyInvalid || showReviewValidation) && 'border-destructive'
+                            (reviewBodyInvalid || showReviewValidation) && 'border-status-critical'
                         )}
                     />
                     <div className="mt-2 flex items-center justify-between text-[0.75rem] text-muted-foreground">
@@ -398,12 +374,7 @@ export function WriteReviewModalContent({
                         </span>
                     </div>
                     {showReviewValidation && reviewValidationMessage && (
-                        <>
-                            <FieldValidationPopup id="review-validation-message" message={reviewValidationMessage} />
-                            <p id="review-validation-inline" className="mt-2 text-sm text-destructive">
-                                {reviewValidationMessage}
-                            </p>
-                        </>
+                        <FieldError id="review-validation-message" message={reviewValidationMessage} />
                     )}
                 </div>
 

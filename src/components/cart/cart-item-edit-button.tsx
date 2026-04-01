@@ -15,13 +15,6 @@
  */
 'use client';
 
-/*
- * Copyright (c) 2025, Salesforce, Inc.
- * All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
- */
-
 // React
 import { type ReactElement, useState } from 'react';
 
@@ -29,8 +22,8 @@ import { type ReactElement, useState } from 'react';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Components
+import { CartItemModal } from '@/components/cart-item-modal';
 import { Button } from '@/components/ui/button';
-import { CartItemEditModal } from '@/components/cart-item-edit-modal';
 import { useTranslation } from 'react-i18next';
 
 // Constants
@@ -62,16 +55,15 @@ export function CartItemEditButton({ product, className = '' }: CartItemEditButt
         <>
             <Button
                 variant="link"
-                size="sm"
-                className={`font-bold ${className ?? ''}`}
-                title={t('edit')}
+                className={`text-xs cursor-pointer hover:no-underline h-auto p-0 ${className ?? ''}`}
+                aria-label={`${t('edit')} ${product.productName ?? ''}`}
                 data-testid={`edit-item-${product.itemId}`}
                 onClick={() => setIsOpen(true)}>
                 {t('edit')}
             </Button>
 
             {product.itemId && (
-                <CartItemEditModal
+                <CartItemModal
                     open={isOpen}
                     onOpenChange={setIsOpen}
                     product={product as ShopperProducts.schemas['Product']}

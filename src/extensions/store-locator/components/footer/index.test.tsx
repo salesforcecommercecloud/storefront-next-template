@@ -17,7 +17,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import StoreLocatorFooter from './index';
-import { ConfigProvider } from '@/config';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 
@@ -45,5 +45,14 @@ describe('StoreLocatorFooter', () => {
         const link = screen.getByRole('link', { name: /store locator/i });
         expect(link).toBeInTheDocument();
         expect(link).toHaveAttribute('href', '/store-locator');
+    });
+
+    it('has proper styling classes matching footer links', () => {
+        renderWithRouter(<StoreLocatorFooter />);
+        const link = screen.getByRole('link', { name: /store locator/i });
+        expect(link).toHaveClass('text-sm');
+        expect(link).toHaveClass('text-muted-foreground');
+        expect(link).toHaveClass('hover:text-foreground');
+        expect(link).toHaveClass('transition-colors');
     });
 });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { forwardRef, type ComponentProps } from 'react';
-import { Link } from 'react-router';
+import { Link } from '@/components/link';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import { cn, resolveAssetUrl } from '@/lib/utils';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -23,6 +23,11 @@ import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { type Image } from '@/types';
 import type { ComponentType } from '@/components/region';
+
+const contentCardDefaults = {
+    showBackground: true,
+    showBorder: true,
+} as const;
 
 interface ContentCardProps extends ComponentProps<'div'> {
     title?: string;
@@ -70,10 +75,10 @@ export class ContentCardMetadata {
     @AttributeDefinition()
     buttonLink?: string;
 
-    @AttributeDefinition()
+    @AttributeDefinition({ defaultValue: contentCardDefaults.showBackground })
     showBackground?: boolean;
 
-    @AttributeDefinition()
+    @AttributeDefinition({ defaultValue: contentCardDefaults.showBorder })
     showBorder?: boolean;
 }
 /* v8 ignore stop */
@@ -91,8 +96,8 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
             imageAlt,
             buttonText,
             buttonLink,
-            showBackground = true,
-            showBorder = true,
+            showBackground = contentCardDefaults.showBackground,
+            showBorder = contentCardDefaults.showBorder,
             loading = 'lazy',
             regionId: _regionId,
             component: _component,

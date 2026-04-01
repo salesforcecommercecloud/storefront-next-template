@@ -19,6 +19,7 @@ import { readdir, writeFile, mkdir } from 'fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
+import { logger } from '@salesforce/storefront-next-dev/logger';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '..');
@@ -99,7 +100,7 @@ export async function discoverLocales(dirs) {
             }
         } catch (error) {
             if (error.code === 'ENOENT') {
-                console.log('📁 No main app locales directory found.');
+                logger.debug('📁 No main app locales directory found.');
             } else {
                 throw error;
             }
@@ -126,7 +127,7 @@ export async function discoverLocales(dirs) {
         }
     } catch (error) {
         if (error.code === 'ENOENT') {
-            console.log('📁 No extensions directory found.');
+            logger.debug('📁 No extensions directory found.');
         } else {
             throw error;
         }
@@ -227,7 +228,7 @@ export async function aggregateExtensionLocales(options = {}) {
     const { OUTPUT_DIR, EXTENSIONS_DIR } = dirs;
 
     const log = (...args) => {
-        if (!silent) console.log(...args);
+        if (!silent) logger.debug(...args);
     };
 
     try {
@@ -263,7 +264,7 @@ export async function aggregateExtensionLocales(options = {}) {
         log('✨ Extension locale generation complete!');
         return { generated: results.length, locales: results };
     } catch (error) {
-        if (!silent) console.error('❌ Error generating extension locales:', error);
+        if (!silent) logger.error('❌ Error generating extension locales:', error);
         throw error;
     }
 }

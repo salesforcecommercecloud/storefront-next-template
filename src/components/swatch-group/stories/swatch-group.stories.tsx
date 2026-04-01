@@ -161,16 +161,16 @@ export const SquareSwatches: Story = {
         handleChange: action('handleChange'),
         children: (
             <>
-                <Swatch value="small" label="Small" shape="square" mode="click">
+                <Swatch value="small" label="Small" shape="label" mode="click">
                     S
                 </Swatch>
-                <Swatch value="medium" label="Medium" shape="square" mode="click">
+                <Swatch value="medium" label="Medium" shape="label" mode="click">
                     M
                 </Swatch>
-                <Swatch value="large" label="Large" shape="square" mode="click">
+                <Swatch value="large" label="Large" shape="label" mode="click">
                     L
                 </Swatch>
-                <Swatch value="xlarge" label="XLarge" shape="square" mode="click">
+                <Swatch value="xlarge" label="XLarge" shape="label" mode="click">
                     XL
                 </Swatch>
             </>

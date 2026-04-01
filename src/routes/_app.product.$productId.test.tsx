@@ -15,7 +15,7 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { use } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { shouldRevalidate, type ProductPageData } from './_app.product.$productId';
@@ -40,6 +40,10 @@ vi.mock('@/components/product-view/child-products', () => ({
             <div data-testid="parent-product-id">{parentProduct?.id}</div>
         </div>
     ),
+}));
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
 }));
 
 vi.mock('@/components/typography', () => ({
@@ -114,14 +118,12 @@ vi.mock('@/components/region', () => ({
 }));
 
 vi.mock('@/components/json-ld', () => ({
-    JsonLd: () => null,
+    JsonLd: ({ id }: any) => <script data-testid={id} type="application/ld+json" />,
 }));
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-vi.mock('@/extensions/store-locator/utils', () => ({
-    getCookieFromRequestAs: vi.fn(),
-    getCookieFromDocumentAs: vi.fn(),
-    getSelectedStoreInfoCookieName: vi.fn(() => 'selectedStoreInfo_test'),
+vi.mock('@/extensions/store-locator/middlewares/selected-store.server', () => ({
+    selectedStoreContext: { id: 'selectedStoreContext' },
 }));
 
 vi.mock('@/extensions/bopis/context/pickup-context', () => ({
@@ -308,6 +310,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -333,6 +336,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -353,6 +357,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -370,6 +375,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -397,6 +403,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -410,6 +417,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -431,6 +439,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
             };
 
@@ -438,6 +447,42 @@ describe('Product Detail Route', () => {
 
             // Should show skeleton while Suspense boundary is waiting for promises to resolve
             expect(getByTestId('product-skeleton')).toBeTruthy();
+        });
+
+        test('should render product JSON-LD after page content', async () => {
+            vi.mocked(isProductSet).mockReturnValue(false);
+            vi.mocked(isProductBundle).mockReturnValue(false);
+
+            const { default: ProductPage } = await import('./_app.product.$productId');
+            const fulfilledSchemaPromise = {
+                status: 'fulfilled',
+                value: {
+                    '@context': 'https://schema.org',
+                    '@type': 'Product',
+                    name: 'Test Product',
+                },
+                then: () => undefined,
+            } as unknown as ProductPageData['productSchema'];
+            const mockLoaderData: ProductPageData = {
+                product: Promise.resolve(mockProduct),
+                category: Promise.resolve(mockCategory),
+                page: mockPage,
+                pageKey: 'test-product-123',
+                productSchema: fulfilledSchemaPromise,
+            };
+
+            render(<ProductPage loaderData={mockLoaderData} />);
+
+            await waitFor(() => {
+                expect(screen.getByTestId('product-skeleton')).toBeInTheDocument();
+                expect(screen.getByTestId('product-schema')).toBeInTheDocument();
+            });
+
+            const pageContent = screen.getByTestId('product-skeleton');
+            const productSchema = screen.getByTestId('product-schema');
+            expect(Boolean(pageContent.compareDocumentPosition(productSchema) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(
+                true
+            );
         });
     });
 });

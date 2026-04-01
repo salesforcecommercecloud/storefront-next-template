@@ -14,67 +14,46 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { DecoratedVariationAttribute } from '@/lib/product-utils';
+import type { DecoratedVariationAttributeValue } from '@/lib/product-utils';
 import { action } from 'storybook/actions';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
-import Swatches from '../swatches';
+import { ProductTileSwatches } from '../swatches';
 
-const mockColorAttributes: DecoratedVariationAttribute[] = [
+const mockColorValues: DecoratedVariationAttributeValue[] = [
     {
-        id: 'color',
-        name: 'Colour',
-        values: [
-            {
-                value: 'navy',
-                name: 'Navy',
-                href: '/product/test?color=navy',
-                swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
-            },
-            {
-                value: 'red',
-                name: 'Red',
-                href: '/product/test?color=red',
-                swatch: { link: 'https://example.com/red.jpg', disBaseLink: 'https://example.com/red.jpg' },
-            },
-            {
-                value: 'blue',
-                name: 'Blue',
-                href: '/product/test?color=blue',
-                swatch: { link: 'https://example.com/blue.jpg', disBaseLink: 'https://example.com/blue.jpg' },
-            },
-            {
-                value: 'black',
-                name: 'Black',
-                href: '/product/test?color=black',
-                swatch: { link: 'https://example.com/black.jpg', disBaseLink: 'https://example.com/black.jpg' },
-            },
-            {
-                value: 'green',
-                name: 'Green',
-                href: '/product/test?color=green',
-                swatch: { link: 'https://example.com/green.jpg', disBaseLink: 'https://example.com/green.jpg' },
-            },
-        ],
+        value: 'navy',
+        name: 'Navy',
+        href: '/product/test?color=navy',
+        swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
+    },
+    {
+        value: 'red',
+        name: 'Red',
+        href: '/product/test?color=red',
+        swatch: { link: 'https://example.com/red.jpg', disBaseLink: 'https://example.com/red.jpg' },
+    },
+    {
+        value: 'blue',
+        name: 'Blue',
+        href: '/product/test?color=blue',
+        swatch: { link: 'https://example.com/blue.jpg', disBaseLink: 'https://example.com/blue.jpg' },
+    },
+    {
+        value: 'black',
+        name: 'Black',
+        href: '/product/test?color=black',
+        swatch: { link: 'https://example.com/black.jpg', disBaseLink: 'https://example.com/black.jpg' },
+    },
+    {
+        value: 'green',
+        name: 'Green',
+        href: '/product/test?color=green',
+        swatch: { link: 'https://example.com/green.jpg', disBaseLink: 'https://example.com/green.jpg' },
     },
 ];
 
-const mockSizeAttributes: DecoratedVariationAttribute[] = [
-    {
-        id: 'size',
-        name: 'Size',
-        values: [
-            { value: 'S', name: 'S', href: '/product/test?size=S' },
-            { value: 'M', name: 'M', href: '/product/test?size=M' },
-            { value: 'L', name: 'L', href: '/product/test?size=L' },
-            { value: 'XL', name: 'XL', href: '/product/test?size=XL' },
-        ],
-    },
-];
-
-const meta: Meta<typeof Swatches> = {
+const meta: Meta<typeof ProductTileSwatches> = {
     title: 'Components/ProductTile/Swatches',
-    component: Swatches,
+    component: ProductTileSwatches,
     tags: ['autodocs'],
     parameters: {
         layout: 'centered',
@@ -89,117 +68,52 @@ const meta: Meta<typeof Swatches> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Swatches>;
+type Story = StoryObj<typeof ProductTileSwatches>;
 
 export const ColorSwatches: Story = {
     args: {
-        variationAttributes: mockColorAttributes,
-        maxSwatches: 5,
+        colorValues: mockColorValues,
         selectedAttributeValue: 'navy',
-        handleAttributeChange: action('handleAttributeChange'),
-        disableSwatchInteraction: false,
-        swatchMode: 'hover',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const swatchGroup = canvas.getByRole('radiogroup', { name: 'Colour' });
-        await expect(swatchGroup).toBeInTheDocument();
-        const swatches = canvas.getAllByRole('radio');
-        await expect(swatches.length).toBe(5);
+        onSwatchHover: action('onSwatchHover'),
+        onSwatchClick: action('onSwatchClick'),
+        productName: 'Test Product',
+        totalColorCount: 5,
+        maxSwatches: 5,
     },
 };
 
 export const ColorSwatchesWithOverflow: Story = {
     args: {
-        variationAttributes: mockColorAttributes,
-        maxSwatches: 3,
+        colorValues: mockColorValues.slice(0, 3),
         selectedAttributeValue: 'red',
-        handleAttributeChange: action('handleAttributeChange'),
-        disableSwatchInteraction: false,
-        swatchMode: 'click',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const swatches = canvas.getAllByRole('radio');
-        await expect(swatches.length).toBe(3);
-        const moreIndicator = canvas.getByTitle('+2');
-        await expect(moreIndicator).toBeInTheDocument();
-    },
-};
-
-export const SizeSwatches: Story = {
-    args: {
-        variationAttributes: mockSizeAttributes,
-        maxSwatches: 4,
-        selectedAttributeValue: 'M',
-        handleAttributeChange: action('handleAttributeChange'),
-        disableSwatchInteraction: false,
-        swatchMode: 'click',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const swatchGroup = canvas.getByRole('radiogroup', { name: 'Size' });
-        await expect(swatchGroup).toBeInTheDocument();
-        const swatches = canvas.getAllByRole('radio');
-        await expect(swatches.length).toBe(4);
+        onSwatchHover: action('onSwatchHover'),
+        onSwatchClick: action('onSwatchClick'),
+        productName: 'Test Product',
+        totalColorCount: 5,
+        maxSwatches: 3,
     },
 };
 
 export const NoSelection: Story = {
     args: {
-        variationAttributes: mockColorAttributes,
-        maxSwatches: 5,
+        colorValues: mockColorValues,
         selectedAttributeValue: null,
-        handleAttributeChange: action('handleAttributeChange'),
-        disableSwatchInteraction: false,
-        swatchMode: 'hover',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const swatches = canvas.getAllByRole('radio');
-        for (const swatch of swatches) {
-            await expect(swatch).not.toBeChecked();
-        }
+        onSwatchHover: action('onSwatchHover'),
+        onSwatchClick: action('onSwatchClick'),
+        productName: 'Test Product',
+        totalColorCount: 5,
+        maxSwatches: 5,
     },
 };
 
-export const VariantReadOnly: Story = {
+export const NoSwatches: Story = {
     args: {
-        variationAttributes: mockColorAttributes,
-        maxSwatches: 5,
+        colorValues: [],
         selectedAttributeValue: null,
-        handleAttributeChange: action('handleAttributeChange'),
-        disableSwatchInteraction: true,
-        selectedVariantColorValue: 'navy',
-        swatchMode: 'click',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const swatches = canvas.getAllByRole('radio');
-        await expect(swatches.length).toBe(1);
-        const moreIndicator = canvas.queryByTitle(/^\+\d+$/);
-        await expect(moreIndicator).toBeNull();
-    },
-};
-
-export const EmptyAttributes: Story = {
-    args: {
-        variationAttributes: [],
+        onSwatchHover: action('onSwatchHover'),
+        onSwatchClick: action('onSwatchClick'),
+        productName: 'Test Product',
+        totalColorCount: 0,
         maxSwatches: 5,
-        selectedAttributeValue: null,
-        handleAttributeChange: action('handleAttributeChange'),
-        disableSwatchInteraction: false,
-        swatchMode: 'hover',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const swatchGroup = canvas.queryByRole('radiogroup');
-        await expect(swatchGroup).toBeNull();
     },
 };

@@ -22,6 +22,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import PasswordlessLoginForm from './passwordless-login-form';
 
 // Mock navigation state
@@ -31,7 +32,9 @@ const mockNavigation = {
 
 // Helper to render with router context
 function renderWithRouter(ui: React.ReactElement) {
-    const router = createMemoryRouter([{ path: '/', element: ui }], { initialEntries: ['/'] });
+    const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{ui}</AllProvidersWrapper> }], {
+        initialEntries: ['/'],
+    });
     return render(<RouterProvider router={router} />);
 }
 
@@ -69,7 +72,7 @@ describe('PasswordlessLoginForm', () => {
             // Forgot password link
             const forgotPasswordLink = screen.getByRole('link', { name: t('login:forgotPassword') });
             expect(forgotPasswordLink).toBeInTheDocument();
-            expect(forgotPasswordLink).toHaveAttribute('href', '/forgot-password');
+            expect(forgotPasswordLink).toHaveAttribute('href', '/global/en-GB/forgot-password');
 
             // No error message by default
             expect(screen.queryByRole('alert')).not.toBeInTheDocument();
@@ -118,7 +121,7 @@ describe('PasswordlessLoginForm', () => {
 
             const passwordLoginLink = screen.getByRole('link', { name: t('login:loginWithPassword') });
             expect(passwordLoginLink).toBeInTheDocument();
-            expect(passwordLoginLink).toHaveAttribute('href', '/login?mode=password');
+            expect(passwordLoginLink).toHaveAttribute('href', '/global/en-GB/login?mode=password');
         });
 
         test('does not render password login link when passwordless is disabled', () => {

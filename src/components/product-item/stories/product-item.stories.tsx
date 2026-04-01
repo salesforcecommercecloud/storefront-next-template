@@ -17,7 +17,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import ProductItem from '../index';
 // @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
@@ -222,12 +222,8 @@ An auto bonus product that is automatically added to the cart as part of a promo
         await expect(canvas.getByText(mockBonusProductItem.productName)).toBeInTheDocument();
         // Verify bonus product badge is displayed
         await expect(canvas.getByText('Bonus Product')).toBeInTheDocument();
-        // Verify original price (£99) is shown (as strikethrough)
-        const originalPrices = canvas.getAllByText(/£99/);
-        await expect(originalPrices.length).toBeGreaterThan(0);
-        // Verify discounted price (£0) is shown
-        const discountedPrices = canvas.getAllByText(/£0/);
-        await expect(discountedPrices.length).toBeGreaterThan(0);
+        // Verify "Free" text is shown for bonus product with zero price
+        await expect(canvas.getByText('Free')).toBeInTheDocument();
 
         // Interaction tests for auto bonus product
         // Verify quantity picker is disabled and cannot be interacted with
@@ -343,12 +339,8 @@ A choice-based bonus product that allows users to select from multiple bonus opt
         await expect(canvas.getByText(mockChoiceBonusProductItem.productName)).toBeInTheDocument();
         // Verify bonus product badge is displayed
         await expect(canvas.getByText('Bonus Product')).toBeInTheDocument();
-        // Verify original price is shown (as strikethrough)
-        const originalPrices = canvas.getAllByText(/£49\.99/);
-        await expect(originalPrices.length).toBeGreaterThan(0);
-        // Verify discounted price (£0) is shown
-        const discountedPrices = canvas.getAllByText(/£0/);
-        await expect(discountedPrices.length).toBeGreaterThan(0);
+        // Verify "Free" text is shown for bonus product with zero price
+        await expect(canvas.getByText('Free')).toBeInTheDocument();
 
         // Interaction tests for choice-based bonus product
         // Verify quantity picker is enabled and interactive

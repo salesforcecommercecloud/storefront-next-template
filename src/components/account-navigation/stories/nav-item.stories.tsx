@@ -19,7 +19,7 @@ import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { action } from 'storybook/actions';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
+import { waitForStorybookReady, SITE_PREFIX } from '@storybook/test-utils';
 import { AccountNavItem } from '../index';
 import { User, Heart, ShoppingBag, LogOut } from 'lucide-react';
 
@@ -287,7 +287,7 @@ export const Logout: Story = {
 
         const form = button.closest('form');
         await expect(form).toBeInTheDocument();
-        await expect(form).toHaveAttribute('action', '/logout');
+        await expect(form).toHaveAttribute('action', `${SITE_PREFIX}/logout`);
         await expect(form).toHaveAttribute('method', 'post');
 
         const icon = canvas.getByTestId('Log Out-icon');

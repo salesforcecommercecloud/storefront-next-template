@@ -87,7 +87,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & Partial<
             <FormField
                 control={form.control}
                 name={'cardNumber' as Path<TFormValues>}
-                render={({ field }) => {
+                render={({ field, fieldState }) => {
                     const CardIcon = getCardIcon(detectedCardType || t('payment.unknownCardType'));
                     const showCardIcon = detectedCardType && detectedCardType !== t('payment.unknownCardType');
                     return (
@@ -100,6 +100,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & Partial<
                                         autoComplete="cc-number"
                                         maxLength={23}
                                         className={showCardIcon ? 'pr-12' : ''}
+                                        aria-invalid={!!fieldState.error}
                                         {...field}
                                         onChange={(e) => {
                                             const formatted = formatCardNumber(e.target.value);
@@ -123,7 +124,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & Partial<
                 }}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2">
                 <FormField
                     control={form.control}
                     name={'expiryDate' as Path<TFormValues>}
@@ -150,7 +151,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & Partial<
                 <FormField
                     control={form.control}
                     name={'cvv' as Path<TFormValues>}
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                         <FormItem>
                             <FormLabel className="sr-only">{t('payment.cvvLabel')}</FormLabel>
                             <FormControl>
@@ -175,6 +176,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & Partial<
                                         autoComplete="cc-csc"
                                         maxLength={4}
                                         className="pl-10 pr-10"
+                                        aria-invalid={!!fieldState.error}
                                         {...field}
                                         onChange={(e) => {
                                             const digits = e.target.value.replace(/\D/g, '');
@@ -209,7 +211,7 @@ export function CreditCardInputFields<TFormValues extends FieldValues & Partial<
                             <FormControl>
                                 <Checkbox id="save-default" checked={field.value} onCheckedChange={field.onChange} />
                             </FormControl>
-                            <FormLabel htmlFor="save-default" className="text-sm cursor-pointer">
+                            <FormLabel htmlFor="save-default" className="text-sm text-foreground/80 cursor-pointer">
                                 {defaultOptionLabel ?? (t as (key: string) => string)('payment.saveAsDefault')}
                             </FormLabel>
                         </FormItem>

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { type JSX, useCallback, useMemo } from 'react';
-import { useLocation, useNavigate, useNavigation } from 'react-router';
+import { useLocation, useNavigation } from 'react-router';
+import { useNavigate } from '@/hooks/use-navigate';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getPaginationItems } from '@/lib/pagination-utils';

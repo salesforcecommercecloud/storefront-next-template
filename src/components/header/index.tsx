@@ -13,47 +13,101 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ReactElement, PropsWithChildren } from 'react';
-import { Link, useLocation } from 'react-router';
+import { type ReactElement, type ReactNode, type PropsWithChildren, useRef, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router';
+import { Link } from '@/components/link';
 import Search from './search';
 import CartBadge from './cart-badge';
 import UserActions from './user-actions/user-actions';
 import { useTranslation } from 'react-i18next';
-import logo from '/images/foundations/foundations-logo.svg';
+import logo from '/images/logo.svg';
+import { Button } from '@/components/ui/button';
+import { SparklesIcon } from '@/components/icons';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { launchChat } from '@/components/shopper-agent';
+import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import { UITarget } from '@/targets/ui-target';
 
-export default function Header({ children }: PropsWithChildren): ReactElement {
+interface HeaderProps extends PropsWithChildren {
+    beforeHeader?: ReactNode;
+}
+
+export default function Header({ children, beforeHeader }: HeaderProps): ReactElement {
     const { t } = useTranslation('header');
     const location = useLocation();
+    const headerRef = useRef<HTMLElement>(null);
+    const config = useConfig<AppConfig>();
+    const showChat =
+        (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
+        validateShopperAgentConfig(config.commerceAgent);
+    const updateHeaderHeight = useCallback(() => {
+        if (headerRef.current) {
+            const height = `${headerRef.current.offsetHeight}px`;
+            headerRef.current.style.setProperty('--header-height', height);
+            document.documentElement.style.setProperty('--header-height', height);
+        }
+    }, []);
+
+    useEffect(() => {
+        const el = headerRef.current;
+        if (!el) return;
+        updateHeaderHeight();
+        const observer = new ResizeObserver(updateHeaderHeight);
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [updateHeaderHeight]);
 
     return (
-        <header className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/*
-                 * Responsive flex layout with explicit ordering:
-                 * Mobile (< lg): Logo → Icons → Hamburger (far right) | Search (new row)
-                 * Desktop (≥ lg): Logo → Mega Menu → Search → Icons
-                 */}
-                <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-x-4">
-                    {/* Logo - always first */}
-                    <Link to="/" className="flex-shrink-0 flex items-center gap-2 h-16 order-1">
-                        <img src={logo} alt={t('logoAlt')} className="h-10 w-auto" />
+        <header
+            ref={headerRef}
+            className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
+            <div className="flex justify-end px-4 lg:px-9">{beforeHeader}</div>
+            <div className="px-4 lg:px-9">
+                {/* Top row: Logo left, Icons right */}
+                <div className="flex items-center gap-x-4 lg:gap-x-6 h-16">
+                    {/* Logo - color swapped by theme via --header-logo-filter in app.css */}
+                    <Link to="/" className="flex-shrink-0 flex items-center" data-testid="header-logo">
+                        <img
+                            src={logo}
+                            alt={t('logoAlt')}
+                            className="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+                        />
                     </Link>
 
-                    {/* Icons group - order: 2 on mobile, 4 on desktop */}
-                    <div className="flex items-center space-x-2 h-16 order-2 lg:order-4">
-                        <UITarget targetId="header.before.cart" />
-                        <UserActions />
-                        <CartBadge />
-                    </div>
+                    {/* Navigation Menu - desktop only, next to logo */}
+                    <div className="hidden lg:flex items-center">{children}</div>
 
-                    {/* Navigation Menu - order: 3 on mobile (far right), 2 on desktop */}
-                    <div className="flex items-center order-3 lg:order-2">{children}</div>
+                    {/* Spacer - takes remaining space */}
+                    <div className="flex-1" />
 
-                    {/* Search - wraps to new row on mobile (order: 4), inline on desktop (order: 3) */}
-                    <div className="w-full lg:w-auto order-4 lg:order-3 pb-4 lg:pb-0">
+                    {/* Search - desktop only */}
+                    <div className="hidden lg:block" data-testid="header-search-desktop">
                         <Search key={`${location.pathname}${location.search}`} />
                     </div>
+
+                    {/* Icons group - includes mobile hamburger */}
+                    <div className="flex items-center space-x-2">
+                        <UITarget targetId="header.before.cart" />
+                        {showChat && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="cursor-pointer lg:px-4 px-1 text-header-foreground hover:bg-transparent hover:opacity-50 transition-opacity"
+                                onClick={() => launchChat()}
+                                aria-label={t('openChat')}>
+                                <SparklesIcon />
+                            </Button>
+                        )}
+                        <UserActions />
+                        <CartBadge />
+                        <div className="lg:hidden">{children}</div>
+                    </div>
+                </div>
+
+                {/* Mobile search - second row */}
+                <div className="pb-4 lg:hidden" data-testid="header-search-mobile">
+                    <Search key={`${location.pathname}${location.search}`} />
                 </div>
             </div>
         </header>

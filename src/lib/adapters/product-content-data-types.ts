@@ -183,39 +183,36 @@ export interface ProductDescriptionData {
     features: HtmlContent[];
 }
 
+// --- Ask assistant FAQ (PDP collapsible) ---
+
+/**
+ * FAQ questions for the "Ask assistant" collapsible section on PDP.
+ */
+export interface FaqQuestionsData {
+    questions: string[];
+}
+
 // --- Collapsible PDP content (Ingredients, Usage, Care, Tech Specs) ---
 
 /**
- * Ingredients & Materials section
+ * Ingredients & Materials section — pre-rendered HTML for direct use in CollapsibleHtmlSection.
  */
-export interface IngredientsData {
-    heading: string;
-    items: string[];
-}
+export type IngredientsData = HtmlContent;
 
 /**
- * Usage Instructions section
+ * Usage Instructions section — pre-rendered HTML for direct use in CollapsibleHtmlSection.
  */
-export interface UsageInstructionsData {
-    heading: string;
-    content: string;
-}
+export type UsageInstructionsData = HtmlContent;
 
 /**
- * Care Instructions section
+ * Care Instructions section — pre-rendered HTML for direct use in CollapsibleHtmlSection.
  */
-export interface CareInstructionsData {
-    heading: string;
-    items: string[];
-}
+export type CareInstructionsData = HtmlContent;
 
 /**
- * Technical Specs section (key-value pairs)
+ * Technical Specs section — pre-rendered HTML for direct use in CollapsibleHtmlSection.
  */
-export interface TechSpecsData {
-    heading: string;
-    specs: Array<{ key: string; value: string }>;
-}
+export type TechSpecsData = HtmlContent;
 
 // --- Customer Reviews ---
 

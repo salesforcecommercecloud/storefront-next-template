@@ -19,10 +19,12 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 const meta: Meta<typeof StaticVenmoButton> = {
     title: 'CHECKOUT/StaticVenmoButton',
     component: StaticVenmoButton,
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'centered',
         docs: {
             description: {
@@ -55,10 +57,13 @@ export const Default: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const button = canvas.getByRole('button');
+        // Single control in canvas; do not use getByAltText — logo is decorative (alt="") inside the labeled button.
+        const button = await canvas.findByRole('button');
         await expect(button).toBeInTheDocument();
-        const logo = canvas.getByAltText('Venmo');
-        await expect(logo).toBeInTheDocument();
+        await expect((button.getAttribute('aria-label') ?? '').toLowerCase()).toContain('venmo');
+        const logo = button.querySelector('img');
+        await expect(logo).toBeTruthy();
+        await expect(logo).toHaveAttribute('src');
     },
 };
 
@@ -70,7 +75,7 @@ export const Disabled: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const button = canvas.getByRole('button');
+        const button = await canvas.findByRole('button', { name: /venmo/i });
         await expect(button).toBeDisabled();
     },
 };

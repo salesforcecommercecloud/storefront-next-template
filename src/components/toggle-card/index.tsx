@@ -19,6 +19,7 @@ import { type ComponentProps, createContext, type ReactNode, type Ref, useContex
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
+import { cn } from '@/lib/utils';
 
 type ToggleCardContextValue = {
     editing: boolean;
@@ -27,7 +28,8 @@ type ToggleCardContextValue = {
 
 const ToggleCardContext = createContext<ToggleCardContextValue | undefined>(undefined);
 
-export type ToggleCardProps = ComponentProps<'div'> & {
+/** Omit HTML `title` so checkout step headings can be React nodes (e.g. styled spans). */
+export type ToggleCardProps = Omit<ComponentProps<'div'>, 'title'> & {
     id?: string;
     title?: ReactNode;
     description?: ReactNode;
@@ -67,30 +69,43 @@ export function ToggleCard({
     const contextValue = useMemo<ToggleCardContextValue>(() => ({ editing, disabled }), [editing, disabled]);
 
     const showHeaderContentGap = editing || (!editing && !disabled);
+    const isCompact = !editing && disabled;
 
     return (
         <ToggleCardContext.Provider value={contextValue}>
             <Card
-                className={`relative ${showHeaderContentGap ? 'gap-4' : 'gap-0'} ${className ?? ''}`}
+                className={cn('relative', showHeaderContentGap ? 'gap-4' : 'gap-0', isCompact && 'py-4', className)}
                 data-testid={id ? `sf-toggle-card-${id}` : undefined}
                 aria-disabled={disabled && !editing ? true : undefined}
                 {...props}>
                 <CardHeader
-                    className={`${!description ? 'grid-rows-1 items-center' : ''} ${showHeaderSeparator ? 'border-b border-muted-foreground/20 pb-4' : ''}`}>
+                    className={cn(
+                        !description && 'grid-rows-1 items-center',
+                        showHeaderSeparator && 'border-b border-border pb-4'
+                    )}>
                     <CardTitle
                         ref={titleRef as unknown as Ref<HTMLDivElement>}
                         tabIndex={0}
-                        className={disabled && !editing ? 'text-muted-foreground' : undefined}>
+                        className={cn(
+                            'text-base font-semibold',
+                            disabled && !editing ? 'text-muted-foreground' : 'text-foreground'
+                        )}>
                         {title}
                     </CardTitle>
-                    {description ? <CardDescription>{description}</CardDescription> : null}
+                    {description ? (
+                        <CardDescription className="text-muted-foreground">{description}</CardDescription>
+                    ) : null}
                     {/* Actions */}
-                    <CardAction className={!description ? 'row-span-1 self-center' : undefined}>
+                    <CardAction className={cn(!description && 'row-span-1 self-center')}>
                         {!editing && !disabled && onEdit && !disableEdit ? (
                             <Button
-                                className={`cursor-pointer ${editVariant === 'link' ? 'font-bold' : ''}`}
                                 variant={editVariant}
                                 size="sm"
+                                className={cn(
+                                    editVariant === 'outline' &&
+                                        'rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium',
+                                    editVariant === 'link' && 'font-bold'
+                                )}
                                 onClick={() => {
                                     if (onEdit) {
                                         onEdit();
@@ -103,7 +118,7 @@ export function ToggleCard({
 
                         {editing && editAction && onEditActionClick ? (
                             <Button
-                                className={`cursor-pointer ${editVariant === 'link' ? 'font-bold' : ''}`}
+                                className={cn('cursor-pointer', editVariant === 'link' && 'font-bold')}
                                 variant={editVariant}
                                 size="sm"
                                 onClick={onEditActionClick}

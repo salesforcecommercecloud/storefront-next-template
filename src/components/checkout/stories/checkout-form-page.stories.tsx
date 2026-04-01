@@ -31,6 +31,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 // import { cn } from '@/lib/utils';
 // Create a mock checkout form page component that matches the exact production look
@@ -144,7 +145,7 @@ function MockCheckoutFormPage({
         SHIPPING_ADDRESS: 1,
         SHIPPING_OPTIONS: 2,
         PAYMENT: 3,
-        REVIEW_ORDER: 4,
+        PLACE_ORDER: 4,
     };
 
     // Type guard to safely access checkoutData properties
@@ -390,7 +391,7 @@ function MockCheckoutFormPage({
                                         <div className="flex justify-center pt-2">
                                             <Button disabled={isLoading} size="lg" className="min-w-48">
                                                 {isLoading
-                                                    ? t('checkout:common.submitting')
+                                                    ? t('checkout:shippingAddress.saving')
                                                     : t('checkout:shippingAddress.continue')}
                                             </Button>
                                         </div>
@@ -670,7 +671,7 @@ function MockCheckoutFormPage({
                         )}
 
                         {/* Place Order */}
-                        {(step === STEPS.PAYMENT || step >= STEPS.REVIEW_ORDER) && (
+                        {(step === STEPS.PAYMENT || step >= STEPS.PLACE_ORDER) && (
                             <Card>
                                 <CardHeader>
                                     <CardTitle>
@@ -684,7 +685,9 @@ function MockCheckoutFormPage({
                                         <Button disabled={isSubmitting} className="w-full max-w-sm" size="lg">
                                             {isSubmitting
                                                 ? t('checkout:placeOrder.processing')
-                                                : t('checkout:placeOrder.button')}
+                                                : t('checkout:placeOrder.button', {
+                                                      total: `$${(cart.orderTotal ?? 0).toFixed(2)}`,
+                                                  })}
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -759,6 +762,7 @@ const meta: Meta<typeof MockCheckoutFormPage> = {
     component: MockCheckoutFormPage,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'fullscreen',
         docs: {
             description: {
@@ -1059,7 +1063,7 @@ Fourth step showing payment information form. This demonstrates:
     },
 };
 
-export const ReviewOrderStep: Story = {
+export const PlaceOrderStep: Story = {
     args: {
         step: 4,
         checkoutData: checkoutWithOneItem,

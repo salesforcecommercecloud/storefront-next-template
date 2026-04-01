@@ -132,6 +132,10 @@ This component is used in category pages to filter products by store availabilit
             description: 'Function to check if a filter is currently selected',
             action: 'isFilterSelected',
         },
+        hasActiveFilter: {
+            description: 'Whether any refine is active for an attribute (parent effectiveRefines)',
+            action: 'hasActiveFilter',
+        },
         toggleFilter: {
             description: 'Function to toggle a filter on/off',
             action: 'toggleFilter',
@@ -152,6 +156,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     args: {
         isFilterSelected: (_attributeId: string, _value: string) => false,
+        hasActiveFilter: (_attributeId: string) => false,
         toggleFilter: (_attributeId: string, _value: string) => {
             action('toggleFilter')({ attributeId: _attributeId, value: _value });
         },
@@ -188,6 +193,7 @@ export const WithStoreSelected: Story = {
         isFilterSelected: (_attributeId: string, _value: string) => {
             return _attributeId === 'ilids' && _value === 'inventory-1';
         },
+        hasActiveFilter: (_attributeId: string) => _attributeId === 'ilids',
         toggleFilter: (_attributeId: string, _value: string) => {
             action('toggleFilter')({ attributeId: _attributeId, value: _value });
         },
@@ -224,6 +230,7 @@ export const FilterChecked: Story = {
         isFilterSelected: (_attributeId: string, _value: string) => {
             return _attributeId === 'ilids' && _value === 'inventory-1';
         },
+        hasActiveFilter: (_attributeId: string) => _attributeId === 'ilids',
         toggleFilter: (_attributeId: string, _value: string) => {
             action('toggleFilter')({ attributeId: _attributeId, value: _value });
         },
@@ -278,6 +285,7 @@ This state appears when the inventory filter is active.
 export const MobileLayout: Story = {
     args: {
         isFilterSelected: (_attributeId: string, _value: string) => false,
+        hasActiveFilter: (_attributeId: string) => false,
         toggleFilter: (_attributeId: string, _value: string) => {
             action('toggleFilter')({ attributeId: _attributeId, value: _value });
         },
@@ -313,6 +321,7 @@ export const DesktopLayout: Story = {
         isFilterSelected: (_attributeId: string, _value: string) => {
             return _attributeId === 'ilids' && _value === 'inventory-1';
         },
+        hasActiveFilter: (_attributeId: string) => _attributeId === 'ilids',
         toggleFilter: (_attributeId: string, _value: string) => {
             action('toggleFilter')({ attributeId: _attributeId, value: _value });
         },

@@ -19,6 +19,7 @@ import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
 
@@ -32,12 +33,18 @@ async function addToCart(
     basket?: ShopperBasketsV2.schemas['Basket'];
     error?: string;
 }> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('CartItemAdd: starting addToCart', {
+        productId: productItem.productId,
+        quantity: productItem.quantity,
+    });
     const basketResource = await getBasket(context);
     const basket = basketResource.current;
 
     if (!basket) {
         // This state should never happen as it would indicate that the basket middleware is broken
+        logger.warn('CartItemAdd: no basket found');
         return {
             success: false,
             error: t('errors:noBasketFound'),
@@ -69,9 +76,11 @@ async function addToCart(
         // Update the basket storage
         updateBasketResource(context, updatedBasket);
 
+        logger.info('CartItemAdd: item added successfully');
         return { success: true, basket: updatedBasket };
     } catch (error) {
         if (error instanceof ApiError) {
+            logger.error('CartItemAdd: API error adding item', { error });
             return {
                 success: false,
                 error: error.body?.detail || error.statusText,
@@ -84,8 +93,10 @@ async function addToCart(
         // result that crashes in parseResponseBody. Fall back to the error message.
         try {
             const { responseMessage } = await extractResponseError(error);
+            logger.error('CartItemAdd: failed', { error });
             return { success: false, error: responseMessage };
         } catch {
+            logger.error('CartItemAdd: unexpected error', { error });
             return {
                 success: false,
                 error: error instanceof Error ? error.message : 'An unexpected error occurred',
@@ -98,7 +109,9 @@ async function addToCart(
  * Server action to add a single item to the cart.
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('CartItemAdd: action starting');
 
     if (request.method !== 'POST') {
         throw new Response(t('product:methodNotAllowed'), { status: 405 });
@@ -109,12 +122,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const productItemJson = formData.get('productItem') as string;
 
         if (!productItemJson) {
+            logger.warn('CartItemAdd: missing productItem in form data');
             throw new Error(t('product:productItemRequired'));
         }
 
         const productItem = JSON.parse(productItemJson);
         const result = await addToCart(context, productItem);
 
+        logger.info('CartItemAdd: action succeeded');
         return Response.json(result);
     } catch (error) {
         // extractResponseError re-throws for plain errors (no `response` property).
@@ -123,8 +138,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
         // parseResponseBody. Always return a Response from the action.
         try {
             const { responseMessage, status_code } = await extractResponseError(error);
+            logger.error('CartItemAdd: action failed', { error });
             return data({ success: false, error: responseMessage }, { status: Number(status_code) });
         } catch {
+            logger.error('CartItemAdd: action unexpected error', { error });
             return Response.json(
                 { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' },
                 { status: 500 }

@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 import { type ReactElement, useState, useRef, useEffect } from 'react';
-import { Link, Form } from 'react-router';
-import { House, Heart, ShoppingBag, User, MapPin, CreditCard, Building, LogOut } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
+import { Form } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { House, Heart, ShoppingBag, User, MapPin, CreditCard, Building, LogOut } from 'lucide-react';
+
+// Runtime SDK
+import { buildUrl } from '@salesforce/storefront-next-runtime/multi-site';
+
+// Components
+import { Link } from '@/components/link';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
+// hooks
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
+
+// Lib
 import { cn } from '@/lib/utils';
+import type { AppConfig } from '@/types/config';
 
 interface UserMenuProps {
     isAuthenticated: boolean;
@@ -28,9 +41,9 @@ interface UserMenuProps {
 
 // Common className for menu item links
 const menuItemClassName = cn(
-    'flex items-center gap-2 px-3 py-2 text-sm text-foreground rounded-md',
+    'flex items-center gap-2 px-3 py-2 text-sm text-foreground rounded-sm',
     'hover:bg-muted/50 transition-colors',
-    'outline-none focus-visible:bg-accent focus-visible:text-accent-foreground'
+    'outline-none focus-visible:bg-muted focus-visible:text-foreground'
 );
 
 export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElement {
@@ -39,6 +52,8 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
     const openedViaMouseRef = useRef(false);
     const { t } = useTranslation('header');
     const { t: tAccount } = useTranslation('account');
+    const config = useConfig<AppConfig>();
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
 
     // Clear timeout on unmount
     useEffect(() => {
@@ -98,7 +113,7 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
 
     // Common Popover props
     const popoverContentProps = {
-        className: 'w-64 p-0 overflow-hidden',
+        className: 'w-64 p-0 overflow-hidden bg-background border-border',
         align: 'end' as const,
         sideOffset: 8,
         onMouseEnter: handleMouseEnter,
@@ -190,7 +205,14 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
 
                         {/* Logout */}
                         <div className="px-4 py-2">
-                            <Form method="post" action="/logout" className="w-full">
+                            <Form
+                                method="post"
+                                action={buildUrl({
+                                    to: '/logout',
+                                    urlConfig: config.url,
+                                    params: { siteId: siteRef, localeId: localeRef },
+                                })}
+                                className="w-full">
                                 <button
                                     type="submit"
                                     className={cn(menuItemClassName, 'w-full text-left cursor-pointer')}
@@ -213,9 +235,9 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
                 {trigger}
             </PopoverTrigger>
             <PopoverContent {...popoverContentProps}>
-                <div className="p-4 bg-secondary rounded-md">
+                <div className="p-4 bg-muted/50 rounded-sm">
                     <p className="text-sm text-muted-foreground mb-4">{t('menu.signInForBestExperience')}</p>
-                    <Button asChild className="w-full mb-3">
+                    <Button asChild className="w-full mb-3 rounded-sm">
                         <Link to="/login" onMouseEnter={handleMenuItemMouseEnter}>
                             {t('signIn')}
                         </Link>
@@ -225,8 +247,8 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
                         <Link
                             to="/signup"
                             className={cn(
-                                'text-primary hover:underline rounded-sm px-1 py-0.5',
-                                'outline-none focus-visible:bg-accent focus-visible:text-accent-foreground'
+                                'text-foreground hover:underline rounded-sm px-1 py-0.5',
+                                'outline-none focus-visible:bg-muted focus-visible:text-foreground'
                             )}
                             onMouseEnter={handleMenuItemMouseEnter}>
                             {t('menu.createAccount')}

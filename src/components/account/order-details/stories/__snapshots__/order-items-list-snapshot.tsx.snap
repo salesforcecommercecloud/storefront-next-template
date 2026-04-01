@@ -8,25 +8,31 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
     data-testid="order-item"
   >
     <div
-      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
-      <div
-        class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+      <a
+        class="flex-shrink-0 block"
+        data-discover="true"
+        href="/product/701643108633M"
       >
-        <img
-          alt="Sweater"
-          class="h-full w-full object-contain"
-          src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw97734cd6/images/large/PG.33330DAN84Q.CHARCWL.PZ.webp?sfrm=jpg&q=70"
-        />
-      </div>
+        <div
+          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+        >
+          <img
+            alt="Sweater"
+            class="h-full w-full object-contain"
+            src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw97734cd6/images/large/PG.33330DAN84Q.CHARCWL.PZ.webp?sfrm=jpg&q=70"
+          />
+        </div>
+      </a>
       <div
         class="min-w-0 flex-1 space-y-1"
       >
         <div
-          class="mb-4 flex items-start gap-2 min-w-0"
+          class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
           >
             <a
               class="text-foreground hover:text-primary block break-words"
@@ -40,7 +46,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
         </div>
         <div>
           <div
-            class="text-sm text-muted-foreground space-y-1 mb-1"
+            class="text-xs text-muted-foreground space-y-1 mb-1"
           >
             <div>
               Size
@@ -84,7 +90,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
            
           <span
             aria-label="List price: £185.97"
-            class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
           >
             £185.97
           </span>
@@ -129,23 +135,29 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
     data-testid="order-item"
   >
     <div
-      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
-      <div
-        class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+      <a
+        class="flex-shrink-0 block"
+        data-discover="true"
+        href="/product/prod-1"
       >
         <div
-          class="w-full h-full bg-muted rounded"
-        />
-      </div>
+          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+        >
+          <div
+            class="w-full h-full bg-muted rounded"
+          />
+        </div>
+      </a>
       <div
         class="min-w-0 flex-1 space-y-1"
       >
         <div
-          class="mb-4 flex items-start gap-2 min-w-0"
+          class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
           >
             <a
               class="text-foreground hover:text-primary block break-words"
@@ -204,23 +216,29 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
     data-testid="order-item"
   >
     <div
-      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+      class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
-      <div
-        class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+      <a
+        class="flex-shrink-0 block"
+        data-discover="true"
+        href="/product/prod-2"
       >
         <div
-          class="w-full h-full bg-muted rounded"
-        />
-      </div>
+          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+        >
+          <div
+            class="w-full h-full bg-muted rounded"
+          />
+        </div>
+      </a>
       <div
         class="min-w-0 flex-1 space-y-1"
       >
         <div
-          class="mb-4 flex items-start gap-2 min-w-0"
+          class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
           >
             <a
               class="text-foreground hover:text-primary block break-words"

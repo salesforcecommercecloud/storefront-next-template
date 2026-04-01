@@ -38,18 +38,21 @@ import { getCustomerProfileForCheckout, isRegisteredCustomer } from '@/lib/api/c
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods';
 import { createApiClients } from '@/lib/api-clients';
 import { currencyContext } from '@/lib/currency';
+import { getLogger } from '@/lib/logger.server';
+
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getPickupShipment } from '@/extensions/bopis/lib/basket-utils';
 import { setAddressAndMethodForPickup } from '@/extensions/bopis/lib/api/shipment';
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores';
 import { isPickupAddressSet } from '@/extensions/bopis/lib/store-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
-import { isAddressEmpty } from '@/lib/address-utils';
+import { isAddressEmpty, isOrderBillingAddressIncomplete } from '@/lib/address-utils';
 
 /**
  * Checkout page data type
  */
 export type CheckoutPageData = {
+    basket: ShopperBasketsV2.schemas['Basket'] | null;
     shippingMethodsMap?: Promise<Record<string, ShopperBasketsV2.schemas['ShippingMethodResult']>>;
     customerProfile?: Promise<CustomerProfile | null>;
     productMap: Promise<Record<string, ShopperProducts.schemas['Product']>>;
@@ -95,7 +98,9 @@ export async function getServerShippingMethodsMapData(
         const basketResource = await getBasket(context);
         const basket = basketResource.current ?? null;
         return fetchShippingMethodsMapForBasket(context, basket);
-    } catch {
+    } catch (error) {
+        const logger = getLogger(context);
+        logger.warn('Checkout: failed to fetch shipping methods map', { error });
         return {};
     }
 }
@@ -126,8 +131,12 @@ export async function fetchShippingMethodsMapForBasket(
             try {
                 const methods = await getShippingMethodsForShipment(context, basketId, shipment.shipmentId);
                 shippingMethodsMap[shipment.shipmentId] = methods;
-            } catch {
-                // Skip this shipment if fetching fails
+            } catch (error) {
+                const logger = getLogger(context);
+                logger.warn('Checkout: failed to fetch shipping methods for shipment', {
+                    shipmentId: shipment.shipmentId,
+                    error,
+                });
             }
         });
 
@@ -214,7 +223,7 @@ async function fetchPromotionsForBasket(
 ): Promise<Record<string, ShopperPromotions.schemas['Promotion']>> {
     const promotionIds = new Set<string>();
 
-    // Extract promotion IDs from product items
+    // Extract promotion IDs from product items (top-level and shipment-level; SCAPI may only set priceAdjustments on shipment items)
     productItems.forEach((productItem) => {
         if (productItem.priceAdjustments?.length) {
             productItem.priceAdjustments.forEach((adjustment) => {
@@ -224,6 +233,19 @@ async function fetchPromotionsForBasket(
             });
         }
     });
+    if (basket?.shipments?.length) {
+        basket.shipments.forEach((shipment) => {
+            shipment.productItems?.forEach((productItem) => {
+                if (productItem.priceAdjustments?.length) {
+                    productItem.priceAdjustments.forEach((adjustment) => {
+                        if (adjustment.promotionId) {
+                            promotionIds.add(adjustment.promotionId);
+                        }
+                    });
+                }
+            });
+        });
+    }
 
     // Extract promotion IDs from shipping items
     if (basket?.shippingItems?.length) {
@@ -277,8 +299,9 @@ async function fetchPromotionsForBasket(
                     }
                 });
             }
-        } catch {
-            // Continue with next batch if this one fails
+        } catch (error) {
+            const logger = getLogger(context);
+            logger.warn('Checkout: failed to fetch promotions batch', { error });
         }
     }
 
@@ -286,20 +309,47 @@ async function fetchPromotionsForBasket(
 }
 
 /**
- * Determines if a basket needs to be prefilled with customer data
+ * Determines if a basket needs to be prefilled with customer data.
+ * For registered shoppers, we prefill:
+ * - Email: always when missing (customer.login is the email)
+ * - Shipping address: when missing and customer has saved addresses
  */
 function shouldPrefillBasket(
     basket: ShopperBasketsV2.schemas['Basket'] | undefined,
     customerProfile: CustomerProfile
 ): boolean {
-    if (!customerProfile?.customer || !customerProfile?.addresses?.length) {
+    if (!customerProfile?.customer) {
         return false;
     }
 
     const missingEmail = !basket?.customerInfo?.email;
+    const basketCustomerId = basket?.customerInfo?.customerId;
+    const profileCustomerId = customerProfile.customer.customerId;
+    const customerMismatch = !basketCustomerId || basketCustomerId !== profileCustomerId;
     const missingShippingAddress = isAddressEmpty(basket?.shipments?.[0]?.shippingAddress);
+    const hasShippingAddressNoMethod =
+        !missingShippingAddress && basket?.shipments?.[0]?.shippingAddress && !basket?.shipments?.[0]?.shippingMethod;
+    const missingPaymentInstrument = !basket?.paymentInstruments?.[0];
+    const hasAddresses = !!customerProfile.addresses?.length;
 
-    return missingEmail || missingShippingAddress;
+    /**
+     * Baskets are tied to the session (e.g. usid), not to a customer ID. customerMismatch may happen when:
+     * Guest adds items → basket has no customerId. User logs in. We need to update the basket with the logged-in customer.
+     * basketCustomerId !== profileCustomerId: basket has a different customerId (e.g. before merge completed).
+     */
+    if (missingEmail || customerMismatch) {
+        return true;
+    }
+    if (missingShippingAddress && hasAddresses) {
+        return true;
+    }
+    if (hasShippingAddressNoMethod) {
+        return true;
+    }
+    if (missingPaymentInstrument) {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -309,6 +359,7 @@ export async function initializeBasketForReturningCustomer(
     context: LoaderFunctionArgs['context'],
     customerProfile: CustomerProfile
 ): Promise<ShopperBasketsV2.schemas['Basket'] | null> {
+    const logger = getLogger(context);
     try {
         // Load the basket if it's not already loaded
         const basket = (await getBasket(context)).current ?? undefined;
@@ -321,13 +372,19 @@ export async function initializeBasketForReturningCustomer(
         }
 
         const basketId = basket.basketId;
+        logger.debug('Checkout: prefilling basket for returning customer', { basketId });
 
         const clients = createApiClients(context);
         let updatedBasket = basket;
         let hasUpdates = false;
 
-        // Set customer email if missing
-        if (!updatedBasket.customerInfo?.email && customerProfile.customer.login) {
+        const basketCustomerId = updatedBasket.customerInfo?.customerId;
+        const profileCustomerId = customerProfile.customer.customerId;
+        const needsCustomerAssociation =
+            !updatedBasket.customerInfo?.email || !basketCustomerId || basketCustomerId !== profileCustomerId;
+
+        // Set customer info when missing or when basket customer doesn't match
+        if (needsCustomerAssociation && customerProfile.customer.login) {
             const { data } = await clients.shopperBasketsV2.updateCustomerForBasket({
                 params: {
                     path: {
@@ -379,45 +436,49 @@ export async function initializeBasketForReturningCustomer(
             }
         }
 
-        // Set billing address if missing
-        if (!updatedBasket.billingAddress && hasUpdates) {
-            const shippingAddr = updatedBasket.shipments?.[0]?.shippingAddress;
-            if (shippingAddr) {
-                try {
-                    const { data } = await clients.shopperBasketsV2.updateBillingAddressForBasket({
-                        params: {
-                            path: {
-                                basketId,
-                            },
+        // Set billing address if missing or only a stub (e.g. phone-only patch from contact step)
+        const shippingAddrForBilling = updatedBasket.shipments?.[0]?.shippingAddress;
+        if (
+            (!updatedBasket.billingAddress || isOrderBillingAddressIncomplete(updatedBasket.billingAddress)) &&
+            hasUpdates &&
+            shippingAddrForBilling &&
+            !isAddressEmpty(shippingAddrForBilling)
+        ) {
+            try {
+                const { data } = await clients.shopperBasketsV2.updateBillingAddressForBasket({
+                    params: {
+                        path: {
+                            basketId,
                         },
-                        body: {
-                            firstName: shippingAddr.firstName,
-                            lastName: shippingAddr.lastName,
-                            address1: shippingAddr.address1,
-                            address2: shippingAddr.address2,
-                            city: shippingAddr.city,
-                            stateCode: shippingAddr.stateCode,
-                            postalCode: shippingAddr.postalCode,
-                            countryCode: shippingAddr.countryCode,
-                            phone: shippingAddr.phone,
-                        },
-                    });
-                    updatedBasket = data;
-                    updateBasketResource(context, updatedBasket);
-                } catch {
-                    // Billing address update failed - continue without it
-                }
+                    },
+                    body: {
+                        firstName: shippingAddrForBilling.firstName,
+                        lastName: shippingAddrForBilling.lastName,
+                        address1: shippingAddrForBilling.address1,
+                        address2: shippingAddrForBilling.address2,
+                        city: shippingAddrForBilling.city,
+                        stateCode: shippingAddrForBilling.stateCode,
+                        postalCode: shippingAddrForBilling.postalCode,
+                        countryCode: shippingAddrForBilling.countryCode,
+                        phone: shippingAddrForBilling.phone,
+                    },
+                });
+                updatedBasket = data;
+                updateBasketResource(context, updatedBasket);
+            } catch (error) {
+                logger.warn('Checkout: billing address prefill failed', { basketId, error });
             }
         }
 
-        // Set default shipping method if missing
-        if (
-            hasUpdates &&
-            updatedBasket.shipments?.[0]?.shippingAddress &&
-            !updatedBasket.shipments?.[0]?.shippingMethod
-        ) {
+        // Set default shipping method when shipment has address but no method (e.g. after prefill or address-only update)
+        if (updatedBasket.shipments?.[0]?.shippingAddress && !updatedBasket.shipments?.[0]?.shippingMethod) {
             try {
-                const shippingMethods = await getShippingMethodsForShipment(context, updatedBasket.basketId as string);
+                const shipmentId = updatedBasket.shipments[0].shipmentId ?? 'me';
+                const shippingMethods = await getShippingMethodsForShipment(
+                    context,
+                    updatedBasket.basketId as string,
+                    shipmentId
+                );
                 if (
                     Array.isArray(shippingMethods?.applicableShippingMethods) &&
                     shippingMethods?.applicableShippingMethods?.length > 0
@@ -435,8 +496,11 @@ export async function initializeBasketForReturningCustomer(
                     updatedBasket = data;
                     updateBasketResource(context, updatedBasket);
                 }
-            } catch {
-                // Shipping method update failed - continue without it
+            } catch (err) {
+                logger.warn('Checkout: could not set default shipping method on basket', {
+                    basketId,
+                    error: err,
+                });
             }
         }
 
@@ -446,18 +510,34 @@ export async function initializeBasketForReturningCustomer(
                 const { addPaymentInstrumentToBasket } = await import('@/lib/api/basket');
                 const { getPaymentMethodsFromCustomer } = await import('@/lib/customer-profile-utils');
 
+                const { normalizeCardType } = await import('@/lib/payment-utils');
                 const savedPaymentMethods = getPaymentMethodsFromCustomer(customerProfile);
                 if (savedPaymentMethods.length > 0) {
                     const preferredMethod =
                         savedPaymentMethods.find((method) => method.preferred) || savedPaymentMethods[0];
+                    const normalizedCardType = normalizeCardType(preferredMethod.cardType);
 
-                    const paymentInfo = {
-                        paymentMethodId: 'CREDIT_CARD',
-                        customerPaymentInstrumentId: preferredMethod.id,
-                    };
+                    if (!normalizedCardType || normalizedCardType === 'unknown') {
+                        logger.warn('Checkout: invalid card type for saved payment method', {
+                            cardType: preferredMethod.cardType,
+                        });
+                        // Skip auto-applying invalid payment method to avoid incomplete basket payment
+                    } else {
+                        const paymentInfo = {
+                            paymentMethodId: 'CREDIT_CARD',
+                            amount: updatedBasket.orderTotal ?? 0,
+                            paymentCard: {
+                                cardType: normalizedCardType,
+                                holder: preferredMethod.cardholderName || '',
+                                maskedNumber: preferredMethod.maskedNumber || '',
+                                expirationMonth: preferredMethod.expirationMonth,
+                                expirationYear: preferredMethod.expirationYear,
+                            },
+                        };
 
-                    updatedBasket = await addPaymentInstrumentToBasket(context, basketId, paymentInfo);
-                    updateBasketResource(context, updatedBasket);
+                        updatedBasket = await addPaymentInstrumentToBasket(context, basketId, paymentInfo);
+                        updateBasketResource(context, updatedBasket);
+                    }
                 }
             } catch {
                 // Payment instrument addition failed - continue without it
@@ -490,9 +570,10 @@ async function handleBasketPrefill(
         // Load the basket if it's not already loaded.
         const currentBasket = (await getBasket(context)).current ?? undefined;
 
-        if (shouldPrefillBasket(currentBasket, profile)) {
-            // Prefill basket with customer's saved data (email, shipping address, billing address)
+        const needsPrefill = shouldPrefillBasket(currentBasket, profile);
 
+        if (needsPrefill) {
+            // Prefill basket with customer's saved data (email, shipping address, billing address)
             return await initializeBasketForReturningCustomer(context, profile);
         }
 
@@ -509,8 +590,10 @@ async function handleBasketPrefill(
 export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData> {
     try {
         const { context } = args;
+        const logger = getLogger(context);
         const userIsRegistered = isRegisteredCustomer(context);
         const session = getAuth(context);
+        logger.debug('Checkout: loader starting', { userIsRegistered, hasBasket: Boolean(session.customerId) });
 
         const basket = (await getBasket(context)).current ?? null;
 
@@ -554,6 +637,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
                 const shippingMethodsMapPromise = fetchShippingMethodsForAllShipments(context, updatedBasket);
 
                 return {
+                    basket: updatedBasket,
                     shippingMethodsMap: shippingMethodsMapPromise,
                     customerProfile: Promise.resolve(customerProfile),
                     productMap: productMapPromise,
@@ -569,6 +653,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
         const shippingMethodsMapPromise = fetchShippingMethodsForAllShipments(context, basket);
 
         return {
+            basket,
             shippingMethodsMap: shippingMethodsMapPromise,
             productMap: productMapPromise,
             promotions: promotionsPromise,
@@ -577,8 +662,11 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
             // @sfdc-extension-line SFDC_EXT_BOPIS
             ...(storesByStoreId && { storesByStoreId }),
         };
-    } catch {
+    } catch (error) {
+        const logger = getLogger(args.context);
+        logger.error('Checkout: loader failed', { error });
         return {
+            basket: null,
             shippingMethodsMap: Promise.resolve({}),
             productMap: Promise.resolve({}),
             promotions: Promise.resolve({}),

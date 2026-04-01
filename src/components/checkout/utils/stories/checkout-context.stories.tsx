@@ -21,6 +21,7 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { CheckoutContext, type CustomerProfile } from '../checkout-context-types';
 import { Button } from '@/components/ui/button';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 // Consumer component to demonstrate context usage
 function CheckoutContextConsumer() {
@@ -34,10 +35,11 @@ function CheckoutContextConsumer() {
 
     const stepNames = {
         [STEPS.CONTACT_INFO]: 'Contact Info',
+        [STEPS.PICKUP]: 'Pickup',
         [STEPS.SHIPPING_ADDRESS]: 'Shipping Address',
         [STEPS.SHIPPING_OPTIONS]: 'Shipping Options',
         [STEPS.PAYMENT]: 'Payment',
-        [STEPS.REVIEW_ORDER]: 'Review Order',
+        [STEPS.PLACE_ORDER]: 'Place Order',
     };
 
     return (
@@ -127,6 +129,7 @@ const meta: Meta<typeof CheckoutProvider> = {
     component: CheckoutProvider,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'padded',
         docs: {
             description: {
@@ -172,7 +175,7 @@ type Story = StoryObj<typeof CheckoutProvider>;
 export const Default: Story = {
     render: () => (
         <CheckoutContextStoryHarness>
-            <CheckoutProvider>
+            <CheckoutProvider shippingDefaultSet={Promise.resolve(undefined)}>
                 <CheckoutContextConsumer />
             </CheckoutProvider>
         </CheckoutContextStoryHarness>
@@ -210,6 +213,7 @@ export const WithCustomerProfile: Story = {
     render: () => (
         <CheckoutContextStoryHarness>
             <CheckoutProvider
+                shippingDefaultSet={Promise.resolve(undefined)}
                 customerProfile={{
                     customer: {
                         id: 'test-customer-id',
@@ -252,7 +256,7 @@ Checkout context provider with a returning customer profile.
 export const WithNavigation: Story = {
     render: () => (
         <CheckoutContextStoryHarness>
-            <CheckoutProvider>
+            <CheckoutProvider shippingDefaultSet={Promise.resolve(undefined)}>
                 <CheckoutContextConsumer />
             </CheckoutProvider>
         </CheckoutContextStoryHarness>

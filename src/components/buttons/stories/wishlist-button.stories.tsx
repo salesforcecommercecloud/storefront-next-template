@@ -18,11 +18,11 @@ import { WishlistButton } from '../wishlist-button';
 import { mockProductSearchItem } from '@/components/__mocks__/product-search-hit-data';
 import { HeartIcon } from '../../icons';
 import { action } from 'storybook/actions';
-import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode, type ReactElement } from 'react';
 
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 
 const WISHLIST_HARNESS_ATTR = 'data-wishlist-harness';
@@ -432,9 +432,27 @@ This story shows the WishlistButton when the item is already in the wishlist:
     },
 };
 
-// Mock component to demonstrate loading state
 function LoadingStateWishlistButton({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
-    return <HeartIcon isFilled={false} disabled={true} size={size} className="opacity-50 cursor-not-allowed" />;
+    const [isLoading, setIsLoading] = useState(false);
+    const [isFilled, setIsFilled] = useState(false);
+    const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, []);
+
+    const handleClick = () => {
+        if (isLoading) return;
+        setIsLoading(true);
+        timerRef.current = setTimeout(() => {
+            setIsLoading(false);
+            setIsFilled(true);
+        }, 2000);
+    };
+
+    return <HeartIcon isFilled={isFilled} isLoading={isLoading} onClick={handleClick} size={size} />;
 }
 
 export const LoadingState: Story = {
@@ -446,19 +464,17 @@ export const LoadingState: Story = {
         docs: {
             description: {
                 story: `
-This story demonstrates the loading state during wishlist operations:
+This story simulates the full add-to-wishlist lifecycle:
 
-### Loading Features:
-- **Disabled state**: Button is disabled during loading
-- **Loading indicator**: Visual feedback that operation is in progress
-- **Prevents multiple clicks**: Can't trigger multiple operations
-- **Accessibility**: Loading state announced to screen readers
+### Interaction:
+1. **Click** the heart icon to start the operation
+2. **Spinner** appears for ~2 seconds (loading state)
+3. **Filled red heart** appears (product added to wishlist)
 
-### Loading Behavior:
-- Triggered when wishlist operation is in progress
-- Prevents multiple simultaneous operations
-- Provides clear user feedback
-- Maintains accessibility during loading
+### Features:
+- **Loading spinner**: Replaces heart icon during the operation
+- **Non-interactive during loading**: Prevents multiple clicks via pointer-events-none
+- **Success feedback**: Heart fills red when complete
                 `,
             },
         },
@@ -467,15 +483,22 @@ This story demonstrates the loading state during wishlist operations:
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test wishlist button renders correctly
-        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist|remove from wishlist/i });
+        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist/i });
         await expect(wishlistButton).toBeInTheDocument();
+        await expect(wishlistButton).not.toBeDisabled();
 
-        // Test button is disabled in loading state (as expected for LoadingState story)
-        await expect(wishlistButton).toBeDisabled();
+        await userEvent.click(wishlistButton);
 
-        // Verify component renders
-        await expect(canvasElement.firstChild).toBeInTheDocument();
+        const loadingButton = canvas.getByRole('button', { name: /updating wishlist/i });
+        await expect(loadingButton).not.toBeDisabled();
+        await expect(loadingButton).toHaveAttribute('aria-busy', 'true');
+        await expect(loadingButton).toHaveClass('pointer-events-none');
+
+        await new Promise((resolve) => setTimeout(resolve, 2500));
+
+        const filledButton = canvas.getByRole('button', { name: /remove from wishlist/i });
+        await expect(filledButton).not.toBeDisabled();
+        await expect(filledButton).not.toHaveAttribute('aria-busy');
     },
 };
 

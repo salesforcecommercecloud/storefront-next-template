@@ -22,6 +22,28 @@ import type { AddressBookItem } from '@/lib/customer-profile-utils';
 const normalize = (value: string | undefined | null) => (!value ? '' : value);
 
 /**
+ * Creates a normalized string key from an address for deduplication and comparison.
+ * @param address - OrderAddress or CustomerAddress to create a key for
+ * @returns A hyphen-separated string of normalized core address fields
+ */
+export function getAddressKey(
+    address: ShopperBasketsV2.schemas['OrderAddress'] | ShopperCustomers.schemas['CustomerAddress']
+): string {
+    return `${normalize(address.firstName)}-${normalize(address.lastName)}-${normalize(address.address1)}-${normalize(address.city)}-${normalize(address.stateCode)}-${normalize(address.postalCode)}-${normalize(address.countryCode)}`;
+}
+
+/**
+ * Compares two addresses for equality by their normalized field values.
+ */
+export function isAddressEqual(
+    address1?: ShopperBasketsV2.schemas['OrderAddress'] | null,
+    address2?: ShopperBasketsV2.schemas['OrderAddress'] | null
+): boolean {
+    if (!address1 || !address2) return false;
+    return getAddressKey(address1) === getAddressKey(address2);
+}
+
+/**
  * Converts an OrderAddress to a CustomerAddress format
  * This is useful for creating guest addresses or converting between address types
  *
@@ -66,6 +88,23 @@ export function isAddressEmpty(address: ShopperBasketsV2.schemas['OrderAddress']
         normalize(address.postalCode) === '' &&
         normalize(address.stateCode) === ''
     );
+}
+
+/**
+ * True when billing cannot satisfy SFCC order placement (e.g. phone-only stub set from contact step).
+ * Used so checkout can copy a full shipping address onto billing when this returns true.
+ */
+export function isOrderBillingAddressIncomplete(
+    address: ShopperBasketsV2.schemas['OrderAddress'] | undefined | null
+): boolean {
+    if (!address || isAddressEmpty(address)) {
+        return true;
+    }
+    const address1 = normalize(address.address1);
+    const city = normalize(address.city);
+    const postalCode = normalize(address.postalCode);
+    const countryCode = normalize(address.countryCode);
+    return address1 === '' || city === '' || postalCode === '' || countryCode === '';
 }
 
 type FormattedAddress = {
@@ -132,6 +171,22 @@ export function customerAddressToOrderAddress(
         postalCode: customerAddress.postalCode ?? '',
         stateCode: customerAddress.stateCode ?? '',
     };
+}
+
+/**
+ * Finds the saved address that matches a basket/order shipping address by comparing
+ * core address fields. Returns the matching address ID, or undefined if no match.
+ */
+export function findMatchingSavedAddressId(
+    shippingAddress: ShopperBasketsV2.schemas['OrderAddress'] | undefined | null,
+    savedAddresses: AddressBookItem[]
+): string | undefined {
+    if (!shippingAddress || savedAddresses.length === 0) return undefined;
+
+    const key = getAddressKey(shippingAddress);
+    const match = savedAddresses.find((saved) => getAddressKey(saved) === key);
+
+    return match?.id;
 }
 
 /**

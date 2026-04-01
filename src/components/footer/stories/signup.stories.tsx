@@ -106,10 +106,6 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Check for heading
-        const heading = canvas.getByText(/be the first to know/i);
-        await expect(heading).toBeInTheDocument();
-
         // Check for email input
         const emailInput = await canvas.findByPlaceholderText(/your email/i, {}, { timeout: 500 });
         await expect(emailInput).toBeInTheDocument();

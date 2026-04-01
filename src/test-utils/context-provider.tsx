@@ -15,12 +15,19 @@
  */
 
 import type { ReactNode } from 'react';
-import { ConfigProvider, type AppConfig } from '@/config/context';
-import { mockConfig } from './context-provider-utils';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/multi-site';
+import type { AppConfig } from '@/types/config';
+import { mockConfig, mockBuildConfig } from './config';
 import { TargetProviders } from '@/targets/target-providers';
 import { CurrencyProvider } from '@/providers/currency';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
+
+const defaultMockSite = {
+    ...mockBuildConfig.app.commerce.sites[0],
+    alias: mockBuildConfig.app.siteAliasMap?.RefArchGlobal ?? undefined,
+};
 
 /**
  * React Testing Library wrapper component that provides ConfigProvider context
@@ -73,13 +80,15 @@ export function AllProvidersWrapper({
 }) {
     return (
         <ConfigProvider config={config}>
-            <CurrencyWrapper currency={currency}>
-                {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-                <StoreLocatorProvider>
-                    <TargetProviders>{children}</TargetProviders>
+            <SiteProvider value={defaultMockSite}>
+                <CurrencyWrapper currency={currency}>
                     {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-                </StoreLocatorProvider>
-            </CurrencyWrapper>
+                    <StoreLocatorProvider>
+                        <TargetProviders>{children}</TargetProviders>
+                        {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
+                    </StoreLocatorProvider>
+                </CurrencyWrapper>
+            </SiteProvider>
         </ConfigProvider>
     );
 }

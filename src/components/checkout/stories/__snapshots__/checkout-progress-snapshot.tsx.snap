@@ -188,7 +188,7 @@ exports[`CheckoutProgress stories snapshot > ContactInfo story renders and match
               <div
                 class="font-medium truncate text-muted-foreground"
               >
-                Review
+                Place Order
               </div>
             </div>
           </div>
@@ -381,12 +381,12 @@ exports[`CheckoutProgress stories snapshot > ContactInfo story renders and match
             <div
               class="text-sm font-medium text-foreground"
             >
-              Review
+              Place Order
             </div>
             <div
               class="text-xs mt-1 text-muted-foreground"
             >
-              Confirm order
+              Place order
             </div>
           </div>
         </div>
@@ -626,7 +626,7 @@ exports[`CheckoutProgress stories snapshot > Payment story renders and matches s
               <div
                 class="font-medium truncate text-muted-foreground"
               >
-                Review
+                Place Order
               </div>
             </div>
           </div>
@@ -861,12 +861,12 @@ exports[`CheckoutProgress stories snapshot > Payment story renders and matches s
             <div
               class="text-sm font-medium text-foreground"
             >
-              Review
+              Place Order
             </div>
             <div
               class="text-xs mt-1 text-muted-foreground"
             >
-              Confirm order
+              Place order
             </div>
           </div>
         </div>
@@ -876,7 +876,7 @@ exports[`CheckoutProgress stories snapshot > Payment story renders and matches s
 </div>
 `;
 
-exports[`CheckoutProgress stories snapshot > ReviewOrder story renders and matches snapshot 1`] = `
+exports[`CheckoutProgress stories snapshot > PlaceOrder story renders and matches snapshot 1`] = `
 <div
   class="w-full max-w-4xl mx-auto p-6"
   data-progress-harness="true"
@@ -1120,7 +1120,7 @@ exports[`CheckoutProgress stories snapshot > ReviewOrder story renders and match
               <div
                 class="font-medium truncate text-primary"
               >
-                Review
+                Place Order
               </div>
             </div>
           </div>
@@ -1369,12 +1369,12 @@ exports[`CheckoutProgress stories snapshot > ReviewOrder story renders and match
             <div
               class="text-sm font-medium text-primary"
             >
-              Review
+              Place Order
             </div>
             <div
               class="text-xs mt-1 text-primary"
             >
-              Confirm order
+              Place order
             </div>
           </div>
         </div>
@@ -1586,7 +1586,7 @@ exports[`CheckoutProgress stories snapshot > ShippingAddress story renders and m
               <div
                 class="font-medium truncate text-muted-foreground"
               >
-                Review
+                Place Order
               </div>
             </div>
           </div>
@@ -1793,12 +1793,12 @@ exports[`CheckoutProgress stories snapshot > ShippingAddress story renders and m
             <div
               class="text-sm font-medium text-foreground"
             >
-              Review
+              Place Order
             </div>
             <div
               class="text-xs mt-1 text-muted-foreground"
             >
-              Confirm order
+              Place order
             </div>
           </div>
         </div>
@@ -2024,7 +2024,7 @@ exports[`CheckoutProgress stories snapshot > ShippingOptions story renders and m
               <div
                 class="font-medium truncate text-muted-foreground"
               >
-                Review
+                Place Order
               </div>
             </div>
           </div>
@@ -2245,12 +2245,12 @@ exports[`CheckoutProgress stories snapshot > ShippingOptions story renders and m
             <div
               class="text-sm font-medium text-foreground"
             >
-              Review
+              Place Order
             </div>
             <div
               class="text-xs mt-1 text-muted-foreground"
             >
-              Confirm order
+              Place order
             </div>
           </div>
         </div>

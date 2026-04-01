@@ -179,7 +179,7 @@ describe('Suggestions Wrapper Component', () => {
         renderWithRouter(
             <Suggestions
                 searchSuggestions={searchSuggestions}
-                recentSearches={undefined}
+                recentSearches={[]}
                 closeAndNavigate={mockCloseAndNavigate}
                 clearRecentSearches={mockClearRecentSearches}
             />

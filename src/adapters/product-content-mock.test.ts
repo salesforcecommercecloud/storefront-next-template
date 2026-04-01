@@ -126,43 +126,42 @@ describe('ProductContentMockAdapter', () => {
     });
 
     describe('getIngredientsData', () => {
-        it('should return ingredients & materials list', async () => {
+        it('should return ingredients & materials as HTML', async () => {
             const data = await adapter.getIngredientsData?.();
             expect(data).toBeDefined();
             if (!data) return;
-            expect(data.heading).toBe('Ingredients & Materials');
-            expect(data.items).toHaveLength(4);
+            expect(data.contentType).toBe('bulleted-list');
+            expect(data.html).toContain('leather');
         });
     });
 
     describe('getUsageInstructions', () => {
-        it('should return usage instructions content', async () => {
+        it('should return usage instructions as HTML', async () => {
             const data = await adapter.getUsageInstructions?.();
             expect(data).toBeDefined();
             if (!data) return;
-            expect(data.heading).toBe('Usage Instructions');
-            expect(data.content).toContain('leather');
+            expect(data.contentType).toBe('plain-text');
+            expect(data.html).toContain('leather');
         });
     });
 
     describe('getCareInstructions', () => {
-        it('should return care instructions list', async () => {
+        it('should return care instructions as HTML', async () => {
             const data = await adapter.getCareInstructions?.();
             expect(data).toBeDefined();
             if (!data) return;
-            expect(data.heading).toBe('Care Instructions');
-            expect(data.items).toHaveLength(4);
+            expect(data.contentType).toBe('bulleted-list');
+            expect(data.html).toContain('leather');
         });
     });
 
     describe('getTechSpecs', () => {
-        it('should return tech specs key-value pairs', async () => {
+        it('should return tech specs as HTML', async () => {
             const data = await adapter.getTechSpecs?.();
             expect(data).toBeDefined();
             if (!data) return;
-            expect(data.heading).toBe('Technical Specs');
-            expect(data.specs).toHaveLength(4);
-            expect(data.specs.find((s) => s.key === 'Heel Height')?.value).toBe('1.5 inches');
+            expect(data.contentType).toBe('table-2-column');
+            expect(data.html).toContain('Heel Height');
         });
     });
 

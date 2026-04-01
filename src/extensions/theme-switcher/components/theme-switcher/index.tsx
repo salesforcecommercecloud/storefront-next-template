@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 import { NativeSelect } from '@/components/ui/native-select';
 
-type ThemeFamily = 'market-street' | 'foundations';
+type ThemeFamily = 'market-street';
 type ThemeMode = 'light' | 'dark';
 
 export default function ThemeSwitcher(): ReactElement {
@@ -28,7 +28,7 @@ export default function ThemeSwitcher(): ReactElement {
     const familyId = useId();
     const { t } = useTranslation('themeSwitcher');
 
-    const [themeFamily, setThemeFamily] = useState<ThemeFamily>('foundations');
+    const [themeFamily, setThemeFamily] = useState<ThemeFamily>('market-street');
     const [themeMode, setThemeMode] = useState<ThemeMode>('light');
 
     // Apply theme whenever it changes
@@ -38,12 +38,8 @@ export default function ThemeSwitcher(): ReactElement {
         // Handle dark mode class
         html.classList.toggle('dark', themeMode === 'dark');
 
-        // Handle data-theme attribute for market street
-        if (themeFamily === 'market-street') {
-            html.setAttribute('data-theme', `market-street-${themeMode}`);
-        } else {
-            html.removeAttribute('data-theme');
-        }
+        // Market Street doesn't use data-theme attribute
+        html.removeAttribute('data-theme');
     }, [themeFamily, themeMode]);
 
     const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -65,7 +61,6 @@ export default function ThemeSwitcher(): ReactElement {
                     value={themeFamily}
                     onChange={handleFamilyChange}
                     aria-label={t('themeFamilyAriaLabel')}>
-                    <option value="foundations">{t('foundations')}</option>
                     <option value="market-street">{t('marketStreet')}</option>
                 </NativeSelect>
             </div>

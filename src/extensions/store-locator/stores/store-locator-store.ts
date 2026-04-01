@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Cookies from 'js-cookie';
-import { getCookieConfig } from '@/lib/cookie-utils';
 
 export type StoreLocatorConfig = {
     supportedCountries: Array<{ countryCode: string; countryName: string }>;
@@ -76,7 +74,6 @@ const defaultConfig: StoreLocatorConfig = {
     geoTimeout: 10000,
 };
 
-import { getSelectedStoreInfoCookieName } from '@/extensions/store-locator/utils';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 
 /**
@@ -98,32 +95,6 @@ const normalizeStoreInfo = (
         name: store.name || store.id,
         inventoryId: store.inventoryId,
     };
-};
-
-/**
- * Persist the selected store info cookie (client-only). Clears cookie when info is null.
- * Saves full store object including id, name, and inventoryId.
- * Throws on server to highlight accidental invocation in SSR.
- *
- * @param info - Selected store info or null to clear
- */
-const writeSelectedStoreInfoCookie = (info: SelectedStoreInfo | null) => {
-    try {
-        const cookieName = getSelectedStoreInfoCookieName();
-        const cookieConfig = getCookieConfig();
-
-        if (info) {
-            Cookies.set(cookieName, JSON.stringify(info), cookieConfig);
-        } else {
-            // Use same config for removal to ensure path and domain match
-            Cookies.remove(cookieName, cookieConfig);
-        }
-    } catch (e) {
-        // draw attention to failed attempts to write cookie on server
-        if (typeof window === 'undefined') {
-            throw e;
-        }
-    }
 };
 
 /**
@@ -176,7 +147,6 @@ export const createStoreLocatorStore = (init?: Partial<StoreLocatorState>): Stor
         setShouldSearch: (should) => store.setState({ shouldSearch: should }),
         setSelectedStoreInfo: (info) => {
             const normalized = normalizeStoreInfo(info);
-            writeSelectedStoreInfoCookie(normalized);
             store.setState({ selectedStoreInfo: normalized });
         },
     };

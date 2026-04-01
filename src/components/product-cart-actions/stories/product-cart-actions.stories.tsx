@@ -19,7 +19,7 @@ import ProductCartActions from '../index';
 // @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import ProductViewProvider from '@/providers/product-view';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
@@ -102,12 +102,13 @@ export const Default: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
+
+        // Verify Add to Cart button exists and is enabled
         const addToCartButton = canvas.getByRole('button', { name: /add to cart/i });
         await expect(addToCartButton).toBeInTheDocument();
         await expect(addToCartButton).toBeEnabled();
 
-        const wishlistButton = canvas.getByRole('button', { name: /add to wishlist/i });
-        await expect(wishlistButton).toBeInTheDocument();
+        // Note: Wishlist button is rendered in ProductInfo component, not ProductCartActions
     },
 };
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type FormEvent, type ReactElement, useCallback, useRef, useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from '@/hooks/use-navigate';
 import debounce from 'lodash.debounce';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -23,8 +23,11 @@ import { useTranslation } from 'react-i18next';
 import Suggestions from '@/components/search/suggestions';
 import { useSearchSuggestions } from '@/hooks/use-search-suggestions';
 import { useTransformSearchSuggestions } from '@/hooks/use-transform-search-suggestions';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { getSessionJSONItem, setSessionJSONItem, clearSessionJSONItem } from '@/lib/utils';
+import { openShopperAgentAndSendMessage } from '@/components/shopper-agent';
+import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 
 const RECENT_SEARCH_LIMIT = 5;
 const RECENT_SEARCH_KEY = 'recent-search-key';
@@ -34,7 +37,7 @@ const POPOVER_CONTENT_OFFSET = 12;
 export default function SearchBar(): ReactElement {
     const { t } = useTranslation('header');
     const navigate = useNavigate();
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [query, setQuery] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -147,6 +150,20 @@ export default function SearchBar(): ReactElement {
         setShowSuggestions(false);
     }, []);
 
+    const showShopperAgent =
+        (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
+        validateShopperAgentConfig(config.commerceAgent);
+
+    const onShopperAgentClick = useCallback(() => {
+        const searchText = inputRef.current?.value?.trim() ?? query.trim();
+        setShowSuggestions(false);
+        setQuery('');
+        if (inputRef.current) {
+            inputRef.current.value = '';
+        }
+        openShopperAgentAndSendMessage(searchText);
+    }, [query]);
+
     useEffect(() => {
         shouldOpenPopover();
     }, [query, suggestions, shouldOpenPopover]);
@@ -160,7 +177,7 @@ export default function SearchBar(): ReactElement {
                             ref={inputRef}
                             type="text"
                             placeholder={t('searchPlaceholder')}
-                            className="w-full pl-10"
+                            className="w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground"
                             onChange={handleInputChange}
                             onFocus={shouldOpenPopover}
                             onBlur={() => setShowSuggestions(false)}
@@ -169,13 +186,14 @@ export default function SearchBar(): ReactElement {
                             aria-expanded={showSuggestions}
                             aria-haspopup="listbox"
                             role="combobox"
+                            data-testid="header-search"
                         />
                     </PopoverTrigger>
                     <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2" />
                 </div>
             </form>
             <PopoverContent
-                className="w-screen p-0 border shadow-[0px_1px_12px_rgba(0,0,0,0.25)] max-h-80 overflow-y-auto"
+                className="w-screen p-0 border shadow-[0px_1px_12px_rgba(0,0,0,0.25)] max-h-[min(70vh,32rem)] overflow-y-auto"
                 align="start"
                 side="bottom"
                 sideOffset={POPOVER_CONTENT_OFFSET}
@@ -187,6 +205,8 @@ export default function SearchBar(): ReactElement {
                     recentSearches={getSessionJSONItem<string[]>(RECENT_SEARCH_KEY) || []}
                     closeAndNavigate={closeAndNavigate}
                     clearRecentSearches={clearRecentSearches}
+                    showShopperAgent={showShopperAgent}
+                    onShopperAgentClick={onShopperAgentClick}
                 />
             </PopoverContent>
         </Popover>

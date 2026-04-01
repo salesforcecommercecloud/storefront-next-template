@@ -203,6 +203,9 @@ describe('Customer Lookup Functions', () => {
                     path: {
                         customerId: 'customer123',
                     },
+                    query: {
+                        expand: ['addresses', 'paymentinstruments'],
+                    },
                 },
             });
         });
@@ -221,7 +224,13 @@ describe('Customer Lookup Functions', () => {
                 customerId: 'customer456',
                 email: 'simple@example.com',
                 addresses: [],
-                paymentInstruments: [],
+                paymentInstruments: [
+                    {
+                        paymentInstrumentId: 'dummy',
+                        paymentMethodId: 'CREDIT_CARD',
+                        paymentCard: {},
+                    },
+                ],
             };
 
             vi.mocked(getAuth).mockReturnValue({ customerId: 'customer456', accessToken: 'token456' });
@@ -240,7 +249,7 @@ describe('Customer Lookup Functions', () => {
                 preferredShippingAddress: undefined,
             });
             expect(result.addresses).toEqual([]);
-            expect(result.paymentInstruments).toEqual([]);
+            expect(result.paymentInstruments).toHaveLength(1);
         });
 
         it('should handle customer with only addresses', async () => {
@@ -259,7 +268,13 @@ describe('Customer Lookup Functions', () => {
                         countryCode: 'US',
                     },
                 ],
-                paymentInstruments: [],
+                paymentInstruments: [
+                    {
+                        paymentInstrumentId: 'dummy',
+                        paymentMethodId: 'CREDIT_CARD',
+                        paymentCard: {},
+                    },
+                ],
             };
 
             vi.mocked(getAuth).mockReturnValue({ customerId: 'customer789', accessToken: 'token789' });
@@ -278,7 +293,7 @@ describe('Customer Lookup Functions', () => {
                 preferredShippingAddress: mockCustomer.addresses[0], // First address as preferred
             });
             expect(result.addresses).toHaveLength(1);
-            expect(result.paymentInstruments).toEqual([]);
+            expect(result.paymentInstruments).toHaveLength(1);
         });
 
         it('should handle customer with only payment instruments', async () => {

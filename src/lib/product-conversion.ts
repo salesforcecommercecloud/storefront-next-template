@@ -35,8 +35,6 @@ export function convertProductToProductSearchHit(
         productId,
         productName,
         price: productPrice,
-        // TODO: apply current site defaultCurrency as the fallback value in case others are undefined.
-        // This needs multi site implementation
         currency: product.currency,
         image: firstImage
             ? {

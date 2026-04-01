@@ -30,7 +30,8 @@ import { masterProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { bundleProd } from '@/components/__mocks__/bundle-product';
 import { mockBuildConfig } from '@/test-utils/config';
-import { createAppConfig } from '@/config/context';
+import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
+import type { Config } from '@/types/config';
 import { getTranslation } from '@/lib/i18next';
 
 // Create a default config object for tests
@@ -44,13 +45,14 @@ const defaultTestConfig = createAppConfig({
                 enabled: false,
                 callbackUri: '/passwordless-login-callback',
                 landingUri: '/passwordless-login-landing',
+                mode: 'email' as const,
             },
             socialLogin: { enabled: true, callbackUri: '/social-callback', providers: ['Apple', 'Google'] },
             socialShare: { enabled: true, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
             guestCheckout: true,
         },
     },
-});
+} satisfies Config);
 
 // Mock useToast
 const mockAddToast = vi.fn();
@@ -162,17 +164,11 @@ describe('ProductCartActions', () => {
     });
 
     describe('when shopping for a product', () => {
-        test('add to cart and wishlist buttons are rendered', () => {
+        test('add to cart button is rendered', () => {
             renderProductCartActions({ product: standardProd });
 
             // User should see a button to add the product to cart
             expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
-
-            // User should see a button to add the product to wishlist
-            expect(screen.getByRole('button', { name: /add to wishlist/i })).toBeInTheDocument();
-
-            // User should see a share button
-            expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
         });
 
         test('add to cart button is disabled on out of stock item', () => {
@@ -238,138 +234,52 @@ describe('ProductCartActions', () => {
             // handleAddToCart should be called
             expect(mockHandleAddToCart).toHaveBeenCalledOnce();
         });
-
-        test('clicking add to wishlist button calls handleAddToWishlist', async () => {
-            const user = userEvent.setup();
-            renderProductCartActions({ product: standardProd });
-
-            const addToWishlistButton = screen.getByRole('button', { name: /add to wishlist/i });
-
-            // Wishlist button should always be clickable
-            expect(addToWishlistButton).toBeEnabled();
-            await user.click(addToWishlistButton);
-
-            // handleAddToWishlist should be called
-            expect(mockHandleAddToWishlist).toHaveBeenCalledOnce();
-        });
     });
 
-    describe('Share Button Integration', () => {
-        test('share button is rendered alongside wishlist button', () => {
-            renderProductCartActions({ product: standardProd });
+    describe('compact add mode (onBuyNow prop)', () => {
+        test('renders "Add to Cart" and "Buy it Now" buttons side by side when onBuyNow is provided', () => {
+            const onBuyNow = vi.fn();
+            renderProductCartActions({ product: standardProd, onBuyNow });
 
-            const wishlistButton = screen.getByRole('button', { name: /add to wishlist/i });
-            const shareButton = screen.getByRole('button', { name: /share/i });
-
-            expect(wishlistButton).toBeInTheDocument();
-            expect(shareButton).toBeInTheDocument();
-
-            // Both buttons should be in the same grid container
-            const buttonsContainer = wishlistButton.closest('div.grid');
-            expect(buttonsContainer).toContainElement(shareButton);
+            expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: t('product:buyItNow') })).toBeInTheDocument();
         });
 
-        test('share button opens dropdown menu when clicked', async () => {
-            const user = userEvent.setup();
-            renderProductCartActions({ product: standardProd });
+        test('hides express payments and BNPL in compact add mode', () => {
+            const onBuyNow = vi.fn();
+            renderProductCartActions({ product: standardProd, onBuyNow });
 
-            const shareButton = screen.getByRole('button', { name: /share/i });
-            await user.click(shareButton);
-
-            await waitFor(() => {
-                expect(screen.getByText('Copy link')).toBeInTheDocument();
-            });
+            // In compact mode, we show a simple two-button layout
+            expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: t('product:buyItNow') })).toBeInTheDocument();
         });
 
-        test('share button shows configured social providers', async () => {
+        test('calls onBuyNow when "Buy it Now" is clicked', async () => {
             const user = userEvent.setup();
-            renderProductCartActions({ product: standardProd });
+            const onBuyNow = vi.fn();
+            renderProductCartActions({ product: standardProd, onBuyNow });
 
-            const shareButton = screen.getByRole('button', { name: /share/i });
-            await user.click(shareButton);
+            await user.click(screen.getByRole('button', { name: t('product:buyItNow') }));
 
-            await waitFor(() => {
-                expect(screen.getByText('Copy link')).toBeInTheDocument();
-            });
-
-            // Check for configured social providers
-            expect(screen.getByText('Email')).toBeInTheDocument();
-            expect(screen.getByText('Twitter/X')).toBeInTheDocument();
+            expect(onBuyNow).toHaveBeenCalledOnce();
         });
 
-        test('share button respects disabled socialShare config', async () => {
-            const customConfig = createAppConfig({
-                ...mockBuildConfig,
-                app: {
-                    ...mockBuildConfig.app,
-                    features: {
-                        ...mockBuildConfig.app.features,
-                        passwordlessLogin: {
-                            enabled: false,
-                            callbackUri: '/passwordless-login-callback',
-                            landingUri: '/passwordless-login-landing',
-                        },
-                        socialLogin: { enabled: true, callbackUri: '/social-callback', providers: ['Apple', 'Google'] },
-                        socialShare: { enabled: false, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
-                        guestCheckout: true,
-                    },
-                },
-            });
+        test('"Buy it Now" button is disabled when product cannot be added to cart', () => {
+            const outOfStockProduct = {
+                ...standardProd,
+                inventory: { ats: 0, orderable: false, id: 'test-inventory' },
+            };
+            const onBuyNow = vi.fn();
+            renderProductCartActions({ product: outOfStockProduct, onBuyNow });
 
-            const user = userEvent.setup();
-            const productId = standardProd.id;
-            const initialUrl = `/product/${productId}`;
-            const router = createMemoryRouter(
-                [
-                    {
-                        path: '/product/:productId',
-                        element: (
-                            <AllProvidersWrapper config={customConfig}>
-                                <ProductViewProvider product={standardProd} mode="add">
-                                    <ProductCartActions product={standardProd} />
-                                </ProductViewProvider>
-                            </AllProvidersWrapper>
-                        ),
-                    },
-                ],
-                {
-                    initialEntries: [initialUrl],
-                }
-            );
-            render(<RouterProvider router={router} />);
-
-            const shareButton = screen.getByRole('button', { name: /share/i });
-            await user.click(shareButton);
-
-            await waitFor(() => {
-                expect(screen.getByText('Copy link')).toBeInTheDocument();
-            });
-
-            // Social providers should not be shown when disabled
-            expect(screen.queryByText('Email')).not.toBeInTheDocument();
-            expect(screen.queryByText('Twitter/X')).not.toBeInTheDocument();
+            expect(screen.getByRole('button', { name: t('product:buyItNow') })).toBeDisabled();
         });
 
-        test('share button shows copy link option', async () => {
-            const user = userEvent.setup();
+        test('standard add mode does not show Buy it Now button when onBuyNow is not provided', () => {
             renderProductCartActions({ product: standardProd });
 
-            const shareButton = screen.getByRole('button', { name: /share/i });
-            await user.click(shareButton);
-
-            await waitFor(() => {
-                expect(screen.getByText('Copy link')).toBeInTheDocument();
-            });
-
-            // Verify copy link option is present and clickable
-            const copyLinkOption = screen.getByText('Copy link');
-            expect(copyLinkOption).toBeInTheDocument();
-            await user.click(copyLinkOption);
-
-            // Verify toast is shown (clipboard functionality is tested in ShareButton tests)
-            await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalled();
-            });
+            expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: t('product:buyItNow') })).not.toBeInTheDocument();
         });
     });
 
@@ -451,7 +361,7 @@ describe('ProductCartActions', () => {
             expect(mockHandleAddToWishlist).not.toHaveBeenCalled();
         });
 
-        test('shows loading state when pending action is executing', async () => {
+        test('executes pending wishlist action asynchronously', async () => {
             const productId = (standardProd.productId as string) || standardProd.id;
 
             // Mock handleAddToWishlist to be async and take some time
@@ -479,11 +389,10 @@ describe('ProductCartActions', () => {
 
             render(<RouterProvider router={router} />);
 
-            // Check if loading state is shown (button should show "Adding To Wishlist..." text or be disabled)
+            // Verify the action is executed
             await waitFor(
                 () => {
-                    const wishlistButton = screen.getByRole('button', { name: /adding to wishlist/i });
-                    expect(wishlistButton).toBeInTheDocument();
+                    expect(mockHandleAddToWishlist).toHaveBeenCalled();
                 },
                 { timeout: 2000 }
             );

@@ -313,11 +313,11 @@ export const Default: Story = {
         // Verify all field labels are present
         await expect(canvas.getByText(/first name/i)).toBeInTheDocument();
         await expect(canvas.getByText(/last name/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/^address$/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/address line 1/i)).toBeInTheDocument();
         await expect(canvas.getByText(/address line 2/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/^city$/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/state\/province/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/postal code/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/city/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/state/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/zip code/i)).toBeInTheDocument();
         await expect(canvas.getByText(/phone number/i)).toBeInTheDocument();
 
         // Test typing in first name field
@@ -353,11 +353,11 @@ export const PrefilledShippingAddress: Story = {
         // Verify form fields are populated with initial data (use role+name to avoid multiple matches)
         await expect(canvas.getByRole('textbox', { name: /first name/i })).toHaveValue('John');
         await expect(canvas.getByRole('textbox', { name: /last name/i })).toHaveValue('Doe');
-        await expect(canvas.getByRole('textbox', { name: /^address$/i })).toHaveValue('123 Main Street');
+        await expect(canvas.getByRole('textbox', { name: /address line 1/i })).toHaveValue('123 Main Street');
         await expect(canvas.getByRole('textbox', { name: /address line 2/i })).toHaveValue('Apt 4B');
-        await expect(canvas.getByRole('textbox', { name: /^city$/i })).toHaveValue('New York');
+        await expect(canvas.getByRole('textbox', { name: /city/i })).toHaveValue('New York');
         await expect(canvas.getByRole('combobox', { name: /state/i })).toHaveValue('NY');
-        await expect(canvas.getByRole('textbox', { name: /postal code/i })).toHaveValue('10001');
+        await expect(canvas.getByRole('textbox', { name: /zip code/i })).toHaveValue('10001');
         await expect(canvas.getByRole('textbox', { name: /phone/i })).toHaveValue('5551234567');
     },
 };
@@ -373,7 +373,7 @@ export const WithoutPhone: Story = {
 
         // Verify phone field is not present
         await expect(canvas.queryByText(/phone number/i)).not.toBeInTheDocument();
-        await expect(canvas.queryByPlaceholderText(/\(555\) 123-4567/i)).not.toBeInTheDocument();
+        await expect(canvas.queryByPlaceholderText(/\(000\) 000-0000/i)).not.toBeInTheDocument();
 
         // Other fields should still be present
         await expect(canvas.getByText(/first name/i)).toBeInTheDocument();
@@ -427,11 +427,11 @@ export const PrefilledBillingAddress: Story = {
         // Verify form fields are populated with billing address data (use role+name to avoid display-value ambiguity)
         await expect(canvas.getByRole('textbox', { name: /first name/i })).toHaveValue('Jane');
         await expect(canvas.getByRole('textbox', { name: /last name/i })).toHaveValue('Smith');
-        await expect(canvas.getByRole('textbox', { name: /^address$/i })).toHaveValue('456 Oak Avenue');
+        await expect(canvas.getByRole('textbox', { name: /address line 1/i })).toHaveValue('456 Oak Avenue');
         await expect(canvas.getByRole('textbox', { name: /address line 2/i })).toHaveValue('Suite 200');
-        await expect(canvas.getByRole('textbox', { name: /^city$/i })).toHaveValue('Los Angeles');
+        await expect(canvas.getByRole('textbox', { name: /city/i })).toHaveValue('Los Angeles');
         await expect(canvas.getByRole('combobox', { name: /state/i })).toHaveValue('CA');
-        await expect(canvas.getByRole('textbox', { name: /postal code/i })).toHaveValue('90001');
+        await expect(canvas.getByRole('textbox', { name: /zip code/i })).toHaveValue('90001');
     },
 };
 
@@ -453,15 +453,15 @@ export const Interactive: Story = {
         await userEvent.type(lastNameInput, 'Johnson');
         await expect(lastNameInput).toHaveValue('Johnson');
 
-        const addressInput = canvas.getByPlaceholderText(/street address/i);
+        const addressInput = canvas.getByPlaceholderText(/address line 1/i);
         await userEvent.type(addressInput, '789 Pine Road');
         await expect(addressInput).toHaveValue('789 Pine Road');
 
-        const address2Input = canvas.getByPlaceholderText(/apartment, suite/i);
+        const address2Input = canvas.getByPlaceholderText(/address line 2|apartment|suite/i);
         await userEvent.type(address2Input, 'Floor 3');
         await expect(address2Input).toHaveValue('Floor 3');
 
-        const cityInput = canvas.getByPlaceholderText(/^city$/i);
+        const cityInput = canvas.getByPlaceholderText(/city/i);
         await userEvent.type(cityInput, 'Chicago');
         await expect(cityInput).toHaveValue('Chicago');
 
@@ -469,13 +469,16 @@ export const Interactive: Story = {
         await userEvent.selectOptions(stateSelect, 'IL');
         await expect(stateSelect).toHaveValue('IL');
 
-        const postalCodeInput = canvas.getByPlaceholderText(/postal code/i);
+        const postalCodeInput = canvas.getByRole('textbox', { name: /zip code/i });
         await userEvent.type(postalCodeInput, '60601');
         await expect(postalCodeInput).toHaveValue('60601');
 
-        const phoneInput = canvas.getByPlaceholderText(/\(555\) 123-4567/i);
+        // Phone field: raw digits while focused, formatted on blur
+        const phoneInput = canvas.getByPlaceholderText(/\(000\) 000-0000/i);
         await userEvent.type(phoneInput, '3125551234');
         await expect(phoneInput).toHaveValue('3125551234');
+        await userEvent.tab();
+        await expect(phoneInput).toHaveValue('(312) 555-1234');
     },
 };
 
@@ -498,7 +501,7 @@ export const FieldErrorValidation: Story = {
         await userEvent.click(saveButton);
 
         // Validation shows multiple errors (firstName, lastName, address1, city) - use getAllByText
-        const errors = canvas.getAllByText(/(first name|last name|address|city).*required/i);
+        const errors = canvas.getAllByText(/please enter your (first name|last name|address|city)/i);
         await expect(errors.length).toBeGreaterThanOrEqual(1);
     },
 };

@@ -18,7 +18,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import ShippingMultiOptions from './shipping-multi-options';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 

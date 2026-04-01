@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 import { type ReactElement } from 'react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /**
  * Logs an error message only in development mode
  */
 function devError(...args: unknown[]): void {
     if (import.meta.env.DEV) {
-        // eslint-disable-next-line no-console
-        console.error(...args);
+        logger.error(args.map(String).join(' '));
     }
 }
 

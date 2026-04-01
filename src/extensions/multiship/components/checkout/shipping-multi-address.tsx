@@ -57,9 +57,8 @@ import {
     updateItemAddresses,
     initializeItemAddresses,
 } from '@/extensions/multiship/lib/multi-address';
-import { getAddressKey } from '@/extensions/multiship/lib/address-utils';
-import { formatAddress } from '@/lib/address-utils';
-import { AddAddressDialog } from '@/extensions/multiship/components/checkout/add-address-dialog';
+import { getAddressKey, formatAddress } from '@/lib/address-utils';
+import { AddressModal } from '@/components/checkout/components/address-modal';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import type { CheckoutActionData } from '@/components/checkout/types';
 import CheckoutErrorBanner from '@/components/checkout/components/checkout-error-banner';
@@ -444,12 +443,11 @@ export default function ShippingMultiAddress({
                                     </div>
 
                                     <div className="flex flex-col gap-2">
-                                        <Typography
-                                            variant="small"
-                                            className="text-sm font-medium text-foreground"
-                                            id={`delivery-address-label-${productItem?.itemId || index}`}>
+                                        <label
+                                            htmlFor={`delivery-address-select-${productItem?.itemId || index}`}
+                                            className="text-sm font-medium text-foreground">
                                             {tMultiship('checkout.deliveryAddressLabel')}*
-                                        </Typography>
+                                        </label>
 
                                         <NativeSelect
                                             className="w-full h-9 text-sm"
@@ -510,11 +508,19 @@ export default function ShippingMultiAddress({
                 </ToggleCardSummary>
             </ToggleCard>
 
-            <AddAddressDialog
+            <AddressModal
                 open={addAddressDialogOpen}
                 onOpenChange={setAddAddressDialogOpen}
                 onSave={handleAddAddress}
-                hideAddressId={!customerProfile?.customer?.customerId}
+                showAddressId={!!customerProfile?.customer?.customerId}
+                showPhone={true}
+                strictValidation={true}
+                generateAddressId={(firstName, lastName) =>
+                    tMultiship('checkout.addressForm.deliveryAddressIdFallback', {
+                        firstName: firstName.trim(),
+                        lastName: lastName.trim(),
+                    }).trim()
+                }
             />
         </>
     );

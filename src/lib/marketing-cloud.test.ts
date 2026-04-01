@@ -43,7 +43,7 @@ vi.mock('jose', async () => {
     };
 });
 
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     getConfig: vi.fn(() => ({
         commerce: {
             api: {

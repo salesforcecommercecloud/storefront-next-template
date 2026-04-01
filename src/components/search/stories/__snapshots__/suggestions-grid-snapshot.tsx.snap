@@ -37,15 +37,14 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
             </div>
           </div>
           <p
-            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+            class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
           >
             Running Shoes
           </p>
           <p
-            class="text-sm font-semibold text-foreground"
+            class="text-sm font-medium text-header-foreground"
           >
-            £
-            99.99
+            £99.99
           </p>
         </div>
       </a>
@@ -77,15 +76,14 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
             </div>
           </div>
           <p
-            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+            class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
           >
             Hiking Boots
           </p>
           <p
-            class="text-sm font-semibold text-foreground"
+            class="text-sm font-medium text-header-foreground"
           >
-            £
-            149.99
+            £149.99
           </p>
         </div>
       </a>
@@ -117,15 +115,14 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
             </div>
           </div>
           <p
-            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+            class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
           >
             Casual Sneakers
           </p>
           <p
-            class="text-sm font-semibold text-foreground"
+            class="text-sm font-medium text-header-foreground"
           >
-            £
-            79.99
+            £79.99
           </p>
         </div>
       </a>
@@ -157,15 +154,14 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
             </div>
           </div>
           <p
-            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+            class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
           >
             Dress Shoes
           </p>
           <p
-            class="text-sm font-semibold text-foreground"
+            class="text-sm font-medium text-header-foreground"
           >
-            £
-            199.99
+            £199.99
           </p>
         </div>
       </a>
@@ -197,15 +193,14 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
             </div>
           </div>
           <p
-            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+            class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
           >
             Sandals
           </p>
           <p
-            class="text-sm font-semibold text-foreground"
+            class="text-sm font-medium text-header-foreground"
           >
-            £
-            49.99
+            £49.99
           </p>
         </div>
       </a>
@@ -253,15 +248,14 @@ exports[`SuggestionsGrid stories snapshot > SingleProduct story renders and matc
             </div>
           </div>
           <p
-            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+            class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
           >
             Running Shoes
           </p>
           <p
-            class="text-sm font-semibold text-foreground"
+            class="text-sm font-medium text-header-foreground"
           >
-            £
-            99.99
+            £99.99
           </p>
         </div>
       </a>
@@ -294,16 +288,52 @@ exports[`SuggestionsGrid stories snapshot > WithoutImages story renders and matc
               class="w-full relative aspect-[4/3]"
             >
               <div
-                class="absolute inset-0 w-full h-full flex items-center justify-center bg-muted text-foreground"
+                class="absolute inset-0 w-full h-full flex items-center justify-center bg-muted text-header-foreground"
               >
                 <div
                   class="text-center"
                 >
-                  <div
-                    class="text-2xl mb-1"
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-image-off w-8 h-8 mb-1 mx-auto"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    📷
-                  </div>
+                    <line
+                      x1="2"
+                      x2="22"
+                      y1="2"
+                      y2="22"
+                    />
+                    <path
+                      d="M10.41 10.41a2 2 0 1 1-2.83-2.83"
+                    />
+                    <line
+                      x1="13.5"
+                      x2="6"
+                      y1="13.5"
+                      y2="21"
+                    />
+                    <line
+                      x1="18"
+                      x2="21"
+                      y1="12"
+                      y2="15"
+                    />
+                    <path
+                      d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59"
+                    />
+                    <path
+                      d="M21 15V5a2 2 0 0 0-2-2H9"
+                    />
+                  </svg>
                   <div
                     class="text-xs"
                   >
@@ -314,15 +344,14 @@ exports[`SuggestionsGrid stories snapshot > WithoutImages story renders and matc
             </div>
           </div>
           <p
-            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+            class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
           >
             Product Without Image
           </p>
           <p
-            class="text-sm font-semibold text-foreground"
+            class="text-sm font-medium text-header-foreground"
           >
-            £
-            29.99
+            £29.99
           </p>
         </div>
       </a>
@@ -341,16 +370,52 @@ exports[`SuggestionsGrid stories snapshot > WithoutImages story renders and matc
               class="w-full relative aspect-[4/3]"
             >
               <div
-                class="absolute inset-0 w-full h-full flex items-center justify-center bg-muted text-foreground"
+                class="absolute inset-0 w-full h-full flex items-center justify-center bg-muted text-header-foreground"
               >
                 <div
                   class="text-center"
                 >
-                  <div
-                    class="text-2xl mb-1"
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-image-off w-8 h-8 mb-1 mx-auto"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    📷
-                  </div>
+                    <line
+                      x1="2"
+                      x2="22"
+                      y1="2"
+                      y2="22"
+                    />
+                    <path
+                      d="M10.41 10.41a2 2 0 1 1-2.83-2.83"
+                    />
+                    <line
+                      x1="13.5"
+                      x2="6"
+                      y1="13.5"
+                      y2="21"
+                    />
+                    <line
+                      x1="18"
+                      x2="21"
+                      y1="12"
+                      y2="15"
+                    />
+                    <path
+                      d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59"
+                    />
+                    <path
+                      d="M21 15V5a2 2 0 0 0-2-2H9"
+                    />
+                  </svg>
                   <div
                     class="text-xs"
                   >
@@ -361,15 +426,14 @@ exports[`SuggestionsGrid stories snapshot > WithoutImages story renders and matc
             </div>
           </div>
           <p
-            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+            class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
           >
             Another Product
           </p>
           <p
-            class="text-sm font-semibold text-foreground"
+            class="text-sm font-medium text-header-foreground"
           >
-            £
-            39.99
+            £39.99
           </p>
         </div>
       </a>
@@ -415,7 +479,7 @@ exports[`SuggestionsGrid stories snapshot > WithoutPrices story renders and matc
             </div>
           </div>
           <p
-            class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+            class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
           >
             Product Without Price
           </p>

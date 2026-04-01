@@ -132,6 +132,15 @@ vi.mock('@/extensions/store-locator/components/store-locator/details', () => ({
 }));
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 // Import the functions we want to test
 import { createApiClients } from '@/lib/api-clients';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -329,8 +338,13 @@ describe('Order Confirmation Route', () => {
     describe('ErrorBoundary component', () => {
         test('should render error message for order not found', async () => {
             const { ErrorBoundary } = await import('./_app.order-confirmation.$orderNo');
+            const { AllProvidersWrapper } = await import('@/test-utils/context-provider');
 
-            render(<ErrorBoundary />);
+            render(
+                <AllProvidersWrapper>
+                    <ErrorBoundary />
+                </AllProvidersWrapper>
+            );
 
             expect(screen.getByText(t('checkout:confirmation.orderNotFound'))).toBeInTheDocument();
             expect(screen.getByText(t('checkout:confirmation.orderNotFoundDescription'))).toBeInTheDocument();
@@ -339,8 +353,13 @@ describe('Order Confirmation Route', () => {
 
         test('should render action buttons', async () => {
             const { ErrorBoundary } = await import('./_app.order-confirmation.$orderNo');
+            const { AllProvidersWrapper } = await import('@/test-utils/context-provider');
 
-            render(<ErrorBoundary />);
+            render(
+                <AllProvidersWrapper>
+                    <ErrorBoundary />
+                </AllProvidersWrapper>
+            );
 
             const continueShoppingLink = screen.getByText('Continue Shopping').closest('a');
             expect(continueShoppingLink).toHaveAttribute('href', '/');

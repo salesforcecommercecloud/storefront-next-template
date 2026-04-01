@@ -65,7 +65,7 @@ export default function PreferredStore(): ReactElement {
         <Card>
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <CardTitle className="text-lg">{t('storePreferences.preferredStore.heading')}</CardTitle>
+                    <CardTitle className="text-lg-xl">{t('storePreferences.preferredStore.heading')}</CardTitle>
                     <CardDescription className="mt-1">
                         {t('storePreferences.preferredStore.description')}
                     </CardDescription>
@@ -78,7 +78,7 @@ export default function PreferredStore(): ReactElement {
             </CardHeader>
             <CardContent>
                 {isRevalidating ? (
-                    <Card className="bg-muted border border-muted-foreground/40 shadow-none gap-0 py-0">
+                    <Card className="bg-muted/40 border border-border shadow-none gap-0 py-0">
                         <CardContent className="px-4 py-3">
                             <Skeleton className="h-6 w-3/4" data-testid="skeleton" />
                             <Skeleton className="h-4 w-full mt-2" data-testid="skeleton" />
@@ -86,7 +86,7 @@ export default function PreferredStore(): ReactElement {
                         </CardContent>
                     </Card>
                 ) : preferredStore ? (
-                    <Card className="bg-muted border border-muted-foreground/40 shadow-none gap-0 py-0">
+                    <Card className="bg-muted/40 border border-border shadow-none gap-0 py-0">
                         <CardContent className="px-4 py-3">
                             <Typography variant="large" as="p">
                                 {preferredStore.name}
@@ -99,7 +99,7 @@ export default function PreferredStore(): ReactElement {
                             {preferredStore.storeHours && (
                                 <Accordion type="single" collapsible className="mt-1">
                                     <AccordionItem value="store-hours" className="border-none">
-                                        <AccordionTrigger className="py-1 text-sm text-primary font-normal hover:no-underline">
+                                        <AccordionTrigger className="py-1 text-sm text-primary font-normal underline cursor-pointer hover:underline">
                                             {t('storePreferences.preferredStore.storeHoursTitle')}
                                         </AccordionTrigger>
                                         <AccordionContent className="pb-0">

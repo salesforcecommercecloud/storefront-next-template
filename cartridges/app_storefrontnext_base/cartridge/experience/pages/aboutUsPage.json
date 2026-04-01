@@ -4,5 +4,5 @@
     "arch_type": "headless",
     "region_definitions": [],
     "supported_aspect_types": [],
-    "route": "/about-us"
+    "route": "/:siteId/:localeId/about-us"
 }

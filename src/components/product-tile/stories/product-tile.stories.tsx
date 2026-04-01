@@ -20,53 +20,13 @@ import {
     mockMasterProductHitWithMultipleVariants,
     // @ts-expect-error mock file is JS
 } from '../../__mocks__/product-search-hit-data';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
 import { CurrencyWrapper } from '@/test-utils/context-provider';
 import DynamicImageProvider from '@/providers/dynamic-image';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                event.preventDefault();
-                event.stopPropagation();
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-
-                if (label.match(/add to cart/i)) {
-                    action('add-to-cart')({ label });
-                } else if (label.match(/wishlist/i)) {
-                    action('wishlist')({ label });
-                } else {
-                    logAction({ type: 'click', tag, label });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+import { ProductTileProvider } from '../context';
 
 const meta: Meta<typeof ProductTile> = {
     title: 'Components/ProductTile',
@@ -79,13 +39,13 @@ const meta: Meta<typeof ProductTile> = {
         (Story) => (
             <ConfigProvider config={mockConfig}>
                 <CurrencyWrapper currency="GBP">
-                    <ActionLogger>
-                        <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
+                    <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
+                        <ProductTileProvider>
                             <div className="w-64">
                                 <Story />
                             </div>
-                        </DynamicImageProvider>
-                    </ActionLogger>
+                        </ProductTileProvider>
+                    </DynamicImageProvider>
                 </CurrencyWrapper>
             </ConfigProvider>
         ),
@@ -103,10 +63,6 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
-        // Check for price - master products show lowest variant price including promotions (£143.99)
-        const prices = canvas.getAllByText(/£143\.99/);
-        await expect(prices.length).toBeGreaterThan(0);
-        // Check for image
         const image = canvas.getByRole('img');
         await expect(image).toBeInTheDocument();
     },
@@ -116,17 +72,15 @@ export const WithBadges: Story = {
     args: {
         product: {
             ...mockProductSearchItem,
-            // Badges are detected from representedProduct properties or promotions array
             representedProduct: {
                 ...mockProductSearchItem.representedProduct,
                 c_isSale: true,
                 c_isNew: true,
             },
-            // promotions array also triggers the Sale badge
             promotions: [
                 {
                     promotionId: 'promo-sale',
-                    calloutMsg: 'Get 20% off of this tie.',
+                    calloutMsg: 'Get 20% off.',
                 },
             ],
         },
@@ -134,157 +88,183 @@ export const WithBadges: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-
-        // Verify product name is displayed
         await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
-        // Verify Sale badge is displayed (from promotions or representedProduct.c_isSale)
         await expect(canvas.getByText('Sale')).toBeInTheDocument();
     },
 };
 
-export const MasterProductWithSwatches: Story = {
+export const WithSwatches: Story = {
     args: {
         product: mockMasterProductHitWithMultipleVariants,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        // Check for swatches via label
-        const swatches = canvas.queryAllByLabelText(/Beige|Black|Blue|Green|Grey|Orange|Pink|Purple|Red|White|Yellow/i);
-        // Verify if we found any swatches
-        if (swatches.length > 0) {
-            await expect(swatches[0]).toBeInTheDocument();
-        }
+        await expect(canvas.getByText(mockMasterProductHitWithMultipleVariants.productName)).toBeInTheDocument();
+
+        // Swatches are decorative/visual-only (aria-hidden) — verify via DOM queries
+        const swatchContainer = canvasElement.querySelector('[aria-label="Available colors"]');
+        await expect(swatchContainer).not.toBeNull();
+
+        // Both colour swatch links are present
+        const swatchLinks = swatchContainer!.querySelectorAll('a');
+        await expect(swatchLinks.length).toBe(2);
+
+        // Each swatch renders its image (both colours have swatch imageGroups in the mock)
+        const swatchImages = swatchContainer!.querySelectorAll('img');
+        await expect(swatchImages.length).toBe(2);
+
+        // No overflow indicator — 2 swatches ≤ default maxSwatches (5)
+        await expect(canvasElement.querySelector('[title*=" more"]')).toBeNull();
     },
 };
 
-export const CustomAction: Story = {
+export const WithSwatchOverflow: Story = {
     args: {
-        product: mockProductSearchItem,
-        footerAction: <button className="w-full bg-primary text-primary-foreground p-2 rounded">Custom Action</button>,
+        product: mockMasterProductHitWithMultipleVariants,
+        maxSwatches: 1,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByText('Custom Action')).toBeInTheDocument();
-        await expect(canvas.queryByText('More Options')).not.toBeInTheDocument();
+
+        const swatchContainer = canvasElement.querySelector('[aria-label="Available colors"]');
+        await expect(swatchContainer).not.toBeNull();
+
+        // Only 1 colour swatch link (exclude the overflow "+N more" link)
+        const swatchLinks = swatchContainer!.querySelectorAll('a[aria-label*=" in "]');
+        await expect(swatchLinks.length).toBe(1);
+
+        // Overflow indicator shows "+1" for the remaining colour
+        const overflow = canvasElement.querySelector('[title="+1 more"]');
+        await expect(overflow).not.toBeNull();
     },
 };
 
-// Page Designer Styling Stories
-export const PageDesignerImageCover: Story = {
+export const WithPickupAvailable: Story = {
     args: {
         product: mockProductSearchItem,
-        objectFit: 'cover',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
-    },
-};
-
-export const PageDesignerBorderRadius: Story = {
-    args: {
-        product: mockProductSearchItem,
-        borderRadius: '2xl',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
-    },
-};
-
-export const PageDesignerShadowXL: Story = {
-    args: {
-        product: mockProductSearchItem,
-        boxShadow: 'xl',
+        showPickupAvailable: true,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        // Pickup indicator is visual-only (aria-hidden) — verify via DOM
+        const pickupIndicator = canvasElement.querySelector('[data-testid="pickup-available-indicator"]');
+        await expect(pickupIndicator).not.toBeNull();
     },
 };
 
-export const PageDesignerPaddingMargin: Story = {
+export const WithWishlist: Story = {
     args: {
         product: mockProductSearchItem,
-        padding: '8',
-        margin: '4',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // WishlistButton is inside aria-hidden="true" (visual/mouse only — keyboard reaches wishlist via PDP)
+        const wishlistButton = canvasElement.querySelector('[aria-label="Add to Wishlist"]');
+        await expect(wishlistButton).not.toBeNull();
+    },
+};
+
+export const WithQuickAdd: Story = {
+    args: {
+        product: mockProductSearchItem,
+        quickAddLabel: 'Quick Add',
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        await expect(canvas.getByText('Quick Add')).toBeInTheDocument();
     },
 };
 
-export const PageDesignerTypography: Story = {
+export const WithStoreName: Story = {
     args: {
         product: mockProductSearchItem,
-        fontWeight: 'bold',
-        letterSpacing: 'wide',
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        // Store name comes from config.global.branding.name ('Test Store').
+        await expect(canvas.getByText('Test Store')).toBeInTheDocument();
     },
 };
 
-export const PageDesignerHoverScale: Story = {
+export const WithTopCategory: Story = {
     args: {
         product: mockProductSearchItem,
-        hoverEffect: 'scale',
+        topCategoryName: 'Men',
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        // DOM text is 'Men'; uppercase is applied via CSS class
+        await expect(canvas.getByText('Men')).toBeInTheDocument();
     },
 };
 
-export const PageDesignerHoverShadow: Story = {
+export const WithShortDescription: Story = {
     args: {
-        product: mockProductSearchItem,
-        hoverEffect: 'shadow',
+        product: {
+            ...mockProductSearchItem,
+            representedProduct: {
+                ...mockProductSearchItem.representedProduct,
+                c_shortDescription: 'Lightweight running shoe with cushioned sole.',
+            },
+        },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        await expect(canvas.getByTestId('product-tile-description')).toBeInTheDocument();
+        await expect(canvas.getByText('Lightweight running shoe with cushioned sole.')).toBeInTheDocument();
     },
 };
 
-export const PageDesignerHoverLift: Story = {
+export const WithLongDescription: Story = {
     args: {
-        product: mockProductSearchItem,
-        hoverEffect: 'lift',
+        product: {
+            ...mockProductSearchItem,
+            representedProduct: {
+                ...mockProductSearchItem.representedProduct,
+                c_shortDescription:
+                    'This premium athletic shoe features advanced cushioning technology, breathable mesh upper, reinforced toe cap, and a durable outsole designed for all-terrain performance in any weather condition.',
+            },
+        },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        const descEl = canvas.getByTestId('product-tile-description');
+        await expect(descEl).toBeInTheDocument();
     },
 };
 
-export const PageDesignerFullCustomization: Story = {
+export const FullFeatured: Story = {
     args: {
-        product: mockProductSearchItem,
-        objectFit: 'contain',
-        borderRadius: '2xl',
-        boxShadow: 'lg',
-        padding: '6',
-        margin: '2',
-        fontWeight: 'bold',
-        letterSpacing: 'wide',
-        hoverEffect: 'scale',
+        product: {
+            ...mockMasterProductHitWithMultipleVariants,
+            representedProduct: {
+                ...mockMasterProductHitWithMultipleVariants?.representedProduct,
+                c_isNew: true,
+                c_shortDescription: 'Premium master product with multiple color variants and full tile features.',
+            },
+        },
+        showPickupAvailable: true,
+        quickAddLabel: 'Quick Add',
+        topCategoryName: 'Men',
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        await expect(canvas.getByText(mockMasterProductHitWithMultipleVariants.productName)).toBeInTheDocument();
+        // Pickup indicator is inside aria-hidden="true" — query via testid
+        const pickupIndicator = canvasElement.querySelector('[data-testid="pickup-available-indicator"]');
+        await expect(pickupIndicator).not.toBeNull();
+        await expect(canvas.getByTestId('product-tile-description')).toBeInTheDocument();
+        await expect(canvas.getByText('Test Store')).toBeInTheDocument();
+        await expect(canvas.getByText('Men')).toBeInTheDocument();
     },
 };

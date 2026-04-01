@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
-import { RouterContextProvider } from 'react-router';
+import { type DataStrategyResult, RouterContextProvider } from 'react-router';
 import legacyRoutesMiddleware, { matchesRoutePattern } from '@/middlewares/legacy-routes.client';
-import { appConfigContext } from '@/config/context';
-import type { AppConfig } from '@/config';
+import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 describe('legacyRoutesMiddleware', () => {
     let mockContext: RouterContextProvider;
-    let mockNext: ReturnType<typeof vi.fn>;
+    let mockNext: ReturnType<typeof vi.fn<() => Promise<Record<string, DataStrategyResult>>>>;
 
     beforeEach(() => {
         mockContext = new RouterContextProvider();
-        mockNext = vi.fn().mockResolvedValue({});
+        mockNext = vi.fn<() => Promise<Record<string, DataStrategyResult>>>().mockResolvedValue({});
 
         // Mock context.get to return config
         vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
             if (contextKey === appConfigContext) {
                 return {
-                    site: {
-                        hybrid: {
-                            enabled: true,
-                            legacyRoutes: ['/checkout', '/account', '/s/'],
-                        },
+                    hybrid: {
+                        enabled: true,
+                        legacyRoutes: ['/checkout', '/account', '/s/'],
                     },
                 } as unknown as AppConfig;
             }
@@ -55,7 +53,7 @@ describe('legacyRoutesMiddleware', () => {
 
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -70,11 +68,9 @@ describe('legacyRoutesMiddleware', () => {
             vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
                 if (contextKey === appConfigContext) {
                     return {
-                        site: {
-                            hybrid: {
-                                enabled: false,
-                                legacyRoutes: ['/checkout'],
-                            },
+                        hybrid: {
+                            enabled: false,
+                            legacyRoutes: ['/checkout'],
                         },
                     } as unknown as AppConfig;
                 }
@@ -85,7 +81,7 @@ describe('legacyRoutesMiddleware', () => {
         test('should skip when hybrid mode is disabled', async () => {
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -98,11 +94,9 @@ describe('legacyRoutesMiddleware', () => {
             vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
                 if (contextKey === appConfigContext) {
                     return {
-                        site: {
-                            hybrid: {
-                                enabled: true,
-                                legacyRoutes: [],
-                            },
+                        hybrid: {
+                            enabled: true,
+                            legacyRoutes: [],
                         },
                     } as unknown as AppConfig;
                 }
@@ -113,7 +107,7 @@ describe('legacyRoutesMiddleware', () => {
         test('should skip when legacyRoutes is empty', async () => {
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -122,11 +116,9 @@ describe('legacyRoutesMiddleware', () => {
             vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
                 if (contextKey === appConfigContext) {
                     return {
-                        site: {
-                            hybrid: {
-                                enabled: true,
-                                // legacyRoutes is undefined
-                            },
+                        hybrid: {
+                            enabled: true,
+                            // legacyRoutes is undefined
                         },
                     } as unknown as AppConfig;
                 }
@@ -135,7 +127,7 @@ describe('legacyRoutesMiddleware', () => {
 
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -147,44 +139,53 @@ describe('legacyRoutesMiddleware', () => {
             vi.stubGlobal('window', { location: { href: '' } } as Window & typeof globalThis);
         });
 
-        test('should trigger redirect path when path matches legacy route exactly', async () => {
+        test('should trigger redirect path when path matches legacy route exactly', () => {
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            // Don't await — the middleware returns a never-resolving promise on redirect paths
+            // (keeps React Router suspended while the browser navigates away)
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
-            // Middleware should not call next() when redirecting (it returns empty object instead)
+            // window.location.href is set synchronously before the promise
             expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toContain('checkout');
+            expect(window.location.href).toContain('redirected=1');
         });
 
         test('should not redirect when path does not exactly match', async () => {
             const request = new Request('https://example.com/checkout/payment');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             // Should continue normal navigation since /checkout/payment !== /checkout
             expect(mockNext).toHaveBeenCalledOnce();
         });
 
-        test('should trigger redirect path and preserve existing query params', async () => {
+        test('should trigger redirect path and preserve existing query params', () => {
             const request = new Request('https://example.com/checkout?step=2&item=abc');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toContain('step=2');
+            expect(window.location.href).toContain('item=abc');
+            expect(window.location.href).toContain('redirected=1');
         });
 
-        test('should trigger redirect path and preserve hash fragment', async () => {
+        test('should trigger redirect path and preserve hash fragment', () => {
             const request = new Request('https://example.com/checkout#payment');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toContain('checkout');
+            expect(window.location.href).toContain('redirected=1');
         });
 
         test('should continue normal navigation when path does not match', async () => {
             const request = new Request('https://example.com/product/123');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -193,7 +194,7 @@ describe('legacyRoutesMiddleware', () => {
             // /s/ is in legacyRoutes, but /s/RefArch/en_US/Cart-Show is not
             const request = new Request('https://example.com/s/RefArch/en_US/Cart-Show');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             // Should continue normal navigation since it's not an exact match
             expect(mockNext).toHaveBeenCalledOnce();
@@ -209,7 +210,7 @@ describe('legacyRoutesMiddleware', () => {
         test('should not redirect when redirected=1 query param is present', async () => {
             const request = new Request('https://example.com/checkout?redirected=1');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -217,7 +218,7 @@ describe('legacyRoutesMiddleware', () => {
         test('should let React Router handle 404 after one redirect attempt', async () => {
             const request = new Request('https://example.com/checkout?redirected=1&other=param');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             // Should not redirect again, let it fall through to React Router
             expect(mockNext).toHaveBeenCalledOnce();
@@ -234,9 +235,7 @@ describe('legacyRoutesMiddleware', () => {
             vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
                 if (contextKey === appConfigContext) {
                     return {
-                        site: {
-                            hybrid: null,
-                        },
+                        hybrid: null,
                     } as unknown as AppConfig;
                 }
                 return undefined;
@@ -244,7 +243,7 @@ describe('legacyRoutesMiddleware', () => {
 
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -254,7 +253,7 @@ describe('legacyRoutesMiddleware', () => {
 
             const request = new Request('https://example.com/checkout');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).toHaveBeenCalledOnce();
         });
@@ -263,7 +262,7 @@ describe('legacyRoutesMiddleware', () => {
             // /account is a legacy route, but /accounts is not (exact matching)
             const request = new Request('https://example.com/accounts/profile');
 
-            await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             // Should continue normal navigation since /accounts/profile !== /account
             expect(mockNext).toHaveBeenCalledOnce();
@@ -307,23 +306,19 @@ describe('legacyRoutesMiddleware', () => {
         });
     });
 
-    describe('client-side parameterized route matching', () => {
+    describe('multisite prefix stripping', () => {
         beforeEach(() => {
             vi.stubGlobal('window', { location: { href: '' } } as Window & typeof globalThis);
 
             vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
                 if (contextKey === appConfigContext) {
                     return {
-                        site: {
-                            hybrid: {
-                                enabled: true,
-                                legacyRoutes: [
-                                    '/checkout',
-                                    '/product/:id',
-                                    '/category/:cat/item/:id',
-                                    '/user/:username/profile',
-                                ],
-                            },
+                        hybrid: {
+                            enabled: true,
+                            legacyRoutes: ['/checkout', '/account/orders', '/product/:id'],
+                        },
+                        url: {
+                            prefix: '/:siteId/:localeId',
                         },
                     } as unknown as AppConfig;
                 }
@@ -331,7 +326,56 @@ describe('legacyRoutesMiddleware', () => {
             });
         });
 
-        test('should trigger redirects for parameterized routes', async () => {
+        test('should redirect when multisite-prefixed URL matches a bare legacy route', () => {
+            const request = new Request('https://example.com/global/en-GB/checkout');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toContain('redirected=1');
+        });
+
+        test('should redirect for parameterized legacy routes with multisite prefix', () => {
+            const request = new Request('https://example.com/global/en-GB/product/123');
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toContain('redirected=1');
+        });
+
+        test('should not redirect for non-legacy multisite routes', async () => {
+            const request = new Request('https://example.com/global/en-GB/category/womens');
+
+            await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).toHaveBeenCalledOnce();
+        });
+    });
+
+    describe('client-side parameterized route matching', () => {
+        beforeEach(() => {
+            vi.stubGlobal('window', { location: { href: '' } } as Window & typeof globalThis);
+
+            vi.spyOn(mockContext, 'get').mockImplementation((contextKey: any) => {
+                if (contextKey === appConfigContext) {
+                    return {
+                        hybrid: {
+                            enabled: true,
+                            legacyRoutes: [
+                                '/checkout',
+                                '/product/:id',
+                                '/category/:cat/item/:id',
+                                '/user/:username/profile',
+                            ],
+                        },
+                    } as unknown as AppConfig;
+                }
+                return undefined;
+            });
+        });
+
+        test('should trigger redirects for parameterized routes', () => {
             const testCases = [
                 'https://example.com/product/123', // Single parameter
                 'https://example.com/category/electronics/item/abc-123', // Multiple parameters
@@ -343,9 +387,15 @@ describe('legacyRoutesMiddleware', () => {
             ];
 
             for (const url of testCases) {
+                // Reset window.location.href before each iteration
+                (window as any).location.href = '';
                 const request = new Request(url);
-                await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+                void legacyRoutesMiddleware(
+                    { request, context: mockContext, params: {}, unstable_pattern: '' },
+                    mockNext
+                );
                 expect(mockNext).not.toHaveBeenCalled();
+                expect(window.location.href).toContain('redirected=1');
                 mockNext.mockClear();
             }
         });
@@ -359,7 +409,10 @@ describe('legacyRoutesMiddleware', () => {
 
             for (const url of testCases) {
                 const request = new Request(url);
-                await legacyRoutesMiddleware({ request, context: mockContext, params: {} }, mockNext);
+                await legacyRoutesMiddleware(
+                    { request, context: mockContext, params: {}, unstable_pattern: '' },
+                    mockNext
+                );
                 expect(mockNext).toHaveBeenCalledOnce();
                 mockNext.mockClear();
             }

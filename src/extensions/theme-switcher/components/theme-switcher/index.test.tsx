@@ -31,7 +31,6 @@ describe('ThemeSwitcher', () => {
         expect(selects).toHaveLength(2);
 
         // Verify theme family options
-        expect(screen.getByRole('option', { name: /foundations/i })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: /market street/i })).toBeInTheDocument();
 
         // Verify theme mode options
@@ -39,13 +38,13 @@ describe('ThemeSwitcher', () => {
         expect(screen.getByRole('option', { name: /^dark$/i })).toBeInTheDocument();
     });
 
-    it('should initialize with default theme (foundations, light)', () => {
+    it('should initialize with default theme (market-street, light)', () => {
         render(<ThemeSwitcher />);
 
         const selects = screen.getAllByRole('combobox');
         const [familySelect, modeSelect] = selects;
 
-        expect(familySelect).toHaveValue('foundations');
+        expect(familySelect).toHaveValue('market-street');
         expect(modeSelect).toHaveValue('light');
     });
 
@@ -77,46 +76,13 @@ describe('ThemeSwitcher', () => {
         });
     });
 
-    it('should apply data-theme attribute for market-street theme', async () => {
-        render(<ThemeSwitcher />);
-
-        const selects = screen.getAllByRole('combobox');
-        const [familySelect] = selects;
-
-        await userEvent.selectOptions(familySelect, 'market-street');
-
-        await waitFor(() => {
-            expect(document.documentElement.getAttribute('data-theme')).toBe('market-street-light');
-        });
-    });
-
-    it('should remove data-theme attribute for foundations theme', async () => {
-        document.documentElement.setAttribute('data-theme', 'market-street-light');
+    it('should not set data-theme attribute for market-street theme', async () => {
+        document.documentElement.setAttribute('data-theme', 'some-old-theme');
 
         render(<ThemeSwitcher />);
-
-        const selects = screen.getAllByRole('combobox');
-        const [familySelect] = selects;
-
-        await userEvent.selectOptions(familySelect, 'foundations');
 
         await waitFor(() => {
             expect(document.documentElement.getAttribute('data-theme')).toBeNull();
-        });
-    });
-
-    it('should combine theme family and mode in data-theme attribute', async () => {
-        render(<ThemeSwitcher />);
-
-        const selects = screen.getAllByRole('combobox');
-        const [familySelect, modeSelect] = selects;
-
-        await userEvent.selectOptions(familySelect, 'market-street');
-        await userEvent.selectOptions(modeSelect, 'dark');
-
-        await waitFor(() => {
-            expect(document.documentElement.getAttribute('data-theme')).toBe('market-street-dark');
-            expect(document.documentElement.classList.contains('dark')).toBe(true);
         });
     });
 
@@ -129,7 +95,7 @@ describe('ThemeSwitcher', () => {
         const [familySelect, modeSelect] = selects;
 
         // Always starts with defaults
-        expect(familySelect).toHaveValue('foundations');
+        expect(familySelect).toHaveValue('market-street');
         expect(modeSelect).toHaveValue('light');
     });
 });

@@ -51,7 +51,7 @@ vi.mock('@/hooks/use-cart-quantity-update', () => ({
     }),
 }));
 
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: () => ({
         pages: {
             cart: {
@@ -111,12 +111,12 @@ describe('MiniCartItem', () => {
     it('renders variation attributes', () => {
         renderWithRouter(<MiniCartItem product={mockProduct} />);
         expect(
-            screen.getByText((content, element) => {
+            screen.getByText((_content, element) => {
                 return element?.textContent === 'Color: Grey';
             })
         ).toBeInTheDocument();
         expect(
-            screen.getByText((content, element) => {
+            screen.getByText((_content, element) => {
                 return element?.textContent === 'Size: XL';
             })
         ).toBeInTheDocument();
@@ -157,16 +157,14 @@ describe('MiniCartItem', () => {
         expect(screen.getByText('No image')).toBeInTheDocument();
     });
 
-    it('renders quantity selector as dropdown', () => {
+    it('renders quantity picker with stepper controls', () => {
         renderWithRouter(<MiniCartItem product={mockProduct} />);
         expect(screen.getByText('Quantity:')).toBeInTheDocument();
-        const select = screen.getByLabelText('Quantity');
-        expect(select).toBeInTheDocument();
-        expect(select).toHaveValue('1');
-        // Check that dropdown has options 1-10 plus Custom option
-        const options = screen.getAllByRole('option');
-        expect(options).toHaveLength(11); // 1-10 plus "Custom..."
-        expect(screen.getByText('Custom...')).toBeInTheDocument();
+        const input = screen.getByLabelText('Quantity:');
+        expect(input).toBeInTheDocument();
+        expect(input).toHaveValue(1);
+        expect(screen.getByTestId('quantity-decrement')).toBeInTheDocument();
+        expect(screen.getByTestId('quantity-increment')).toBeInTheDocument();
     });
 
     it('calls onRemove when remove button is clicked', async () => {
@@ -196,7 +194,7 @@ describe('MiniCartItem', () => {
         };
         renderWithRouter(<MiniCartItem product={productWithOnlyColor} />);
         expect(
-            screen.getByText((content, element) => {
+            screen.getByText((_content, element) => {
                 return (
                     element?.textContent === 'Color: Blue' &&
                     element?.className?.includes('inline-block') &&
@@ -205,7 +203,7 @@ describe('MiniCartItem', () => {
             })
         ).toBeInTheDocument();
         expect(
-            screen.queryByText((content, element) => {
+            screen.queryByText((_content, element) => {
                 return element?.textContent?.includes('Size:') || false;
             })
         ).not.toBeInTheDocument();
@@ -227,7 +225,7 @@ describe('MiniCartItem', () => {
         };
         renderWithRouter(<MiniCartItem product={productWithOnlySize} />);
         expect(
-            screen.getByText((content, element) => {
+            screen.getByText((_content, element) => {
                 return (
                     element?.textContent === 'Size: M' &&
                     element?.className?.includes('inline-block') &&
@@ -236,22 +234,22 @@ describe('MiniCartItem', () => {
             })
         ).toBeInTheDocument();
         expect(
-            screen.queryByText((content, element) => {
+            screen.queryByText((_content, element) => {
                 return element?.textContent?.includes('Color:') || false;
             })
         ).not.toBeInTheDocument();
     });
 
-    it('switches to custom input when Custom option is selected', async () => {
+    it('renders increment and decrement buttons for quantity', async () => {
         const user = userEvent.setup();
         renderWithRouter(<MiniCartItem product={mockProduct} />);
 
-        const select = screen.getByLabelText('Quantity');
-        await user.selectOptions(select, 'custom');
+        const incrementButton = screen.getByTestId('quantity-increment');
+        const decrementButton = screen.getByTestId('quantity-decrement');
 
-        // Should now show an input field
-        const input = screen.getByLabelText('Custom quantity');
-        expect(input).toBeInTheDocument();
-        expect(input).toHaveValue(1);
+        expect(incrementButton).toBeInTheDocument();
+        expect(decrementButton).toBeInTheDocument();
+        await user.click(incrementButton);
+        // Quantity change is handled by mocked hook
     });
 });

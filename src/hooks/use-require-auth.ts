@@ -17,7 +17,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from '@/hooks/use-navigate';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/providers/auth';
 import { useToast } from '@/components/toast';

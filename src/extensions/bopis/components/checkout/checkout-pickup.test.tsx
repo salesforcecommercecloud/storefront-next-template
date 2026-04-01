@@ -19,7 +19,7 @@ import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi
 import type { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import CheckoutPickup from './checkout-pickup';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 
 const wrapper = ({ children }: { children: ReactNode }) => (

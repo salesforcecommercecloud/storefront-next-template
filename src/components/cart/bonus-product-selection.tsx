@@ -21,14 +21,17 @@ import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-n
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useToast } from '@/components/toast';
 import { getBonusProductCountsForPromotion } from '@/lib/bonus-product-utils';
 import { requiresVariantSelection, getPrimaryProductImageUrl, isRuleBasedPromotion } from '@/lib/product-utils';
 import { useRuleBasedBonusProducts } from '@/hooks/use-rule-based-bonus-products';
-import { useConfig } from '@/config/get-config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { toImageUrl } from '@/lib/dynamic-image';
+import { formatCurrency } from '@/lib/currency';
+import { useCurrency } from '@/providers/currency';
+import { getPriceData } from '@/components/product-price/utils';
 
 interface BonusProductSelectionProps {
     bonusDiscountLineItem: ShopperBasketsV2.schemas['BonusDiscountLineItem'];
@@ -37,8 +40,6 @@ interface BonusProductSelectionProps {
     promotionName?: string;
     onProductSelect: (productId: string, productName: string, requiresModal: boolean) => void;
 }
-
-const BADGE_TEXT = 'Free';
 
 export default function BonusProductSelection({
     bonusDiscountLineItem,
@@ -49,8 +50,9 @@ export default function BonusProductSelection({
 }: BonusProductSelectionProps): ReactElement {
     const addToCartFetcher = useFetcher();
     const { addToast } = useToast();
-    const { t } = useTranslation();
-    const config = useConfig();
+    const { t, i18n } = useTranslation();
+    const config = useConfig<AppConfig>();
+    const currency = useCurrency();
 
     // Track processed fetcher data to prevent duplicate toasts
     const processedDataRef = useRef<typeof addToCartFetcher.data>(null);
@@ -74,12 +76,11 @@ export default function BonusProductSelection({
     );
 
     // Build title
-    const titleText = promotionName || 'Bonus Products Available';
-    const titleSuffix = ` (${selectedBonusItems} of ${maxBonusItems} added to cart)`;
-
-    // Determine if accordion should be expanded by default
-    // Expand if there are still bonus products the shopper can select
-    const shouldExpandByDefault = selectedBonusItems < maxBonusItems;
+    const titleText = promotionName || t('cart:bonusProducts.defaultTitle');
+    const titleSuffix = t('cart:bonusProducts.selectionCount', {
+        selected: selectedBonusItems,
+        max: maxBonusItems,
+    });
 
     // Get bonus products with full data
     const bonusProducts = useMemo(() => {
@@ -192,101 +193,98 @@ export default function BonusProductSelection({
     };
 
     return (
-        <section aria-label="Bonus Product Bundle" className="w-full" data-node-id="16247:74507">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue={shouldExpandByDefault ? 'bonus-selection' : undefined}
-                className="w-full">
-                <AccordionItem value="bonus-selection" className="border-none">
-                    <AccordionTrigger className="text-left hover:no-underline py-4 justify-start items-center gap-1.5">
-                        <span className="text-base leading-tight text-foreground">
-                            <span className="font-bold">{titleText}</span>
-                            <span className="font-normal">{titleSuffix}</span>
-                        </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="px-0 pt-4">
-                        <Carousel className="w-full">
-                            <CarouselContent className="-ml-2 justify-start">
-                                {bonusProducts.map((item) => (
-                                    <CarouselItem key={item.productId} className="basis-52 pl-2">
-                                        <article
-                                            className="bg-[var(--bg-input-30)] border border-border rounded-lg w-full shadow-sm h-full flex flex-col"
-                                            aria-label="Bonus bundle product card">
-                                            {/* Image */}
-                                            <div className="px-6 py-4">
-                                                <div className="bg-background border border-border rounded-xl overflow-hidden">
-                                                    <div className="h-36 w-full relative">
-                                                        {item.imageUrl ? (
-                                                            // Bonus product cards are content images, so provide descriptive alt text.
-                                                            <img
-                                                                src={
-                                                                    toImageUrl({ src: item.imageUrl, config }) ??
-                                                                    item.imageUrl
-                                                                }
-                                                                alt={
-                                                                    item.imageAlt ||
-                                                                    item.productName ||
-                                                                    t('common:productImageAlt') ||
-                                                                    'Product Image'
-                                                                }
-                                                                loading="lazy"
-                                                                className="absolute inset-0 h-full w-full object-cover"
-                                                                onError={(e) => {
-                                                                    e.currentTarget.style.display = 'none';
-                                                                }}
-                                                            />
-                                                        ) : (
-                                                            <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                                                                <span className="text-muted-foreground text-sm">
-                                                                    No image
-                                                                </span>
-                                                            </div>
-                                                        )}
-                                                    </div>
+        <section
+            aria-label="Bonus Product Bundle"
+            className="w-full overflow-hidden rounded-[var(--radius)] border border-border bg-[var(--bg-input-30)] shadow-md p-4">
+            <h3 className="text-base leading-6 text-card-foreground font-sans pb-3">
+                <span className="font-semibold">{titleText}</span>
+                <span className="font-normal">{titleSuffix}</span>
+            </h3>
+            <Carousel opts={{ align: 'start' }} className="w-full">
+                <div className="relative">
+                    <CarouselContent className="-ml-3 justify-start">
+                        {bonusProducts.map((item) => (
+                            <CarouselItem key={item.productId} className="basis-[220px] pl-3">
+                                <article
+                                    className="flex h-[329px] flex-col justify-between items-start rounded-[var(--radius)] border border-border bg-background"
+                                    aria-label="Bonus bundle product card">
+                                    {/* Image */}
+                                    <div className="flex flex-col items-start self-stretch">
+                                        <div className="px-4 py-3 self-stretch">
+                                            <div className="bg-muted/30 border border-border rounded-xl overflow-hidden">
+                                                <div className="h-36 w-full relative">
+                                                    {item.imageUrl ? (
+                                                        <img
+                                                            src={
+                                                                toImageUrl({ src: item.imageUrl, config }) ??
+                                                                item.imageUrl
+                                                            }
+                                                            alt={
+                                                                item.imageAlt ||
+                                                                item.productName ||
+                                                                t('common:productImageAlt') ||
+                                                                'Product Image'
+                                                            }
+                                                            loading="lazy"
+                                                            className="absolute inset-0 h-full w-full object-cover"
+                                                            onError={(e) => {
+                                                                e.currentTarget.style.display = 'none';
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                                                            <span className="text-muted-foreground text-sm">
+                                                                {t('common:noImageAvailable')}
+                                                            </span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            {/* Header with product name and badge - fixed height with line clamp */}
-                                            <div className="px-6 pt-0 pb-4 flex items-start justify-between gap-1.5 min-h-[4rem]">
-                                                <p className="text-lg font-semibold leading-tight text-card-foreground line-clamp-2">
-                                                    {item.productName}
-                                                </p>
-                                                <div className="flex items-center gap-1.5 flex-shrink-0">
-                                                    <Badge className="bg-primary text-primary-foreground font-semibold">
-                                                        {BADGE_TEXT}
-                                                    </Badge>
-                                                </div>
+                                        {/* Product name and badge with price */}
+                                        <div className="px-4 pb-2 flex items-start justify-between gap-1.5 self-stretch">
+                                            <p className="text-sm font-semibold leading-tight text-card-foreground line-clamp-2">
+                                                {item.productName}
+                                            </p>
+                                            <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                                                <Badge className="bg-primary text-primary-foreground font-semibold text-xs rounded-pill">
+                                                    {t('cart:bonusProducts.freeBadge')}
+                                                </Badge>
+                                                {(() => {
+                                                    const { currentPrice } = getPriceData(item.product);
+                                                    return currentPrice > 0 ? (
+                                                        <span className="text-sm text-muted-foreground line-through">
+                                                            {formatCurrency(currentPrice, i18n.language, currency)}
+                                                        </span>
+                                                    ) : null;
+                                                })()}
                                             </div>
+                                        </div>
+                                    </div>
 
-                                            {/* Footer with select button - pushed to bottom */}
-                                            <div className="px-6 pb-4 mt-auto">
-                                                <Button
-                                                    className="w-full h-9 shadow-sm"
-                                                    onClick={() =>
-                                                        handleSelectProduct(
-                                                            item.productId,
-                                                            item.productName,
-                                                            item.product
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        addToCartFetcher.state === 'submitting' ||
-                                                        selectedBonusItems >= maxBonusItems
-                                                    }>
-                                                    {addToCartFetcher.state === 'submitting' ? 'Adding...' : 'Select'}
-                                                </Button>
-                                            </div>
-                                        </article>
-                                    </CarouselItem>
-                                ))}
-                            </CarouselContent>
-                            <CarouselPrevious className="left-0" />
-                            <CarouselNext className="right-0" />
-                        </Carousel>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
+                                    {/* Select button */}
+                                    <div className="px-4 pb-3 self-stretch">
+                                        <Button
+                                            className="w-full h-9 shadow-sm"
+                                            onClick={() =>
+                                                handleSelectProduct(item.productId, item.productName, item.product)
+                                            }
+                                            disabled={
+                                                addToCartFetcher.state === 'submitting' ||
+                                                selectedBonusItems >= maxBonusItems
+                                            }>
+                                            {addToCartFetcher.state === 'submitting' ? 'Adding...' : 'Select'}
+                                        </Button>
+                                    </div>
+                                </article>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 size-8 rounded-full shadow-md border-border" />
+                    <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 size-8 rounded-full shadow-md border-border" />
+                </div>
+            </Carousel>
         </section>
     );
 }

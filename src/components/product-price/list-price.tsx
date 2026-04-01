@@ -58,6 +58,7 @@ export default function ListPrice({
         <>
             <Typography
                 as={as}
+                variant="small"
                 className={`text-muted-foreground line-through ${className || ''}`}
                 aria-label={ariaLabel}>
                 {listPriceText}

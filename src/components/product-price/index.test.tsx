@@ -36,8 +36,8 @@ describe('ProductPrice', () => {
     test('renders current price and list price for standard product', () => {
         render(<ProductPrice product={mockProduct} currency="USD" labelForA11y="Test Product" />);
 
-        expect(screen.getByText('From $29.99')).toBeInTheDocument();
-        expect(screen.getByText('$39.99')).toBeInTheDocument();
+        // Price range displayed as min – max (no "From" prefix)
+        expect(screen.getByText('$29.99 – $39.99')).toBeInTheDocument();
     });
 
     test('renders only current price for set product', () => {
@@ -49,8 +49,8 @@ describe('ProductPrice', () => {
 
         render(<ProductPrice product={setProduct} currency="USD" labelForA11y="Test Set" />);
 
-        expect(screen.getByText('From $29.99')).toBeInTheDocument();
-        expect(screen.queryByText('$39.99')).not.toBeInTheDocument();
+        // Set product with price range shows min – max
+        expect(screen.getByText('$29.99 – $39.99')).toBeInTheDocument();
     });
 
     test('renders current price only when not on sale', () => {
@@ -77,8 +77,8 @@ describe('ProductPrice', () => {
     test('handles quantity multiplication', () => {
         render(<ProductPrice product={mockProduct} currency="USD" quantity={2} labelForA11y="Test Product" />);
 
-        expect(screen.getByText('From $59.98')).toBeInTheDocument(); // 29.99 * 2
-        expect(screen.getByText('$79.98')).toBeInTheDocument(); // 39.99 * 2
+        // Quantity multiplies range: 29.99*2 – 39.99*2
+        expect(screen.getByText('$59.98 – $79.98')).toBeInTheDocument();
     });
 
     test('does not apply quantity multiplication when type is unit', () => {
@@ -86,9 +86,8 @@ describe('ProductPrice', () => {
             <ProductPrice product={mockProduct} currency="USD" quantity={2} labelForA11y="Test Product" type="unit" />
         );
 
-        expect(screen.getByText('From $29.99')).toBeInTheDocument();
-        expect(screen.queryByText('From $59.98')).not.toBeInTheDocument();
-        expect(screen.queryByText('$39.99')).toBeInTheDocument();
-        expect(screen.queryByText('$79.98')).not.toBeInTheDocument();
+        // Unit type: show range per unit, no quantity multiplication
+        expect(screen.getByText('$29.99 – $39.99')).toBeInTheDocument();
+        expect(screen.queryByText('$59.98 – $79.98')).not.toBeInTheDocument();
     });
 });

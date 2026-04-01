@@ -19,7 +19,7 @@ import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { action } from 'storybook/actions';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { expect, within, userEvent } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
+import { waitForStorybookReady, SITE_PREFIX } from '@storybook/test-utils';
 import { AccountNavList, type AccountNavItemData } from '../index';
 import { User, Heart, ShoppingBag, MapPin, Settings, LogOut } from 'lucide-react';
 
@@ -208,10 +208,22 @@ export const Default: Story = {
         await expect(canvas.getByRole('link', { name: 'Addresses' })).toBeInTheDocument();
 
         // Verify correct hrefs
-        await expect(canvas.getByRole('link', { name: 'Account Details' })).toHaveAttribute('href', '/account');
-        await expect(canvas.getByRole('link', { name: 'Wishlist' })).toHaveAttribute('href', '/account/wishlist');
-        await expect(canvas.getByRole('link', { name: 'Orders' })).toHaveAttribute('href', '/account/orders');
-        await expect(canvas.getByRole('link', { name: 'Addresses' })).toHaveAttribute('href', '/account/addresses');
+        await expect(canvas.getByRole('link', { name: 'Account Details' })).toHaveAttribute(
+            'href',
+            `${SITE_PREFIX}/account`
+        );
+        await expect(canvas.getByRole('link', { name: 'Wishlist' })).toHaveAttribute(
+            'href',
+            `${SITE_PREFIX}/account/wishlist`
+        );
+        await expect(canvas.getByRole('link', { name: 'Orders' })).toHaveAttribute(
+            'href',
+            `${SITE_PREFIX}/account/orders`
+        );
+        await expect(canvas.getByRole('link', { name: 'Addresses' })).toHaveAttribute(
+            'href',
+            `${SITE_PREFIX}/account/addresses`
+        );
 
         // Verify all links are present
         const links = canvas.getAllByRole('link');
@@ -393,7 +405,7 @@ export const WithLogout: Story = {
         // Verify logout form
         const form = logoutButton.closest('form');
         await expect(form).toBeInTheDocument();
-        await expect(form).toHaveAttribute('action', '/logout');
+        await expect(form).toHaveAttribute('action', `${SITE_PREFIX}/logout`);
         await expect(form).toHaveAttribute('method', 'post');
 
         // Verify logout icon

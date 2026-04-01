@@ -55,9 +55,9 @@ export default function CheckoutProvider({ children, customerProfile, shippingDe
                   CHECKOUT_STEPS.SHIPPING_ADDRESS,
                   CHECKOUT_STEPS.SHIPPING_OPTIONS,
                   CHECKOUT_STEPS.PAYMENT,
-                  CHECKOUT_STEPS.REVIEW_ORDER,
+                  CHECKOUT_STEPS.PLACE_ORDER,
               ]
-            : [CHECKOUT_STEPS.CONTACT_INFO, CHECKOUT_STEPS.PICKUP, CHECKOUT_STEPS.PAYMENT, CHECKOUT_STEPS.REVIEW_ORDER];
+            : [CHECKOUT_STEPS.CONTACT_INFO, CHECKOUT_STEPS.PICKUP, CHECKOUT_STEPS.PAYMENT, CHECKOUT_STEPS.PLACE_ORDER];
     };
 
     // Compute the initial step from basket or customer profile

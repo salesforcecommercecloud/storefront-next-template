@@ -31,6 +31,7 @@ const mockGetPickupShipmentDistribution = vi.fn(() => ({
     enableMultiAddress: false,
     hasMultipleDeliveryAddresses: false,
     hasUnaddressedDeliveryItems: false,
+    needsShippingMethods: false,
     hasEmptyShipments: false,
     isDeliveryProductItem: () => false as const,
     deliveryShipments: [],
@@ -51,6 +52,7 @@ describe('Checkout Utils - BOPIS/Store Pickup Scenarios', () => {
             enableMultiAddress: false,
             hasMultipleDeliveryAddresses: false,
             hasUnaddressedDeliveryItems: false,
+            needsShippingMethods: false,
             hasEmptyShipments: false,
             isDeliveryProductItem: () => false as const,
             deliveryShipments: [],
@@ -73,6 +75,7 @@ describe('Checkout Utils - BOPIS/Store Pickup Scenarios', () => {
                 enableMultiAddress: false,
                 hasMultipleDeliveryAddresses: false,
                 hasUnaddressedDeliveryItems: false,
+                needsShippingMethods: false,
                 hasEmptyShipments: false,
                 isDeliveryProductItem: () => false as const,
                 deliveryShipments: [],
@@ -83,7 +86,7 @@ describe('Checkout Utils - BOPIS/Store Pickup Scenarios', () => {
             expect(result).toBe(CHECKOUT_STEPS.PAYMENT);
         });
 
-        test('goes to REVIEW_ORDER when store pickup has email and payment', () => {
+        test('goes to PLACE_ORDER when store pickup has email and payment', () => {
             const basketWithPickup = createMockBasketWithPickupItems(
                 [{ productId: 'product-1', inventoryId: 'store-inv-1', storeId: 'store-1' }],
                 {
@@ -109,6 +112,7 @@ describe('Checkout Utils - BOPIS/Store Pickup Scenarios', () => {
                 enableMultiAddress: false,
                 hasMultipleDeliveryAddresses: false,
                 hasUnaddressedDeliveryItems: false,
+                needsShippingMethods: false,
                 hasEmptyShipments: false,
                 isDeliveryProductItem: () => false as const,
                 deliveryShipments: [],
@@ -116,7 +120,7 @@ describe('Checkout Utils - BOPIS/Store Pickup Scenarios', () => {
             mockGetPickupShipmentDistribution.mockReturnValue(pickupDistribution);
 
             const result = computeStepFromBasket(basketWithPickup, pickupDistribution);
-            expect(result).toBe(CHECKOUT_STEPS.REVIEW_ORDER);
+            expect(result).toBe(CHECKOUT_STEPS.PLACE_ORDER);
         });
 
         test('still requires contact info for store pickup without email', () => {
@@ -134,6 +138,7 @@ describe('Checkout Utils - BOPIS/Store Pickup Scenarios', () => {
                 enableMultiAddress: false,
                 hasMultipleDeliveryAddresses: false,
                 hasUnaddressedDeliveryItems: false,
+                needsShippingMethods: false,
                 hasEmptyShipments: false,
                 isDeliveryProductItem: () => false as const,
                 deliveryShipments: [],
@@ -162,6 +167,7 @@ describe('Checkout Utils - BOPIS/Store Pickup Scenarios', () => {
                 enableMultiAddress: false,
                 hasMultipleDeliveryAddresses: false,
                 hasUnaddressedDeliveryItems: false,
+                needsShippingMethods: false,
                 hasEmptyShipments: false,
                 isDeliveryProductItem: () => false as const,
                 deliveryShipments: [],

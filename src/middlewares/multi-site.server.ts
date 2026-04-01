@@ -15,7 +15,9 @@
  */
 import { type MiddlewareFunction } from 'react-router';
 import { createMultiSiteMiddleware, type MultiSiteConfig } from '@salesforce/storefront-next-runtime/multi-site';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Creates and returns the multi-site middleware configured with the app's site and locale settings.
@@ -24,12 +26,25 @@ import { getConfig } from '@/config';
  * Must run BEFORE i18next and currency middlewares.
  */
 export const multiSiteMiddleware: MiddlewareFunction<Response> = async (args, next) => {
-    const config = getConfig(args.context);
+    const logger = getLogger(args.context);
+    const config = getConfig<AppConfig>(args.context);
     const sites = config.commerce.sites;
+
+    logger.debug('MultiSite: middleware starting', {
+        siteCount: sites.length,
+        defaultSiteId: config.defaultSiteId,
+    });
+
+    if (!sites.length) {
+        logger.error('MultiSite: no sites configured');
+        throw new Error('No sites found.');
+    }
     const defaultSiteId = config.defaultSiteId;
     const siteAliasMap = config.siteAliasMap;
+    const localeAliasMap = config.localeAliasMap;
     const defaultSite = sites.find((site) => site.id === defaultSiteId);
     if (!defaultSite?.defaultLocale) {
+        logger.error('MultiSite: default site missing defaultLocale', { defaultSiteId });
         throw new Error(`Site "${config.defaultSiteId}" must have a defaultLocale configured. `);
     }
 
@@ -39,12 +54,20 @@ export const multiSiteMiddleware: MiddlewareFunction<Response> = async (args, ne
             ...site,
             alias: siteAliasMap?.[site.id],
             name: site.id,
+            supportedLocales: site.supportedLocales.map((locale) => ({
+                ...locale,
+                alias: localeAliasMap?.[locale.id],
+            })),
         })),
         defaultSiteId,
         defaultLocale: defaultSite.defaultLocale,
+        siteDetectionConfig: config.siteDetectionConfig,
+        localeDetectionConfig: config.localeDetectionConfig,
     };
 
-    // Create and invoke the multi-site middleware
+    // Create and invoke the multi-site middleware.
+    // Wrap next() so we can intercept after site/locale resolution but BEFORE downstream
+    // loaders/rendering execute — this avoids wasted rendering when we redirect.
     const middleware = createMultiSiteMiddleware(multiSiteConfig);
     return middleware(args, next);
 };

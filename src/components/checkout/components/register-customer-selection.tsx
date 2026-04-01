@@ -13,60 +13,210 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState } from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Typography } from '@/components/typography';
-import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
+const OtpModal = lazy(() => import('@/components/login/otp-modal'));
+import { Checkbox } from '@/components/ui/checkbox';
+import { useBasket } from '@/providers/basket';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 
 interface RegisterCustomerSelectionProps {
     /** Callback when checkbox state changes - receives boolean value */
     onSaved?: (shouldCreateAccount: boolean) => void;
+    /** Callback when OTP verification succeeds */
+    onRegistrationSuccess?: () => void;
+    /** Whether the user opted to save their payment method */
+    savePaymentToProfile?: boolean;
+    /** Optional toast callback to avoid bundling sonner in this lazy chunk */
+    showToast?: (message: string, type: 'success' | 'error', options?: { duration?: number }) => void;
 }
 
-export default function RegisterCustomerSelection({ onSaved }: RegisterCustomerSelectionProps) {
-    const [shouldCreateAccount, setShouldCreateAccount] = useState(false);
-    const { t } = useTranslation('checkout');
+type InitiateRegistrationResponse = {
+    success: boolean;
+    error?: string;
+    email?: string;
+};
 
-    // Just track the user's preference, don't call API yet
+export default function RegisterCustomerSelection({
+    onSaved,
+    onRegistrationSuccess,
+    savePaymentToProfile: _savePaymentToProfile = false,
+    showToast,
+}: RegisterCustomerSelectionProps) {
+    const [shouldCreateAccount, setShouldCreateAccount] = useState(false);
+    const [accountCreated, setAccountCreated] = useState(false);
+    const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+    const [registrationEmail, setRegistrationEmail] = useState<string>('');
+    const [error, setError] = useState<string | null>(null);
+    const { t: _t } = useTranslation('checkout');
+    const t = _t as (key: string, options?: object) => string;
+    const basket = useBasket();
+    const config = useConfig();
+    const registrationFetcher = useFetcher<InitiateRegistrationResponse>({ key: 'checkout-registration' });
+    const lastProcessedDataRef = useRef<InitiateRegistrationResponse | null>(null);
+
     const handleCheckboxChange = (checked: boolean) => {
         setShouldCreateAccount(checked);
-        onSaved?.(checked); // Pass the boolean preference to parent
+        setError(null);
+
+        if (checked) {
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.setItem('registeredViaCheckout', 'true');
+            }
+
+            const email = basket?.customerInfo?.email;
+            if (!email) {
+                const errorMsg = t('registration.emailNotFound');
+                setError(errorMsg);
+                showToast?.(errorMsg, 'error');
+                setShouldCreateAccount(false);
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.removeItem('registeredViaCheckout');
+                }
+                return;
+            }
+
+            setRegistrationEmail(email);
+
+            const formData = new FormData();
+            formData.append('email', email);
+
+            void registrationFetcher.submit(formData, {
+                method: 'POST',
+                action: '/action/initiate-checkout-registration',
+            });
+        } else {
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.removeItem('registeredViaCheckout');
+            }
+            onSaved?.(false);
+        }
     };
 
-    return (
-        <ToggleCard title={t('payment.saveForFutureUse')} editing={true} disableEdit={true}>
-            <ToggleCardEdit>
-                <div className="flex items-start space-x-3">
-                    <Checkbox
-                        id="create-account-checkbox"
-                        checked={shouldCreateAccount}
-                        onCheckedChange={handleCheckboxChange}
-                        className="mt-0.5"
-                        aria-label={t('payment.createAccountForFasterCheckout')}
-                    />
-                    <div className="space-y-1">
-                        <label
-                            htmlFor="create-account-checkbox"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
-                            <Typography variant="small" className="font-medium">
-                                {t('payment.createAccountForFasterCheckout')}
-                            </Typography>
-                        </label>
-                    </div>
-                </div>
-            </ToggleCardEdit>
+    useEffect(() => {
+        const { state, data } = registrationFetcher;
 
-            <ToggleCardSummary>
-                <div className="space-y-2">
-                    <Typography variant="small" className="text-muted-foreground">
-                        Account Creation
-                    </Typography>
-                    <Typography variant="p" className="font-medium">
-                        {shouldCreateAccount ? 'Account will be created' : 'Continue as guest'}
-                    </Typography>
+        if (state === 'idle' && data && data !== lastProcessedDataRef.current) {
+            lastProcessedDataRef.current = data;
+
+            if (data.success) {
+                setIsOtpModalOpen(true);
+            } else {
+                const errorMsg = data.error || t('registration.initiationFailed');
+                setError(errorMsg);
+                showToast?.(errorMsg, 'error');
+                setShouldCreateAccount(false);
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.removeItem('registeredViaCheckout');
+                }
+            }
+        }
+    }, [registrationFetcher, registrationFetcher.state, registrationFetcher.data, t, showToast]);
+
+    const handleOtpSuccess = (tokenResponse?: ShopperLogin.schemas['TokenResponse']) => {
+        setIsOtpModalOpen(false);
+        setAccountCreated(true);
+        onSaved?.(true);
+
+        if (typeof sessionStorage !== 'undefined' && tokenResponse) {
+            sessionStorage.setItem('checkoutRegistrationTokens', JSON.stringify(tokenResponse));
+        }
+
+        showToast?.(t('registration.accountCreatedSuccess'), 'success', { duration: 8000 });
+        onRegistrationSuccess?.();
+    };
+
+    const handleOtpModalClose = () => {
+        setIsOtpModalOpen(false);
+        setShouldCreateAccount(false);
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.removeItem('registeredViaCheckout');
+        }
+        onSaved?.(false);
+    };
+
+    const handleResendCode = async () => {
+        const formData = new FormData();
+        formData.append('email', registrationEmail);
+
+        return new Promise<void>((resolve, _reject) => {
+            void registrationFetcher.submit(formData, {
+                method: 'POST',
+                action: '/action/initiate-checkout-registration',
+            });
+
+            setTimeout(() => resolve(), 1000);
+        });
+    };
+
+    const handleCheckoutAsGuest = () => {
+        setShouldCreateAccount(false);
+        setIsOtpModalOpen(false);
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.removeItem('registeredViaCheckout');
+        }
+        onSaved?.(false);
+    };
+
+    if (accountCreated) {
+        return (
+            <section
+                className="flex items-start gap-4 border border-input p-4"
+                aria-label={t('registration.accountCreatedTitle')}>
+                <div className="flex flex-1 flex-col gap-1">
+                    <h6 className="text-sm font-semibold text-foreground">{t('registration.accountCreatedTitle')}</h6>
+                    <p className="text-sm leading-5 text-foreground">{t('registration.accountCreatedDescription')}</p>
                 </div>
-            </ToggleCardSummary>
-        </ToggleCard>
+                <div className="inline-flex shrink-0 items-center gap-1.5 rounded-sm border border-active-foreground px-2 py-0.5">
+                    <span className="text-sm font-medium text-active-foreground">{t('registration.verified')}</span>
+                </div>
+            </section>
+        );
+    }
+
+    return (
+        <div data-testid="register-customer-checkbox">
+            <label
+                htmlFor="create-account-checkbox"
+                className="flex cursor-pointer items-start gap-2 border border-input p-4">
+                <Checkbox
+                    id="create-account-checkbox"
+                    data-testid="create-account-checkbox"
+                    checked={shouldCreateAccount}
+                    onCheckedChange={(checked) => handleCheckboxChange(checked === true)}
+                    className="mt-0.5 shrink-0"
+                    aria-label={t('payment.saveForFutureUse')}
+                    disabled={registrationFetcher.state === 'submitting'}
+                />
+                <div className="flex flex-1 flex-col gap-1 text-sm">
+                    <span className="font-medium leading-5 text-foreground">{t('payment.saveForFutureUse')}</span>
+                    <span className="leading-5 text-foreground">{t('payment.createAccountForFasterCheckout')}</span>
+                    {registrationFetcher.state === 'submitting' && (
+                        <p className="text-foreground">{t('registration.sendingVerificationCode')}</p>
+                    )}
+                    {shouldCreateAccount && !error && registrationFetcher.state !== 'submitting' && (
+                        <p className="mt-3 leading-5 text-foreground">
+                            {t('registration.checkboxExpandedDescription')}
+                        </p>
+                    )}
+                </div>
+            </label>
+
+            {isOtpModalOpen && (
+                <Suspense fallback={null}>
+                    <OtpModal
+                        isOpen={isOtpModalOpen}
+                        onClose={handleOtpModalClose}
+                        email={registrationEmail}
+                        onSuccess={handleOtpSuccess}
+                        onCheckoutAsGuest={handleCheckoutAsGuest}
+                        onResendCode={handleResendCode}
+                        otpLength={(config.auth as { otpLength: number })?.otpLength ?? 6}
+                    />
+                </Suspense>
+            )}
+        </div>
     );
 }

@@ -22,27 +22,27 @@ import { Skeleton } from '@/components/ui/skeleton';
  */
 export function AccountDetailSkeleton() {
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {/* Page Header Card Skeleton */}
-            <Card className="border-border">
-                <CardContent className="py-6">
-                    <Skeleton className="h-8 w-40" />
+            <Card className="bg-card border-border">
+                <CardContent className="px-6 py-3">
+                    <Skeleton className="h-6 w-40" />
                     <Skeleton className="h-4 w-64 mt-1" />
                 </CardContent>
             </Card>
 
             {/* Personal Information Card Skeleton */}
-            <Card className="border-border">
+            <Card className="bg-card border-border">
                 <CardContent className="p-6">
                     {/* Card Header with separator */}
-                    <div className="mb-6 pb-4 border-b border-muted-foreground/20 space-y-1">
-                        <Skeleton className="h-6 w-40" />
+                    <div className="mb-6 pb-4 border-b border-border space-y-1.5">
+                        <Skeleton className="h-5 w-40" />
                         <Skeleton className="h-4 w-56" />
                     </div>
                     {/* Profile fields skeleton - 2 columns */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {Array.from({ length: 4 }, (_, i) => i).map((index) => (
-                            <div key={index} className="space-y-1">
+                            <div key={index} className="space-y-2">
                                 <Skeleton className="h-4 w-20" />
                                 <Skeleton className="h-4 w-28" />
                             </div>
@@ -52,16 +52,16 @@ export function AccountDetailSkeleton() {
             </Card>
 
             {/* Password & Security Card Skeleton */}
-            <Card className="border-border">
+            <Card className="bg-card border-border">
                 <CardContent className="p-6">
                     {/* Card Header with separator */}
-                    <div className="mb-6 pb-4 border-b border-muted-foreground/20 space-y-1">
-                        <Skeleton className="h-6 w-36" />
+                    <div className="mb-6 pb-4 border-b border-border space-y-1.5">
+                        <Skeleton className="h-5 w-36" />
                         <Skeleton className="h-4 w-64" />
                     </div>
                     {/* Password field with inline button */}
                     <div className="flex items-center justify-between">
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                             <Skeleton className="h-4 w-16" />
                             <Skeleton className="h-4 w-20" />
                         </div>

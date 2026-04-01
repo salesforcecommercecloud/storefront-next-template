@@ -90,8 +90,8 @@ vi.mock('react-router', () => ({
     },
 }));
 
-vi.mock('@/config', async () => {
-    const actual = await vi.importActual('@/config');
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
     return {
         ...actual,
         useConfig: () => ({

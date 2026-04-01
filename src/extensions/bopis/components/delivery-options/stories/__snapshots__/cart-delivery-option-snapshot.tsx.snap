@@ -5,7 +5,7 @@ exports[`CartDeliveryOption stories snapshot > Default story renders and matches
   <button
     aria-expanded="false"
     aria-haspopup="menu"
-    class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-medium text-foreground flex items-center justify-center gap-2 hover:bg-accent transition-colors"
+    class="mb-1 w-fit px-2 rounded-pill border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
     data-slot="dropdown-menu-trigger"
     data-state="closed"
     id="radix-_r_0_"
@@ -13,7 +13,7 @@ exports[`CartDeliveryOption stories snapshot > Default story renders and matches
   >
     <svg
       aria-hidden="true"
-      class="lucide lucide-shopping-cart mr-1 size-4"
+      class="lucide lucide-shopping-cart size-3"
       fill="none"
       height="24"
       stroke="currentColor"
@@ -50,7 +50,7 @@ exports[`CartDeliveryOption stories snapshot > Desktop story renders and matches
   <button
     aria-expanded="false"
     aria-haspopup="menu"
-    class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-medium text-foreground flex items-center justify-center gap-2 hover:bg-accent transition-colors"
+    class="mb-1 w-fit px-2 rounded-pill border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
     data-slot="dropdown-menu-trigger"
     data-state="closed"
     id="radix-_r_6_"
@@ -58,7 +58,7 @@ exports[`CartDeliveryOption stories snapshot > Desktop story renders and matches
   >
     <svg
       aria-hidden="true"
-      class="lucide lucide-shopping-cart mr-1 size-4"
+      class="lucide lucide-shopping-cart size-3"
       fill="none"
       height="24"
       stroke="currentColor"
@@ -95,7 +95,7 @@ exports[`CartDeliveryOption stories snapshot > Mobile story renders and matches 
   <button
     aria-expanded="false"
     aria-haspopup="menu"
-    class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-medium text-foreground flex items-center justify-center gap-2 hover:bg-accent transition-colors"
+    class="mb-1 w-fit px-2 rounded-pill border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
     data-slot="dropdown-menu-trigger"
     data-state="closed"
     id="radix-_r_4_"
@@ -103,7 +103,7 @@ exports[`CartDeliveryOption stories snapshot > Mobile story renders and matches 
   >
     <svg
       aria-hidden="true"
-      class="lucide lucide-shopping-cart mr-1 size-4"
+      class="lucide lucide-shopping-cart size-3"
       fill="none"
       height="24"
       stroke="currentColor"
@@ -141,7 +141,7 @@ exports[`CartDeliveryOption stories snapshot > PickupSelected story renders and 
     <button
       aria-expanded="false"
       aria-haspopup="menu"
-      class="mb-3 w-[8.5rem] min-w-[8.5rem] h-10 min-h-10 px-3 py-1 rounded-full border bg-background shadow text-sm font-medium text-foreground flex items-center justify-center gap-2 hover:bg-accent transition-colors"
+      class="mb-1 w-fit px-2 rounded-pill border-0 bg-muted shadow-none text-xs font-medium text-foreground flex items-center justify-center gap-1 hover:bg-accent transition-colors"
       data-slot="dropdown-menu-trigger"
       data-state="closed"
       id="radix-_r_2_"
@@ -149,7 +149,7 @@ exports[`CartDeliveryOption stories snapshot > PickupSelected story renders and 
     >
       <svg
         aria-hidden="true"
-        class="lucide lucide-shopping-cart mr-1 size-4"
+        class="lucide lucide-shopping-cart size-3"
         fill="none"
         height="24"
         stroke="currentColor"

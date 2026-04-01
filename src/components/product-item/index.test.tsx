@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 
 // React Router
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
@@ -27,12 +26,9 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 
 // Components
 import ProductItem from './index';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { CurrencyProvider } from '@/providers/currency';
-
-// Utils
-import { formatCurrency } from '@/lib/currency';
 
 // Mock data
 import { bundleProd as mockedBundleProduct } from '../__mocks__/bundle-product';
@@ -162,7 +158,7 @@ describe('ProductItem', () => {
             // JSDOM does not compute these classes into proper css properties
             // we can only assert if these two exists in DOM, but can't check the visibility
             // it can only visible on proper browser (or E2E tests)
-            expect(eachPriceElements).toHaveLength(2); // Mobile and desktop
+            expect(eachPriceElements).toHaveLength(1); // Rendered once
         });
 
         test('does not render quantity text in default variant', () => {
@@ -333,8 +329,8 @@ describe('ProductItem', () => {
 
             expect(screen.getByTestId('sf-product-item-undefined')).toBeInTheDocument();
             expect(screen.getByText('Product Name')).toBeInTheDocument(); // Default name
-            const priceElements = screen.getAllByText('$0.00');
-            expect(priceElements).toHaveLength(2); // Mobile and desktop
+            // Zero price shows "Free" text
+            expect(screen.getByText('Free')).toBeInTheDocument();
         });
 
         test('handles product with only productId', () => {
@@ -418,9 +414,8 @@ describe('ProductItem', () => {
 
             renderWithRouter(<ProductItem productItem={productWithZeroPrice} />);
 
-            // Check that price appears in both mobile and desktop views
-            const priceElements = screen.getAllByText('$0.00');
-            expect(priceElements).toHaveLength(2); // Mobile and desktop
+            // Zero price shows "Free" text
+            expect(screen.getByText('Free')).toBeInTheDocument();
         });
 
         test('handles missing price (defaults to 0)', () => {
@@ -433,9 +428,8 @@ describe('ProductItem', () => {
 
             renderWithRouter(<ProductItem productItem={productWithoutPrice} />);
 
-            // Check that price appears in both mobile and desktop views
-            const priceElements = screen.getAllByText('$0.00');
-            expect(priceElements).toHaveLength(2); // Mobile and desktop
+            // Zero price shows "Free" text
+            expect(screen.getByText('Free')).toBeInTheDocument();
         });
     });
 
@@ -509,7 +503,7 @@ describe('ProductItem', () => {
 
             // Component uses priceAfterItemDiscount for "each" calculation: 59.98 / 2 = $29.99
             const priceElements = screen.getAllByText('$29.99 each');
-            expect(priceElements).toHaveLength(2); // Mobile and desktop price elements
+            expect(priceElements).toHaveLength(1); // Rendered once
         });
 
         test('handles missing priceAfterItemDiscount gracefully', () => {
@@ -524,7 +518,7 @@ describe('ProductItem', () => {
 
             // Falls back to price for "each" calculation: 79.98 / 2 = $39.99
             const priceElements = screen.getAllByText('$39.99 each');
-            expect(priceElements).toHaveLength(2); // Mobile and desktop price elements
+            expect(priceElements).toHaveLength(1); // Rendered once
         });
     });
 
@@ -544,59 +538,38 @@ describe('ProductItem', () => {
             },
         };
 
-        test('renders PromoPopover properly when product has promotions', () => {
+        test('renders ProductItemPromotions "Saved" badge when product has discount', () => {
             const productWithPromotions = {
                 ...mockProduct,
+                basePrice: 25.0,
                 price: 50.0,
                 priceAfterItemDiscount: 40.0,
+                quantity: 2,
                 priceAdjustments: [{ promotionId: 'promo-1', itemText: '20% discount applied', price: -10 }],
             };
 
             renderWithRouter(<ProductItem productItem={productWithPromotions} promotions={mockPromotions} />);
 
-            // Check that the PromoPopover trigger button is rendered and accessible
-            const infoButton = screen.getByRole('button', { name: 'Info' });
-            expect(infoButton).toBeInTheDocument();
-            expect(infoButton).toBeVisible();
-            // Check that the discount amount is displayed
-            expect(screen.getByText('Promotions:')).toBeInTheDocument();
-
-            expect(screen.getByText(/-\$10.00/)).toBeInTheDocument();
+            // ProductItemPromotions shows a "Saved" badge when there's a discount
+            expect(screen.getByText(/Saved/)).toBeInTheDocument();
         });
 
-        test('displays promotion messages in PromoPopover on hover', async () => {
-            const user = userEvent.setup();
-            const productWithPromotions = {
+        test('does not render "Saved" badge when no discount exists', () => {
+            const productWithoutDiscount = {
                 ...mockProduct,
+                basePrice: 29.99,
+                price: 59.98,
+                priceAfterItemDiscount: 59.98, // Same as price, no discount
                 priceAdjustments: [
                     { promotionId: 'promo-1', itemText: '20% discount applied' },
                     { promotionId: 'promo-2', itemText: 'Free shipping applied' },
                 ],
             };
 
-            renderWithRouter(<ProductItem productItem={productWithPromotions} promotions={mockPromotions} />);
+            renderWithRouter(<ProductItem productItem={productWithoutDiscount} promotions={mockPromotions} />);
 
-            // Check that the info button is present for users to interact with
-            const infoButton = screen.getByRole('button', { name: 'Info' });
-            expect(infoButton).toBeInTheDocument();
-            expect(infoButton).toBeVisible();
-
-            // Hover over the info button to trigger tooltip
-            await user.hover(infoButton);
-
-            // Wait for tooltip to appear and check for promotion content
-            await waitFor(() => {
-                // one for visiable and one for hidden for a11y
-                // Check that promotion messages are displayed
-                const promo1MessagesFirstHalf = screen.getAllByText(/20% Off!/);
-                expect(promo1MessagesFirstHalf.length).toBe(2);
-
-                const promo1MessagesSecondHalf = screen.getAllByText(/Limited time offer/);
-                expect(promo1MessagesSecondHalf.length).toBe(2);
-
-                const promo2Messages = screen.getAllByText(/Free shipping on orders over \$50/);
-                expect(promo2Messages.length).toBe(2); // one for visible and one for hidden for a11y
-            });
+            // No "Saved" badge since there's no price difference
+            expect(screen.queryByText(/Saved/)).not.toBeInTheDocument();
         });
 
         test('does not render PromoPopover when no promotions or discounts', () => {
@@ -617,17 +590,17 @@ describe('ProductItem', () => {
         test('handles missing promotions gracefully', () => {
             const productWithPromotions = {
                 ...mockProduct,
+                basePrice: 39.99,
                 price: 79.98, // total: 39.99 × 2
-                priceAfterItemDiscount: 59.98, // discounted total (different from price to show PromoPopover)
+                priceAfterItemDiscount: 59.98, // discounted total
                 priceAdjustments: [{ promotionId: 'promo-1', itemText: '20% discount applied' }],
             };
 
             renderWithRouter(<ProductItem productItem={productWithPromotions} />);
 
-            // Should still render the PromoPopover trigger for user interaction
-            const infoButton = screen.getByRole('button', { name: 'Info' });
-            expect(infoButton).toBeInTheDocument();
-            expect(infoButton).toBeVisible();
+            // Should render without errors even without promotions prop
+            // ProductItemPromotions shows "Saved" badge when there's a discount
+            expect(screen.getByText(/Saved/)).toBeInTheDocument();
         });
 
         test('render properly when no promotions', () => {
@@ -647,15 +620,17 @@ describe('ProductItem', () => {
         test('handles very large discount amounts', () => {
             const productWithLargeDiscount = {
                 ...mockProduct,
+                basePrice: 999.99,
                 price: 999.99,
                 priceAfterItemDiscount: 0.01, // Almost free
+                quantity: 1,
                 priceAdjustments: [{ promotionId: 'promo-1', itemText: 'Large discount', price: -999.98 }],
             };
 
             renderWithRouter(<ProductItem productItem={productWithLargeDiscount} />);
 
-            // Should display the large discount amount correctly
-            expect(screen.getByText(/-\$999.98/)).toBeInTheDocument();
+            // ProductItemPromotions shows "Saved" badge for the large discount
+            expect(screen.getByText(/Saved/)).toBeInTheDocument();
         });
 
         // NOTE: adjust this test when display price is implemented
@@ -668,9 +643,8 @@ describe('ProductItem', () => {
 
             renderWithRouter(<ProductItem productItem={productWithZeroPrice} />);
 
-            // Should show $0.00 discount in both mobile and desktop views
-            const priceElements = screen.getAllByText('$0.00');
-            expect(priceElements).toHaveLength(2); // Mobile and desktop price elements
+            // Zero price shows "Free" text
+            expect(screen.getByText('Free')).toBeInTheDocument();
         });
 
         test('render properly for bonus product', () => {
@@ -684,8 +658,8 @@ describe('ProductItem', () => {
 
             renderWithRouter(<ProductItem productItem={productWithEmptyAdjustments} />);
 
-            // PromoPopover should not be rendered
-            expect(screen.queryByRole('button', { name: 'Info' })).not.toBeInTheDocument();
+            // ProductItemPromotions returns null for bonus products
+            expect(screen.queryByText(/Saved/)).not.toBeInTheDocument();
         });
     });
 
@@ -715,7 +689,7 @@ describe('ProductItem', () => {
             expect(screen.queryByText('Bonus Product')).not.toBeInTheDocument();
         });
 
-        test('shows strikethrough original total price for bonus product', () => {
+        test('shows Free text for bonus product with zero price', () => {
             const bonusProduct = {
                 ...mockProduct,
                 bonusProductLineItem: true,
@@ -727,18 +701,8 @@ describe('ProductItem', () => {
 
             renderWithRouter(<ProductItem productItem={bonusProduct} />);
 
-            // Should show original price (39.99) with strikethrough, not total
-            // Note: The component uses `price` directly, not `pricePerUnit * quantity`
-            const originalPriceElements = screen.getAllByText(formatCurrency(bonusProduct.price, 'en-GB', 'USD'));
-            expect(originalPriceElements.length).toBeGreaterThanOrEqual(1);
-
-            // Check that at least one has line-through class
-            const hasLineThrough = originalPriceElements.some((el) => el.className.includes('line-through'));
-            expect(hasLineThrough).toBe(true);
-
-            // Should show $0.00 as the actual price
-            const zeroPriceElements = screen.getAllByText('$0.00');
-            expect(zeroPriceElements.length).toBeGreaterThanOrEqual(1);
+            // Zero priceAfterItemDiscount shows "Free" text in default variant
+            expect(screen.getByText('Free')).toBeInTheDocument();
         });
 
         test('handles bonus product with zero original price', () => {
@@ -806,16 +770,8 @@ describe('ProductItem', () => {
             expect(screen.getByText('Bonus Product')).toBeInTheDocument();
             expect(screen.getByText('Free Bonus Tie')).toBeInTheDocument();
 
-            // Check for $0.00 price (appears in both mobile and desktop views)
-            const zeroPriceElements = screen.getAllByText('$0.00');
-            expect(zeroPriceElements.length).toBeGreaterThanOrEqual(1);
-
-            // Check for original price (49.99) with strikethrough
-            // Note: Component uses `price` directly, not `pricePerUnit * quantity`
-            const originalPriceElements = screen.getAllByText(
-                formatCurrency(completeBonusProduct.price, 'en-GB', 'USD')
-            );
-            expect(originalPriceElements.length).toBeGreaterThanOrEqual(1);
+            // Zero priceAfterItemDiscount shows "Free" text
+            expect(screen.getByText('Free')).toBeInTheDocument();
         });
 
         test('hides both primary and secondary actions for bonus product', () => {

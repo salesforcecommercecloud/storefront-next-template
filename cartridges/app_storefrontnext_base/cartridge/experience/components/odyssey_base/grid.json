@@ -5,27 +5,27 @@
     "arch_type": "headless",
     "region_definitions": [
         {
-            "id": "column-1",
+            "id": "column_1",
             "name": "Column 1"
         },
         {
-            "id": "column-2",
+            "id": "column_2",
             "name": "Column 2"
         },
         {
-            "id": "column-3",
+            "id": "column_3",
             "name": "Column 3"
         },
         {
-            "id": "column-4",
+            "id": "column_4",
             "name": "Column 4"
         },
         {
-            "id": "column-5",
+            "id": "column_5",
             "name": "Column 5"
         },
         {
-            "id": "column-6",
+            "id": "column_6",
             "name": "Column 6"
         }
     ],

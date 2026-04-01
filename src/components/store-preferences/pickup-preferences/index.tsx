@@ -80,7 +80,7 @@ export default function PickupPreferences(): ReactElement {
         <Card>
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <CardTitle className="text-lg">{t('storePreferences.pickupPreferences.heading')}</CardTitle>
+                    <CardTitle className="text-lg-xl">{t('storePreferences.pickupPreferences.heading')}</CardTitle>
                     <CardDescription className="mt-1">
                         {t('storePreferences.pickupPreferences.description')}
                     </CardDescription>
@@ -102,13 +102,13 @@ export default function PickupPreferences(): ReactElement {
                     )}
                 </CardAction>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 border-t border-border pt-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between gap-y-1">
                     <div className="min-w-0">
-                        <Label className="text-base font-medium text-foreground">
+                        <Label className="text-sm font-medium text-foreground">
                             {t('storePreferences.pickupPreferences.autoSelectStore')}
                         </Label>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                             {t('storePreferences.pickupPreferences.autoSelectStoreDescription')}
                         </p>
                     </div>
@@ -122,10 +122,10 @@ export default function PickupPreferences(): ReactElement {
                 </div>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between gap-y-1">
                     <div className="min-w-0">
-                        <Label className="text-base font-medium text-foreground">
+                        <Label className="text-sm font-medium text-foreground">
                             {t('storePreferences.pickupPreferences.pickupNotifications')}
                         </Label>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                             {t('storePreferences.pickupPreferences.pickupNotificationsDescription')}
                         </p>
                     </div>
@@ -139,10 +139,10 @@ export default function PickupPreferences(): ReactElement {
                 </div>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between gap-y-1">
                     <div className="min-w-0">
-                        <Label className="text-base font-medium text-foreground">
+                        <Label className="text-sm font-medium text-foreground">
                             {t('storePreferences.pickupPreferences.storeEventsPromotions')}
                         </Label>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                             {t('storePreferences.pickupPreferences.storeEventsPromotionsDescription')}
                         </p>
                     </div>

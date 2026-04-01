@@ -174,7 +174,9 @@ function getCurrency(product: ShopperProducts.schemas['Product']): string | unde
  * Generates a Product JSON-LD schema from product data
  *
  * @param product - Product data from SFCC API
- * @param productUrl - Optional absolute product URL (defaults to slugUrl if not provided)
+ * @param productUrl - Absolute product URL using public storefront domain.
+ *   Should be constructed using getPublicOrigin() in the loader to avoid exposing internal URLs.
+ *   Do NOT rely on slugUrl from product API data as it may contain internal routing URLs.
  * @returns Product schema object ready for JSON-LD
  */
 export function generateProductSchema(product: ShopperProducts.schemas['Product'], productUrl?: string): ProductSchema {
@@ -187,10 +189,9 @@ export function generateProductSchema(product: ShopperProducts.schemas['Product'
     const currency = getCurrency(product);
     const availability = getAvailabilityStatus(product);
 
-    // Construct product URL if not provided
-    // Note: This runs in server-side loader, so productUrl should always be provided
-    // Fallback to slugUrl if available, otherwise use productUrl parameter
-    const finalProductUrl = productUrl || product.slugUrl;
+    // Use the provided productUrl (should be public URL from loader)
+    // Never rely on product.slugUrl as it may contain internal routing URLs
+    const finalProductUrl = productUrl;
 
     // Build schema with overrides taking precedence
     // For image: use array if we have multiple unique product views (2-5 images),

@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { redirect, Link, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ForgotPasswordForm } from '@/components/forgot-password-form';
-// services
-import { getAuth, getPasswordResetToken } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
+import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+
+// Components
+import { Link } from '@/components/link';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { ForgotPasswordForm } from '@/components/forgot-password-form';
+
+// Lib
+import { getTranslation } from '@/lib/i18next';
+import { buildUrlFromContext } from '@/lib/url.server';
+
+// Middleware
+import { getAuth, getPasswordResetToken } from '@/middlewares/auth.server';
+import { getLogger } from '@/lib/logger.server';
 
 type ForgotPasswordActionData = {
     error?: string;
@@ -34,7 +43,7 @@ export function loader({ context }: LoaderFunctionArgs): Response | void {
     // If user is already logged in as registered user, redirect to login page
     const session = getAuth(context);
     if (session.userType === 'registered') {
-        return redirect('/login');
+        return redirect(buildUrlFromContext('/login', context));
     }
 }
 
@@ -42,6 +51,7 @@ export function loader({ context }: LoaderFunctionArgs): Response | void {
 // server-side to maintain security and proper integration with SFCC's authentication system
 // eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<ForgotPasswordActionData> {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();
     const email = formData.get('email')?.toString();
@@ -52,10 +62,13 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     try {
         //Send password reset token using SLAS and Marketing Cloud
         await getPasswordResetToken(context, { email });
+        logger.info('ForgotPassword: reset token sent');
         return { success: true, email };
-    } catch {
-        // Generic error message for security - don't expose actual error to user
-        return { error: t('errors:somethingWentWrong') };
+    } catch (error) {
+        logger.error('ForgotPassword: failed', { error });
+        const errorMessage = extractErrorMessage(error);
+        const errorKey = getPasswordResetErrorMessageKey(errorMessage);
+        return { error: t(errorKey) };
     }
 }
 
@@ -68,9 +81,7 @@ export default function ForgotPassword(): ReactElement {
             <div className="flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
-                        <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
-                            {t('checkEmailTitle')}
-                        </h2>
+                        <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('checkEmailTitle')}</h2>
                         <p className="mt-2 text-center text-sm text-muted-foreground">
                             {t('checkEmailDescription', { email: actionData.email })}
                         </p>
@@ -93,7 +104,7 @@ export default function ForgotPassword(): ReactElement {
         <div className="flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">{t('title')}</h2>
+                    <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
                     <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                 </div>
 

@@ -16,7 +16,9 @@
 'use client';
 
 import { type ReactElement, useCallback, useId, useMemo } from 'react';
-import { useLocation, useNavigate, useNavigation } from 'react-router';
+import { useLocation, useNavigation } from 'react-router';
+import { useNavigate } from '@/hooks/use-navigate';
+
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
 import { NativeSelect } from '@/components/ui/native-select';

@@ -3,18 +3,18 @@
 exports[`AccountDetailSkeleton stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-6"
+    class="space-y-5"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-border"
+      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
       data-slot="card"
     >
       <div
-        class="px-6 py-6"
+        class="px-6 py-3"
         data-slot="card-content"
       >
         <div
-          class="bg-accent animate-pulse rounded-md h-8 w-40"
+          class="bg-accent animate-pulse rounded-md h-6 w-40"
           data-slot="skeleton"
         />
         <div
@@ -24,7 +24,7 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-border"
+      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
       data-slot="card"
     >
       <div
@@ -32,10 +32,10 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
         data-slot="card-content"
       >
         <div
-          class="mb-6 pb-4 border-b border-muted-foreground/20 space-y-1"
+          class="mb-6 pb-4 border-b border-border space-y-1.5"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-40"
+            class="bg-accent animate-pulse rounded-md h-5 w-40"
             data-slot="skeleton"
           />
           <div
@@ -47,7 +47,7 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
           class="grid grid-cols-1 sm:grid-cols-2 gap-6"
         >
           <div
-            class="space-y-1"
+            class="space-y-2"
           >
             <div
               class="bg-accent animate-pulse rounded-md h-4 w-20"
@@ -59,7 +59,7 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
             />
           </div>
           <div
-            class="space-y-1"
+            class="space-y-2"
           >
             <div
               class="bg-accent animate-pulse rounded-md h-4 w-20"
@@ -71,7 +71,7 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
             />
           </div>
           <div
-            class="space-y-1"
+            class="space-y-2"
           >
             <div
               class="bg-accent animate-pulse rounded-md h-4 w-20"
@@ -83,7 +83,7 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
             />
           </div>
           <div
-            class="space-y-1"
+            class="space-y-2"
           >
             <div
               class="bg-accent animate-pulse rounded-md h-4 w-20"
@@ -98,7 +98,7 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-border"
+      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
       data-slot="card"
     >
       <div
@@ -106,10 +106,10 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
         data-slot="card-content"
       >
         <div
-          class="mb-6 pb-4 border-b border-muted-foreground/20 space-y-1"
+          class="mb-6 pb-4 border-b border-border space-y-1.5"
         >
           <div
-            class="bg-accent animate-pulse rounded-md h-6 w-36"
+            class="bg-accent animate-pulse rounded-md h-5 w-36"
             data-slot="skeleton"
           />
           <div
@@ -121,7 +121,7 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
           class="flex items-center justify-between"
         >
           <div
-            class="space-y-1"
+            class="space-y-2"
           >
             <div
               class="bg-accent animate-pulse rounded-md h-4 w-16"

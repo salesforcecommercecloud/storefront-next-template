@@ -450,4 +450,54 @@ describe('StarRating', () => {
             expect(screen.getByText('Rating: 4.5, Unknown: {unknown}')).toBeInTheDocument();
         });
     });
+
+    describe('starClassName prop', () => {
+        test('applies starClassName to each star SVG', () => {
+            const { container } = render(<StarRating rating={3} reviewCount={10} starClassName="text-foreground" />);
+            // Use getAttribute('class') because SVGElement.className is SVGAnimatedString, not a plain string
+            const stars = container.querySelectorAll('[role="group"] svg');
+            expect(stars.length).toBeGreaterThan(0);
+            stars.forEach((star) => {
+                expect(star.getAttribute('class')).toContain('text-foreground');
+            });
+        });
+
+        test('merges starClassName with the size class', () => {
+            const { container } = render(
+                <StarRating rating={3} reviewCount={10} starSize="lg" starClassName="custom-color" />
+            );
+            const firstStar = container.querySelector('[role="group"] svg');
+            expect(firstStar?.getAttribute('class')).toContain('custom-color');
+        });
+    });
+
+    describe('ratingLinkClassName prop', () => {
+        test('applies ratingLinkClassName to the rating link button', () => {
+            render(
+                <StarRating
+                    rating={4}
+                    reviewCount={50}
+                    showRatingLink
+                    ratingLinkClassName="text-xs text-muted-foreground"
+                />
+            );
+            const linkButton = screen.getByRole('button');
+            expect(linkButton.className).toContain('text-xs');
+            expect(linkButton.className).toContain('text-muted-foreground');
+        });
+
+        test('always preserves focus/cursor classes alongside ratingLinkClassName', () => {
+            render(<StarRating rating={4} reviewCount={50} showRatingLink ratingLinkClassName="custom-class" />);
+            const linkButton = screen.getByRole('button');
+            expect(linkButton.className).toContain('cursor-pointer');
+            expect(linkButton.className).toContain('custom-class');
+        });
+
+        test('uses default ratingLinkClassName when prop is omitted', () => {
+            render(<StarRating rating={4} reviewCount={50} showRatingLink />);
+            const linkButton = screen.getByRole('button');
+            expect(linkButton.className).toContain('text-muted-foreground');
+            expect(linkButton.className).toContain('underline');
+        });
+    });
 });

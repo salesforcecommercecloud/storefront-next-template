@@ -15,7 +15,10 @@
  */
 
 import defaultTheme from 'tailwindcss/defaultTheme';
-import type { AppConfig } from '@/config/context';
+import type { AppConfig } from '@/types/config';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 export type DynamicImageWidths = Array<number | string> | Record<string, number | string>;
 
@@ -466,10 +469,7 @@ const convertToPxNumbers = (widths: Array<number | string>): Array<number> =>
             } else if (pxValue.test(width)) {
                 return parseInt(width, 10);
             } else {
-                // eslint-disable-next-line no-console
-                console.error('Expecting to see values with vw or px unit only', {
-                    namespace: 'utils.convertToPxNumbers',
-                });
+                logger.error('Expecting to see values with vw or px unit only');
                 return 0;
             }
         })

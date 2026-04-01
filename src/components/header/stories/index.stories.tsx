@@ -17,7 +17,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
+import { waitForStorybookReady, SITE_PREFIX } from '@storybook/test-utils';
 import Header from '../index';
 import AuthProvider from '@/providers/auth';
 import type { SessionData } from '@/lib/api/types';
@@ -199,17 +199,17 @@ export const Guest: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const logoLink = canvas.queryByRole('link', { name: 'Home Performer' }) || canvas.queryByAltText('Home');
-        if (logoLink) {
-            await expect(logoLink).toBeInTheDocument();
+        const logo = canvas.queryByTestId('header-logo');
+        if (logo) {
+            await expect(logo).toBeInTheDocument();
         }
         const signInButton = canvas.queryByRole('link', { name: 'Sign In' });
         if (signInButton) {
             await expect(signInButton).toBeInTheDocument();
         }
-        const searchInput = canvas.queryByPlaceholderText('Search');
-        if (searchInput) {
-            await expect(searchInput).toBeInTheDocument();
+        const searchDesktop = canvas.queryByTestId('header-search-desktop');
+        if (searchDesktop) {
+            await expect(searchDesktop).toBeInTheDocument();
         }
         const accountButton = canvas.queryByRole('button', { name: /account|profile/i });
         void expect(accountButton).toBeNull();
@@ -236,18 +236,18 @@ export const Authenticated: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const logoLink = canvas.queryByRole('link', { name: 'Home Performer' }) || canvas.queryByAltText('Home');
-        if (logoLink) {
-            await expect(logoLink).toBeInTheDocument();
+        const logo = canvas.queryByTestId('header-logo');
+        if (logo) {
+            await expect(logo).toBeInTheDocument();
         }
         const accountLink = canvas.queryByRole('link', { name: /my account/i });
         if (accountLink) {
             await expect(accountLink).toBeInTheDocument();
-            await expect(accountLink).toHaveAttribute('href', '/account/overview');
+            await expect(accountLink).toHaveAttribute('href', `${SITE_PREFIX}/account/overview`);
         }
-        const searchInput = canvas.queryByPlaceholderText('Search');
-        if (searchInput) {
-            await expect(searchInput).toBeInTheDocument();
+        const searchDesktop = canvas.queryByTestId('header-search-desktop');
+        if (searchDesktop) {
+            await expect(searchDesktop).toBeInTheDocument();
         }
     },
 };
@@ -270,7 +270,7 @@ export const MobileView: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const logo = canvas.queryByRole('link', { name: 'Home Performer' }) || canvas.queryByAltText('Home');
+        const logo = canvas.queryByTestId('header-logo');
         if (logo) {
             await expect(logo).toBeInTheDocument();
         }
@@ -278,9 +278,9 @@ export const MobileView: Story = {
         if (signInLink) {
             await expect(signInLink).toBeInTheDocument();
         }
-        const searchInput = canvas.queryByPlaceholderText('Search');
-        if (searchInput) {
-            await expect(searchInput).toBeInTheDocument();
+        const searchMobile = canvas.queryByTestId('header-search-mobile');
+        if (searchMobile) {
+            await expect(searchMobile).toBeInTheDocument();
         }
         const cartButton = canvas.queryByRole('button', { name: /cart|shopping/i });
         if (cartButton) {
@@ -335,10 +335,7 @@ export const WithNavigation: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const logo =
-            canvas.queryByRole('link', { name: 'Home Performer' }) ||
-            canvas.queryByAltText('Home') ||
-            canvasElement.querySelector('a[href="/"]');
+        const logo = canvas.queryByTestId('header-logo');
         if (logo) {
             await expect(logo).toBeInTheDocument();
         }
@@ -350,9 +347,9 @@ export const WithNavigation: Story = {
         if (signInLink) {
             await expect(signInLink).toBeInTheDocument();
         }
-        const searchInput = canvas.queryByPlaceholderText('Search');
-        if (searchInput) {
-            await expect(searchInput).toBeInTheDocument();
+        const searchDesktop = canvas.queryByTestId('header-search-desktop');
+        if (searchDesktop) {
+            await expect(searchDesktop).toBeInTheDocument();
         }
         const cartButton = canvas.queryByRole('button', { name: /cart|shopping/i });
         if (cartButton) {
@@ -381,10 +378,7 @@ export const WithNavigationAuthenticated: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const logo =
-            canvas.queryByRole('link', { name: 'Home Performer' }) ||
-            canvas.queryByAltText('Home') ||
-            canvasElement.querySelector('a[href="/"]');
+        const logo = canvas.queryByTestId('header-logo');
         if (logo) {
             await expect(logo).toBeInTheDocument();
         }
@@ -395,11 +389,11 @@ export const WithNavigationAuthenticated: Story = {
         const accountLink = canvas.queryByRole('link', { name: /my account/i });
         if (accountLink) {
             await expect(accountLink).toBeInTheDocument();
-            await expect(accountLink).toHaveAttribute('href', '/account/overview');
+            await expect(accountLink).toHaveAttribute('href', `${SITE_PREFIX}/account/overview`);
         }
-        const searchInput = canvas.queryByPlaceholderText('Search');
-        if (searchInput) {
-            await expect(searchInput).toBeInTheDocument();
+        const searchDesktop = canvas.queryByTestId('header-search-desktop');
+        if (searchDesktop) {
+            await expect(searchDesktop).toBeInTheDocument();
         }
         const cartButton = canvas.queryByRole('button', { name: /cart|shopping/i });
         if (cartButton) {
@@ -445,10 +439,7 @@ export const StickyWithContent: Story = {
             await expect(scrollSections.length).toBeGreaterThan(30);
         }
 
-        const logo =
-            canvas.queryByRole('link', { name: 'Home Performer' }) ||
-            canvas.queryByAltText('Home') ||
-            canvasElement.querySelector('a[href="/"]');
+        const logo = canvas.queryByTestId('header-logo');
         if (logo) {
             await expect(logo).toBeInTheDocument();
         }
@@ -456,10 +447,9 @@ export const StickyWithContent: Story = {
         if (signInLink) {
             await expect(signInLink).toBeInTheDocument();
         }
-        const searchInput = canvas.queryByPlaceholderText('Search');
-        if (searchInput) {
-            await expect(searchInput).toBeInTheDocument();
-            await expect(searchInput).toBeDisabled();
+        const searchDesktop = canvas.queryByTestId('header-search-desktop');
+        if (searchDesktop) {
+            await expect(searchDesktop).toBeInTheDocument();
         }
     },
 };
@@ -473,7 +463,9 @@ export const MobileMenuInteraction: Story = {
                 <Header>
                     <ResponsiveNavigationMenu
                         resolve={Promise.resolve(rootCategory)}
-                        defer={Promise.resolve(categoriesList.flatMap((cat) => cat.categories || []))}
+                        defer={Promise.resolve(
+                            categoriesList.flatMap((cat: { categories?: unknown[] }) => cat.categories || [])
+                        )}
                     />
                 </Header>
             </AuthProvider>

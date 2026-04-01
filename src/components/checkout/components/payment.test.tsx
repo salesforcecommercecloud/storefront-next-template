@@ -75,11 +75,11 @@ describe('Payment Integration Tests', () => {
         test('renders payment form in editing mode', () => {
             render(<Payment {...createDefaultProps()} />);
 
-            // Check if the title and form fields are rendered (card title is "Payment")
-            expect(screen.getByText(/^Payment$/)).toBeInTheDocument();
-            // Card fields use placeholders: Card Number*, Name on Card*, mm/yy*, CVV*
+            // Check if the title and form fields are rendered
+            expect(screen.getByText('Payment')).toBeInTheDocument();
+            // Card Number doesn't have accessible name, use placeholder
             expect(screen.getByPlaceholderText(/card number/i)).toBeInTheDocument();
-            expect(screen.getByRole('textbox', { name: /name on card/i })).toBeInTheDocument();
+            expect(screen.getByRole('textbox', { name: /cardholder name|name on card/i })).toBeInTheDocument();
         });
     });
 
@@ -205,27 +205,263 @@ describe('Payment Integration Tests', () => {
     });
 
     describe('Billing Address Toggle', () => {
-        test('checkbox is checked by default (billing matches shipping)', () => {
+        test('checkbox is unchecked by default (billing matches shipping)', () => {
             render(<Payment {...createDefaultProps()} />);
 
-            const checkbox = screen.getByRole('checkbox', { name: /same as shipping address/i });
-            expect(checkbox).toBeChecked();
+            const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
+            expect(checkbox).not.toBeChecked();
 
             // Billing address fields should be hidden (check for absence of "First Name" field)
             expect(screen.queryByRole('textbox', { name: /^first name$/i })).not.toBeInTheDocument();
         });
 
-        test('shows billing address fields when checkbox is unchecked', async () => {
+        test('shows billing address section when checkbox is checked', async () => {
             const user = userEvent.setup();
             render(<Payment {...createDefaultProps()} />);
 
-            const checkbox = screen.getByRole('checkbox', { name: /same as shipping address/i });
+            const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
 
-            // Uncheck the checkbox to show billing fields
+            // Check the checkbox to show billing section
             await user.click(checkbox);
 
             await waitFor(() => {
-                expect(screen.getByRole('textbox', { name: /^first name$/i })).toBeInTheDocument();
+                expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
+            });
+        });
+    });
+
+    describe('Billing Address Saved Address Dropdown', () => {
+        const createProfileWithAddresses = (addressCount: number) => ({
+            customer: { email: 'user@example.com' },
+            addresses: Array.from({ length: addressCount }, (_, i) => ({
+                addressId: `addr-${i + 1}`,
+                firstName: `First${i + 1}`,
+                lastName: `Last${i + 1}`,
+                address1: `${100 + i} Test St`,
+                city: `City${i + 1}`,
+                stateCode: 'MA',
+                postalCode: `0${1000 + i}`,
+                countryCode: 'US',
+                preferred: i === 0,
+            })),
+            paymentInstruments: [],
+        });
+
+        test('shows saved address dropdown when checkbox is checked and addresses exist', async () => {
+            const user = userEvent.setup();
+            useCustomerProfile.mockReturnValue(createProfileWithAddresses(2));
+            render(<Payment {...createDefaultProps()} />);
+
+            const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
+            await user.click(checkbox);
+
+            await waitFor(() => {
+                expect(screen.getByText(/select an address/i)).toBeInTheDocument();
+            });
+        });
+
+        test('shows address form directly when no saved addresses', async () => {
+            const user = userEvent.setup();
+            useCustomerProfile.mockReturnValue({
+                customer: { email: 'guest@example.com' },
+                addresses: [],
+                paymentInstruments: [],
+            });
+            render(<Payment {...createDefaultProps()} />);
+
+            const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
+            await user.click(checkbox);
+
+            await waitFor(() => {
+                expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
+            });
+            expect(screen.queryByText(/select an address/i)).not.toBeInTheDocument();
+        });
+
+        test('populates billing fields when a saved address is selected', async () => {
+            const user = userEvent.setup();
+            useCustomerProfile.mockReturnValue(createProfileWithAddresses(2));
+            render(<Payment {...createDefaultProps()} />);
+
+            const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
+            await user.click(checkbox);
+
+            // Open the dropdown
+            const trigger = await screen.findByText(/select an address/i);
+            await user.click(trigger);
+
+            // Select the first address
+            const option = await screen.findByText(/First1 Last1, 100 Test St, City1, MA, 01000/);
+            await user.click(option);
+
+            // Trigger should now show the selected address
+            await waitFor(() => {
+                expect(screen.getByText(/First1 Last1, 100 Test St, City1, MA, 01000/)).toBeInTheDocument();
+            });
+        });
+
+        test('shows address form when "Add new address" is selected', async () => {
+            const user = userEvent.setup();
+            useCustomerProfile.mockReturnValue(createProfileWithAddresses(2));
+            render(<Payment {...createDefaultProps()} />);
+
+            const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
+            await user.click(checkbox);
+
+            // Open the dropdown
+            const trigger = await screen.findByText(/select an address/i);
+            await user.click(trigger);
+
+            // Select "Add new address"
+            const addNew = await screen.findByText(/\+ add new address/i);
+            await user.click(addNew);
+
+            // Address form should appear with empty fields
+            await waitFor(() => {
+                expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
+            });
+        });
+
+        test('clears billing fields when switching to "Add new address"', async () => {
+            const user = userEvent.setup();
+            useCustomerProfile.mockReturnValue(createProfileWithAddresses(2));
+            render(<Payment {...createDefaultProps()} />);
+
+            const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
+            await user.click(checkbox);
+
+            // Select a saved address first
+            const trigger = await screen.findByText(/select an address/i);
+            await user.click(trigger);
+            const option = await screen.findByText(/First1 Last1/);
+            await user.click(option);
+
+            // Now switch to "Add new address"
+            const updatedTrigger = await screen.findByText(/First1 Last1/);
+            await user.click(updatedTrigger);
+            const addNew = await screen.findByText(/\+ add new address/i);
+            await user.click(addNew);
+
+            // Form should appear with empty fields
+            await waitFor(() => {
+                const firstNameInput = screen.getByPlaceholderText(/first name/i);
+                expect(firstNameInput).toHaveValue('');
+            });
+        });
+
+        test('hides billing section when checkbox is unchecked after being checked', async () => {
+            const user = userEvent.setup();
+            useCustomerProfile.mockReturnValue(createProfileWithAddresses(2));
+            render(<Payment {...createDefaultProps()} />);
+
+            const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
+
+            // Check then uncheck
+            await user.click(checkbox);
+            await waitFor(() => {
+                expect(screen.getByText(/select an address/i)).toBeInTheDocument();
+            });
+
+            await user.click(checkbox);
+            await waitFor(() => {
+                expect(screen.queryByText(/select an address/i)).not.toBeInTheDocument();
+            });
+        });
+
+        test('shows check icon next to selected address in dropdown', async () => {
+            const user = userEvent.setup();
+            useCustomerProfile.mockReturnValue(createProfileWithAddresses(2));
+            render(<Payment {...createDefaultProps()} />);
+
+            const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
+            await user.click(checkbox);
+
+            // Select the first address
+            const trigger = await screen.findByText(/select an address/i);
+            await user.click(trigger);
+            const option = await screen.findByText(/First1 Last1, 100 Test St, City1, MA, 01000/);
+            await user.click(option);
+
+            // Re-open the dropdown
+            const updatedTrigger = await screen.findByText(/First1 Last1/);
+            await user.click(updatedTrigger);
+
+            // The selected address should have a check icon (svg within its button)
+            await waitFor(() => {
+                const buttons = screen.getAllByRole('button');
+                const selectedButton = buttons.find((b) => b.textContent?.includes('First1 Last1'));
+                expect(selectedButton?.querySelector('svg')).toBeInTheDocument();
+            });
+        });
+    });
+
+    describe('Save payment to profile checkbox', () => {
+        test('shows save payment checkbox when customer is logged in and entering new card', () => {
+            const profileWithCustomerId = {
+                customer: { email: 'test@example.com', customerId: 'cust-123' },
+                addresses: [],
+                paymentInstruments: [],
+            };
+            useCustomerProfile.mockReturnValue(profileWithCustomerId);
+
+            render(<Payment {...createDefaultProps()} />);
+
+            expect(
+                screen.getByRole('checkbox', { name: /save this payment|savePaymentToProfile|future use/i })
+            ).toBeInTheDocument();
+        });
+
+        test('does not show save payment checkbox when guest has no customer profile', () => {
+            useCustomerProfile.mockReturnValue(null);
+
+            render(<Payment {...createDefaultProps()} />);
+
+            expect(
+                screen.queryByRole('checkbox', { name: /save this payment|savePaymentToProfile|future use/i })
+            ).not.toBeInTheDocument();
+        });
+
+        test('does not show save payment checkbox when profile has no customerId', () => {
+            const profileNoCustomerId = {
+                customer: { email: 'test@example.com' },
+                addresses: [],
+                paymentInstruments: [],
+            };
+            useCustomerProfile.mockReturnValue(profileNoCustomerId);
+
+            render(<Payment {...createDefaultProps()} />);
+
+            expect(
+                screen.queryByRole('checkbox', { name: /save this payment|savePaymentToProfile|future use/i })
+            ).not.toBeInTheDocument();
+        });
+
+        test('save payment checkbox can be toggled when visible', async () => {
+            const user = userEvent.setup();
+            const profileWithCustomerId = {
+                customer: { email: 'test@example.com', customerId: 'cust-123' },
+                addresses: [],
+                paymentInstruments: [],
+            };
+            useCustomerProfile.mockReturnValue(profileWithCustomerId);
+
+            render(<Payment {...createDefaultProps()} />);
+
+            const checkbox = screen.getByRole('checkbox', {
+                name: /save this payment|savePaymentToProfile|future use/i,
+            });
+            expect(checkbox).not.toBeChecked();
+
+            await user.click(checkbox);
+
+            await waitFor(() => {
+                expect(checkbox).toBeChecked();
+            });
+
+            await user.click(checkbox);
+
+            await waitFor(() => {
+                expect(checkbox).not.toBeChecked();
             });
         });
     });
@@ -255,9 +491,9 @@ describe('Payment Integration Tests', () => {
 
             render(<Payment {...createDefaultProps()} />);
 
-            // Check for the presence of saved payment method radio button
+            // Check for the presence of saved payment method radio button and ending-in text
             expect(screen.getByRole('radio', { name: /visa/i })).toBeInTheDocument();
-            expect(screen.getByText(/john doe/i)).toBeInTheDocument();
+            expect(screen.getByText(/ending in.*1234/i)).toBeInTheDocument();
         });
 
         test('auto-selects preferred payment method', async () => {
@@ -323,12 +559,12 @@ describe('Payment Integration Tests', () => {
     });
 
     describe('Default Values with useMemo', () => {
-        test('initializes with shipping address as default billing', () => {
+        test('initializes with billing same as shipping by default', () => {
             render(<Payment {...createDefaultProps()} />);
 
-            // Form should initialize with billingSameAsShipping checked
-            const checkbox = screen.getByRole('checkbox', { name: /same as shipping address/i });
-            expect(checkbox).toBeChecked();
+            // Form should initialize with "Use a different billing address" unchecked
+            const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
+            expect(checkbox).not.toBeChecked();
         });
 
         test('initializes with existing payment card holder', () => {
@@ -375,8 +611,7 @@ describe('Payment Integration Tests', () => {
 
             render(<Payment {...createDefaultProps()} />);
 
-            // Should render saved payment method text
-            expect(screen.getByText(/choose a saved payment method or add a new one/i)).toBeInTheDocument();
+            // Should render saved payment methods
             expect(screen.getByText('Visa')).toBeInTheDocument();
         });
 
@@ -401,8 +636,7 @@ describe('Payment Integration Tests', () => {
 
             render(<Payment {...createDefaultProps()} />);
 
-            // Should still render
-            expect(screen.getByText(/choose a saved payment method or add a new one/i)).toBeInTheDocument();
+            // Should still render saved payment methods
             expect(screen.getByText('Mastercard')).toBeInTheDocument();
         });
 
@@ -447,6 +681,143 @@ describe('Payment Integration Tests', () => {
                 spy.mockRestore();
             }
         });
+
+        test('switches "new" selection to preferred saved method after profile hydration', async () => {
+            let profile: any = null;
+            useCustomerProfile.mockImplementation(() => profile);
+
+            const { rerender } = render(<Payment {...createDefaultProps()} />);
+
+            // Initial bootstrap state before saved methods arrive.
+            const newCardRadio = document.getElementById('credit-card-option');
+            expect(newCardRadio).toBeTruthy();
+            expect(newCardRadio?.getAttribute('aria-checked')).toBe('true');
+
+            profile = {
+                customer: { email: 'hydrated@example.com' },
+                addresses: [],
+                paymentInstruments: [
+                    {
+                        paymentInstrumentId: 'saved-preferred',
+                        paymentMethodId: 'CREDIT_CARD',
+                        paymentCard: {
+                            cardType: 'Visa',
+                            maskedNumber: '************1111',
+                        },
+                        preferred: true,
+                    },
+                    {
+                        paymentInstrumentId: 'saved-secondary',
+                        paymentMethodId: 'CREDIT_CARD',
+                        paymentCard: {
+                            cardType: 'Mastercard',
+                            maskedNumber: '************2222',
+                        },
+                        preferred: false,
+                    },
+                ],
+            };
+
+            rerender(<Payment {...createDefaultProps()} />);
+
+            await waitFor(() => {
+                // After hydration, the preferred saved card should become selected automatically.
+                expect(screen.getByRole('radio', { name: /visa/i })).toHaveAttribute('aria-checked', 'true');
+            });
+        });
+
+        test('preserves distinct billing address on initial load when billing differs from shipping', async () => {
+            const basketWithDistinctBilling = createMockBasket({
+                billingAddress: {
+                    firstName: 'Jane',
+                    lastName: 'Shopper',
+                    address1: '456 Billing Ave',
+                    city: 'Los Angeles',
+                    stateCode: 'CA',
+                    postalCode: '90001',
+                    countryCode: 'US',
+                },
+            });
+
+            useBasket.mockReturnValue(basketWithDistinctBilling);
+
+            render(<Payment {...createDefaultProps({ showBillingSameAsShipping: true })} />);
+
+            await waitFor(() => {
+                // "Use a different billing address" should be selected when basket has distinct billing.
+                expect(screen.getByRole('checkbox', { name: /different billing address/i })).toBeChecked();
+            });
+
+            // Billing form should show pre-existing billing values (not cleared on mount).
+            expect(screen.getByRole('textbox', { name: /first name/i })).toHaveValue('Jane');
+            expect(screen.getByRole('textbox', { name: /last name/i })).toHaveValue('Shopper');
+            expect(screen.getByRole('textbox', { name: /address line 1/i })).toHaveValue('456 Billing Ave');
+        });
+    });
+
+    describe('View All (n more) / View less', () => {
+        const createProfileWithSavedCards = (count: number) => ({
+            customer: { email: 'user@example.com' },
+            addresses: [],
+            paymentInstruments: Array.from({ length: count }, (_, i) => ({
+                paymentInstrumentId: `card-${i + 1}`,
+                paymentMethodId: 'CREDIT_CARD',
+                paymentCard: {
+                    holder: `Cardholder ${i + 1}`,
+                    cardType: 'Visa',
+                    maskedNumber: `************${String(1000 + i).slice(-4)}`,
+                },
+            })),
+        });
+
+        test('shows "View all (n more)" when more than 3 payment options', async () => {
+            useCustomerProfile.mockReturnValue(createProfileWithSavedCards(5));
+            render(<Payment {...createDefaultProps()} />);
+
+            await waitFor(() => {
+                expect(screen.getByRole('button', { name: /view all \(\d+ more\)/i })).toBeInTheDocument();
+            });
+        });
+
+        test('clicking "View all (n more)" expands options and shows "view less"', async () => {
+            const user = userEvent.setup();
+            useCustomerProfile.mockReturnValue(createProfileWithSavedCards(5));
+            render(<Payment {...createDefaultProps()} />);
+
+            const viewAllButton = await screen.findByRole('button', { name: /view all \(\d+ more\)/i });
+            await user.click(viewAllButton);
+
+            await waitFor(() => {
+                expect(screen.getByRole('button', { name: /view less/i })).toBeInTheDocument();
+            });
+            expect(screen.queryByRole('button', { name: /view all \(\d+ more\)/i })).not.toBeInTheDocument();
+        });
+
+        test('clicking "View less" collapses options and shows "View all (n more)" again', async () => {
+            Element.prototype.scrollIntoView = vi.fn();
+            const user = userEvent.setup();
+            useCustomerProfile.mockReturnValue(createProfileWithSavedCards(5));
+            render(<Payment {...createDefaultProps()} />);
+
+            const viewAllButton = await screen.findByRole('button', { name: /view all \(\d+ more\)/i });
+            await user.click(viewAllButton);
+
+            const viewLessButton = await screen.findByRole('button', { name: /view less/i });
+            await user.click(viewLessButton);
+
+            await waitFor(() => {
+                expect(screen.getByRole('button', { name: /view all \(\d+ more\)/i })).toBeInTheDocument();
+            });
+            expect(screen.queryByRole('button', { name: /view less/i })).not.toBeInTheDocument();
+        });
+
+        test('does not show "View all" or "View less" when 3 or fewer payment options (e.g. 2 saved + new)', () => {
+            useCustomerProfile.mockReturnValue(createProfileWithSavedCards(2));
+            render(<Payment {...createDefaultProps()} />);
+
+            expect(screen.queryByRole('button', { name: /view all \(\d+ more\)/i })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: /view less/i })).not.toBeInTheDocument();
+        });
     });
 
     describe('Edge Cases - Field Errors', () => {
@@ -471,7 +842,7 @@ describe('Payment Integration Tests', () => {
                 success: false,
                 fieldErrors: {
                     cardNumber: 'Card number is required',
-                    holder: 'Cardholder name is required',
+                    cardholderName: 'Cardholder name is required',
                     expiryDate: 'Expiry date is required',
                     cvv: 'CVV is required',
                 },
@@ -479,7 +850,7 @@ describe('Payment Integration Tests', () => {
 
             render(<Payment {...createDefaultProps({ actionData: actionDataWithMultipleErrors })} />);
 
-            // All errors should be visible
+            // All errors should be visible inline (FormMessage under each field)
             expect(screen.getByText('Card number is required')).toBeInTheDocument();
             expect(screen.getByText('Cardholder name is required')).toBeInTheDocument();
             expect(screen.getByText('Expiry date is required')).toBeInTheDocument();
@@ -488,7 +859,7 @@ describe('Payment Integration Tests', () => {
     });
 
     describe('Edge Cases - Billing Address Comparison', () => {
-        test('displays billing address when different from shipping in summary', () => {
+        test('displays no payment method message in summary when no payment instruments', () => {
             const basketWithDifferentBilling = createMockBasket({
                 billingAddress: {
                     firstName: 'Alice',
@@ -505,30 +876,39 @@ describe('Payment Integration Tests', () => {
 
             render(<Payment {...createDefaultProps({ isCompleted: true, isEditing: false })} />);
 
-            // Should display billing address in summary when different
-            expect(screen.getByText(/billing address/i)).toBeInTheDocument();
+            expect(screen.getByText(/no payment method saved/i)).toBeInTheDocument();
         });
 
-        test('displays billing address with address2 in summary', () => {
-            const basketWithAddress2 = createMockBasket({
+        test('displays billing same as shipping in summary when payment exists', () => {
+            const basketWithPayment = createMockBasket({
+                paymentInstruments: [
+                    {
+                        paymentMethodId: 'CREDIT_CARD',
+                        paymentCard: {
+                            cardType: 'Visa',
+                            maskedNumber: '************1234',
+                            numberLastDigits: '1234',
+                            expirationMonth: 12,
+                            expirationYear: 2027,
+                        },
+                    },
+                ],
                 billingAddress: {
-                    firstName: 'Alice',
-                    lastName: 'Smith',
-                    address1: '456 Oak Ave',
-                    address2: 'Apt 4B',
-                    city: 'Boston',
-                    stateCode: 'MA',
-                    postalCode: '02101',
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    address1: '123 Main St',
+                    city: 'New York',
+                    stateCode: 'NY',
+                    postalCode: '10001',
                     countryCode: 'US',
                 },
             });
 
-            useBasket.mockReturnValue(basketWithAddress2);
+            useBasket.mockReturnValue(basketWithPayment);
 
             render(<Payment {...createDefaultProps({ isCompleted: true, isEditing: false })} />);
 
-            // Should display address2 in billing summary
-            expect(screen.getByText('Apt 4B')).toBeInTheDocument();
+            expect(screen.getByText(/billing.*same as shipping/i)).toBeInTheDocument();
         });
 
         test('handles billing address same as shipping in summary', () => {
@@ -548,8 +928,8 @@ describe('Payment Integration Tests', () => {
 
             render(<Payment {...createDefaultProps({ isCompleted: true, isEditing: false })} />);
 
-            // Billing address section should exist but show "Same as shipping"
-            expect(screen.getByText(/billing address/i)).toBeInTheDocument();
+            // Without payment instruments, summary shows no payment method message
+            expect(screen.getByText(/no payment method saved/i)).toBeInTheDocument();
         });
 
         test('handles missing billing address in comparison', () => {
@@ -649,8 +1029,8 @@ describe('Payment Integration Tests', () => {
             render(<Payment {...createDefaultProps()} />);
 
             // Tests cardType || 'Unknown' and maskedNumber?.slice(-4) || '****' branches
-            // Just verify saved payment section renders
-            expect(screen.getByText(/choose a saved payment method/i)).toBeInTheDocument();
+            // Just verify saved payment section renders (Credit Card option for new payment is present)
+            expect(screen.getByText(/credit card/i)).toBeInTheDocument();
         });
 
         test('auto-selects first payment when no preferred method exists', async () => {
@@ -752,7 +1132,7 @@ describe('Payment Integration Tests', () => {
             render(<Payment {...createDefaultProps()} />);
 
             // Tests maskedNumber?.slice(-4) || '****' branch
-            expect(screen.getByText(/choose a saved payment/i)).toBeInTheDocument();
+            expect(screen.getByText(/credit card/i)).toBeInTheDocument();
         });
 
         test('renders saved payment with undefined cardType', () => {
@@ -777,7 +1157,7 @@ describe('Payment Integration Tests', () => {
             render(<Payment {...createDefaultProps()} />);
 
             // Tests both: getCardIcon(method.cardType || 'Unknown') AND {method.cardType || 'Unknown'}
-            expect(screen.getByText(/choose a saved payment/i)).toBeInTheDocument();
+            expect(screen.getByText(/credit card/i)).toBeInTheDocument();
         });
     });
 });

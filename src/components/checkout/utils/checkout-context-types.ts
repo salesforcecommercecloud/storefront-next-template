@@ -23,7 +23,7 @@ export const CHECKOUT_STEPS = {
     SHIPPING_ADDRESS: 2,
     SHIPPING_OPTIONS: 3,
     PAYMENT: 4,
-    REVIEW_ORDER: 5,
+    PLACE_ORDER: 5,
 } as const;
 
 export type CheckoutStep = (typeof CHECKOUT_STEPS)[keyof typeof CHECKOUT_STEPS];

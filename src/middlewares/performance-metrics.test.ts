@@ -15,7 +15,7 @@
  */
 import { vi } from 'vitest';
 import { createTestContext, type TestContextConfig } from '@/lib/test-utils';
-import type { Config } from '@/config/schema';
+import type { Config } from '@/types/config';
 import type { DataStrategyResult, MiddlewareFunction, RouterContext } from 'react-router';
 
 type PerformanceTimerType = typeof import('./performance-metrics').PerformanceTimer;
@@ -36,7 +36,7 @@ const mockConfig = vi.hoisted(() => {
 });
 
 // Mock config for middleware tests
-vi.mock('@/config', async (importOriginal) => {
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual = await importOriginal();
     return {
         ...(actual as Config),

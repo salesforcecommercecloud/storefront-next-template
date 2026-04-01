@@ -15,7 +15,7 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ProductMainSkeleton, ProductRecommendationSkeleton, ProductRecommendationsSkeleton } from '../skeletons';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';

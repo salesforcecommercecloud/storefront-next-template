@@ -13,72 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// React & Router
 import { forwardRef, type ComponentProps, useState, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
-import { Link } from 'react-router';
+import { Link } from '@/components/link';
 
-// Types
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 
-// Libs & Utils
 import { cn } from '@/lib/utils';
-import { createProductUrl, getDecoratedVariationAttributes } from '@/lib/product-utils';
+import {
+    createProductUrl,
+    getDecoratedVariationAttributes,
+    type DecoratedVariationAttributeValue,
+} from '@/lib/product-utils';
+import { getProductBrand, getProductShortDescription, getProductRating } from '@/lib/product-utils-plp';
 import { useProductTileContext } from './context';
-
-// Page Designer Decorators
+import { WishlistButton } from '@/components/buttons/wishlist-button';
+import { PickupIcon } from '@/components/icons';
+import { QuickAddButton } from './quick-add-button';
+import { ProductTileSwatchesSkeleton } from '@/components/category-skeleton';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import type { ComponentType } from '@/components/region';
-
-// Components
-import { ProductTileSwatchesSkeleton } from '@/components/category-skeleton';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { ProductImageContainer } from '@/components/product-image';
 import ProductPrice from '@/components/product-price';
+import { StarRating } from '@/components/product-ratings/star-rating';
+import { Card } from '@/components/ui/card';
 
-const LazySwatches = lazy(() => import('./swatches'));
+const LazySwatches = lazy(() => import('./swatches').then((m) => ({ default: m.ProductTileSwatches })));
 
-interface ProductTileProps extends ComponentProps<'div'> {
-    product: ShopperSearch.schemas['ProductSearchHit'];
-    maxSwatches?: number;
-    handleProductClick?: (product: ShopperSearch.schemas['ProductSearchHit']) => void;
-    /** Custom footer action button. If provided, replaces the default "More Options" button */
-    footerAction?: React.ReactNode;
-    /** If true, swatches are displayed but not interactive (read-only mode for wishlist) */
-    disableSwatchInteraction?: boolean;
-    /** For variant products in read-only mode, filter swatches to only show this variant's color value */
-    selectedVariantColorValue?: string | null;
-    /** Image aspect ratio (width/height). If provided, calculates height based on viewport width. Defaults to 1 (square) */
-    imgAspectRatio?: number;
-    /** Show prev/next navigation arrows on the product image */
-    showNavigationArrows?: boolean;
-
-    // Page Designer styling props
-    objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
-    borderRadius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-    boxShadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-    padding?: '0' | '2' | '4' | '6' | '8';
-    margin?: '0' | '2' | '4' | '6' | '8';
-    fontWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
-    letterSpacing?: 'tighter' | 'tight' | 'normal' | 'wide' | 'wider';
-    hoverEffect?: 'default' | 'scale' | 'shadow' | 'lift';
-
-    // Page Designer system props (need to be filtered)
-    regionId?: string;
-    component?: ComponentType;
-    componentData?: Record<string, Promise<unknown>>;
-    designMetadata?: ComponentDesignMetadata;
-    data?: unknown;
-}
-
-// Configure which attribute to show swatches for and how many to display
-// Change these constants to adapt to different customer needs
 const PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID = 'color';
-const PRODUCT_TILE_MAX_SWATCHES = 2;
+const PRODUCT_TILE_MAX_SWATCHES = 3;
 
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
 @Component('productTile', {
@@ -169,7 +134,6 @@ export class ProductTileMetadata {
 }
 /* v8 ignore stop */
 
-// Helper function to map Page Designer attribute values to Tailwind classes
 const getPageDesignerStyleClasses = ({
     objectFit,
     borderRadius,
@@ -182,7 +146,6 @@ const getPageDesignerStyleClasses = ({
 }: Partial<ProductTileProps>) => {
     const classes: string[] = [];
 
-    // Object fit for images - override existing styles
     if (objectFit) {
         const fitMap = {
             contain: '[&_img]:!object-contain',
@@ -194,7 +157,6 @@ const getPageDesignerStyleClasses = ({
         classes.push(fitMap[objectFit]);
     }
 
-    // Border radius - override default rounded-xl
     if (borderRadius) {
         const radiusMap = {
             none: '!rounded-none',
@@ -207,7 +169,6 @@ const getPageDesignerStyleClasses = ({
         classes.push(radiusMap[borderRadius]);
     }
 
-    // Box shadow - override default shadow-sm and hover:shadow-md
     if (boxShadow === 'none') {
         classes.push('!shadow-none hover:!shadow-none');
     } else if (boxShadow) {
@@ -221,17 +182,14 @@ const getPageDesignerStyleClasses = ({
         classes.push(shadowMap[boxShadow]);
     }
 
-    // Padding - applied to wrapper
     if (padding && padding !== '0') {
         classes.push(`p-${padding}`);
     }
 
-    // Margin - applied to wrapper
     if (margin && margin !== '0') {
         classes.push(`m-${margin}`);
     }
 
-    // Font weight - apply to product name Link
     if (fontWeight) {
         const weightMap = {
             normal: '[&_a]:!font-normal',
@@ -242,7 +200,6 @@ const getPageDesignerStyleClasses = ({
         classes.push(weightMap[fontWeight]);
     }
 
-    // Letter spacing - apply to product name Link
     if (letterSpacing) {
         const spacingMap = {
             tighter: '[&_a]:!tracking-tighter',
@@ -254,7 +211,6 @@ const getPageDesignerStyleClasses = ({
         classes.push(spacingMap[letterSpacing]);
     }
 
-    // Hover effects - override default hover:shadow-md
     if (hoverEffect && hoverEffect !== 'default') {
         const hoverMap = {
             scale: 'hover:!scale-105 !transition-transform !duration-200 hover:!shadow-md',
@@ -267,18 +223,54 @@ const getPageDesignerStyleClasses = ({
     return classes.join(' ');
 };
 
+export interface ProductTileProps extends ComponentProps<'div'> {
+    product: ShopperSearch.schemas['ProductSearchHit'];
+    maxSwatches?: number;
+    handleProductClick?: (product: ShopperSearch.schemas['ProductSearchHit']) => void;
+    /** For variant products, filter swatches to only show this variant's color value */
+    selectedVariantColorValue?: string | null;
+    /** Image aspect ratio (width/height). If provided, calculates height based on viewport width. Defaults to 1 (square) */
+    imgAspectRatio?: number;
+    /** Show the pickup available indicator icon with tooltip */
+    showPickupAvailable?: boolean;
+    /** Custom quick add button label */
+    quickAddLabel?: string;
+    /** Top-level navigation category name shown below swatches (e.g. "Men", "Women") */
+    topCategoryName?: string;
+    /** Accepted for API compatibility; has no effect */
+    showNavigationArrows?: boolean;
+
+    // Page Designer styling props
+    objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
+    borderRadius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+    boxShadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+    padding?: '0' | '2' | '4' | '6' | '8';
+    margin?: '0' | '2' | '4' | '6' | '8';
+    fontWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
+    letterSpacing?: 'tighter' | 'tight' | 'normal' | 'wide' | 'wider';
+    hoverEffect?: 'default' | 'scale' | 'shadow' | 'lift';
+
+    // Page Designer system props (need to be filtered)
+    regionId?: string;
+    component?: ComponentType;
+    componentData?: Record<string, Promise<unknown>>;
+    designMetadata?: ComponentDesignMetadata;
+    data?: unknown;
+}
+
 const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
     (
         {
             className,
             product,
             maxSwatches = PRODUCT_TILE_MAX_SWATCHES,
-            footerAction,
-            disableSwatchInteraction = false,
             selectedVariantColorValue,
             handleProductClick,
             imgAspectRatio,
-            showNavigationArrows = false,
+            showPickupAvailable = false,
+            quickAddLabel,
+            topCategoryName,
+            showNavigationArrows: _showNavigationArrows,
             // Page Designer styling props
             objectFit,
             borderRadius,
@@ -298,14 +290,14 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
         },
         ref
     ) => {
-        const { navigate, config, t, currency, swatchMode, getBadges } = useProductTileContext();
+        const { config, t, currency, getBadges, swatchMode } = useProductTileContext();
         const { hasBadges, badges } = useMemo(() => getBadges(product), [getBadges, product]);
+        const brand = useMemo(() => getProductBrand(product), [product]);
+        const description = useMemo(() => getProductShortDescription(product), [product]);
+        const ratingData = useMemo(() => getProductRating(product), [product]);
 
-        // Use config default if imgAspectRatio is not provided
         const effectiveImgAspectRatio = imgAspectRatio ?? config.global.productListing.defaultProductTileImgAspectRatio;
 
-        // Business logic: use representedProduct for product-tile swatches if available
-        // For wishlist items, prioritize selectedVariantColorValue
         const isMasterProd = !!product?.variants;
         const initialVariationValue =
             selectedVariantColorValue !== undefined && selectedVariantColorValue !== null
@@ -314,37 +306,36 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                   ? product?.variants?.find((variant) => variant?.productId == product?.representedProduct?.id)
                         ?.variationValues?.[PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID]
                   : undefined;
+
+        // Local swatch selection state — drives image switching and selected ring on swatches.
+        // Initialized from the URL-driven prop; updates when the user clicks a swatch on the tile.
         const [selectedAttributeValue, setSelectedAttributeValue] = useState<string | null>(
             initialVariationValue || null
         );
 
-        // Update selectedAttributeValue when selectedVariantColorValue changes (for wishlist)
         useEffect(() => {
             if (selectedVariantColorValue !== undefined && selectedVariantColorValue !== null) {
                 setSelectedAttributeValue(selectedVariantColorValue);
             }
         }, [selectedVariantColorValue]);
+
         const variationAttributes = useMemo(() => getDecoratedVariationAttributes(product), [product]);
-        const swatchesVariationAttributes = variationAttributes.filter(
-            ({ id }) => PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID === id
+        const colorAttributes = variationAttributes.filter(({ id }) => PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID === id);
+        const colorValues = (colorAttributes[0]?.values?.slice(0, maxSwatches) ??
+            []) as DecoratedVariationAttributeValue[];
+
+        const handleSwatchHover = useCallback(
+            (value: string) => {
+                if (swatchMode === 'hover') {
+                    setSelectedAttributeValue(value);
+                }
+            },
+            [swatchMode]
         );
 
-        const handleAttributeChange = useCallback((attributeValue: string) => {
-            setSelectedAttributeValue(attributeValue);
-        }, []);
+        const productUrl = createProductUrl(product.productId);
+        const productName = product.productName ?? '';
 
-        const handleMoreOptions = useCallback(() => {
-            handleProductClick?.(product);
-            // Navigate to PDP page with selected attribute if available
-            const productUrl = createProductUrl(
-                product.productId,
-                selectedAttributeValue,
-                PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID
-            );
-            void navigate(productUrl);
-        }, [navigate, product, selectedAttributeValue, handleProductClick]);
-
-        // Apply Page Designer styling if any styling props are provided
         const pageDesignerStyles = getPageDesignerStyleClasses({
             objectFit,
             borderRadius,
@@ -360,14 +351,14 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             <Card
                 ref={ref}
                 className={cn(
-                    'group rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 transition-all duration-200',
+                    'product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl',
                     pageDesignerStyles,
                     className
                 )}
                 {...props}>
-                {/* Image area with overlaid badges */}
-                <CardHeader className="p-0 relative">
-                    <div className="relative overflow-hidden">
+                {/* Image area */}
+                <div className="product-image relative">
+                    <div className="relative w-full overflow-hidden">
                         <ProductImageContainer
                             product={product}
                             selectedColorValue={
@@ -376,84 +367,162 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             imgAspectRatio={effectiveImgAspectRatio}
                             className="w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
                             handleProductClick={handleProductClick}
-                            showNavigationArrows={showNavigationArrows}
                         />
 
-                        {/* Badges overlaid top-left */}
+                        {/* Clickable product link overlay */}
+                        <Link
+                            to={productUrl}
+                            className="absolute inset-0 z-[1] cursor-pointer"
+                            aria-label={`View ${productName}`}
+                            onClick={() => handleProductClick?.(product)}
+                            tabIndex={-1}
+                        />
+
+                        {/* Badges — top-left */}
                         {hasBadges && (
-                            <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+                            <div className="absolute top-2 left-2 flex flex-col items-start gap-1 z-20">
                                 {badges.map((badge) => (
-                                    <Badge
+                                    <span
                                         key={badge.label}
-                                        variant="default"
-                                        className="text-xs leading-3 font-medium">
+                                        className="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none">
                                         {badge.label}
-                                    </Badge>
+                                    </span>
                                 ))}
                             </div>
                         )}
-                    </div>
-                </CardHeader>
 
-                {/* Swatches */}
-                <CardContent className="px-4 pt-3 pb-0">
-                    {swatchesVariationAttributes.length > 0 && (
-                        <Suspense fallback={<ProductTileSwatchesSkeleton count={maxSwatches} />}>
-                            <LazySwatches
-                                variationAttributes={swatchesVariationAttributes}
-                                maxSwatches={maxSwatches}
-                                selectedAttributeValue={selectedAttributeValue}
-                                handleAttributeChange={handleAttributeChange}
-                                disableSwatchInteraction={disableSwatchInteraction}
-                                selectedVariantColorValue={selectedVariantColorValue}
-                                swatchMode={swatchMode}
+                        {/* Action icons — top-right (aria-hidden: SR reaches PDP via product name link; tabIndex={-1} on children keeps them out of keyboard tab order) */}
+                        <div aria-hidden="true" className="absolute top-2 right-2 flex flex-col items-end gap-2 z-20">
+                            {showPickupAvailable && (
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div className="group/pickup relative" data-testid="pickup-available-indicator">
+                                        <div className="w-9 h-9 p-2 bg-muted text-muted-foreground flex items-center justify-center">
+                                            <PickupIcon className="w-4 h-4" />
+                                        </div>
+                                        <div className="absolute right-0 top-full mt-1 z-50 opacity-0 group-hover/pickup:opacity-100 transition-opacity duration-200 pointer-events-none">
+                                            <div className="bg-foreground text-background text-xs font-medium px-2 py-1 whitespace-nowrap shadow-lg">
+                                                {t('pickupAvailable')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <WishlistButton
+                                    product={product}
+                                    size="sm"
+                                    tabIndex={-1}
+                                    className="relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Hover overlay — subtle dark tint */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none" />
+
+                        {/* Quick Add button — aria-hidden: mouse/touch only, keyboard reaches cart via PDP */}
+                        <div
+                            aria-hidden="true"
+                            className="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                            <QuickAddButton
+                                productId={product.productId ?? ''}
+                                productName={productName}
+                                selectedColorValue={selectedAttributeValue}
+                                label={quickAddLabel ?? t('quickAdd')}
                             />
-                        </Suspense>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Info section */}
+                <div className="relative p-4">
+                    {/* Color swatches — aria-hidden: visual/mouse preview only, SR navigates via product name link */}
+                    {colorValues.length > 0 && (
+                        <div aria-hidden="true">
+                            <Suspense fallback={<ProductTileSwatchesSkeleton count={maxSwatches} />}>
+                                <LazySwatches
+                                    colorValues={colorValues}
+                                    selectedAttributeValue={selectedAttributeValue}
+                                    onSwatchHover={handleSwatchHover}
+                                    onSwatchClick={() => handleProductClick?.(product)}
+                                    productName={productName}
+                                    totalColorCount={colorAttributes[0]?.values?.length ?? colorValues.length}
+                                    maxSwatches={maxSwatches}
+                                    productHref={productUrl}
+                                />
+                            </Suspense>
+                        </div>
                     )}
-                </CardContent>
 
-                {/* Product name */}
-                <CardContent className="px-4 pt-2 pb-0">
-                    <Link
-                        to={createProductUrl(product.productId)}
-                        className="text-card-foreground font-semibold text-sm leading-snug hover:underline line-clamp-2 block"
-                        onClick={() => {
-                            handleProductClick?.(product);
-                        }}>
-                        {product.productName}
-                    </Link>
-                </CardContent>
+                    {/* Store name */}
+                    <p className="text-xs text-muted-foreground mb-1 uppercase">{config.global.branding.name}</p>
 
-                {/* Price + promo callout */}
-                <CardContent className="px-4 pt-2 pb-0">
-                    <ProductPrice
-                        type="unit"
-                        product={product}
-                        currency={currency}
-                        labelForA11y={product?.productName}
-                        currentPriceProps={{
-                            className: 'text-card-foreground font-semibold text-sm leading-none',
-                        }}
-                        listPriceProps={{
-                            className: 'text-muted-foreground text-sm leading-none line-through',
-                        }}
-                        promoCalloutProps={{
-                            className: 'text-xs text-green-600 mt-1',
-                        }}
-                        className="text-sm"
-                    />
-                </CardContent>
-
-                {/* Action button */}
-                <CardFooter className="px-4 pt-3 pb-4 mt-auto">
-                    {footerAction !== undefined ? (
-                        footerAction
-                    ) : (
-                        <Button className="w-full text-sm font-normal" size="default" onClick={handleMoreOptions}>
-                            {t('moreOptions')}
-                        </Button>
+                    {/* Top category */}
+                    {topCategoryName && (
+                        <p className="text-xs text-muted-foreground mb-1 uppercase">{topCategoryName}</p>
                     )}
-                </CardFooter>
+
+                    {/* Brand */}
+                    {brand && <p className="text-xs text-muted-foreground mb-1">{brand}</p>}
+
+                    {/* Product name — the single keyboard/SR tab stop for this tile */}
+                    <h3 className="text-sm font-medium text-card-foreground mb-2">
+                        <Link
+                            to={productUrl}
+                            className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                            onClick={() => handleProductClick?.(product)}>
+                            {productName}
+                        </Link>
+                    </h3>
+
+                    {/* SKU */}
+                    {product.productId && (
+                        <p className="text-xs text-muted-foreground mb-1" data-testid="product-tile-sku">
+                            {t('sku')} {product.productId}
+                        </p>
+                    )}
+
+                    {/* Short description */}
+                    {description && (
+                        <p className="text-xs text-muted-foreground mb-2" data-testid="product-tile-description">
+                            {description}
+                        </p>
+                    )}
+
+                    {/* Star ratings */}
+                    <div className="mb-2">
+                        <StarRating
+                            rating={ratingData.rating}
+                            reviewCount={ratingData.reviewCount}
+                            starSize="sm"
+                            starClassName="text-foreground"
+                            showRatingLink
+                            ratingLinkTemplate="({count})"
+                            ratingLinkClassName="text-xs text-muted-foreground"
+                        />
+                    </div>
+
+                    {/* Price */}
+                    <div>
+                        <ProductPrice
+                            type="unit"
+                            product={product}
+                            currency={currency ?? config.commerce.sites?.[0]?.defaultCurrency ?? ''}
+                            labelForA11y={(product?.productName ?? product?.productId) || ''}
+                            currentPriceProps={{
+                                className: 'text-base font-semibold text-card-foreground',
+                            }}
+                            listPriceProps={{
+                                className: 'text-muted-foreground text-sm leading-none line-through',
+                            }}
+                            promoCalloutProps={{
+                                className: 'text-xs text-active-foreground mt-1',
+                            }}
+                            className="text-sm"
+                        />
+                    </div>
+                </div>
             </Card>
         );
     }

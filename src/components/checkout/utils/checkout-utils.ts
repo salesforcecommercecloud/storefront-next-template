@@ -56,7 +56,7 @@ export function computeFinalStepForReturningCustomer(
 
     // If customer has complete profile (email, addresses, payment methods), go straight to review/place order
     if (hasCustomerEmail && hasCustomerAddresses && (hasCustomerPaymentMethods || paymentValid)) {
-        return CHECKOUT_STEPS.REVIEW_ORDER;
+        return CHECKOUT_STEPS.PLACE_ORDER;
     }
 
     // If customer has email and addresses but no saved payment methods, go to payment step
@@ -75,7 +75,7 @@ export function computeFinalStepForReturningCustomer(
     }
 
     // Fallback to review if we can't determine the step
-    return CHECKOUT_STEPS.REVIEW_ORDER;
+    return CHECKOUT_STEPS.PLACE_ORDER;
 }
 
 /**
@@ -137,7 +137,7 @@ export function computeStepFromBasket(
         return CHECKOUT_STEPS.PAYMENT;
     }
 
-    return CHECKOUT_STEPS.REVIEW_ORDER;
+    return CHECKOUT_STEPS.PLACE_ORDER;
 }
 
 export function getCompletedSteps(

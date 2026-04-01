@@ -16,9 +16,9 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { action } from './action.cart-bundle-add';
-import { ensureBasketId } from '@/middlewares/basket.server';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 vi.mock('@/middlewares/basket.server');
@@ -32,12 +32,12 @@ const { createContext: reactCreateContext, actualReactRouter } = vi.hoisted(() =
 });
 
 vi.mock('@/lib/api-clients');
-vi.mock('@/config');
+vi.mock('@salesforce/storefront-next-runtime/config');
 vi.mock('@/lib/i18next', () => ({
     getTranslation: () => ({ t: (key: string) => key }),
 }));
 vi.mock('@/extensions/bopis/lib/basket-utils', () => ({
-    syncShipmentWithDeliveryOptionChange: vi.fn((context, basket) => Promise.resolve(basket)),
+    syncShipmentWithDeliveryOptionChange: vi.fn((_context, basket) => Promise.resolve(basket)),
 }));
 vi.mock('react-router', () => {
     return {
@@ -46,8 +46,17 @@ vi.mock('react-router', () => {
         data: (body: any, init?: ResponseInit) => Response.json(body, init),
     };
 });
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
 
 import { createFormDataRequest } from '@/test-utils/request-helpers';
+import { createActionArgs } from '@/lib/test-utils';
 
 describe('action.cart-bundle-add', () => {
     const mockBasket = {
@@ -88,7 +97,8 @@ describe('action.cart-bundle-add', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(ensureBasketId).mockResolvedValue(mockBasket.basketId);
+        vi.mocked(getBasket).mockResolvedValue({ current: mockBasket, snapshot: null } as any);
+        vi.mocked(updateBasketResource).mockImplementation(() => {});
         vi.mocked(createApiClients).mockReturnValue(mockClients as any);
         vi.mocked(getConfig).mockReturnValue(mockConfig as any);
     });
@@ -116,13 +126,11 @@ describe('action.cart-bundle-add', () => {
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await action({
-                request,
-                context: {} as any,
-                params: {},
-            });
+            const response = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            );
 
-            const result = await response.json();
+            const result = await (response as Response).json();
             expect(result.success).toBe(true);
             expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalled();
         });
@@ -151,13 +159,11 @@ describe('action.cart-bundle-add', () => {
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await action({
-                request,
-                context: {} as any,
-                params: {},
-            });
+            const response = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            );
 
-            const result = await response.json();
+            const result = await (response as Response).json();
             expect(result.success).toBe(true);
         });
 
@@ -184,13 +190,11 @@ describe('action.cart-bundle-add', () => {
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await action({
-                request,
-                context: {} as any,
-                params: {},
-            });
+            const response = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            );
 
-            const result = await response.json();
+            const result = await (response as Response).json();
             expect(result.success).toBe(true);
             // The server action extracts productId and quantity from ProductSelectionValues
             expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalledWith({
@@ -214,13 +218,11 @@ describe('action.cart-bundle-add', () => {
         test('returns error when bundle data is missing', async () => {
             const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {});
 
-            const response = await action({
-                request,
-                context: {} as any,
-                params: {},
-            });
+            const response = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            );
 
-            const result = await response.json();
+            const result = await (response as Response).json();
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
         });
@@ -231,11 +233,7 @@ describe('action.cart-bundle-add', () => {
             });
 
             await expect(
-                action({
-                    request,
-                    context: {} as any,
-                    params: {},
-                })
+                action(createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' }))
             ).rejects.toThrow();
         });
     });

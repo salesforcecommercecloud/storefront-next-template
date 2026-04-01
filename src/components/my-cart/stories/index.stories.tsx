@@ -22,6 +22,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { checkoutWithMultipleItems, checkoutWithOneItem } from '@/components/__mocks__/checkout-data';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 function MyCartStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -59,6 +60,7 @@ const meta: Meta<typeof MyCart> = {
     component: MyCart,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'centered',
         docs: {
             description: {

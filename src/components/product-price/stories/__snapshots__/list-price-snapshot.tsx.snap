@@ -5,7 +5,7 @@ exports[`ListPrice Snapshots > Default snapshot 1`] = `
   <div>
     <span
       aria-label="List price: $129.99"
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+      class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
     >
       $129.99
     </span>
@@ -25,7 +25,7 @@ exports[`ListPrice Snapshots > Range snapshot 1`] = `
   <div>
     <span
       aria-label="List price from $89.99"
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+      class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
     >
       $89.99
     </span>

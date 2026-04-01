@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 'use client';
 
-import { type ReactElement, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
+import { type ReactElement, useMemo, useState } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { useTranslation } from 'react-i18next';
 import { useToast } from '@/components/toast';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -29,11 +27,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Share2, Link as LinkIcon, Mail, MessageSquare, Copy, type LucideIcon } from 'lucide-react';
+import { Link as LinkIcon, Mail, MessageSquare, Copy, type LucideIcon } from 'lucide-react';
+import { ShareIcon } from '@/components/icons';
 
 interface ShareButtonProps {
     product: ShopperProducts.schemas['Product'];
+    size?: 'sm' | 'md' | 'lg';
     className?: string;
+    tabIndex?: number;
 }
 
 type ShareProvider = 'Twitter' | 'Facebook' | 'LinkedIn' | 'Email';
@@ -55,18 +56,20 @@ const providerLabels: Record<ShareProvider, string> = {
 };
 
 /**
- * Share button that provides a custom dropdown menu with share options.
+ * Share button that triggers native share dialog if available, otherwise shows dropdown menu.
  * Share options are configurable via config.features.socialShare config.
  *
  * @param props - Component props
  * @param props.product - The product data to share
+ * @param props.size - Icon size (sm, md, lg)
  * @param props.className - Optional additional CSS classes
- * @returns JSX element with share button and dropdown menu
+ * @param props.tabIndex - Tab index for accessibility
+ * @returns JSX element with share button
  */
-export function ShareButton({ product, className }: ShareButtonProps): ReactElement {
+export function ShareButton({ product, size = 'md', className, tabIndex }: ShareButtonProps): ReactElement {
     const { addToast } = useToast();
-    const config = useConfig();
-    const { t } = useTranslation('product');
+    const config = useConfig<AppConfig>();
+    const [open, setOpen] = useState(false);
 
     const productName = product.name || 'Check out this product';
     const productDescription = product.shortDescription || 'I found this great product';
@@ -75,6 +78,10 @@ export function ShareButton({ product, className }: ShareButtonProps): ReactElem
     const encodedUrl = encodeURIComponent(shareUrl);
     const encodedTitle = encodeURIComponent(productName);
     const encodedText = encodeURIComponent(`${productName}\n\n${productDescription}`);
+
+    // Check if native share is available
+    const hasNativeShare =
+        typeof navigator !== 'undefined' && 'share' in navigator && typeof navigator.share === 'function';
 
     const handleNativeShare = async () => {
         if (!navigator.share) {
@@ -95,6 +102,13 @@ export function ShareButton({ product, className }: ShareButtonProps): ReactElem
                 addToast('Failed to share', 'error');
             }
         }
+    };
+
+    const handleClick = () => {
+        if (hasNativeShare) {
+            void handleNativeShare();
+        }
+        // When native share is unavailable, DropdownMenu handles state via onOpenChange
     };
 
     const handleCopyLink = async () => {
@@ -148,23 +162,18 @@ export function ShareButton({ product, className }: ShareButtonProps): ReactElem
             }));
     }, [config.features.socialShare.enabled, config.features.socialShare.providers, shareHandlers]);
 
+    // If native share is available, render just the icon button
+    if (hasNativeShare) {
+        return <ShareIcon size={size} className={className} tabIndex={tabIndex} onClick={handleClick} />;
+    }
+
+    // Otherwise, render dropdown menu with fallback options
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="lg" className={className} aria-label={t('share')}>
-                    {t('share')}
-                </Button>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
+            <DropdownMenuTrigger asChild onClick={() => setOpen(!open)}>
+                <ShareIcon size={size} className={className} tabIndex={tabIndex} />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-                {typeof navigator !== 'undefined' && 'share' in navigator && typeof navigator.share === 'function' && (
-                    <>
-                        <DropdownMenuItem onClick={() => void handleNativeShare()}>
-                            <Share2 className="mr-2 size-4" />
-                            <span>Share via...</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                    </>
-                )}
                 <DropdownMenuItem onClick={() => void handleCopyLink()}>
                     <Copy className="mr-2 size-4" />
                     <span>Copy link</span>

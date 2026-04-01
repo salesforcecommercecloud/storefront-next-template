@@ -15,7 +15,8 @@
  */
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BrowserRouter } from 'react-router';
+import { createMemoryRouter, RouterProvider } from 'react-router';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import SearchSuggestionsSection from './suggestions-section';
 
 // Mock child components
@@ -62,7 +63,10 @@ vi.mock('@/hooks/use-analytics', () => ({
 }));
 
 const renderWithRouter = (ui: React.ReactElement) => {
-    return render(<BrowserRouter>{ui}</BrowserRouter>);
+    const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{ui}</AllProvidersWrapper> }], {
+        initialEntries: ['/'],
+    });
+    return render(<RouterProvider router={router} />);
 };
 
 describe('SearchSuggestionsSection Component', () => {

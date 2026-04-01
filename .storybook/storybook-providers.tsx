@@ -17,7 +17,7 @@ import BasketProvider from '../src/providers/basket';
 import CheckoutOneClickProvider from '../src/components/checkout/utils/checkout-context';
 import ProductViewProvider from '../src/providers/product-view';
 import StoreLocatorProvider from '../src/extensions/store-locator/providers/store-locator';
-import { ConfigProvider } from '../src/config';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { CurrencyProvider } from '../src/providers/currency';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/multi-site';
 import { mockConfig } from '../src/test-utils/config';

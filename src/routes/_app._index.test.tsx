@@ -22,7 +22,8 @@ import { getTranslation } from '@/lib/i18next';
 import HomePage, { type HomePageData, loader } from './_app._index';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
-import { type AppConfig, getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 const { t } = getTranslation();
 
@@ -167,11 +168,7 @@ vi.mock('react-i18next', async () => {
                     'hero.slide3.subtitle': 'On orders over $50',
                     'hero.slide3.ctaText': 'Learn More',
                     'featuredProducts.title': 'Featured Products',
-                    'newArrivals.title': 'New Arrivals',
-                    'newArrivals.description':
-                        'Discover the latest additions to our collection. From statement pieces to everyday essentials.',
-                    'newArrivals.ctaText': 'SHOP NEW ARRIVALS',
-                    'categoryGrid.title': 'Step into Elegance',
+                    'categoryGrid.title': 'Style for Real Life',
                     'categoryGrid.shopNowButton': 'Shop Now',
                     'featuredContent.women.title': 'Women',
                     'featuredContent.women.description':
@@ -183,6 +180,9 @@ vi.mock('react-i18next', async () => {
                         "Timeless craftsmanship meets contemporary style in our men's footwear collection.",
                     'featuredContent.men.imageAlt': "Men's Collection",
                     'featuredContent.men.ctaText': 'EXPLORE COLLECTION',
+                    'featuredContent.styleForRealLife.title': 'Style for Real Life',
+                    'featuredContent.styleForRealLife.description':
+                        'At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.\n\nDiscover pieces that move with you, adapt to your life, and become the foundation of a wardrobe that works—every day, everywhere.',
                 };
                 return translations[normalizedKey] || key;
             },
@@ -216,13 +216,22 @@ vi.mock('@/lib/api/categories', () => ({
     fetchCategories: vi.fn(() => Promise.resolve(mockCategories)),
 }));
 
-vi.mock('@/config', async (importOriginal) => {
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual = await importOriginal<object>();
     return {
         ...actual,
         getConfig: vi.fn(),
     };
 });
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
 
 const renderComponent = (loaderDataOverrides?: Partial<HomePageData>) => {
     const defaultData: HomePageData = {
@@ -232,6 +241,8 @@ const renderComponent = (loaderDataOverrides?: Partial<HomePageData>) => {
         }),
         searchResult: Promise.resolve(mockSearchResult),
         categories: Promise.resolve(mockCategories),
+        pageUrl: 'http://localhost/',
+        ogImageUrl: 'http://localhost/mock-hero-01.webp',
     };
     const data = { ...defaultData, ...loaderDataOverrides };
     return render(<HomePage loaderData={data} />);
@@ -251,10 +262,6 @@ describe('HomePage', () => {
 
     describe('Basic Rendering', () => {
         const renderingTests = [
-            {
-                description: 'renders new arrivals section',
-                assertion: () => expect(screen.getByText(t('home:newArrivals.title'))).toBeInTheDocument(),
-            },
             {
                 description: 'renders featured content cards',
                 assertion: () => {
@@ -282,7 +289,7 @@ describe('HomePage', () => {
             // Should not render region when no regions are available
             expect(screen.queryByTestId('region')).not.toBeInTheDocument();
             // But should still render other sections
-            expect(screen.getByText(t('home:newArrivals.title'))).toBeInTheDocument();
+            expect(screen.getByText(t('home:featuredContent.women.title'))).toBeInTheDocument();
         });
 
         test('renders header banner region when headerbanner region is provided', () => {
@@ -312,29 +319,7 @@ describe('HomePage', () => {
             expect(screen.getByTestId('hero-carousel')).toBeInTheDocument();
             expect(screen.getByTestId('product-carousel')).toBeInTheDocument();
             // Should still render other sections
-            expect(screen.getByText(t('home:newArrivals.title'))).toBeInTheDocument();
-        });
-    });
-
-    describe('New Arrivals Section', () => {
-        const newArrivalsTests = [
-            {
-                description: 'renders new arrivals with correct title',
-                translationKey: 'home:newArrivals.title',
-            },
-            {
-                description: 'renders new arrivals with correct description',
-                translationKey: 'home:newArrivals.description',
-            },
-            {
-                description: 'renders new arrivals CTA button',
-                translationKey: 'home:newArrivals.ctaText',
-            },
-        ];
-
-        test.each(newArrivalsTests)('$description', ({ translationKey }) => {
-            renderComponent();
-            expect(screen.getByText(t(translationKey))).toBeInTheDocument();
+            expect(screen.getByText(t('home:featuredContent.women.title'))).toBeInTheDocument();
         });
     });
 
@@ -350,7 +335,7 @@ describe('HomePage', () => {
             renderComponent();
             await waitFor(() => {
                 expect(screen.getByTestId('popular-categories')).toBeInTheDocument();
-                expect(screen.getByText('Step into Elegance')).toBeInTheDocument();
+                expect(screen.getByText('Style for Real Life')).toBeInTheDocument();
             });
         });
     });
@@ -375,10 +360,10 @@ describe('HomePage', () => {
             expect(screen.getByText(t(contentKey))).toBeInTheDocument();
         });
 
-        test('renders both content cards with correct count', () => {
+        test('renders all content cards with correct count', () => {
             renderComponent();
             const contentCards = screen.getAllByTestId('content-card');
-            expect(contentCards).toHaveLength(2);
+            expect(contentCards).toHaveLength(3); // Women, Men, and Style for Real Life card
         });
     });
 
@@ -386,7 +371,7 @@ describe('HomePage', () => {
         test('handles page promise rejection gracefully', () => {
             renderComponent();
             // Should still render other sections
-            expect(screen.getByText(t('home:newArrivals.title'))).toBeInTheDocument();
+            expect(screen.getByText(t('home:featuredContent.women.title'))).toBeInTheDocument();
         });
 
         test('handles page promise rejection', () => {
@@ -398,7 +383,7 @@ describe('HomePage', () => {
             });
 
             // Should still render other sections
-            expect(screen.getByText(t('home:newArrivals.title'))).toBeInTheDocument();
+            expect(screen.getByText(t('home:featuredContent.women.title'))).toBeInTheDocument();
         });
     });
 
@@ -414,10 +399,9 @@ describe('HomePage', () => {
             {
                 description: 'applies correct spacing between sections',
                 assertion: () => {
-                    const newArrivalsTitle = screen.getByText(t('home:newArrivals.title'));
-                    const sectionWithPadding = newArrivalsTitle.closest('[class*="py-16"]');
+                    const featuredContentTitle = screen.getByText(t('home:featuredContent.women.title'));
+                    const sectionWithPadding = featuredContentTitle.closest('[class*="pt-16"]');
                     expect(sectionWithPadding).toBeInTheDocument();
-                    expect(sectionWithPadding).toHaveClass('py-16');
                 },
             },
             {

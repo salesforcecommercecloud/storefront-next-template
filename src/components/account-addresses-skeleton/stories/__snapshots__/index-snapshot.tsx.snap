@@ -3,31 +3,36 @@
 exports[`AccountAddressesSkeleton stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-6"
+    class="space-y-5"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm p-6"
+      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
       data-slot="card"
     >
       <div
-        class="flex items-start justify-between"
+        class="px-6 py-3"
+        data-slot="card-content"
       >
-        <div>
-          <h1
-            class="text-2xl font-bold text-foreground"
-            tabindex="0"
-          >
-            Addresses
-          </h1>
+        <div
+          class="flex items-start justify-between"
+        >
+          <div>
+            <h1
+              class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
+              tabindex="0"
+            >
+              Addresses
+            </h1>
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-48"
+              data-slot="skeleton"
+            />
+          </div>
           <div
-            class="bg-accent animate-pulse rounded-md h-4 w-48 mt-2"
+            class="bg-accent animate-pulse rounded-md h-9 w-36"
             data-slot="skeleton"
           />
         </div>
-        <div
-          class="bg-accent animate-pulse rounded-md h-9 w-36"
-          data-slot="skeleton"
-        />
       </div>
     </div>
     <div

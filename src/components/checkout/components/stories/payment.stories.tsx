@@ -19,6 +19,7 @@ import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import Payment from '../payment';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -66,6 +67,7 @@ const meta: Meta<typeof Payment> = {
     title: 'CHECKOUT/Payment',
     tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'padded',
         docs: {
             description: {

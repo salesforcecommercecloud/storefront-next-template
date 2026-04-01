@@ -30,6 +30,19 @@ const mockGetProducts = vi.fn();
 const mockGetCustomerProductLists = vi.fn();
 const mockGetCustomerProductList = vi.fn();
 
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => mockLogger),
+}));
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => mockLogger),
+}));
+
 // Mock createApiClients
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: () => ({
@@ -62,8 +75,8 @@ vi.mock('@/middlewares/auth.server', () => ({
     getAuth: () => mockGetAuthServer(),
 }));
 
-vi.mock('@/config', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@/config')>();
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>();
     return {
         ...actual,
         getConfig: () => mockGetConfig(),
@@ -398,8 +411,6 @@ describe('fetchProductsForWishlist', () => {
                 quantity: 1,
             }));
 
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
             // First batch succeeds, second batch fails, third batch succeeds
             mockGetProducts
                 .mockResolvedValueOnce({
@@ -433,12 +444,10 @@ describe('fetchProductsForWishlist', () => {
             expect(result['product-49']).toBeDefined();
 
             // Should log the error
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-                expect.stringContaining('Error fetching products batch'),
-                expect.any(Error)
+            expect(mockLogger.error).toHaveBeenCalledWith(
+                'Error fetching products batch',
+                expect.objectContaining({ ids: expect.any(String), error: expect.any(Error) })
             );
-
-            consoleErrorSpy.mockRestore();
         });
 
         test('should return empty object when all batches fail', async () => {
@@ -450,7 +459,7 @@ describe('fetchProductsForWishlist', () => {
                 quantity: 1,
             }));
 
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            mockLogger.error.mockClear();
 
             mockGetProducts
                 .mockRejectedValueOnce(new Error('API Error 1'))
@@ -460,9 +469,7 @@ describe('fetchProductsForWishlist', () => {
 
             expect(mockGetProducts).toHaveBeenCalledTimes(2);
             expect(result).toEqual({});
-            expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
-
-            consoleErrorSpy.mockRestore();
+            expect(mockLogger.error).toHaveBeenCalledTimes(2);
         });
     });
 

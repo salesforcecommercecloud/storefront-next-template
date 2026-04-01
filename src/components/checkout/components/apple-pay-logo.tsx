@@ -22,19 +22,25 @@ import { useTranslation } from 'react-i18next';
  * Official Apple Pay logo matching SDK button appearance
  * Uses local Apple Pay SVG file from public/images
  */
-export default function ApplePayLogo({ className }: { className?: string }) {
+export default function ApplePayLogo({
+    className,
+    decorative = false,
+}: {
+    className?: string;
+    /** When true, image is hidden from the accessibility tree (use inside a button that has aria-label). */
+    decorative?: boolean;
+}) {
     const { t } = useTranslation('checkout');
+    const label = t('expressPayments.applePayLabel') || 'Apple Pay';
     return (
         <img
             src={applePayLogo}
-            alt={t('expressPayments.applePayLabel') || 'Apple Pay'}
+            alt={decorative ? '' : label}
             width="48"
             height="16"
-            className={`${className || ''} h-4 w-auto`}
-            style={{
-                objectFit: 'contain',
-                filter: 'brightness(0) invert(1)', // Convert to white
-            }}
+            {...(decorative ? { 'aria-hidden': true } : {})}
+            className={`${className || ''} h-4 w-auto object-contain`}
+            style={{ filter: 'brightness(0) invert(1)' }}
         />
     );
 }

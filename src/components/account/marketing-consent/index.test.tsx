@@ -24,17 +24,19 @@ import { ConfigWrapper } from '@/test-utils/config';
 
 const { t } = getTranslation();
 
-const mockUpdateSubscription = vi.fn();
+const mockUpdateBatch = vi.fn();
 const mockAddToast = vi.fn();
-let capturedOnError: ((message: string) => void) | undefined;
+let capturedOnError: ((message: string, data?: { partialSuccess?: boolean }) => void) | undefined;
 vi.mock('@/hooks/use-update-marketing-consent', () => ({
-    useUpdateMarketingConsent: vi.fn((onSuccess: () => void, onError?: (message: string) => void) => {
-        capturedOnError = onError;
-        return {
-            updateSubscription: mockUpdateSubscription,
-            isUpdating: false,
-        };
-    }),
+    useUpdateMarketingConsent: vi.fn(
+        (_onSuccess: () => void, onError?: (message: string, data?: { partialSuccess?: boolean }) => void) => {
+            capturedOnError = onError;
+            return {
+                updateBatch: mockUpdateBatch,
+                isUpdating: false,
+            };
+        }
+    ),
 }));
 vi.mock('@/components/toast', () => ({
     useToast: () => ({ addToast: mockAddToast }),
@@ -121,7 +123,7 @@ const noTitleFixture: ShopperConsents.schemas['ConsentSubscriptionResponse'] = {
 
 describe('MarketingConsent', () => {
     beforeEach(() => {
-        mockUpdateSubscription.mockClear();
+        mockUpdateBatch.mockClear();
         mockAddToast.mockClear();
         capturedOnError = undefined;
     });
@@ -177,7 +179,21 @@ describe('MarketingConsent', () => {
         expect(newsletterSwitch).toHaveAttribute('aria-checked', 'true');
     });
 
-    test('clicking switch calls updateSubscription with correct payload when contactPointValueByChannel provided', async () => {
+    test('switches are disabled until Edit is clicked', () => {
+        renderWithProviders(
+            <MarketingConsent
+                subscriptions={subscriptionsFixture}
+                contactPointValueByChannel={{ email: 'user@example.com' }}
+            />
+        );
+
+        const switches = screen.getAllByRole('switch');
+        switches.forEach((sw) => expect(sw).toBeDisabled());
+        const editButton = screen.getByRole('button', { name: t('account:marketingConsent.editA11y') });
+        expect(editButton).toBeInTheDocument();
+    });
+
+    test('clicking Edit then toggling switch then Save calls updateBatch with correct payload', async () => {
         const user = userEvent.setup();
         renderWithProviders(
             <MarketingConsent
@@ -186,25 +202,58 @@ describe('MarketingConsent', () => {
             />
         );
 
+        await user.click(screen.getByRole('button', { name: t('account:marketingConsent.editA11y') }));
+
         const saleSwitch = screen.getByRole('switch', {
             name: new RegExp(`Sale.*${t('account:marketingConsent.optedOut')}`),
         });
-        expect(saleSwitch).toHaveAttribute('aria-checked', 'false');
         expect(saleSwitch).not.toBeDisabled();
-
         await user.click(saleSwitch);
+        expect(saleSwitch).toHaveAttribute('aria-checked', 'true');
 
-        expect(mockUpdateSubscription).toHaveBeenCalledTimes(1);
-        expect(mockUpdateSubscription).toHaveBeenCalledWith({
-            subscriptionId: 'Sale',
-            channel: 'email',
-            contactPointValue: 'user@example.com',
-            status: 'opt_in',
-        });
+        await user.click(screen.getByRole('button', { name: t('account:common.save') }));
+
+        expect(mockUpdateBatch).toHaveBeenCalledTimes(1);
+        expect(mockUpdateBatch).toHaveBeenCalledWith([
+            {
+                subscriptionId: 'Sale',
+                channel: 'email',
+                contactPointValue: 'user@example.com',
+                status: 'opt_in',
+            },
+        ]);
     });
 
-    test('switch is disabled when contactPointValueByChannel has no value for channel', () => {
+    test('clicking Cancel exits edit mode without calling updateBatch', async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <MarketingConsent
+                subscriptions={subscriptionsFixture}
+                contactPointValueByChannel={{ email: 'user@example.com' }}
+            />
+        );
+
+        await user.click(screen.getByRole('button', { name: t('account:marketingConsent.editA11y') }));
+        const saleSwitch = screen.getByRole('switch', {
+            name: new RegExp(`Sale.*${t('account:marketingConsent.optedOut')}`),
+        });
+        await user.click(saleSwitch);
+        expect(saleSwitch).toHaveAttribute('aria-checked', 'true');
+
+        await user.click(screen.getByRole('button', { name: t('account:common.cancel') }));
+
+        expect(mockUpdateBatch).not.toHaveBeenCalled();
+        const saleSwitchAfterCancel = screen.getByRole('switch', {
+            name: new RegExp(`Sale.*${t('account:marketingConsent.optedOut')}`),
+        });
+        expect(saleSwitchAfterCancel).toHaveAttribute('aria-checked', 'false');
+    });
+
+    test('switch is disabled when contactPointValueByChannel has no value for channel', async () => {
+        const user = userEvent.setup();
         renderWithProviders(<MarketingConsent subscriptions={subscriptionsFixture} />);
+
+        await user.click(screen.getByRole('button', { name: t('account:marketingConsent.editA11y') }));
 
         const switches = screen.getAllByRole('switch');
         expect(switches).toHaveLength(2);
@@ -272,7 +321,7 @@ describe('MarketingConsent', () => {
         expect(sw).toHaveAttribute('aria-checked', 'false');
     });
 
-    test('when opt-in fails, switch reverts back to opt-out', async () => {
+    test('when opt-in fails after Save, error toast is shown and switch shows server state', async () => {
         const user = userEvent.setup();
         renderWithProviders(
             <MarketingConsent
@@ -281,13 +330,12 @@ describe('MarketingConsent', () => {
             />
         );
 
+        await user.click(screen.getByRole('button', { name: t('account:marketingConsent.editA11y') }));
         const saleSwitch = screen.getByRole('switch', {
             name: new RegExp(`Sale.*${t('account:marketingConsent.optedOut')}`),
         });
-        expect(saleSwitch).toHaveAttribute('aria-checked', 'false');
-
         await user.click(saleSwitch);
-        expect(saleSwitch).toHaveAttribute('aria-checked', 'true');
+        await user.click(screen.getByRole('button', { name: t('account:common.save') }));
 
         act(() => {
             capturedOnError?.('API error');
@@ -299,7 +347,7 @@ describe('MarketingConsent', () => {
         expect(saleSwitchAfterRevert).toHaveAttribute('aria-checked', 'false');
     });
 
-    test('when opt-out fails, switch reverts back to opt-in', async () => {
+    test('when opt-out fails after Save, error toast is shown and switch shows server state', async () => {
         const user = userEvent.setup();
         renderWithProviders(
             <MarketingConsent
@@ -308,13 +356,12 @@ describe('MarketingConsent', () => {
             />
         );
 
+        await user.click(screen.getByRole('button', { name: t('account:marketingConsent.editA11y') }));
         const newsletterSwitch = screen.getByRole('switch', {
             name: new RegExp(`Newsletter.*${t('account:marketingConsent.optedIn')}`),
         });
-        expect(newsletterSwitch).toHaveAttribute('aria-checked', 'true');
-
         await user.click(newsletterSwitch);
-        expect(newsletterSwitch).toHaveAttribute('aria-checked', 'false');
+        await user.click(screen.getByRole('button', { name: t('account:common.save') }));
 
         act(() => {
             capturedOnError?.('API error');

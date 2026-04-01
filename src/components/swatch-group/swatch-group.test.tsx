@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { SwatchGroup } from './swatch-group';
 import { Swatch } from './swatch';
 
@@ -26,6 +27,14 @@ const MockSwatch = ({ value, children, ...props }: { value: string; children: Re
         {children}
     </button>
 );
+
+// Helper to render within a memory router with all providers
+const renderInRouter = (element: React.ReactElement, opts?: { initialEntries?: string[] }) => {
+    const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{element}</AllProvidersWrapper> }], {
+        initialEntries: opts?.initialEntries ?? ['/'],
+    });
+    return render(<RouterProvider router={router} />);
+};
 
 describe('SwatchGroup', () => {
     test('renders with label and display name', () => {
@@ -95,39 +104,19 @@ describe('SwatchGroup', () => {
     test('handles keyboard navigation with arrow keys', async () => {
         const user = userEvent.setup();
 
-        // Using createMemoryRouter in framework mode is fine
-        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
-        const router = createMemoryRouter(
-            [
-                {
-                    path: '/',
-                    element: (
-                        <SwatchGroup label="Size">
-                            <Swatch value="small" href="/small">
-                                Small
-                            </Swatch>
-                            <Swatch value="medium" href="/medium">
-                                Medium
-                            </Swatch>
-                            <Swatch value="large" href="/large">
-                                Large
-                            </Swatch>
-                        </SwatchGroup>
-                    ),
-                },
-                // Catch-all route to prevent 404 errors when navigating
-                {
-                    path: '*',
-                    element: <div>Navigated</div>,
-                },
-            ],
-            {
-                initialEntries: ['/'],
-            }
+        renderInRouter(
+            <SwatchGroup label="Size">
+                <Swatch value="small" href="/small">
+                    Small
+                </Swatch>
+                <Swatch value="medium" href="/medium">
+                    Medium
+                </Swatch>
+                <Swatch value="large" href="/large">
+                    Large
+                </Swatch>
+            </SwatchGroup>
         );
-
-        render(<RouterProvider router={router} />);
 
         const swatches = screen.getAllByRole('radio');
 
@@ -154,36 +143,16 @@ describe('SwatchGroup', () => {
     test('wraps keyboard navigation at boundaries', async () => {
         const user = userEvent.setup();
 
-        // Using createMemoryRouter in framework mode is fine
-        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
-        const router = createMemoryRouter(
-            [
-                {
-                    path: '/',
-                    element: (
-                        <SwatchGroup label="Size">
-                            <Swatch value="small" href="/small">
-                                Small
-                            </Swatch>
-                            <Swatch value="large" href="/large">
-                                Large
-                            </Swatch>
-                        </SwatchGroup>
-                    ),
-                },
-                // Catch-all route to prevent 404 errors when navigating
-                {
-                    path: '*',
-                    element: <div>Navigated</div>,
-                },
-            ],
-            {
-                initialEntries: ['/'],
-            }
+        renderInRouter(
+            <SwatchGroup label="Size">
+                <Swatch value="small" href="/small">
+                    Small
+                </Swatch>
+                <Swatch value="large" href="/large">
+                    Large
+                </Swatch>
+            </SwatchGroup>
         );
-
-        render(<RouterProvider router={router} />);
 
         const swatches = screen.getAllByRole('radio');
 
@@ -202,34 +171,19 @@ describe('SwatchGroup', () => {
     });
 
     test('sets correct selected state based on value prop', () => {
-        // Using createMemoryRouter in framework mode is fine
-        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
-        const router = createMemoryRouter(
-            [
-                {
-                    path: '/',
-                    element: (
-                        <SwatchGroup label="Color" value="blue">
-                            <Swatch value="red" href="/red">
-                                Red
-                            </Swatch>
-                            <Swatch value="blue" href="/blue">
-                                Blue
-                            </Swatch>
-                            <Swatch value="green" href="/green">
-                                Green
-                            </Swatch>
-                        </SwatchGroup>
-                    ),
-                },
-            ],
-            {
-                initialEntries: ['/'],
-            }
+        renderInRouter(
+            <SwatchGroup label="Color" value="blue">
+                <Swatch value="red" href="/red">
+                    Red
+                </Swatch>
+                <Swatch value="blue" href="/blue">
+                    Blue
+                </Swatch>
+                <Swatch value="green" href="/green">
+                    Green
+                </Swatch>
+            </SwatchGroup>
         );
-
-        render(<RouterProvider router={router} />);
 
         const redSwatch = screen.getByRole('radio', { name: /red/i });
         const blueSwatch = screen.getByRole('radio', { name: /blue/i });
@@ -241,34 +195,19 @@ describe('SwatchGroup', () => {
     });
 
     test('sets correct focusable state - selected item is focusable', () => {
-        // Using createMemoryRouter in framework mode is fine
-        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
-        const router = createMemoryRouter(
-            [
-                {
-                    path: '/',
-                    element: (
-                        <SwatchGroup label="Color" value="blue">
-                            <Swatch value="red" href="/red">
-                                Red
-                            </Swatch>
-                            <Swatch value="blue" href="/blue">
-                                Blue
-                            </Swatch>
-                            <Swatch value="green" href="/green">
-                                Green
-                            </Swatch>
-                        </SwatchGroup>
-                    ),
-                },
-            ],
-            {
-                initialEntries: ['/'],
-            }
+        renderInRouter(
+            <SwatchGroup label="Color" value="blue">
+                <Swatch value="red" href="/red">
+                    Red
+                </Swatch>
+                <Swatch value="blue" href="/blue">
+                    Blue
+                </Swatch>
+                <Swatch value="green" href="/green">
+                    Green
+                </Swatch>
+            </SwatchGroup>
         );
-
-        render(<RouterProvider router={router} />);
 
         const redSwatch = screen.getByRole('radio', { name: /red/i });
         const blueSwatch = screen.getByRole('radio', { name: /blue/i });
@@ -280,34 +219,19 @@ describe('SwatchGroup', () => {
     });
 
     test('sets first item as focusable when no value selected', () => {
-        // Using createMemoryRouter in framework mode is fine
-        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
-        const router = createMemoryRouter(
-            [
-                {
-                    path: '/',
-                    element: (
-                        <SwatchGroup label="Color">
-                            <Swatch value="red" href="/red">
-                                Red
-                            </Swatch>
-                            <Swatch value="blue" href="/blue">
-                                Blue
-                            </Swatch>
-                            <Swatch value="green" href="/green">
-                                Green
-                            </Swatch>
-                        </SwatchGroup>
-                    ),
-                },
-            ],
-            {
-                initialEntries: ['/'],
-            }
+        renderInRouter(
+            <SwatchGroup label="Color">
+                <Swatch value="red" href="/red">
+                    Red
+                </Swatch>
+                <Swatch value="blue" href="/blue">
+                    Blue
+                </Swatch>
+                <Swatch value="green" href="/green">
+                    Green
+                </Swatch>
+            </SwatchGroup>
         );
-
-        render(<RouterProvider router={router} />);
 
         const redSwatch = screen.getByRole('radio', { name: /red/i });
         const blueSwatch = screen.getByRole('radio', { name: /blue/i });
@@ -319,86 +243,41 @@ describe('SwatchGroup', () => {
     });
 
     test('applies custom className when provided', () => {
-        // Using createMemoryRouter in framework mode is fine
-        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
-        const router = createMemoryRouter(
-            [
-                {
-                    path: '/',
-                    element: (
-                        <SwatchGroup label="Color" className="custom-swatch-group">
-                            <Swatch value="red" href="/red">
-                                Red
-                            </Swatch>
-                        </SwatchGroup>
-                    ),
-                },
-            ],
-            {
-                initialEntries: ['/'],
-            }
+        renderInRouter(
+            <SwatchGroup label="Color" className="custom-swatch-group">
+                <Swatch value="red" href="/red">
+                    Red
+                </Swatch>
+            </SwatchGroup>
         );
-
-        render(<RouterProvider router={router} />);
 
         const container = screen.getByRole('radiogroup').parentElement;
         expect(container).toHaveClass('custom-swatch-group');
     });
 
     test('does not render label when not provided', () => {
-        // Using createMemoryRouter in framework mode is fine
-        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
-        const router = createMemoryRouter(
-            [
-                {
-                    path: '/',
-                    element: (
-                        <SwatchGroup>
-                            <Swatch value="red" href="/red">
-                                Red
-                            </Swatch>
-                        </SwatchGroup>
-                    ),
-                },
-            ],
-            {
-                initialEntries: ['/'],
-            }
+        renderInRouter(
+            <SwatchGroup>
+                <Swatch value="red" href="/red">
+                    Red
+                </Swatch>
+            </SwatchGroup>
         );
-
-        render(<RouterProvider router={router} />);
 
         expect(screen.queryByText(/:/)).not.toBeInTheDocument();
     });
 
     test('updates selected index when value prop changes', () => {
-        // Using createMemoryRouter in framework mode is fine
-        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
-        const router1 = createMemoryRouter(
-            [
-                {
-                    path: '/',
-                    element: (
-                        <SwatchGroup label="Color" value="red">
-                            <Swatch value="red" href="/red">
-                                Red
-                            </Swatch>
-                            <Swatch value="blue" href="/blue">
-                                Blue
-                            </Swatch>
-                        </SwatchGroup>
-                    ),
-                },
-            ],
-            {
-                initialEntries: ['/'],
-            }
+        renderInRouter(
+            <SwatchGroup label="Color" value="red">
+                <Swatch value="red" href="/red">
+                    Red
+                </Swatch>
+                <Swatch value="blue" href="/blue">
+                    Blue
+                </Swatch>
+            </SwatchGroup>
         );
-
-        const { rerender } = render(<RouterProvider router={router1} />);
 
         let redSwatch = screen.getByRole('radio', { name: /red/i });
         let blueSwatch = screen.getByRole('radio', { name: /blue/i });
@@ -406,29 +285,18 @@ describe('SwatchGroup', () => {
         expect(redSwatch).toBeChecked();
         expect(blueSwatch).not.toBeChecked();
 
-        // Update value prop
-        const router2 = createMemoryRouter(
-            [
-                {
-                    path: '/',
-                    element: (
-                        <SwatchGroup label="Color" value="blue">
-                            <Swatch value="red" href="/red">
-                                Red
-                            </Swatch>
-                            <Swatch value="blue" href="/blue">
-                                Blue
-                            </Swatch>
-                        </SwatchGroup>
-                    ),
-                },
-            ],
-            {
-                initialEntries: ['/'],
-            }
+        // Update value prop by re-rendering with new value
+        cleanup();
+        renderInRouter(
+            <SwatchGroup label="Color" value="blue">
+                <Swatch value="red" href="/red">
+                    Red
+                </Swatch>
+                <Swatch value="blue" href="/blue">
+                    Blue
+                </Swatch>
+            </SwatchGroup>
         );
-
-        rerender(<RouterProvider router={router2} />);
 
         redSwatch = screen.getByRole('radio', { name: /red/i });
         blueSwatch = screen.getByRole('radio', { name: /blue/i });

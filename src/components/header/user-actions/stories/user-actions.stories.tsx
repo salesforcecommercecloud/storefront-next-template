@@ -18,7 +18,7 @@ import UserActions from '../user-actions';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
+import { waitForStorybookReady, SITE_PREFIX } from '@storybook/test-utils';
 import AuthProvider from '@/providers/auth';
 import type { SessionData } from '@/lib/api/types';
 
@@ -131,7 +131,7 @@ User actions for guest users.
         // Check for Sign In icon button/link
         const signInLink = await canvas.findByRole('link', { name: /sign in/i }, { timeout: 5000 });
         await expect(signInLink).toBeInTheDocument();
-        await expect(signInLink).toHaveAttribute('href', '/login');
+        await expect(signInLink).toHaveAttribute('href', `${SITE_PREFIX}/login`);
 
         // Check that logout button is not present
         const logoutButton = canvas.queryByRole('button', { name: /sign out/i });
@@ -168,7 +168,7 @@ User actions for authenticated users.
         // Check for account icon button/link
         const accountLink = await canvas.findByRole('link', { name: /my account/i }, { timeout: 5000 });
         await expect(accountLink).toBeInTheDocument();
-        await expect(accountLink).toHaveAttribute('href', '/account/overview');
+        await expect(accountLink).toHaveAttribute('href', `${SITE_PREFIX}/account/overview`);
 
         // Check that logout button is not present (moved to account navigation)
         const logoutButton = canvas.queryByRole('button', { name: /sign out/i });

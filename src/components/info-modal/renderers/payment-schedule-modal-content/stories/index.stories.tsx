@@ -19,7 +19,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { PaymentScheduleModalContent } from '../../payment-schedule-modal-content';
 import type { PaymentSchedule, StepInfo } from '../../../types';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { CurrencyProvider } from '@/providers/currency';
 import { mockConfig } from '@/test-utils/config';
 import type { ReactElement } from 'react';

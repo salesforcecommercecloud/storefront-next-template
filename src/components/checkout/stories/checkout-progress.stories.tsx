@@ -20,6 +20,7 @@ import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'r
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { CHECKOUT_STEPS } from '../utils/checkout-context-types';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 const PROGRESS_HARNESS_ATTR = 'data-progress-harness';
 
@@ -78,6 +79,7 @@ const meta: Meta<typeof CheckoutProgress> = {
     component: CheckoutProgress,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'padded',
         docs: {
             description: {
@@ -199,7 +201,7 @@ Third step - Shipping Options. Contact Info and Shipping Address are completed.
 ### Features:
 - First two steps show checkmarks
 - Delivery step is current
-- Payment and Review are pending
+- Payment and Place Order are pending
                 `,
             },
         },
@@ -237,7 +239,7 @@ Fourth step - Payment. All previous steps are completed.
 ### Features:
 - First three steps show checkmarks
 - Payment step is current
-- Review is pending
+- Place Order is pending
                 `,
             },
         },
@@ -253,11 +255,11 @@ Fourth step - Payment. All previous steps are completed.
     },
 };
 
-export const ReviewOrder: Story = {
+export const PlaceOrder: Story = {
     render: () => (
         <ProgressStoryHarness>
             <CheckoutProgress
-                currentStep={CHECKOUT_STEPS.REVIEW_ORDER}
+                currentStep={CHECKOUT_STEPS.PLACE_ORDER}
                 completedSteps={[
                     CHECKOUT_STEPS.CONTACT_INFO,
                     CHECKOUT_STEPS.SHIPPING_ADDRESS,
@@ -271,11 +273,11 @@ export const ReviewOrder: Story = {
         docs: {
             description: {
                 story: `
-Final step - Review Order. All previous steps are completed.
+Final step - Place Order. All previous steps are completed.
 
 ### Features:
 - All previous steps show checkmarks
-- Review step is current
+- Place Order step is current
 - Final step in checkout flow
                 `,
             },
@@ -285,9 +287,9 @@ Final step - Review Order. All previous steps are completed.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Check for Review step - use findAllByText since text appears multiple times
-        const reviewElements = await canvas.findAllByText(/review/i, {}, { timeout: 5000 });
-        await expect(reviewElements.length).toBeGreaterThan(0);
-        await expect(reviewElements[0]).toBeInTheDocument();
+        // Check for Place Order step - use findAllByText since text appears multiple times
+        const placeOrderElements = await canvas.findAllByText(/place order/i, {}, { timeout: 5000 });
+        await expect(placeOrderElements.length).toBeGreaterThan(0);
+        await expect(placeOrderElements[0]).toBeInTheDocument();
     },
 };

@@ -18,10 +18,12 @@ import ShippingAddressDisplay from '../shipping-address-display';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 const meta: Meta<typeof ShippingAddressDisplay> = {
     title: 'CHECKOUT/ShippingAddressDisplay',
     component: ShippingAddressDisplay,
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'centered',
         docs: {
             description: {

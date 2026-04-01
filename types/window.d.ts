@@ -44,6 +44,16 @@ declare global {
          * @example '/mobify/bundle/local/client/' | '/mobify/bundle/140/client/' | undefined (in dev mode)
          */
         _BUNDLE_PATH?: string;
+
+        /**
+         * The base path prefix for the current deployment.
+         * This property is injected by @salesforce/storefront-next-dev package.
+         *
+         * Note: In local development, this is typically an empty string.
+         *
+         * @example '' | '/my-base-path'
+         */
+        _BASE_PATH?: string;
     }
 }
 

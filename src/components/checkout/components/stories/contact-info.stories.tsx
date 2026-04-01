@@ -19,6 +19,7 @@ import { expect, within, userEvent } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -427,6 +428,7 @@ const meta: Meta<typeof ContactInfo> = {
     title: 'CHECKOUT/ContactInfo',
     tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'padded',
         docs: {
             description: {

@@ -1,17 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`OrderDetails stories snapshot > Default story renders and matches snapshot 1`] = `
+exports[`OrderDetails stories snapshot > CompletedStatus story renders and matches snapshot 1`] = `
 <div
   data-section="order-details"
 >
-  <a
-    class="inline-block text-sm text-muted-foreground hover:text-foreground mb-5"
-    data-discover="true"
-    href="/account/orders"
-  >
-    &lt; 
-    Back to Order History
-  </a>
   <div
     class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
     data-slot="card"
@@ -25,25 +17,81 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
       >
         <div>
           <h1
-            class="text-2xl font-bold"
+            class="text-xl font-bold"
           >
             Order Details
           </h1>
           <p
-            class="mt-1 text-base font-medium text-muted-foreground"
+            class="mt-1 flex items-center gap-0 text-base font-medium text-muted-foreground"
+            data-testid="order-number"
           >
-            Order
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-hash size-4 shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="4"
+                x2="20"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="4"
+                x2="20"
+                y1="15"
+                y2="15"
+              />
+              <line
+                x1="10"
+                x2="8"
+                y1="3"
+                y2="21"
+              />
+              <line
+                x1="16"
+                x2="14"
+                y1="3"
+                y2="21"
+              />
+            </svg>
             <span>
-               #
               INO001
             </span>
           </p>
         </div>
         <span
-          class="inline-flex w-fit items-center bg-primary/10 px-3 py-1 text-sm font-medium text-primary shrink-0"
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
+          data-slot="badge"
           data-testid="order-status-badge"
         >
-          New
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-check mr-1 inline size-3.5"
+            data-testid="order-status-icon"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20 6 9 17l-5-5"
+            />
+          </svg>
+          Completed
         </span>
       </div>
       <div
@@ -74,22 +122,12 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                 data-shipment-id="me"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none"
+                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
-                    class="text-sm"
+                    class="text-sm min-w-0 font-medium"
                   >
-                    <span
-                      class="font-medium"
-                    >
-                      Shipment 1
-                    </span>
-                    <span
-                      class="text-xs text-muted-foreground"
-                    >
-                       → 
-                      John Snow
-                    </span>
+                    Shipment 1
                   </p>
                 </div>
                 <div
@@ -102,25 +140,31 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
-                        <div
-                          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                        <a
+                          class="flex-shrink-0 block"
+                          data-discover="true"
+                          href="/product/701643108633M"
                         >
-                          <img
-                            alt="First Product"
-                            class="h-full w-full object-contain"
-                            src="https://example.com/product.jpg"
-                          />
-                        </div>
+                          <div
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                          >
+                            <img
+                              alt="First Product"
+                              class="h-full w-full object-contain"
+                              src="https://example.com/product.jpg"
+                            />
+                          </div>
+                        </a>
                         <div
                           class="min-w-0 flex-1 space-y-1"
                         >
                           <div
-                            class="mb-4 flex items-start gap-2 min-w-0"
+                            class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                             >
                               <a
                                 class="text-foreground hover:text-primary block break-words"
@@ -193,7 +237,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                         data-slot="card-content"
                       >
                         <p
-                          class="text-xs font-semibold text-muted-foreground"
+                          class="text-xs font-semibold text-foreground"
                         >
                           Tracking Number
                         </p>
@@ -214,7 +258,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                         data-slot="card-content"
                       >
                         <p
-                          class="text-xs font-semibold text-muted-foreground"
+                          class="text-xs font-semibold text-foreground"
                         >
                           Shipping Address
                         </p>
@@ -222,23 +266,17 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                           class="mt-2"
                         >
                           <div
-                            class="space-y-2"
+                            class="text-sm font-normal leading-5 text-foreground"
                           >
                             <div>
-                              <p
-                                class="text-sm font-medium leading-none text-left text-muted-foreground"
-                              >
+                              <p>
                                 John Snow
                               </p>
                             </div>
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
+                            <p>
                               2030 Market street 8th st
                             </p>
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
+                            <p>
                               98121, Seattle, WA, US
                             </p>
                           </div>
@@ -265,24 +303,24 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
             data-slot="card"
           >
             <div
-              class="p-6"
+              class="px-[var(--cart-summary-px)]"
               data-slot="card-content"
             >
               <div
-                class="space-y-5"
+                class="space-y-4"
                 data-testid="sf-order-summary"
               >
                 <div
                   aria-labelledby="order-summary-heading"
-                  class="space-y-4"
+                  class="space-y-2"
                   role="region"
                 >
                   <div
-                    class="space-y-4 text-sm"
+                    class="space-y-2 text-sm"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -323,8 +361,11 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                       </span>
                     </div>
                   </div>
+                  <hr
+                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+                  />
                   <div
-                    class="space-y-4 w-full text-sm"
+                    class="space-y-2 w-full text-sm pt-2"
                   >
                     <div
                       class="flex w-full justify-between items-center"
@@ -341,12 +382,381 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                       </span>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`OrderDetails stories snapshot > Default story renders and matches snapshot 1`] = `
+<div
+  data-section="order-details"
+>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+    data-slot="card"
+  >
+    <div
+      class="px-6 pt-0 pb-6 space-y-6"
+      data-slot="card-content"
+    >
+      <div
+        class="flex flex-col items-start gap-4 sm:flex-row sm:justify-between"
+      >
+        <div>
+          <h1
+            class="text-xl font-bold"
+          >
+            Order Details
+          </h1>
+          <p
+            class="mt-1 flex items-center gap-0 text-base font-medium text-muted-foreground"
+            data-testid="order-number"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-hash size-4 shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="4"
+                x2="20"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="4"
+                x2="20"
+                y1="15"
+                y2="15"
+              />
+              <line
+                x1="10"
+                x2="8"
+                y1="3"
+                y2="21"
+              />
+              <line
+                x1="16"
+                x2="14"
+                y1="3"
+                y2="21"
+              />
+            </svg>
+            <span>
+              INO001
+            </span>
+          </p>
+        </div>
+        <span
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+          data-slot="badge"
+          data-testid="order-status-badge"
+        >
+          New
+        </span>
+      </div>
+      <div
+        aria-hidden="true"
+        class="border-t border-muted-foreground/20"
+      />
+      <div
+        class="grid grid-cols-1 lg:grid-cols-3 gap-6"
+      >
+        <div
+          class="lg:col-span-2 space-y-4"
+        >
+          <h2
+            class="text-lg font-semibold"
+          >
+            Items Ordered
+          </h2>
+          <div
+            class="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none p-0 overflow-visible"
+            data-slot="card"
+          >
+            <div
+              class="p-0"
+              data-slot="card-content"
+            >
+              <div
+                class=""
+                data-shipment-id="me"
+              >
+                <div
+                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
+                >
+                  <p
+                    class="text-sm min-w-0 font-medium"
+                  >
+                    Shipment 1
+                  </p>
+                </div>
+                <div
+                  class="p-3"
+                >
+                  <ul
+                    class="space-y-4"
+                  >
+                    <li
+                      data-testid="order-item"
+                    >
+                      <div
+                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+                      >
+                        <a
+                          class="flex-shrink-0 block"
+                          data-discover="true"
+                          href="/product/701643108633M"
+                        >
+                          <div
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                          >
+                            <img
+                              alt="First Product"
+                              class="h-full w-full object-contain"
+                              src="https://example.com/product.jpg"
+                            />
+                          </div>
+                        </a>
+                        <div
+                          class="min-w-0 flex-1 space-y-1"
+                        >
+                          <div
+                            class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
+                          >
+                            <h2
+                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                            >
+                              <a
+                                class="text-foreground hover:text-primary block break-words"
+                                data-discover="true"
+                                href="/product/701643108633M"
+                                title="First Product"
+                              >
+                                First Product
+                              </a>
+                            </h2>
+                          </div>
+                          <div />
+                          <p
+                            class="text-xs text-muted-foreground"
+                          >
+                            Qty: 1
+                          </p>
+                        </div>
+                        <div
+                          class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
+                        >
+                          <div
+                            class="items-center gap-2"
+                          >
+                            <span
+                              aria-label="Current price: £61.99"
+                              aria-live="polite"
+                              class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
+                            >
+                              £61.99
+                            </span>
+                            <span
+                              aria-atomic="true"
+                              aria-live="polite"
+                              class="sr-only"
+                            >
+                              First Product
+                              Current price: £61.99
+                            </span>
+                             
+                          </div>
+                          <a
+                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            data-discover="true"
+                            data-size="sm"
+                            data-slot="button"
+                            data-variant="default"
+                            href="/product/701643108633M"
+                          >
+                            Buy Again
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  class="mt-2 border-t border-muted-foreground/20 pt-4 px-3 pb-3 mx-3"
+                >
                   <div
-                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-                    data-orientation="horizontal"
-                    data-slot="separator"
-                    role="none"
+                    class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                  >
+                    <div
+                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      data-card="tracking-number"
+                      data-slot="card"
+                    >
+                      <div
+                        class="p-3"
+                        data-slot="card-content"
+                      >
+                        <p
+                          class="text-xs font-semibold text-foreground"
+                        >
+                          Tracking Number
+                        </p>
+                        <p
+                          class="mt-2 text-sm font-medium text-foreground break-all"
+                        >
+                          1234567890
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      data-card="shipping-address"
+                      data-slot="card"
+                    >
+                      <div
+                        class="p-3"
+                        data-slot="card-content"
+                      >
+                        <p
+                          class="text-xs font-semibold text-foreground"
+                        >
+                          Shipping Address
+                        </p>
+                        <div
+                          class="mt-2"
+                        >
+                          <div
+                            class="text-sm font-normal leading-5 text-foreground"
+                          >
+                            <div>
+                              <p>
+                                John Snow
+                              </p>
+                            </div>
+                            <p>
+                              2030 Market street 8th st
+                            </p>
+                            <p>
+                              98121, Seattle, WA, US
+                            </p>
+                          </div>
+                        </div>
+                        <p
+                          class="mt-2 text-sm text-muted-foreground"
+                        >
+                          Ground
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-4"
+        >
+          <h3
+            class="text-lg font-semibold"
+          >
+            Order Summary
+          </h3>
+          <div
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            data-slot="card"
+          >
+            <div
+              class="px-[var(--cart-summary-px)]"
+              data-slot="card-content"
+            >
+              <div
+                class="space-y-4"
+                data-testid="sf-order-summary"
+              >
+                <div
+                  aria-labelledby="order-summary-heading"
+                  class="space-y-2"
+                  role="region"
+                >
+                  <div
+                    class="space-y-2 text-sm"
+                  >
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span>
+                        Subtotal
+                      </span>
+                      <span>
+                        £61.99
+                      </span>
+                    </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <div
+                        class="flex items-center"
+                      >
+                        <span>
+                          Shipping
+                        </span>
+                      </div>
+                      <span
+                        class="text-muted-foreground"
+                      >
+                        TBD
+                      </span>
+                    </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span>
+                        Tax
+                      </span>
+                      <span
+                        class="text-muted-foreground"
+                      >
+                        TBD
+                      </span>
+                    </div>
+                  </div>
+                  <hr
+                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
                   />
+                  <div
+                    class="space-y-2 w-full text-sm pt-2"
+                  >
+                    <div
+                      class="flex w-full justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Order Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        £71.38
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -362,14 +772,6 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
 <div
   data-section="order-details"
 >
-  <a
-    class="inline-block text-sm text-muted-foreground hover:text-foreground mb-5"
-    data-discover="true"
-    href="/account/orders"
-  >
-    &lt; 
-    Back to Order History
-  </a>
   <div
     class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
     data-slot="card"
@@ -383,22 +785,60 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
       >
         <div>
           <h1
-            class="text-2xl font-bold"
+            class="text-xl font-bold"
           >
             Order Details
           </h1>
           <p
-            class="mt-1 text-base font-medium text-muted-foreground"
+            class="mt-1 flex items-center gap-0 text-base font-medium text-muted-foreground"
+            data-testid="order-number"
           >
-            Order
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-hash size-4 shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="4"
+                x2="20"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="4"
+                x2="20"
+                y1="15"
+                y2="15"
+              />
+              <line
+                x1="10"
+                x2="8"
+                y1="3"
+                y2="21"
+              />
+              <line
+                x1="16"
+                x2="14"
+                y1="3"
+                y2="21"
+              />
+            </svg>
             <span>
-               #
               INV002
             </span>
           </p>
         </div>
         <span
-          class="inline-flex w-fit items-center bg-primary/10 px-3 py-1 text-sm font-medium text-primary shrink-0"
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+          data-slot="badge"
           data-testid="order-status-badge"
         >
           New
@@ -432,22 +872,12 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                 data-shipment-id="ship-a"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none"
+                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
-                    class="text-sm"
+                    class="text-sm min-w-0 font-medium"
                   >
-                    <span
-                      class="font-medium"
-                    >
-                      Shipment 1
-                    </span>
-                    <span
-                      class="text-xs text-muted-foreground"
-                    >
-                       → 
-                      Alice Smith
-                    </span>
+                    Shipment 1
                   </p>
                 </div>
                 <div
@@ -460,23 +890,29 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
-                        <div
-                          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                        <a
+                          class="flex-shrink-0 block"
+                          data-discover="true"
+                          href="/product/prod-a"
                         >
                           <div
-                            class="w-full h-full bg-muted rounded"
-                          />
-                        </div>
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                          >
+                            <div
+                              class="w-full h-full bg-muted rounded"
+                            />
+                          </div>
+                        </a>
                         <div
                           class="min-w-0 flex-1 space-y-1"
                         >
                           <div
-                            class="mb-4 flex items-start gap-2 min-w-0"
+                            class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                             >
                               <a
                                 class="text-foreground hover:text-primary block break-words"
@@ -488,65 +924,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                               </a>
                             </h2>
                           </div>
-                          <div>
-                            <div
-                              class="flex items-center gap-2 mb-1 "
-                            >
-                              <span
-                                class="text-sm text-muted-foreground"
-                              >
-                                Promotions:
-                                 
-                                <span
-                                  class="text-success font-medium"
-                                >
-                                  £0.00
-                                </span>
-                              </span>
-                              <div
-                                class="flex items-center"
-                              >
-                                <div
-                                  class="relative"
-                                >
-                                  <button
-                                    aria-label="Info"
-                                    class="gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-9 w-3.5 h-3.5 min-w-0 p-0 flex items-center justify-center"
-                                    data-size="icon"
-                                    data-slot="tooltip-trigger"
-                                    data-state="closed"
-                                    data-variant="ghost"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-info w-[14px] h-[14px] text-muted-foreground"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <circle
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                      />
-                                      <path
-                                        d="M12 16v-4"
-                                      />
-                                      <path
-                                        d="M12 8h.01"
-                                      />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                          <div />
                           <p
                             class="text-xs text-muted-foreground"
                           >
@@ -607,7 +985,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                         data-slot="card-content"
                       >
                         <p
-                          class="text-xs font-semibold text-muted-foreground"
+                          class="text-xs font-semibold text-foreground"
                         >
                           Shipping Address
                         </p>
@@ -615,12 +993,10 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                           class="mt-2"
                         >
                           <div
-                            class="space-y-2"
+                            class="text-sm font-normal leading-5 text-foreground"
                           >
                             <div>
-                              <p
-                                class="text-sm font-medium leading-none text-left text-muted-foreground"
-                              >
+                              <p>
                                 Alice Smith
                               </p>
                             </div>
@@ -636,22 +1012,12 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                 data-shipment-id="ship-b"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none"
+                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
-                    class="text-sm"
+                    class="text-sm min-w-0 font-medium"
                   >
-                    <span
-                      class="font-medium"
-                    >
-                      Shipment 2
-                    </span>
-                    <span
-                      class="text-xs text-muted-foreground"
-                    >
-                       → 
-                      Bob Jones
-                    </span>
+                    Shipment 2
                   </p>
                 </div>
                 <div
@@ -664,23 +1030,29 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
-                        <div
-                          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                        <a
+                          class="flex-shrink-0 block"
+                          data-discover="true"
+                          href="/product/prod-b"
                         >
                           <div
-                            class="w-full h-full bg-muted rounded"
-                          />
-                        </div>
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                          >
+                            <div
+                              class="w-full h-full bg-muted rounded"
+                            />
+                          </div>
+                        </a>
                         <div
                           class="min-w-0 flex-1 space-y-1"
                         >
                           <div
-                            class="mb-4 flex items-start gap-2 min-w-0"
+                            class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                             >
                               <a
                                 class="text-foreground hover:text-primary block break-words"
@@ -692,65 +1064,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                               </a>
                             </h2>
                           </div>
-                          <div>
-                            <div
-                              class="flex items-center gap-2 mb-1 "
-                            >
-                              <span
-                                class="text-sm text-muted-foreground"
-                              >
-                                Promotions:
-                                 
-                                <span
-                                  class="text-success font-medium"
-                                >
-                                  £0.00
-                                </span>
-                              </span>
-                              <div
-                                class="flex items-center"
-                              >
-                                <div
-                                  class="relative"
-                                >
-                                  <button
-                                    aria-label="Info"
-                                    class="gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-9 w-3.5 h-3.5 min-w-0 p-0 flex items-center justify-center"
-                                    data-size="icon"
-                                    data-slot="tooltip-trigger"
-                                    data-state="closed"
-                                    data-variant="ghost"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-info w-[14px] h-[14px] text-muted-foreground"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <circle
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                      />
-                                      <path
-                                        d="M12 16v-4"
-                                      />
-                                      <path
-                                        d="M12 8h.01"
-                                      />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                          <div />
                           <p
                             class="text-xs text-muted-foreground"
                           >
@@ -811,7 +1125,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                         data-slot="card-content"
                       >
                         <p
-                          class="text-xs font-semibold text-muted-foreground"
+                          class="text-xs font-semibold text-foreground"
                         >
                           Shipping Address
                         </p>
@@ -819,12 +1133,10 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                           class="mt-2"
                         >
                           <div
-                            class="space-y-2"
+                            class="text-sm font-normal leading-5 text-foreground"
                           >
                             <div>
-                              <p
-                                class="text-sm font-medium leading-none text-left text-muted-foreground"
-                              >
+                              <p>
                                 Bob Jones
                               </p>
                             </div>
@@ -847,24 +1159,24 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
             data-slot="card"
           >
             <div
-              class="p-6"
+              class="px-[var(--cart-summary-px)]"
               data-slot="card-content"
             >
               <div
-                class="space-y-5"
+                class="space-y-4"
                 data-testid="sf-order-summary"
               >
                 <div
                   aria-labelledby="order-summary-heading"
-                  class="space-y-4"
+                  class="space-y-2"
                   role="region"
                 >
                   <div
-                    class="space-y-4 text-sm"
+                    class="space-y-2 text-sm"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -905,8 +1217,11 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                       </span>
                     </div>
                   </div>
+                  <hr
+                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+                  />
                   <div
-                    class="space-y-4 w-full text-sm"
+                    class="space-y-2 w-full text-sm pt-2"
                   >
                     <div
                       class="flex w-full justify-between items-center"
@@ -923,12 +1238,6 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                       </span>
                     </div>
                   </div>
-                  <div
-                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-                    data-orientation="horizontal"
-                    data-slot="separator"
-                    role="none"
-                  />
                 </div>
               </div>
             </div>
@@ -940,18 +1249,10 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
 </div>
 `;
 
-exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches snapshot 1`] = `
+exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matches snapshot 1`] = `
 <div
   data-section="order-details"
 >
-  <a
-    class="inline-block text-sm text-muted-foreground hover:text-foreground mb-5"
-    data-discover="true"
-    href="/account/orders"
-  >
-    &lt; 
-    Back to Order History
-  </a>
   <div
     class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
     data-slot="card"
@@ -965,25 +1266,81 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
       >
         <div>
           <h1
-            class="text-2xl font-bold"
+            class="text-xl font-bold"
           >
             Order Details
           </h1>
           <p
-            class="mt-1 text-base font-medium text-muted-foreground"
+            class="mt-1 flex items-center gap-0 text-base font-medium text-muted-foreground"
+            data-testid="order-number"
           >
-            Order
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-hash size-4 shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="4"
+                x2="20"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="4"
+                x2="20"
+                y1="15"
+                y2="15"
+              />
+              <line
+                x1="10"
+                x2="8"
+                y1="3"
+                y2="21"
+              />
+              <line
+                x1="16"
+                x2="14"
+                y1="3"
+                y2="21"
+              />
+            </svg>
             <span>
-               #
               INO001
             </span>
           </p>
         </div>
         <span
-          class="inline-flex w-fit items-center bg-primary/10 px-3 py-1 text-sm font-medium text-primary shrink-0"
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
+          data-slot="badge"
           data-testid="order-status-badge"
         >
-          orders.status.inTransit
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-check mr-1 inline size-3.5"
+            data-testid="order-status-icon"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20 6 9 17l-5-5"
+            />
+          </svg>
+          Replaced
         </span>
       </div>
       <div
@@ -1014,22 +1371,12 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                 data-shipment-id="me"
               >
                 <div
-                  class="px-3 py-2 bg-muted rounded-none"
+                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
                 >
                   <p
-                    class="text-sm"
+                    class="text-sm min-w-0 font-medium"
                   >
-                    <span
-                      class="font-medium"
-                    >
-                      Shipment 1
-                    </span>
-                    <span
-                      class="text-xs text-muted-foreground"
-                    >
-                       → 
-                      John Snow
-                    </span>
+                    Shipment 1
                   </p>
                 </div>
                 <div
@@ -1042,25 +1389,31 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                       data-testid="order-item"
                     >
                       <div
-                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center"
+                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
-                        <div
-                          class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                        <a
+                          class="flex-shrink-0 block"
+                          data-discover="true"
+                          href="/product/701643108633M"
                         >
-                          <img
-                            alt="First Product"
-                            class="h-full w-full object-contain"
-                            src="https://example.com/product.jpg"
-                          />
-                        </div>
+                          <div
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                          >
+                            <img
+                              alt="First Product"
+                              class="h-full w-full object-contain"
+                              src="https://example.com/product.jpg"
+                            />
+                          </div>
+                        </a>
                         <div
                           class="min-w-0 flex-1 space-y-1"
                         >
                           <div
-                            class="mb-4 flex items-start gap-2 min-w-0"
+                            class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                             >
                               <a
                                 class="text-foreground hover:text-primary block break-words"
@@ -1133,7 +1486,7 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                         data-slot="card-content"
                       >
                         <p
-                          class="text-xs font-semibold text-muted-foreground"
+                          class="text-xs font-semibold text-foreground"
                         >
                           Tracking Number
                         </p>
@@ -1154,7 +1507,7 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                         data-slot="card-content"
                       >
                         <p
-                          class="text-xs font-semibold text-muted-foreground"
+                          class="text-xs font-semibold text-foreground"
                         >
                           Shipping Address
                         </p>
@@ -1162,23 +1515,17 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                           class="mt-2"
                         >
                           <div
-                            class="space-y-2"
+                            class="text-sm font-normal leading-5 text-foreground"
                           >
                             <div>
-                              <p
-                                class="text-sm font-medium leading-none text-left text-muted-foreground"
-                              >
+                              <p>
                                 John Snow
                               </p>
                             </div>
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
+                            <p>
                               2030 Market street 8th st
                             </p>
-                            <p
-                              class="text-sm font-medium leading-none text-left text-muted-foreground"
-                            >
+                            <p>
                               98121, Seattle, WA, US
                             </p>
                           </div>
@@ -1205,24 +1552,24 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
             data-slot="card"
           >
             <div
-              class="p-6"
+              class="px-[var(--cart-summary-px)]"
               data-slot="card-content"
             >
               <div
-                class="space-y-5"
+                class="space-y-4"
                 data-testid="sf-order-summary"
               >
                 <div
                   aria-labelledby="order-summary-heading"
-                  class="space-y-4"
+                  class="space-y-2"
                   role="region"
                 >
                   <div
-                    class="space-y-4 text-sm"
+                    class="space-y-2 text-sm"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -1263,8 +1610,11 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                       </span>
                     </div>
                   </div>
+                  <hr
+                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+                  />
                   <div
-                    class="space-y-4 w-full text-sm"
+                    class="space-y-2 w-full text-sm pt-2"
                   >
                     <div
                       class="flex w-full justify-between items-center"
@@ -1281,12 +1631,790 @@ exports[`OrderDetails stories snapshot > ShippedStatus story renders and matches
                       </span>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and matches snapshot 1`] = `
+<div
+  data-section="order-details"
+>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+    data-slot="card"
+  >
+    <div
+      class="px-6 pt-0 pb-6 space-y-6"
+      data-slot="card-content"
+    >
+      <div
+        class="flex flex-col items-start gap-4 sm:flex-row sm:justify-between"
+      >
+        <div>
+          <h1
+            class="text-xl font-bold"
+          >
+            Order Details
+          </h1>
+          <p
+            class="mt-1 flex items-center gap-0 text-base font-medium text-muted-foreground"
+            data-testid="order-number"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-hash size-4 shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="4"
+                x2="20"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="4"
+                x2="20"
+                y1="15"
+                y2="15"
+              />
+              <line
+                x1="10"
+                x2="8"
+                y1="3"
+                y2="21"
+              />
+              <line
+                x1="16"
+                x2="14"
+                y1="3"
+                y2="21"
+              />
+            </svg>
+            <span>
+              INO001
+            </span>
+          </p>
+        </div>
+        <span
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+          data-slot="badge"
+          data-testid="order-status-badge"
+        >
+          New
+        </span>
+      </div>
+      <div
+        aria-hidden="true"
+        class="border-t border-muted-foreground/20"
+      />
+      <div
+        class="grid grid-cols-1 lg:grid-cols-3 gap-6"
+      >
+        <div
+          class="lg:col-span-2 space-y-4"
+        >
+          <h2
+            class="text-lg font-semibold"
+          >
+            Items Ordered
+          </h2>
+          <div
+            class="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none p-0 overflow-visible"
+            data-slot="card"
+          >
+            <div
+              class="p-0"
+              data-slot="card-content"
+            >
+              <div
+                class=""
+                data-shipment-id="me"
+              >
+                <div
+                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
+                >
+                  <p
+                    class="text-sm min-w-0 font-medium"
+                  >
+                    Shipment 1
+                  </p>
+                </div>
+                <div
+                  class="p-3"
+                >
+                  <ul
+                    class="space-y-4"
+                  >
+                    <li
+                      data-testid="order-item"
+                    >
+                      <div
+                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+                      >
+                        <a
+                          class="flex-shrink-0 block"
+                          data-discover="true"
+                          href="/product/701643108633M"
+                        >
+                          <div
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                          >
+                            <img
+                              alt="First Product"
+                              class="h-full w-full object-contain"
+                              src="https://example.com/product.jpg"
+                            />
+                          </div>
+                        </a>
+                        <div
+                          class="min-w-0 flex-1 space-y-1"
+                        >
+                          <div
+                            class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
+                          >
+                            <h2
+                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                            >
+                              <a
+                                class="text-foreground hover:text-primary block break-words"
+                                data-discover="true"
+                                href="/product/701643108633M"
+                                title="First Product"
+                              >
+                                First Product
+                              </a>
+                            </h2>
+                          </div>
+                          <div />
+                          <p
+                            class="text-xs text-muted-foreground"
+                          >
+                            Qty: 1
+                          </p>
+                        </div>
+                        <div
+                          class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
+                        >
+                          <div
+                            class="items-center gap-2"
+                          >
+                            <span
+                              aria-label="Current price: £61.99"
+                              aria-live="polite"
+                              class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
+                            >
+                              £61.99
+                            </span>
+                            <span
+                              aria-atomic="true"
+                              aria-live="polite"
+                              class="sr-only"
+                            >
+                              First Product
+                              Current price: £61.99
+                            </span>
+                             
+                          </div>
+                          <a
+                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            data-discover="true"
+                            data-size="sm"
+                            data-slot="button"
+                            data-variant="default"
+                            href="/product/701643108633M"
+                          >
+                            Buy Again
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  class="mt-2 border-t border-muted-foreground/20 pt-4 px-3 pb-3 mx-3"
+                >
                   <div
-                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-                    data-orientation="horizontal"
-                    data-slot="separator"
-                    role="none"
+                    class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                  >
+                    <div
+                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      data-card="tracking-number"
+                      data-slot="card"
+                    >
+                      <div
+                        class="p-3"
+                        data-slot="card-content"
+                      >
+                        <p
+                          class="text-xs font-semibold text-foreground"
+                        >
+                          Tracking Number
+                        </p>
+                        <p
+                          class="mt-2 text-sm font-medium text-foreground break-all"
+                        >
+                          1234567890
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      data-card="shipping-address"
+                      data-slot="card"
+                    >
+                      <div
+                        class="p-3"
+                        data-slot="card-content"
+                      >
+                        <p
+                          class="text-xs font-semibold text-foreground"
+                        >
+                          Shipping Address
+                        </p>
+                        <div
+                          class="mt-2"
+                        >
+                          <div
+                            class="text-sm font-normal leading-5 text-foreground"
+                          >
+                            <div>
+                              <p>
+                                John Snow
+                              </p>
+                            </div>
+                            <p>
+                              2030 Market street 8th st
+                            </p>
+                            <p>
+                              98121, Seattle, WA, US
+                            </p>
+                          </div>
+                        </div>
+                        <p
+                          class="mt-2 text-sm text-muted-foreground"
+                        >
+                          Ground
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-4"
+        >
+          <h3
+            class="text-lg font-semibold"
+          >
+            Order Summary
+          </h3>
+          <div
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            data-slot="card"
+          >
+            <div
+              class="px-[var(--cart-summary-px)]"
+              data-slot="card-content"
+            >
+              <div
+                class="space-y-4"
+                data-testid="sf-order-summary"
+              >
+                <div
+                  aria-labelledby="order-summary-heading"
+                  class="space-y-2"
+                  role="region"
+                >
+                  <div
+                    class="space-y-2 text-sm"
+                  >
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span>
+                        Subtotal
+                      </span>
+                      <span>
+                        £61.99
+                      </span>
+                    </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <div
+                        class="flex items-center"
+                      >
+                        <span>
+                          Shipping
+                        </span>
+                      </div>
+                      <span
+                        class="text-muted-foreground"
+                      >
+                        TBD
+                      </span>
+                    </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span>
+                        Tax
+                      </span>
+                      <span
+                        class="text-muted-foreground"
+                      >
+                        TBD
+                      </span>
+                    </div>
+                  </div>
+                  <hr
+                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
                   />
+                  <div
+                    class="space-y-2 w-full text-sm pt-2"
+                  >
+                    <div
+                      class="flex w-full justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Order Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        £71.38
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="space-y-1.5"
+          >
+            <p
+              class="text-xs font-semibold text-foreground"
+            >
+              Payment Method
+            </p>
+            <div
+              class="text-card-foreground flex flex-col gap-6 shadow-sm rounded-none p-0 bg-card border border-border"
+              data-card="payment-method"
+              data-slot="card"
+            >
+              <div
+                class="p-3 py-2"
+                data-slot="card-content"
+              >
+                <ul
+                  class="text-sm font-medium text-muted-foreground space-y-1 list-none"
+                >
+                  <li>
+                    Visa Ending in 4242
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`OrderDetails stories snapshot > WithShippingStatus story renders and matches snapshot 1`] = `
+<div
+  data-section="order-details"
+>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 shadow-sm rounded-none"
+    data-slot="card"
+  >
+    <div
+      class="px-6 pt-0 pb-6 space-y-6"
+      data-slot="card-content"
+    >
+      <div
+        class="flex flex-col items-start gap-4 sm:flex-row sm:justify-between"
+      >
+        <div>
+          <h1
+            class="text-xl font-bold"
+          >
+            Order Details
+          </h1>
+          <p
+            class="mt-1 flex items-center gap-0 text-base font-medium text-muted-foreground"
+            data-testid="order-number"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-hash size-4 shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="4"
+                x2="20"
+                y1="9"
+                y2="9"
+              />
+              <line
+                x1="4"
+                x2="20"
+                y1="15"
+                y2="15"
+              />
+              <line
+                x1="10"
+                x2="8"
+                y1="3"
+                y2="21"
+              />
+              <line
+                x1="16"
+                x2="14"
+                y1="3"
+                y2="21"
+              />
+            </svg>
+            <span>
+              INO001
+            </span>
+          </p>
+        </div>
+        <span
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+          data-slot="badge"
+          data-testid="order-status-badge"
+        >
+          New
+        </span>
+      </div>
+      <div
+        aria-hidden="true"
+        class="border-t border-muted-foreground/20"
+      />
+      <div
+        class="grid grid-cols-1 lg:grid-cols-3 gap-6"
+      >
+        <div
+          class="lg:col-span-2 space-y-4"
+        >
+          <h2
+            class="text-lg font-semibold"
+          >
+            Items Ordered
+          </h2>
+          <div
+            class="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none p-0 overflow-visible"
+            data-slot="card"
+          >
+            <div
+              class="p-0"
+              data-slot="card-content"
+            >
+              <div
+                class=""
+                data-shipment-id="me"
+              >
+                <div
+                  class="px-3 py-2 bg-muted rounded-none flex flex-nowrap items-center justify-between gap-2"
+                >
+                  <p
+                    class="text-sm min-w-0 font-medium"
+                  >
+                    Shipment 1
+                  </p>
+                  <span
+                    class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
+                    data-slot="badge"
+                    data-testid="shipping-status-badge"
+                  >
+                    Shipped
+                  </span>
+                </div>
+                <div
+                  class="p-3"
+                >
+                  <ul
+                    class="space-y-4"
+                  >
+                    <li
+                      data-testid="order-item"
+                    >
+                      <div
+                        class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
+                      >
+                        <a
+                          class="flex-shrink-0 block"
+                          data-discover="true"
+                          href="/product/701643108633M"
+                        >
+                          <div
+                            class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
+                          >
+                            <img
+                              alt="First Product"
+                              class="h-full w-full object-contain"
+                              src="https://example.com/product.jpg"
+                            />
+                          </div>
+                        </a>
+                        <div
+                          class="min-w-0 flex-1 space-y-1"
+                        >
+                          <div
+                            class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
+                          >
+                            <h2
+                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                            >
+                              <a
+                                class="text-foreground hover:text-primary block break-words"
+                                data-discover="true"
+                                href="/product/701643108633M"
+                                title="First Product"
+                              >
+                                First Product
+                              </a>
+                            </h2>
+                          </div>
+                          <div />
+                          <p
+                            class="text-xs text-muted-foreground"
+                          >
+                            Qty: 1
+                          </p>
+                        </div>
+                        <div
+                          class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
+                        >
+                          <div
+                            class="items-center gap-2"
+                          >
+                            <span
+                              aria-label="Current price: £61.99"
+                              aria-live="polite"
+                              class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
+                            >
+                              £61.99
+                            </span>
+                            <span
+                              aria-atomic="true"
+                              aria-live="polite"
+                              class="sr-only"
+                            >
+                              First Product
+                              Current price: £61.99
+                            </span>
+                             
+                          </div>
+                          <a
+                            class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 gap-1.5 px-3 has-[>svg]:px-2.5 rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs"
+                            data-discover="true"
+                            data-size="sm"
+                            data-slot="button"
+                            data-variant="default"
+                            href="/product/701643108633M"
+                          >
+                            Buy Again
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  class="mt-2 border-t border-muted-foreground/20 pt-4 px-3 pb-3 mx-3"
+                >
+                  <div
+                    class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                  >
+                    <div
+                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      data-card="tracking-number"
+                      data-slot="card"
+                    >
+                      <div
+                        class="p-3"
+                        data-slot="card-content"
+                      >
+                        <p
+                          class="text-xs font-semibold text-foreground"
+                        >
+                          Tracking Number
+                        </p>
+                        <p
+                          class="mt-2 text-sm font-medium text-foreground break-all"
+                        >
+                          1234567890
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="text-card-foreground flex flex-col gap-6 border shadow-sm rounded-none min-h-[4rem] p-0 bg-card"
+                      data-card="shipping-address"
+                      data-slot="card"
+                    >
+                      <div
+                        class="p-3"
+                        data-slot="card-content"
+                      >
+                        <p
+                          class="text-xs font-semibold text-foreground"
+                        >
+                          Shipping Address
+                        </p>
+                        <div
+                          class="mt-2"
+                        >
+                          <div
+                            class="text-sm font-normal leading-5 text-foreground"
+                          >
+                            <div>
+                              <p>
+                                John Snow
+                              </p>
+                            </div>
+                            <p>
+                              2030 Market street 8th st
+                            </p>
+                            <p>
+                              98121, Seattle, WA, US
+                            </p>
+                          </div>
+                        </div>
+                        <p
+                          class="mt-2 text-sm text-muted-foreground"
+                        >
+                          Ground
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-4"
+        >
+          <h3
+            class="text-lg font-semibold"
+          >
+            Order Summary
+          </h3>
+          <div
+            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            data-slot="card"
+          >
+            <div
+              class="px-[var(--cart-summary-px)]"
+              data-slot="card-content"
+            >
+              <div
+                class="space-y-4"
+                data-testid="sf-order-summary"
+              >
+                <div
+                  aria-labelledby="order-summary-heading"
+                  class="space-y-2"
+                  role="region"
+                >
+                  <div
+                    class="space-y-2 text-sm"
+                  >
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span>
+                        Subtotal
+                      </span>
+                      <span>
+                        £61.99
+                      </span>
+                    </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <div
+                        class="flex items-center"
+                      >
+                        <span>
+                          Shipping
+                        </span>
+                      </div>
+                      <span
+                        class="text-muted-foreground"
+                      >
+                        TBD
+                      </span>
+                    </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span>
+                        Tax
+                      </span>
+                      <span
+                        class="text-muted-foreground"
+                      >
+                        TBD
+                      </span>
+                    </div>
+                  </div>
+                  <hr
+                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+                  />
+                  <div
+                    class="space-y-2 w-full text-sm pt-2"
+                  >
+                    <div
+                      class="flex w-full justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Order Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        £71.38
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

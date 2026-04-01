@@ -22,7 +22,7 @@ exports[`MarketingConsent stories snapshot > ClickEditButton story renders and m
     >
       <button
         aria-label="Edit marketing preferences"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
@@ -68,15 +68,18 @@ exports[`MarketingConsent stories snapshot > ClickEditButton story renders and m
             <button
               aria-checked="false"
               aria-label="Sale: Not opted in"
-              class="peer inline-flex h-6 w-11 cursor-pointer items-center rounded-full border-2 border-transparent shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input shrink-0 sm:ml-4"
+              class="peer inline-flex h-6 w-11 items-center rounded-full border-2 border-transparent shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input shrink-0 sm:ml-4 cursor-default disabled:cursor-default"
+              data-disabled=""
               data-slot="switch"
               data-state="unchecked"
+              disabled=""
               role="switch"
               type="button"
               value="on"
             >
               <span
                 class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-0"
+                data-disabled=""
                 data-slot="switch-thumb"
                 data-state="unchecked"
               />
@@ -97,15 +100,18 @@ exports[`MarketingConsent stories snapshot > ClickEditButton story renders and m
             <button
               aria-checked="true"
               aria-label="Newsletter: Opted in"
-              class="peer inline-flex h-6 w-11 cursor-pointer items-center rounded-full border-2 border-transparent shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input shrink-0 sm:ml-4"
+              class="peer inline-flex h-6 w-11 items-center rounded-full border-2 border-transparent shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input shrink-0 sm:ml-4 cursor-default disabled:cursor-default"
+              data-disabled=""
               data-slot="switch"
               data-state="checked"
+              disabled=""
               role="switch"
               type="button"
               value="on"
             >
               <span
                 class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-0"
+                data-disabled=""
                 data-slot="switch-thumb"
                 data-state="checked"
               />
@@ -145,7 +151,7 @@ exports[`MarketingConsent stories snapshot > Default story renders and matches s
     >
       <button
         aria-label="Edit marketing preferences"
-        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer"
         data-size="sm"
         data-slot="button"
         data-variant="outline"
@@ -191,15 +197,18 @@ exports[`MarketingConsent stories snapshot > Default story renders and matches s
             <button
               aria-checked="false"
               aria-label="Sale: Not opted in"
-              class="peer inline-flex h-6 w-11 cursor-pointer items-center rounded-full border-2 border-transparent shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input shrink-0 sm:ml-4"
+              class="peer inline-flex h-6 w-11 items-center rounded-full border-2 border-transparent shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input shrink-0 sm:ml-4 cursor-default disabled:cursor-default"
+              data-disabled=""
               data-slot="switch"
               data-state="unchecked"
+              disabled=""
               role="switch"
               type="button"
               value="on"
             >
               <span
                 class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-0"
+                data-disabled=""
                 data-slot="switch-thumb"
                 data-state="unchecked"
               />
@@ -220,15 +229,18 @@ exports[`MarketingConsent stories snapshot > Default story renders and matches s
             <button
               aria-checked="true"
               aria-label="Newsletter: Opted in"
-              class="peer inline-flex h-6 w-11 cursor-pointer items-center rounded-full border-2 border-transparent shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input shrink-0 sm:ml-4"
+              class="peer inline-flex h-6 w-11 items-center rounded-full border-2 border-transparent shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input shrink-0 sm:ml-4 cursor-default disabled:cursor-default"
+              data-disabled=""
               data-slot="switch"
               data-state="checked"
+              disabled=""
               role="switch"
               type="button"
               value="on"
             >
               <span
                 class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-0"
+                data-disabled=""
                 data-slot="switch-thumb"
                 data-state="checked"
               />

@@ -6,136 +6,38 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
+      style="--header-height: 0px;"
     >
       <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        class="flex justify-end px-4 lg:px-9"
+      />
+      <div
+        class="px-4 lg:px-9"
       >
         <div
-          class="flex flex-wrap lg:flex-nowrap items-center justify-between gap-x-4"
+          class="flex items-center gap-x-4 lg:gap-x-6 h-16"
         >
           <a
-            class="flex-shrink-0 flex items-center gap-2 h-16 order-1"
+            class="flex-shrink-0 flex items-center"
+            data-testid="header-logo"
             href="/"
           >
             <img
               alt="Home"
-              class="h-10 w-auto"
-              src="/images/foundations/foundations-logo.svg"
+              class="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+              src="/images/logo.svg"
             />
           </a>
           <div
-            class="flex items-center space-x-2 h-16 order-2 lg:order-4"
-          >
-            <button
-              aria-label="Find a Store"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
-              data-size="default"
-              data-slot="button"
-              data-variant="ghost"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-store size-6"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"
-                />
-                <path
-                  d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"
-                />
-                <path
-                  d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"
-                />
-              </svg>
-            </button>
-            <a
-              aria-controls="radix-_r_2_"
-              aria-expanded="false"
-              aria-haspopup="dialog"
-              aria-label="My Account"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1"
-              data-size="default"
-              data-slot="popover-trigger"
-              data-state="closed"
-              data-variant="ghost"
-              href="/account/overview"
-              type="button"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-user size-5"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
-                />
-                <circle
-                  cx="12"
-                  cy="7"
-                  r="4"
-                />
-              </svg>
-            </a>
-            <button
-              aria-label="My cart, number of items: 0"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
-              data-size="default"
-              data-slot="button"
-              data-variant="ghost"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-shopping-cart size-5"
-                data-testid="shopping-cart-icon"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="8"
-                  cy="21"
-                  r="1"
-                />
-                <circle
-                  cx="19"
-                  cy="21"
-                  r="1"
-                />
-                <path
-                  d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
-                />
-              </svg>
-            </button>
-          </div>
-          <div
-            class="flex items-center order-3 lg:order-2"
+            class="hidden lg:flex items-center"
           />
           <div
-            class="w-full lg:w-auto order-4 lg:order-3 pb-4 lg:pb-0"
+            class="flex-1"
+          />
+          <div
+            class="hidden lg:block"
+            data-testid="header-search-desktop"
           >
             <form
               class="relative z-10"
@@ -150,9 +52,10 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
                   aria-expanded="false"
                   aria-haspopup="listbox"
                   aria-label="Search"
-                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 cursor-not-allowed opacity-60 pointer-events-none"
+                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
                   data-slot="popover-trigger"
                   data-state="closed"
+                  data-testid="header-search"
                   disabled=""
                   placeholder="Search"
                   role="combobox"
@@ -183,234 +86,12 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
               </div>
             </form>
           </div>
-        </div>
-      </div>
-    </header>
-  </div>
-</div>
-`;
-
-exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="min-h-screen bg-background"
-  >
-    <header
-      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
-    >
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-      >
-        <div
-          class="flex flex-wrap lg:flex-nowrap items-center justify-between gap-x-4"
-        >
-          <a
-            class="flex-shrink-0 flex items-center gap-2 h-16 order-1"
-            href="/"
-          >
-            <img
-              alt="Home"
-              class="h-10 w-auto"
-              src="/images/foundations/foundations-logo.svg"
-            />
-          </a>
           <div
-            class="flex items-center space-x-2 h-16 order-2 lg:order-4"
+            class="flex items-center space-x-2"
           >
             <button
               aria-label="Find a Store"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
-              data-size="default"
-              data-slot="button"
-              data-variant="ghost"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-store size-6"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"
-                />
-                <path
-                  d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"
-                />
-                <path
-                  d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"
-                />
-              </svg>
-            </button>
-            <a
-              aria-controls="radix-_r_0_"
-              aria-expanded="false"
-              aria-haspopup="dialog"
-              aria-label="Sign In"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1"
-              data-size="default"
-              data-slot="popover-trigger"
-              data-state="closed"
-              data-variant="ghost"
-              href="/login"
-              type="button"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-log-in size-5"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="m10 17 5-5-5-5"
-                />
-                <path
-                  d="M15 12H3"
-                />
-                <path
-                  d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
-                />
-              </svg>
-            </a>
-            <button
-              aria-label="My cart, number of items: 0"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
-              data-size="default"
-              data-slot="button"
-              data-variant="ghost"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-shopping-cart size-5"
-                data-testid="shopping-cart-icon"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="8"
-                  cy="21"
-                  r="1"
-                />
-                <circle
-                  cx="19"
-                  cy="21"
-                  r="1"
-                />
-                <path
-                  d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
-                />
-              </svg>
-            </button>
-          </div>
-          <div
-            class="flex items-center order-3 lg:order-2"
-          />
-          <div
-            class="w-full lg:w-auto order-4 lg:order-3 pb-4 lg:pb-0"
-          >
-            <form
-              class="relative z-10"
-            >
-              <div
-                class="relative"
-              >
-                <input
-                  aria-autocomplete="list"
-                  aria-controls="radix-_r_1_"
-                  aria-disabled="true"
-                  aria-expanded="false"
-                  aria-haspopup="listbox"
-                  aria-label="Search"
-                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 cursor-not-allowed opacity-60 pointer-events-none"
-                  data-slot="popover-trigger"
-                  data-state="closed"
-                  disabled=""
-                  placeholder="Search"
-                  role="combobox"
-                  type="text"
-                />
-                <svg
-                  aria-hidden="true"
-                  class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="m21 21-4.34-4.34"
-                  />
-                  <circle
-                    cx="11"
-                    cy="11"
-                    r="8"
-                  />
-                </svg>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </header>
-  </div>
-</div>
-`;
-
-exports[`Header stories snapshot > MobileView story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="min-h-screen bg-background"
-  >
-    <header
-      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
-    >
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-      >
-        <div
-          class="flex flex-wrap lg:flex-nowrap items-center justify-between gap-x-4"
-        >
-          <a
-            class="flex-shrink-0 flex items-center gap-2 h-16 order-1"
-            href="/"
-          >
-            <img
-              alt="Home"
-              class="h-10 w-auto"
-              src="/images/foundations/foundations-logo.svg"
-            />
-          </a>
-          <div
-            class="flex items-center space-x-2 h-16 order-2 lg:order-4"
-          >
-            <button
-              aria-label="Find a Store"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 hover:bg-transparent hover:opacity-50 transition-opacity"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
@@ -443,18 +124,18 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
               aria-controls="radix-_r_4_"
               aria-expanded="false"
               aria-haspopup="dialog"
-              aria-label="Sign In"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1"
+              aria-label="My Account"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1 hover:bg-transparent hover:opacity-50 transition-opacity"
               data-size="default"
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/login"
+              href="/account/overview"
               type="button"
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-log-in size-5"
+                class="lucide lucide-user size-5"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -466,19 +147,18 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="m10 17 5-5-5-5"
+                  d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
                 />
-                <path
-                  d="M15 12H3"
-                />
-                <path
-                  d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+                <circle
+                  cx="12"
+                  cy="7"
+                  r="4"
                 />
               </svg>
             </a>
             <button
               aria-label="My cart, number of items: 0"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer hover:bg-transparent hover:opacity-50 transition-opacity"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
@@ -512,12 +192,106 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
                 />
               </svg>
             </button>
+            <div
+              class="lg:hidden"
+            />
           </div>
+        </div>
+        <div
+          class="pb-4 lg:hidden"
+          data-testid="header-search-mobile"
+        >
+          <form
+            class="relative z-10"
+          >
+            <div
+              class="relative"
+            >
+              <input
+                aria-autocomplete="list"
+                aria-controls="radix-_r_5_"
+                aria-disabled="true"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Search"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
+                data-slot="popover-trigger"
+                data-state="closed"
+                data-testid="header-search"
+                disabled=""
+                placeholder="Search"
+                role="combobox"
+                type="text"
+              />
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m21 21-4.34-4.34"
+                />
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="8"
+                />
+              </svg>
+            </div>
+          </form>
+        </div>
+      </div>
+    </header>
+  </div>
+</div>
+`;
+
+exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-background"
+  >
+    <header
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
+      style="--header-height: 0px;"
+    >
+      <div
+        class="flex justify-end px-4 lg:px-9"
+      />
+      <div
+        class="px-4 lg:px-9"
+      >
+        <div
+          class="flex items-center gap-x-4 lg:gap-x-6 h-16"
+        >
+          <a
+            class="flex-shrink-0 flex items-center"
+            data-testid="header-logo"
+            href="/"
+          >
+            <img
+              alt="Home"
+              class="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+              src="/images/logo.svg"
+            />
+          </a>
           <div
-            class="flex items-center order-3 lg:order-2"
+            class="hidden lg:flex items-center"
           />
           <div
-            class="w-full lg:w-auto order-4 lg:order-3 pb-4 lg:pb-0"
+            class="flex-1"
+          />
+          <div
+            class="hidden lg:block"
+            data-testid="header-search-desktop"
           >
             <form
               class="relative z-10"
@@ -527,14 +301,15 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
               >
                 <input
                   aria-autocomplete="list"
-                  aria-controls="radix-_r_5_"
+                  aria-controls="radix-_r_0_"
                   aria-disabled="true"
                   aria-expanded="false"
                   aria-haspopup="listbox"
                   aria-label="Search"
-                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 cursor-not-allowed opacity-60 pointer-events-none"
+                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
                   data-slot="popover-trigger"
                   data-state="closed"
+                  data-testid="header-search"
                   disabled=""
                   placeholder="Search"
                   role="combobox"
@@ -565,6 +340,423 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
               </div>
             </form>
           </div>
+          <div
+            class="flex items-center space-x-2"
+          >
+            <button
+              aria-label="Find a Store"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 hover:bg-transparent hover:opacity-50 transition-opacity"
+              data-size="default"
+              data-slot="button"
+              data-variant="ghost"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-store size-6"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"
+                />
+                <path
+                  d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"
+                />
+                <path
+                  d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"
+                />
+              </svg>
+            </button>
+            <a
+              aria-controls="radix-_r_1_"
+              aria-expanded="false"
+              aria-haspopup="dialog"
+              aria-label="Sign In"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1 hover:bg-transparent hover:opacity-50 transition-opacity"
+              data-size="default"
+              data-slot="popover-trigger"
+              data-state="closed"
+              data-variant="ghost"
+              href="/login"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-log-in size-5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m10 17 5-5-5-5"
+                />
+                <path
+                  d="M15 12H3"
+                />
+                <path
+                  d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+                />
+              </svg>
+            </a>
+            <button
+              aria-label="My cart, number of items: 0"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer hover:bg-transparent hover:opacity-50 transition-opacity"
+              data-size="default"
+              data-slot="button"
+              data-variant="ghost"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-shopping-cart size-5"
+                data-testid="shopping-cart-icon"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="8"
+                  cy="21"
+                  r="1"
+                />
+                <circle
+                  cx="19"
+                  cy="21"
+                  r="1"
+                />
+                <path
+                  d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+                />
+              </svg>
+            </button>
+            <div
+              class="lg:hidden"
+            />
+          </div>
+        </div>
+        <div
+          class="pb-4 lg:hidden"
+          data-testid="header-search-mobile"
+        >
+          <form
+            class="relative z-10"
+          >
+            <div
+              class="relative"
+            >
+              <input
+                aria-autocomplete="list"
+                aria-controls="radix-_r_2_"
+                aria-disabled="true"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Search"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
+                data-slot="popover-trigger"
+                data-state="closed"
+                data-testid="header-search"
+                disabled=""
+                placeholder="Search"
+                role="combobox"
+                type="text"
+              />
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m21 21-4.34-4.34"
+                />
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="8"
+                />
+              </svg>
+            </div>
+          </form>
+        </div>
+      </div>
+    </header>
+  </div>
+</div>
+`;
+
+exports[`Header stories snapshot > MobileView story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-background"
+  >
+    <header
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
+      style="--header-height: 0px;"
+    >
+      <div
+        class="flex justify-end px-4 lg:px-9"
+      />
+      <div
+        class="px-4 lg:px-9"
+      >
+        <div
+          class="flex items-center gap-x-4 lg:gap-x-6 h-16"
+        >
+          <a
+            class="flex-shrink-0 flex items-center"
+            data-testid="header-logo"
+            href="/"
+          >
+            <img
+              alt="Home"
+              class="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+              src="/images/logo.svg"
+            />
+          </a>
+          <div
+            class="hidden lg:flex items-center"
+          />
+          <div
+            class="flex-1"
+          />
+          <div
+            class="hidden lg:block"
+            data-testid="header-search-desktop"
+          >
+            <form
+              class="relative z-10"
+            >
+              <div
+                class="relative"
+              >
+                <input
+                  aria-autocomplete="list"
+                  aria-controls="radix-_r_6_"
+                  aria-disabled="true"
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                  aria-label="Search"
+                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
+                  data-slot="popover-trigger"
+                  data-state="closed"
+                  data-testid="header-search"
+                  disabled=""
+                  placeholder="Search"
+                  role="combobox"
+                  type="text"
+                />
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m21 21-4.34-4.34"
+                  />
+                  <circle
+                    cx="11"
+                    cy="11"
+                    r="8"
+                  />
+                </svg>
+              </div>
+            </form>
+          </div>
+          <div
+            class="flex items-center space-x-2"
+          >
+            <button
+              aria-label="Find a Store"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 hover:bg-transparent hover:opacity-50 transition-opacity"
+              data-size="default"
+              data-slot="button"
+              data-variant="ghost"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-store size-6"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"
+                />
+                <path
+                  d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"
+                />
+                <path
+                  d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"
+                />
+              </svg>
+            </button>
+            <a
+              aria-controls="radix-_r_7_"
+              aria-expanded="false"
+              aria-haspopup="dialog"
+              aria-label="Sign In"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1 hover:bg-transparent hover:opacity-50 transition-opacity"
+              data-size="default"
+              data-slot="popover-trigger"
+              data-state="closed"
+              data-variant="ghost"
+              href="/login"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-log-in size-5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m10 17 5-5-5-5"
+                />
+                <path
+                  d="M15 12H3"
+                />
+                <path
+                  d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+                />
+              </svg>
+            </a>
+            <button
+              aria-label="My cart, number of items: 0"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer hover:bg-transparent hover:opacity-50 transition-opacity"
+              data-size="default"
+              data-slot="button"
+              data-variant="ghost"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-shopping-cart size-5"
+                data-testid="shopping-cart-icon"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="8"
+                  cy="21"
+                  r="1"
+                />
+                <circle
+                  cx="19"
+                  cy="21"
+                  r="1"
+                />
+                <path
+                  d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+                />
+              </svg>
+            </button>
+            <div
+              class="lg:hidden"
+            />
+          </div>
+        </div>
+        <div
+          class="pb-4 lg:hidden"
+          data-testid="header-search-mobile"
+        >
+          <form
+            class="relative z-10"
+          >
+            <div
+              class="relative"
+            >
+              <input
+                aria-autocomplete="list"
+                aria-controls="radix-_r_8_"
+                aria-disabled="true"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Search"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
+                data-slot="popover-trigger"
+                data-state="closed"
+                data-testid="header-search"
+                disabled=""
+                placeholder="Search"
+                role="combobox"
+                type="text"
+              />
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m21 21-4.34-4.34"
+                />
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="8"
+                />
+              </svg>
+            </div>
+          </form>
         </div>
       </div>
     </header>
@@ -581,30 +773,116 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
       class="min-h-screen"
     >
       <header
-        class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
+        class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
+        style="--header-height: 0px;"
       >
         <div
-          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+          class="flex justify-end px-4 lg:px-9"
+        />
+        <div
+          class="px-4 lg:px-9"
         >
           <div
-            class="flex flex-wrap lg:flex-nowrap items-center justify-between gap-x-4"
+            class="flex items-center gap-x-4 lg:gap-x-6 h-16"
           >
             <a
-              class="flex-shrink-0 flex items-center gap-2 h-16 order-1"
+              class="flex-shrink-0 flex items-center"
+              data-testid="header-logo"
               href="/"
             >
               <img
                 alt="Home"
-                class="h-10 w-auto"
-                src="/images/foundations/foundations-logo.svg"
+                class="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+                src="/images/logo.svg"
               />
             </a>
             <div
-              class="flex items-center space-x-2 h-16 order-2 lg:order-4"
+              class="hidden lg:flex items-center"
+            >
+              <nav
+                class="hidden lg:block"
+              >
+                <ul
+                  class="flex gap-4"
+                >
+                  <li
+                    class="text-sm font-medium text-foreground"
+                  >
+                    Women
+                  </li>
+                  <li
+                    class="text-sm font-medium text-foreground"
+                  >
+                    Men
+                  </li>
+                  <li
+                    class="text-sm font-medium text-foreground"
+                  >
+                    Accessories
+                  </li>
+                </ul>
+              </nav>
+            </div>
+            <div
+              class="flex-1"
+            />
+            <div
+              class="hidden lg:block"
+              data-testid="header-search-desktop"
+            >
+              <form
+                class="relative z-10"
+              >
+                <div
+                  class="relative"
+                >
+                  <input
+                    aria-autocomplete="list"
+                    aria-controls="radix-_r_f_"
+                    aria-disabled="true"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-label="Search"
+                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
+                    data-slot="popover-trigger"
+                    data-state="closed"
+                    data-testid="header-search"
+                    disabled=""
+                    placeholder="Search"
+                    role="combobox"
+                    type="text"
+                  />
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="m21 21-4.34-4.34"
+                    />
+                    <circle
+                      cx="11"
+                      cy="11"
+                      r="8"
+                    />
+                  </svg>
+                </div>
+              </form>
+            </div>
+            <div
+              class="flex items-center space-x-2"
             >
               <button
                 aria-label="Find a Store"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 hover:bg-transparent hover:opacity-50 transition-opacity"
                 data-size="default"
                 data-slot="button"
                 data-variant="ghost"
@@ -634,11 +912,11 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
                 </svg>
               </button>
               <a
-                aria-controls="radix-_r_a_"
+                aria-controls="radix-_r_g_"
                 aria-expanded="false"
                 aria-haspopup="dialog"
                 aria-label="Sign In"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1 hover:bg-transparent hover:opacity-50 transition-opacity"
                 data-size="default"
                 data-slot="popover-trigger"
                 data-state="closed"
@@ -672,7 +950,7 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
               </a>
               <button
                 aria-label="My cart, number of items: 0"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer hover:bg-transparent hover:opacity-50 transition-opacity"
                 data-size="default"
                 data-slot="button"
                 data-variant="ghost"
@@ -706,83 +984,85 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
                   />
                 </svg>
               </button>
-            </div>
-            <div
-              class="flex items-center order-3 lg:order-2"
-            >
-              <nav
-                class="hidden lg:block"
+              <div
+                class="lg:hidden"
               >
-                <ul
-                  class="flex gap-4"
+                <nav
+                  class="hidden lg:block"
                 >
-                  <li
-                    class="text-sm font-medium text-foreground"
+                  <ul
+                    class="flex gap-4"
                   >
-                    Women
-                  </li>
-                  <li
-                    class="text-sm font-medium text-foreground"
-                  >
-                    Men
-                  </li>
-                  <li
-                    class="text-sm font-medium text-foreground"
-                  >
-                    Accessories
-                  </li>
-                </ul>
-              </nav>
+                    <li
+                      class="text-sm font-medium text-foreground"
+                    >
+                      Women
+                    </li>
+                    <li
+                      class="text-sm font-medium text-foreground"
+                    >
+                      Men
+                    </li>
+                    <li
+                      class="text-sm font-medium text-foreground"
+                    >
+                      Accessories
+                    </li>
+                  </ul>
+                </nav>
+              </div>
             </div>
-            <div
-              class="w-full lg:w-auto order-4 lg:order-3 pb-4 lg:pb-0"
+          </div>
+          <div
+            class="pb-4 lg:hidden"
+            data-testid="header-search-mobile"
+          >
+            <form
+              class="relative z-10"
             >
-              <form
-                class="relative z-10"
+              <div
+                class="relative"
               >
-                <div
-                  class="relative"
+                <input
+                  aria-autocomplete="list"
+                  aria-controls="radix-_r_h_"
+                  aria-disabled="true"
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                  aria-label="Search"
+                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
+                  data-slot="popover-trigger"
+                  data-state="closed"
+                  data-testid="header-search"
+                  disabled=""
+                  placeholder="Search"
+                  role="combobox"
+                  type="text"
+                />
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <input
-                    aria-autocomplete="list"
-                    aria-controls="radix-_r_b_"
-                    aria-disabled="true"
-                    aria-expanded="false"
-                    aria-haspopup="listbox"
-                    aria-label="Search"
-                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 cursor-not-allowed opacity-60 pointer-events-none"
-                    data-slot="popover-trigger"
-                    data-state="closed"
-                    disabled=""
-                    placeholder="Search"
-                    role="combobox"
-                    type="text"
+                  <path
+                    d="m21 21-4.34-4.34"
                   />
-                  <svg
-                    aria-hidden="true"
-                    class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
-                    fill="none"
-                    height="24"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="m21 21-4.34-4.34"
-                    />
-                    <circle
-                      cx="11"
-                      cy="11"
-                      r="8"
-                    />
-                  </svg>
-                </div>
-              </form>
-            </div>
+                  <circle
+                    cx="11"
+                    cy="11"
+                    r="8"
+                  />
+                </svg>
+              </div>
+            </form>
           </div>
         </div>
       </header>
@@ -961,30 +1241,116 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
     class="min-h-screen bg-background"
   >
     <header
-      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
+      style="--header-height: 0px;"
     >
       <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        class="flex justify-end px-4 lg:px-9"
+      />
+      <div
+        class="px-4 lg:px-9"
       >
         <div
-          class="flex flex-wrap lg:flex-nowrap items-center justify-between gap-x-4"
+          class="flex items-center gap-x-4 lg:gap-x-6 h-16"
         >
           <a
-            class="flex-shrink-0 flex items-center gap-2 h-16 order-1"
+            class="flex-shrink-0 flex items-center"
+            data-testid="header-logo"
             href="/"
           >
             <img
               alt="Home"
-              class="h-10 w-auto"
-              src="/images/foundations/foundations-logo.svg"
+              class="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+              src="/images/logo.svg"
             />
           </a>
           <div
-            class="flex items-center space-x-2 h-16 order-2 lg:order-4"
+            class="hidden lg:flex items-center"
+          >
+            <nav
+              class="hidden lg:block"
+            >
+              <ul
+                class="flex gap-4"
+              >
+                <li
+                  class="text-sm font-medium text-foreground"
+                >
+                  Women
+                </li>
+                <li
+                  class="text-sm font-medium text-foreground"
+                >
+                  Men
+                </li>
+                <li
+                  class="text-sm font-medium text-foreground"
+                >
+                  Accessories
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div
+            class="flex-1"
+          />
+          <div
+            class="hidden lg:block"
+            data-testid="header-search-desktop"
+          >
+            <form
+              class="relative z-10"
+            >
+              <div
+                class="relative"
+              >
+                <input
+                  aria-autocomplete="list"
+                  aria-controls="radix-_r_9_"
+                  aria-disabled="true"
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                  aria-label="Search"
+                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
+                  data-slot="popover-trigger"
+                  data-state="closed"
+                  data-testid="header-search"
+                  disabled=""
+                  placeholder="Search"
+                  role="combobox"
+                  type="text"
+                />
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m21 21-4.34-4.34"
+                  />
+                  <circle
+                    cx="11"
+                    cy="11"
+                    r="8"
+                  />
+                </svg>
+              </div>
+            </form>
+          </div>
+          <div
+            class="flex items-center space-x-2"
           >
             <button
               aria-label="Find a Store"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 hover:bg-transparent hover:opacity-50 transition-opacity"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
@@ -1014,11 +1380,11 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
               </svg>
             </button>
             <a
-              aria-controls="radix-_r_6_"
+              aria-controls="radix-_r_a_"
               aria-expanded="false"
               aria-haspopup="dialog"
               aria-label="Sign In"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1 hover:bg-transparent hover:opacity-50 transition-opacity"
               data-size="default"
               data-slot="popover-trigger"
               data-state="closed"
@@ -1052,7 +1418,7 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
             </a>
             <button
               aria-label="My cart, number of items: 0"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer hover:bg-transparent hover:opacity-50 transition-opacity"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
@@ -1086,9 +1452,123 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
                 />
               </svg>
             </button>
+            <div
+              class="lg:hidden"
+            >
+              <nav
+                class="hidden lg:block"
+              >
+                <ul
+                  class="flex gap-4"
+                >
+                  <li
+                    class="text-sm font-medium text-foreground"
+                  >
+                    Women
+                  </li>
+                  <li
+                    class="text-sm font-medium text-foreground"
+                  >
+                    Men
+                  </li>
+                  <li
+                    class="text-sm font-medium text-foreground"
+                  >
+                    Accessories
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
+        </div>
+        <div
+          class="pb-4 lg:hidden"
+          data-testid="header-search-mobile"
+        >
+          <form
+            class="relative z-10"
+          >
+            <div
+              class="relative"
+            >
+              <input
+                aria-autocomplete="list"
+                aria-controls="radix-_r_b_"
+                aria-disabled="true"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Search"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
+                data-slot="popover-trigger"
+                data-state="closed"
+                data-testid="header-search"
+                disabled=""
+                placeholder="Search"
+                role="combobox"
+                type="text"
+              />
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m21 21-4.34-4.34"
+                />
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="8"
+                />
+              </svg>
+            </div>
+          </form>
+        </div>
+      </div>
+    </header>
+  </div>
+</div>
+`;
+
+exports[`Header stories snapshot > WithNavigationAuthenticated story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-background"
+  >
+    <header
+      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50"
+      style="--header-height: 0px;"
+    >
+      <div
+        class="flex justify-end px-4 lg:px-9"
+      />
+      <div
+        class="px-4 lg:px-9"
+      >
+        <div
+          class="flex items-center gap-x-4 lg:gap-x-6 h-16"
+        >
+          <a
+            class="flex-shrink-0 flex items-center"
+            data-testid="header-logo"
+            href="/"
+          >
+            <img
+              alt="Home"
+              class="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+              src="/images/logo.svg"
+            />
+          </a>
           <div
-            class="flex items-center order-3 lg:order-2"
+            class="hidden lg:flex items-center"
           >
             <nav
               class="hidden lg:block"
@@ -1115,7 +1595,11 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
             </nav>
           </div>
           <div
-            class="w-full lg:w-auto order-4 lg:order-3 pb-4 lg:pb-0"
+            class="flex-1"
+          />
+          <div
+            class="hidden lg:block"
+            data-testid="header-search-desktop"
           >
             <form
               class="relative z-10"
@@ -1125,14 +1609,15 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
               >
                 <input
                   aria-autocomplete="list"
-                  aria-controls="radix-_r_7_"
+                  aria-controls="radix-_r_c_"
                   aria-disabled="true"
                   aria-expanded="false"
                   aria-haspopup="listbox"
                   aria-label="Search"
-                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 cursor-not-allowed opacity-60 pointer-events-none"
+                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
                   data-slot="popover-trigger"
                   data-state="closed"
+                  data-testid="header-search"
                   disabled=""
                   placeholder="Search"
                   role="combobox"
@@ -1163,43 +1648,12 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
               </div>
             </form>
           </div>
-        </div>
-      </div>
-    </header>
-  </div>
-</div>
-`;
-
-exports[`Header stories snapshot > WithNavigationAuthenticated story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="min-h-screen bg-background"
-  >
-    <header
-      class="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50 relative [--header-height:theme(spacing.16)]"
-    >
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-      >
-        <div
-          class="flex flex-wrap lg:flex-nowrap items-center justify-between gap-x-4"
-        >
-          <a
-            class="flex-shrink-0 flex items-center gap-2 h-16 order-1"
-            href="/"
-          >
-            <img
-              alt="Home"
-              class="h-10 w-auto"
-              src="/images/foundations/foundations-logo.svg"
-            />
-          </a>
           <div
-            class="flex items-center space-x-2 h-16 order-2 lg:order-4"
+            class="flex items-center space-x-2"
           >
             <button
               aria-label="Find a Store"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 hover:bg-transparent hover:opacity-50 transition-opacity"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
@@ -1229,11 +1683,11 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
               </svg>
             </button>
             <a
-              aria-controls="radix-_r_8_"
+              aria-controls="radix-_r_d_"
               aria-expanded="false"
               aria-haspopup="dialog"
               aria-label="My Account"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 cursor-pointer lg:px-4 px-1 hover:bg-transparent hover:opacity-50 transition-opacity"
               data-size="default"
               data-slot="popover-trigger"
               data-state="closed"
@@ -1266,7 +1720,7 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
             </a>
             <button
               aria-label="My cart, number of items: 0"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3 relative cursor-pointer hover:bg-transparent hover:opacity-50 transition-opacity"
               data-size="default"
               data-slot="button"
               data-variant="ghost"
@@ -1300,83 +1754,85 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
                 />
               </svg>
             </button>
-          </div>
-          <div
-            class="flex items-center order-3 lg:order-2"
-          >
-            <nav
-              class="hidden lg:block"
+            <div
+              class="lg:hidden"
             >
-              <ul
-                class="flex gap-4"
+              <nav
+                class="hidden lg:block"
               >
-                <li
-                  class="text-sm font-medium text-foreground"
+                <ul
+                  class="flex gap-4"
                 >
-                  Women
-                </li>
-                <li
-                  class="text-sm font-medium text-foreground"
-                >
-                  Men
-                </li>
-                <li
-                  class="text-sm font-medium text-foreground"
-                >
-                  Accessories
-                </li>
-              </ul>
-            </nav>
+                  <li
+                    class="text-sm font-medium text-foreground"
+                  >
+                    Women
+                  </li>
+                  <li
+                    class="text-sm font-medium text-foreground"
+                  >
+                    Men
+                  </li>
+                  <li
+                    class="text-sm font-medium text-foreground"
+                  >
+                    Accessories
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
-          <div
-            class="w-full lg:w-auto order-4 lg:order-3 pb-4 lg:pb-0"
+        </div>
+        <div
+          class="pb-4 lg:hidden"
+          data-testid="header-search-mobile"
+        >
+          <form
+            class="relative z-10"
           >
-            <form
-              class="relative z-10"
+            <div
+              class="relative"
             >
-              <div
-                class="relative"
+              <input
+                aria-autocomplete="list"
+                aria-controls="radix-_r_e_"
+                aria-disabled="true"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Search"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground cursor-not-allowed opacity-60 pointer-events-none"
+                data-slot="popover-trigger"
+                data-state="closed"
+                data-testid="header-search"
+                disabled=""
+                placeholder="Search"
+                role="combobox"
+                type="text"
+              />
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <input
-                  aria-autocomplete="list"
-                  aria-controls="radix-_r_9_"
-                  aria-disabled="true"
-                  aria-expanded="false"
-                  aria-haspopup="listbox"
-                  aria-label="Search"
-                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full pl-10 cursor-not-allowed opacity-60 pointer-events-none"
-                  data-slot="popover-trigger"
-                  data-state="closed"
-                  disabled=""
-                  placeholder="Search"
-                  role="combobox"
-                  type="text"
+                <path
+                  d="m21 21-4.34-4.34"
                 />
-                <svg
-                  aria-hidden="true"
-                  class="lucide lucide-search pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="m21 21-4.34-4.34"
-                  />
-                  <circle
-                    cx="11"
-                    cy="11"
-                    r="8"
-                  />
-                </svg>
-              </div>
-            </form>
-          </div>
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="8"
+                />
+              </svg>
+            </div>
+          </form>
         </div>
       </div>
     </header>

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 import type { DataStrategyResult, MiddlewareFunction } from 'react-router';
-import { appConfigContext } from '@/config';
+import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { stripPathPrefix } from '@salesforce/storefront-next-runtime/multi-site';
+import type { AppConfig } from '@/types/config';
 
 /**
  * Client-side middleware that intercepts navigation to legacy routes and forces a full page navigation.
@@ -100,9 +102,10 @@ const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResu
     if (typeof window === 'undefined') {
         return next();
     }
-    const config = context.get(appConfigContext);
-    const enabled = config?.site?.hybrid?.enabled ?? false;
-    const legacyRoutes = config?.site?.hybrid?.legacyRoutes;
+
+    const config = context.get(appConfigContext) as AppConfig | undefined;
+    const enabled = config?.hybrid?.enabled ?? false;
+    const legacyRoutes = config?.hybrid?.legacyRoutes;
 
     // If hybrid mode is disabled or no legacy routes configured, skip
     if (!enabled || !legacyRoutes || legacyRoutes.length === 0) {
@@ -118,7 +121,25 @@ const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResu
         return next();
     }
 
-    const isLegacyRoute = legacyRoutes.some((legacyRoute) => matchesRoutePattern(pathname, legacyRoute));
+    // Normalize the pathname by stripping the multi-site prefix before matching.
+    //
+    // With multisite enabled, the template's Link/useNavigate automatically prefix
+    // every subpage URL with the site and locale (e.g. '/checkout' → '/global/en-GB/checkout').
+    // Without stripping, the incoming pathname would never match the bare paths configured
+    // in legacyRoutes. Stripping early normalizes the URL so the matching logic always
+    // operates on functional paths rather than URL variations.
+    //
+    // Why this approach:
+    // - No config bloat: '/cart' is defined once — you don't need a separate entry for every
+    //   site/locale permutation (e.g. '/global/en-GB/cart', '/us/en-US/cart').
+    // - Consistency: uses the same normalized path that ecdn-matcher and the runtime use.
+    // - Centralized strategy: the prefix pattern comes from config.url.prefix, so changing
+    //   your URL strategy (e.g. '/:siteId/:localeId' → '/:localeId') requires only one
+    //   update — the legacyRoutes list stays untouched.
+    const urlPrefix = config?.url?.prefix ?? '';
+    const strippedPathname = stripPathPrefix(pathname, urlPrefix);
+
+    const isLegacyRoute = legacyRoutes.some((legacyRoute) => matchesRoutePattern(strippedPathname, legacyRoute));
 
     if (isLegacyRoute) {
         // Add redirected=1 to prevent infinite loops
@@ -128,9 +149,14 @@ const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResu
         // The CDN routing rules or server middleware will handle routing to the legacy backend
         window.location.href = url.toString();
 
-        // Return empty result to prevent further processing
-        // (though navigation will interrupt execution anyway)
-        return {};
+        // Suspend indefinitely while the browser navigates away.
+        // Returning an empty object would cause React Router to error with
+        // "No result returned from dataStrategy" since it expects a DataStrategyResult
+        // for every matched route. This never-resolving promise keeps React Router
+        // waiting until the page unloads. It's zero-cost (no timers or listeners)
+        // and is garbage collected when the browser completes the navigation.
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        return new Promise(() => {});
     }
 
     // Not a legacy route, continue with normal client-side navigation

@@ -21,7 +21,8 @@ import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi'
 import type { GalleryImage } from '@/components/image-gallery';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
 import { toImageUrl } from '@/lib/dynamic-image';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 interface UseProductImagesProps {
     product: ShopperProducts.schemas['Product'];
@@ -79,7 +80,7 @@ export function useProductImages({
     selectedAttributes,
     viewType = 'large',
 }: UseProductImagesProps): UseProductImagesReturn {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
 
     // Get images filtered by selected attributes
     const filteredImages = useMemo(() => {

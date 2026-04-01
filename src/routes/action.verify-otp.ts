@@ -21,6 +21,7 @@ import { getTranslation } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import { getLogger } from '@/lib/logger.server';
 
 type VerifyOtpResponse = {
     success: boolean;
@@ -34,6 +35,7 @@ type VerifyOtpResponse = {
  * This is called when the user submits the OTP code from the modal
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<VerifyOtpResponse> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
 
     try {
@@ -86,41 +88,41 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         try {
             await mergeBasket(context);
         } catch (error) {
-            // user can still access their registered basket
-            // eslint-disable-next-line no-console
-            console.error('[OTP Login] Failed to merge basket:', error);
+            logger.error('VerifyOtp: basket merge failed', { error });
         }
 
+        logger.info('VerifyOtp: succeeded');
         return {
             success: true,
             message: t('checkout:passwordlessLogin.loginSuccess'),
             tokenResponse,
         };
-    } catch (error) {
-        let errorMessage = t('checkout:passwordlessLogin.invalidOtp');
+    } catch (error: unknown) {
+        logger.error('VerifyOtp: failed', { error });
+        let errorMessage: string = t('checkout:passwordlessLogin.invalidOtp');
 
         // Try to extract the actual error message from the API response
         if (error && typeof error === 'object') {
             // Check if it's an ApiError with rawBody (priority check)
-            if ('rawBody' in error && typeof error.rawBody === 'string') {
+            if ('rawBody' in error && typeof (error as { rawBody?: unknown }).rawBody === 'string') {
                 try {
-                    const parsed = JSON.parse(error.rawBody);
-                    if (parsed.message && typeof parsed.message === 'string') {
+                    const rawBody = (error as { rawBody: string }).rawBody;
+                    const parsed = JSON.parse(rawBody) as { message?: unknown };
+                    if (typeof parsed.message === 'string') {
                         errorMessage = parsed.message;
                     }
                 } catch (parseError) {
-                    // eslint-disable-next-line no-console
-                    console.error('[OTP Verification] Failed to parse rawBody:', parseError);
+                    logger.error('VerifyOtp: failed to parse rawBody', { error: parseError });
                 }
             }
             // Only check message if we didn't find rawBody
-            else if ('message' in error && typeof error.message === 'string') {
-                const msg = error.message;
+            else if ('message' in error && typeof (error as { message?: unknown }).message === 'string') {
+                const msg = (error as { message: string }).message;
 
                 // Try to parse message as JSON
                 try {
-                    const parsed = JSON.parse(msg);
-                    if (parsed.message && typeof parsed.message === 'string') {
+                    const parsed = JSON.parse(msg) as { message?: unknown };
+                    if (typeof parsed.message === 'string') {
                         errorMessage = parsed.message;
                     }
                 } catch {

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { AnalyticsEvent } from '@salesforce/storefront-next-runtime/events';
+import type { AnalyticsEvent, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
 import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import Cookies from 'js-cookie';
+import { getBasePath } from '@/lib/utils';
 
 export type ActiveDataConfig = EngagementAdapterConfig & {
     host: string;
-    locale: string;
     siteUUID?: string;
     sourceCode?: string;
     siteCurrency?: string;
@@ -452,12 +452,6 @@ function validateActiveDataConfig(config: ActiveDataConfig): { valid: boolean; e
     if (!config.host || config.host.trim() === '') {
         errors.push(`Missing required field: host`);
     }
-    if (!config.siteId || config.siteId.trim() === '') {
-        errors.push(`Missing required field: siteId`);
-    }
-    if (!config.locale || config.locale.trim() === '') {
-        errors.push(`Missing required field: locale`);
-    }
     return { valid: errors.length === 0, errors };
 }
 
@@ -473,7 +467,16 @@ export function createActiveDataAdapter(config: ActiveDataConfig): EngagementAda
 
     return {
         name: 'active-data',
-        sendEvent: async (event: AnalyticsEvent): Promise<unknown> => {
+        sendEvent: async (event: AnalyticsEvent, siteInfo?: EventSiteInfo): Promise<unknown> => {
+            if (!siteInfo?.siteId || !siteInfo?.localeId) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                    'ActiveData adapter: skipping event — siteInfo with siteId and localeId is required. ' +
+                        'Ensure multi-site middleware is configured.'
+                );
+                return Promise.resolve({});
+            }
+
             // Don't send events that are not enabled for this adapter
             if (!config.eventToggles[event.eventType]) return Promise.resolve({});
 
@@ -488,12 +491,19 @@ export function createActiveDataAdapter(config: ActiveDataConfig): EngagementAda
                 return Promise.resolve({});
             }
 
-            const activeDataEndpoint = `${config.host}/on/demandware.store/Sites-${config.siteId}-Site/${config.locale}/__Analytics-Start`;
+            // Convert locale format: en-GB → en_GB
+            const locale = siteInfo.localeId.replace('-', '_');
+            const activeDataEndpoint = `${config.host}/on/demandware.store/Sites-${siteInfo.siteId}-Site/${locale}/__Analytics-Start`;
 
             const params = extractActiveDataParamsFromEvent(event);
             const urls = createActiveDataUrls(activeDataEndpoint, params, config);
             for (const url of urls) {
-                navigator.sendBeacon(url);
+                // Route through the server-side proxy so the dwsid cookie is forwarded
+                // to ECOM. Direct cross-origin sendBeacon calls don't include the
+                // storefront's dwsid cookie, causing ECOM to create duplicate sessions
+                // when hybrid auth is enabled.
+                const proxyUrl = `${getBasePath()}/resource/analytics-proxy?url=${encodeURIComponent(url)}`;
+                navigator.sendBeacon(proxyUrl);
             }
 
             return Promise.resolve({});

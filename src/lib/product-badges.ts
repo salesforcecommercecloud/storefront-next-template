@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import type { BadgeDetail } from '@/config';
+import type { BadgeDetail } from '@/types/config';
 
 interface GetProductBadgesProps {
     product: ShopperSearch.schemas['ProductSearchHit'];

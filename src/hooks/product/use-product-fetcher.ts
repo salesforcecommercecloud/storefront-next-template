@@ -15,8 +15,10 @@
  */
 
 import { useEffect } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
+
+type Product = ShopperProducts.schemas['Product'];
 
 export interface UseProductFetcherOptions {
     /**
@@ -26,7 +28,8 @@ export interface UseProductFetcherOptions {
     /**
      * The SCAPI fetcher instance configured for getProduct
      */
-    fetcher: ScapiFetcher<'shopperProducts', 'getProduct'>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fetcher: ScapiFetcher<Product, any>;
     /**
      * Optional: The ID of the currently loaded product (to skip redundant fetches)
      */
@@ -34,7 +37,7 @@ export interface UseProductFetcherOptions {
     /**
      * Callback invoked when product data is successfully received and validated
      */
-    onDataReceived: (product: ShopperProductsTypes.Product) => void;
+    onDataReceived: (product: Product) => void;
     /**
      * Optional: Validate that the loaded product matches this ID
      * If provided, only calls onDataReceived if the loaded product matches

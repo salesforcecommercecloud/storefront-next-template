@@ -190,7 +190,7 @@ describe('Checkout Context Functions', () => {
 
         it('should return REVIEW when all info is complete', () => {
             const result = computeStepFromBasket(mockBasketWithAllInfo, mockShipmentDistribution);
-            expect(result).toBe(CHECKOUT_STEPS.REVIEW_ORDER);
+            expect(result).toBe(CHECKOUT_STEPS.PLACE_ORDER);
         });
 
         it('should skip user shipping options check in auto-advance mode', () => {
@@ -249,7 +249,7 @@ describe('Checkout Context Functions', () => {
                 mockCustomerProfile,
                 mockShipmentDistribution
             );
-            expect(result).toBe(CHECKOUT_STEPS.REVIEW_ORDER);
+            expect(result).toBe(CHECKOUT_STEPS.PLACE_ORDER);
         });
 
         it('should return PAYMENT when payment info is missing from profile', () => {

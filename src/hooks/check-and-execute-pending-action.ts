@@ -17,7 +17,9 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation } from 'react-router';
+import { useNavigate } from '@/hooks/use-navigate';
+import { getSearchWithoutActionParams } from './use-filters-panel-state';
 
 interface CheckAndExecutePendingActionOptions {
     /** The action name to match (e.g., 'addToCart', 'updateQuantity', 'removeItem') */
@@ -100,15 +102,11 @@ export function useCheckAndExecutePendingAction({
                 if (shouldExecute(urlActionParams)) {
                     hasExecutedRef.current = true;
 
-                    // Execute the action
+                    // Execute the action — URL param cleanup is left to the consumer
                     void (async () => {
                         try {
                             await onMatch(urlActionParams);
-                            // Note: URL params will be cleared by the root-level hook
-                            // when the action completes
                         } catch (error) {
-                            // If execution fails, clear URL params to prevent stuck state
-                            void navigate(location.pathname, { replace: true });
                             hasExecutedRef.current = false;
                             throw error;
                         }
@@ -116,7 +114,10 @@ export function useCheckAndExecutePendingAction({
                 }
             } catch {
                 // Invalid JSON or other error - clear URL params
-                void navigate(location.pathname, { replace: true });
+                void navigate(
+                    { pathname: location.pathname, search: getSearchWithoutActionParams(location.search) },
+                    { replace: true }
+                );
             }
         }
     }, [actionName, shouldExecute, location.pathname, location.search, onMatch, navigate]);

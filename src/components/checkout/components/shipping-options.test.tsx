@@ -25,6 +25,7 @@ vi.mock('@/providers/basket', () => ({ useBasket: vi.fn() }));
 vi.mock('@/hooks/checkout/use-customer-profile', () => ({
     useCustomerProfile: vi.fn(() => null),
 }));
+vi.mock('@/providers/currency', () => ({ useCurrency: vi.fn(() => 'USD') }));
 
 const createMockBasket = (overrides = {}) => ({
     basketId: 'test-basket-123',
@@ -104,17 +105,23 @@ describe('ShippingOptions Integration Tests', () => {
         test('renders all available shipping methods', () => {
             render(<ShippingOptions {...createDefaultProps()} />);
 
-            expect(screen.getByText('$5.99 | Standard Shipping')).toBeInTheDocument();
-            expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
-            expect(screen.getByText('$24.99 | Overnight Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$5.99')).toBeInTheDocument();
+            expect(screen.getByText('$12.99')).toBeInTheDocument();
+            expect(screen.getByText('$24.99')).toBeInTheDocument();
+            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
+            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
+            expect(screen.getByText('Next business day')).toBeInTheDocument();
         });
 
         test('displays pricing for each method', () => {
             render(<ShippingOptions {...createDefaultProps()} />);
 
-            expect(screen.getByText('$5.99 | Standard Shipping')).toBeInTheDocument();
-            expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
-            expect(screen.getByText('$24.99 | Overnight Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$5.99')).toBeInTheDocument();
+            expect(screen.getByText('$12.99')).toBeInTheDocument();
+            expect(screen.getByText('$24.99')).toBeInTheDocument();
+            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
+            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
+            expect(screen.getByText('Next business day')).toBeInTheDocument();
         });
 
         test('displays "Free" for zero-price shipping methods', () => {
@@ -131,37 +138,49 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithFree })} />);
 
-            expect(screen.getByText('Free | Free Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('Free')).toBeInTheDocument();
+            expect(screen.getByText('Free Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('7-10 business days')).toBeInTheDocument();
         });
 
-        test('displays estimated arrival time when provided', () => {
-            const methodsWithArrival: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+        test('displays method name and description in edit view', () => {
+            const methodsWithDescription: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
                 applicableShippingMethods: [
                     {
                         id: 'standard',
                         name: 'Standard Shipping',
                         description: '5-7 business days',
                         price: 5.99,
-                        estimatedArrivalTime: '5-7 days',
                     },
                     {
                         id: 'express',
                         name: 'Express Shipping',
+                        description: '2-3 business days',
                         price: 12.99,
-                        estimatedArrivalTime: '2-3 days',
                     },
                 ],
             };
 
-            render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithArrival })} />);
+            render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithDescription })} />);
 
-            expect(screen.getByText('Arrives: 5-7 days')).toBeInTheDocument();
-            expect(screen.getByText('Arrives: 2-3 days')).toBeInTheDocument();
+            expect(screen.getByText('Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('Express Shipping')).toBeInTheDocument();
             expect(screen.getByText('5-7 business days')).toBeInTheDocument();
+            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
         });
 
-        test('displays estimated arrival time in summary when method is selected', () => {
-            const basketWithEstimatedArrival = createMockBasket({
+        test('displays arrives text in summary using description when method is selected', () => {
+            const methodsWithDescription: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+                applicableShippingMethods: [
+                    {
+                        id: 'express',
+                        name: 'Express Shipping',
+                        description: '2-3 business days',
+                        price: 12.99,
+                    },
+                ],
+            };
+            const basketWithDescription = createMockBasket({
                 shipments: [
                     {
                         shipmentId: 'shipment-1',
@@ -176,22 +195,39 @@ describe('ShippingOptions Integration Tests', () => {
                         shippingMethod: {
                             id: 'express',
                             name: 'Express Shipping',
+                            description: '2-3 business days',
                             price: 12.99,
-                            estimatedArrivalTime: '2-3 days',
                         },
                     },
                 ],
             });
 
-            useBasket.mockReturnValue(basketWithEstimatedArrival);
+            useBasket.mockReturnValue(basketWithDescription);
 
-            render(<ShippingOptions {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
+            render(
+                <ShippingOptions
+                    {...createDefaultProps({
+                        isEditing: false,
+                        isCompleted: true,
+                        shippingMethods: methodsWithDescription,
+                    })}
+                />
+            );
 
-            expect(screen.getByText('Arrives: 2-3 days')).toBeInTheDocument();
+            expect(screen.getByText('Arrives: 2-3 business days')).toBeInTheDocument();
         });
 
-        test('falls back to c_estimatedArrivalTime in summary when standard field missing', () => {
-            const basketWithCustomArrival = createMockBasket({
+        test('does not show arrives text in summary when description is missing', () => {
+            const methodsNoDescription: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+                applicableShippingMethods: [
+                    {
+                        id: 'express',
+                        name: 'Express Shipping',
+                        price: 15.99,
+                    },
+                ],
+            };
+            const basketNoDescription = createMockBasket({
                 shipments: [
                     {
                         shipmentId: 'shipment-1',
@@ -207,17 +243,24 @@ describe('ShippingOptions Integration Tests', () => {
                             id: 'express',
                             name: 'Express Shipping',
                             price: 15.99,
-                            c_estimatedArrivalTime: 'Tomorrow',
-                        } as any,
+                        },
                     },
                 ],
             });
 
-            useBasket.mockReturnValue(basketWithCustomArrival);
+            useBasket.mockReturnValue(basketNoDescription);
 
-            render(<ShippingOptions {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
+            render(
+                <ShippingOptions
+                    {...createDefaultProps({
+                        isEditing: false,
+                        isCompleted: true,
+                        shippingMethods: methodsNoDescription,
+                    })}
+                />
+            );
 
-            expect(screen.getByText('Arrives: Tomorrow')).toBeInTheDocument();
+            expect(screen.queryByText(/Arrives:/)).not.toBeInTheDocument();
         });
 
         test('handles missing estimated arrival time gracefully', () => {
@@ -235,7 +278,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithoutArrival })} />);
 
-            expect(screen.getByText('$5.99 | Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$5.99')).toBeInTheDocument();
             expect(screen.getByText('5-7 business days')).toBeInTheDocument();
             expect(screen.queryByText(/Arrives:/i)).not.toBeInTheDocument();
         });
@@ -262,9 +305,12 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithFree })} />);
 
-            expect(screen.getByText('Free | Free Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('Free')).toBeInTheDocument();
+            expect(screen.getByText('Free Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('Free shipping on orders over $50')).toBeInTheDocument();
             expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
-            expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$12.99')).toBeInTheDocument();
+            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
         });
 
         test('renders "Free" in summary when free shipping is selected', () => {
@@ -337,9 +383,12 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ shippingMethods: mixedMethods })} />);
 
-            expect(screen.getByText('Free | Free Standard Shipping')).toBeInTheDocument();
-            expect(screen.getByText('$5.99 | Standard Shipping')).toBeInTheDocument();
-            expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
+            expect(screen.getByText('Free')).toBeInTheDocument();
+            expect(screen.getByText('Free Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('$5.99')).toBeInTheDocument();
+            expect(screen.getByText('$12.99')).toBeInTheDocument();
+            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
+            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
 
             // Should not show $0.00 anywhere
             expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
@@ -365,7 +414,9 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ shippingMethods: promotionalFreeMethods })} />);
 
-            expect(screen.getByText('Free | Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('Free')).toBeInTheDocument();
+            expect(screen.getByText('Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
             expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
         });
     });
@@ -375,7 +426,7 @@ describe('ShippingOptions Integration Tests', () => {
             const user = userEvent.setup();
             render(<ShippingOptions {...createDefaultProps()} />);
 
-            const expressRadio = screen.getByLabelText(/Express Shipping/i);
+            const expressRadio = screen.getByLabelText(/2-3 business days/i);
             await user.click(expressRadio);
 
             await waitFor(() => {
@@ -401,7 +452,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps()} />);
 
-            const expressRadio = screen.getByLabelText(/Express Shipping/i);
+            const expressRadio = screen.getByLabelText(/2-3 business days/i);
             expect(expressRadio).toBeChecked();
         });
     });
@@ -415,7 +466,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ onSubmit: handleSubmit })} />);
 
-            const expressRadio = screen.getByLabelText(/Express Shipping/i);
+            const expressRadio = screen.getByLabelText(/2-3 business days/i);
             await user.click(expressRadio);
 
             const submitButton = screen.getByRole('button', { name: /continue/i });
@@ -676,7 +727,6 @@ describe('ShippingOptions Integration Tests', () => {
 
             const submitButton = screen.getByRole('button');
             expect(submitButton).toBeDisabled();
-            expect(submitButton).toHaveTextContent(/No shipping methods available/i);
         });
     });
 
@@ -705,7 +755,22 @@ describe('ShippingOptions Integration Tests', () => {
         test('shows prompt when no method selected', () => {
             render(<ShippingOptions {...createDefaultProps({ isEditing: false })} />);
 
-            expect(screen.getByText(/enter your shipping address/i)).toBeInTheDocument();
+            expect(screen.getByText('Shipping Method')).toBeInTheDocument();
+            expect(screen.getByText(/complete previous steps to continue/i)).toBeInTheDocument();
+            expect(screen.queryByText(/enter your shipping address/i)).not.toBeInTheDocument();
+        });
+
+        test('shows address prompt for signed-in shopper when no method selected', () => {
+            useCustomerProfile.mockReturnValue({
+                customer: { customerId: 'cust-1' },
+            } as never);
+
+            render(<ShippingOptions {...createDefaultProps({ isEditing: false })} />);
+
+            expect(
+                screen.getByText(/enter your shipping address to view available shipping methods/i)
+            ).toBeInTheDocument();
+            expect(screen.queryByText(/complete previous steps to continue/i)).not.toBeInTheDocument();
         });
     });
 
@@ -941,14 +1006,7 @@ describe('ShippingOptions Integration Tests', () => {
                             stateCode: 'NY',
                             postalCode: '10001',
                         },
-                        shippingMethods: [
-                            {
-                                id: 'free-method',
-                                name: 'Standard Ground',
-                                price: 0,
-                            },
-                        ],
-                        selectedShippingMethod: {
+                        shippingMethod: {
                             id: 'free-method',
                             name: 'Standard Ground',
                             price: 0,
@@ -961,7 +1019,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
 
-            expect(screen.getByText(/shipping address/i)).toBeInTheDocument();
+            expect(screen.getByText(/Free \| Standard Ground/)).toBeInTheDocument();
         });
     });
 
@@ -1087,7 +1145,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps()} />);
 
-            expect(screen.getAllByText(/shipping options/i).length).toBeGreaterThan(0);
+            expect(screen.getAllByText(/shipping method/i).length).toBeGreaterThan(0);
         });
 
         test('uses defaultShippingMethodId when selectedMethod is null', () => {

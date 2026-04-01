@@ -26,7 +26,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ensureAdaptersInitialized, resetAdaptersInitialization } from './initialize-adapters';
-import type { AppConfig } from '@/config';
+import type { AppConfig } from '@/types/config';
 
 // Mock dependencies
 const mockGetAllAdapters = vi.fn();

@@ -18,7 +18,7 @@ import { render, screen, within, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import ShippingMultiAddress from './shipping-multi-address';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import type { ShopperBasketsV2, ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
@@ -628,7 +628,7 @@ describe('ShippingMultiAddress', () => {
             expect(addAddressButton).toHaveLength(2);
         });
 
-        test('opens AddAddressDialog when "Add New Address" button is clicked', async () => {
+        test('opens AddressModal when "Add New Address" button is clicked', async () => {
             const user = userEvent.setup();
             const mockProductItems: ShopperBasketsV2.schemas['ProductItem'][] = [
                 {
@@ -659,9 +659,9 @@ describe('ShippingMultiAddress', () => {
             await user.click(addAddressButton[0]);
 
             // Dialog should be open
-            expect(screen.getByText('Add Address')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('First name')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('Last name')).toBeInTheDocument();
+            expect(screen.getByRole('heading', { name: 'Add New Address' })).toBeInTheDocument();
+            expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
+            expect(screen.getByPlaceholderText(/last name/i)).toBeInTheDocument();
         });
 
         test('assigns new address to the product item when saved', async () => {
@@ -702,21 +702,14 @@ describe('ShippingMultiAddress', () => {
             await user.click(addAddressButton[0]);
 
             // Fill out the form
-            await user.type(screen.getByPlaceholderText(/Address Title|e\.g\., Home, Work/i), 'Home');
-            await user.type(screen.getByPlaceholderText('First name'), 'Jane');
-            await user.type(screen.getByPlaceholderText('Last name'), 'Doe');
-            await user.type(screen.getByPlaceholderText(/Phone|\(555\) 123-4567/i), '2065551234');
-            await user.type(screen.getByPlaceholderText('Address Line 1'), '789 New St');
-            await user.type(screen.getByPlaceholderText('City'), 'Seattle');
-            // Find state select by finding the combobox that contains the state placeholder
-            const stateSelects = screen.getAllByRole('combobox');
-            const stateSelect =
-                stateSelects.find((select) => {
-                    const options = Array.from(select.querySelectorAll('option'));
-                    return options.some((opt) => opt.textContent?.includes('Select State'));
-                }) || stateSelects[stateSelects.length - 1]; // Fallback to last combobox (state is usually last)
-            await user.selectOptions(stateSelect, 'WA');
-            await user.type(screen.getByPlaceholderText('Zip code'), '98101');
+            await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Home');
+            await user.type(screen.getByPlaceholderText(/first name/i), 'Jane');
+            await user.type(screen.getByPlaceholderText(/last name/i), 'Doe');
+            await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '789 New St');
+            await user.type(screen.getByPlaceholderText(/city/i), 'Seattle');
+            await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'WA');
+            await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '98101');
+            await user.type(screen.getByRole('textbox', { name: /phone/i }), '2065551234');
 
             // Submit the form
             const saveButton = screen.getByRole('button', { name: 'Save' });
@@ -724,7 +717,7 @@ describe('ShippingMultiAddress', () => {
 
             // Wait for dialog to close
             await waitFor(() => {
-                expect(screen.queryByText('Add Address')).not.toBeInTheDocument();
+                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
             });
 
             // Check that the address is now selected for the item
@@ -774,28 +767,21 @@ describe('ShippingMultiAddress', () => {
             await user.click(addAddressButtons[0]);
 
             // Fill out and save the form
-            await user.type(screen.getByPlaceholderText(/Address Title|e\.g\., Home, Work/i), 'Work');
-            await user.type(screen.getByPlaceholderText('First name'), 'John');
-            await user.type(screen.getByPlaceholderText('Last name'), 'Smith');
-            await user.type(screen.getByPlaceholderText(/Phone|\(555\) 123-4567/i), '5035551234');
-            await user.type(screen.getByPlaceholderText('Address Line 1'), '123 Test Ave');
-            await user.type(screen.getByPlaceholderText('City'), 'Portland');
-            // Find state select
-            const stateSelects = screen.getAllByRole('combobox');
-            const stateSelect =
-                stateSelects.find((select) => {
-                    const options = Array.from(select.querySelectorAll('option'));
-                    return options.some((opt) => opt.textContent?.includes('Select State'));
-                }) || stateSelects[stateSelects.length - 1];
-            await user.selectOptions(stateSelect, 'OR');
-            await user.type(screen.getByPlaceholderText('Zip code'), '97201');
+            await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Work');
+            await user.type(screen.getByPlaceholderText(/first name/i), 'John');
+            await user.type(screen.getByPlaceholderText(/last name/i), 'Smith');
+            await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '123 Test Ave');
+            await user.type(screen.getByPlaceholderText(/city/i), 'Portland');
+            await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'OR');
+            await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '97201');
+            await user.type(screen.getByRole('textbox', { name: /phone/i }), '5035551234');
 
             const saveButton = screen.getByRole('button', { name: 'Save' });
             await user.click(saveButton);
 
             // Wait for dialog to close
             await waitFor(() => {
-                expect(screen.queryByText('Add Address')).not.toBeInTheDocument();
+                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
             });
 
             // Both items should have the new address selected
@@ -850,27 +836,20 @@ describe('ShippingMultiAddress', () => {
             const addAddressButtons = screen.getAllByText('+ Add New Address');
             await user.click(addAddressButtons[0]);
 
-            await user.type(screen.getByPlaceholderText(/Address Title|e\.g\., Home, Work/i), 'Shared');
-            await user.type(screen.getByPlaceholderText('First name'), 'Shared');
-            await user.type(screen.getByPlaceholderText('Last name'), 'Address');
-            await user.type(screen.getByPlaceholderText(/Phone|\(555\) 123-4567/i), '6175551234');
-            await user.type(screen.getByPlaceholderText('Address Line 1'), '999 Shared St');
-            await user.type(screen.getByPlaceholderText('City'), 'Boston');
-            // Find state select
-            const stateSelects = screen.getAllByRole('combobox');
-            const stateSelect =
-                stateSelects.find((select) => {
-                    const options = Array.from(select.querySelectorAll('option'));
-                    return options.some((opt) => opt.textContent?.includes('Select State'));
-                }) || stateSelects[stateSelects.length - 1];
-            await user.selectOptions(stateSelect, 'MA');
-            await user.type(screen.getByPlaceholderText('Zip code'), '02101');
+            await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Shared');
+            await user.type(screen.getByPlaceholderText(/first name/i), 'Shared');
+            await user.type(screen.getByPlaceholderText(/last name/i), 'Address');
+            await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '999 Shared St');
+            await user.type(screen.getByPlaceholderText(/city/i), 'Boston');
+            await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'MA');
+            await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '02101');
+            await user.type(screen.getByRole('textbox', { name: /phone/i }), '6175551234');
 
             const saveButton = screen.getByRole('button', { name: 'Save' });
             await user.click(saveButton);
 
             await waitFor(() => {
-                expect(screen.queryByText('Add Address')).not.toBeInTheDocument();
+                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
             });
 
             // Now select the new address for item-2 from dropdown
@@ -909,23 +888,23 @@ describe('ShippingMultiAddress', () => {
             const addAddressButton = screen.getAllByText('+ Add New Address');
             await user.click(addAddressButton[0]);
 
-            await user.type(screen.getByPlaceholderText('First name'), 'Test');
-            await user.type(screen.getByPlaceholderText('Last name'), 'User');
+            await user.type(screen.getByPlaceholderText(/first name/i), 'Test');
+            await user.type(screen.getByPlaceholderText(/last name/i), 'User');
 
             // Cancel and reopen
             const cancelButton = screen.getByRole('button', { name: 'Cancel' });
             await user.click(cancelButton);
 
             await waitFor(() => {
-                expect(screen.queryByText('Add Address')).not.toBeInTheDocument();
+                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
             });
 
             // Reopen dialog
             await user.click(addAddressButton[0]);
 
             // Form should be reset (empty fields)
-            const firstNameInput = screen.getByPlaceholderText('First name');
-            const lastNameInput = screen.getByPlaceholderText('Last name');
+            const firstNameInput = screen.getByPlaceholderText(/first name/i);
+            const lastNameInput = screen.getByPlaceholderText(/last name/i);
 
             expect(firstNameInput).toHaveValue('');
             expect(lastNameInput).toHaveValue('');

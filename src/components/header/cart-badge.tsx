@@ -17,7 +17,7 @@
 
 import { lazy, type ReactElement, Suspense, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useBasketSnapshot } from '@/providers/basket';
+import { useBasketSnapshot, useMiniCart } from '@/providers/basket';
 import CartBadgeIcon from './cart-badge-icon';
 import { useTranslation } from 'react-i18next';
 
@@ -33,6 +33,12 @@ export default function CartBadge(): ReactElement {
     const { t } = useTranslation('cart');
     const numberOfItems = snapshot?.uniqueProductCount ?? 0;
     const [clicked, setClicked] = useState<boolean>(false);
+    const { miniCartOpen, setMiniCartOpen } = useMiniCart();
+
+    // Ensure CartSheet is lazy-loaded when opened externally (e.g. add-to-cart)
+    if (miniCartOpen && !clicked) {
+        setClicked(true);
+    }
 
     if (clicked) {
         return (
@@ -40,7 +46,7 @@ export default function CartBadge(): ReactElement {
                 fallback={
                     <Button
                         variant="ghost"
-                        className="relative pointer-events-none"
+                        className="relative pointer-events-none hover:bg-transparent"
                         aria-label={t('badge.ariaLabel', { count: numberOfItems })}>
                         <CartBadgeIcon numberOfItems={numberOfItems} />
                     </Button>
@@ -48,7 +54,7 @@ export default function CartBadge(): ReactElement {
                 <CartSheet>
                     <Button
                         variant="ghost"
-                        className="relative cursor-pointer"
+                        className="relative cursor-pointer hover:bg-transparent hover:opacity-50 transition-opacity"
                         aria-label={t('badge.ariaLabel', { count: numberOfItems })}>
                         <CartBadgeIcon numberOfItems={numberOfItems} />
                     </Button>
@@ -60,8 +66,11 @@ export default function CartBadge(): ReactElement {
     return (
         <Button
             variant="ghost"
-            className="relative cursor-pointer"
-            onClick={() => setClicked(true)}
+            className="relative cursor-pointer hover:bg-transparent hover:opacity-50 transition-opacity"
+            onClick={() => {
+                setClicked(true);
+                setMiniCartOpen(true);
+            }}
             aria-label={t('badge.ariaLabel', { count: numberOfItems })}>
             <CartBadgeIcon numberOfItems={numberOfItems} />
         </Button>

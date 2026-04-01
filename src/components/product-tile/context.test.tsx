@@ -17,7 +17,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { act, render, renderHook, screen } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { ConfigWrapper } from '@/test-utils/config';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { CurrencyProvider } from '@/providers/currency';
 import { ProductTileProvider, useProductTileContext } from './context';
 
@@ -48,9 +48,9 @@ function createRouterWrapper({ currency = 'USD' }: { currency?: string } = {}) {
                 {
                     path: '/',
                     element: (
-                        <ConfigWrapper>
+                        <AllProvidersWrapper>
                             <CurrencyProvider value={currency}>{children}</CurrencyProvider>
-                        </ConfigWrapper>
+                        </AllProvidersWrapper>
                     ),
                 },
             ],
@@ -70,11 +70,11 @@ function createProviderWrapper({ currency = 'USD' }: { currency?: string } = {})
                 {
                     path: '/',
                     element: (
-                        <ConfigWrapper>
+                        <AllProvidersWrapper>
                             <CurrencyProvider value={currency}>
                                 <ProductTileProvider>{children}</ProductTileProvider>
                             </CurrencyProvider>
-                        </ConfigWrapper>
+                        </AllProvidersWrapper>
                     ),
                 },
             ],
@@ -99,13 +99,13 @@ describe('ProductTileProvider', () => {
                 {
                     path: '/',
                     element: (
-                        <ConfigWrapper>
+                        <AllProvidersWrapper>
                             <CurrencyProvider value="USD">
                                 <ProductTileProvider>
                                     <div data-testid="child">Hello</div>
                                 </ProductTileProvider>
                             </CurrencyProvider>
-                        </ConfigWrapper>
+                        </AllProvidersWrapper>
                     ),
                 },
             ],
@@ -124,7 +124,7 @@ describe('ProductTileProvider', () => {
 
         expect(result.current).toEqual(
             expect.objectContaining({
-                navigate: mockNavigate,
+                navigate: expect.any(Function),
                 currency: 'USD',
                 swatchMode: expect.stringMatching(/^(click|hover)$/),
             })
@@ -156,7 +156,8 @@ describe('ProductTileProvider', () => {
         });
 
         void result.current.navigate('/product/123');
-        expect(mockNavigate).toHaveBeenCalledWith('/product/123');
+        // The navigate wrapper prepends the site/locale prefix before calling the router navigate
+        expect(mockNavigate).toHaveBeenCalledWith('/global/en-US/product/123', undefined);
     });
 });
 
@@ -174,7 +175,8 @@ describe('useProductTileContext', () => {
             wrapper: createProviderWrapper(),
         });
 
-        expect(result.current.navigate).toBe(mockNavigate);
+        // Navigate is a multi-site wrapper around the mocked useNavigate
+        expect(result.current.navigate).toBeTypeOf('function');
         expect(result.current.config).toBeDefined();
         expect(result.current.t).toBeTypeOf('function');
         expect(result.current.currency).toBe('USD');
@@ -187,8 +189,8 @@ describe('useProductTileContext', () => {
             wrapper: createRouterWrapper(),
         });
 
-        // Should still return all required fields via direct hook calls
-        expect(result.current.navigate).toBe(mockNavigate);
+        // Navigate is a multi-site wrapper around the mocked useNavigate
+        expect(result.current.navigate).toBeTypeOf('function');
         expect(result.current.config).toBeDefined();
         expect(result.current.t).toBeTypeOf('function');
         expect(result.current.currency).toBe('USD');

@@ -29,7 +29,8 @@ import debounce from 'lodash.debounce';
 import { useToast } from '@/components/toast';
 
 // Hooks
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 // Constants
 // Types
@@ -54,6 +55,8 @@ interface UseCartQuantityUpdateReturn {
     quantity: number | string;
     /** Stock validation error message */
     stockValidationError: string | null;
+    /** Maximum quantity allowed based on stock level (undefined if no limit) */
+    stockMax: number | undefined;
     /** Whether to show remove confirmation dialog */
     showRemoveConfirmation: boolean;
     /** Handle quantity change from input */
@@ -107,7 +110,7 @@ export function useCartQuantityUpdate({
     debounceDelay,
     fetcher,
 }: UseCartQuantityUpdateProps): UseCartQuantityUpdateReturn {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const { addToast } = useToast();
     const { t } = useTranslation('quantitySelector');
 
@@ -126,7 +129,9 @@ export function useCartQuantityUpdate({
         });
     }, [itemId, removeAction, fetcher]);
 
-    const [stockValidationError, setStockValidationError] = useState<string | null>(null);
+    const [stockValidationError, setStockValidationError] = useState<string | null>(() =>
+        stockLevel !== undefined && stockLevel > 0 && stockLevel <= initialValue ? t('maxStockReached') : null
+    );
     const [quantity, setQuantity] = useState<number | string>(initialValue);
     const [showRemoveConfirmation, setShowRemoveConfirmation] = useState(false);
 
@@ -139,11 +144,11 @@ export function useCartQuantityUpdate({
     const lastSuccessfulQuantityRef = useRef<number>(initialValue);
     const quantityRef = useRef<number | string>(initialValue);
 
-    // Generate inventory message for a specific quantity
+    // Generate inventory message when quantity is at or above stock level
     const getInventoryMessage = useCallback(
         (qty: number) => {
-            if (stockLevel !== undefined && stockLevel > 0 && stockLevel < qty) {
-                return t('onlyLeft', { stockLevel: stockLevel.toString() });
+            if (stockLevel !== undefined && stockLevel > 0 && stockLevel <= qty) {
+                return t('maxStockReached');
             }
             return null;
         },
@@ -210,20 +215,17 @@ export function useCartQuantityUpdate({
                 // Always update the quantity display value for immediate UI feedback
                 setQuantity(numberValue);
 
+                // Show or clear stock validation message
+                setStockValidationError(getInventoryMessage(numberValue));
+
                 // Check if quantity exceeds stock level
                 if (stockLevel !== undefined && stockLevel > 0 && stockLevel < numberValue) {
-                    // Show stock validation error using new message logic
-                    setStockValidationError(getInventoryMessage(numberValue));
-
                     // Cancel any pending debounced API calls
                     changeItemQuantity.cancel();
 
                     // Don't make API call if quantity exceeds stock
                     return;
                 }
-
-                // Clear stock validation error if quantity is valid
-                setStockValidationError(null);
 
                 // Cancel any pending handlers before making new API call
                 changeItemQuantity.cancel();
@@ -306,15 +308,20 @@ export function useCartQuantityUpdate({
         lastSuccessfulQuantityRef.current = lastSuccessfulQuantity;
     }, [lastSuccessfulQuantity]);
 
-    // Update local quantity when initialValue changes (e.g., from external updates)
+    // Update local quantity and stock validation when initialValue or stockLevel changes
+    // (e.g., from external basket updates or async data loading)
     useEffect(() => {
         setQuantity(initialValue);
         setLastSuccessfulQuantity(initialValue);
-    }, [initialValue]);
+        setStockValidationError(getInventoryMessage(initialValue));
+    }, [initialValue, stockLevel, getInventoryMessage]);
+
+    const stockMax = stockLevel !== undefined && stockLevel > 0 ? stockLevel : undefined;
 
     return {
         quantity,
         stockValidationError,
+        stockMax,
         showRemoveConfirmation,
         handleQuantityChange,
         handleQuantityBlur,

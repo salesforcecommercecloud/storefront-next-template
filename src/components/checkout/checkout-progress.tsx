@@ -50,9 +50,9 @@ const TIMELINE_STEPS: TimelineStep[] = [
         description: 'Payment method',
     },
     {
-        id: CHECKOUT_STEPS.REVIEW_ORDER,
-        title: 'Review',
-        description: 'Confirm order',
+        id: CHECKOUT_STEPS.PLACE_ORDER,
+        title: 'Place Order',
+        description: 'Place order',
     },
 ];
 

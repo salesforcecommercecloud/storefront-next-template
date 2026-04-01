@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
     createStoreLocatorStore,
     type StoreLocatorConfig,
@@ -22,47 +22,9 @@ import {
     type GeoCoordinates,
 } from './store-locator-store';
 
-// Mock js-cookie
-vi.mock('js-cookie', () => ({
-    default: {
-        set: vi.fn(),
-        remove: vi.fn(),
-    },
-}));
-
-// Mock cookie utils
-vi.mock('@/lib/cookie-utils', () => ({
-    getCookieConfig: vi.fn(),
-}));
-
-// Mock store locator utils
-vi.mock('@/extensions/store-locator/utils', () => ({
-    getSelectedStoreInfoCookieName: vi.fn(),
-}));
-
 describe('createStoreLocatorStore', () => {
-    let mockCookies: { set: ReturnType<typeof vi.fn>; remove: ReturnType<typeof vi.fn> };
-    let mockGetCookieConfig: ReturnType<typeof vi.fn>;
-    let mockGetSelectedStoreInfoCookieName: ReturnType<typeof vi.fn>;
-
-    beforeEach(async () => {
+    beforeEach(() => {
         vi.clearAllMocks();
-
-        // Get the mocked functions
-        const { default: cookies } = await import('js-cookie');
-        const { getCookieConfig } = await import('@/lib/cookie-utils');
-        const { getSelectedStoreInfoCookieName } = await import('@/extensions/store-locator/utils');
-
-        mockCookies = cookies as any;
-        mockGetCookieConfig = getCookieConfig as any;
-        mockGetSelectedStoreInfoCookieName = getSelectedStoreInfoCookieName as any;
-
-        mockGetCookieConfig.mockReturnValue({ path: '/', secure: true });
-        mockGetSelectedStoreInfoCookieName.mockReturnValue('selectedStoreInfo');
-    });
-
-    afterEach(() => {
-        vi.restoreAllMocks();
     });
 
     describe('initial state', () => {
@@ -192,7 +154,7 @@ describe('createStoreLocatorStore', () => {
         });
 
         describe('setSelectedStoreInfo', () => {
-            it('sets selected store info and persists to cookie', () => {
+            it('sets selected store info in state', () => {
                 const storeInfo: SelectedStoreInfo = {
                     id: 'store1',
                     name: 'Test Store',
@@ -203,13 +165,9 @@ describe('createStoreLocatorStore', () => {
 
                 const state = store.getState();
                 expect(state.selectedStoreInfo).toEqual(storeInfo);
-                expect(mockCookies.set).toHaveBeenCalledWith('selectedStoreInfo', JSON.stringify(storeInfo), {
-                    path: '/',
-                    secure: true,
-                });
             });
 
-            it('clears selected store info and removes cookie when null', () => {
+            it('clears selected store info when null', () => {
                 // First set a store
                 const storeInfo: SelectedStoreInfo = {
                     id: 'store1',
@@ -224,53 +182,6 @@ describe('createStoreLocatorStore', () => {
 
                 const state = store.getState();
                 expect(state.selectedStoreInfo).toBeNull();
-                expect(mockCookies.remove).toHaveBeenCalledWith('selectedStoreInfo', { path: '/', secure: true });
-            });
-
-            it('handles cookie write errors on server', () => {
-                // Mock server environment
-                const originalWindow = global.window;
-                // @ts-expect-error - Deleting window for server environment test
-                delete global.window;
-
-                // Mock cookie set to throw an error
-                mockCookies.set.mockImplementation(() => {
-                    throw new Error('Cookie write failed');
-                });
-
-                const storeInfo: SelectedStoreInfo = {
-                    id: 'store1',
-                    name: 'Test Store',
-                    inventoryId: 'inv1',
-                };
-
-                expect(() => {
-                    store.getState().setSelectedStoreInfo(storeInfo);
-                }).toThrow('Cookie write failed');
-
-                // Restore window
-                global.window = originalWindow;
-            });
-
-            it('handles cookie write errors on client gracefully', () => {
-                // Mock cookie set to throw an error
-                mockCookies.set.mockImplementation(() => {
-                    throw new Error('Cookie write failed');
-                });
-
-                const storeInfo: SelectedStoreInfo = {
-                    id: 'store1',
-                    name: 'Test Store',
-                    inventoryId: 'inv1',
-                };
-
-                // Should not throw on client
-                expect(() => {
-                    store.getState().setSelectedStoreInfo(storeInfo);
-                }).not.toThrow();
-
-                // State should still be updated
-                expect(store.getState().selectedStoreInfo).toEqual(storeInfo);
             });
 
             it("normalizes ShopperStores.schemas['Store'] objects and applies name fallback", () => {
@@ -293,12 +204,6 @@ describe('createStoreLocatorStore', () => {
                     name: 'Test Store',
                     inventoryId: 'inv1',
                 });
-                // Verify cookie only contains normalized data
-                expect(mockCookies.set).toHaveBeenCalledWith(
-                    'selectedStoreInfo',
-                    JSON.stringify({ id: 'store1', name: 'Test Store', inventoryId: 'inv1' }),
-                    { path: '/', secure: true }
-                );
             });
 
             it('applies name fallback (name || id) when name is missing', () => {

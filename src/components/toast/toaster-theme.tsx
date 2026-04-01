@@ -18,6 +18,7 @@
 
 import { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
+import { Check } from 'lucide-react';
 
 /**
  * Client-side Toaster component that adapts to theme changes
@@ -49,5 +50,16 @@ export function ToasterTheme() {
         };
     }, []);
 
-    return <Toaster richColors expand position="top-right" className="toaster" theme={theme} />;
+    return (
+        <Toaster
+            expand
+            position="top-center"
+            closeButton
+            className="toaster"
+            theme={theme}
+            offset="var(--header-height)"
+            icons={{ success: <Check size={20} strokeWidth={2.5} /> }}
+            toastOptions={{ unstyled: true }}
+        />
+    );
 }

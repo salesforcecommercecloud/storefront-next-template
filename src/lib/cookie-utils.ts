@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getConfig } from '@/config/get-config';
 import type { RouterContextProvider } from 'react-router';
 import { COOKIE_TRACKING_CONSENT, COOKIE_DWSID } from '@/middlewares/auth.utils';
 import { modeDetectionContext } from '@/middlewares/mode-detection';
+import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 
 /**
  * List of cookie names that should NOT be namespaced.
@@ -56,38 +56,30 @@ export interface CookieConfig {
  * If the cookie name is in COOKIE_NAMESPACE_EXCLUSIONS, returns the name as-is.
  *
  * @param name - Base cookie name
- * @param context - Optional router context (server loaders/actions only, omit for client-side)
+ * @param context - Router context provider (required for multi-site resolution)
  * @returns Namespaced cookie name in format: `${name}_${siteId}`, or original name if excluded
  *
  * @example
- * // Server-side with context
  * getCookieNameWithSiteId('cc-nx-g', context); // Returns "cc-nx-g_RefArch"
  *
  * @example
- * // Client-side without context
- * getCookieNameWithSiteId('cc-nx-g'); // Returns "cc-nx-g_RefArch"
- *
- * @example
  * // Returns "dwsid" (if in exclusions array)
- * getCookieNameWithSiteId(COOKIE_DWSID);
+ * getCookieNameWithSiteId(COOKIE_DWSID, context);
  */
-export const getCookieNameWithSiteId = (name: string, context?: Readonly<RouterContextProvider>): string => {
+export const getCookieNameWithSiteId = (name: string, context: Readonly<RouterContextProvider>): string => {
     // Check if this cookie should be excluded from namespacing
     if (COOKIE_NAMESPACE_EXCLUSIONS.includes(name)) {
         return name;
     }
 
-    // Get config using getConfig() - handles both server (with context) and client (without)
-    const config = getConfig(context);
-    const siteId = config.commerce.api.siteId;
-
-    if (!siteId) {
-        throw new Error(
-            'siteId not available for cookie namespacing. ' + 'Ensure configuration is properly initialized.'
-        );
+    // Site ID is always resolved by multi-site middleware
+    const multiSite = context.get(multiSiteContext);
+    if (!multiSite?.site?.id) {
+        throw new Error('Multi-site context not initialized for cookie namespacing');
     }
+    const { site } = multiSite;
 
-    return `${name}_${siteId}`;
+    return `${name}_${site.id}`;
 };
 
 /**
@@ -99,27 +91,22 @@ export const getCookieNameWithSiteId = (name: string, context?: Readonly<RouterC
  * 3. Default values (path, sameSite, secure)
  *
  * @param cookieOptions - Optional cookie options to merge with defaults and environment config
- * @param context - Optional router context (server loaders/actions only, omit for client-side)
+ * @param context - Router context provider (required, server-only)
  * @returns Final cookie attributes with proper precedence applied
  *
  * @example
- * // Client-side - uses getConfig() automatically
- * const cookieConfig = getCookieConfig();
- * // Result: { path: '/', sameSite: 'lax', secure: true, domain: '<from env>' }
- *
- * @example
- * // Server-side - pass context
+ * // Pass context from middleware/loader/action
  * const cookieConfig = getCookieConfig({ httpOnly: false }, context);
  * // Result includes domain from config if set
  *
  * @example
  * // Provided options override defaults, but .env takes precedence over both
- * const cookieConfig = getCookieConfig({ path: '/custom', domain: '.code.com' });
+ * const cookieConfig = getCookieConfig({ path: '/custom', domain: '.code.com' }, context);
  * // If PUBLIC_COOKIE_DOMAIN=.env.com is set:
  * // Result: { path: '/custom', sameSite: 'lax', secure: true, domain: '.env.com' }
  *
  * @example
- * // Use with createCookie (server-side)
+ * // Use with createCookie
  * const authCookie = createCookie('auth', getCookieConfig({ httpOnly: false }, context), context);
  */
 
@@ -151,10 +138,10 @@ export const parseAllCookies = (cookieHeader: string | null): Record<string, str
 };
 
 export const getCookieConfig = <T extends object = CookieConfig>(
-    cookieOptions?: T,
-    context?: Readonly<RouterContextProvider>
+    cookieOptions: T | undefined,
+    context: Readonly<RouterContextProvider>
 ): T & CookieConfig => {
-    const modeDetection = context?.get(modeDetectionContext);
+    const modeDetection = context.get(modeDetectionContext);
 
     // 3. Start with defaults (lowest priority)
     const defaults: CookieConfig = {
@@ -176,11 +163,7 @@ export const getCookieConfig = <T extends object = CookieConfig>(
     // 1. Apply app config cookie overrides (highest priority)
     const cookieConfigOverrides: CookieConfig = {};
 
-    // Get config using getConfig() - handles both server (with context) and client (without)
-    const config = getConfig(context);
-
-    // this will change when multi site implementation starts, for now we use first site in the list
-    const currentSite = config.commerce.sites[0];
+    const currentSite = context.get(multiSiteContext)?.site;
     const cookieDomain = currentSite?.cookies?.domain;
     if (cookieDomain) {
         cookieConfigOverrides.domain = cookieDomain;
@@ -216,7 +199,7 @@ export interface Cookie<T = unknown> {
 export const createCookie = <T = unknown>(
     name: string,
     defaultConfig: CookieConfig,
-    context?: Readonly<RouterContextProvider>
+    context: Readonly<RouterContextProvider>
 ): Cookie<T> => {
     const namespacedName = getCookieNameWithSiteId(name, context);
 

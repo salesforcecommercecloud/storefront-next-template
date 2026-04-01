@@ -17,7 +17,11 @@ import { createContext, type PropsWithChildren, useContext, useEffect, useState 
 import type { ProductContentAdapter } from '@/lib/adapters/product-content-types';
 import { getProductContentAdapter, PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME } from '@/lib/adapters/product-content-store';
 import { ensureProductContentAdapterRegistered } from '@/lib/adapters/ensure-product-content-adapter';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 const ProductContentContext = createContext<ProductContentAdapter | undefined>(undefined);
 
@@ -39,7 +43,7 @@ const ProductContentProvider = ({
     children,
     adapterName = PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME,
 }: ProductContentProviderProps) => {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<ProductContentAdapter | undefined>(undefined);
 
     useEffect(() => {
@@ -51,8 +55,7 @@ const ProductContentProvider = ({
                 setAdapter(initializedAdapter);
             } catch (error) {
                 if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.warn('Failed to initialize product content adapter:', error);
+                    logger.warn('Failed to initialize product content adapter', { error });
                 }
             }
         };

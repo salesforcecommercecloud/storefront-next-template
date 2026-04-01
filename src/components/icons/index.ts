@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 export { HeartIcon } from './heart-icon';
+export { ShareIcon } from './share-icon';
+export { PickupIcon } from './pickup-icon';
+export { SparklesIcon } from './sparkles-icon';
 export { default as VisaIcon } from './visa-icon';
 export { default as MastercardIcon } from './mastercard-icon';
 export { default as AmexIcon } from './amex-icon';

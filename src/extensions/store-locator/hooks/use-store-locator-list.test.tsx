@@ -20,20 +20,28 @@ import { useStoreLocatorList, type SearchStoresResult } from './use-store-locato
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 
-// Mock react-router useFetcher and useRevalidator
-const mockFetcher = {
+// Mock react-router useFetcher (called twice: once for store search, once for set-selected-store action)
+const mockSearchFetcher = {
     state: 'idle' as 'idle' | 'loading',
     data: undefined as SearchStoresResult | undefined,
     load: vi.fn(),
+    submit: vi.fn(),
 };
 
-const mockRevalidator = {
-    revalidate: vi.fn(),
+const mockStoreFetcher = {
+    state: 'idle' as 'idle' | 'loading',
+    data: undefined,
+    load: vi.fn(),
+    submit: vi.fn(),
 };
 
+let fetcherCallCount = 0;
 vi.mock('react-router', () => ({
-    useFetcher: () => mockFetcher,
-    useRevalidator: () => mockRevalidator,
+    useFetcher: () => {
+        fetcherCallCount++;
+        // First call is the search fetcher, second is the store action fetcher
+        return fetcherCallCount % 2 === 1 ? mockSearchFetcher : mockStoreFetcher;
+    },
     createContext: vi.fn(),
 }));
 
@@ -70,10 +78,15 @@ vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
 
 describe('useStoreLocatorList', () => {
     beforeEach(() => {
-        mockFetcher.state = 'idle';
-        mockFetcher.data = undefined;
-        mockFetcher.load.mockClear();
-        mockRevalidator.revalidate.mockClear();
+        fetcherCallCount = 0;
+        mockSearchFetcher.state = 'idle';
+        mockSearchFetcher.data = undefined;
+        mockSearchFetcher.load.mockClear();
+        mockSearchFetcher.submit.mockClear();
+        mockStoreFetcher.state = 'idle';
+        mockStoreFetcher.data = undefined;
+        mockStoreFetcher.load.mockClear();
+        mockStoreFetcher.submit.mockClear();
         mockStore.mode = 'input';
         mockStore.searchParams = undefined;
         mockStore.deviceCoordinates = { latitude: undefined, longitude: undefined };
@@ -86,7 +99,7 @@ describe('useStoreLocatorList', () => {
         mockStore.shouldSearch = true;
         mockStore.searchParams = { countryCode: 'US', postalCode: '94105' };
         renderHook(() => useStoreLocatorList(), { wrapper: AllProvidersWrapper });
-        expect(mockFetcher.load).toHaveBeenCalled();
+        expect(mockSearchFetcher.load).toHaveBeenCalled();
         expect(mockStore.setShouldSearch).toHaveBeenCalledWith(false);
     });
 
@@ -95,7 +108,7 @@ describe('useStoreLocatorList', () => {
         mockStore.shouldSearch = true;
         mockStore.deviceCoordinates = { latitude: 1, longitude: 2 };
         renderHook(() => useStoreLocatorList(), { wrapper: AllProvidersWrapper });
-        expect(mockFetcher.load).toHaveBeenCalled();
+        expect(mockSearchFetcher.load).toHaveBeenCalled();
         expect(mockStore.setShouldSearch).toHaveBeenCalledWith(false);
     });
 
@@ -105,7 +118,7 @@ describe('useStoreLocatorList', () => {
         expect(result.current.stores).toEqual([]);
 
         // provide data from fetcher
-        mockFetcher.data = {
+        mockSearchFetcher.data = {
             success: true,
             stores: {
                 data: new Array(15)
@@ -128,11 +141,11 @@ describe('useStoreLocatorList', () => {
         });
     });
 
-    test('triggers revalidation when store changes', () => {
+    test('submits to server action when store changes', () => {
         const { result } = renderHook(() => useStoreLocatorList(), { wrapper: AllProvidersWrapper });
 
-        // Initially no store selected
-        expect(mockRevalidator.revalidate).not.toHaveBeenCalled();
+        // Initially no submission
+        expect(mockStoreFetcher.submit).not.toHaveBeenCalled();
 
         // Set a store
         act(() => {
@@ -143,35 +156,21 @@ describe('useStoreLocatorList', () => {
             });
         });
 
-        // Should trigger revalidation when store is set
-        expect(mockRevalidator.revalidate).toHaveBeenCalledTimes(1);
+        // Should submit to server action for cookie persistence
+        expect(mockStoreFetcher.submit).toHaveBeenCalledTimes(1);
         expect(mockStore.setSelectedStoreInfo).toHaveBeenCalledWith({
             id: 'store1',
             name: 'Store 1',
             inventoryId: 'inv1',
         });
 
-        // Change to a different store
-        mockStore.selectedStoreInfo = {
-            id: 'store1',
-            name: 'Store 1',
-            inventoryId: 'inv1',
-        };
-        mockRevalidator.revalidate.mockClear();
-
-        act(() => {
-            result.current.setSelectedStoreInfo({
-                id: 'store2',
-                name: 'Store 2',
-                inventoryId: 'inv2',
-            });
-        });
-
-        // Should trigger revalidation again when store changes
-        expect(mockRevalidator.revalidate).toHaveBeenCalledTimes(1);
+        // Verify the form data and action
+        const [formData, options] = mockStoreFetcher.submit.mock.calls[0];
+        expect(formData.get('storeInfo')).toBe(JSON.stringify({ id: 'store1', name: 'Store 1', inventoryId: 'inv1' }));
+        expect(options).toEqual({ method: 'POST', action: '/action/set-selected-store' });
     });
 
-    test('does not trigger revalidation when store inventoryId does not change', () => {
+    test('submits empty storeInfo when clearing store', () => {
         mockStore.selectedStoreInfo = {
             id: 'store1',
             name: 'Store 1',
@@ -180,16 +179,14 @@ describe('useStoreLocatorList', () => {
 
         const { result } = renderHook(() => useStoreLocatorList(), { wrapper: AllProvidersWrapper });
 
-        // Set the same store (same inventoryId)
+        // Clear the store
         act(() => {
-            result.current.setSelectedStoreInfo({
-                id: 'store1',
-                name: 'Store 1',
-                inventoryId: 'inv1',
-            });
+            result.current.setSelectedStoreInfo(null);
         });
 
-        // Should not trigger revalidation if inventoryId hasn't changed
-        expect(mockRevalidator.revalidate).not.toHaveBeenCalled();
+        // Should submit with empty storeInfo to clear cookie
+        expect(mockStoreFetcher.submit).toHaveBeenCalledTimes(1);
+        const [formData] = mockStoreFetcher.submit.mock.calls[0];
+        expect(formData.get('storeInfo')).toBe('');
     });
 });

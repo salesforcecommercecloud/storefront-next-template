@@ -16,17 +16,27 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import { act, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { MemoryRouter } from 'react-router';
+import { createMemoryRouter, RouterProvider } from 'react-router';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import CategoryNavigationMenu from './impl';
 import { testData } from './__tests__/data';
 
 describe('CategoryNavigationMenu Component', () => {
     const renderComponent = (props: ComponentPropsWithoutRef<typeof CategoryNavigationMenu>) => {
-        return render(
-            <MemoryRouter>
-                <CategoryNavigationMenu {...props} />
-            </MemoryRouter>
+        const router = createMemoryRouter(
+            [
+                {
+                    path: '*',
+                    element: (
+                        <AllProvidersWrapper>
+                            <CategoryNavigationMenu {...props} />
+                        </AllProvidersWrapper>
+                    ),
+                },
+            ],
+            { initialEntries: ['/'] }
         );
+        return render(<RouterProvider router={router} />);
     };
 
     beforeEach(() => {
@@ -50,7 +60,7 @@ describe('CategoryNavigationMenu Component', () => {
             expect(element1).toBeInTheDocument();
             expect(element2).toBeInTheDocument();
             expect(element3).toBeInTheDocument();
-            expect(element3.getAttribute('href')).toBe('/category/cat-3');
+            expect(element3.getAttribute('href')).toBe('/global/en-GB/category/cat-3');
         });
 
         it('should render nested structure correctly', async () => {
@@ -156,12 +166,17 @@ describe('CategoryNavigationMenu Component', () => {
         });
 
         it('should throw when maxDepth is 0', () => {
-            expect(() =>
-                renderComponent({
-                    categories: testData.basic,
-                    maxDepth: 0,
-                })
-            ).toThrow('maxDepth must be greater than 0');
+            // With createMemoryRouter, React Router catches the error via its error boundary.
+            // We suppress console.error and verify the error boundary rendered.
+            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            renderComponent({
+                categories: testData.basic,
+                maxDepth: 0,
+            });
+            expect(consoleSpy).toHaveBeenCalled();
+            const errorMessages = consoleSpy.mock.calls.map((call) => call.join(' ')).join(' ');
+            expect(errorMessages).toContain('maxDepth must be greater than 0');
+            consoleSpy.mockRestore();
         });
     });
 

@@ -27,10 +27,8 @@ import { useProductReviews } from '@/hooks/product-reviews/use-product-reviews';
 // Lazy load the ReviewCardsSection to improve initial page load
 const ReviewCardsSection = lazy(() => import('@/components/review-cards/review-cards-section'));
 
-// Lazy load AiReviewSummary to reduce initial bundle (only needed when aiSummary is present)
-const AiReviewSummary = lazy(() =>
-    import('@/components/ai-review-summary').then((m) => ({ default: m.AiReviewSummary }))
-);
+// Lazy load AiInsightCard to reduce initial bundle (only needed when aiSummary is present)
+const AiInsightCard = lazy(() => import('@/components/ai-insight-card').then((m) => ({ default: m.AiInsightCard })));
 
 const CUSTOMER_REVIEWS_ACCORDION_VALUE = 'customer-reviews';
 /** Delay before triggering onExpanded callback (matches accordion open animation duration). */
@@ -76,12 +74,17 @@ export default function CustomerReviewsSection(): ReactElement {
 
     useEffect(() => {
         registerExpand(() => {
+            if (prevAccordionOpenRef.current) {
+                // Already open — defer scroll to after the popover close re-render
+                requestAnimationFrame(() => triggerOnExpanded());
+                return;
+            }
             setAccordionValue((prev) =>
                 prev.includes(CUSTOMER_REVIEWS_ACCORDION_VALUE) ? prev : [...prev, CUSTOMER_REVIEWS_ACCORDION_VALUE]
             );
         });
         return () => registerExpand(null);
-    }, [registerExpand]);
+    }, [registerExpand, triggerOnExpanded]);
 
     // Use full list when loaded, otherwise summary for header and expanded content
     const aggregateRating = useMemo(() => {
@@ -151,7 +154,8 @@ export default function CustomerReviewsSection(): ReactElement {
                     {!isLoadingHeader && aiSummary && (
                         <div className="mt-2">
                             <Suspense fallback={null}>
-                                <AiReviewSummary
+                                <AiInsightCard
+                                    variant="review"
                                     title={t('aiReviewSummary')}
                                     badgeText="Beta"
                                     description={aiSummary}

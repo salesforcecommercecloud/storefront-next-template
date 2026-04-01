@@ -15,10 +15,15 @@
  */
 'use client';
 
-import { type ReactElement, useCallback, useMemo } from 'react';
-import { useLocation, useNavigate, useNavigation } from 'react-router';
+import { type ReactElement, useCallback, useMemo, useState } from 'react';
+import { useLocation, useNavigation } from 'react-router';
+import { useNavigate } from '@/hooks/use-navigate';
+
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Plus, Minus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Typography } from '@/components/typography';
 import type { FilterValue, RefinementProps } from './types';
 import RefineDefault from './refine-default';
 import RefineColor from './refine-color';
@@ -26,7 +31,6 @@ import RefineSize from './refine-size';
 import RefinePrice from './refine-price';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import RefineInventory from '@/extensions/bopis/components/refine-inventory';
-import RefineCategory from '@/components/category-refinements/refine-cgid';
 
 export default function CategoryRefinements({
     result,
@@ -35,6 +39,7 @@ export default function CategoryRefinements({
     result: ShopperSearch.schemas['ProductSearchResult'];
     refine: string[];
 }): ReactElement {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const navigation = useNavigation();
@@ -59,19 +64,19 @@ export default function CategoryRefinements({
         ? new URLSearchParams(navigation.location.search).getAll('refine')
         : refine;
 
-    // Expand all sections, except category (attribute ID = cgid)
-    const expandedSections = useMemo(
-        () =>
-            effectiveRefines.reduce((acc: string[], entry: string) => {
-                const attributeId = entry.split('=')[0];
-                if (attributeId !== 'cgid') {
-                    acc.push(attributeId);
-                }
-                return acc;
-            }, []),
+    // Track which sections should be expanded (default open if has active filters)
+    const hasActiveFilter = useCallback(
+        (attributeId: string) => {
+            return effectiveRefines.some((r) => r.startsWith(`${attributeId}=`));
+        },
         [effectiveRefines]
     );
-    const refinements = useMemo(() => result?.refinements || [], [result]);
+
+    // Category (`cgid`) selection is handled by QuickFilters, not the side filters panel.
+    const refinements = useMemo(
+        () => (result?.refinements || []).filter((refinement) => refinement.attributeId !== 'cgid'),
+        [result]
+    );
 
     const toggleFilter = useCallback(
         (attributeId: string, value: string) => {
@@ -80,13 +85,7 @@ export default function CategoryRefinements({
             const refinePair = `${attributeId}=${value}`;
 
             let nextRefines: string[];
-            let pathname: string | undefined;
-
-            if (attributeId === 'cgid') {
-                // Navigate to the new category while preserving non-cgid refinements
-                nextRefines = refines.filter((r) => !r.startsWith('cgid='));
-                pathname = `/category/${value}`;
-            } else if (refines.includes(refinePair)) {
+            if (refines.includes(refinePair)) {
                 // Remove this refinement
                 nextRefines = refines.filter((r) => r !== refinePair);
             } else {
@@ -112,7 +111,7 @@ export default function CategoryRefinements({
             const nextSearch = `?${params.toString()}`;
 
             void navigate({
-                pathname: pathname ?? location.pathname,
+                pathname: location.pathname,
                 search: nextSearch,
             });
         },
@@ -146,8 +145,6 @@ export default function CategoryRefinements({
                 return <RefineSize {...refinementProps} />;
             case 'price':
                 return <RefinePrice {...refinementProps} result={result} />;
-            case 'cgid':
-                return <RefineCategory {...refinementProps} />;
             default:
                 return <RefineDefault {...refinementProps} />;
         }
@@ -157,41 +154,73 @@ export default function CategoryRefinements({
     if (refinements.length === 0) {
         return (
             <div className="border rounded-md p-4">
-                <p className="text-muted-foreground text-sm">No filter options available.</p>
+                <p className="text-muted-foreground text-sm">{t('categoryRefinements:noFilterOptionsAvailable')}</p>
             </div>
         );
     }
 
     return (
-        <>
-            {/*  @sfdc-extension-line SFDC_EXT_BOPIS */}
-            <RefineInventory isFilterSelected={isFilterSelected} toggleFilter={toggleFilter} />
+        <div className={isPending ? 'pointer-events-none opacity-50 transition-opacity' : ''}>
+            {/*  @sfdc-extension-block-start SFDC_EXT_BOPIS */}
+            <RefineInventory
+                isFilterSelected={isFilterSelected}
+                hasActiveFilter={hasActiveFilter}
+                toggleFilter={toggleFilter}
+            />
+            {/*  @sfdc-extension-block-end SFDC_EXT_BOPIS */}
 
-            {/* Accordion to display the available refinement categories */}
-            <Accordion
-                type="multiple"
-                defaultValue={expandedSections}
-                {...(isPending && { className: 'pointer-events-none opacity-50 transition-opacity' })}>
-                {refinements.map((refinement) => {
-                    const { values, attributeId, label } = refinement;
-                    if (!Array.isArray(values) || !values.length) {
-                        return null;
-                    }
+            {/* Individual collapsible sections for each refinement category */}
+            {refinements.map((refinement) => {
+                const { values, attributeId, label } = refinement;
+                if (!Array.isArray(values) || !values.length) {
+                    return null;
+                }
 
-                    return (
-                        <AccordionItem key={attributeId} value={attributeId}>
-                            <AccordionTrigger>{label}</AccordionTrigger>
-                            <AccordionContent>
-                                {renderFilterValues(
-                                    refinement as ShopperSearch.schemas['ProductSearchRefinement'] & {
-                                        values: FilterValue[];
-                                    }
-                                )}
-                            </AccordionContent>
-                        </AccordionItem>
-                    );
-                })}
-            </Accordion>
-        </>
+                return (
+                    <FilterSection
+                        key={attributeId}
+                        label={label || attributeId}
+                        defaultOpen={hasActiveFilter(attributeId)}>
+                        {renderFilterValues(
+                            refinement as ShopperSearch.schemas['ProductSearchRefinement'] & {
+                                values: FilterValue[];
+                            }
+                        )}
+                    </FilterSection>
+                );
+            })}
+        </div>
+    );
+}
+
+/**
+ * Individual filter section with collapsible behavior.
+ * Shows Plus icon when collapsed, Minus when expanded.
+ */
+function FilterSection({
+    label,
+    defaultOpen = false,
+    children,
+}: {
+    label: string;
+    defaultOpen?: boolean;
+    children: ReactElement;
+}): ReactElement {
+    const [isOpen, setIsOpen] = useState(defaultOpen);
+
+    return (
+        <section>
+            <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border rounded-md mb-4">
+                <Typography variant="small" as="h3" className="leading-normal p-4 transition-colors hover:bg-muted/60">
+                    <CollapsibleTrigger className="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer">
+                        <Typography variant="small" as="span" className="font-medium">
+                            {label}
+                        </Typography>
+                        {isOpen ? <Minus className="size-4" /> : <Plus className="size-4" />}
+                    </CollapsibleTrigger>
+                </Typography>
+                <CollapsibleContent className="px-4 pb-4">{children}</CollapsibleContent>
+            </Collapsible>
+        </section>
     );
 }

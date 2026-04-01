@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 import type { RouterContextProvider } from 'react-router';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
+import { authorizePasswordless } from '@/middlewares/auth.server';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { createContactInfoSchema, parseContactInfoFromFormData } from '@/lib/checkout-schemas';
-import { customerLookup } from '@/lib/api/customer';
+import { updateBillingAddressForBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
+import type { AppConfig } from '@/types/config';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action for submitting checkout contact information.
  */
 export async function action(formData: FormData, context: RouterContextProvider) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('SubmitContactInfo: starting');
 
     // Parse and validate using shared schema
     // This ensures server-side validation matches client-side validation exactly
@@ -48,24 +54,9 @@ export async function action(formData: FormData, context: RouterContextProvider)
     // Use validated data
     const { email, countryCode, phone } = result.data;
 
-    // Combine country code and phone number
-    const fullPhone = countryCode && phone ? `${countryCode}${phone}` : phone;
+    // Combine country code and phone number with space separator
+    const fullPhone = countryCode && phone ? `${countryCode} ${phone}` : phone;
 
-    // Perform customer lookup first to determine if user is registered or guest
-    let customerLookupResult = null;
-    try {
-        customerLookupResult = await customerLookup(context, email);
-    } catch {
-        // Customer lookup failed, continue with guest flow
-        // Continue with guest flow if lookup fails
-        customerLookupResult = {
-            isRegistered: false,
-            recommendation: 'guest' as const,
-            message: t('checkout.contactInfo.lookupFallbackMessage'),
-        };
-    }
-
-    // Update customer info in Commerce Cloud only if user should be treated as registered
     const basketId = await ensureBasketId(context);
     if (!basketId) {
         return Response.json(
@@ -78,7 +69,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         );
     }
 
-    // Always update basket with customer email and phone (required for order placement)
+    // Always update basket with customer email (required for order placement)
     let updatedBasket;
     try {
         const clients = createApiClients(context);
@@ -90,7 +81,6 @@ export async function action(formData: FormData, context: RouterContextProvider)
             },
             body: {
                 email,
-                ...(fullPhone && { phone: fullPhone }),
             },
         });
 
@@ -99,8 +89,8 @@ export async function action(formData: FormData, context: RouterContextProvider)
         // Update local basket state with API response
         updateBasketResource(context, updatedBasket);
     } catch (error) {
-        // Try to extract a more specific error message
-        let errorMessage = t('checkout.contactInfo.saveError');
+        logger.error('SubmitContactInfo: failed to update customer email', { error });
+        let errorMessage: string = t('checkout.contactInfo.saveError');
 
         if (error instanceof ApiError) {
             try {
@@ -129,13 +119,36 @@ export async function action(formData: FormData, context: RouterContextProvider)
         );
     }
 
-    // Return success data as JSON with updated basket for direct context updates
+    // Save phone to billing address so it persists for order placement
+    if (fullPhone && updatedBasket) {
+        try {
+            const existingBilling = updatedBasket.billingAddress ?? {};
+            const billingWithPhone = { ...existingBilling, phone: fullPhone };
+            const billingBasket = await updateBillingAddressForBasket(context, basketId, billingWithPhone);
+            updatedBasket = { ...updatedBasket, billingAddress: billingBasket.billingAddress };
+            updateBasketResource(context, updatedBasket);
+        } catch {
+            // Non-blocking: phone on billing is supplemental
+        }
+    }
+
+    // Send OTP for passwordless login when shopper enters email (mode=email). Non-blocking.
+    const appConfig = getConfig<AppConfig>(context);
+    if (appConfig.features?.passwordlessLogin?.enabled && email?.trim()) {
+        try {
+            await authorizePasswordless(context, { userid: email.trim() });
+        } catch {
+            // Do not fail contact step if OTP send fails (e.g. SLAS error, config)
+        }
+    }
+    logger.info('SubmitContactInfo: succeeded', { basketId });
+
     return Response.json({
         success: true,
         step: 'contactInfo',
         data: {
             email,
-            customerLookup: customerLookupResult,
+            phone: fullPhone,
         },
         basket: updatedBasket,
     });

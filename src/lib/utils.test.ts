@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { resolveAssetUrl, isAbsoluteURL, getErrorMessage, parseJsonToStringRecord } from './utils';
+import { resolveAssetUrl, isAbsoluteURL, getErrorMessage, parseJsonToStringRecord, getBasePath } from './utils';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 describe('isAbsoluteURL', () => {
@@ -154,12 +154,15 @@ describe('resolveAssetUrl', () => {
             // Save original window and mock Node.js environment
             originalWindow = globalThis.window;
             vi.stubGlobal('window', undefined);
+            // Clear base path so it doesn't leak from .env into tests that don't expect it
+            delete process.env.MRT_ENV_BASE_PATH;
         });
 
         afterEach(() => {
             // Restore window and clean up env
             vi.stubGlobal('window', originalWindow);
             delete process.env.BUNDLE_ID;
+            delete process.env.MRT_ENV_BASE_PATH;
         });
 
         it('should use process.env.BUNDLE_ID in MRT', () => {
@@ -181,6 +184,12 @@ describe('resolveAssetUrl', () => {
         it('should handle relative paths on server', () => {
             process.env.BUNDLE_ID = '200';
             expect(resolveAssetUrl('images/hero.png')).toBe('/mobify/bundle/200/client/images/hero.png');
+        });
+
+        it('should include base path in bundle path on server', () => {
+            process.env.BUNDLE_ID = '140';
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            expect(resolveAssetUrl('/images/hero.png')).toBe('/shop/mobify/bundle/140/client/images/hero.png');
         });
     });
 
@@ -233,6 +242,96 @@ describe('resolveAssetUrl', () => {
 
         it('should handle local asset paths from Page Designer', () => {
             expect(resolveAssetUrl('images/hero-cube.webp')).toBe('/mobify/bundle/60/client/images/hero-cube.webp');
+        });
+    });
+});
+
+describe('getBasePath', () => {
+    describe('client-side (window defined)', () => {
+        afterEach(() => {
+            delete (window as { _BASE_PATH?: string })._BASE_PATH;
+        });
+
+        it('should return empty string when _BASE_PATH is not set', () => {
+            delete (window as { _BASE_PATH?: string })._BASE_PATH;
+            expect(getBasePath()).toBe('');
+        });
+
+        it('should return base path from _BASE_PATH', () => {
+            (window as { _BASE_PATH: string })._BASE_PATH = '/shop';
+            expect(getBasePath()).toBe('/shop');
+        });
+
+        it('should return empty string when _BASE_PATH is empty', () => {
+            (window as { _BASE_PATH: string })._BASE_PATH = '';
+            expect(getBasePath()).toBe('');
+        });
+    });
+
+    describe('server-side (window undefined)', () => {
+        let originalWindow: typeof globalThis.window;
+
+        beforeEach(() => {
+            originalWindow = globalThis.window;
+            vi.stubGlobal('window', undefined);
+        });
+
+        afterEach(() => {
+            vi.stubGlobal('window', originalWindow);
+            delete process.env.MRT_ENV_BASE_PATH;
+        });
+
+        it('should return empty string when MRT_ENV_BASE_PATH is not set', () => {
+            delete process.env.MRT_ENV_BASE_PATH;
+            expect(getBasePath()).toBe('');
+        });
+
+        it('should return valid base path', () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop';
+            expect(getBasePath()).toBe('/shop');
+        });
+
+        it('should throw when leading slash is missing', () => {
+            process.env.MRT_ENV_BASE_PATH = 'shop';
+            expect(() => getBasePath()).toThrow('Invalid base path');
+        });
+
+        it('should throw on trailing slashes', () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop/';
+            expect(() => getBasePath()).toThrow('Invalid base path');
+        });
+
+        it('should throw on invalid base path', () => {
+            process.env.MRT_ENV_BASE_PATH = '/shop/nested';
+            expect(() => getBasePath()).toThrow('Invalid base path');
+        });
+    });
+});
+
+describe('resolveAssetUrl with base path', () => {
+    describe('in MRT environment with base path', () => {
+        beforeEach(() => {
+            (window as { _BUNDLE_ID: string })._BUNDLE_ID = '60';
+            (window as { _BASE_PATH: string })._BASE_PATH = '/shop';
+        });
+
+        afterEach(() => {
+            delete (window as { _BUNDLE_ID?: string })._BUNDLE_ID;
+            delete (window as { _BASE_PATH?: string })._BASE_PATH;
+        });
+
+        it('should prepend base path and bundle path to local assets', () => {
+            expect(resolveAssetUrl('/images/hero.png')).toBe('/shop/mobify/bundle/60/client/images/hero.png');
+        });
+
+        it('should return URLs with base path and bundle path unchanged', () => {
+            const url = '/shop/mobify/bundle/60/client/images/hero.png';
+            expect(resolveAssetUrl(url)).toBe(url);
+        });
+
+        it('should return URLs containing /mobify/bundle/ without base path unchanged', () => {
+            const url = '/mobify/bundle/60/client/images/hero.png';
+            expect(resolveAssetUrl(url)).toBe(url);
         });
     });
 });

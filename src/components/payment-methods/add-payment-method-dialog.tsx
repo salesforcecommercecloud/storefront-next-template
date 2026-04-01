@@ -29,6 +29,7 @@ import { type CountryCode } from '@/components/customer-address-form';
 import { AddressFormFields } from '@/components/address-form-fields';
 import { CreditCardInputFields } from '@/components/credit-card-input-fields';
 import { Form } from '@/components/ui/form';
+import { accountDestructiveAlertClasses } from '@/lib/account-action-styles';
 import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
 import { detectCardType } from '@/lib/payment-utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -55,9 +56,9 @@ export function AddPaymentMethodDialog({
     isLoading = false,
 }: AddPaymentMethodDialogProps): ReactElement {
     const { t } = useTranslation('account');
+    const [countryCode] = useState<CountryCode>('US');
     const [selectedAddress, setSelectedAddress] = useState('');
     const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
-    const [countryCode] = useState<CountryCode>('US');
     const [formError, setFormError] = useState<string | null>(null);
 
     const paymentSchema = createPaymentSchema(t as unknown as TFunction);
@@ -138,11 +139,10 @@ export function AddPaymentMethodDialog({
         }
 
         const cardNumber = (formData.cardNumber || '').replace(/\s/g, '');
-        const cardType = detectCardType(cardNumber).toLowerCase().replace(/\s+/g, '_');
         const formDataToSend = new FormData();
         formDataToSend.append('cardNumber', cardNumber);
         formDataToSend.append('cardholderName', formData.cardholderName || '');
-        formDataToSend.append('cardType', cardType);
+        formDataToSend.append('cardType', detectCardType(cardNumber));
         formDataToSend.append('expirationMonth', String(expirationMonth));
         formDataToSend.append('expirationYear', String(expirationYear));
         if (paymentForm.getValues('saveAsDefault' as keyof PaymentData)) {
@@ -169,14 +169,16 @@ export function AddPaymentMethodDialog({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="text-xl font-semibold">
+                <DialogHeader className="mb-4">
+                    <DialogTitle
+                        className="font-semibold text-foreground"
+                        style={{ fontSize: 'var(--text-lg-xl)', lineHeight: 'var(--text-lg-xl--line-height)' }}>
                         {t('paymentMethods.addPaymentMethodTitle')}
                     </DialogTitle>
                 </DialogHeader>
 
                 {formError && (
-                    <Alert variant="destructive">
+                    <Alert className={accountDestructiveAlertClasses}>
                         <AlertDescription>{formError}</AlertDescription>
                     </Alert>
                 )}

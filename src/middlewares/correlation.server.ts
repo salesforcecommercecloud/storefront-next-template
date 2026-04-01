@@ -15,6 +15,7 @@
  */
 import type { MiddlewareFunction } from 'react-router';
 import { correlationContext, generateCorrelationId } from '@/lib/correlation';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Middleware to extract or generate a correlation ID for request tracing.
@@ -26,7 +27,15 @@ import { correlationContext, generateCorrelationId } from '@/lib/correlation';
  * 2. Newly generated UUID (fallback)
  */
 export const correlationMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
-    const correlationId = request.headers.get('x-correlation-id') || generateCorrelationId();
+    const logger = getLogger(context);
+    const headerCorrelationId = request.headers.get('x-correlation-id');
+    const correlationId = headerCorrelationId || generateCorrelationId();
+
+    logger.debug('Correlation: middleware starting', {
+        correlationId,
+        fromHeader: !!headerCorrelationId,
+    });
+
     context.set(correlationContext, correlationId);
     return next();
 };

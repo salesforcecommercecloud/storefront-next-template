@@ -19,7 +19,6 @@ exports[`HeroSkeleton stories snapshot > Default story renders and matches snaps
       >
         <div
           class="max-w-2xl"
-          data-theme="foundations-light"
         >
           <div
             class="h-8 sm:h-10 md:h-12 lg:h-16 bg-white/20 w-3/4 rounded mb-3 sm:mb-4 md:mb-6"
@@ -79,7 +78,6 @@ exports[`HeroSkeleton stories snapshot > DesktopLayout story renders and matches
       >
         <div
           class="max-w-2xl"
-          data-theme="foundations-light"
         >
           <div
             class="h-8 sm:h-10 md:h-12 lg:h-16 bg-white/20 w-3/4 rounded mb-3 sm:mb-4 md:mb-6"
@@ -139,7 +137,6 @@ exports[`HeroSkeleton stories snapshot > MobileLayout story renders and matches 
       >
         <div
           class="max-w-2xl"
-          data-theme="foundations-light"
         >
           <div
             class="h-8 sm:h-10 md:h-12 lg:h-16 bg-white/20 w-3/4 rounded mb-3 sm:mb-4 md:mb-6"

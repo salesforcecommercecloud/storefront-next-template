@@ -15,12 +15,15 @@
  */
 import type { ReactElement } from 'react';
 import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { ResetPasswordForm } from '@/components/reset-password-form';
-import { resetPasswordWithToken } from '@/middlewares/auth.server';
-import { isPasswordValid } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
-import { useTranslation } from 'react-i18next';
+import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+import { buildUrlFromContext } from '@/lib/url.server';
+import { isPasswordValid } from '@/lib/utils';
+import { resetPasswordWithToken } from '@/middlewares/auth.server';
+import { getLogger } from '@/lib/logger.server';
 
 type ResetPasswordLoaderData = {
     token: string;
@@ -32,13 +35,13 @@ type ResetPasswordActionData = {
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function loader({ request }: LoaderFunctionArgs): ResetPasswordLoaderData | Response {
+export function loader({ request, context }: LoaderFunctionArgs): ResetPasswordLoaderData | Response {
     const url = new URL(request.url);
     const token = url.searchParams.get('token');
     const email = url.searchParams.get('email');
 
     if (!token || !email) {
-        return redirect('/forgot-password');
+        return redirect(buildUrlFromContext('/forgot-password', context));
     }
 
     return {
@@ -51,6 +54,7 @@ export function loader({ request }: LoaderFunctionArgs): ResetPasswordLoaderData
 // server-side to maintain security and proper integration with SFCC's authentication system
 // eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<ResetPasswordActionData | Response> {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();
     const token = formData.get('token')?.toString();
@@ -60,7 +64,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
     // Separate validation for token - critical security field
     if (!token) {
-        return redirect('/forgot-password');
+        return redirect(buildUrlFromContext('/forgot-password', context));
     }
 
     if (!email || !newPassword || !confirmPassword) {
@@ -83,12 +87,14 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             newPassword,
         });
 
+        logger.info('ResetPassword: password reset succeeded');
         // Password reset successful - redirect to login
-        return redirect('/login');
-    } catch {
-        // Show generic error message to avoid exposing token validation errors (security)
-        // This matches PWA Kit behavior
-        return { error: t('errors:somethingWentWrong') };
+        return redirect(buildUrlFromContext('/login', context));
+    } catch (error) {
+        logger.error('ResetPassword: failed', { error });
+        const errorMessage = extractErrorMessage(error);
+        const errorKey = getPasswordResetErrorMessageKey(errorMessage);
+        return { error: t(errorKey) };
     }
 }
 
@@ -101,10 +107,8 @@ export default function ResetPassword({ loaderData }: { loaderData: ResetPasswor
         <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">{t('title')}</h2>
-                    <p className="mt-2 text-center text-sm text-muted-foreground">
-                        {t('subtitle') || 'Enter your new password below'}
-                    </p>
+                    <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
+                    <p className="mt-2 text-center text-sm text-muted-foreground">{t('enterNewPassword')}</p>
                 </div>
 
                 <Card className="p-8">

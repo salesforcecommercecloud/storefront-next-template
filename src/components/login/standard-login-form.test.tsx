@@ -22,6 +22,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import StandardLoginForm from './standard-login-form';
 
 // Mock navigation state
@@ -31,7 +32,9 @@ const mockNavigation = {
 
 // Helper to render with router context
 function renderWithRouter(ui: React.ReactElement) {
-    const router = createMemoryRouter([{ path: '/', element: ui }], { initialEntries: ['/'] });
+    const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{ui}</AllProvidersWrapper> }], {
+        initialEntries: ['/'],
+    });
     return render(<RouterProvider router={router} />);
 }
 
@@ -82,16 +85,16 @@ describe('StandardLoginForm', () => {
             // Links
             const forgotPasswordLink = screen.getByRole('link', { name: t('login:forgotPassword') });
             expect(forgotPasswordLink).toBeInTheDocument();
-            expect(forgotPasswordLink).toHaveAttribute('href', '/forgot-password');
+            expect(forgotPasswordLink).toHaveAttribute('href', '/global/en-GB/forgot-password');
             expect(forgotPasswordLink).toHaveClass('text-primary', 'hover:text-primary/80');
 
             const signUpLink = screen.getByRole('link', { name: t('login:signUp') });
             expect(signUpLink).toBeInTheDocument();
-            expect(signUpLink).toHaveAttribute('href', '/signup');
+            expect(signUpLink).toHaveAttribute('href', '/global/en-GB/signup');
 
             const passwordlessLink = screen.getByRole('link', { name: t('login:loginWithoutPassword') });
             expect(passwordlessLink).toBeInTheDocument();
-            expect(passwordlessLink).toHaveAttribute('href', '/login?mode=passwordless');
+            expect(passwordlessLink).toHaveAttribute('href', '/global/en-GB/login?mode=passwordless');
             expect(passwordlessLink).toHaveClass('text-primary', 'hover:text-primary/80');
 
             // Hidden loginMode field
@@ -155,7 +158,7 @@ describe('StandardLoginForm', () => {
                 name: t('login:loginWithoutPassword'),
             });
             expect(passwordlessLink).toBeInTheDocument();
-            expect(passwordlessLink).toHaveAttribute('href', '/login?mode=passwordless');
+            expect(passwordlessLink).toHaveAttribute('href', '/global/en-GB/login?mode=passwordless');
         });
 
         test('does not render passwordless login link when disabled', () => {

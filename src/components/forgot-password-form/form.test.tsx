@@ -23,11 +23,15 @@ interface MockInputProps extends ComponentProps<'input'> {
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-// Mock React Router components
+// Mock React Router Form component
 vi.mock('react-router', () => ({
     Form: ({ children, ...props }: { children: ReactNode; method?: string; className?: string }) => (
         <form {...props}>{children}</form>
     ),
+}));
+
+// Mock the Link component from @/components/link
+vi.mock('@/components/link', () => ({
     Link: ({ children, to, ...props }: { children: ReactNode; to: string; className?: string }) => (
         <a href={to} {...props}>
             {children}

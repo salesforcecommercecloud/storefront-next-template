@@ -22,6 +22,7 @@ import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 import { orderAddressToCustomerAddress } from '@/lib/address-utils';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Customer lookup result
@@ -497,10 +498,11 @@ export async function saveCustomerAddress(
 export async function saveShippingAddressToCustomer(
     context: ActionFunctionArgs['context'],
     customerId: string,
-    address: ShopperBasketsV2.schemas['OrderAddress']
+    address: ShopperBasketsV2.schemas['OrderAddress'],
+    preferred: boolean = false
 ): Promise<boolean> {
     // Convert OrderAddress to CustomerAddress and delegate to saveCustomerAddress
-    const customerAddress = orderAddressToCustomerAddress(address, true);
+    const customerAddress = orderAddressToCustomerAddress(address, preferred);
     return saveCustomerAddress(context, customerId, customerAddress);
 }
 
@@ -686,11 +688,14 @@ export async function getCustomerProfileForCheckout(
     try {
         const clients = createApiClients(context);
 
-        // Get customer profile which includes addresses and payment instruments
+        // Get customer profile with addresses and payment instruments explicitly expanded
         const { data: customer } = await clients.shopperCustomers.getCustomer({
             params: {
                 path: {
                     customerId,
+                },
+                query: {
+                    expand: ['addresses', 'paymentinstruments'],
                 },
             },
         });
@@ -751,34 +756,81 @@ export async function getCustomerProfileForCheckout(
 }
 
 /**
- * Save a payment method to a customer's profile
+ * Derive last 4 digits from an order/basket payment card (read-only fields).
+ * Used when saving a payment method from place order where we don't have the full number.
+ */
+function getLastFourFromPaymentCard(card: { numberLastDigits?: string; maskedNumber?: string }): string | undefined {
+    if (card.numberLastDigits && /^\d{4}$/.test(card.numberLastDigits)) {
+        return card.numberLastDigits;
+    }
+    if (card.maskedNumber) {
+        const digits = card.maskedNumber.replace(/\D/g, '');
+        const last4 = digits.slice(-4);
+        if (last4.length === 4) {
+            return last4;
+        }
+    }
+    return undefined;
+}
+
+/**
+ * Input for saving a payment method: either full request (add form) or order instrument
+ * (has numberLastDigits/maskedNumber, no number). Used so we can pass order.paymentInstruments[0].
+ */
+export type PaymentInstrumentForSave = {
+    paymentMethodId?: string;
+    paymentCard?: {
+        cardType?: string;
+        number?: string;
+        expirationMonth?: number;
+        expirationYear?: number;
+        holder?: string;
+        numberLastDigits?: string;
+        maskedNumber?: string;
+    };
+    default?: boolean;
+};
+
+/**
+ * Save a payment method to a customer's profile.
+ * When saving from an order (no full card number), last 4 digits are derived from
+ * numberLastDigits or maskedNumber and sent as a masked number so the backend can store them.
  *
  * @param context - React Router context
  * @param customerId - The customer ID to save the payment method for
- * @param paymentInstrument - The payment instrument to save
+ * @param paymentInstrument - The payment instrument to save (request shape or order instrument with read-only fields)
  * @returns Promise<boolean> indicating success
  */
 export async function savePaymentMethodToCustomer(
     context: ActionFunctionArgs['context'],
     customerId: string,
-    paymentInstrument: ShopperCustomers.schemas['CustomerPaymentInstrumentRequest']
+    paymentInstrument: PaymentInstrumentForSave
 ): Promise<boolean> {
+    const logger = getLogger(context);
     try {
         const clients = createApiClients(context);
 
-        // Create the payment instrument for the customer
-        // Filter out read-only properties like maskedNumber, issuerNumber, etc.
+        const card = paymentInstrument.paymentCard;
+        // When saving from order we don't have paymentCard.number; derive last 4 from order so backend can persist them
+        const cardWithReadOnly = card as
+            | (typeof card & { numberLastDigits?: string; maskedNumber?: string })
+            | undefined;
+        const derivedLast4 = cardWithReadOnly && getLastFourFromPaymentCard(cardWithReadOnly);
+        const numberForRequest = card?.number ?? (derivedLast4 ? `************${derivedLast4}` : null);
+        if (!numberForRequest) {
+            logger.error('Cannot save payment method: no card number available');
+            return false;
+        }
+
         const customerPaymentInstrument = {
             paymentMethodId: paymentInstrument.paymentMethodId,
-            paymentCard: paymentInstrument.paymentCard
+            paymentCard: card
                 ? {
-                      // Only include writable properties for customer payment instruments
-                      cardType: paymentInstrument.paymentCard.cardType,
-                      number: paymentInstrument.paymentCard.number,
-                      expirationMonth: paymentInstrument.paymentCard.expirationMonth,
-                      expirationYear: paymentInstrument.paymentCard.expirationYear,
-                      holder: paymentInstrument.paymentCard.holder,
-                      // Exclude read-only properties: maskedNumber, issuerNumber, etc.
+                      cardType: card.cardType,
+                      number: numberForRequest,
+                      expirationMonth: card.expirationMonth,
+                      expirationYear: card.expirationYear,
+                      holder: card.holder,
                   }
                 : undefined,
             default: paymentInstrument.default,

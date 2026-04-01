@@ -112,8 +112,44 @@ describe('SavedAddressesList', () => {
         expect(screen.queryByText(/alice/i)).not.toBeInTheDocument();
     });
 
-    test('uses custom aria-label when provided', () => {
-        render(<SavedAddressesList addresses={[address1]} aria-label="Choose your delivery address" />);
-        expect(screen.getByRole('radiogroup', { name: 'Choose your delivery address' })).toBeInTheDocument();
+    test('uses default aria-label for the radio group', () => {
+        render(<SavedAddressesList addresses={[address1]} />);
+        expect(screen.getByRole('radiogroup', { name: 'Select a saved address' })).toBeInTheDocument();
+    });
+
+    test('shows Add New Address button when onAddNewAddress is provided and calls it on click', async () => {
+        const user = userEvent.setup();
+        const onAddNewAddress = vi.fn();
+        render(<SavedAddressesList addresses={[address1, address2]} onAddNewAddress={onAddNewAddress} />);
+        const addButton = screen.getByRole('button', { name: /add new address/i });
+        expect(addButton).toBeInTheDocument();
+        await user.click(addButton);
+        expect(onAddNewAddress).toHaveBeenCalledTimes(1);
+    });
+
+    test('does not show Add New Address button when onAddNewAddress is not provided', () => {
+        render(<SavedAddressesList addresses={[address1]} />);
+        expect(screen.queryByRole('button', { name: /add new address/i })).not.toBeInTheDocument();
+    });
+
+    test('shows Edit Address link for each address when onEditAddress is provided', () => {
+        const onEditAddress = vi.fn();
+        render(<SavedAddressesList addresses={[address1, address2]} onEditAddress={onEditAddress} />);
+        const editLinks = screen.getAllByRole('button', { name: /edit address/i });
+        expect(editLinks).toHaveLength(2);
+    });
+
+    test('does not show Edit Address link when onEditAddress is not provided', () => {
+        render(<SavedAddressesList addresses={[address1, address2]} />);
+        expect(screen.queryByRole('button', { name: /edit address/i })).not.toBeInTheDocument();
+    });
+
+    test('calls onEditAddress with the correct address id when clicked', async () => {
+        const user = userEvent.setup();
+        const onEditAddress = vi.fn();
+        render(<SavedAddressesList addresses={[address1, address2]} onEditAddress={onEditAddress} />);
+        const editLinks = screen.getAllByRole('button', { name: /edit address/i });
+        await user.click(editLinks[1]);
+        expect(onEditAddress).toHaveBeenCalledWith('addr-2');
     });
 });

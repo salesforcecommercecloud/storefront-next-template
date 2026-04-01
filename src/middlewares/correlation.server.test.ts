@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
 import { correlationMiddleware } from './correlation.server';
 import { correlationContext, generateCorrelationId } from '@/lib/correlation';
-import { createTestContext } from '@/lib/test-utils';
+import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 
 vi.mock('@/lib/correlation', async (importOriginal) => {
     const actual = await importOriginal();
@@ -27,15 +27,24 @@ vi.mock('@/lib/correlation', async (importOriginal) => {
     };
 });
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 describe('middlewares/correlation.server.ts', () => {
-    let mockContext: RouterContextProvider;
-    let mockNext: ReturnType<typeof vi.fn>;
+    let mockContext: Readonly<RouterContextProvider>;
+    let mockNext: Mock<() => Promise<Response>>;
     let mockRequest: Request;
 
     beforeEach(() => {
         vi.clearAllMocks();
         mockContext = createTestContext();
-        mockNext = vi.fn().mockResolvedValue(new Response('test'));
+        mockNext = vi.fn<() => Promise<Response>>().mockResolvedValue(new Response('test'));
         mockRequest = new Request('https://example.com/test');
     });
 
@@ -45,14 +54,20 @@ describe('middlewares/correlation.server.ts', () => {
                 headers: { 'x-correlation-id': 'incoming-correlation-id' },
             });
 
-            await correlationMiddleware({ request: requestWithHeader, context: mockContext, params: {} }, mockNext);
+            await correlationMiddleware(
+                createLoaderArgs(requestWithHeader, mockContext, { unstable_pattern: '/' }),
+                mockNext
+            );
 
             expect(generateCorrelationId).not.toHaveBeenCalled();
             expect(mockContext.get(correlationContext)).toBe('incoming-correlation-id');
         });
 
         it('should generate a correlation ID when no headers are present', async () => {
-            await correlationMiddleware({ request: mockRequest, context: mockContext, params: {} }, mockNext);
+            await correlationMiddleware(
+                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/' }),
+                mockNext
+            );
 
             expect(generateCorrelationId).toHaveBeenCalledOnce();
             expect(mockContext.get(correlationContext)).toBe('mock-correlation-id-12345');
@@ -63,7 +78,7 @@ describe('middlewares/correlation.server.ts', () => {
             mockNext.mockResolvedValue(expectedResponse);
 
             const result = await correlationMiddleware(
-                { request: mockRequest, context: mockContext, params: {} },
+                { request: mockRequest, context: mockContext, params: {}, unstable_pattern: '/' },
                 mockNext
             );
 
@@ -74,13 +89,15 @@ describe('middlewares/correlation.server.ts', () => {
         it('should set correlation ID before calling next()', async () => {
             let correlationIdDuringNext: string | undefined;
 
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             mockNext.mockImplementation(() => {
                 correlationIdDuringNext = mockContext.get(correlationContext);
                 return Promise.resolve(new Response('test'));
             });
 
-            await correlationMiddleware({ request: mockRequest, context: mockContext, params: {} }, mockNext);
+            await correlationMiddleware(
+                createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/' }),
+                mockNext
+            );
 
             expect(correlationIdDuringNext).toBe('mock-correlation-id-12345');
         });
@@ -96,7 +113,10 @@ describe('middlewares/correlation.server.ts', () => {
                 vi.clearAllMocks();
                 mockContext = createTestContext();
 
-                await correlationMiddleware({ request, context: mockContext, params: {} }, mockNext);
+                await correlationMiddleware(
+                    createLoaderArgs(request, mockContext, { unstable_pattern: '/' }),
+                    mockNext
+                );
 
                 expect(generateCorrelationId).toHaveBeenCalledOnce();
                 expect(mockContext.get(correlationContext)).toBe('mock-correlation-id-12345');
@@ -110,8 +130,8 @@ describe('middlewares/correlation.server.ts', () => {
             const context1 = createTestContext();
             const context2 = createTestContext();
 
-            await correlationMiddleware({ request: mockRequest, context: context1, params: {} }, mockNext);
-            await correlationMiddleware({ request: mockRequest, context: context2, params: {} }, mockNext);
+            await correlationMiddleware(createLoaderArgs(mockRequest, context1, { unstable_pattern: '/' }), mockNext);
+            await correlationMiddleware(createLoaderArgs(mockRequest, context2, { unstable_pattern: '/' }), mockNext);
 
             expect(context1.get(correlationContext)).toBe('id-1');
             expect(context2.get(correlationContext)).toBe('id-2');

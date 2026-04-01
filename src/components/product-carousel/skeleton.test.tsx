@@ -18,7 +18,7 @@ import { vi, describe, test, expect, beforeEach } from 'vitest';
 import ProductCarouselSkeleton from './skeleton';
 
 // Mock the config
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: () => ({
         global: {
             carousel: {

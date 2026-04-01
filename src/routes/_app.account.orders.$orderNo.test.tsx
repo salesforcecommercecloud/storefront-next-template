@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router';
+import { render, screen, within } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { getTranslation } from '@/lib/i18next';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const { t } = getTranslation();
 
@@ -49,6 +50,15 @@ vi.mock('@/components/account/order-details', () => ({
 
 vi.mock('@/components/order-skeleton', () => ({
     default: () => <div data-testid="order-skeleton">Loading order...</div>,
+}));
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
 }));
 
 import OrderDetailsPage, { loader, ErrorBoundary } from './_app.account.orders.$orderNo';
@@ -144,10 +154,11 @@ describe('Order Details Route (_app.account.orders.$orderNo)', () => {
 
     describe('ErrorBoundary', () => {
         test('renders order not found card and back link', () => {
+            const router = createMemoryRouter([{ path: '/', element: <ErrorBoundary /> }], { initialEntries: ['/'] });
             render(
-                <MemoryRouter>
-                    <ErrorBoundary />
-                </MemoryRouter>
+                <AllProvidersWrapper>
+                    <RouterProvider router={router} />
+                </AllProvidersWrapper>
             );
 
             expect(screen.getByText(t('account:orders.orderNotFound'))).toBeInTheDocument();
@@ -155,14 +166,18 @@ describe('Order Details Route (_app.account.orders.$orderNo)', () => {
             const backLink = screen.getByRole('link', {
                 name: t('account:orders.backToOrderHistory'),
             });
-            expect(backLink).toHaveAttribute('href', '/account/orders');
+            expect(backLink).toHaveAttribute('href', '/global/en-GB/account/orders');
         });
     });
 
     describe('OrderDetailsPage', () => {
         test('renders OrderDetails with resolved data', async () => {
             const router = createOrderDetailsRouter('INO001');
-            render(<RouterProvider router={router} />);
+            render(
+                <AllProvidersWrapper>
+                    <RouterProvider router={router} />
+                </AllProvidersWrapper>
+            );
 
             await screen.findByTestId('order-details');
             expect(screen.getByTestId('order-no')).toHaveTextContent('INO001');
@@ -171,16 +186,20 @@ describe('Order Details Route (_app.account.orders.$orderNo)', () => {
 
         test('shows order not found card when orderData promise rejects (Await errorElement)', async () => {
             const router = createRouterWithRejectingLoader('BAD-ORDER');
-            const { unmount } = render(<RouterProvider router={router} />);
+            const { unmount } = render(
+                <AllProvidersWrapper>
+                    <RouterProvider router={router} />
+                </AllProvidersWrapper>
+            );
 
             await screen.findByText(t('account:orders.orderNotFound'), {}, { timeout: 2000 });
             const errorSection = screen.getByTestId('order-not-found');
             expect(errorSection).toHaveTextContent(t('account:orders.orderNotFound'));
             expect(errorSection).toHaveTextContent(t('account:orders.orderNotFoundDescription'));
-            const backLink = screen.getByRole('link', {
+            const backLink = within(errorSection).getByRole('link', {
                 name: t('account:orders.backToOrderHistory'),
             });
-            expect(backLink).toHaveAttribute('href', '/account/orders');
+            expect(backLink).toHaveAttribute('href', '/global/en-GB/account/orders');
 
             // Ensure proper cleanup before test completes
             unmount();

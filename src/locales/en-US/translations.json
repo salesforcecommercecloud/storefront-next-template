@@ -4,10 +4,14 @@
         "remove": "Remove"
     },
     "categoryRefinements": {
-        "appliedFilters": "Active filters:",
-        "clearAll": "Clear all"
+        "appliedFilters": "Applied filters:",
+        "clearAll": "Clear all",
+        "filtersButtonLabel": "Filters",
+        "filtersButtonLabelWithCount": "{{label}}, {{count}} selected",
+        "noFilterOptionsAvailable": "No filter options available."
     },
     "common": {
+        "defaultSiteName": "Storefront Next: Market Street",
         "loading": "Loading",
         "loadingMore": "Loading more...",
         "product": "the product",
@@ -27,6 +31,10 @@
     },
     "search": {
         "results": "Search Results for",
+        "shopperAgent": {
+            "title": "Shop with your Shopper Agent",
+            "description": "I can help you find the perfect piece for your space. Shop with me."
+        },
         "suggestions": {
             "didYouMean": "Did you mean",
             "categories": "Categories",
@@ -63,10 +71,15 @@
         "removeItemAriaLabel": "Yes, remove item - Remove this item from your cart"
     },
     "editItem": {
-        "title": "Edit Cart Item"
+        "title": "Edit Cart Item",
+        "quickAddTitle": "Quick Add",
+        "loadError": "Failed to load product details. Please try again.",
+        "retry": "Retry",
+        "loadingProduct": "Loading..."
     },
     "header": {
         "logoAlt": "Home",
+        "openChat": "Open chat",
         "searchPlaceholder": "Search",
         "welcomeBack": "Welcome back!",
         "signIn": "Sign In",
@@ -116,9 +129,9 @@
         "otpCodeLabel": "Verification Code",
         "redirecting": "Signing you in...",
         "otpModalTitle": "Enter Verification Code",
-        "otpModalDescription": "We've sent an 8-digit code to {{email}}",
+        "otpModalDescription": "We've sent a {{otpLength}}-digit code to {{email}}",
         "otpRequired": "Verification code is required",
-        "otpInvalidFormat": "Please enter a valid 8-digit code",
+        "otpInvalidFormat": "Please enter a valid {{otpLength}}-digit code",
         "verifying": "Verifying...",
         "checkoutAsGuest": "Checkout as Guest",
         "resendCode": "Resend Code",
@@ -211,6 +224,7 @@
             "basketQuotaExceeded": "Maximum number of baskets exceeded. Use your existing basket.",
             "paymentFailed": "Payment failed. Check your payment information and try again.",
             "paymentInformationRequired": "Payment information is required to complete your order.",
+            "unableToLoadCustomerProfile": "Unable to load your profile. Please refresh the page and try again.",
             "inventoryUnavailable": "Some items in your cart are no longer available. Review your cart.",
             "invalidOrderData": "Invalid order data. Check your checkout information and try again.",
             "shippingAddressRequired": "Shipping address is required to continue.",
@@ -287,11 +301,15 @@
         "quantityUpdated": "Quantity updated",
         "quantityUpdateFailed": "Failed to update quantity",
         "onlyLeft": "Only {{stockLevel}} left!",
-        "onlyLeftForProduct": "Only {{stockLevel}} left for {{productName}}!"
+        "onlyLeftForProduct": "Only {{stockLevel}} left for {{productName}}!",
+        "maxStockReached": "Maximum stock reached"
     },
     "_NOTICE_product": "Product translations have been moved to product.json as a separate namespace. Use t('product:key') to access them.",
     "cart": {
         "title": "Cart",
+        "delivery": {
+            "heading": "Delivery - {{deliveryCount}} out of {{totalCount}} items"
+        },
         "itemCount": {
             "zero": "Cart (0 items)",
             "one": "Cart (1 item)",
@@ -305,7 +323,7 @@
             "signIn": "Sign In"
         },
         "summary": {
-            "orderSummary": "Summary",
+            "orderSummary": "Order Summary",
             "showOrderSummary": "Show order summary",
             "subtotal": "Subtotal",
             "shipping": "Shipping",
@@ -325,7 +343,7 @@
             "applying": "Applying...",
             "remove": "Remove",
             "removing": "Removing...",
-            "accordionTitle": "Enter a Promotion Code",
+            "accordionTitle": "Do you have a promo code?",
             "successMessage": "Promotion was applied.",
             "errorMessage": "Check the code and try again. The promotion can already be applied or it has expired.",
             "removeSuccessMessage": "Promotion was removed.",
@@ -387,64 +405,89 @@
         "contactInfo": {
             "title": "Contact Information",
             "emailLabel": "Email Address",
-            "emailPlaceholder": "Enter your email address",
-            "emailRequired": "Enter your email address",
-            "emailInvalid": "Enter a valid email address",
-            "countryCodeLabel": "Country Code",
+            "emailPlaceholder": "Email Address",
+            "emailRequired": "Please enter your email address",
+            "emailInvalid": "Please enter a valid email address",
+            "countryCodeLabel": "Code",
             "phoneLabel": "Phone Number",
-            "phonePlaceholder": "Phone number",
+            "phonePlaceholder": "(000) 000-0000",
+            "phoneRequired": "Please enter your phone number",
+            "phoneInvalid": "Please enter a valid phone number",
             "notProvided": "Not provided yet",
             "loginSuggestion": "💡 Have an account? You can continue as guest or ",
             "loginSuggestionLink": "sign in for faster checkout",
             "usingRegisteredAccount": "✓ Using your registered account",
-            "continue": "Continue to Shipping",
+            "continue": "Continue to Shipping Address",
             "saving": "Saving...",
             "lookupFallbackMessage": "Customer lookup failed. Continuing as guest.",
             "saveError": "Failed to save contact information",
             "sessionExpired": "Session expired. Sign in again."
         },
+        "addressModal": {
+            "title": "Add New Address",
+            "editTitle": "Edit Address",
+            "description": "Enter your shipping address in the form below.",
+            "editDescription": "Update your shipping address in the form below.",
+            "cancel": "Cancel",
+            "save": "Save",
+            "saving": "Saving..."
+        },
         "shippingAddress": {
             "title": "Shipping Address",
+            "changeLabel": "Edit",
             "selectSavedAddress": "Select a saved address",
             "viewAllLink": "View all",
             "viewAllMore": "({{count}} more)",
             "viewLessAddresses": "View less",
+            "addNewAddressButton": "Add new address",
+            "editAddressLink": "Edit Address",
             "defaultBadge": "Default",
-            "firstNameRequired": "First name is required",
-            "lastNameRequired": "Last name is required",
-            "addressRequired": "Address is required",
-            "cityRequired": "City is required",
-            "continue": "Continue to Shipping Options",
+            "firstNameRequired": "Please enter your first name.",
+            "lastNameRequired": "Please enter your last name.",
+            "addressRequired": "Please enter your address.",
+            "cityRequired": "Please enter your city.",
+            "stateRequired": "Please select your state.",
+            "postalCodeRequired": "Please enter your zip code.",
+            "continue": "Continue to Shipping Method",
             "saving": "Saving...",
             "saved": "Shipping address saved",
             "failed": "Failed to save shipping address",
             "confirmed": "Shipping address confirmed",
-            "notProvided": "Shipping address not provided yet"
+            "notProvided": "Shipping address not provided yet",
+            "completePreviousSteps": "Complete previous steps to continue"
         },
         "addressForm": {
             "firstNameLabel": "First Name",
-            "firstNamePlaceholder": "First name",
+            "firstNamePlaceholder": "First Name",
             "lastNameLabel": "Last Name",
-            "lastNamePlaceholder": "Last name",
+            "lastNamePlaceholder": "Last Name",
             "countryLabel": "Country",
-            "addressLabel": "Address",
-            "addressPlaceholder": "Street address",
+            "addressLabel": "Address Line 1",
+            "addressPlaceholder": "Address Line 1",
             "address2Label": "Address Line 2",
-            "address2Placeholder": "Apartment, suite, etc. (optional)",
+            "address2Placeholder": "Address Line 2",
             "cityLabel": "City",
             "cityPlaceholder": "City",
-            "stateLabel": "State/Province",
-            "statePlaceholder": "State or province",
-            "zipLabel": "Postal Code",
-            "zipPlaceholder": "Postal code",
+            "stateLabel": "State",
+            "statePlaceholder": "State",
+            "provinceLabel": "Province",
+            "provincePlaceholder": "Province",
+            "zipLabel": "Zip Code",
+            "zipPlaceholder": "Zip",
+            "postalCodeLabel": "Postal Code",
+            "postalCodePlaceholder": "Postal code",
+            "codeLabel": "Code",
             "phoneLabel": "Phone Number",
-            "phonePlaceholder": "(555) 123-4567"
+            "phonePlaceholder": "(000) 000-0000"
         },
         "shippingOptions": {
-            "title": "Shipping Options",
+            "title": "Shipping Method",
+            "giftWrappingLabel": "Send as a gift (gift wrapping)",
+            "giftWrappingDescription": "You can enable or disable gift options at any time.",
             "selectRequired": "Select a shipping method",
             "saving": "Saving...",
             "continue": "Continue to Payment",
+            "completePreviousSteps": "Complete previous steps to continue",
             "enterAddressFirst": "Enter your shipping address to view available shipping methods.",
             "arrives": "Arrives: {{estimatedArrivalTime}}",
             "priceAndMethod": "{{price}} | {{methodName}}",
@@ -454,6 +497,7 @@
         },
         "payment": {
             "title": "Payment",
+            "changeLabel": "Edit",
             "methodTitle": "Payment Method",
             "savedMethodDescription": "Choose a saved payment method or add a new one",
             "addNewPaymentMethod": "Add new payment method",
@@ -481,9 +525,10 @@
             "cvvInvalid": "Enter a valid CVV",
             "cvvInvalidFormat": "Enter a valid CVV (3-4 digits).",
             "billingAddressRequired": "Billing address is required when different from shipping.",
-            "billingSameAsShipping": "Billing Address same as Shipping Address",
+            "billingSameAsShipping": "Use a different billing address",
             "billingSameAsShippingDescription": "Use the same address for billing and shipping",
             "sameAsShippingAddress": "Same as shipping address",
+            "selectAnAddress": "Select an address",
             "noBillingAddressSaved": "No billing address saved",
             "continue": "Continue to Review",
             "saving": "Saving...",
@@ -494,11 +539,16 @@
             "unknownCardType": "Unknown",
             "defaultCardLabel": "Card",
             "preferredBadge": "Preferred",
+            "defaultBadge": "Default",
+            "endingIn": "Ending in {{lastDigits}}",
             "expiresLabel": "Expires {{expiry}}",
             "summaryLabel": "{{methodLabel}} ending in {{lastDigits}}",
             "summarySavedLabel": "Saved payment method: {{methodLabel}} ending in {{lastDigits}}",
             "noPaymentMethodSaved": "No payment method saved",
-            "billingSummaryTitle": "Billing Address"
+            "billingSummaryTitle": "Billing Address",
+            "viewAllMore": "View all ({{count}} more)",
+            "viewLess": "View less",
+            "savePaymentToProfile": "Save payment method for future use"
         },
         "expressPayments": {
             "separator": "Or",
@@ -528,10 +578,11 @@
             "toggleLabel": "Show Order Summary"
         },
         "myCart": {
-            "title": "My Cart"
+            "title": "My Cart",
+            "saved": "Saved {{amount}}"
         },
         "placeOrder": {
-            "button": "Place Order",
+            "button": "Place Order - {{total}}",
             "processing": "Placing Order...",
             "success": "Order was placed!",
             "failed": "An unexpected error occurred during checkout."
@@ -617,6 +668,19 @@
                 "description": "This section couldn't load properly. You can continue with checkout or try refreshing the page.",
                 "tryAgain": "Try again"
             }
+        },
+        "registration": {
+            "emailNotFound": "Email address is required to create an account. Please provide your email in the contact information section.",
+            "initiationFailed": "Unable to send verification code. Please try again.",
+            "sendingVerificationCode": "Sending verification code...",
+            "accountCreatedSuccess": "Account created successfully!",
+            "checkboxExpandedDescription": "When you place your order, we create an account for you and save your payment information and other details for future purchases. During your next checkout, confirm your account using the code we'll send to you.",
+            "accountCreatedTitle": "Account Created",
+            "verified": "Verified",
+            "accountCreatedDescription": "We've created and verified your account using the information from your order. Next time you checkout, just enter the code we send to log in - no password needed.",
+            "accountCreationLabel": "Account Creation",
+            "accountWillBeCreated": "Account will be created",
+            "continueAsGuest": "Continue as guest"
         }
     },
     "account": {
@@ -629,6 +693,7 @@
             "wishlist": "Wishlist",
             "orderHistory": "Order History",
             "addresses": "Addresses",
+            "manageAddresses": "Manage Addresses",
             "paymentMethods": "Payment Methods",
             "storePreferences": "Store Preferences",
             "logOut": "Log Out"
@@ -709,14 +774,29 @@
             "defaultName": "there",
             "quickLinks": {
                 "title": "Quick Links",
-                "accountDetailsDesc": "View and edit your profile",
                 "orderHistoryDesc": "Track your orders",
                 "wishlistDesc": "Items you've saved",
-                "addressesDesc": "Manage your addresses"
+                "addressesDesc": "Manage your addresses",
+                "paymentMethodsDesc": "Manage your payment methods"
             },
             "curatedForYou": {
-                "title": "Curated for You"
+                "title": "Curated for You",
+                "subtitle": "Picked for you based on your activity"
+            },
+            "appDownload": {
+                "title": "Download Our App",
+                "description": "Get the best shopping experience on the go. Access exclusive deals, track orders, and shop faster.",
+                "appStore": "App Store",
+                "googlePlay": "Google Play",
+                "qrCode": "QR Code"
             }
+        },
+        "shopperAgentEntry": {
+            "title": "Need Help?",
+            "description": "We're here to assist you with any questions or concerns",
+            "askQuestion": "Ask a question",
+            "contactInfo": "Contact info",
+            "browseFaq": "Browse FAQ"
         },
         "wishlist": {
             "pageTitle": "My Wishlist",
@@ -764,7 +844,7 @@
             "address": "Address",
             "viewOrderDetails": "View Order Details",
             "tableHeaders": {
-                "orderNumber": "Order Number",
+                "orderNumber": "Order ID",
                 "status": "Status",
                 "method": "Method",
                 "amount": "Amount",
@@ -776,13 +856,22 @@
             "status": {
                 "created": "Created",
                 "new": "New",
-                "failed": "Failed",
-                "failedWithReopen": "Failed With Reopen",
                 "completed": "Completed",
-                "cancelled": "Cancelled"
+                "cancelled": "Cancelled",
+                "replaced": "Replaced",
+                "failed": "Failed"
+            },
+            "shippingStatus": {
+                "notShipped": "Not Shipped",
+                "partShipped": "Part Shipped",
+                "shipped": "Shipped"
             },
             "totalOrders_one": "Viewing {{count}} order",
             "totalOrders_other": "Viewing {{count}} orders",
+            "totalOrdersRange": "Viewing {{start}}–{{end}} of {{total}} orders",
+            "paginationLabel": "Order history pagination",
+            "paginationPrevious": "Previous page",
+            "paginationNext": "Next page",
             "invalidDate": "Invalid Date",
             "shipmentNumber": "Shipment {{n}}",
             "itemsOrdered": "Items Ordered",
@@ -795,7 +884,9 @@
             "productPlaceholderInitial": "Item",
             "quantityLabel": "Qty: {{count}}",
             "trackingNumber": "Tracking Number",
-            "shippingAddress": "Shipping Address"
+            "shippingAddress": "Shipping Address",
+            "paymentMethod": "Payment Method",
+            "paymentMethodEndingIn": "{{cardType}} Ending in {{lastDigits}}"
         },
         "addresses": {
             "subtitle": "Manage your shipping addresses",
@@ -1013,68 +1104,48 @@
             "channelEmail": "Email",
             "channelSms": "SMS / Text Messages",
             "disclaimer": "By enabling these communication preferences, you agree to receive marketing communications from us, including exclusive offers, latest product information, and news about upcoming collections. See our Terms & Conditions and Privacy Policy for more details.",
-            "updateError": "Failed to update marketing preference. Try again."
+            "updateError": "Failed to update marketing preference. Try again.",
+            "partialSuccess": "Some preferences saved. Refresh to see current settings."
         }
     },
     "home": {
-        "hero-foundations": {
-            "slide1": {
-                "title": "The React Starter Store for High Performers",
-                "subtitle": "Discover our latest collection of products",
-                "ctaText": "Shop Now",
-                "imageAlt": "Minimalist white cube on clean background"
-            },
-            "slide2": {
-                "title": "Premium Quality Products",
-                "subtitle": "Handpicked items for the modern lifestyle",
-                "ctaText": "Explore Collection",
-                "imageAlt": "Minimalist white cube on clean background"
-            },
-            "slide3": {
-                "title": "Fast & Reliable Delivery",
-                "subtitle": "Get your orders delivered quickly and safely",
-                "ctaText": "Learn More",
-                "imageAlt": "Minimalist white cube on clean background"
-            }
-        },
-        "hero-market-street": {
+        "hero": {
             "slide1": {
                 "title": "The New Season",
                 "subtitle": "A new collection shaped by contrast, proportion, and modern attitude. Introducing key pieces for the season ahead.",
-                "ctaText": "Discover The Collection",
+                "ctaText": "Discover the Collection",
                 "imageAlt": "Women's Slacks Jackets and Purses"
             },
             "slide2": {
                 "title": "The Modern Wardrobe",
-                "subtitle": "Statement pieces and refined layers designed for nights out, late moments, and everything in between.",
-                "ctaText": "Shop The Edit",
+                "subtitle": "Elevated silhouettes, refined textures, and a bold approach to everyday dressing. Designed to move with you.",
+                "ctaText": "Shop the Look",
                 "imageAlt": "Women's White Linen Dress"
             },
             "slide3": {
                 "title": "After Hours",
                 "subtitle": "Statement pieces and refined layers designed for nights out, late moments, and everything in between.",
-                "ctaText": "Explore The Collection",
+                "ctaText": "Explore the Collection",
                 "imageAlt": "Women's Black Suit"
             },
             "slide4": {
                 "title": "New Perspectives",
                 "subtitle": "A curated drop of standout pieces that redefine contemporary fashion. Confident. Expressive. Uncompromising.",
                 "ctaText": "Shop Now",
-                "imageAlt": "Wonmen's Grey Dress"
+                "imageAlt": "Women's Grey Dress"
             }
+        },
+        "meta": {
+            "title": "Storefront Next: Market Street",
+            "description": "Next gen fashion store"
         },
         "featuredProducts": {
             "title": "Featured Products",
             "shopAll": "Shop all"
         },
-        "newArrivals": {
-            "title": "New Arrivals",
-            "description": "Discover the latest additions to our collection. From statement pieces to everyday essentials.",
-            "ctaText": "SHOP NEW ARRIVALS"
-        },
         "categoryGrid": {
-            "title": "Step into Elegance",
-            "description": "At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.",
+            "title": "Style for Real Life",
+            "description": "At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.",
             "shopNowButton": "Shop Now"
         },
         "featuredContent": {
@@ -1089,6 +1160,10 @@
                 "description": "Timeless craftsmanship meets contemporary style in our men's footwear collection.",
                 "ctaText": "EXPLORE COLLECTION",
                 "imageAlt": "Men's Collection"
+            },
+            "styleForRealLife": {
+                "title": "Style for Real Life",
+                "description": "At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.\n\nDiscover pieces that move with you, adapt to your life, and become the foundation of a wardrobe that works—every day, everywhere."
             }
         }
     },
@@ -1098,15 +1173,23 @@
             "account": "Account",
             "ourCompany": "Our Company",
             "switchThemes": "Switch Themes",
+            "switchSite": "Region",
             "switchLanguage": "Language",
-            "switchCurrency": "Currency"
+            "switchCurrency": "Currency",
+            "shop": "Shop",
+            "help": "Help",
+            "about": "About"
         },
         "links": {
             "contactUs": "Contact Us",
             "shipping": "Shipping",
             "orderStatus": "Order Status",
             "signInOrCreateAccount": "Sign in or create account",
-            "aboutUs": "About Us"
+            "aboutUs": "About Us",
+            "accessibility": "Accessibility Statement",
+            "privacyPolicy": "Privacy Policy",
+            "privacyChoices": "Your Privacy Choices",
+            "termsOfUse": "Terms of Use"
         },
         "socialMedia": {
             "youtubeLabel": "Youtube",
@@ -1115,12 +1198,14 @@
             "facebookLabel": "Facebook"
         },
         "newsletter": {
-            "title": "Be the first to know",
-            "description": "Sign up to stay in the loop about the hottest deals",
+            "title": "Join Our Community",
+            "description": "Be the first to discover new arrivals, exclusive offers, and style inspiration.",
             "emailPlaceholder": "Your email",
             "subscribeButton": "Subscribe"
         },
-        "copyright": "Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed."
+        "copyright": "Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.",
+        "address": "415 Mission St, San Francisco, CA 94105",
+        "logoAlt": "Market Street"
     },
     "aboutUs": {
         "breadcrumb": {
@@ -1277,7 +1362,9 @@
         "removeItemAriaLabel": "Remove item from cart",
         "emptyCart": "Your cart is empty",
         "loading": "Loading...",
-        "viewCart": "View Cart"
+        "viewCart": "View Cart",
+        "saved": "Saved {{amount}}",
+        "free": "Free"
     },
     "trackingConsent": {
         "title": "Tracking Consent",
@@ -1290,6 +1377,7 @@
         "ariaLabel": "Language selector",
         "locales": {
             "en-GB": "English (UK)",
+            "en-US": "English (US)",
             "it-IT": "Italian (Italy)"
         },
         "validation": {
@@ -1352,13 +1440,24 @@
     },
     "writeReview": {
         "validation": {
+            "pleaseFixFollowing": "Please fix the following:",
             "ratingRequired": "Please select a rating",
             "reviewRequired": "Please fill out this field.",
-            "reviewMinLength": "Please enter at least {{count}} characters.",
+            "reviewMinLength": "Your review must be at least {{count}} characters",
             "reviewMaxLength": "Please enter no more than {{count}} characters.",
             "titleMaxLength": "Please enter no more than {{count}} characters."
         },
         "minCharactersHint": "Minimum {{count}} characters.",
         "maxCharactersHint": "Maximum {{count}} characters."
+    },
+    "sitePicker": {
+        "title": "Choose your site",
+        "description": "Select your preferred store to see relevant products and pricing.",
+        "ariaLabel": "Select site",
+        "placeholder": "Select a site...",
+        "sites": {
+            "RefArchGlobal": "Global (UK)",
+            "RefArch": "United States"
+        }
     }
 }

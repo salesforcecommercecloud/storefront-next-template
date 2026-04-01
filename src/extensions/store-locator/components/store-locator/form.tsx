@@ -17,6 +17,7 @@
 
 import { useCallback, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import { createLogger } from '@/lib/logger';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 import { useStoreLocatorForm } from '@/extensions/store-locator/hooks/use-store-locator-form';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,8 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { NativeSelect } from '@/components/ui/native-select';
 import { TextSeparator } from './text-separator';
+
+const logger = createLogger();
 
 /**
  * StoreLocatorForm
@@ -54,8 +57,7 @@ export default function StoreLocatorForm(): ReactElement {
                     setDeviceCoordinates({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
                 },
                 (error) => {
-                    // eslint-disable-next-line no-console
-                    console.warn('geolocation error', error);
+                    logger.warn('Geolocation error', { code: error.code, message: error.message });
                     setGeoError(true);
                 },
                 { timeout: config.geoTimeout }

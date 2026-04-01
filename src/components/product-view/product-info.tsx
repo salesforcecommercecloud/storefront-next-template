@@ -22,13 +22,16 @@ import { useVariationAttributes } from '@/hooks/product/use-variation-attributes
 import { useProductView } from '@/providers/product-view';
 import { useCurrency } from '@/providers/currency';
 import { toImageUrl } from '@/lib/dynamic-image';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import ProductPrice from '../product-price';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
 import InventoryMessage from '../inventory-message';
 import { ProductRatingSummary } from './product-rating-summary';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { useTranslation } from 'react-i18next';
+import { WishlistButton } from '@/components/buttons/wishlist-button';
+import { ShareButton } from '@/components/buttons/share-button';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
 
@@ -78,7 +81,7 @@ export default function ProductInfo({
     variantStyle = 'full',
     showQuantityInEditMode = false,
 }: ProductInfoProps): ReactElement {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const isProductASet = isProductSet(product);
     const isProductABundle = isProductBundle(product);
     // Use variation attributes hook for URL-aware swatches
@@ -118,7 +121,28 @@ export default function ProductInfo({
         : variationAttributes;
 
     return (
-        <div className="grid gap-4">
+        <div className="relative grid gap-4">
+            {/* Action icons — top-right */}
+            {!isCompactStyle && (
+                <div className="absolute top-0 right-0 flex items-center gap-2 z-10">
+                    <WishlistButton
+                        product={{
+                            productId: product.id,
+                            productName: product.name,
+                            price: product.price,
+                            image: product.imageGroups?.[0]?.images?.[0],
+                        }}
+                        size="sm"
+                        className="!static border border-border bg-background/90 shadow-none hover:border-muted-foreground/50 hover:bg-background"
+                    />
+                    <ShareButton
+                        product={product}
+                        size="sm"
+                        className="!static border border-border bg-background/90 shadow-none hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
+                    />
+                </div>
+            )}
+
             {/* Compact style: brand (uppercase) then product name */}
             {isCompactStyle && (
                 <>
@@ -131,10 +155,19 @@ export default function ProductInfo({
                 </>
             )}
 
-            {/* Desktop Product Title - hidden on mobile when not compact */}
+            {/* Product Title, SKU, Description */}
             {!isCompactStyle && (
-                <div className="hidden md:block">
-                    <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
+                <div className="pr-20">
+                    <h1
+                        data-testid="product-title"
+                        className="text-2xl lg:text-3xl font-medium text-foreground tracking-tight">
+                        {product.name}
+                    </h1>
+                    {product.id && (
+                        <p className="mt-2 text-xs text-muted-foreground">
+                            {t('sku')} {product.id}
+                        </p>
+                    )}
                     {product.shortDescription && (
                         <p className="mt-2 text-lg text-muted-foreground">{product.shortDescription}</p>
                     )}
@@ -144,7 +177,7 @@ export default function ProductInfo({
             {!isCompactStyle && <ProductRatingSummary />}
 
             {/* Price - show unit price on PDP */}
-            <div>
+            <div className="space-y-3">
                 <ProductPrice
                     type="unit"
                     product={product}
@@ -154,13 +187,23 @@ export default function ProductInfo({
                     currentPriceProps={{
                         className: 'text-xl font-bold text-foreground',
                     }}
+                    promoCalloutProps={{
+                        className: 'text-sm [&_span]:mx-0 [&_span]:text-status-positive',
+                    }}
                     hidePromo={isCompactStyle}
                     currentPriceOnly={isCompactStyle}
                 />
             </div>
 
             {/* Inventory Status Message - hidden in compact/edit mode */}
-            {!isCompactStyle && <InventoryMessage product={product} currentVariant={currentVariant} />}
+            {!isCompactStyle && (
+                <InventoryMessage
+                    product={product}
+                    currentVariant={currentVariant}
+                    lowStockThreshold={config.global.inventory.lowStockThreshold}
+                    maxStockDisplay={config.global.inventory.maxStockDisplay}
+                />
+            )}
 
             {/* Swatch Groups for Product Variations */}
             {sortedVariationAttributes.map(({ id, name, selectedValue, values }) => {
@@ -179,11 +222,24 @@ export default function ProductInfo({
                     const { href, name: valueName, image, value: swatchValue, orderable } = value;
                     const swatchImageUrl = (image && toImageUrl({ image, config })) || '';
                     const content = image ? (
-                        <div
-                            className="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
-                            style={{ backgroundImage: swatchImageUrl ? `url(${swatchImageUrl})` : undefined }}
-                            aria-label={image.alt || valueName}
-                        />
+                        <>
+                            <span
+                                className="rounded-pill bg-cover bg-center bg-no-repeat"
+                                style={{
+                                    width: 'var(--swatch-color-dot, 100%)',
+                                    height: 'var(--swatch-color-dot, 100%)',
+                                    backgroundColor: valueName?.toLowerCase(),
+                                    backgroundImage: swatchImageUrl ? `url(${swatchImageUrl})` : undefined,
+                                    border: 'var(--swatch-color-dot-border, none)',
+                                }}
+                                aria-label={image.alt || valueName}
+                            />
+                            <span
+                                className="text-xs font-medium capitalize ml-1"
+                                style={{ display: 'var(--swatch-color-label)' }}>
+                                {valueName}
+                            </span>
+                        </>
                     ) : (
                         <span className="text-xs font-medium">{valueName}</span>
                     );
@@ -196,7 +252,8 @@ export default function ProductInfo({
                             disabled={!orderable}
                             value={swatchValue}
                             name={valueName}
-                            shape={id === 'color' ? 'circle' : 'square'}>
+                            shape={id === 'color' ? 'color' : 'label'}
+                            labeled>
                             {content}
                         </Swatch>
                     );

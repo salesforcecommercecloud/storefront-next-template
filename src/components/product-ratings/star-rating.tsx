@@ -89,6 +89,17 @@ export interface StarRatingProps extends HTMLAttributes<HTMLDivElement> {
      */
     reviewCountLabelClassName?: string;
     /**
+     * Additional class name applied to each star SVG (merged with size class).
+     * Use to override the default fill/unfill color (e.g. 'text-foreground' for black stars).
+     */
+    starClassName?: string;
+    /**
+     * Additional class name for the rating link button visual styling.
+     * Focus and cursor classes are always applied regardless of this value.
+     * @default 'text-sm text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground'
+     */
+    ratingLinkClassName?: string;
+    /**
      * Additional class name for the container
      */
     className?: string;
@@ -150,6 +161,8 @@ export const StarRating = forwardRef<HTMLDivElement, StarRatingProps>(
             starSize = 'sm',
             ratingLabelClassName = 'text-lg font-semibold text-black',
             reviewCountLabelClassName = 'text-xs text-gray-500 mt-2 mb-4',
+            starClassName,
+            ratingLinkClassName = 'text-sm text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground',
             starContainerAriaLabelTemplate,
             ratingLinkAriaLabelTemplate,
             totalStars = 5,
@@ -242,7 +255,7 @@ export const StarRating = forwardRef<HTMLDivElement, StarRatingProps>(
                                     key={position}
                                     opacity={opacity}
                                     filled={!isUnfilled}
-                                    className={starSizeClasses[starSize]}
+                                    className={cn(starSizeClasses[starSize], starClassName)}
                                     aria-hidden="true"
                                 />
                             );
@@ -261,7 +274,10 @@ export const StarRating = forwardRef<HTMLDivElement, StarRatingProps>(
                             onClick={onRatingLinkClick}
                             onMouseEnter={onRatingLinkClick}
                             aria-label={ratingLinkAriaLabel}
-                            className="cursor-pointer text-sm text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded">
+                            className={cn(
+                                'cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded',
+                                ratingLinkClassName
+                            )}>
                             {ratingLinkText}
                         </button>
                     )}

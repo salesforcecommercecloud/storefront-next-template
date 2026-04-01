@@ -26,6 +26,22 @@ vi.mock('react-router', async (importOriginal) => {
         useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
         useResolvedPath: () => ({ pathname: '/', search: '', hash: '' }),
         useHref: () => '/',
+        useSearchParams: () => [new URLSearchParams(), vi.fn()],
+        // useFetcher is required by WishlistButton (useWishlist) and QuickAddButton (CartItemModal)
+        useFetcher: () => ({
+            state: 'idle',
+            data: undefined,
+            errors: undefined,
+            submit: vi.fn(),
+            load: vi.fn(),
+            Form: (props: any) => <form {...props} />,
+            formMethod: undefined,
+            formAction: undefined,
+            formData: undefined,
+            formEncType: undefined,
+            json: undefined,
+            text: undefined,
+        }),
         Link: (props: any) => (
             <a href={props.to} {...props}>
                 {props.children}

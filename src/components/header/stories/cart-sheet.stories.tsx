@@ -18,13 +18,14 @@ import CartSheet from '../cart-sheet';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
+import { SITE_PREFIX } from '@storybook/test-utils';
 import { Button } from '@/components/ui/button';
-import BasketProvider from '@/providers/basket';
+import BasketProvider, { useMiniCart } from '@/providers/basket';
 import emptyBasket from '@/components/__mocks__/empty-basket';
 import emptyBasketSnapshot from '@/components/__mocks__/empty-basket-snapshot';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
 import basketWithOneItemSnapshot from '@/components/__mocks__/basket-with-dress-snapshot';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { CurrencyWrapper } from '@/test-utils/context-provider';
 
@@ -96,6 +97,14 @@ function CartSheetStoryHarness({ children }: { children: ReactNode }): ReactElem
     return <div ref={containerRef}>{children}</div>;
 }
 
+function CartSheetWithState({ children }: { children: ReactNode }): ReactElement {
+    const { setMiniCartOpen } = useMiniCart();
+    useEffect(() => {
+        setMiniCartOpen(true);
+    }, [setMiniCartOpen]);
+    return <CartSheet>{children}</CartSheet>;
+}
+
 const meta: Meta<typeof CartSheet> = {
     title: 'LAYOUT/Header/Cart Sheet',
     component: CartSheet,
@@ -149,9 +158,9 @@ export const Empty: Story = {
         ),
     ],
     render: () => (
-        <CartSheet>
+        <CartSheetWithState>
             <Button variant="ghost">Open Cart</Button>
-        </CartSheet>
+        </CartSheetWithState>
     ),
     parameters: {
         snapshot: false, // Skip snapshot test - Radix UI Sheet with empty state causes infinite loop in test environment
@@ -191,9 +200,9 @@ export const WithItems: Story = {
         ),
     ],
     render: () => (
-        <CartSheet>
+        <CartSheetWithState>
             <Button variant="ghost">Open Cart</Button>
-        </CartSheet>
+        </CartSheetWithState>
     ),
     parameters: {
         docs: {
@@ -241,9 +250,9 @@ export const Interactive: Story = {
         ),
     ],
     render: () => (
-        <CartSheet>
+        <CartSheetWithState>
             <Button variant="ghost">Open Cart</Button>
-        </CartSheet>
+        </CartSheetWithState>
     ),
     parameters: {
         docs: {
@@ -312,9 +321,9 @@ export const WithViewCartButton: Story = {
         },
     ],
     render: () => (
-        <CartSheet>
+        <CartSheetWithState>
             <Button variant="ghost">Open Cart</Button>
-        </CartSheet>
+        </CartSheetWithState>
     ),
     parameters: {
         docs: {
@@ -342,6 +351,6 @@ Cart sheet with View Cart button enabled via configuration.
         // Check for View Cart button (ghost variant Button component wrapping a Link)
         const viewCartButton = await documentBody.findByRole('link', { name: /view cart/i }, { timeout: 5000 });
         await expect(viewCartButton).toBeInTheDocument();
-        await expect(viewCartButton).toHaveAttribute('href', '/cart');
+        await expect(viewCartButton).toHaveAttribute('href', `${SITE_PREFIX}/cart`);
     },
 };

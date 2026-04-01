@@ -1,4 +1,5 @@
 import { waitFor } from 'storybook/test';
+import { mockConfig } from '../src/test-utils/config';
 
 /**
  * Waits for the Storybook loading placeholder to disappear, ensuring the component is fully mounted
@@ -16,10 +17,7 @@ import { waitFor } from 'storybook/test';
  * }
  * ```
  */
-export async function waitForStorybookReady(
-    canvasElement: HTMLElement,
-    timeout = 5000
-): Promise<void> {
+export async function waitForStorybookReady(canvasElement: HTMLElement, timeout = 5000): Promise<void> {
     await waitFor(
         () => {
             const loadingPlaceholder = canvasElement.querySelector('[data-storybook-loading="true"]');
@@ -31,3 +29,16 @@ export async function waitForStorybookReady(
     );
 }
 
+/**
+ * The default URL prefix applied by the multi-site SiteProvider in Storybook.
+ * Derived from the mock config's first site and its default locale.
+ *
+ * Use this in play-function assertions to build expected prefixed URLs:
+ * Do not do any fancy logic in here. This is to DRY the prefix hard-code string for tests
+ * @example
+ * ```ts
+ * await expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/featured`);
+ * ```
+ */
+const defaultSite = mockConfig.commerce.sites[0];
+export const SITE_PREFIX = `/${defaultSite.id}/${defaultSite.defaultLocale}`;

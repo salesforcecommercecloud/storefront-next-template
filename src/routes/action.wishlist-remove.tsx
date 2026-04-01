@@ -20,7 +20,8 @@ import { extractStatusCode } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer';
 import { getTranslation } from '@/lib/i18next';
-import { getWishlist } from '@/lib/api/wishlist';
+import { getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist';
+import { getLogger } from '@/lib/logger.server';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -41,11 +42,7 @@ async function removeFromWishlist(
     context: ActionFunctionArgs['context'],
     itemId?: string,
     productId?: string
-): Promise<{
-    success: boolean;
-    productList?: CustomerProductList;
-    error?: string;
-}> {
+): Promise<WishlistActionResponse & { productList?: CustomerProductList }> {
     const { t } = getTranslation();
 
     // TODO: revisit the error messages returned from this function
@@ -178,9 +175,11 @@ async function removeFromWishlist(
  * Server action to remove a product from the wishlist
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
 
     if (request.method !== 'POST') {
+        logger.warn('WishlistRemove: method not allowed', { method: request.method });
         throw new Response(t('product:methodNotAllowed'), { status: 405 });
     }
 
@@ -196,6 +195,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         // Validate that at least one identifier is provided
         if (!itemId && !productId) {
+            logger.warn('WishlistRemove: missing both itemId and productId');
             throw new Error(t('product:productOrItemIdRequired'));
         }
 
@@ -204,13 +204,24 @@ export async function action({ request, context }: ActionFunctionArgs) {
             (itemId && (itemId.length === 0 || itemId.length > 100)) ||
             (productId && (productId.length === 0 || productId.length > 100))
         ) {
+            logger.warn('WishlistRemove: invalid ID length', { itemId, productId });
             throw new Error(t('product:productOrItemIdRequired'));
         }
 
+        logger.debug('WishlistRemove: starting', { itemId, productId });
+
         const result = await removeFromWishlist(context, itemId, productId);
+
+        if (result.success) {
+            logger.info('WishlistRemove: succeeded', { itemId, productId });
+        } else {
+            logger.warn('WishlistRemove: operation returned failure', { itemId, productId, error: result.error });
+        }
 
         return Response.json(result);
     } catch (error) {
+        logger.error('WishlistRemove: failed', { error });
+
         let responseMessage: string | undefined;
         let status_code: string | undefined;
 

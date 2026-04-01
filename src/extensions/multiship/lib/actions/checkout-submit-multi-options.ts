@@ -19,6 +19,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 import { updateBasketWithCustomerInfoFallback } from '@/extensions/multiship/lib/basket-utils';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Handle multi-shipment shipping method submission
@@ -32,6 +33,7 @@ export async function handleMultiShipShippingOptions(
     basket: ShopperBasketsV2.schemas['Basket'],
     context: ActionFunctionArgs['context']
 ): Promise<Response | null> {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
     // Check if this is a multi-shipment submission (fields like shippingMethod_{shipmentId})
     const multiShipFields: Record<string, string> = {};
@@ -44,9 +46,14 @@ export async function handleMultiShipShippingOptions(
 
     const isMultiShip = Object.keys(multiShipFields).length > 0;
     if (!isMultiShip) {
+        logger.debug('SubmitShippingOptions: single-shipment mode, skipping multiship handler');
         // Not a multi-ship submission, let the caller handle single-ship logic
         return null;
     }
+
+    logger.debug('SubmitShippingOptions: multi-shipment mode', {
+        shipmentCount: Object.keys(multiShipFields).length,
+    });
 
     // Multi-shipment mode: update each shipment individually
     try {
@@ -95,6 +102,7 @@ export async function handleMultiShipShippingOptions(
             basket: updatedBasket,
         });
     } catch (error) {
+        logger.error('SubmitShippingOptions: multiship update failed', { error });
         let errorMessage = t('errors:api.serverError');
         if (error instanceof ApiError) {
             try {
@@ -102,7 +110,10 @@ export async function handleMultiShipShippingOptions(
                 if (responseMessage) {
                     errorMessage = responseMessage;
                 }
-            } catch {
+            } catch (extractError) {
+                logger.error('SubmitShippingOptions: failed to extract error message', {
+                    error: extractError,
+                });
                 // Use default error message if extraction fails
             }
         }

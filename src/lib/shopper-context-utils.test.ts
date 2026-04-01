@@ -24,15 +24,25 @@ import {
     buildShopperContextBody,
     updateShopperContext,
 } from './shopper-context-utils';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { RouterContextProvider } from 'react-router';
 
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     getConfig: vi.fn(),
 }));
 
 vi.mock('@/lib/api/shopper-context', () => ({
     createShopperContext: vi.fn(),
+}));
+
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => mockLogger),
 }));
 
 const { mockSerialize, mockParse } = vi.hoisted(() => ({
@@ -200,7 +210,7 @@ describe('shopper-context-utils', () => {
         });
 
         test('should extract custom qualifiers into qualifiers', () => {
-            const url = new URL('https://example.com?device=mobile');
+            const url = new URL('https://example.com?deviceType=mobile');
             const result = extractQualifiersFromUrl(url);
             // device maps to deviceType in qualifiers (apiFieldName is used)
             expect(result.qualifiers.deviceType).toBe('mobile');
@@ -217,16 +227,26 @@ describe('shopper-context-utils', () => {
         test('should extract coupon codes into qualifiers', () => {
             const url = new URL('https://example.com?couponCodes=code1&couponCodes=code2');
             const result = extractQualifiersFromUrl(url);
-            // Multiple coupon codes should be joined with comma
-            expect(result.qualifiers.couponCodes).toBe('code1,code2');
+            // Repeated param: last wins (use comma in one param for multiple: ?couponCodes=code1,code2)
+            expect(result.qualifiers.couponCodes).toBe('code2');
             expect(result.sourceCodeQualifiers).toEqual({});
         });
 
         test('should handle multiple qualifiers', () => {
-            const url = new URL('https://example.com?device=mobile&src=email');
+            const url = new URL('https://example.com?deviceType=mobile&src=email');
             const result = extractQualifiersFromUrl(url);
             expect(result.qualifiers.deviceType).toBe('mobile');
             expect(result.sourceCodeQualifiers.sourceCode).toBe('email');
+        });
+
+        test('should extract effectiveDateTime and customerGroupIds as root-level qualifiers', () => {
+            const url = new URL(
+                'https://example.com?effectiveDateTime=2025-01-15T12:00:00Z&customerGroupIds=group1,group2'
+            );
+            const result = extractQualifiersFromUrl(url);
+            expect(result.qualifiers.effectiveDateTime).toBe('2025-01-15T12:00:00Z');
+            expect(result.qualifiers.customerGroupIds).toBe('group1,group2');
+            expect(result.sourceCodeQualifiers).toEqual({});
         });
 
         test('should skip parameters with no searchParamKey (empty key)', () => {
@@ -310,18 +330,17 @@ describe('shopper-context-utils', () => {
             });
         });
 
-        test('should preserve whitespace in src value', () => {
+        test('should trim whitespace in src value', () => {
             const input = { src: '   ' };
             const result = extractQualifiersFromInput(input);
-            // Unlike URLSearchParams, Object.entries preserves whitespace
             expect(result).toEqual({
                 qualifiers: {},
-                sourceCodeQualifiers: { sourceCode: '   ' },
+                sourceCodeQualifiers: { sourceCode: '' },
             });
         });
 
         test('should extract custom qualifiers into qualifiers', () => {
-            const input = { device: 'mobile' };
+            const input = { deviceType: 'mobile' };
             const result = extractQualifiersFromInput(input);
             // device maps to deviceType in qualifiers (apiFieldName is used)
             expect(result.qualifiers.deviceType).toBe('mobile');
@@ -351,10 +370,21 @@ describe('shopper-context-utils', () => {
         });
 
         test('should handle multiple qualifiers', () => {
-            const input = { device: 'mobile', src: 'email' };
+            const input = { deviceType: 'mobile', src: 'email' };
             const result = extractQualifiersFromInput(input);
             expect(result.qualifiers.deviceType).toBe('mobile');
             expect(result.sourceCodeQualifiers.sourceCode).toBe('email');
+        });
+
+        test('should extract effectiveDateTime and customerGroupIds as root-level qualifiers', () => {
+            const input = {
+                effectiveDateTime: '2025-01-15T12:00:00Z',
+                customerGroupIds: 'group1,group2',
+            };
+            const result = extractQualifiersFromInput(input);
+            expect(result.qualifiers.effectiveDateTime).toBe('2025-01-15T12:00:00Z');
+            expect(result.qualifiers.customerGroupIds).toBe('group1,group2');
+            expect(result.sourceCodeQualifiers).toEqual({});
         });
 
         test('should skip empty keys', () => {
@@ -392,7 +422,7 @@ describe('shopper-context-utils', () => {
         test('should handle all qualifier types together', () => {
             const input = {
                 src: 'email',
-                device: 'mobile',
+                deviceType: 'mobile',
                 store: 'store123',
                 couponCodes: 'code1,code2',
             };
@@ -416,14 +446,14 @@ describe('shopper-context-utils', () => {
         });
 
         test('should handle special characters in values', () => {
-            const input = { src: 'email-promo-123', device: 'mobile-web' };
+            const input = { src: 'email-promo-123', deviceType: 'mobile-web' };
             const result = extractQualifiersFromInput(input);
             expect(result.sourceCodeQualifiers.sourceCode).toBe('email-promo-123');
             expect(result.qualifiers.deviceType).toBe('mobile-web');
         });
 
         test('should handle empty string values', () => {
-            const input = { device: '', store: 'store123' };
+            const input = { deviceType: '', store: 'store123' };
             const result = extractQualifiersFromInput(input);
             // Empty values are included
             expect(result.qualifiers.deviceType).toBe('');
@@ -431,7 +461,7 @@ describe('shopper-context-utils', () => {
         });
 
         test('should handle values with spaces', () => {
-            const input = { src: 'email promo', device: 'mobile device' };
+            const input = { src: 'email promo', deviceType: 'mobile device' };
             const result = extractQualifiersFromInput(input);
             expect(result.sourceCodeQualifiers.sourceCode).toBe('email promo');
             expect(result.qualifiers.deviceType).toBe('mobile device');
@@ -581,22 +611,11 @@ describe('shopper-context-utils', () => {
             });
         });
 
-        test('should prioritize sourceCode from sourceCodeContextMap over contextMap', () => {
-            const contextMap = { sourceCode: 'old', otherKey: 'value' };
+        test('should set sourceCode from sourceCodeContextMap when provided', () => {
+            const contextMap = { otherKey: 'value' };
             const sourceCodeContextMap = { sourceCode: 'new' };
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
-            // sourceCodeContextMap takes precedence over contextMap
             expect(result).toEqual({ otherKey: 'value', sourceCode: 'new' });
-        });
-
-        test('should trim whitespace from root-level qualifier values', () => {
-            const contextMap = { otherKey: '  value  ' };
-            const sourceCodeContextMap = { sourceCode: '  email  ' };
-            const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
-            expect(result).toEqual({
-                otherKey: 'value',
-                sourceCode: 'email',
-            });
         });
 
         test('should skip empty keys', () => {
@@ -606,11 +625,11 @@ describe('shopper-context-utils', () => {
             expect(result).toEqual({ otherKey: 'email' });
         });
 
-        test('should skip empty values for root-level qualifiers', () => {
+        test('should include empty string values for root-level qualifiers in body', () => {
             const contextMap = { otherKey: '' };
             const sourceCodeContextMap = { sourceCode: '' };
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
-            expect(result).toEqual({});
+            expect(result).toEqual({ otherKey: '', sourceCode: '' });
         });
 
         test('should include empty values for customQualifiers', () => {
@@ -618,15 +637,9 @@ describe('shopper-context-utils', () => {
             const sourceCodeContextMap = { sourceCode: 'email' };
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
             expect(result).toEqual({
+                customQualifiers: { deviceType: '' },
                 sourceCode: 'email',
             });
-        });
-
-        test('should skip whitespace-only values for root-level qualifiers', () => {
-            const contextMap = { otherKey: '   ' };
-            const sourceCodeContextMap = { sourceCode: '   ' };
-            const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
-            expect(result).toEqual({});
         });
 
         test('should handle multiple valid keys', () => {
@@ -634,6 +647,30 @@ describe('shopper-context-utils', () => {
             const sourceCodeContextMap = { sourceCode: 'email' };
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
             expect(result).toEqual({ key1: 'value1', key2: 'value2', sourceCode: 'email' });
+        });
+
+        test('should include effectiveDateTime and customerGroupIds as root-level qualifiers in body', () => {
+            const contextMap = {
+                effectiveDateTime: '2025-01-15T12:00:00Z',
+                customerGroupIds: 'group1',
+            };
+            const sourceCodeContextMap = {};
+            const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
+            expect(result).toEqual({
+                effectiveDateTime: '2025-01-15T12:00:00Z',
+                customerGroupIds: ['group1'],
+            });
+        });
+
+        test('should include customerGroupIds as string array when comma-separated', () => {
+            const contextMap = {
+                customerGroupIds: 'BigSpenders,MobileUsers',
+            };
+            const sourceCodeContextMap = {};
+            const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
+            expect(result).toEqual({
+                customerGroupIds: ['BigSpenders', 'MobileUsers'],
+            });
         });
 
         test('should return empty object for empty inputs', () => {
@@ -645,9 +682,9 @@ describe('shopper-context-utils', () => {
 
         test('should handle null values by skipping them for root-level qualifiers', () => {
             const contextMap = { otherKey: null as any };
-            const sourceCodeContextMap = { sourceCode: null as any };
+            const sourceCodeContextMap = {};
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
-            // Non-string values are skipped
+            // Non-string values in contextMap are skipped; callers pass only string sourceCode
             expect(result).toEqual({});
         });
 
@@ -691,8 +728,8 @@ describe('shopper-context-utils', () => {
             });
         });
 
-        test('should handle coupon codes with whitespace', () => {
-            const contextMap = { couponCodes: ' code1 , code2 , code3 ' };
+        test('should split coupon codes by comma (segment trimming is done at extraction)', () => {
+            const contextMap = { couponCodes: 'code1,code2,code3' };
             const sourceCodeContextMap = {};
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
             expect(result).toEqual({
@@ -700,8 +737,8 @@ describe('shopper-context-utils', () => {
             });
         });
 
-        test('should filter empty coupon codes', () => {
-            const contextMap = { couponCodes: 'code1,,code3,  ' };
+        test('should split normalized coupon codes into array (extraction supplies normalized string e.g. code1,code3)', () => {
+            const contextMap = { couponCodes: 'code1,code3' };
             const sourceCodeContextMap = {};
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
             expect(result).toEqual({
@@ -710,23 +747,22 @@ describe('shopper-context-utils', () => {
         });
 
         test('should handle multiple customQualifiers', () => {
-            // Note: The key in contextMap must match the key in SHOPPER_CONTEXT_SEARCH_PARAMS.customQualifiers
-            // For device mapping, the key is 'device', not 'deviceType' (deviceType is the apiFieldName)
-            const contextMap = { device: 'mobile' };
+            // Key in contextMap matches SHOPPER_CONTEXT_SEARCH_PARAMS.customQualifiers (deviceType)
+            const contextMap = { deviceType: 'mobile' };
             const sourceCodeContextMap = { sourceCode: 'email' };
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
             expect(result.customQualifiers).toBeDefined();
-            expect(result.customQualifiers?.device).toBe('mobile');
+            expect(result.customQualifiers?.deviceType).toBe('mobile');
         });
 
         test('should handle category marker key as root-level qualifier', () => {
-            const contextMap = { category: 'customQualifiers', device: 'mobile' };
+            const contextMap = { category: 'customQualifiers', deviceType: 'mobile' };
             const sourceCodeContextMap = { sourceCode: 'email' };
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
             // category is not in customQualifiers mapping, so it's treated as root-level
-            // device is in customQualifiers mapping (key matches), so it goes to customQualifiers
+            // deviceType is in customQualifiers mapping, so it goes to customQualifiers
             expect((result as Record<string, unknown>).category).toBe('customQualifiers');
-            expect(result.customQualifiers?.device).toBe('mobile');
+            expect(result.customQualifiers?.deviceType).toBe('mobile');
         });
 
         test('should handle sourceCode from contextMap when not in sourceCodeContextMap', () => {
@@ -737,17 +773,14 @@ describe('shopper-context-utils', () => {
             expect(result.sourceCode).toBe('email');
         });
 
-        test('should prioritize sourceCode from sourceCodeContextMap over contextMap', () => {
-            const contextMap = { sourceCode: 'old' };
+        test('should include sourceCode from sourceCodeContextMap in body', () => {
+            const contextMap = {};
             const sourceCodeContextMap = { sourceCode: 'new' };
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
-            // sourceCodeContextMap is processed first, so 'new' should be used
             expect(result.sourceCode).toBe('new');
         });
 
         test('should handle multiple custom qualifiers', () => {
-            // Note: This test assumes we have multiple custom qualifiers defined
-            // For now, we only have 'device', so we'll test with what we have
             const contextMap = { deviceType: 'mobile' };
             const sourceCodeContextMap = { sourceCode: 'email' };
             const result = buildShopperContextBody(contextMap, sourceCodeContextMap);
@@ -774,7 +807,6 @@ describe('shopper-context-utils', () => {
     describe('updateShopperContext', () => {
         let mockContext: RouterContextProvider;
         let mockCreateShopperContext: ReturnType<typeof vi.fn>;
-        let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
         beforeEach(async () => {
             const { createShopperContext } = await import('@/lib/api/shopper-context');
@@ -794,8 +826,6 @@ describe('shopper-context-utils', () => {
                 commerce: { api: { siteId: 'RefArch' } },
             } as any);
 
-            consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
             mockParse.mockResolvedValue(null);
             mockSerialize.mockResolvedValue('Set-Cookie: mock=value');
             mockCreateShopperContext.mockResolvedValue(undefined);
@@ -803,7 +833,6 @@ describe('shopper-context-utils', () => {
 
         afterEach(() => {
             vi.clearAllMocks();
-            consoleErrorSpy.mockRestore();
         });
 
         test('should update shopper context with new qualifiers', async () => {
@@ -938,10 +967,9 @@ describe('shopper-context-utils', () => {
 
             // Should still call API even if cookie serialization fails
             expect(mockCreateShopperContext).toHaveBeenCalledTimes(1);
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-                'Failed to serialize shopper context cookie:',
-                'Cookie serialization failed'
-            );
+            expect(mockLogger.error).toHaveBeenCalledWith('Failed to serialize shopper context cookie', {
+                error: 'Cookie serialization failed',
+            });
             expect(result.setCookieHeaders).toHaveLength(0);
         });
 

@@ -101,15 +101,13 @@ A fully filled star with 100% opacity. This represents a full star in a rating d
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
 
-        // Test that star is rendered
         const star = canvasElement.querySelector('svg');
         await expect(star).toBeInTheDocument();
 
-        // Test that star has rating color class
-        await expect(star).toHaveClass('text-rating');
-
-        // Test opacity is 1
-        await expect(star).toHaveStyle({ opacity: '1' });
+        const path = star!.querySelector('path');
+        await expect(path).not.toBeNull();
+        await expect(path!.getAttribute('fill')).toBe('var(--color-rating)');
+        await expect(path!.getAttribute('stroke')).toBe('var(--color-rating)');
     },
 };
 
@@ -141,15 +139,13 @@ An unfilled star with full opacity. This represents an empty star in a rating di
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
 
-        // Test that star is rendered
         const star = canvasElement.querySelector('svg');
         await expect(star).toBeInTheDocument();
 
-        // Test that star has gray color class
-        await expect(star).toHaveClass('text-muted-foreground/30');
-
-        // Test opacity is 1
-        await expect(star).toHaveStyle({ opacity: '1' });
+        const path = star!.querySelector('path');
+        await expect(path).not.toBeNull();
+        await expect(path!.getAttribute('fill')).toBe('white');
+        await expect(path!.getAttribute('stroke')).toBe('var(--color-border-subtle)');
     },
 };
 
@@ -183,8 +179,18 @@ A partially filled star at 50% opacity. This represents a half-star in a rating 
 
         const star = canvasElement.querySelector('svg');
         await expect(star).toBeInTheDocument();
-        await expect(star).toHaveClass('text-rating');
-        await expect(star).toHaveStyle({ opacity: '0.5' });
+
+        const path = star!.querySelector('path');
+        await expect(path).not.toBeNull();
+        // Partial fill uses a gradient
+        await expect(path!.getAttribute('fill')).toMatch(/^url\(#/);
+        await expect(path!.getAttribute('stroke')).toBe('var(--color-border-subtle)');
+
+        const gradient = star!.querySelector('linearGradient');
+        await expect(gradient).not.toBeNull();
+        const stops = gradient!.querySelectorAll('stop');
+        await expect(stops.length).toBe(2);
+        await expect(stops[0].getAttribute('offset')).toBe('50%');
     },
 };
 
@@ -224,15 +230,16 @@ Demonstrates various opacity levels from 0% to 100% for filled stars.
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
 
-        // Test that 6 stars are rendered
         const stars = canvasElement.querySelectorAll('svg');
         await expect(stars.length).toBe(6);
 
-        // Test first star (0% opacity)
-        await expect(stars[0]).toHaveStyle({ opacity: '0' });
+        // First star (opacity=0, filled=true): not partial, not fully filled → white fill
+        const firstPath = stars[0].querySelector('path');
+        await expect(firstPath!.getAttribute('fill')).toBe('white');
 
-        // Test last star (100% opacity)
-        await expect(stars[5]).toHaveStyle({ opacity: '1' });
+        // Last star (opacity=1, filled=true): fully filled → rating color
+        const lastPath = stars[5].querySelector('path');
+        await expect(lastPath!.getAttribute('fill')).toBe('var(--color-rating)');
     },
 };
 
@@ -351,26 +358,29 @@ Comparison of filled, unfilled, and mixed star displays.
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
 
-        // Test that 15 stars are rendered (5 + 5 + 5)
         const stars = canvasElement.querySelectorAll('svg');
         await expect(stars.length).toBe(15);
 
-        // Test first row has all yellow stars
+        // First row: 5 filled stars → rating color fill
         for (let i = 0; i < 5; i++) {
-            await expect(stars[i]).toHaveClass('text-rating');
+            const path = stars[i].querySelector('path');
+            await expect(path!.getAttribute('fill')).toBe('var(--color-rating)');
         }
 
-        // Test second row has all gray stars
+        // Second row: 5 unfilled stars → white fill
         for (let i = 5; i < 10; i++) {
-            await expect(stars[i]).toHaveClass('text-muted-foreground/30');
+            const path = stars[i].querySelector('path');
+            await expect(path!.getAttribute('fill')).toBe('white');
         }
 
-        // Test third row has mixed colors
-        await expect(stars[10]).toHaveClass('text-rating'); // 1st filled
-        await expect(stars[11]).toHaveClass('text-rating'); // 2nd filled
-        await expect(stars[12]).toHaveClass('text-rating'); // 3rd filled
-        await expect(stars[13]).toHaveClass('text-rating'); // 4th partial
-        await expect(stars[14]).toHaveClass('text-muted-foreground/30'); // 5th unfilled
+        // Third row: 3 filled + 1 partial + 1 unfilled
+        await expect(stars[10].querySelector('path')!.getAttribute('fill')).toBe('var(--color-rating)');
+        await expect(stars[11].querySelector('path')!.getAttribute('fill')).toBe('var(--color-rating)');
+        await expect(stars[12].querySelector('path')!.getAttribute('fill')).toBe('var(--color-rating)');
+        // 4th star is partial (opacity=0.5) → gradient fill
+        await expect(stars[13].querySelector('path')!.getAttribute('fill')).toMatch(/^url\(#/);
+        // 5th star is unfilled → white fill
+        await expect(stars[14].querySelector('path')!.getAttribute('fill')).toBe('white');
     },
 };
 

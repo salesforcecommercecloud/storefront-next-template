@@ -16,6 +16,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import CategoryBreadcrumbs from './index';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
@@ -23,8 +24,8 @@ const createTestWrapper = (component: React.ReactElement) => {
     const router = createMemoryRouter(
         [
             {
-                path: '/',
-                element: component,
+                path: '*',
+                element: <AllProvidersWrapper>{component}</AllProvidersWrapper>,
             },
         ],
         { initialEntries: ['/'] }
@@ -80,8 +81,8 @@ describe('CategoryBreadcrumbs', () => {
         const firstLink = screen.getByRole('link', { name: 'First' });
         const secondLink = screen.getByRole('link', { name: 'Second' });
 
-        expect(firstLink).toHaveAttribute('href', '/category/cat-1');
-        expect(secondLink).toHaveAttribute('href', '/category/cat-2');
+        expect(firstLink).toHaveAttribute('href', '/global/en-GB/category/cat-1');
+        expect(secondLink).toHaveAttribute('href', '/global/en-GB/category/cat-2');
     });
 
     it('should show chevron icons between breadcrumb items', () => {

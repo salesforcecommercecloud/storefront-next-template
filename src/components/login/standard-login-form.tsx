@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { type ReactElement, useRef } from 'react';
-import { Form, Link } from 'react-router';
+import { Form } from 'react-router';
+import { Link } from '@/components/link';
 import { Input } from '@/components/ui/input';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
 import { useTranslation } from 'react-i18next';

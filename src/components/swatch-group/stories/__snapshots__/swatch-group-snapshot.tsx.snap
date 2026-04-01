@@ -21,12 +21,12 @@ exports[`SwatchGroup stories snapshot > Default story renders and matches snapsh
         </span>
       </div>
       <div
-        class="flex flex-wrap gap-2 focus:outline-none"
+        class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
       >
         <button
           aria-checked="false"
           aria-label="Red"
-          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -48,7 +48,7 @@ exports[`SwatchGroup stories snapshot > Default story renders and matches snapsh
         <button
           aria-checked="false"
           aria-label="Blue"
-          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -70,7 +70,7 @@ exports[`SwatchGroup stories snapshot > Default story renders and matches snapsh
         <button
           aria-checked="false"
           aria-label="Green"
-          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -116,12 +116,12 @@ exports[`SwatchGroup stories snapshot > NoSelection story renders and matches sn
         </span>
       </div>
       <div
-        class="flex flex-wrap gap-2 focus:outline-none"
+        class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
       >
         <button
           aria-checked="false"
           aria-label="Red"
-          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -143,7 +143,7 @@ exports[`SwatchGroup stories snapshot > NoSelection story renders and matches sn
         <button
           aria-checked="false"
           aria-label="Blue"
-          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -165,7 +165,7 @@ exports[`SwatchGroup stories snapshot > NoSelection story renders and matches sn
         <button
           aria-checked="false"
           aria-label="Green"
-          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -211,12 +211,12 @@ exports[`SwatchGroup stories snapshot > SquareSwatches story renders and matches
         </span>
       </div>
       <div
-        class="flex flex-wrap gap-2 focus:outline-none"
+        class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
       >
         <button
           aria-checked="false"
           aria-label="Small"
-          class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+          class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -236,7 +236,7 @@ exports[`SwatchGroup stories snapshot > SquareSwatches story renders and matches
         <button
           aria-checked="false"
           aria-label="Medium"
-          class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+          class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -256,7 +256,7 @@ exports[`SwatchGroup stories snapshot > SquareSwatches story renders and matches
         <button
           aria-checked="false"
           aria-label="Large"
-          class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+          class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -276,7 +276,7 @@ exports[`SwatchGroup stories snapshot > SquareSwatches story renders and matches
         <button
           aria-checked="false"
           aria-label="XLarge"
-          class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+          class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -323,12 +323,12 @@ exports[`SwatchGroup stories snapshot > WithDisplayName story renders and matche
         </span>
       </div>
       <div
-        class="flex flex-wrap gap-2 focus:outline-none"
+        class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
       >
         <button
           aria-checked="false"
           aria-label="Cotton"
-          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -348,7 +348,7 @@ exports[`SwatchGroup stories snapshot > WithDisplayName story renders and matche
         <button
           aria-checked="false"
           aria-label="Silk"
-          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"
@@ -368,7 +368,7 @@ exports[`SwatchGroup stories snapshot > WithDisplayName story renders and matche
         <button
           aria-checked="false"
           aria-label="Wool"
-          class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+          class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
           position="relative"
           role="radio"
           tabindex="-1"

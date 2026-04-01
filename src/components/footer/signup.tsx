@@ -37,20 +37,16 @@ export default function Signup(): ReactElement {
     );
 
     return (
-        <>
-            <h3 className="text-lg font-semibold">{t('newsletter.title')}</h3>
-            <p className="text-sm">{t('newsletter.description')}</p>
-            <form onSubmit={handleSubmit} className="flex mt-4 w-full max-w-sm items-center gap-2">
-                <Input
-                    ref={inputRef}
-                    type="email"
-                    placeholder={t('newsletter.emailPlaceholder')}
-                    className="text-primary-foreground"
-                />
-                <Button type="submit" variant="outline">
-                    {t('newsletter.subscribeButton')}
-                </Button>
-            </form>
-        </>
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+            <Input
+                ref={inputRef}
+                type="email"
+                placeholder={t('newsletter.emailPlaceholder')}
+                className="flex-1 h-10 bg-background text-foreground"
+            />
+            <Button type="submit" variant="secondary" size="lg">
+                {t('newsletter.subscribeButton')}
+            </Button>
+        </form>
     );
 }

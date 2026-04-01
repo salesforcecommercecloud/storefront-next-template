@@ -22,9 +22,9 @@ module.exports = {
             startServerReadyTimeout: 30000,
             url: [
                 'http://localhost:3001/',
-                // 'http://localhost:3001/category/womens-clothing-tops',
-                'http://localhost:3001/product/25591227M?color=JJ9DFXX',
-                'http://localhost:3001/cart',
+                // 'http://localhost:3001/RefArchGlobal/en-GB/category/womens-clothing-tops',
+                'http://localhost:3001/RefArchGlobal/en-GB/product/25591227M?color=JJ9DFXX',
+                'http://localhost:3001/RefArchGlobal/en-GB/cart',
             ],
             settings: {
                 formFactor: 'mobile',
@@ -64,7 +64,7 @@ module.exports = {
                         ],
                         'resource-summary:document:size': [
                             'error',
-                            { maxNumericValue: 43500, aggregationMethod: 'median' },
+                            { maxNumericValue: 48300, aggregationMethod: 'median' },
                         ],
                     },
                 },
@@ -80,7 +80,7 @@ module.exports = {
                         'categories:best-practices': ['error', { minScore: 0.96, aggregationMethod: 'median' }],
                         'resource-summary:script:size': [
                             'error',
-                            { maxNumericValue: 350000, aggregationMethod: 'median' },
+                            { maxNumericValue: 365000, aggregationMethod: 'median' },
                         ],
                         'resource-summary:document:size': [
                             'error',
@@ -100,7 +100,7 @@ module.exports = {
                         'categories:best-practices': ['error', { minScore: 0.96, aggregationMethod: 'median' }],
                         'resource-summary:script:size': [
                             'error',
-                            { maxNumericValue: 376000, aggregationMethod: 'median' },
+                            { maxNumericValue: 424000, aggregationMethod: 'median' },
                         ],
                         'resource-summary:document:size': [
                             'error',
@@ -120,7 +120,7 @@ module.exports = {
                         'categories:best-practices': ['error', { minScore: 0.96, aggregationMethod: 'median' }],
                         'resource-summary:script:size': [
                             'error',
-                            { maxNumericValue: 420000, aggregationMethod: 'median' },
+                            { maxNumericValue: 425000, aggregationMethod: 'median' },
                         ],
                         'resource-summary:document:size': [
                             'error',

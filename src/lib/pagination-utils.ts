@@ -20,6 +20,68 @@ const DEFAULT_MAX_VISIBLE = 5;
 export type PaginationItem = number | { type: 'ellipsis'; key: 'left' | 'right' };
 
 /**
+ * Pagination state derived from offset/limit/total (e.g. from SCAPI list endpoints).
+ * Use for "Viewing X–Y of Z" text and prev/next offset links.
+ */
+export type OffsetLimitPaginationState = {
+    /** Effective page size (limit or default) */
+    safeLimit: number;
+    /** 1-based start index for display (e.g. "Viewing 1–10 of 25") */
+    startIndex: number;
+    /** 1-based end index for display */
+    endIndex: number;
+    /** 1-based current page number */
+    currentPage: number;
+    /** Total number of pages */
+    totalPages: number;
+    /** Whether there is a next page */
+    hasNext: boolean;
+    /** Whether there is a previous page */
+    hasPrevious: boolean;
+    /** Offset for next page (use in URL) */
+    nextOffset: number;
+    /** Offset for previous page (use in URL) */
+    prevOffset: number;
+};
+
+/**
+ * Derives pagination state from offset/limit/total for list APIs that use offset-based paging.
+ * Use for "Viewing X–Y of Z" and prev/next navigation.
+ *
+ * @param params.offset - Current offset (0-based)
+ * @param params.limit - Page size
+ * @param params.total - Total number of items
+ * @param params.defaultLimit - Fallback when limit is 0 (default 10)
+ * @param params.currentPageSize - Optional actual number of items on this page (e.g. orders.length); when set, endIndex uses it for accurate "Viewing 1–3 of 25" on partial pages
+ */
+export function getOffsetLimitPaginationState(params: {
+    offset: number;
+    limit: number;
+    total: number;
+    defaultLimit?: number;
+    currentPageSize?: number;
+}): OffsetLimitPaginationState {
+    const { offset, limit, total, defaultLimit = 10, currentPageSize } = params;
+    const safeLimit = limit > 0 ? limit : defaultLimit;
+    const startIndex = offset + 1;
+    const endIndex = Math.min(offset + (currentPageSize !== undefined ? currentPageSize : safeLimit), total);
+    const currentPage = safeLimit > 0 ? Math.floor(offset / safeLimit) + 1 : 1;
+    const totalPagesRaw = safeLimit > 0 ? Math.ceil(total / safeLimit) : 1;
+    const totalPages = Math.max(1, totalPagesRaw);
+    return {
+        safeLimit,
+        startIndex,
+        endIndex,
+        currentPage,
+        totalPages,
+        hasNext: currentPage < totalPagesRaw,
+        hasPrevious: currentPage > 1,
+        nextOffset: offset + safeLimit,
+        prevOffset: Math.max(0, offset - safeLimit),
+    };
+}
+
+/**
  * Returns an array of page numbers and ellipsis for truncated pagination.
  * When totalPages <= maxVisible, returns [1, 2, ..., totalPages].
  * Otherwise returns a compact set like [1, { ellipsis: 'left' }, 5, 6, 7, 8, 9, { ellipsis: 'right' }, 20].

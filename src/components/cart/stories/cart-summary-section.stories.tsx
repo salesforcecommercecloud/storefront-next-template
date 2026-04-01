@@ -20,12 +20,10 @@ import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import OrderSummary from '@/components/order-summary';
-import emptyBasket from '@/components/__mocks__/empty-basket';
 import {
     basketWithOneItem,
     inBasketProductDetails as dressProductDetails,
 } from '@/components/__mocks__/basket-with-dress';
-import { basketWithMultipleItems, inBasketProductDetails } from '@/components/__mocks__/basket-with-multiple-items';
 import { getTranslation } from '@/lib/i18next';
 import { CurrencyWrapper } from '@/test-utils/context-provider';
 
@@ -301,31 +299,19 @@ The CartSummarySection component renders the order summary and checkout actions 
 
 ## Features
 
-- **Responsive Layout**: Different layouts for desktop and mobile viewports
-- **Order Summary Integration**: Uses OrderSummary component to display basket totals and line items
-- **Checkout Actions**: Secure checkout button with payment method trust signals
-- **Promo Code Support**: Includes promo code form functionality (desktop only)
-- **Mobile Optimization**: Sticky bottom checkout section for mobile devices
-
-## Layout Behavior
-
-- **Desktop**: Full order summary with promo code form and checkout CTA
-- **Mobile**: Sticky bottom checkout section for easy access
-- **Responsive**: Automatically adapts based on isDesktop prop
-
-## Integration
-
-This component is used by CartContent and integrates with:
-- OrderSummary component for displaying basket information
-- Payment method icons for trust signals
-- React Router for navigation to checkout
-- UI strings for internationalization
+- **Order Summary**: Subtotal, shipping, tax, and estimated total breakdown
+- **Promo Code Support**: Collapsible accordion for entering promo codes
+- **Checkout Actions**: Secure checkout button with payment method trust signals (Visa, Mastercard, Amex, Discover)
+- **Responsive**: Adapts padding for mobile and desktop viewports
 
 ## Props
 
 - **basket**: Shopping basket data with items and totals
-- **isDesktop**: Controls layout behavior (desktop vs mobile)
-- **productMap**: Optional product details mapping for enhanced display
+- **showPromoCodeForm**: Whether to display the promo code accordion
+- **showCheckoutAction**: Whether to display the checkout button and payment icons
+- **showCartItems**: Whether to display the cart items accordion
+- **isEstimate**: Whether to show "Estimated" prefix for totals
+- **productsByItemId**: Optional product details mapping for enhanced display
                 `,
             },
         },
@@ -406,62 +392,24 @@ const mockProductMap = {
     '2a54fe1a10d9d9bbbeea6f205f': dressProductDetails.data[0], // Button Front Jacket
 };
 
-// Mock product map for multiple items basket
-const mockMultipleItemsProductMap = {
-    '4b1d10f5f04a55b91b10d2cd02': inBasketProductDetails.data[0], // Solid Silk Tie
-    '2e97471059696f517030b6895b': inBasketProductDetails.data[1], // Floral Ruffle Top
-};
-
-export const DesktopEmptyCart: Story = {
-    args: {
-        basket: emptyBasket,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Desktop layout for an empty cart. This shows:
-
-- Full order summary with empty state
-- Promo code form (though not applicable for empty cart)
-- Checkout button (disabled/hidden for empty cart)
-- Payment method icons for trust signals
-- Desktop-optimized spacing and layout
-                `,
-            },
-        },
-    },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test component interaction
-        const buttons = canvas.queryAllByRole('button');
-        const inputs = canvas.queryAllByRole('textbox');
-
-        // Perform basic interactions
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-
-        // Verify component renders
-        void expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
 export const DesktopWithItems: Story = {
     args: {
-        basket: basketWithOneItem,
+        basket: {
+            ...basketWithOneItem,
+            productSubTotal: 75,
+            productTotal: 75,
+            shippingTotal: 0,
+            taxTotal: 6,
+            orderTotal: 81,
+        },
         productsByItemId: mockProductMap,
+        showCartItems: false,
+        showPromoCodeForm: true,
+        showCheckoutAction: true,
+        isEstimate: true,
     },
     parameters: {
+        layout: 'centered',
         docs: {
             description: {
                 story: `
@@ -476,306 +424,13 @@ Desktop layout with items in the cart. This demonstrates:
             },
         },
     },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test component interaction
-        const buttons = canvas.queryAllByRole('button');
-        const inputs = canvas.queryAllByRole('textbox');
-
-        // Perform basic interactions
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-
-        // Verify component renders
-        void expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const DesktopMultipleItems: Story = {
-    args: {
-        basket: basketWithMultipleItems,
-        productsByItemId: mockMultipleItemsProductMap,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Desktop layout with multiple items in the cart. This shows:
-
-- Order summary with multiple line items
-- Subtotal calculations for multiple products
-- Promo code form for bulk discounts
-- Checkout button with secure checkout icon
-- Payment method trust signals
-- Desktop layout optimized for larger orders
-                `,
-            },
-        },
-    },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test component interaction
-        const buttons = canvas.queryAllByRole('button');
-        const inputs = canvas.queryAllByRole('textbox');
-
-        // Perform basic interactions
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-
-        // Verify component renders
-        void expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const MobileEmptyCart: Story = {
-    args: {
-        basket: emptyBasket,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Mobile layout for an empty cart. This shows:
-
-- Sticky bottom checkout section
-- Checkout button (though not applicable for empty cart)
-- Payment method icons
-- Mobile-optimized touch interface
-- Sticky positioning for easy access
-                `,
-            },
-        },
-    },
     decorators: [
         (Story: React.ComponentType) => (
-            <div style={{ height: '100vh', backgroundColor: '#f0f0f0', padding: '20px' }}>
-                <div style={{ height: '80vh', backgroundColor: 'white', marginBottom: '20px', padding: '20px' }}>
-                    <p>Content above the sticky checkout section</p>
-                </div>
+            <div style={{ width: 343 }}>
                 <Story />
             </div>
         ),
     ],
-    globals: {
-        viewport: 'mobile2',
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test component interaction
-        const buttons = canvas.queryAllByRole('button');
-        const inputs = canvas.queryAllByRole('textbox');
-
-        // Perform basic interactions
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-
-        // Verify component renders
-        void expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const MobileWithItems: Story = {
-    args: {
-        basket: basketWithOneItem,
-        productsByItemId: mockProductMap,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Mobile layout with items in the cart. This demonstrates:
-
-- Sticky bottom checkout section
-- Full-width checkout button for easy tapping
-- Secure checkout icon and payment method icons
-- Mobile-optimized spacing and touch targets
-- Sticky positioning for persistent access
-                `,
-            },
-        },
-    },
-    decorators: [
-        (Story: React.ComponentType) => (
-            <div style={{ height: '100vh', backgroundColor: '#f0f0f0', padding: '20px' }}>
-                <div style={{ height: '80vh', backgroundColor: 'white', marginBottom: '20px', padding: '20px' }}>
-                    <p>Content above the sticky checkout section</p>
-                </div>
-                <Story />
-            </div>
-        ),
-    ],
-    globals: {
-        viewport: 'mobile2',
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test component interaction
-        const buttons = canvas.queryAllByRole('button');
-        const inputs = canvas.queryAllByRole('textbox');
-
-        // Perform basic interactions
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-
-        // Verify component renders
-        void expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const MobileMultipleItems: Story = {
-    args: {
-        basket: basketWithMultipleItems,
-        productsByItemId: mockMultipleItemsProductMap,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Mobile layout with multiple items in the cart. This shows:
-
-- Sticky bottom checkout section
-- Checkout button for larger orders
-- Payment method trust signals
-- Mobile-optimized interface for complex orders
-- Persistent access to checkout action
-                `,
-            },
-        },
-    },
-    decorators: [
-        (Story: React.ComponentType) => (
-            <div style={{ height: '100vh', backgroundColor: '#f0f0f0', padding: '20px' }}>
-                <div style={{ height: '80vh', backgroundColor: 'white', marginBottom: '20px', padding: '20px' }}>
-                    <p>Content above the sticky checkout section</p>
-                </div>
-                <Story />
-            </div>
-        ),
-    ],
-    globals: {
-        viewport: 'mobile2',
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test component interaction
-        const buttons = canvas.queryAllByRole('button');
-        const inputs = canvas.queryAllByRole('textbox');
-
-        // Perform basic interactions
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-
-        // Verify component renders
-        void expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const TabletView: Story = {
-    args: {
-        basket: basketWithOneItem,
-        productsByItemId: mockProductMap,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Tablet view showing desktop layout on medium screens. This demonstrates:
-
-- Desktop layout behavior on tablet viewport
-- Order summary with proper tablet spacing
-- Promo code form and checkout actions
-- Payment method icons
-- Balanced layout for tablet interaction
-                `,
-            },
-        },
-    },
-    globals: {
-        viewport: 'tablet',
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test component interaction
-        const buttons = canvas.queryAllByRole('button');
-        const inputs = canvas.queryAllByRole('textbox');
-
-        // Perform basic interactions
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-
-        // Verify component renders
-        void expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const WithoutProductMap: Story = {
-    args: {
-        basket: basketWithOneItem,
-        // productMap intentionally omitted
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Desktop layout without product map. This shows:
-
-- Order summary with basic product information
-- How the component handles missing product details
-- Fallback behavior when productMap is not provided
-- Still functional checkout and promo code features
-- Graceful degradation of product information display
-                `,
-            },
-        },
-    },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
 

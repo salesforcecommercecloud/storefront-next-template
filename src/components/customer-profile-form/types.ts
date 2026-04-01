@@ -50,6 +50,10 @@ export interface CustomerProfileFormProps {
     onSuccess?: (formData: CustomerProfileFormData) => void;
     onError?: (error: string) => void;
     onCancel?: () => void;
+    /** When true, action buttons (Save/Cancel) are not rendered; use with formId for external submit. */
+    hideActions?: boolean;
+    /** Form id for external submit button (e.g. header Save) via form={formId}. */
+    formId?: string;
 }
 
 // Props interface for CustomerProfileFields component
@@ -57,4 +61,6 @@ export interface CustomerProfileFieldsProps {
     form: UseFormReturn<CustomerProfileFormData>;
     updateFetcher: ScapiFetcher<ShopperCustomers.schemas['Customer'], ShopperCustomers.schemas['Customer']>;
     onCancel?: () => void;
+    /** When true, do not render Save/Cancel buttons (used when actions are in parent, e.g. card header). */
+    hideActions?: boolean;
 }

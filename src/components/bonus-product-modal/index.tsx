@@ -17,13 +17,13 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef, type ReactElement } from 'react';
-import type { ShopperProductsTypes } from 'commerce-sdk-isomorphic';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
+import { useScapiFetcher, type ScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useProductImages } from '@/hooks/product/use-product-images';
 import { useToast } from '@/components/toast';
 import ProductViewProvider, { useProductView } from '@/providers/product-view';
@@ -78,7 +78,7 @@ export function BonusProductModal({
     maxQuantity: _maxQuantity,
 }: BonusProductModalProps): ReactElement {
     // === STATE ===
-    const [currentProduct, setCurrentProduct] = useState<ShopperProductsTypes.Product | null>(null);
+    const [currentProduct, setCurrentProduct] = useState<ShopperProducts.schemas['Product'] | null>(null);
     const [variationValues, setVariationValues] = useState<Record<string, string>>({});
     // Track if the original productId was a variant (not a master)
     // When true, we should lock to that variant and hide variant selection
@@ -112,7 +112,7 @@ export function BonusProductModal({
     useBonusProductData({
         open,
         productId,
-        fetcher,
+        fetcher: fetcher as ScapiFetcher<ShopperProducts.schemas['Product']>,
         currentProduct,
         setIsLockedToVariant,
         setCurrentProduct,

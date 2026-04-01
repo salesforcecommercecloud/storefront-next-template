@@ -21,6 +21,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Typography } from '@/components/typography';
 import { useTranslation, withTranslation, type WithTranslation } from 'react-i18next';
+import { useNavigate } from '@/hooks/use-navigate';
+
+function ReturnToCartButton() {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    return (
+        <Button variant="outline" onClick={() => void navigate('/cart')}>
+            {t('checkout:errorBoundary.returnToCart')}
+        </Button>
+    );
+}
 
 interface CheckoutErrorBoundaryProps extends WithTranslation {
     children: ReactNode;
@@ -77,9 +88,7 @@ class CheckoutErrorBoundaryClass extends Component<CheckoutErrorBoundaryProps, C
                                 <RefreshCw className="h-4 w-4" />
                                 {t('checkout:errorBoundary.tryAgain')}
                             </Button>
-                            <Button variant="outline" onClick={() => (window.location.href = '/cart')}>
-                                {t('checkout:errorBoundary.returnToCart')}
-                            </Button>
+                            <ReturnToCartButton />
                         </div>
                     </CardContent>
                 </Card>

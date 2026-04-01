@@ -15,13 +15,16 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createRoutesStub, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { createActionArgs, createLoaderArgs } from '@/lib/test-utils/loader-action-args';
 import Login, { loader, action } from './_empty.login';
 import { render, screen, waitFor } from '@testing-library/react';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import userEvent from '@testing-library/user-event';
 import { getAuth, authorizePasswordless, getPasswordLessAccessToken, updateAuth } from '@/middlewares/auth.server';
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
 import { mergeBasket } from '@/lib/api/basket';
+import { updateBasketResource } from '@/middlewares/basket.server';
 import { getAppOrigin, isAbsoluteURL, extractResponseError } from '@/lib/utils';
 
 vi.mock('@/middlewares/auth.server', () => ({
@@ -41,6 +44,14 @@ vi.mock('@/lib/api/auth/social-login', () => ({
 
 vi.mock('@/lib/api/basket', () => ({
     mergeBasket: vi.fn(),
+}));
+
+vi.mock('@/middlewares/basket.server', () => ({
+    updateBasketResource: vi.fn(),
+}));
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
 }));
 
 vi.mock('@/lib/utils', () => ({
@@ -63,30 +74,34 @@ vi.mock('@/components/buttons/social-login-buttons', () => ({
     SocialLoginButtons: () => <div data-testid="social-buttons" />,
 }));
 
-vi.mock('@/config', () => ({
-    getConfig: vi.fn(() => ({
-        auth: {
-            otpLength: 8,
-        },
-        features: {
-            passwordlessLogin: {
-                enabled: true,
-                landingUri: '/passwordless-login-landing',
-                callbackUri: '/passwordless-login-callback',
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>();
+    return {
+        ...actual,
+        getConfig: vi.fn(() => ({
+            auth: {
+                otpLength: 8,
             },
-            socialLogin: {
-                enabled: true,
-                callbackUri: '/social-callback',
-                providers: ['Apple', 'Google'],
+            features: {
+                passwordlessLogin: {
+                    enabled: true,
+                    landingUri: '/passwordless-login-landing',
+                    callbackUri: '/passwordless-login-callback',
+                },
+                socialLogin: {
+                    enabled: true,
+                    callbackUri: '/social-callback',
+                    providers: ['Apple', 'Google'],
+                },
             },
-        },
-        commerce: {
-            api: {
-                privateKeyEnabled: false,
+            commerce: {
+                api: {
+                    privateKeyEnabled: false,
+                },
             },
-        },
-    })),
-}));
+        })),
+    };
+});
 
 vi.mock('@/lib/i18next', () => ({
     getTranslation: vi.fn(() => ({
@@ -100,13 +115,14 @@ vi.mock('@/lib/i18next', () => ({
 }));
 
 // Get mocked functions
+const mockGetPasswordLessAccessToken = vi.mocked(getPasswordLessAccessToken);
+const mockUpdateAuth = vi.mocked(updateAuth);
 const mockGetAuth = vi.mocked(getAuth);
 const mockLoginRegisteredUser = vi.mocked(loginRegisteredUser);
 const mockAuthorizeIDP = vi.mocked(authorizeIDP);
 const mockAuthorizePasswordless = vi.mocked(authorizePasswordless);
-const mockGetPasswordLessAccessToken = vi.mocked(getPasswordLessAccessToken);
-const mockUpdateAuth = vi.mocked(updateAuth);
 const mockMergeBasket = vi.mocked(mergeBasket);
+const mockUpdateBasketResource = vi.mocked(updateBasketResource);
 const mockGetAppOrigin = vi.mocked(getAppOrigin);
 const mockIsAbsoluteURL = vi.mocked(isAbsoluteURL);
 const mockExtractResponseError = vi.mocked(extractResponseError);
@@ -134,13 +150,7 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await loader(args);
+            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('status', 302);
             expect(result).toHaveProperty('headers');
@@ -159,13 +169,7 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login?returnUrl=/product/123');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await loader(args);
+            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('status', 302);
             if (result instanceof Response) {
@@ -180,13 +184,7 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await loader(args);
+            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             // Check if result is not a Response (redirect)
             if (!(result instanceof Response)) {
@@ -200,13 +198,7 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login?passwordless=sent&email=test@example.com');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await loader(args);
+            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             if (!(result instanceof Response)) {
                 expect(result.passwordlessSent).toBe(true);
@@ -219,13 +211,7 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login?mode=passwordless');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await loader(args);
+            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             if (!(result instanceof Response)) {
                 expect(result.mode).toBe('passwordless');
@@ -237,13 +223,7 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await loader(args);
+            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             if (!(result instanceof Response)) {
                 expect(result.isSocialLoginEnabled).toBe(true);
@@ -276,6 +256,7 @@ describe('Login Route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: '/login',
                 } as any;
 
                 const result = await loader(args);
@@ -314,6 +295,7 @@ describe('Login Route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: '/login',
                 } as any;
 
                 const result = await loader(args);
@@ -339,6 +321,7 @@ describe('Login Route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: '/login',
                 } as any;
 
                 const result = await loader(args);
@@ -382,6 +365,7 @@ describe('Login Route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: '/login',
                 } as any;
 
                 const result = await loader(args);
@@ -418,6 +402,7 @@ describe('Login Route', () => {
                     request: mockRequest,
                     params: {},
                     context: mockContext,
+                    unstable_pattern: '/login',
                 } as any;
 
                 const result = await loader(args);
@@ -441,6 +426,8 @@ describe('Login Route', () => {
                 accessToken: 'test-token',
             });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            const mergedBasket = { basketId: 'basket-1' } as any;
+            mockMergeBasket.mockResolvedValue(mergedBasket);
 
             const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
@@ -455,13 +442,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('redirectUrl', '/');
             expect(result).toHaveProperty('auth');
@@ -470,6 +451,8 @@ describe('Login Route', () => {
                 email: 'test@example.com',
                 password: 'password123',
             });
+            expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
+            expect(mockUpdateBasketResource).toHaveBeenCalledWith(mockContext, mergedBasket);
         });
 
         it('should redirect to returnUrl on successful login', async () => {
@@ -479,6 +462,8 @@ describe('Login Route', () => {
                 accessToken: 'test-token',
             });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            const mergedBasket = { basketId: 'basket-1' } as any;
+            mockMergeBasket.mockResolvedValue(mergedBasket);
 
             const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
@@ -494,13 +479,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('redirectUrl', '/product/123');
             expect(result).toHaveProperty('auth');
@@ -513,6 +492,8 @@ describe('Login Route', () => {
                 accessToken: 'test-token',
             });
             mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            const mergedBasket = { basketId: 'basket-1' } as any;
+            mockMergeBasket.mockResolvedValue(mergedBasket);
 
             const formData = new URLSearchParams();
             formData.append('email', 'test@example.com');
@@ -530,18 +511,42 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result.redirectUrl).toContain('/product/123');
             expect(result.redirectUrl).toContain('action=addToCart');
             expect(result.redirectUrl).toContain('actionParams=');
             expect(result).toHaveProperty('auth');
+        });
+
+        it('should continue login even if basket merge fails', async () => {
+            mockGetAuth.mockReturnValue({
+                userType: 'registered',
+                customerId: 'test-customer-123',
+                accessToken: 'test-token',
+            });
+            mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            mockMergeBasket.mockRejectedValue(new Error('merge failed'));
+
+            const formData = new URLSearchParams();
+            formData.append('email', 'test@example.com');
+            formData.append('password', 'password123');
+            formData.append('loginMode', 'password');
+
+            const mockRequest = new Request('http://localhost:5173/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
+            });
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+
+            expect(result).toHaveProperty('redirectUrl', '/');
+            expect(result).toHaveProperty('auth');
+            expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
+            expect(mockUpdateBasketResource).not.toHaveBeenCalled();
         });
 
         it('should return error on failed login', async () => {
@@ -564,13 +569,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
         });
@@ -592,13 +591,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
         });
@@ -618,13 +611,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockLoginRegisteredUser).not.toHaveBeenCalled();
@@ -652,13 +639,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result.redirectUrl).toContain('oauth2/authorize');
             expect(mockAuthorizeIDP).toHaveBeenCalledWith(mockContext, {
@@ -690,6 +671,7 @@ describe('Login Route', () => {
                 request: mockRequest,
                 params: {},
                 context: mockContext,
+                unstable_pattern: '/login',
             } as any;
 
             await action(args);
@@ -717,13 +699,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockAuthorizeIDP).not.toHaveBeenCalled();
@@ -745,13 +721,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
         });
@@ -774,13 +744,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result.success).toBe(true);
             expect(result.redirectUrl).toContain('/login?otp=true');
@@ -808,13 +772,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
@@ -837,13 +795,7 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
-
-            const result = await action(args);
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
@@ -864,10 +816,15 @@ describe('Login Route', () => {
                 {
                     path: '/',
                     Component: WrappedComponent,
-                    action: async ({ request }) => action({ request, params: {}, context: actionContext } as any),
+                    action: async ({ request }) =>
+                        action({ request, params: {}, context: actionContext, unstable_pattern: '/login' } as any),
                 },
             ]);
-            return render(<Stub initialEntries={['/']} />);
+            return render(
+                <AllProvidersWrapper>
+                    <Stub initialEntries={['/']} />
+                </AllProvidersWrapper>
+            );
         };
 
         it('renders standard login form with all required elements', () => {
@@ -877,6 +834,7 @@ describe('Login Route', () => {
                 mode: 'password',
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: true,
+                pageUrl: 'http://localhost/login',
             });
 
             expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -897,6 +855,7 @@ describe('Login Route', () => {
                 mode: 'password',
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: true,
+                pageUrl: 'http://localhost/login',
             });
 
             await user.type(screen.getByLabelText(/email/i), 'test@example.com');
@@ -917,6 +876,7 @@ describe('Login Route', () => {
                 mode: 'passwordless',
                 isPasswordlessLoginEnabled: true,
                 isSocialLoginEnabled: true,
+                pageUrl: 'http://localhost/login',
             });
 
             expect(screen.getByTestId('passwordless-form')).toBeInTheDocument();
@@ -930,6 +890,7 @@ describe('Login Route', () => {
                 mode: 'password',
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: false,
+                pageUrl: 'http://localhost/login',
             });
 
             expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -943,6 +904,7 @@ describe('Login Route', () => {
                 mode: 'password',
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: true,
+                pageUrl: 'http://localhost/login',
             });
 
             expect(screen.queryByText('An error occurred. Please try again.')).not.toBeInTheDocument();

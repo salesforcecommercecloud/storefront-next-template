@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 import { type ReactElement, useCallback } from 'react';
+import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Form, Link } from 'react-router';
+import { Label } from '@/components/ui/label';
+import { Form } from 'react-router';
+import { Link } from '@/components/link';
 import { Typography } from '@/components/typography';
-import { useToast } from '@/components/toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -31,15 +33,28 @@ const textAreaClassName = cn('min-h-48 resize-none text-sm leading-5');
 
 export default function Contact(): ReactElement {
     const { t } = useTranslation('aboutUs');
-    const { addToast } = useToast();
 
     //TODO: Support submit function, currently it only shows a mock success toast.
     const handleSubmit = useCallback(
         (event: React.FormEvent<HTMLFormElement>) => {
-            addToast(t('contact.toast.success'), 'success');
+            // Unstyled + semantic surface colors: Sonner richColors success fails WCAG AA (4.5:1) on light backgrounds.
+            toast.success(t('contact.toast.success'), {
+                duration: 5000,
+                unstyled: true,
+                classNames: {
+                    toast: 'flex w-full max-w-md items-center gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-lg',
+                    title: 'text-sm font-medium text-foreground',
+                    actionButton:
+                        'inline-flex shrink-0 items-center justify-center rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground shadow-xs outline-none hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                },
+                action: {
+                    label: 'Close',
+                    onClick: () => toast.dismiss(),
+                },
+            });
             event.currentTarget.reset(); // Clear the form after successful submission
         },
-        [addToast, t]
+        [t]
     );
 
     return (
@@ -71,65 +86,61 @@ export default function Contact(): ReactElement {
             <div className="flex flex-1 flex-col gap-4 p-6">
                 <Form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <div className="flex flex-col gap-2">
-                        <Typography as="div" variant="small">
+                        <Label htmlFor="contact-full-name" className="text-sm leading-5 font-normal text-foreground">
                             {t('contact.form.nameLabel')}
-                            <Typography as="span" className="text-destructive">
-                                *
-                            </Typography>
-                        </Typography>
+                            <span className="text-destructive">*</span>
+                        </Label>
                         <Input
                             id="contact-full-name"
                             name="fullName"
                             required
+                            aria-required="true"
                             placeholder={t('contact.form.placeholders.fullName')}
                             className={fieldClassName}
                         />
                     </div>
                     <div className="flex flex-col gap-2">
-                        <Typography as="div" variant="small">
+                        <Label htmlFor="contact-email" className="text-sm leading-5 font-normal text-foreground">
                             {t('contact.form.emailLabel')}
-                            <Typography as="span" className="text-destructive">
-                                *
-                            </Typography>
-                        </Typography>
+                            <span className="text-destructive">*</span>
+                        </Label>
                         <Input
                             id="contact-email"
                             name="email"
                             type="email"
                             autoComplete="email"
                             required
+                            aria-required="true"
                             placeholder={t('contact.form.placeholders.email')}
                             className={fieldClassName}
                         />
                     </div>
                     <div className="flex flex-col gap-2">
-                        <Typography as="div" variant="small">
+                        <Label htmlFor="contact-topic" className="text-sm leading-5 font-normal text-foreground">
                             {t('contact.form.label')}
-                            <Typography as="span" className="text-destructive">
-                                *
-                            </Typography>
-                        </Typography>
+                            <span className="text-destructive">*</span>
+                        </Label>
                         <Input
                             id="contact-topic"
                             name="topic"
                             placeholder={t('contact.form.placeholders.topic')}
                             className={fieldClassName}
                             required
+                            aria-required="true"
                         />
                     </div>
                     <div className="flex flex-col gap-2">
-                        <Typography as="div" variant="small">
+                        <Label htmlFor="contact-message" className="text-sm leading-5 font-normal text-foreground">
                             {t('contact.form.messageLabel')}
-                            <Typography as="span" className="text-destructive">
-                                *
-                            </Typography>
-                        </Typography>
+                            <span className="text-destructive">*</span>
+                        </Label>
                         <Textarea
                             id="contact-message"
                             name="message"
                             className={textAreaClassName}
                             placeholder={t('contact.form.placeholders.message')}
                             required
+                            aria-required="true"
                         />
                     </div>
                     <Button type="submit" className="w-full">

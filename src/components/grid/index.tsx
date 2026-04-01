@@ -31,27 +31,27 @@ import { type ComponentType, Region } from '@/components/region';
 })
 @RegionDefinition([
     {
-        id: 'column-1',
+        id: 'column_1',
         name: 'Column 1',
     },
     {
-        id: 'column-2',
+        id: 'column_2',
         name: 'Column 2',
     },
     {
-        id: 'column-3',
+        id: 'column_3',
         name: 'Column 3',
     },
     {
-        id: 'column-4',
+        id: 'column_4',
         name: 'Column 4',
     },
     {
-        id: 'column-5',
+        id: 'column_5',
         name: 'Column 5',
     },
     {
-        id: 'column-6',
+        id: 'column_6',
         name: 'Column 6',
     },
 ])
@@ -283,13 +283,19 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
 
         // Page Designer mode: Render dynamic regions based on column count
         if (component) {
-            // Generate region IDs based on column count (column-1, column-2, etc.)
-            const regionIds = Array.from({ length: numColumns }, (_, i) => `column-${i + 1}`);
+            // Generate region IDs based on column count (column_1, column_2, etc.)
+            const regionIds = Array.from({ length: numColumns }, (_, i) => `column_${i + 1}`);
 
             return (
                 <ComponentElement ref={ref} className={classes} style={gridStyles} data-slot="grid" {...props}>
                     {regionIds.map((regionId) => (
-                        <Region key={regionId} regionId={regionId} component={component} errorElement={null} />
+                        <Region
+                            key={regionId}
+                            regionId={regionId}
+                            component={component}
+                            errorElement={null}
+                            className={classes}
+                        />
                     ))}
                 </ComponentElement>
             );

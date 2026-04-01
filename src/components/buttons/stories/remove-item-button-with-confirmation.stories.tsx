@@ -18,7 +18,7 @@ import { RemoveItemButtonWithConfirmation } from '../remove-item-button-with-con
 import { Button } from '@/components/ui/button';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 
 import { expect, within } from 'storybook/test';

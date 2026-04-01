@@ -18,7 +18,7 @@ import { initI18next } from './i18next.client';
 import i18next from 'i18next';
 
 // Mock the config module
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     getConfig: vi.fn(() => ({
         i18n: {
             fallbackLng: 'en-GB',

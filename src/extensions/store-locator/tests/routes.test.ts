@@ -15,21 +15,10 @@
  */
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '..', '..', '..', '..');
-
-vi.mock('../../../../config.server.ts', () => ({
-    default: {
-        app: {
-            url: {
-                prefix: '/',
-                excludeRoutes: ['/resource/**', '/action/**'],
-            },
-        },
-    },
-}));
 
 describe('Extension Routes', () => {
     let originalReactRouterAppDirectory: string;
@@ -47,8 +36,14 @@ describe('Extension Routes', () => {
         const { default: routes } = await import('@/routes');
         const resolvedRoutes = await routes;
 
-        // Find the _app layout at the top level (no prefix wrapper when prefix is '/')
-        const defaultLayout = resolvedRoutes.find((r: any) => r.file === 'routes/_app.tsx');
+        // With multi-site URL prefix configured, routes are wrapped under a multi-site-wrapper
+        const wrapper = resolvedRoutes.find((r: any) => r.id === 'multi-site-wrapper');
+        expect(wrapper).toBeDefined();
+        expect(wrapper?.children).toBeDefined();
+
+        // Find the _app layout inside the wrapper
+        const wrappedRoutes = wrapper?.children ?? [];
+        const defaultLayout = wrappedRoutes.find((r: any) => r.file === 'routes/_app.tsx');
         expect(defaultLayout).toBeDefined();
         expect(defaultLayout?.children).toBeDefined();
 

@@ -17,8 +17,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { BrowserRouter } from 'react-router';
 import SearchSuggestionsPopup from './suggestions-grid';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
+import { CurrencyProvider } from '@/providers/currency';
 
 // Mock DynamicImage component
 vi.mock('@/components/dynamic-image', () => ({
@@ -27,16 +28,22 @@ vi.mock('@/components/dynamic-image', () => ({
     ),
 }));
 
+vi.mock('lucide-react', () => ({
+    ImageOff: ({ className }: any) => <svg data-testid="image-off-icon" className={className} />,
+}));
+
 vi.mock('@/hooks/use-analytics', () => ({
     useAnalytics: () => ({
         trackClickSearchSuggestion: vi.fn(),
     }),
 }));
 
-const renderWithRouter = (ui: React.ReactElement) => {
+const renderWithRouter = (ui: React.ReactElement, currency: string = 'GBP') => {
     return render(
         <ConfigProvider config={mockConfig}>
-            <BrowserRouter>{ui}</BrowserRouter>
+            <CurrencyProvider value={currency}>
+                <BrowserRouter>{ui}</BrowserRouter>
+            </CurrencyProvider>
         </ConfigProvider>
     );
 };
@@ -95,15 +102,16 @@ describe('SearchSuggestionsPopup Component', () => {
 
         // Check fallback for missing image
         expect(screen.getByText('No image available')).toBeInTheDocument();
-        expect(screen.getByText('📷')).toBeInTheDocument();
+        expect(screen.getByTestId('image-off-icon')).toBeInTheDocument();
     });
 
     it('should render prices when provided and not render when missing or zero', () => {
         renderWithRouter(<SearchSuggestionsPopup suggestions={mockSuggestions} />);
 
-        expect(screen.getByText('£1099')).toBeInTheDocument();
-        expect(screen.getByText('£899')).toBeInTheDocument();
-        expect(screen.getByText('£299')).toBeInTheDocument();
+        // formatCurrency uses Intl.NumberFormat which adds thousand separators
+        expect(screen.getByText('£1,099.00')).toBeInTheDocument();
+        expect(screen.getByText('£899.00')).toBeInTheDocument();
+        expect(screen.getByText('£299.00')).toBeInTheDocument();
 
         // Product without price should not show price
         const productWithoutPrice = screen.getByText('Product Without Price');
@@ -129,9 +137,11 @@ describe('SearchSuggestionsPopup Component', () => {
         // Should not crash without callback
         rerender(
             <ConfigProvider config={mockConfig}>
-                <BrowserRouter>
-                    <SearchSuggestionsPopup suggestions={mockSuggestions} closeAndNavigate={undefined} />
-                </BrowserRouter>
+                <CurrencyProvider value="GBP">
+                    <BrowserRouter>
+                        <SearchSuggestionsPopup suggestions={mockSuggestions} closeAndNavigate={undefined} />
+                    </BrowserRouter>
+                </CurrencyProvider>
             </ConfigProvider>
         );
         expect(() => fireEvent.click(screen.getByText('Samsung Galaxy S24'))).not.toThrow();

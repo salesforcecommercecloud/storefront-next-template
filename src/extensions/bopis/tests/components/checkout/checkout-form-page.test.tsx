@@ -186,7 +186,7 @@ const defaultSteps = {
     SHIPPING_ADDRESS: 2,
     SHIPPING_OPTIONS: 3,
     PAYMENT: 4,
-    REVIEW_ORDER: 5,
+    PLACE_ORDER: 5,
 } as const;
 
 const buildCheckoutContext = (overrides?: Record<string, unknown>) => ({
@@ -261,6 +261,7 @@ vi.mock('@/providers/cart-store', () => ({
 // Mock basket provider
 vi.mock('@/providers/basket', () => ({
     useBasket: () => mockUseBasket(),
+    useBasketHydrated: () => true,
 }));
 
 // Mock React Router hooks
@@ -310,7 +311,11 @@ vi.mock('@/components/my-cart', () => ({
     default: () => <div data-testid="my-cart">My Cart</div>,
 }));
 
-vi.mock('@/config', () => ({
+vi.mock('@/providers/currency', () => ({
+    useCurrency: () => 'USD',
+}));
+
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: vi.fn(() => ({
         engagement: {
             adapters: {

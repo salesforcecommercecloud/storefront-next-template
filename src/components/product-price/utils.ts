@@ -19,6 +19,11 @@ import type {
     ShopperProducts,
     ShopperSearch,
 } from '@salesforce/storefront-next-runtime/scapi';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
+
+type ProductType = ShopperProducts.schemas['ProductType'];
 
 type Product =
     | ShopperProducts.schemas['Product']
@@ -83,10 +88,9 @@ export const findLowestPrice = (product: Product): LowestPriceResult | undefined
 
     // Look at all of the variants, only if it's a master product.
     // i.e. when a shopper has narrowed down to a variant, do not look into other variants
-    const isMaster = product.hitType === 'master' || !!product.type?.master;
+    const isMaster = product.hitType === 'master' || !!(product.type as ProductType | undefined)?.master;
     if (isMaster && !product.variants) {
-        // eslint-disable-next-line no-console
-        console.warn(
+        logger.warn(
             'Expecting `product.variants` to exist. For more accuracy, please tweak your API request to ask for the variants details.'
         );
     }
@@ -94,7 +98,7 @@ export const findLowestPrice = (product: Product): LowestPriceResult | undefined
 
     const res = array.reduce(
         (prev, data) => {
-            const promotions = data.productPromotions || [];
+            const promotions = (data as { productPromotions?: ProductPromotion[] }).productPromotions || [];
             const [smallestPromotionalPrice, promo] = getSmallestValByProperty(promotions, 'promotionalPrice');
 
             const dataPrice = data.price || 0;
@@ -103,7 +107,7 @@ export const findLowestPrice = (product: Product): LowestPriceResult | undefined
 
             if (smallestPromotionalPrice !== Infinity && smallestPromotionalPrice < dataPrice) {
                 salePrice = smallestPromotionalPrice;
-                promotion = promo as ProductPromotion | null;
+                promotion = promo;
             }
 
             return salePrice < prev.minPrice ? { minPrice: salePrice, promotion, data } : prev;
@@ -117,6 +121,25 @@ export const findLowestPrice = (product: Product): LowestPriceResult | undefined
         minPrice: res.minPrice === Infinity ? 0 : res.minPrice,
     };
 };
+
+/**
+ * Find the highest effective (selling) price among variants for a master product.
+ * Used to display price range (min–max) when product.priceMax is not in the response.
+ */
+function findHighestPrice(product: Product): number | undefined {
+    const isMaster = product?.hitType === 'master' || !!(product?.type as ProductType | undefined)?.master;
+    if (!isMaster || !product?.variants?.length) return undefined;
+    const array = product.variants;
+    let max = -Infinity;
+    for (const data of array) {
+        const promotions = (data as { productPromotions?: ProductPromotion[] }).productPromotions || [];
+        const [smallestPromo] = getSmallestValByProperty(promotions, 'promotionalPrice');
+        const dataPrice = (data as { price?: number }).price ?? 0;
+        const effectivePrice = smallestPromo !== Infinity && smallestPromo < dataPrice ? smallestPromo : dataPrice;
+        if (effectivePrice > max) max = effectivePrice;
+    }
+    return max === -Infinity ? undefined : max;
+}
 
 /**
  * This function extract the price information of a given product
@@ -144,7 +167,13 @@ export const getPriceData = (product: Product, opts: { quantity?: number } = {})
         // Calculate per-unit discounted price
         const itemQuantity = basketItem.quantity ?? 1;
         const currentPrice = itemQuantity > 0 ? discountedPrice / itemQuantity : unitPrice;
-        const listPrice = basePrice;
+
+        // Check tieredPrices for the real list price (same logic as PDP path)
+        const tieredPrices = product?.tieredPrices || [];
+        const maxTieredPrice = tieredPrices.length
+            ? Math.max(...tieredPrices.map((item) => item.price || 0))
+            : undefined;
+        const listPrice = maxTieredPrice && maxTieredPrice > basePrice ? maxTieredPrice : basePrice;
         const isOnSale = currentPrice < listPrice;
 
         return {
@@ -160,8 +189,9 @@ export const getPriceData = (product: Product, opts: { quantity?: number } = {})
         };
     }
 
-    const isASet = product?.hitType === 'set' || !!product?.type?.set;
-    const isMaster = product?.hitType === 'master' || !!product?.type?.master;
+    const productType = product?.type as ProductType | undefined;
+    const isASet = product?.hitType === 'set' || !!productType?.set;
+    const isMaster = product?.hitType === 'master' || !!productType?.master;
     let currentPrice: number;
     let variantWithLowestPrice: LowestPriceResult | null = null;
 
@@ -194,6 +224,12 @@ export const getPriceData = (product: Product, opts: { quantity?: number } = {})
     // Use priceMax as listPrice when there's a price range, otherwise use the calculated listPrice
     const finalListPrice = hasPriceRange ? product.priceMax : listPrice;
 
+    // For master with multiple variants: use API priceMax when present, else compute max from variants
+    const variantCount = product?.variants?.length ?? 0;
+    const computedMaxForMaster =
+        isMaster && variantCount > 1 && !product?.priceMax ? findHighestPrice(product) : undefined;
+    const maxPrice = product?.priceMax ?? computedMaxForMaster ?? maxTieredPrice;
+
     return {
         currentPrice,
         listPrice: finalListPrice,
@@ -205,9 +241,8 @@ export const getPriceData = (product: Product, opts: { quantity?: number } = {})
         // For a master product, when it has more than 2 variants, we use the lowest priced variant, so it is  considered a range price
         //      but for master that has one variant, it is not considered range
         // For standard products, if priceMax is different from price, it should be considered a range
-        isRange: (isMaster && (product?.variants?.length || 0) > 1) || isASet || hasPriceRange || false,
-        // priceMax is for product set
+        isRange: (isMaster && variantCount > 1) || isASet || hasPriceRange || false,
         tieredPrice: closestTieredPrice && 'price' in closestTieredPrice ? closestTieredPrice.price : undefined,
-        maxPrice: product?.priceMax || maxTieredPrice,
+        maxPrice,
     };
 };

@@ -15,7 +15,70 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getPaginationItems } from './pagination-utils';
+import { getPaginationItems, getOffsetLimitPaginationState } from './pagination-utils';
+
+describe('getOffsetLimitPaginationState', () => {
+    it('returns correct state for first page', () => {
+        const state = getOffsetLimitPaginationState({ offset: 0, limit: 10, total: 25 });
+        expect(state.safeLimit).toBe(10);
+        expect(state.startIndex).toBe(1);
+        expect(state.endIndex).toBe(10);
+        expect(state.currentPage).toBe(1);
+        expect(state.totalPages).toBe(3);
+        expect(state.hasNext).toBe(true);
+        expect(state.hasPrevious).toBe(false);
+        expect(state.nextOffset).toBe(10);
+        expect(state.prevOffset).toBe(0);
+    });
+
+    it('returns correct state for middle page', () => {
+        const state = getOffsetLimitPaginationState({ offset: 10, limit: 10, total: 25 });
+        expect(state.startIndex).toBe(11);
+        expect(state.endIndex).toBe(20);
+        expect(state.currentPage).toBe(2);
+        expect(state.hasNext).toBe(true);
+        expect(state.hasPrevious).toBe(true);
+        expect(state.nextOffset).toBe(20);
+        expect(state.prevOffset).toBe(0);
+    });
+
+    it('returns correct state for last page (partial)', () => {
+        const state = getOffsetLimitPaginationState({ offset: 20, limit: 10, total: 25 });
+        expect(state.startIndex).toBe(21);
+        expect(state.endIndex).toBe(25);
+        expect(state.currentPage).toBe(3);
+        expect(state.totalPages).toBe(3);
+        expect(state.hasNext).toBe(false);
+        expect(state.hasPrevious).toBe(true);
+        expect(state.nextOffset).toBe(30);
+        expect(state.prevOffset).toBe(10);
+    });
+
+    it('uses defaultLimit when limit is 0', () => {
+        const state = getOffsetLimitPaginationState({ offset: 0, limit: 0, total: 15, defaultLimit: 10 });
+        expect(state.safeLimit).toBe(10);
+        expect(state.totalPages).toBe(2);
+    });
+
+    it('handles single page', () => {
+        const state = getOffsetLimitPaginationState({ offset: 0, limit: 10, total: 5 });
+        expect(state.totalPages).toBe(1);
+        expect(state.hasNext).toBe(false);
+        expect(state.hasPrevious).toBe(false);
+        expect(state.endIndex).toBe(5);
+    });
+
+    it('uses currentPageSize for endIndex when provided (partial page)', () => {
+        const state = getOffsetLimitPaginationState({
+            offset: 0,
+            limit: 10,
+            total: 25,
+            currentPageSize: 3,
+        });
+        expect(state.startIndex).toBe(1);
+        expect(state.endIndex).toBe(3);
+    });
+});
 
 describe('getPaginationItems', () => {
     it('returns all pages when totalPages <= maxVisible', () => {

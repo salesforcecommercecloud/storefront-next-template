@@ -20,9 +20,7 @@ import { createApiClients } from '@/lib/api-clients';
 import { currencyContext } from '@/lib/currency';
 import ProductSkeleton from '@/components/product-skeleton';
 import ProductView from '@/components/product-view';
-import { Typography } from '@/components/typography';
 import ChildProducts from '@/components/product-view/child-products';
-import { ProductRatingSummary } from '@/components/product-view/product-rating-summary';
 
 // Lazy-load reviews section to reduce initial PDP bundle (reviews chunk loads with product page)
 const CustomerReviewsSection = lazy(() =>
@@ -41,10 +39,13 @@ import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
 import { JsonLd } from '@/components/json-ld';
+import { SeoMeta } from '@/components/seo-meta';
 import { generateProductSchema } from '@/utils/product-schema';
+import { getPublicOrigin } from '@/utils/schema-url';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
+import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-import { getCookieFromRequestAs, getSelectedStoreInfoCookieName } from '@/extensions/store-locator/utils';
-import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
+import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
@@ -74,6 +75,7 @@ export type ProductPageData = {
     category: Promise<ShopperProducts.schemas['Category'] | undefined>;
     page: Promise<PageWithComponentData>;
     pageKey: string;
+    pageUrl: string;
     productSchema: Promise<ReturnType<typeof generateProductSchema> | null>;
 };
 
@@ -85,12 +87,15 @@ export type ProductPageData = {
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): ProductPageData {
     const { request, params, context } = args;
+    const logger = getLogger(context);
     const { productId = '' } = params;
-    const { searchParams } = new URL(request.url);
+    const requestUrl = new URL(request.url);
+    const { searchParams } = requestUrl;
+    const variantPid = searchParams.get('pid');
+    logger.debug('Product: loader starting', { productId, variantPid: variantPid || undefined });
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    const cookieName = getSelectedStoreInfoCookieName();
-    const selectedStoreInfo = getCookieFromRequestAs<SelectedStoreInfo>(request, cookieName);
+    const selectedStoreInfo = context.get(selectedStoreContext);
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     // Get currency from context for product pricing
@@ -185,18 +190,23 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
         return undefined;
     });
 
+    const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
+
     // Generate product schema in loader (server-side) for SEO
     // This ensures it's available immediately and can be rendered outside Suspense
     const productSchemaPromise = productPromise
         .then((product) => {
             try {
-                // Construct absolute URL from request
+                // Use public origin from request headers instead of request.url
+                // to avoid exposing internal AWS Lambda URLs in schema
+                const publicOrigin = getPublicOrigin(request);
                 const url = new URL(request.url);
-                const productUrl = `${url.origin}${url.pathname}${url.search}`;
+                const productUrl = `${publicOrigin}${url.pathname}${url.search}`;
                 return generateProductSchema(product, productUrl);
             } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error('Error generating product schema in loader:', error);
+                logger.error('Error generating product schema in loader', {
+                    error,
+                });
                 return null;
             }
         })
@@ -214,6 +224,7 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
             productId: searchParams.get('pid') || productId,
         }),
         pageKey: productId,
+        pageUrl,
         productSchema: productSchemaPromise,
     };
 }
@@ -310,6 +321,10 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
     const analytics = useAnalytics();
     const lastTrackedProductIdRef = useRef<string | null>(null);
 
+    const primaryImage =
+        productData.imageGroups?.find((g) => g.viewType === 'large')?.images?.[0]?.link ??
+        productData.imageGroups?.[0]?.images?.[0]?.link;
+
     // Track product view on mount and whenever productData changes
     useEffect(() => {
         // Only track if we haven't already tracked this product
@@ -327,18 +342,6 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
     // Main product content - product view with details and images
     const mainProductContent = (
         <div className="space-y-8">
-            {/* Mobile Product Title - shown on mobile only */}
-            <div className="block md:hidden">
-                <Typography variant="h1" className="text-2xl font-bold text-foreground">
-                    {productData.name}
-                </Typography>
-                {productData.shortDescription && (
-                    <Typography variant="p" className="mt-2 text-muted-foreground">
-                        {productData.shortDescription}
-                    </Typography>
-                )}
-                <ProductRatingSummary />
-            </div>
             {isProductASet || isProductABundle ? (
                 <>
                     <ProductView product={productData} category={categoryData} />
@@ -363,18 +366,6 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
                 {/* Promo Content Region - Promotional content above main product */}
                 <Region className="mb-8" page={page} regionId="promoContent" />
 
-                {/* Mobile Product Title - shown on mobile only */}
-                <div className="block md:hidden mb-8">
-                    <Typography variant="h1" className="text-2xl font-bold text-foreground">
-                        {productData.name}
-                    </Typography>
-                    {productData.shortDescription && (
-                        <Typography variant="p" className="mt-2 text-muted-foreground">
-                            {productData.shortDescription}
-                        </Typography>
-                    )}
-                </div>
-
                 {/* Main Product Content - Always shown */}
                 {mainProductContent}
 
@@ -393,8 +384,17 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
         <ProductProvider product={productData}>
             <ProductContentProvider>
                 <ProductReviewsProvider>
+                    <SeoMeta
+                        title={productData.name}
+                        description={productData.pageDescription || productData.shortDescription}
+                        openGraph={{
+                            type: 'product',
+                            url: loaderData.pageUrl,
+                            image: primaryImage,
+                        }}
+                    />
                     <div className="min-h-screen bg-background">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 lg:pb-8">
                             {renderPageContent(loaderData.page)}
                         </div>
                     </div>
@@ -439,12 +439,12 @@ export default function ProductPage({ loaderData }: { loaderData: ProductPageDat
 
     return (
         <Fragment key={pageKey}>
-            {/* Product JSON-LD Schema for SEO - separate Suspense to ensure it appears at the very top of body */}
-            <Suspense fallback={null}>
-                <JsonLdWrapper productSchemaPromise={loaderData.productSchema} />
-            </Suspense>
             <Suspense fallback={<ProductSkeleton />}>
                 <ProductDetailView loaderData={loaderData} />
+            </Suspense>
+            {/* Product JSON-LD Schema for SEO - render after page content so it appears at end of body flow */}
+            <Suspense fallback={null}>
+                <JsonLdWrapper productSchemaPromise={loaderData.productSchema} />
             </Suspense>
         </Fragment>
     );

@@ -19,18 +19,14 @@ import { vi, describe, test, expect } from 'vitest';
 import { CurrencyWrapper } from '@/test-utils/context-provider';
 import { OrderList, OrderListHeader, OrderListBody, type Order } from './index';
 
-// Mock react-router
-vi.mock('react-router', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('react-router')>();
-    return {
-        ...actual,
-        Link: ({ children, to, onClick }: { children: React.ReactNode; to: string; onClick?: () => void }) => (
-            <a href={to} onClick={onClick}>
-                {children}
-            </a>
-        ),
-    };
-});
+// Mock the Link component from @/components/link
+vi.mock('@/components/link', () => ({
+    Link: ({ children, to, onClick }: { children: React.ReactNode; to: string; onClick?: () => void }) => (
+        <a href={to} onClick={onClick}>
+            {children}
+        </a>
+    ),
+}));
 
 const testOrders: Order[] = [
     {
@@ -84,7 +80,7 @@ describe('OrderList Component', () => {
     describe('Header Rendering', () => {
         test('renders title', () => {
             renderOrderList({ title: 'My Orders' });
-            expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent('My Orders');
+            expect(screen.getByRole('heading', { level: 4 })).toHaveTextContent('My Orders');
         });
 
         test('renders subtitle when provided', () => {
@@ -137,7 +133,7 @@ describe('OrderList Component', () => {
                 ],
             });
             const badge = screen.getByText('Completed').closest('span');
-            expect(badge).toHaveClass('bg-order-status-completed');
+            expect(badge).toHaveClass('bg-status-positive');
         });
 
         test('renders cancelled status with destructive styling', () => {
@@ -155,7 +151,7 @@ describe('OrderList Component', () => {
                 ],
             });
             const badge = screen.getByText('Cancelled').closest('span');
-            expect(badge).toHaveClass('bg-order-status-cancelled');
+            expect(badge).toHaveClass('bg-status-critical/20');
         });
 
         test('renders new status with pickup styling', () => {
@@ -173,7 +169,7 @@ describe('OrderList Component', () => {
                 ],
             });
             const badge = screen.getByText('New').closest('span');
-            expect(badge).toHaveClass('bg-order-status-new');
+            expect(badge).toHaveClass('bg-info');
         });
     });
 
@@ -264,7 +260,7 @@ describe('OrderList Component', () => {
 describe('OrderListHeader Component', () => {
     test('renders title', () => {
         render(<OrderListHeader title="My Orders" />);
-        expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent('My Orders');
+        expect(screen.getByRole('heading', { level: 4 })).toHaveTextContent('My Orders');
     });
 
     test('renders subtitle when provided', () => {
@@ -279,7 +275,7 @@ describe('OrderListHeader Component', () => {
 
     test('title is focusable for accessibility', () => {
         render(<OrderListHeader title="My Orders" />);
-        const heading = screen.getByRole('heading', { level: 3 });
+        const heading = screen.getByRole('heading', { level: 4 });
         expect(heading).toHaveAttribute('tabindex', '0');
     });
 });
@@ -334,6 +330,33 @@ describe('OrderListBody Component', () => {
         expect(screen.getByText('Viewing 0 orders')).toBeInTheDocument();
     });
 
+    test('renders pagination range and controls when total exceeds limit', () => {
+        render(
+            <CurrencyWrapper>
+                <OrderListBody orders={testOrders} total={25} offset={0} limit={10} />
+            </CurrencyWrapper>
+        );
+        expect(screen.getByText('Viewing 1–3 of 25 orders')).toBeInTheDocument();
+        expect(screen.getByRole('navigation', { name: /order history pagination/i })).toBeInTheDocument();
+        const nextLink = screen.getByRole('link', { name: /next/i });
+        expect(nextLink).toHaveAttribute('href', '/account/orders?offset=10&limit=10');
+        expect(screen.getByText('Previous page')).toBeInTheDocument();
+    });
+
+    test('renders "Viewing X orders" and disabled Previous/Next when single page', () => {
+        render(
+            <CurrencyWrapper>
+                <OrderListBody orders={testOrders} total={5} offset={0} limit={10} />
+            </CurrencyWrapper>
+        );
+        expect(screen.getByText('Viewing 5 orders')).toBeInTheDocument();
+        expect(screen.getByRole('navigation', { name: /order history pagination/i })).toBeInTheDocument();
+        expect(screen.getByText('Previous page')).toBeInTheDocument();
+        expect(screen.getByText('Next page')).toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: /previous/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: /next/i })).not.toBeInTheDocument();
+    });
+
     test('calls onViewDetails callback', async () => {
         const user = userEvent.setup();
         const mockOnViewDetails = vi.fn();
@@ -356,6 +379,6 @@ describe('OrderListBody Component', () => {
                 <OrderListBody orders={testOrders} />
             </CurrencyWrapper>
         );
-        expect(screen.queryByRole('heading', { level: 3 })).not.toBeInTheDocument();
+        expect(screen.queryByRole('heading', { level: 4 })).not.toBeInTheDocument();
     });
 });

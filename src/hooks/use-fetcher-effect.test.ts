@@ -47,19 +47,21 @@ function createMockFetcher<TData = unknown>(
         data: initialData,
         load: vi.fn().mockResolvedValue(undefined),
         submit: vi.fn().mockResolvedValue(undefined),
-        // Mock other fetcher properties
         formAction: undefined,
         formData: undefined,
         formEncType: 'application/x-www-form-urlencoded',
         formMethod: 'GET',
         formTarget: undefined,
+        formText: undefined,
+        text: undefined,
+        json: undefined,
         type: 'init',
-    } as FetcherWithComponents<TData>;
+    } as unknown as FetcherWithComponents<TData>;
 }
 
 describe('useFetcherEffect', () => {
-    let mockOnSuccess: vi.MockedFunction<(data: TestData | undefined) => void>;
-    let mockOnError: vi.MockedFunction<(error: string | string[]) => void>;
+    let mockOnSuccess: (data: unknown) => void;
+    let mockOnError: (error: string | string[], data?: unknown) => void;
 
     beforeEach(() => {
         mockOnSuccess = vi.fn();
@@ -191,7 +193,7 @@ describe('useFetcherEffect', () => {
             renderHook(() => useFetcherEffect(fetcher, config));
 
             expect(mockOnError).toHaveBeenCalledTimes(1);
-            expect(mockOnError).toHaveBeenCalledWith('Validation failed');
+            expect(mockOnError).toHaveBeenCalledWith('Validation failed', errorData);
             expect(mockOnSuccess).not.toHaveBeenCalled();
         });
 
@@ -210,7 +212,7 @@ describe('useFetcherEffect', () => {
             renderHook(() => useFetcherEffect(fetcher, config));
 
             expect(mockOnError).toHaveBeenCalledTimes(1);
-            expect(mockOnError).toHaveBeenCalledWith(errors);
+            expect(mockOnError).toHaveBeenCalledWith(errors, errorData);
             expect(mockOnSuccess).not.toHaveBeenCalled();
         });
 
@@ -266,7 +268,7 @@ describe('useFetcherEffect', () => {
     describe('State transitions', () => {
         it('should handle state transition from loading to idle with success', () => {
             const testData: TestData = { id: '123', name: 'John Doe', email: 'john@example.com' };
-            let fetcher = createMockFetcher('loading', undefined);
+            let fetcher = createMockFetcher<TestData>('loading', undefined);
 
             const config: FetcherEffectConfig<TestData> = {
                 onSuccess: mockOnSuccess,
@@ -293,7 +295,7 @@ describe('useFetcherEffect', () => {
                 success: false,
                 error: 'Validation failed',
             };
-            let fetcher = createMockFetcher('submitting', undefined);
+            let fetcher = createMockFetcher<SuccessErrorData>('submitting', undefined);
 
             const config: FetcherEffectConfig<SuccessErrorData> = {
                 onSuccess: mockOnSuccess,
@@ -311,7 +313,7 @@ describe('useFetcherEffect', () => {
             rerender();
 
             expect(mockOnError).toHaveBeenCalledTimes(1);
-            expect(mockOnError).toHaveBeenCalledWith('Validation failed');
+            expect(mockOnError).toHaveBeenCalledWith('Validation failed', errorData);
             expect(mockOnSuccess).not.toHaveBeenCalled();
         });
 
@@ -363,7 +365,7 @@ describe('useFetcherEffect', () => {
             renderHook(() => useFetcherEffect(fetcher, config));
 
             expect(mockOnError).toHaveBeenCalledTimes(1);
-            expect(mockOnError).toHaveBeenCalledWith('Validation failed');
+            expect(mockOnError).toHaveBeenCalledWith('Validation failed', errorData);
         });
 
         it('should work with both callbacks', () => {
@@ -510,7 +512,7 @@ describe('useFetcherEffect', () => {
 
             // Empty array is still considered an error array, so it should be called
             expect(mockOnError).toHaveBeenCalledTimes(1);
-            expect(mockOnError).toHaveBeenCalledWith([]);
+            expect(mockOnError).toHaveBeenCalledWith([], errorData);
         });
     });
 

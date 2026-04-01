@@ -19,7 +19,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, useState, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { CurrencyProvider } from '@/providers/currency';
 import { mockConfig } from '@/test-utils/config';
 import InfoModal, { type InfoModalData } from '../index';

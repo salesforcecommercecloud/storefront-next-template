@@ -17,17 +17,23 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import type { ProductWithPromotions } from '@/hooks/use-basket-with-promotions';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Fetches product promotion data for all items in the basket
  * Returns a mapping of productId to product data with promotions
  */
 export async function loader({ context }: LoaderFunctionArgs): Promise<Record<string, ProductWithPromotions>> {
+    const logger = getLogger(context);
+    logger.debug('BasketProductsPromotions: loader starting');
     const basket = (await getBasket(context)).current;
 
     if (!basket?.productItems?.length) {
+        logger.debug('BasketProductsPromotions: no product items in basket');
         return {};
     }
 
@@ -36,12 +42,14 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<Record<st
     const uniqueProductIds = [...new Set(productIds)];
 
     if (uniqueProductIds.length === 0) {
+        logger.debug('BasketProductsPromotions: no valid product IDs found');
         return {};
     }
 
     try {
-        const config = getConfig(context);
+        const config = getConfig<AppConfig>(context);
         const clients = createApiClients(context);
+        const { site } = context.get(multiSiteContext) as MultiSiteContext;
 
         // Fetch product details with promotions expanded
         const { data: productsData } = await clients.shopperProducts.getProducts({
@@ -50,7 +58,7 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<Record<st
                     organizationId: config.commerce.api.organizationId,
                 },
                 query: {
-                    siteId: config.commerce.api.siteId,
+                    siteId: site.id,
                     ids: uniqueProductIds,
                     expand: ['promotions'],
                     perPricebook: true,
@@ -71,7 +79,8 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<Record<st
             },
             {} as Record<string, ProductWithPromotions>
         );
-    } catch {
+    } catch (error) {
+        logger.error('BasketProductsPromotions: failed to fetch product promotions', { error });
         // Return empty object on error - component will not show callout text
         return {};
     }

@@ -30,6 +30,8 @@ export const modeDetectionContext = createRouterContext<ModeDetectionContext | n
  */
 export const modeDetectionMiddlewareServer: MiddlewareFunction<Response> = ({ request, context }, next) => {
     // These functions are isomorphic and will detect server versus client side.
+    // Note: Cannot use getLogger here — this module is shared with the client middleware,
+    // so importing server-only modules would break the client bundle build.
     const isDesignMode = isDesignModeActive(request);
     const isPreviewMode = isPreviewModeActive(request);
 

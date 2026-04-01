@@ -2,10 +2,10 @@
 
 exports[`AccountOverview stories snapshot > Default story renders and matches snapshot 1`] = `
 <div
-  class="space-y-6"
+  class="space-y-5"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -13,19 +13,19 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
       data-slot="card-content"
     >
       <h1
-        class="text-3xl font-bold text-foreground mb-2"
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
       >
         Welcome back, John!
       </h1>
       <p
-        class="text-muted-foreground"
+        class="text-sm text-muted-foreground"
       >
         Manage your account, view orders, and discover personalized recommendations.
       </p>
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -34,7 +34,77 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
     />
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
+      <div
+        class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+      >
+        <div
+          class="flex-1"
+        >
+          <h2
+            class="tracking-tight text-left text-[length:var(--account-section-header)] font-semibold text-foreground mb-2"
+          >
+            Download Our App
+          </h2>
+          <p
+            class="text-sm text-muted-foreground mb-6"
+          >
+            Get the best shopping experience on the go. Access exclusive deals, track orders, and shop faster.
+          </p>
+          <div
+            class="flex flex-wrap gap-3 items-center"
+          >
+            <img
+              alt="App Store"
+              aria-label="App Store"
+              class="h-10 w-auto"
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
+            />
+            <img
+              alt="Google Play"
+              aria-label="Google Play"
+              class="h-10 w-auto"
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
+            />
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center gap-2 lg:flex-shrink-0"
+        >
+          <div
+            class="w-32 h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border"
+          >
+            <svg
+              class="w-16 h-16 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            QR Code
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -42,12 +112,12 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
       data-slot="card-content"
     >
       <h2
-        class="text-xl font-semibold text-foreground mb-4"
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4"
       >
         Quick Links
       </h2>
       <div
-        class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <a
           class="group"
@@ -55,51 +125,11 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/account"
         >
           <div
-            class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
-            <div
-              class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-user h-6 w-6 text-primary"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
-                />
-                <circle
-                  cx="12"
-                  cy="7"
-                  r="4"
-                />
-              </svg>
-            </div>
-            <div
-              class="flex-1 min-w-0"
-            >
-              <h3
-                class="font-medium text-foreground group-hover:text-primary transition-colors"
-              >
-                Account Details
-              </h3>
-              <p
-                class="text-sm text-muted-foreground truncate"
-              >
-                View and edit your profile
-              </p>
-            </div>
             <svg
               aria-hidden="true"
-              class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
+              class="lucide lucide-user h-4 w-4 text-foreground group-hover:text-primary transition-colors"
               fill="none"
               height="24"
               stroke="currentColor"
@@ -111,139 +141,19 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="m9 18 6-6-6-6"
+                d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+              />
+              <circle
+                cx="12"
+                cy="7"
+                r="4"
               />
             </svg>
-          </div>
-        </a>
-        <a
-          class="group"
-          data-discover="true"
-          href="/account/orders"
-        >
-          <div
-            class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
-          >
-            <div
-              class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
+            <h3
+              class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
             >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-receipt h-6 w-6 text-primary"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"
-                />
-                <path
-                  d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"
-                />
-                <path
-                  d="M12 17.5v-11"
-                />
-              </svg>
-            </div>
-            <div
-              class="flex-1 min-w-0"
-            >
-              <h3
-                class="font-medium text-foreground group-hover:text-primary transition-colors"
-              >
-                Order History
-              </h3>
-              <p
-                class="text-sm text-muted-foreground truncate"
-              >
-                Track your orders
-              </p>
-            </div>
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="m9 18 6-6-6-6"
-              />
-            </svg>
-          </div>
-        </a>
-        <a
-          class="group"
-          data-discover="true"
-          href="/account/wishlist"
-        >
-          <div
-            class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
-          >
-            <div
-              class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-heart h-6 w-6 text-primary"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                />
-              </svg>
-            </div>
-            <div
-              class="flex-1 min-w-0"
-            >
-              <h3
-                class="font-medium text-foreground group-hover:text-primary transition-colors"
-              >
-                Wishlist
-              </h3>
-              <p
-                class="text-sm text-muted-foreground truncate"
-              >
-                Items you've saved
-              </p>
-            </div>
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="m9 18 6-6-6-6"
-              />
-            </svg>
+              Account Details
+            </h3>
           </div>
         </a>
         <a
@@ -252,51 +162,11 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/account/addresses"
         >
           <div
-            class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
-            <div
-              class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-map-pin h-6 w-6 text-primary"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
-                />
-                <circle
-                  cx="12"
-                  cy="10"
-                  r="3"
-                />
-              </svg>
-            </div>
-            <div
-              class="flex-1 min-w-0"
-            >
-              <h3
-                class="font-medium text-foreground group-hover:text-primary transition-colors"
-              >
-                Addresses
-              </h3>
-              <p
-                class="text-sm text-muted-foreground truncate"
-              >
-                Manage your addresses
-              </p>
-            </div>
             <svg
               aria-hidden="true"
-              class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
+              class="lucide lucide-map-pin h-4 w-4 text-foreground group-hover:text-primary transition-colors"
               fill="none"
               height="24"
               stroke="currentColor"
@@ -308,9 +178,99 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="m9 18 6-6-6-6"
+                d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+              />
+              <circle
+                cx="12"
+                cy="10"
+                r="3"
               />
             </svg>
+            <h3
+              class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
+            >
+              Manage Addresses
+            </h3>
+          </div>
+        </a>
+        <a
+          class="group"
+          data-discover="true"
+          href="/account/payment-methods"
+        >
+          <div
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-credit-card h-4 w-4 text-foreground group-hover:text-primary transition-colors"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="14"
+                rx="2"
+                width="20"
+                x="2"
+                y="5"
+              />
+              <line
+                x1="2"
+                x2="22"
+                y1="10"
+                y2="10"
+              />
+            </svg>
+            <h3
+              class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
+            >
+              Payment Methods
+            </h3>
+          </div>
+        </a>
+        <a
+          class="group"
+          data-discover="true"
+          href="/account/orders"
+        >
+          <div
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-receipt h-4 w-4 text-foreground group-hover:text-primary transition-colors"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"
+              />
+              <path
+                d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"
+              />
+              <path
+                d="M12 17.5v-11"
+              />
+            </svg>
+            <h3
+              class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
+            >
+              Order History
+            </h3>
           </div>
         </a>
       </div>
@@ -321,10 +281,10 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
 
 exports[`AccountOverview stories snapshot > GuestUser story renders and matches snapshot 1`] = `
 <div
-  class="space-y-6"
+  class="space-y-5"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -332,19 +292,19 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
       data-slot="card-content"
     >
       <h1
-        class="text-3xl font-bold text-foreground mb-2"
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
       >
         Welcome back, there!
       </h1>
       <p
-        class="text-muted-foreground"
+        class="text-sm text-muted-foreground"
       >
         Manage your account, view orders, and discover personalized recommendations.
       </p>
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -353,7 +313,77 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
     />
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
+      <div
+        class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+      >
+        <div
+          class="flex-1"
+        >
+          <h2
+            class="tracking-tight text-left text-[length:var(--account-section-header)] font-semibold text-foreground mb-2"
+          >
+            Download Our App
+          </h2>
+          <p
+            class="text-sm text-muted-foreground mb-6"
+          >
+            Get the best shopping experience on the go. Access exclusive deals, track orders, and shop faster.
+          </p>
+          <div
+            class="flex flex-wrap gap-3 items-center"
+          >
+            <img
+              alt="App Store"
+              aria-label="App Store"
+              class="h-10 w-auto"
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
+            />
+            <img
+              alt="Google Play"
+              aria-label="Google Play"
+              class="h-10 w-auto"
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
+            />
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center gap-2 lg:flex-shrink-0"
+        >
+          <div
+            class="w-32 h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border"
+          >
+            <svg
+              class="w-16 h-16 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            QR Code
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -361,12 +391,12 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
       data-slot="card-content"
     >
       <h2
-        class="text-xl font-semibold text-foreground mb-4"
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4"
       >
         Quick Links
       </h2>
       <div
-        class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <a
           class="group"
@@ -374,51 +404,11 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
           href="/account"
         >
           <div
-            class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
-            <div
-              class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-user h-6 w-6 text-primary"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
-                />
-                <circle
-                  cx="12"
-                  cy="7"
-                  r="4"
-                />
-              </svg>
-            </div>
-            <div
-              class="flex-1 min-w-0"
-            >
-              <h3
-                class="font-medium text-foreground group-hover:text-primary transition-colors"
-              >
-                Account Details
-              </h3>
-              <p
-                class="text-sm text-muted-foreground truncate"
-              >
-                View and edit your profile
-              </p>
-            </div>
             <svg
               aria-hidden="true"
-              class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
+              class="lucide lucide-user h-4 w-4 text-foreground group-hover:text-primary transition-colors"
               fill="none"
               height="24"
               stroke="currentColor"
@@ -430,139 +420,19 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="m9 18 6-6-6-6"
+                d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+              />
+              <circle
+                cx="12"
+                cy="7"
+                r="4"
               />
             </svg>
-          </div>
-        </a>
-        <a
-          class="group"
-          data-discover="true"
-          href="/account/orders"
-        >
-          <div
-            class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
-          >
-            <div
-              class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
+            <h3
+              class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
             >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-receipt h-6 w-6 text-primary"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"
-                />
-                <path
-                  d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"
-                />
-                <path
-                  d="M12 17.5v-11"
-                />
-              </svg>
-            </div>
-            <div
-              class="flex-1 min-w-0"
-            >
-              <h3
-                class="font-medium text-foreground group-hover:text-primary transition-colors"
-              >
-                Order History
-              </h3>
-              <p
-                class="text-sm text-muted-foreground truncate"
-              >
-                Track your orders
-              </p>
-            </div>
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="m9 18 6-6-6-6"
-              />
-            </svg>
-          </div>
-        </a>
-        <a
-          class="group"
-          data-discover="true"
-          href="/account/wishlist"
-        >
-          <div
-            class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
-          >
-            <div
-              class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-heart h-6 w-6 text-primary"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                />
-              </svg>
-            </div>
-            <div
-              class="flex-1 min-w-0"
-            >
-              <h3
-                class="font-medium text-foreground group-hover:text-primary transition-colors"
-              >
-                Wishlist
-              </h3>
-              <p
-                class="text-sm text-muted-foreground truncate"
-              >
-                Items you've saved
-              </p>
-            </div>
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="m9 18 6-6-6-6"
-              />
-            </svg>
+              Account Details
+            </h3>
           </div>
         </a>
         <a
@@ -571,51 +441,11 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
           href="/account/addresses"
         >
           <div
-            class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
-            <div
-              class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
-            >
-              <svg
-                aria-hidden="true"
-                class="lucide lucide-map-pin h-6 w-6 text-primary"
-                fill="none"
-                height="24"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
-                />
-                <circle
-                  cx="12"
-                  cy="10"
-                  r="3"
-                />
-              </svg>
-            </div>
-            <div
-              class="flex-1 min-w-0"
-            >
-              <h3
-                class="font-medium text-foreground group-hover:text-primary transition-colors"
-              >
-                Addresses
-              </h3>
-              <p
-                class="text-sm text-muted-foreground truncate"
-              >
-                Manage your addresses
-              </p>
-            </div>
             <svg
               aria-hidden="true"
-              class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
+              class="lucide lucide-map-pin h-4 w-4 text-foreground group-hover:text-primary transition-colors"
               fill="none"
               height="24"
               stroke="currentColor"
@@ -627,9 +457,99 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="m9 18 6-6-6-6"
+                d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+              />
+              <circle
+                cx="12"
+                cy="10"
+                r="3"
               />
             </svg>
+            <h3
+              class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
+            >
+              Manage Addresses
+            </h3>
+          </div>
+        </a>
+        <a
+          class="group"
+          data-discover="true"
+          href="/account/payment-methods"
+        >
+          <div
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-credit-card h-4 w-4 text-foreground group-hover:text-primary transition-colors"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="14"
+                rx="2"
+                width="20"
+                x="2"
+                y="5"
+              />
+              <line
+                x1="2"
+                x2="22"
+                y1="10"
+                y2="10"
+              />
+            </svg>
+            <h3
+              class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
+            >
+              Payment Methods
+            </h3>
+          </div>
+        </a>
+        <a
+          class="group"
+          data-discover="true"
+          href="/account/orders"
+        >
+          <div
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-receipt h-4 w-4 text-foreground group-hover:text-primary transition-colors"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"
+              />
+              <path
+                d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"
+              />
+              <path
+                d="M12 17.5v-11"
+              />
+            </svg>
+            <h3
+              class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
+            >
+              Order History
+            </h3>
           </div>
         </a>
       </div>
@@ -640,10 +560,10 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
 
 exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and matches snapshot 1`] = `
 <div
-  class="space-y-6"
+  class="space-y-5"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -651,17 +571,17 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
       data-slot="card-content"
     >
       <div
-        class="bg-accent animate-pulse rounded-md h-9 w-64 mb-2"
+        class="bg-accent animate-pulse rounded-md h-6 w-64 mb-1"
         data-slot="skeleton"
       />
       <div
-        class="bg-accent animate-pulse rounded-md h-5 w-96 max-w-full"
+        class="bg-accent animate-pulse rounded-md h-4 w-96 max-w-full"
         data-slot="skeleton"
       />
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -669,7 +589,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
       data-slot="card-content"
     >
       <div
-        class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 animate-pulse"
+        class="w-full px-4 sm:px-6 lg:px-8 py-8 animate-pulse max-w-none -mx-6 md:py-0"
       >
         <div
           class="relative w-full"
@@ -947,7 +867,91 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
+      <div
+        class="bg-accent animate-pulse rounded-md h-7 w-48 mb-2"
+        data-slot="skeleton"
+      />
+      <div
+        class="bg-accent animate-pulse rounded-md h-4 w-full max-w-xl mb-4"
+        data-slot="skeleton"
+      />
+      <div
+        class="flex flex-wrap gap-3"
+      >
+        <div
+          class="bg-accent animate-pulse rounded-md h-10 w-32"
+          data-slot="skeleton"
+        />
+        <div
+          class="bg-accent animate-pulse rounded-md h-10 w-36"
+          data-slot="skeleton"
+        />
+        <div
+          class="bg-accent animate-pulse rounded-md h-10 w-32"
+          data-slot="skeleton"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
+      <div
+        class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+      >
+        <div
+          class="flex-1"
+        >
+          <div
+            class="bg-accent animate-pulse rounded-md h-7 w-48 mb-2"
+            data-slot="skeleton"
+          />
+          <div
+            class="bg-accent animate-pulse rounded-md h-4 w-full max-w-xl mb-6"
+            data-slot="skeleton"
+          />
+          <div
+            class="flex flex-wrap gap-3"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-12 w-32"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-12 w-36"
+              data-slot="skeleton"
+            />
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center gap-2 lg:flex-shrink-0"
+        >
+          <div
+            class="bg-accent animate-pulse w-40 h-40 rounded-lg"
+            data-slot="skeleton"
+          />
+          <div
+            class="bg-accent animate-pulse rounded-md h-4 w-16"
+            data-slot="skeleton"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -959,87 +963,55 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
         data-slot="skeleton"
       />
       <div
-        class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <div
-          class="h-full flex items-center gap-4 p-4 rounded-xl border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
         >
           <div
-            class="bg-accent animate-pulse w-12 h-12 rounded-lg"
+            class="bg-accent animate-pulse rounded-md w-4 h-4"
             data-slot="skeleton"
           />
           <div
-            class="flex-1"
-          >
-            <div
-              class="bg-accent animate-pulse rounded-md h-5 w-24 mb-1"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-40"
-              data-slot="skeleton"
-            />
-          </div>
+            class="bg-accent animate-pulse rounded-md h-5 w-24"
+            data-slot="skeleton"
+          />
         </div>
         <div
-          class="h-full flex items-center gap-4 p-4 rounded-xl border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
         >
           <div
-            class="bg-accent animate-pulse w-12 h-12 rounded-lg"
+            class="bg-accent animate-pulse rounded-md w-4 h-4"
             data-slot="skeleton"
           />
           <div
-            class="flex-1"
-          >
-            <div
-              class="bg-accent animate-pulse rounded-md h-5 w-24 mb-1"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-40"
-              data-slot="skeleton"
-            />
-          </div>
+            class="bg-accent animate-pulse rounded-md h-5 w-24"
+            data-slot="skeleton"
+          />
         </div>
         <div
-          class="h-full flex items-center gap-4 p-4 rounded-xl border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
         >
           <div
-            class="bg-accent animate-pulse w-12 h-12 rounded-lg"
+            class="bg-accent animate-pulse rounded-md w-4 h-4"
             data-slot="skeleton"
           />
           <div
-            class="flex-1"
-          >
-            <div
-              class="bg-accent animate-pulse rounded-md h-5 w-24 mb-1"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-40"
-              data-slot="skeleton"
-            />
-          </div>
+            class="bg-accent animate-pulse rounded-md h-5 w-24"
+            data-slot="skeleton"
+          />
         </div>
         <div
-          class="h-full flex items-center gap-4 p-4 rounded-xl border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
         >
           <div
-            class="bg-accent animate-pulse w-12 h-12 rounded-lg"
+            class="bg-accent animate-pulse rounded-md w-4 h-4"
             data-slot="skeleton"
           />
           <div
-            class="flex-1"
-          >
-            <div
-              class="bg-accent animate-pulse rounded-md h-5 w-24 mb-1"
-              data-slot="skeleton"
-            />
-            <div
-              class="bg-accent animate-pulse rounded-md h-4 w-40"
-              data-slot="skeleton"
-            />
-          </div>
+            class="bg-accent animate-pulse rounded-md h-5 w-24"
+            data-slot="skeleton"
+          />
         </div>
       </div>
     </div>
@@ -1049,7 +1021,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
 
 exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
   data-slot="card"
 >
   <div
@@ -1057,12 +1029,12 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
     data-slot="card-content"
   >
     <h2
-      class="text-xl font-semibold text-foreground mb-4"
+      class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4"
     >
       Quick Links
     </h2>
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
     >
       <a
         class="group"
@@ -1070,51 +1042,11 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
         href="/account"
       >
         <div
-          class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
         >
-          <div
-            class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
-          >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-user h-6 w-6 text-primary"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
-              />
-              <circle
-                cx="12"
-                cy="7"
-                r="4"
-              />
-            </svg>
-          </div>
-          <div
-            class="flex-1 min-w-0"
-          >
-            <h3
-              class="font-medium text-foreground group-hover:text-primary transition-colors"
-            >
-              Account Details
-            </h3>
-            <p
-              class="text-sm text-muted-foreground truncate"
-            >
-              View and edit your profile
-            </p>
-          </div>
           <svg
             aria-hidden="true"
-            class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
+            class="lucide lucide-user h-4 w-4 text-foreground group-hover:text-primary transition-colors"
             fill="none"
             height="24"
             stroke="currentColor"
@@ -1126,139 +1058,19 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="m9 18 6-6-6-6"
+              d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+            />
+            <circle
+              cx="12"
+              cy="7"
+              r="4"
             />
           </svg>
-        </div>
-      </a>
-      <a
-        class="group"
-        data-discover="true"
-        href="/account/orders"
-      >
-        <div
-          class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
-        >
-          <div
-            class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
+          <h3
+            class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
           >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-receipt h-6 w-6 text-primary"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"
-              />
-              <path
-                d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"
-              />
-              <path
-                d="M12 17.5v-11"
-              />
-            </svg>
-          </div>
-          <div
-            class="flex-1 min-w-0"
-          >
-            <h3
-              class="font-medium text-foreground group-hover:text-primary transition-colors"
-            >
-              Order History
-            </h3>
-            <p
-              class="text-sm text-muted-foreground truncate"
-            >
-              Track your orders
-            </p>
-          </div>
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="m9 18 6-6-6-6"
-            />
-          </svg>
-        </div>
-      </a>
-      <a
-        class="group"
-        data-discover="true"
-        href="/account/wishlist"
-      >
-        <div
-          class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
-        >
-          <div
-            class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
-          >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-heart h-6 w-6 text-primary"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-              />
-            </svg>
-          </div>
-          <div
-            class="flex-1 min-w-0"
-          >
-            <h3
-              class="font-medium text-foreground group-hover:text-primary transition-colors"
-            >
-              Wishlist
-            </h3>
-            <p
-              class="text-sm text-muted-foreground truncate"
-            >
-              Items you've saved
-            </p>
-          </div>
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="m9 18 6-6-6-6"
-            />
-          </svg>
+            Account Details
+          </h3>
         </div>
       </a>
       <a
@@ -1267,51 +1079,11 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
         href="/account/addresses"
       >
         <div
-          class="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
         >
-          <div
-            class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center"
-          >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-map-pin h-6 w-6 text-primary"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
-              />
-              <circle
-                cx="12"
-                cy="10"
-                r="3"
-              />
-            </svg>
-          </div>
-          <div
-            class="flex-1 min-w-0"
-          >
-            <h3
-              class="font-medium text-foreground group-hover:text-primary transition-colors"
-            >
-              Addresses
-            </h3>
-            <p
-              class="text-sm text-muted-foreground truncate"
-            >
-              Manage your addresses
-            </p>
-          </div>
           <svg
             aria-hidden="true"
-            class="lucide lucide-chevron-right h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
+            class="lucide lucide-map-pin h-4 w-4 text-foreground group-hover:text-primary transition-colors"
             fill="none"
             height="24"
             stroke="currentColor"
@@ -1323,9 +1095,99 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="m9 18 6-6-6-6"
+              d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+            />
+            <circle
+              cx="12"
+              cy="10"
+              r="3"
             />
           </svg>
+          <h3
+            class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
+          >
+            Manage Addresses
+          </h3>
+        </div>
+      </a>
+      <a
+        class="group"
+        data-discover="true"
+        href="/account/payment-methods"
+      >
+        <div
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-credit-card h-4 w-4 text-foreground group-hover:text-primary transition-colors"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="14"
+              rx="2"
+              width="20"
+              x="2"
+              y="5"
+            />
+            <line
+              x1="2"
+              x2="22"
+              y1="10"
+              y2="10"
+            />
+          </svg>
+          <h3
+            class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
+          >
+            Payment Methods
+          </h3>
+        </div>
+      </a>
+      <a
+        class="group"
+        data-discover="true"
+        href="/account/orders"
+      >
+        <div
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-receipt h-4 w-4 text-foreground group-hover:text-primary transition-colors"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"
+            />
+            <path
+              d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"
+            />
+            <path
+              d="M12 17.5v-11"
+            />
+          </svg>
+          <h3
+            class="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors"
+          >
+            Order History
+          </h3>
         </div>
       </a>
     </div>
@@ -1335,7 +1197,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
 
 exports[`AccountOverview stories snapshot > QuickLinksSectionLoading story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
   data-slot="card"
 >
   <div
@@ -1347,87 +1209,55 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionLoading story rende
       data-slot="skeleton"
     />
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
     >
       <div
-        class="h-full flex items-center gap-4 p-4 rounded-xl border"
+        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
       >
         <div
-          class="bg-accent animate-pulse w-12 h-12 rounded-lg"
+          class="bg-accent animate-pulse rounded-md w-4 h-4"
           data-slot="skeleton"
         />
         <div
-          class="flex-1"
-        >
-          <div
-            class="bg-accent animate-pulse rounded-md h-5 w-24 mb-1"
-            data-slot="skeleton"
-          />
-          <div
-            class="bg-accent animate-pulse rounded-md h-4 w-40"
-            data-slot="skeleton"
-          />
-        </div>
+          class="bg-accent animate-pulse rounded-md h-5 w-24"
+          data-slot="skeleton"
+        />
       </div>
       <div
-        class="h-full flex items-center gap-4 p-4 rounded-xl border"
+        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
       >
         <div
-          class="bg-accent animate-pulse w-12 h-12 rounded-lg"
+          class="bg-accent animate-pulse rounded-md w-4 h-4"
           data-slot="skeleton"
         />
         <div
-          class="flex-1"
-        >
-          <div
-            class="bg-accent animate-pulse rounded-md h-5 w-24 mb-1"
-            data-slot="skeleton"
-          />
-          <div
-            class="bg-accent animate-pulse rounded-md h-4 w-40"
-            data-slot="skeleton"
-          />
-        </div>
+          class="bg-accent animate-pulse rounded-md h-5 w-24"
+          data-slot="skeleton"
+        />
       </div>
       <div
-        class="h-full flex items-center gap-4 p-4 rounded-xl border"
+        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
       >
         <div
-          class="bg-accent animate-pulse w-12 h-12 rounded-lg"
+          class="bg-accent animate-pulse rounded-md w-4 h-4"
           data-slot="skeleton"
         />
         <div
-          class="flex-1"
-        >
-          <div
-            class="bg-accent animate-pulse rounded-md h-5 w-24 mb-1"
-            data-slot="skeleton"
-          />
-          <div
-            class="bg-accent animate-pulse rounded-md h-4 w-40"
-            data-slot="skeleton"
-          />
-        </div>
+          class="bg-accent animate-pulse rounded-md h-5 w-24"
+          data-slot="skeleton"
+        />
       </div>
       <div
-        class="h-full flex items-center gap-4 p-4 rounded-xl border"
+        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
       >
         <div
-          class="bg-accent animate-pulse w-12 h-12 rounded-lg"
+          class="bg-accent animate-pulse rounded-md w-4 h-4"
           data-slot="skeleton"
         />
         <div
-          class="flex-1"
-        >
-          <div
-            class="bg-accent animate-pulse rounded-md h-5 w-24 mb-1"
-            data-slot="skeleton"
-          />
-          <div
-            class="bg-accent animate-pulse rounded-md h-4 w-40"
-            data-slot="skeleton"
-          />
-        </div>
+          class="bg-accent animate-pulse rounded-md h-5 w-24"
+          data-slot="skeleton"
+        />
       </div>
     </div>
   </div>
@@ -1436,7 +1266,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionLoading story rende
 
 exports[`AccountOverview stories snapshot > WelcomeSectionDefault story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
   data-slot="card"
 >
   <div
@@ -1444,12 +1274,12 @@ exports[`AccountOverview stories snapshot > WelcomeSectionDefault story renders 
     data-slot="card-content"
   >
     <h1
-      class="text-3xl font-bold text-foreground mb-2"
+      class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
     >
       Welcome back, John!
     </h1>
     <p
-      class="text-muted-foreground"
+      class="text-sm text-muted-foreground"
     >
       Manage your account, view orders, and discover personalized recommendations.
     </p>
@@ -1459,7 +1289,7 @@ exports[`AccountOverview stories snapshot > WelcomeSectionDefault story renders 
 
 exports[`AccountOverview stories snapshot > WelcomeSectionLoading story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
   data-slot="card"
 >
   <div
@@ -1467,11 +1297,11 @@ exports[`AccountOverview stories snapshot > WelcomeSectionLoading story renders 
     data-slot="card-content"
   >
     <div
-      class="bg-accent animate-pulse rounded-md h-9 w-64 mb-2"
+      class="bg-accent animate-pulse rounded-md h-6 w-64 mb-1"
       data-slot="skeleton"
     />
     <div
-      class="bg-accent animate-pulse rounded-md h-5 w-96 max-w-full"
+      class="bg-accent animate-pulse rounded-md h-4 w-96 max-w-full"
       data-slot="skeleton"
     />
   </div>

@@ -18,6 +18,7 @@ import { extractQualifiersFromInput, updateShopperContext } from '@/lib/shopper-
 import { extractStatusCode, parseJsonToStringRecord } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 
 type UpdateShopperContextResponse = {
     success: boolean;
@@ -30,20 +31,25 @@ type UpdateShopperContextResponse = {
  * Supports customQualifiers, assignmentQualifiers, couponCodes, sourceCode, and other root-level qualifiers.
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+
+    logger.debug('UpdateShopperContext: starting', { method: request.method });
 
     const session = getAuth(context);
     if (!session.usid) {
+        logger.warn('UpdateShopperContext: usid not available');
         return Response.json(
             {
                 success: false,
-                error: t('Usid is not available for updating shopper context.'),
+                error: t("Usid isn't available for updating shopper context."),
             },
             { status: 401 }
         );
     }
 
     if (request.method !== 'PUT') {
+        logger.warn('UpdateShopperContext: method not allowed', { method: request.method });
         throw new Response(t(`This method isn't allowed to update shopper context.`), { status: 405 });
     }
 
@@ -57,8 +63,15 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         const { qualifiers: newShopperContext, sourceCodeQualifiers: newSourceCodeContext } =
             extractQualifiersFromInput(allNewQualifiers);
+
+        logger.debug('UpdateShopperContext: extracted qualifiers', {
+            shopperContextCount: Object.keys(newShopperContext).length,
+            sourceCodeContextCount: Object.keys(newSourceCodeContext).length,
+        });
+
         // Validate that at least one qualifier is provided
         if (Object.keys(newShopperContext).length === 0 && Object.keys(newSourceCodeContext).length === 0) {
+            logger.warn('UpdateShopperContext: no qualifiers provided');
             return Response.json(
                 {
                     success: false,
@@ -87,10 +100,15 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             response.headers.append('Set-Cookie', header);
         }
 
+        logger.info('UpdateShopperContext: succeeded', {
+            qualifierCount: Object.keys(newShopperContext).length + Object.keys(newSourceCodeContext).length,
+        });
+
         return response;
     } catch (error) {
+        logger.error('UpdateShopperContext: failed', { error });
         const statusCode = extractStatusCode(error) ? Number(extractStatusCode(error)) : 500;
-        const errorMessage = error instanceof Error ? error.message : t('Shopper context failed to update');
+        const errorMessage = error instanceof Error ? error.message : t('Shopper context failed to update.');
         return Response.json(
             {
                 success: false,

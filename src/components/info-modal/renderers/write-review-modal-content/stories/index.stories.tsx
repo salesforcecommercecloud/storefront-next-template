@@ -19,7 +19,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { WriteReviewModalContent } from '../../write-review-modal-content';
 import type { WriteReviewFormData } from '@/lib/adapters/product-content-data-types';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import type { ReactElement } from 'react';
 

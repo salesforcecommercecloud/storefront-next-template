@@ -18,10 +18,12 @@ import CheckoutErrorBanner from '../checkout-error-banner';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 const meta: Meta<typeof CheckoutErrorBanner> = {
     title: 'CHECKOUT/CheckoutErrorBanner',
     component: CheckoutErrorBanner,
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'centered',
         docs: {
             description: {

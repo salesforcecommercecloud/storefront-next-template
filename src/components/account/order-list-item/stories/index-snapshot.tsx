@@ -13,9 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { expect, test, describe, afterEach } from 'vitest';
+import * as React from 'react';
+import { expect, test, describe, afterEach, vi } from 'vitest';
+
+vi.mock('@/components/link', () => ({
+    Link: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
+        const { to, children, ...rest } = props ?? {};
+        return (
+            <a href={typeof to === 'string' ? to : undefined} {...rest}>
+                {children}
+            </a>
+        );
+    },
+    NavLink: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
+        const { to, children, ...rest } = props ?? {};
+        return (
+            <a href={typeof to === 'string' ? to : undefined} {...rest}>
+                {children}
+            </a>
+        );
+    },
+}));
+
+vi.mock('@/config', () => ({
+    useConfig: () => ({}),
+    getConfig: () => ({}),
+    ConfigProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    createAppConfig: (config: unknown) => config,
+    appConfigContext: {},
+    getBadgeVariant: () => 'default',
+}));
+
+vi.mock('@/hooks/use-navigate', () => ({
+    useNavigate: () => () => {},
+}));
+
+vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
+}));
+
+vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
+    useSite: () => null,
+    buildUrl: ({ to }: { to: string }) => to,
+    SiteProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+vi.mock('@/providers/currency', () => ({
+    useCurrency: () => 'GBP',
+    CurrencyProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
 import { composeStories } from '@storybook/react-vite';
-import React from 'react';
 import { MemoryRouter } from 'react-router';
 
 import * as OrderListItemStories from './index.stories';

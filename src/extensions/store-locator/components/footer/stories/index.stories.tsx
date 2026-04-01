@@ -15,7 +15,7 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within, userEvent } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
+import { waitForStorybookReady, SITE_PREFIX } from '@storybook/test-utils';
 import StoreLocatorFooter from '../index';
 
 const meta: Meta<typeof StoreLocatorFooter> = {
@@ -75,7 +75,7 @@ This is the default state as used in the site footer.
 
         const link = await canvas.findByRole('link', { name: /store locator/i }, { timeout: 5000 });
         await expect(link).toBeInTheDocument();
-        await expect(link).toHaveAttribute('href', '/store-locator');
+        await expect(link).toHaveAttribute('href', `${SITE_PREFIX}/store-locator`);
     },
 };
 
@@ -126,7 +126,7 @@ The component maintains consistent behavior across screen sizes.
 
         const link = await canvas.findByRole('link', { name: /store locator/i }, { timeout: 5000 });
         await expect(link).toBeInTheDocument();
-        await expect(link).toHaveAttribute('href', '/store-locator');
+        await expect(link).toHaveAttribute('href', `${SITE_PREFIX}/store-locator`);
     },
 };
 
@@ -153,6 +153,6 @@ The component provides a clear footer entry point to the store locator.
 
         const link = await canvas.findByRole('link', { name: /store locator/i }, { timeout: 5000 });
         await expect(link).toBeInTheDocument();
-        await expect(link).toHaveAttribute('href', '/store-locator');
+        await expect(link).toHaveAttribute('href', `${SITE_PREFIX}/store-locator`);
     },
 };

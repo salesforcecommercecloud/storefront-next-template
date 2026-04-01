@@ -24,11 +24,6 @@ exports[`ThemeSwitcher stories snapshot > Default story renders and matches snap
           id="_r_1_"
         >
           <option
-            value="foundations"
-          >
-            foundations
-          </option>
-          <option
             value="market-street"
           >
             marketStreet
@@ -130,11 +125,6 @@ exports[`ThemeSwitcher stories snapshot > DesktopLayout story renders and matche
           data-slot="native-select"
           id="_r_7_"
         >
-          <option
-            value="foundations"
-          >
-            foundations
-          </option>
           <option
             value="market-street"
           >
@@ -238,11 +228,6 @@ exports[`ThemeSwitcher stories snapshot > MobileLayout story renders and matches
           id="_r_5_"
         >
           <option
-            value="foundations"
-          >
-            foundations
-          </option>
-          <option
             value="market-street"
           >
             marketStreet
@@ -344,11 +329,6 @@ exports[`ThemeSwitcher stories snapshot > WithThemeChange story renders and matc
           data-slot="native-select"
           id="_r_3_"
         >
-          <option
-            value="foundations"
-          >
-            foundations
-          </option>
           <option
             value="market-street"
           >

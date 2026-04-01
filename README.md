@@ -72,7 +72,6 @@ cp .env.default .env
 PUBLIC__app__commerce__api__clientId=your-client-id
 PUBLIC__app__commerce__api__organizationId=your-org-id
 PUBLIC__app__commerce__api__shortCode=your-short-code
-PUBLIC__app__commerce__api__siteId=your-site-id
 ```
 
 ### How It Works
@@ -87,7 +86,7 @@ PUBLIC__app__site__currency=EUR   →  config.app.site.currency
 
 Values are automatically parsed (numbers, booleans, JSON arrays/objects).
 
-See [Configuration Guide](./src/config/README.md) for complete documentation.
+See [Configuration Guide](./docs/README-CONFIG.md) for complete documentation.
 
 ## Deployment
 
@@ -148,6 +147,8 @@ src/
 - 🔍 [ESLint Configuration & TypeScript Enforcement](./README-ESLINT.md)
 - 🖼️ [Images](./docs/README-IMAGES.md)
 - ⚡ [Performance](./docs/README-PERFORMANCE.md)
+- 🔎 [SEO (Canonical URLs and Meta Tags)](./docs/README-SEO.md)
+- 🎨 [UI and Styling](./docs/README-UI-STYLING.md)
 - 🔌 [Adapter Pattern Implementation Guide](./docs/README-ADAPTER-PATTERN-GUIDE.md)
 - 📖 [Story Coverage & Code Quality Enforcement](./docs/README-STORY-COVERAGE.md)
 

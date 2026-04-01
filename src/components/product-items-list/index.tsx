@@ -92,6 +92,10 @@ interface ProductItemsListProps {
      * individual tiles instead of a single stacked list.
      */
     separateCards?: boolean;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    /** Whether items in this list are pickup items (affects stock level calculation) */
+    isPickup?: boolean;
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 }
 
 /**
@@ -159,6 +163,8 @@ export default function ProductItemsList({
     basket,
     onSelectBonusProducts,
     separateCards = false,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    isPickup = false,
 }: ProductItemsListProps): ReactElement {
     /**
      * Build bonus promotion map and get attached promotions
@@ -243,6 +249,8 @@ export default function ProductItemsList({
                         promotions={promotions}
                         bonusDiscountLineItems={bonusDiscountLineItems}
                         maxBonusQuantity={maxQuantity}
+                        // @sfdc-extension-line SFDC_EXT_BOPIS
+                        isPickup={isPickup}
                     />
 
                     {/* Render bonus product selection card if eligible */}
@@ -258,7 +266,13 @@ export default function ProductItemsList({
                 return <Card key={productItem.itemId || `item-${index}`}>{currentProductItem}</Card>;
             }
 
-            return <div key={productItem.itemId || `item-${index}`}>{currentProductItem}</div>;
+            return (
+                <div
+                    key={productItem.itemId || `item-${index}`}
+                    className="border-b border-muted-foreground/10 last:border-b-0">
+                    {currentProductItem}
+                </div>
+            );
         });
         // Intentionally exclude primaryAction and secondaryActions from dependencies
         // to prevent re-computation when parent components re-render with new function references
@@ -271,6 +285,8 @@ export default function ProductItemsList({
         variant,
         attachedPromotions,
         bonusProductMaxQuantities,
+        // @sfdc-extension-line SFDC_EXT_BOPIS
+        isPickup,
     ]);
 
     return <div className={variant === 'summary' ? SUMMARY_SPACING : DEFAULT_SPACING}>{memoizedItems}</div>;

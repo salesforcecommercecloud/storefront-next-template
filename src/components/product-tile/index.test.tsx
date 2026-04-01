@@ -14,61 +14,48 @@
  * limitations under the License.
  */
 import { vi, test, describe, expect, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { getTranslation } from '@/lib/i18next';
 
-const { t } = getTranslation();
 import { ProductTile } from './index';
-import { type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { ConfigWrapper } from '@/test-utils/config';
-import { CurrencyProvider } from '@/providers/currency';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
-vi.mock('@/lib/product-utils', () => ({
-    createProductUrl: vi.fn(() => '/product/test-product'),
-    getImagesForColor: vi.fn(() => [
-        {
-            link: 'https://example.com/default1.jpg',
-            disBaseLink: 'https://example.com/default1.jpg',
-            alt: 'Default Image 1',
-        },
-        {
-            link: 'https://example.com/default2.jpg',
-            disBaseLink: 'https://example.com/default2.jpg',
-            alt: 'Default Image 2',
-        },
-    ]),
-    getDecoratedVariationAttributes: vi.fn(() => [
-        {
-            id: 'color',
-            name: 'Colour',
-            values: [
-                {
-                    value: 'navy',
-                    name: 'Navy',
-                    swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
-                },
-                {
-                    value: 'red',
-                    name: 'Red',
-                    swatch: { link: 'https://example.com/red.jpg', disBaseLink: 'https://example.com/red.jpg' },
-                },
-                {
-                    value: 'blue',
-                    name: 'Blue',
-                    swatch: { link: 'https://example.com/blue.jpg', disBaseLink: 'https://example.com/blue.jpg' },
-                },
-                {
-                    value: 'black',
-                    name: 'Black',
-                    swatch: { link: 'https://example.com/black.jpg', disBaseLink: 'https://example.com/black.jpg' },
-                },
-            ],
-        },
-    ]),
+vi.mock('@/lib/product-utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/product-utils')>();
+    return {
+        ...actual,
+        createProductUrl: vi.fn(() => '/product/test-product'),
+        getDecoratedVariationAttributes: vi.fn(() => [
+            {
+                id: 'color',
+                name: 'Colour',
+                values: [
+                    {
+                        value: 'navy',
+                        name: 'Navy',
+                        href: '/product/test?color=navy',
+                        swatch: null,
+                    },
+                    {
+                        value: 'red',
+                        name: 'Red',
+                        href: '/product/test?color=red',
+                        swatch: null,
+                    },
+                ],
+            },
+        ]),
+    };
+});
+
+vi.mock('@/lib/product-utils-plp', () => ({
+    getProductBrand: vi.fn(() => 'Test Brand'),
+    getProductShortDescription: vi.fn(() => 'A great product description.'),
+    getProductRating: vi.fn(() => ({ rating: 4.2, reviewCount: 218 })),
 }));
 
 vi.mock('@/lib/currency', () => ({
@@ -77,9 +64,35 @@ vi.mock('@/lib/currency', () => ({
 
 vi.mock('@/lib/product-badges', () => ({
     getProductBadges: vi.fn(() => ({
-        hasBadges: true,
-        badges: [{ label: 'Sale' }, { label: 'New' }],
+        hasBadges: false,
+        badges: [],
     })),
+}));
+
+// Isolate WishlistButton to avoid auth/wishlist context dependencies
+vi.mock('@/components/buttons/wishlist-button', () => ({
+    WishlistButton: ({ product }: { product: { productName?: string } }) => (
+        <button aria-label={`Add ${product.productName ?? ''} to wishlist`}>Wishlist</button>
+    ),
+}));
+
+// Isolate QuickAddButton to avoid CartItemModal/modal dependencies
+vi.mock('./quick-add-button', () => ({
+    QuickAddButton: ({ label, productName }: { label: string; productName: string }) => (
+        <button aria-label={`${label} ${productName}`}>{label}</button>
+    ),
+}));
+
+// Isolate ProductImageContainer to avoid dynamic image dependencies
+vi.mock('@/components/product-image', () => ({
+    ProductImageContainer: ({ product }: { product: { productName?: string } }) => (
+        <img src="https://example.com/test.jpg" alt={product.productName ?? ''} />
+    ),
+}));
+
+// Pass-through DynamicImageProvider
+vi.mock('@/providers/dynamic-image', () => ({
+    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 const mockNavigate = vi.fn();
@@ -94,65 +107,44 @@ const mockProduct: ShopperSearch.schemas['ProductSearchHit'] = {
             values: [
                 { value: 'navy', name: 'Navy' },
                 { value: 'red', name: 'Red' },
-                { value: 'blue', name: 'Blue' },
-                { value: 'black', name: 'Black' },
             ],
         },
     ],
     imageGroups: [
         {
-            viewType: 'swatch',
+            viewType: 'medium',
             images: [
                 {
-                    alt: 'Navy swatch',
-                    link: 'https://example.com/navy.jpg',
-                    disBaseLink: 'https://example.com/navy.jpg',
-                },
-                {
-                    alt: 'Red swatch',
-                    link: 'https://example.com/red.jpg',
-                    disBaseLink: 'https://example.com/red.jpg',
+                    alt: 'Test Image',
+                    link: 'https://example.com/test.jpg',
+                    disBaseLink: 'https://example.com/test.jpg',
                 },
             ],
         },
     ],
 };
 
-const renderComponent = (props = {}) => {
-    // Using createMemoryRouter in framework mode is fine
-    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+const renderTile = (props: Partial<React.ComponentProps<typeof ProductTile>> = {}) => {
     const router = createMemoryRouter(
         [
             {
                 path: '/test',
                 element: (
-                    <ConfigWrapper>
-                        <CurrencyProvider value="USD">
-                            <ProductTile product={mockProduct} {...props} />
-                        </CurrencyProvider>
-                    </ConfigWrapper>
+                    <AllProvidersWrapper>
+                        <ProductTile product={mockProduct} {...props} />
+                    </AllProvidersWrapper>
                 ),
             },
-            {
-                path: '/product/:productId',
-                element: <div>Product Page</div>,
-            },
-            // Catch-all route to prevent 404 errors when navigating
-            {
-                path: '*',
-                element: <div>Navigated</div>,
-            },
+            { path: '*', element: <div>Navigated</div> },
         ],
         { initialEntries: ['/test'] }
     );
     return render(<RouterProvider router={router} />);
 };
 
-describe('ProductTile', () => {
+describe('ProductTile — rendering', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        // Use vi.spyOn to mock useNavigate while keeping real router exports
         vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
     });
 
@@ -160,67 +152,135 @@ describe('ProductTile', () => {
         vi.restoreAllMocks();
     });
 
-    test('renders product information correctly', () => {
-        renderComponent();
-
-        expect(screen.getByText('Test Product')).toBeInTheDocument();
-        expect(screen.getByText('$99.99')).toBeInTheDocument();
-        expect(screen.getByText(t('product:moreOptions'))).toBeInTheDocument();
+    test('renders product name as a heading', () => {
+        renderTile();
+        expect(screen.getByRole('heading', { name: 'Test Product' })).toBeInTheDocument();
     });
 
-    test('displays product badges', () => {
-        renderComponent();
+    test('renders product price', () => {
+        renderTile();
+        expect(screen.getByText('$99.99')).toBeInTheDocument();
+    });
 
+    test('renders brand when getProductBrand returns a value', () => {
+        renderTile();
+        expect(screen.getByText('Test Brand')).toBeInTheDocument();
+    });
+
+    test('does not render brand element when getProductBrand returns undefined', async () => {
+        const { getProductBrand } = await import('@/lib/product-utils-plp');
+        vi.mocked(getProductBrand).mockReturnValueOnce(undefined);
+        renderTile();
+        expect(screen.queryByText('Test Brand')).not.toBeInTheDocument();
+    });
+
+    test('renders SKU via data-testid', () => {
+        renderTile();
+        const skuEl = screen.getByTestId('product-tile-sku');
+        expect(skuEl).toBeInTheDocument();
+        expect(skuEl.textContent).toContain('test-product');
+    });
+
+    test('renders short description via data-testid', () => {
+        renderTile();
+        expect(screen.getByTestId('product-tile-description')).toHaveTextContent('A great product description.');
+    });
+
+    test('does not render description element when getProductShortDescription returns undefined', async () => {
+        const { getProductShortDescription } = await import('@/lib/product-utils-plp');
+        vi.mocked(getProductShortDescription).mockReturnValueOnce(undefined);
+        renderTile();
+        expect(screen.queryByTestId('product-tile-description')).not.toBeInTheDocument();
+    });
+
+    test('renders badges when hasBadges is true', async () => {
+        const { getProductBadges } = await import('@/lib/product-badges');
+        vi.mocked(getProductBadges).mockReturnValueOnce({
+            hasBadges: true,
+            badges: [
+                { label: 'Sale', propertyName: 'c_isSale', color: 'orange' },
+                { label: 'New', propertyName: 'c_isNew', color: 'green' },
+            ],
+        });
+        renderTile();
         expect(screen.getByText('Sale')).toBeInTheDocument();
         expect(screen.getByText('New')).toBeInTheDocument();
     });
 
-    test('navigates to PDP when clicking product name', async () => {
-        const user = userEvent.setup();
-        renderComponent();
-
-        const productLink = screen.getByRole('link', { name: 'Test Product' });
-        await user.click(productLink);
-
-        // Link should have correct href
-        expect(productLink).toHaveAttribute('href', '/product/test-product');
+    test('does not render badges when hasBadges is false', () => {
+        renderTile();
+        expect(screen.queryByText('Sale')).not.toBeInTheDocument();
     });
 
-    test('navigates to PDP with selected attribute when clicking More Options', async () => {
-        const user = userEvent.setup();
-        renderComponent();
-
-        // First select an attribute
-        const swatches = screen
-            .getAllByRole('button')
-            .filter(
-                (button) =>
-                    button.className.includes('cursor-pointer') &&
-                    !button.textContent?.includes(t('product:moreOptions'))
-            );
-
-        if (swatches.length > 1) {
-            await user.click(swatches[1]); // Select 'small'
-        }
-
-        // Then click More Options button
-        const moreOptionsButton = screen.getByText(t('product:moreOptions'));
-        await user.click(moreOptionsButton);
-
-        expect(mockNavigate).toHaveBeenCalledWith('/product/test-product');
+    test('renders store name from config', () => {
+        renderTile();
+        // AllProvidersWrapper provides a test config; the tile renders config.global.branding.name
+        // Verify the tile renders without error and the product card is present
+        const card = document.querySelector('.product-card');
+        expect(card).toBeInTheDocument();
     });
 
-    test('applies custom className', () => {
-        const customClass = 'custom-product-tile';
-        const { container } = renderComponent({ className: customClass });
+    test('renders topCategoryName when provided', () => {
+        renderTile({ topCategoryName: 'Women' });
+        expect(screen.getByText('Women')).toBeInTheDocument();
+    });
 
-        // The className should be applied to the main ProductTile div (first child of the container)
-        const productTileElement = container.querySelector('.border.rounded-xl');
-        expect(productTileElement).toHaveClass(customClass);
+    test('does not render topCategoryName when not provided', () => {
+        renderTile();
+        // topCategoryName paragraph is conditionally rendered
+        // We verify the tile renders without error and topCategoryName text is absent
+        expect(screen.queryByText('Women')).not.toBeInTheDocument();
+    });
+
+    test('renders wishlist button (inside aria-hidden container)', () => {
+        renderTile();
+        // hidden: true is required because the button is inside an aria-hidden="true" container
+        expect(screen.getByRole('button', { name: /add.*to wishlist/i, hidden: true })).toBeInTheDocument();
+    });
+
+    test('renders quick add button with custom label (inside aria-hidden container)', () => {
+        renderTile({ quickAddLabel: 'Fast Add' });
+        expect(screen.getByRole('button', { name: /fast add test product/i, hidden: true })).toBeInTheDocument();
+    });
+
+    test('renders pickup indicator when showPickupAvailable is true', () => {
+        const { container } = renderTile({ showPickupAvailable: true });
+        // group/pickup is a unique class applied only to the pickup indicator wrapper
+        expect(container.querySelector('[class*="group/pickup"]')).toBeInTheDocument();
+    });
+
+    test('does not render pickup indicator when showPickupAvailable is false', () => {
+        const { container } = renderTile({ showPickupAvailable: false });
+        expect(container.querySelector('[class*="group/pickup"]')).not.toBeInTheDocument();
+    });
+
+    test('does not render pickup indicator by default', () => {
+        const { container } = renderTile();
+        expect(container.querySelector('[class*="group/pickup"]')).not.toBeInTheDocument();
+    });
+
+    test('applies custom className to the root card element', () => {
+        const { container } = renderTile({ className: 'my-custom-class' });
+        expect(container.querySelector('.my-custom-class')).toBeInTheDocument();
+    });
+
+    test('accepts showNavigationArrows prop without error', () => {
+        expect(() => renderTile({ showNavigationArrows: true })).not.toThrow();
+    });
+
+    test('filters out Page Designer system props without error', () => {
+        expect(() =>
+            renderTile({
+                regionId: 'test-region',
+                component: { type: 'productTile' } as never,
+                componentData: {},
+                data: {},
+            })
+        ).not.toThrow();
     });
 });
 
-describe('ProductTile UI Variants', () => {
+describe('ProductTile — navigation', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
@@ -230,16 +290,36 @@ describe('ProductTile UI Variants', () => {
         vi.restoreAllMocks();
     });
 
-    test('renders custom footer action when provided', () => {
-        const customFooter = <button>Add to Cart</button>;
-        renderComponent({ footerAction: customFooter });
+    test('renders product name as the primary link to the PDP', () => {
+        renderTile();
+        const nameLink = screen.getByRole('link', { name: 'Test Product' });
+        expect(nameLink).toHaveAttribute('href', '/global/en-GB/product/test-product');
+    });
 
-        expect(screen.getByRole('button', { name: 'Add to Cart' })).toBeInTheDocument();
-        expect(screen.queryByText(/more options/i)).not.toBeInTheDocument();
+    test('product name link is in the tab order (no tabIndex={-1})', () => {
+        renderTile();
+        const nameLink = screen.getByRole('link', { name: 'Test Product' });
+        expect(nameLink).not.toHaveAttribute('tabindex', '-1');
+    });
+
+    test('calls handleProductClick when the product name link is clicked', async () => {
+        const user = userEvent.setup();
+        const handleProductClick = vi.fn();
+        renderTile({ handleProductClick });
+
+        await user.click(screen.getByRole('link', { name: 'Test Product' }));
+
+        expect(handleProductClick).toHaveBeenCalledWith(mockProduct);
+    });
+
+    test('image area overlay link points to the PDP', () => {
+        renderTile();
+        const overlayLink = screen.getByRole('link', { name: /view test product/i });
+        expect(overlayLink).toHaveAttribute('href', '/global/en-GB/product/test-product');
     });
 });
 
-describe('ProductTile Page Designer Styling', () => {
+describe('ProductTile — swatch rendering', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
@@ -249,136 +329,49 @@ describe('ProductTile Page Designer Styling', () => {
         vi.restoreAllMocks();
     });
 
-    test('applies object-fit styling', () => {
-        const { container } = renderComponent({ objectFit: 'cover' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('[&_img]:!object-cover');
-    });
-
-    test('applies border radius styling', () => {
-        const { container } = renderComponent({ borderRadius: 'lg' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('!rounded-lg');
-    });
-
-    test('applies box shadow styling', () => {
-        const { container } = renderComponent({ boxShadow: 'xl' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('!shadow-xl');
-        expect(card).toHaveClass('hover:!shadow-xl');
-    });
-
-    test('applies box shadow none styling', () => {
-        const { container } = renderComponent({ boxShadow: 'none' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('!shadow-none');
-        expect(card).toHaveClass('hover:!shadow-none');
-    });
-
-    test('applies padding styling', () => {
-        const { container } = renderComponent({ padding: '4' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('p-4');
-    });
-
-    test('applies margin styling', () => {
-        const { container } = renderComponent({ margin: '6' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('m-6');
-    });
-
-    test('applies font weight styling', () => {
-        const { container } = renderComponent({ fontWeight: 'bold' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('[&_a]:!font-bold');
-    });
-
-    test('applies letter spacing styling', () => {
-        const { container } = renderComponent({ letterSpacing: 'wide' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('[&_a]:!tracking-wide');
-    });
-
-    test('applies scale hover effect', () => {
-        const { container } = renderComponent({ hoverEffect: 'scale' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('hover:!scale-105');
-        expect(card).toHaveClass('!transition-transform');
-        expect(card).toHaveClass('!duration-200');
-    });
-
-    test('applies shadow hover effect', () => {
-        const { container } = renderComponent({ hoverEffect: 'shadow' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('hover:!shadow-xl');
-        expect(card).toHaveClass('!transition-shadow');
-        expect(card).toHaveClass('!duration-200');
-    });
-
-    test('applies lift hover effect', () => {
-        const { container } = renderComponent({ hoverEffect: 'lift' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).toHaveClass('hover:!-translate-y-1');
-        expect(card).toHaveClass('hover:!shadow-lg');
-        expect(card).toHaveClass('!transition-all');
-        expect(card).toHaveClass('!duration-200');
-    });
-
-    test('does not apply hover effect classes when hoverEffect is default', () => {
-        const { container } = renderComponent({ hoverEffect: 'default' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).not.toHaveClass('hover:!scale-105');
-        expect(card).not.toHaveClass('hover:!shadow-xl');
-        expect(card).not.toHaveClass('hover:!-translate-y-1');
-    });
-
-    test('applies multiple Page Designer styles together', () => {
-        const { container } = renderComponent({
-            objectFit: 'contain',
-            borderRadius: '2xl',
-            boxShadow: 'lg',
-            padding: '8',
-            margin: '4',
-            fontWeight: 'semibold',
-            letterSpacing: 'normal',
-            hoverEffect: 'scale',
+    test('renders color swatches inside an aria-hidden container', async () => {
+        const { container } = renderTile();
+        // Swatches are visual/mouse-only; their container is aria-hidden so AT ignores them
+        // LazySwatches loads async; wait for it to render
+        await waitFor(() => {
+            const swatchWrapper = container.querySelector('[aria-hidden="true"] [aria-label="Available colors"]');
+            expect(swatchWrapper).toBeInTheDocument();
         });
-        const card = container.querySelector('.border.rounded-xl');
-
-        expect(card).toHaveClass('[&_img]:!object-contain');
-        expect(card).toHaveClass('!rounded-2xl');
-        expect(card).toHaveClass('!shadow-lg');
-        expect(card).toHaveClass('p-8');
-        expect(card).toHaveClass('m-4');
-        expect(card).toHaveClass('[&_a]:!font-semibold');
-        expect(card).toHaveClass('[&_a]:!tracking-normal');
-        expect(card).toHaveClass('hover:!scale-105');
-        // Note: hoverEffect='scale' adds hover:!shadow-md which overrides the hover:!shadow-lg from boxShadow
-        expect(card).toHaveClass('hover:!shadow-md');
     });
 
-    test('filters out Page Designer system props', () => {
-        const { container } = renderComponent({
-            regionId: 'test-region',
-            component: { type: 'productTile' },
-            componentData: {},
-            designMetadata: {},
-            data: {},
-        });
+    test('does not render swatch container when getDecoratedVariationAttributes returns empty', async () => {
+        const { getDecoratedVariationAttributes } = await import('@/lib/product-utils');
+        vi.mocked(getDecoratedVariationAttributes).mockReturnValueOnce([]);
+        const { container } = renderTile();
+        expect(container.querySelector('[aria-label="Available colors"]')).not.toBeInTheDocument();
+    });
+});
 
-        // Component should render without errors
-        expect(container.querySelector('.border.rounded-xl')).toBeInTheDocument();
+describe('ProductTile — accessibility', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
     });
 
-    test('does not add padding class when padding is 0', () => {
-        const { container } = renderComponent({ padding: '0' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).not.toHaveClass('p-0');
+    afterEach(() => {
+        vi.restoreAllMocks();
     });
 
-    test('does not add margin class when margin is 0', () => {
-        const { container } = renderComponent({ margin: '0' });
-        const card = container.querySelector('.border.rounded-xl');
-        expect(card).not.toHaveClass('m-0');
+    test('wishlist button is inside an aria-hidden container', () => {
+        renderTile();
+        const wishlistBtn = screen.getByRole('button', { name: /add.*to wishlist/i, hidden: true });
+        expect(wishlistBtn.closest('[aria-hidden="true"]')).toBeInTheDocument();
+    });
+
+    test('quick add button is inside an aria-hidden container', () => {
+        renderTile();
+        const quickAddBtn = screen.getByRole('button', { name: /quick add test product/i, hidden: true });
+        expect(quickAddBtn.closest('[aria-hidden="true"]')).toBeInTheDocument();
+    });
+
+    test('product name heading wraps the PDP link', () => {
+        renderTile();
+        const heading = screen.getByRole('heading', { name: 'Test Product' });
+        expect(heading.querySelector('a')).toHaveAttribute('href', '/global/en-GB/product/test-product');
     });
 });

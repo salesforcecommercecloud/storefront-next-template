@@ -32,6 +32,7 @@ import {
     createBasketErrorResponse,
 } from './types/action-responses';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 
 // Constants
 
@@ -68,7 +69,9 @@ import { getTranslation } from '@/lib/i18next';
  * @throws Error if no basket is found in the session
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<BasketActionResponse> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('CartBundleUpdate: action starting');
 
     if (request.method !== 'PATCH') {
         throw new Response(t('errors:methodNotAllowed'), { status: 405 });
@@ -76,6 +79,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
     const basketId = await ensureBasketId(context);
     if (!basketId) {
+        logger.warn('CartBundleUpdate: no basket found');
         return createBasketErrorResponse(t('errors:noBasketFound'));
     }
 
@@ -84,6 +88,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const itemsJson = formData.get('items')?.toString();
 
         if (!itemsJson) {
+            logger.warn('CartBundleUpdate: missing items data in form data');
             return createBasketErrorResponse('Items data is required');
         }
 
@@ -91,16 +96,19 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const items = JSON.parse(itemsJson);
 
         if (!Array.isArray(items) || items.length === 0) {
+            logger.warn('CartBundleUpdate: items must be a non-empty array');
             return createBasketErrorResponse('Items must be a non-empty array');
         }
 
         // Validate each item has required fields
         for (const item of items) {
             if (!item.itemId || !item.quantity || item.quantity <= 0) {
+                logger.warn('CartBundleUpdate: invalid item data', { itemId: item.itemId, quantity: item.quantity });
                 return createBasketErrorResponse('Each item must have valid itemId and quantity');
             }
         }
 
+        logger.debug('CartBundleUpdate: updating items', { itemCount: items.length, basketId });
         const clients = createApiClients(context);
 
         // Update all items in the bundle using updateItemsInBasket
@@ -114,11 +122,14 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         // Update the basket cache to reflect the changes
         updateBasketResource(context, updatedBasket);
 
+        logger.info('CartBundleUpdate: bundle updated successfully');
         return createBasketSuccessResponse(updatedBasket);
     } catch (error) {
         if (error instanceof ApiError) {
+            logger.error('CartBundleUpdate: API error updating bundle', { error });
             return createBasketErrorResponse(error.body?.detail || error.statusText);
         }
+        logger.error('CartBundleUpdate: failed', { error });
         return createBasketErrorResponse(error instanceof Error ? error.message : 'An unexpected error occurred');
     }
 }

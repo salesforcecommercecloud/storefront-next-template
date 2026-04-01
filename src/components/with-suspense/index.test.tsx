@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ComponentType } from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import withSuspense from './index';
@@ -249,7 +250,7 @@ describe('withSuspense', () => {
                 );
             };
 
-            const WrappedComponent = withSuspense(ComplexComponent);
+            const WrappedComponent = withSuspense(ComplexComponent as ComponentType<Record<string, unknown>>);
             const items = [{ id: 1, name: 'Item 1' }];
             const callback = vi.fn();
 
@@ -273,7 +274,7 @@ describe('withSuspense', () => {
         test('should pass resolve to ComponentWithData when provided', () => {
             const testPromise = Promise.resolve({ passed: true });
 
-            const DataComponent = ({ data }: { data?: any; testId?: string }) => (
+            const DataComponent = ({ data, testId }: { data?: any; testId?: string }) => (
                 <div data-testid={testId || 'data-component'}>
                     <span>{data ? 'Has data' : 'No data'}</span>
                 </div>
@@ -397,7 +398,7 @@ describe('withSuspense', () => {
                 </div>
             );
 
-            const WrappedComponent = withSuspense(UserComponent);
+            const WrappedComponent = withSuspense(UserComponent as unknown as ComponentType<Record<string, unknown>>);
 
             render(<WrappedComponent userId="user-123" role="admin" />);
 
@@ -416,7 +417,7 @@ describe('withSuspense', () => {
                 <div data-testid="number-component">{value * multiplier}</div>
             );
 
-            const WrappedComponent = withSuspense(NumberComponent);
+            const WrappedComponent = withSuspense(NumberComponent as ComponentType<Record<string, unknown>>);
 
             render(<WrappedComponent value={5} multiplier={3} />);
 

@@ -16,14 +16,17 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Typography } from '@/components/typography';
+import { Plus, Minus } from 'lucide-react';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 
 interface RefineInventoryProps {
     isFilterSelected: (attributeId: string, value: string) => boolean;
+    hasActiveFilter: (attributeId: string) => boolean;
     toggleFilter: (attributeId: string, value: string) => void;
 }
 
@@ -33,47 +36,65 @@ interface RefineInventoryProps {
  * Displays a "Shop by Availability" filter that allows users to filter products
  * by availability at a selected store. Integrates with the store locator feature.
  *
+ * When an `ilids` refine is already active, its value stays in sync with the globally
+ * selected store no matter where the store locator was opened. Opening the locator from
+ * this row (checkbox with no store, or store name) turns the refine on after the next
+ * store selection; if the refine was already off and the locator was opened elsewhere,
+ * changing the store does not enable the refine.
+ *
  * @param isFilterSelected - Function to check if a filter is currently selected
+ * @param hasActiveFilter - Whether any refine is active for an attribute (from parent `effectiveRefines`)
  * @param toggleFilter - Function to toggle a filter on/off
  * @returns ReactElement
  */
-export default function RefineInventory({ isFilterSelected, toggleFilter }: RefineInventoryProps) {
+export default function RefineInventory({ isFilterSelected, hasActiveFilter, toggleFilter }: RefineInventoryProps) {
     const { t } = useTranslation('extBopis');
 
     // Get selected store info to display name and use inventoryId for filtering
     const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
     const openStoreLocator = useStoreLocator((state) => state.open);
-    const openedFromHereRef = useRef(false);
+    const isStoreLocatorOpen = useStoreLocator((state) => state.isOpen);
+    const enableInventoryFilterOnNextStorePickRef = useRef(false);
 
     const inventoryId = selectedStoreInfo?.inventoryId || '';
     const inventoryIdRef = useRef<string>(inventoryId);
     // Use inventoryId directly for checked state, not the ref (ref is for tracking changes)
     const isChecked = isFilterSelected('ilids', inventoryId);
+    const hadIlidsRefine = hasActiveFilter('ilids');
 
-    // Update the inventory filter when the selected store changes
     useEffect(() => {
-        const storeChanged = inventoryIdRef.current !== inventoryId;
-        if (isChecked && storeChanged) {
-            toggleFilter('ilids', inventoryId);
+        if (!isStoreLocatorOpen) {
+            enableInventoryFilterOnNextStorePickRef.current = false;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [inventoryId]);
+    }, [isStoreLocatorOpen]);
 
-    // Auto-apply filter when store locator closes after being opened from this component
-    // Only apply if the store has actually changed
+    // Keep ilids= aligned with the globally selected store whenever the filter is already on (any locator entry).
+    // If the locator was opened from this component's checkbox (no store) or store link, the next store pick
+    // also turns the filter on even when it was off.
     useEffect(() => {
-        // If modal was opened from here and is now closed
-        if (openedFromHereRef.current) {
-            openedFromHereRef.current = false;
+        const prevInv = inventoryIdRef.current;
+        const storeChanged = prevInv !== inventoryId;
 
-            // Only apply filter if store changed and a store is selected
-            const storeChanged = inventoryIdRef.current !== inventoryId;
-            if (inventoryId && !isChecked && storeChanged) {
+        if (!inventoryId) {
+            inventoryIdRef.current = inventoryId;
+            return;
+        }
+
+        if (enableInventoryFilterOnNextStorePickRef.current && storeChanged) {
+            enableInventoryFilterOnNextStorePickRef.current = false;
+            if (!isChecked) {
                 toggleFilter('ilids', inventoryId);
             }
+            inventoryIdRef.current = inventoryId;
+            return;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [inventoryId]);
+
+        if (storeChanged && hadIlidsRefine && !isChecked) {
+            toggleFilter('ilids', inventoryId);
+        }
+
+        inventoryIdRef.current = inventoryId;
+    }, [inventoryId, toggleFilter, hadIlidsRefine, isChecked]);
 
     const handleCheckboxChange = () => {
         if (inventoryId) {
@@ -81,7 +102,7 @@ export default function RefineInventory({ isFilterSelected, toggleFilter }: Refi
             toggleFilter('ilids', inventoryId);
         } else {
             // No store selected, open the store locator
-            openedFromHereRef.current = true;
+            enableInventoryFilterOnNextStorePickRef.current = true;
             openStoreLocator();
         }
     };
@@ -89,53 +110,59 @@ export default function RefineInventory({ isFilterSelected, toggleFilter }: Refi
     const handleStoreNameClick = (e: React.MouseEvent | React.KeyboardEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        openedFromHereRef.current = true;
+        enableInventoryFilterOnNextStorePickRef.current = true;
         openStoreLocator();
     };
 
     const storeLinkText = selectedStoreInfo?.name || t('storeInventoryFilter.selectStore');
+    const [isOpen, setIsOpen] = useState(true); // Default open to match previous behavior
 
     return (
-        <>
-            <Accordion type="multiple" defaultValue={['inventory']}>
-                <AccordionItem value="inventory" className="!border-b" data-testid="sf-store-inventory-filter">
-                    <AccordionTrigger>{t('storeInventoryFilter.heading')}</AccordionTrigger>
-                    <AccordionContent>
-                        <div className="flex items-start space-x-2 p-2 rounded-md hover:bg-muted/30">
-                            <Checkbox
-                                id="inventory-filter"
-                                checked={isChecked}
-                                onCheckedChange={handleCheckboxChange}
-                                aria-label={t('storeInventoryFilter.checkboxAriaLabel', { storeName: storeLinkText })}
-                                data-testid="sf-store-inventory-filter-checkbox"
-                                className="size-4"
-                            />
-                            <label
-                                htmlFor="inventory-filter"
-                                className="text-sm font-medium leading-none cursor-pointer">
-                                {t('storeInventoryFilter.label', { storeName: ' ' })}
-                                <span
-                                    className="underline cursor-pointer hover:opacity-70"
-                                    onClick={handleStoreNameClick}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
-                                            handleStoreNameClick(e);
-                                        }
-                                    }}
-                                    role="button"
-                                    tabIndex={0}
-                                    aria-label={
-                                        selectedStoreInfo
-                                            ? t('storeInventoryFilter.changeStore')
-                                            : t('storeInventoryFilter.selectStore')
-                                    }>
-                                    {storeLinkText}
-                                </span>
-                            </label>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </>
+        <Collapsible
+            open={isOpen}
+            onOpenChange={setIsOpen}
+            className="border border-border rounded-md mb-4"
+            data-testid="sf-store-inventory-filter">
+            <Typography variant="small" as="h3" className="leading-normal p-4 transition-colors hover:bg-muted/60">
+                <CollapsibleTrigger className="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer">
+                    <Typography variant="small" as="span" className="font-medium">
+                        {t('storeInventoryFilter.heading')}
+                    </Typography>
+                    {isOpen ? <Minus className="size-4" /> : <Plus className="size-4" />}
+                </CollapsibleTrigger>
+            </Typography>
+            <CollapsibleContent className="px-4 pb-4">
+                <div className="flex items-start space-x-2 p-2 rounded-md">
+                    <Checkbox
+                        id="inventory-filter"
+                        checked={isChecked}
+                        onCheckedChange={handleCheckboxChange}
+                        aria-label={t('storeInventoryFilter.checkboxAriaLabel', { storeName: storeLinkText })}
+                        data-testid="sf-store-inventory-filter-checkbox"
+                        className="size-4"
+                    />
+                    <label htmlFor="inventory-filter" className="text-sm font-medium leading-none cursor-pointer">
+                        {t('storeInventoryFilter.label', { storeName: ' ' })}
+                        <span
+                            className="underline cursor-pointer hover:opacity-70"
+                            onClick={handleStoreNameClick}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    handleStoreNameClick(e);
+                                }
+                            }}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={
+                                selectedStoreInfo
+                                    ? t('storeInventoryFilter.changeStore')
+                                    : t('storeInventoryFilter.selectStore')
+                            }>
+                            {storeLinkText}
+                        </span>
+                    </label>
+                </div>
+            </CollapsibleContent>
+        </Collapsible>
     );
 }

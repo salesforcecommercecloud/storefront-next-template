@@ -123,6 +123,15 @@ describe('getLastFourDigits', () => {
         expect(getLastFourDigits('****-****-****-9a8b')).toBe('****');
         expect(getLastFourDigits('** 1 2 3 4')).toBe('1234');
     });
+
+    test('prefers numberLastDigits when provided and valid (customer payment instruments)', () => {
+        expect(getLastFourDigits('Visa ****', '4242')).toBe('4242');
+        expect(getLastFourDigits(undefined, '1234')).toBe('1234');
+        expect(getLastFourDigits('************5678', '0000')).toBe('0000');
+        // invalid numberLastDigits falls back to maskedNumber
+        expect(getLastFourDigits('************1234', 'ab')).toBe('1234');
+        expect(getLastFourDigits('************1234', '12')).toBe('1234');
+    });
 });
 
 describe('hasValidPaymentCard', () => {
@@ -132,6 +141,14 @@ describe('hasValidPaymentCard', () => {
             hasValidPaymentCard({
                 paymentInstrumentId: 'id',
                 paymentMethodId: 'CREDIT_CARD',
+                paymentCard: { cardType: 'Visa' },
+            } as any)
+        ).toBe(true);
+        // CREDIT_CARD (visa) from customer profile - accepted via startsWith
+        expect(
+            hasValidPaymentCard({
+                paymentInstrumentId: 'id',
+                paymentMethodId: 'CREDIT_CARD (visa)',
                 paymentCard: { cardType: 'Visa' },
             } as any)
         ).toBe(true);

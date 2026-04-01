@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { describe, expect, it } from 'vitest';
+import type { TFunction } from 'i18next';
 import { createCustomerAddressFormSchema } from './index';
 
 import { getTranslation } from '@/lib/i18next';
 
 const { t } = getTranslation();
-const customerAddressFormSchema = createCustomerAddressFormSchema(t);
+const customerAddressFormSchema = createCustomerAddressFormSchema(t as unknown as TFunction<['errors', 'account']>);
 
 describe('customerAddressFormSchema', () => {
     describe('valid data', () => {

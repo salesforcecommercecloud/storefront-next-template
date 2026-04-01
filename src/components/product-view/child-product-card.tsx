@@ -242,7 +242,7 @@ export default function ChildProductCard({
                         const { href, name: valueName, image, value: swatchValue, orderable } = value;
                         const content = image ? (
                             <div
-                                className="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                                className="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
                                 style={{ backgroundImage: `url(${image.link})` }}
                                 aria-label={image.alt || valueName}
                             />
@@ -258,7 +258,7 @@ export default function ChildProductCard({
                                 disabled={!orderable}
                                 value={swatchValue}
                                 name={valueName}
-                                shape={id === 'color' ? 'circle' : 'square'}>
+                                shape={id === 'color' ? 'color' : 'label'}>
                                 {content}
                             </Swatch>
                         );
@@ -303,6 +303,7 @@ export default function ChildProductCard({
                 {/* Individual Add to Cart Button */}
                 {isParentProductASet && (
                     <Button
+                        data-testid="add-to-cart"
                         onClick={() => void handleAddChildToCart()}
                         disabled={!canAddChildToCart || isAddingChildOrUpdatingToCart}
                         size="sm"

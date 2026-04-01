@@ -13,27 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, beforeEach } from 'vitest';
 import { getBasketCurrency } from './basket';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getConfig } from '@/config';
-import type { RouterContextProvider } from 'react-router';
+import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 
-vi.mock('@/config');
+const createMockContext = (defaultCurrency = 'USD') =>
+    ({
+        get: (key: unknown) => {
+            if (key === multiSiteContext) {
+                return { site: { defaultCurrency } };
+            }
+            return undefined;
+        },
+    }) as any;
 
 describe('getBasketCurrency', () => {
-    const mockContext = {} as Readonly<RouterContextProvider>;
+    let mockContext: ReturnType<typeof createMockContext>;
 
     beforeEach(() => {
-        vi.mocked(getConfig).mockReturnValue({
-            commerce: {
-                sites: [
-                    {
-                        defaultCurrency: 'USD',
-                    },
-                ],
-            },
-        } as any);
+        mockContext = createMockContext('USD');
     });
 
     test('should return basket currency when available', () => {
@@ -48,22 +47,14 @@ describe('getBasketCurrency', () => {
     });
 
     test('should return site currency when basket has no currency', () => {
-        vi.mocked(getConfig).mockReturnValue({
-            commerce: {
-                sites: [
-                    {
-                        defaultCurrency: 'EUR',
-                    },
-                ],
-            },
-        } as any);
+        const eurContext = createMockContext('EUR');
 
         const basket: Partial<ShopperBasketsV2.schemas['Basket']> = {
             basketId: 'test-basket',
             // currency is undefined
         };
 
-        const result = getBasketCurrency(mockContext, basket);
+        const result = getBasketCurrency(eurContext, basket);
 
         expect(result).toBe('EUR');
     });

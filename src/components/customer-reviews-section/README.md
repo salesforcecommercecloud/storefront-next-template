@@ -12,7 +12,7 @@ PDP (_app.product.$productId)
         └── ProductAccordion / content
               └── CustomerReviewsSection ← this component: accordion + summary + list
                     ├── StarRating / StarRatingDistributions  ← summary card (rating + bars)
-                    ├── AiReviewSummary (lazy)                ← AI summary, shown on PDP load
+                    ├── AiInsightCard (lazy)                ← AI summary, shown on PDP load
                     └── ReviewCardsSection (lazy)              ← list + WriteReviewButton
                           ├── filter by rating, search, sort, pagination
                           └── WriteReviewButton → modal (WriteReviewModalContent)
@@ -21,7 +21,7 @@ PDP (_app.product.$productId)
 
 - **ProductReviewsProvider** lives on the PDP. It uses the **product content adapter** (`getReviewsSummary`, `getReviews`, `addReview`). UI only talks to the provider via **useProductReviews**.
 - **ProductRatingSummary** (in ProductInfo) shows the compact rating; it calls **expandReviews()** so "See customer reviews" scrolls to and opens the accordion.
-- **CustomerReviewsSection** is the main reviews block: accordion header uses summary; on expand it loads full list and renders **ReviewCardsSection** and **AiReviewSummary**.
+- **CustomerReviewsSection** is the main reviews block: accordion header uses summary; on expand it loads full list and renders **ReviewCardsSection** and **AiInsightCard**.
 - **ReviewCardsSection** does filtering, search, sort, pagination and renders **ReviewCard**; it includes **WriteReviewButton**, whose modal uses **addReview()** to add a new review and update context.
 
 ## Features

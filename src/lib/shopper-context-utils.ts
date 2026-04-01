@@ -15,6 +15,7 @@
  */
 import type { RouterContextProvider } from 'react-router';
 import { createShopperContext, type ShopperContext } from '@/lib/api/shopper-context';
+import { getLogger } from '@/lib/logger.server';
 import {
     SHOPPER_CONTEXT_SEARCH_PARAMS,
     QUALIFIER_MAPPING_PARAM_NAME,
@@ -55,6 +56,7 @@ const assignmentQualifiersApiFieldNames = assignmentQualifiersKeys.map(
 );
 
 const couponCodesMapping = SHOPPER_CONTEXT_SEARCH_PARAMS.couponCodes as QualifierMapping;
+const customerGroupIdsMapping = SHOPPER_CONTEXT_SEARCH_PARAMS.customerGroupIds as QualifierMapping;
 
 export const isCustomQualifier = (key: string): boolean => {
     return customQualifiersApiFieldNames.includes(key) || customQualifiersKeys.includes(key);
@@ -71,6 +73,25 @@ export const isCouponCode = (key: string): boolean => {
     );
 };
 
+export const isCustomerGroupIds = (key: string): boolean => {
+    return (
+        customerGroupIdsMapping[QUALIFIER_MAPPING_API_FIELD_NAME] === key ||
+        customerGroupIdsMapping[QUALIFIER_MAPPING_PARAM_NAME] === key
+    );
+};
+
+/**
+ * For couponCodes/customerGroupIds normalization.
+ */
+function normalizeArrayQualifierValue(apiFieldName: string, value: string): string {
+    if (!isCouponCode(apiFieldName) && !isCustomerGroupIds(apiFieldName)) return value.trim();
+    const segments = value
+        .split(',')
+        .map((s) => s.trim())
+        .filter((s) => s !== '');
+    return segments.join(',');
+}
+
 /**
  * Shared logic: extract qualifiers from key-value entries.
  * Used by extractQualifiersFromUrl and extractQualifiersFromInput.
@@ -81,10 +102,6 @@ function extractQualifiersFromEntries(entries: Iterable<[string, string]>): {
 } {
     const qualifiers: Record<string, string> = {};
     const sourceCodeQualifiers: Record<string, string> = {};
-
-    // For temporary storage of qualifiers with value as string array
-    // For example: couponCodes
-    const tempQualifiers: Record<string, string[]> = {};
 
     for (const [searchParamKey, searchParamValue] of entries) {
         if (!searchParamKey) continue;
@@ -97,7 +114,7 @@ function extractQualifiersFromEntries(entries: Iterable<[string, string]>): {
         if (mapping && QUALIFIER_MAPPING_PARAM_NAME in mapping) {
             qualifierMapping = mapping as QualifierMapping;
         }
-        // Check if it's a customQualifier (e.g., customQualifiers.device)
+        // Check if it's a customQualifier (e.g., customQualifiers.deviceType)
         else if (isCustomQualifier(searchParamKey)) {
             qualifierMapping = customQualifiersMapping[searchParamKey];
         }
@@ -106,30 +123,15 @@ function extractQualifiersFromEntries(entries: Iterable<[string, string]>): {
             qualifierMapping = assignmentQualifiersMapping[searchParamKey];
         }
 
-        if (qualifierMapping && qualifierMapping[QUALIFIER_MAPPING_PARAM_NAME] === searchParamKey) {
+        if (qualifierMapping) {
             apiFieldName =
                 qualifierMapping[QUALIFIER_MAPPING_API_FIELD_NAME] ?? qualifierMapping[QUALIFIER_MAPPING_PARAM_NAME];
-
-            // Separate sourceCode from other qualifiers
             if (apiFieldName === SOURCE_CODE_API_FIELD_NAME) {
-                sourceCodeQualifiers[apiFieldName] = searchParamValue;
+                sourceCodeQualifiers[apiFieldName] = searchParamValue.trim();
             } else {
-                if (!tempQualifiers[apiFieldName]) {
-                    tempQualifiers[apiFieldName] = [];
-                }
-                // Add to regular qualifiers (for other qualifiers than sourceCode)
-                tempQualifiers[apiFieldName].push(searchParamValue);
+                qualifiers[apiFieldName] = normalizeArrayQualifierValue(apiFieldName, searchParamValue);
             }
         }
-    }
-
-    // Convert temporary qualifiers with value as string array to qualifiers with value as string
-    // As cookies only support string values
-    // Will use string.split(',') to get the values as string array in buildShopperContextBody
-    // As API call will need payload as string or string array
-    for (const key in tempQualifiers) {
-        const values = tempQualifiers[key];
-        qualifiers[key] = values.join(',');
     }
 
     return { qualifiers, sourceCodeQualifiers };
@@ -147,18 +149,8 @@ export function extractQualifiersFromUrl(url: URL): {
 }
 
 /**
- * Extract qualifiers from input record into a map
- * Similar to extractQualifiersFromUrl but accepts a Record<string, string> directly
+ * Extract qualifiers from an object into a map
  * Uses SHOPPER_CONTEXT_SEARCH_PARAMS to determine which qualifiers to extract
- *
- * @param input - Record with key-value pairs to extract qualifiers from
- * @returns Object with qualifiers and sourceCodeQualifiers separated
- *
- * @example
- * const input = { src: 'email', device: 'mobile', store: 'store123' };
- * const { qualifiers, sourceCodeQualifiers } = extractQualifiersFromInput(input);
- * // qualifiers: { deviceType: 'mobile', store: 'store123' }
- * // sourceCodeQualifiers: { sourceCode: 'email' }
  */
 export function extractQualifiersFromInput(input: Record<string, string>): {
     qualifiers: Record<string, string>;
@@ -203,8 +195,6 @@ export function computeEffectiveShopperContext(
     currentShopperContext: Record<string, string>
 ): Record<string, string> {
     const effectiveShopperContext: Record<string, string> = { ...currentShopperContext };
-
-    // Update qualifiers if present in newShopperContext (allow null, but not undefined)
     Object.keys(newShopperContext).forEach((key) => {
         if (newShopperContext[key] !== undefined) {
             effectiveShopperContext[key] = newShopperContext[key];
@@ -239,6 +229,7 @@ export async function updateShopperContext({
     newSourceCodeContext: Record<string, string>;
     cookieHeader: string | null;
 }): Promise<{ setCookieHeaders: string[] }> {
+    const logger = getLogger(context);
     const setCookieHeaders: string[] = [];
 
     // Get current context from cookies using cookie-utils (same as other app cookies; adds siteId suffix)
@@ -287,12 +278,9 @@ export async function updateShopperContext({
             setCookieHeaders.push(header);
         }
     } catch (cookieError) {
-        // Cookie serialization failed - log but don't throw
-        // eslint-disable-next-line no-console
-        console.error(
-            'Failed to serialize shopper context cookie:',
-            cookieError instanceof Error ? cookieError.message : String(cookieError)
-        );
+        logger.error('Failed to serialize shopper context cookie', {
+            error: cookieError instanceof Error ? cookieError.message : String(cookieError),
+        });
     }
 
     return { setCookieHeaders };
@@ -311,23 +299,13 @@ export function buildShopperContextBody(
 ): Partial<ShopperContext> {
     const body: Partial<ShopperContext> = {};
 
-    // Add sourceCode if present
-    if (sourceCodeContextMap.sourceCode) {
-        const sourceCodeValue = sourceCodeContextMap.sourceCode.trim();
-        if (sourceCodeValue.length > 0) {
-            body.sourceCode = sourceCodeValue;
-        }
+    if (sourceCodeContextMap.sourceCode !== undefined) {
+        body.sourceCode = sourceCodeContextMap.sourceCode;
     }
 
     Object.keys(contextMap).forEach((key) => {
         // Validate key and value
         if (!key || typeof key !== 'string' || key.trim().length === 0) {
-            return;
-        }
-
-        // Skip sourceCode from contextMap if it's already set from sourceCodeContextMap
-        // sourceCodeContextMap takes precedence
-        if (key === SOURCE_CODE_API_FIELD_NAME && body.sourceCode) {
             return;
         }
 
@@ -341,32 +319,31 @@ export function buildShopperContextBody(
         const isKeyCustomQualifier = isCustomQualifier(key);
         const isKeyAssignmentQualifier = isAssignmentQualifier(key);
         const isKeyCouponCode = isCouponCode(key);
+        const isKeyCustomerGroupIds = isCustomerGroupIds(key);
 
         const valueArray = rawValue.split(',');
         const value = valueArray.length === 1 ? valueArray[0] : undefined;
 
         if (isKeyCouponCode && valueArray && Array.isArray(valueArray)) {
-            // Only for root-level qualifiers with value as string array
-            // For example: couponCodes
-            body.couponCodes = valueArray.map((v) => v.trim()).filter((v) => v.length > 0);
-        }
-        if (value && typeof value === 'string' && value.trim().length > 0 && !isKeyCouponCode) {
+            body.couponCodes = rawValue === '' ? [] : valueArray;
+        } else if (isKeyCustomerGroupIds && valueArray && Array.isArray(valueArray)) {
+            body.customerGroupIds = rawValue === '' ? [] : valueArray;
+        } else if (typeof value === 'string') {
             if (isKeyCustomQualifier) {
                 // Add custom qualifiers
                 body.customQualifiers = {
                     ...body.customQualifiers,
-                    [key]: value.trim(),
+                    [key]: value,
                 };
             } else if (isKeyAssignmentQualifier) {
                 // Add assignment qualifiers
                 body.assignmentQualifiers = {
                     ...body.assignmentQualifiers,
-                    [key]: value.trim(),
+                    [key]: value,
                 };
             } else {
-                // Add root-level qualifiers with value as string
-                // For example: src
-                (body as Record<string, string>)[key] = value.trim();
+                // Add root-level qualifiers
+                (body as Record<string, string>)[key] = value;
             }
         }
     });

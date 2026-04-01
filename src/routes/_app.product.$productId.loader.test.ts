@@ -18,7 +18,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { loader } from './_app.product.$productId';
-import { appConfigContext } from '@/config';
+import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import { authContext } from '@/middlewares/auth.utils';
 import { currencyContext } from '@/lib/currency';
 
@@ -54,15 +54,7 @@ vi.mock('@/lib/util/pageLoader', () => ({
 }));
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-const mockGetCookieFromRequestAs = vi.hoisted(() => vi.fn());
-const mockGetCookieFromDocumentAs = vi.hoisted(() => vi.fn());
-const mockGetSelectedStoreInfoCookieName = vi.hoisted(() => vi.fn(() => 'selectedStoreInfo_test'));
-
-vi.mock('@/extensions/store-locator/utils', () => ({
-    getCookieFromRequestAs: mockGetCookieFromRequestAs,
-    getCookieFromDocumentAs: mockGetCookieFromDocumentAs,
-    getSelectedStoreInfoCookieName: mockGetSelectedStoreInfoCookieName,
-}));
+import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 describe('Product Route Loaders', () => {
@@ -104,6 +96,10 @@ describe('Product Route Loaders', () => {
         }),
     };
 
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    let mockSelectedStoreInfo: { id?: string; name?: string; inventoryId?: string } | null = null;
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
     const mockContext = {
         locale: 'en-US',
         currency: 'USD',
@@ -118,6 +114,11 @@ describe('Product Route Loaders', () => {
             if (context === currencyContext) {
                 return 'USD';
             }
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            if (context === selectedStoreContext) {
+                return mockSelectedStoreInfo;
+            }
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
             return undefined;
         }),
         set: vi.fn(),
@@ -245,23 +246,17 @@ describe('Product Route Loaders', () => {
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     describe('loader function with BOPIS extension', () => {
-        test('includes inventoryIds when store is selected in cookie', () => {
+        test('includes inventoryIds when store is selected in context', () => {
             mockGetProduct.mockResolvedValue({ data: mockProduct });
             mockGetCategory.mockResolvedValue({ data: mockCategory });
 
-            const selectedStoreInfo = {
-                storeId: 'store-123',
+            mockSelectedStoreInfo = {
+                id: 'store-123',
                 inventoryId: 'inventory-123',
                 name: 'Test Store',
             };
 
-            mockGetCookieFromRequestAs.mockReturnValue(selectedStoreInfo);
-
-            const request = new Request('https://example.com/product/test-product-123', {
-                headers: {
-                    Cookie: `selectedStoreInfo_test=${encodeURIComponent(JSON.stringify(selectedStoreInfo))}`,
-                },
-            });
+            const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
@@ -278,12 +273,14 @@ describe('Product Route Loaders', () => {
                     }),
                 }),
             });
+
+            mockSelectedStoreInfo = null;
         });
 
         test('does not include inventoryIds when store is not selected', () => {
             mockGetProduct.mockResolvedValue({ data: mockProduct });
             mockGetCategory.mockResolvedValue({ data: mockCategory });
-            mockGetCookieFromRequestAs.mockReturnValue(null);
+            mockSelectedStoreInfo = null;
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
@@ -300,13 +297,11 @@ describe('Product Route Loaders', () => {
             mockGetProduct.mockResolvedValue({ data: mockProduct });
             mockGetCategory.mockResolvedValue({ data: mockCategory });
 
-            const selectedStoreInfo = {
-                storeId: 'store-123',
+            mockSelectedStoreInfo = {
+                id: 'store-123',
                 name: 'Test Store',
                 // No inventoryId
             };
-
-            mockGetCookieFromRequestAs.mockReturnValue(selectedStoreInfo);
 
             const request = new Request('https://example.com/product/test-product-123');
             const params = { productId: 'test-product-123' };
@@ -317,6 +312,8 @@ describe('Product Route Loaders', () => {
             // Verify getProduct was called without inventoryIds parameter
             const callArgs = mockGetProduct.mock.calls[0][0];
             expect(callArgs.params.query).not.toHaveProperty('inventoryIds');
+
+            mockSelectedStoreInfo = null;
         });
     });
     // @sfdc-extension-block-end SFDC_EXT_BOPIS

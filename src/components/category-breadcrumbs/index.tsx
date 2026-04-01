@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { Link } from 'react-router';
+import { Link } from '@/components/link';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { ChevronRight } from 'lucide-react';
 

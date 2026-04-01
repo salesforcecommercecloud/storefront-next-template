@@ -15,7 +15,7 @@
  */
 
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getAddressKey } from '@/extensions/multiship/lib/address-utils';
+import { getAddressKey } from '@/lib/address-utils';
 
 /**
  * Return type for multi-shipment distribution analysis functions.

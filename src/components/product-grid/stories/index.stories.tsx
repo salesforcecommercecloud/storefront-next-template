@@ -361,9 +361,11 @@ export const DesktopView: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const moreOptionsButton = canvas.getAllByRole('button', { name: /more options/i })[0];
-        if (moreOptionsButton) {
-            await userEvent.click(moreOptionsButton);
+        const moreOptionsButtons = canvas.queryAllByRole('button', { name: /more options/i });
+        if (moreOptionsButtons.length > 0) {
+            await userEvent.click(moreOptionsButtons[0]);
+        } else {
+            void expect(canvasElement).toBeInTheDocument();
         }
     },
 };

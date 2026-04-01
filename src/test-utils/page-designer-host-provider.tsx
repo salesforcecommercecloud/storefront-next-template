@@ -16,6 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
+import { createLogger } from '@/lib/logger';
 import {
     createHostApi,
     type ClientAcknowledgedEvent,
@@ -23,6 +24,8 @@ import {
 } from '@salesforce/storefront-next-runtime/design/messaging';
 import { useDesignContext } from '@salesforce/storefront-next-runtime/design/react';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+
+const logger = createLogger();
 
 /**
  * A component that creates a design layer host for testing purposes.
@@ -72,15 +75,13 @@ export function PageDesignerHostProvider({
                     labels: {},
                 }),
             onClientConnected: (clientId) => {
-                /* eslint-disable-next-line no-console */
-                console.log(`PageDesignerHost connected to client ${clientId}`);
+                logger.debug(`PageDesignerHost connected to client ${clientId}`);
             },
         });
 
         if (logEvents) {
             host.on('Event', (event) => {
-                /* eslint-disable-next-line no-console */
-                console.log('PageDesignerHost event:', event);
+                logger.debug('PageDesignerHost event', { event: event as unknown as Record<string, unknown> });
             });
         }
 

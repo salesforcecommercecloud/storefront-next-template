@@ -92,7 +92,7 @@ export const Range: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const elements = canvas.getAllByText(/from \$49.99/i);
+        const elements = canvas.getAllByText(/\$49\.99/);
         await expect(elements.length).toBeGreaterThan(0);
         // At least one should be visible (not sr-only)
         const visibleElements = elements.filter((el) => !el.classList.contains('sr-only'));

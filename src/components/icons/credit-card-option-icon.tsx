@@ -25,7 +25,7 @@ interface CreditCardOptionIconProps {
  */
 export default function CreditCardOptionIcon(props: CreditCardOptionIconProps) {
     return (
-        <svg viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <svg viewBox="2 5.5 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
             <g transform="translate(-718, 0)">
                 <path
                     d="M728.728 6.03152C729.568 5.82987 730.417 6.32115 730.626 7.12992L731.797 11.6526C732.007 12.4614 731.497 13.279 730.657 13.4807L723.75 15.139C722.91 15.3406 722.061 14.8493 721.852 14.0405L720.681 9.51785C720.471 8.70909 720.981 7.89145 721.821 7.6898L728.728 6.03152ZM730.969 11.8516L730.245 9.05818L721.957 11.0481L722.68 13.8416C722.775 14.2087 723.162 14.4324 723.543 14.3408L730.45 12.6825C730.831 12.591 731.064 12.2187 730.969 11.8516Z"

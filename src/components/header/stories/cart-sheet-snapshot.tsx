@@ -36,8 +36,8 @@ afterEach(() => {
     console.warn = originalWarn;
 });
 
-vi.mock('@/config', async () => {
-    const actual = await vi.importActual('@/config');
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
     return {
         ...(actual as Record<string, unknown>),
         useConfig: () => ({
@@ -111,6 +111,7 @@ vi.mock('@/providers/basket', () => ({
         }
         return mockBasketValue;
     },
+    useMiniCart: () => ({ miniCartOpen: true, setMiniCartOpen: vi.fn() }),
 }));
 
 import { composeStories } from '@storybook/react-vite';

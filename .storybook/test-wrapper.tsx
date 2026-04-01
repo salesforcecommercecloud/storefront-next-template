@@ -9,7 +9,9 @@ import StoreLocatorProvider from '../src/extensions/store-locator/providers/stor
 import CheckoutOneClickProvider from '../src/components/checkout/utils/checkout-context';
 import BasketProvider from '../src/providers/basket';
 import AuthProvider from '../src/providers/auth';
-import { ConfigProvider } from '../src/config';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/multi-site';
+import { CurrencyProvider } from '../src/providers/currency';
 import { mockConfig } from '../src/test-utils/config';
 import { inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
 
@@ -25,29 +27,36 @@ const mockProductsData = inBasketProductDetails.data.reduce(
 
 export function StoryTestWrapper({ children }: { children: ReactNode }): ReactElement {
     const inRouter = useInRouterContext();
-    
+
     // Wrap with providers in the correct order (matching root.tsx)
     // CheckoutProvider needs BasketProvider, which needs AuthProvider
+    const site = mockConfig.commerce.sites[0];
+    const siteWithAlias = { ...site, alias: mockConfig.siteAliasMap?.[site.id] };
+
     const content = (
         <ConfigProvider config={mockConfig}>
-            <AuthProvider value={{ userType: 'guest', customerId: undefined }}>
-                <BasketProvider basket={undefined}>
-                    <StoreLocatorProvider>
-                        <CheckoutOneClickProvider customerProfile={undefined} shippingDefaultSet={Promise.resolve(undefined)}>
-                            {children}
-                        </CheckoutOneClickProvider>
-                    </StoreLocatorProvider>
-                </BasketProvider>
-            </AuthProvider>
+            <SiteProvider value={siteWithAlias}>
+                <CurrencyProvider value={site.defaultCurrency}>
+                    <AuthProvider value={{ userType: 'guest', customerId: undefined }}>
+                        <BasketProvider basket={undefined}>
+                            <StoreLocatorProvider>
+                                <CheckoutOneClickProvider customerProfile={undefined} shippingDefaultSet={Promise.resolve(undefined)}>
+                                    {children}
+                                </CheckoutOneClickProvider>
+                            </StoreLocatorProvider>
+                        </BasketProvider>
+                    </AuthProvider>
+                </CurrencyProvider>
+            </SiteProvider>
         </ConfigProvider>
     );
-    
+
     // Only create router if one doesn't already exist (to avoid nested router errors)
     // Stories with decorators that create routers will handle it themselves
     if (inRouter) {
         return <>{content}</>;
     }
-    
+
     // Create a memory router for components that need React Router context
     // Includes resource routes needed by hooks like useBasketWithProducts
     const router = createMemoryRouter(
@@ -65,7 +74,7 @@ export function StoryTestWrapper({ children }: { children: ReactNode }): ReactEl
             initialEntries: ['/'],
         }
     );
-    
+
     return <RouterProvider router={router} />;
 }
 

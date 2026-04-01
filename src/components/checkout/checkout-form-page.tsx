@@ -15,18 +15,22 @@
  */
 'use client';
 
-import { useEffect, lazy, Suspense, use, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, lazy, Suspense, use, useRef, useState, type FormEvent } from 'react';
 import { useCheckoutContext } from '@/hooks/use-checkout';
-import { useBasket } from '@/providers/basket';
-import { useCheckoutActions } from '@/hooks/use-checkout-actions';
+import { useBasket, useBasketHydrated } from '@/providers/basket';
+import { useCheckoutActions, type PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
+import { useAuth } from '@/providers/auth';
 import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
-import type { PaymentData } from '@/lib/checkout-schemas';
 import { useTranslation } from 'react-i18next';
+import { Lock } from 'lucide-react';
+import { formatCurrency } from '@/lib/currency';
+import { useCurrency } from '@/providers/currency';
+import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
 import CheckoutErrorBanner from './components/checkout-error-banner';
@@ -56,6 +60,7 @@ const ExpressPayments = lazy(() => import('./components/express-payments'));
 
 // Import skeleton components for accurate loading states
 import {
+    CheckoutSkeleton,
     ContactInfoSkeleton,
     ExpressPaymentsSkeleton,
     MyCartSkeleton,
@@ -66,16 +71,69 @@ import {
     ShippingOptionsSkeleton,
 } from './components/checkout-skeletons';
 
+/**
+ * Determines whether the user's current payment form selection differs from the payment
+ * instrument already on the basket. When they differ, payment must be re-submitted before
+ * place order so the basket reflects the user's actual choice (e.g. switching from a saved
+ * card to a new card, or choosing a different saved card).
+ */
+function doesPaymentSelectionDiffer(
+    paymentData: PaymentData,
+    basket: ShopperBasketsV2.schemas['Basket'] | null | undefined
+): boolean {
+    const basketInstrument = basket?.paymentInstruments?.[0];
+    if (!basketInstrument) return false;
+
+    // User chose "enter a new card" — the basket's existing instrument (from a prior saved-card
+    // auto-apply or a previous payment submit) is stale and must be replaced.
+    if (!paymentData.useSavedPaymentMethod) {
+        return true;
+    }
+
+    // User chose a saved card. The basket instrument doesn't store the customerPaymentInstrumentId
+    // (v2 basket API limitation), so we can't reliably detect whether the user picked a different
+    // saved card than what's already on the basket. Always re-submit to guarantee the correct card
+    // is applied — the server action is idempotent (removes old instrument, adds the selected one).
+    if (paymentData.useSavedPaymentMethod && paymentData.selectedSavedPaymentMethod) {
+        return true;
+    }
+
+    return false;
+}
+
 interface GuestAccountCreationProps {
     cart: ShopperBasketsV2.schemas['Basket'];
     customerProfile: ReturnType<typeof useCustomerProfile>;
     onSaved: (shouldCreate: boolean) => void;
+    savePaymentToProfile?: boolean;
+    showToast?: (message: string, type: 'success' | 'error', options?: { duration?: number }) => void;
+    /** When true, hide create-account-at-place-order (e.g. shopper chose "Checkout as guest" on passwordless OTP modal). */
+    hideCreateAccountOption?: boolean;
 }
 
-function GuestAccountCreation({ cart, customerProfile, onSaved }: GuestAccountCreationProps) {
+function GuestAccountCreation({
+    cart: _cart,
+    customerProfile,
+    onSaved,
+    savePaymentToProfile,
+    showToast,
+    hideCreateAccountOption = false,
+}: GuestAccountCreationProps) {
+    const auth = useAuth();
     const isRegisteredUser = Boolean(customerProfile?.customer?.customerId);
 
-    if (isRegisteredUser) {
+    // The ref preserves the state from when the component first rendered
+    const enteredAsRegistered = useRef(auth?.userType === 'registered' || isRegisteredUser);
+
+    if (enteredAsRegistered.current) {
+        return null;
+    }
+
+    const justRegistered =
+        typeof sessionStorage !== 'undefined' && sessionStorage.getItem('registeredViaCheckout') === 'true';
+
+    // Guest chose to skip passwordless OTP — treat like guest checkout but without create-account checkbox
+    if (hideCreateAccountOption && !justRegistered) {
         return null;
     }
 
@@ -89,20 +147,29 @@ function GuestAccountCreation({ cart, customerProfile, onSaved }: GuestAccountCr
         // Failed to parse customer lookup result
     }
 
-    const shouldShow =
-        customerLookupResult?.recommendation === 'guest' || (!cart?.customerInfo?.customerId && !customerLookupResult);
+    // Show for guest shoppers: lookup confirmed 'guest', lookup not yet performed, or just registered in this session.
+    const shouldShow = justRegistered || !customerLookupResult || customerLookupResult?.recommendation === 'guest';
 
     if (!shouldShow) {
         return null;
     }
 
-    return <RegisterCustomerSelection onSaved={onSaved} />;
+    return (
+        <Suspense fallback={null}>
+            <RegisterCustomerSelection
+                onSaved={onSaved}
+                savePaymentToProfile={savePaymentToProfile}
+                showToast={showToast}
+            />
+        </Suspense>
+    );
 }
 
 interface CheckoutFormPageProps {
     shippingMethodsMap: Record<string, ShopperBasketsV2.schemas['ShippingMethodResult']>;
     productMapPromise: Promise<Record<string, ShopperProducts.schemas['Product']>>;
     promotionsPromise?: Promise<Record<string, ShopperPromotions.schemas['Promotion']>>;
+    showToast?: (message: string, type: 'success' | 'error', options?: { duration?: number }) => void;
 }
 
 /**
@@ -127,13 +194,26 @@ export default function CheckoutFormPage({
     shippingMethodsMap: shippingMethodsMapFromLoader,
     productMapPromise,
     promotionsPromise,
+    showToast,
 }: CheckoutFormPageProps) {
-    const { t } = useTranslation('checkout');
+    const { t, i18n } = useTranslation('checkout');
+    const currency = useCurrency();
 
-    // Use basket from provider (managed by middleware)
     const cart = useBasket();
-    const { step, STEPS, goToStep, editingStep, shipmentDistribution } = useCheckoutContext();
+    const basketHydrated = useBasketHydrated();
+    const { step, STEPS, goToStep, editingStep, shipmentDistribution, exitEditMode } = useCheckoutContext();
     const customerProfile = useCustomerProfile();
+    const isRegisteredUser = Boolean(customerProfile?.customer?.customerId);
+
+    const paymentSubmissionRef = useRef<PaymentSubmissionRef['current']>({
+        formDataGetter: null,
+        shouldPlaceOrderAfterPayment: false,
+        options: null,
+        setFormErrors: null,
+    });
+    const otpFlowActiveRef = useRef(false);
+    const [hideCreateAccountAfterSkippedPasswordlessOtp, setHideCreateAccountAfterSkippedPasswordlessOtp] =
+        useState(false);
 
     // Checkout actions hook with all fetchers and submission handlers
     const {
@@ -149,7 +229,24 @@ export default function CheckoutFormPage({
         placeOrderFetcher,
         isSubmitting,
         handleCreateAccountPreferenceChange,
-    } = useCheckoutActions();
+    } = useCheckoutActions({ paymentSubmissionRef, otpFlowActiveRef });
+
+    /**
+     * Shopper closed passwordless OTP via "Checkout as guest" — do not verify OTP / sign in.
+     * Unblock contact step and hide place-order create-account checkbox for this checkout session.
+     */
+    const handleRegisteredUserChoseGuest = useCallback(() => {
+        setHideCreateAccountAfterSkippedPasswordlessOtp(true);
+        otpFlowActiveRef.current = false;
+        if (contactFetcher.state === 'idle' && contactFetcher.data?.success === true) {
+            exitEditMode();
+        }
+    }, [contactFetcher.state, contactFetcher.data, exitEditMode]);
+
+    /** After successful OTP verification at contact, restore create-account UI if still applicable */
+    const handlePasswordlessOtpVerifiedAtContact = useCallback(() => {
+        setHideCreateAccountAfterSkippedPasswordlessOtp(false);
+    }, []);
 
     let showAddressAndOptions = true;
 
@@ -198,8 +295,6 @@ export default function CheckoutFormPage({
     const analytics = useAnalytics();
     const hasTrackedCheckoutStartRef = useRef(false);
     const previousStepRef = useRef<CheckoutStep | null>(null);
-    const paymentFormDataRef = useRef<(() => PaymentData) | null>(null);
-    const placeOrderAfterPaymentRef = useRef(false);
 
     useEffect(() => {
         // Only track checkout start once on mount if baseket is not empty
@@ -224,7 +319,7 @@ export default function CheckoutFormPage({
     }, [analytics, step, STEPS, cart]);
 
     const isPlacingOrder = placeOrderFetcher.state === 'submitting';
-    const placeOrderErrorRef = useRef<HTMLDivElement>(null);
+    const [isPlaceOrderPending, setIsPlaceOrderPending] = useState(false);
 
     // Form submission handlers - delegated to checkout actions hook
     const handleContactSubmit = submitContactInfo;
@@ -234,13 +329,46 @@ export default function CheckoutFormPage({
 
     const handlePlaceOrderSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (step === STEPS.PAYMENT) {
-            const paymentData = paymentFormDataRef.current?.();
-            if (paymentData) {
-                placeOrderAfterPaymentRef.current = true;
-                submitPayment(paymentData);
+        const paymentData = paymentSubmissionRef.current.formDataGetter?.();
+        const basketAlreadyHasPayment = Boolean(cart?.paymentInstruments?.[0]);
+
+        // Payment must be submitted before place order when the basket has no instrument, or
+        // when the user's current selection differs from what's on the basket (e.g. returning
+        // shopper switched from saved card to "enter new card").
+        const needsPaymentSync =
+            paymentData && (!basketAlreadyHasPayment || doesPaymentSelectionDiffer(paymentData, cart));
+
+        if (needsPaymentSync) {
+            // For new card entry, validate fields client-side before submitting so the user sees
+            // inline errors (empty card number, missing CVV, etc.)
+            if (!paymentData.useSavedPaymentMethod) {
+                const schema = createPaymentSchema(t);
+                const result = schema.safeParse(paymentData);
+                if (!result.success) {
+                    const { setFormErrors } = paymentSubmissionRef.current;
+                    if (setFormErrors) {
+                        const fieldErrors: Record<string, { type: string; message: string }> = {};
+                        for (const issue of result.error.issues) {
+                            const field = issue.path[0]?.toString();
+                            if (field && !fieldErrors[field]) {
+                                fieldErrors[field] = { type: 'validation', message: issue.message };
+                            }
+                        }
+                        setFormErrors(fieldErrors);
+                    }
+                    goToStep(STEPS.PAYMENT);
+                    return;
+                }
             }
+
+            setIsPlaceOrderPending(true);
+            paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = true;
+            paymentSubmissionRef.current.options = { savePaymentToProfile: paymentData.savePaymentToProfile ?? false };
+            submitPayment(paymentData);
         } else {
+            setIsPlaceOrderPending(true);
+            paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
+            paymentSubmissionRef.current.options = null;
             submitPlaceOrder();
         }
     };
@@ -271,34 +399,45 @@ export default function CheckoutFormPage({
         isCompleted: step > STEPS.PAYMENT,
         isEditing: step === STEPS.PAYMENT || editingStep === STEPS.PAYMENT,
         onEdit: () => goToStep(STEPS.PAYMENT),
+        // Guest: show only "Payment" title until contact, shipping address and options are done
+        disabled: !isRegisteredUser && step < STEPS.PAYMENT,
     };
 
-    // Note: Order placement success is now handled by action route redirect
-    // The place order action automatically redirects to the confirmation page
-    // Session storage cleanup is also handled in the action route
-
+    // Focus place order error without scrolling (prevents CLS while maintaining accessibility)
     useEffect(() => {
         if (
             placeOrderFetcher.state === 'idle' &&
             placeOrderFetcher.data &&
             !placeOrderFetcher.data.success &&
-            placeOrderFetcher.data.error &&
-            placeOrderErrorRef.current
+            placeOrderFetcher.data.error
         ) {
-            placeOrderErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setIsPlaceOrderPending(false);
+            // Find the error banner and focus it without scrolling
+            const errorElement = document.querySelector('[role="alert"]');
+            if (errorElement instanceof HTMLElement) {
+                errorElement.tabIndex = -1;
+                errorElement.focus({ preventScroll: true });
+            }
         }
     }, [placeOrderFetcher.state, placeOrderFetcher.data]);
 
-    // Place the order once payment succeeds
+    // Place the order once payment succeeds; reset ref on failure so we never place order without valid payment
     useEffect(() => {
-        if (placeOrderAfterPaymentRef.current && paymentFetcher.state === 'idle' && paymentFetcher.data?.success) {
-            placeOrderAfterPaymentRef.current = false;
+        if (!paymentSubmissionRef.current.shouldPlaceOrderAfterPayment || paymentFetcher.state !== 'idle') return;
+        if (paymentFetcher.data?.success) {
+            paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
             submitPlaceOrder();
+        } else {
+            paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
+            setIsPlaceOrderPending(false);
         }
     }, [paymentFetcher.state, paymentFetcher.data, submitPlaceOrder]);
 
-    // Check if cart is empty (no items) - also handle basketId to ensure we have a valid basket
-    if (!cart || !cart.basketId || !cart.productItems || cart.productItems.length === 0) {
+    if (!cart || !basketHydrated) {
+        return <CheckoutSkeleton />;
+    }
+
+    if (!cart.basketId || !cart.productItems || cart.productItems.length === 0) {
         return (
             <div className="min-h-screen bg-muted flex items-center justify-center">
                 <Card className="w-full max-w-md">
@@ -324,7 +463,7 @@ export default function CheckoutFormPage({
             {...shippingAddressState}
         />
     );
-    const defaultShipmentId = 'me';
+    const defaultShipmentId = cart?.shipments?.[0]?.shipmentId ?? 'me';
     let shippingOptionsComponent = (
         <ShippingOptions
             onSubmit={handleShippingOptionsSubmit}
@@ -366,7 +505,7 @@ export default function CheckoutFormPage({
     // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background pb-20 lg:pb-0">
             <UITarget targetId="checkout.page.before" />
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Mobile Order Summary + My Cart */}
@@ -425,12 +564,20 @@ export default function CheckoutFormPage({
                         <Suspense fallback={<ContactInfoSkeleton />}>
                             <UITarget targetId="checkout.contactInfo.before" />
                             <UITarget targetId="checkout.contactInfo">
-                                <ContactInfo
-                                    onSubmit={handleContactSubmit}
-                                    isLoading={isSubmitting('contact')}
-                                    actionData={contactFetcher.data}
-                                    {...contactInfoState}
-                                />
+                                {!cart ? (
+                                    <ContactInfoSkeleton />
+                                ) : (
+                                    <ContactInfo
+                                        onSubmit={handleContactSubmit}
+                                        isLoading={isSubmitting('contact')}
+                                        actionData={contactFetcher.data}
+                                        otpFlowActiveRef={otpFlowActiveRef}
+                                        onRegisteredUserChoseGuest={handleRegisteredUserChoseGuest}
+                                        onPasswordlessOtpVerified={handlePasswordlessOtpVerifiedAtContact}
+                                        suppressRegisteredEmailLoginHints={hideCreateAccountAfterSkippedPasswordlessOtp}
+                                        {...contactInfoState}
+                                    />
+                                )}
                             </UITarget>
                             <UITarget targetId="checkout.contactInfo.after" />
                         </Suspense>
@@ -480,51 +627,68 @@ export default function CheckoutFormPage({
                                     isLoading={isSubmitting('payment')}
                                     actionData={paymentFetcher.data}
                                     showBillingSameAsShipping={showAddressAndOptions}
-                                    paymentFormDataRef={paymentFormDataRef}
+                                    paymentSubmissionRef={paymentSubmissionRef}
                                     {...paymentState}
                                 />
                             </UITarget>
                             <UITarget targetId="checkout.payment.after" />
                         </Suspense>
 
-                        {/* Create Account Option - Show for guest users after payment */}
-                        <UITarget targetId="checkout.createAccount.before" />
-                        <UITarget targetId="checkout.createAccount">
-                            <GuestAccountCreation
-                                cart={cart}
-                                customerProfile={customerProfile}
-                                onSaved={handleCreateAccountPreferenceChange}
-                            />
-                        </UITarget>
-                        <UITarget targetId="checkout.createAccount.after" />
-
                         {/* Place Order Section */}
-                        {(step === STEPS.PAYMENT || step === STEPS.REVIEW_ORDER) && (
-                            <div className="flex flex-col items-end gap-4 w-full lg:w-auto">
+                        {step >= STEPS.PAYMENT && (
+                            <div className="flex flex-col items-end gap-4 w-full lg:-mt-4">
+                                {/* Create Account Option - Show for guest users when Place Order is visible (step >= PAYMENT) */}
+                                {step >= STEPS.PAYMENT && (
+                                    <div className="w-full">
+                                        <UITarget targetId="checkout.createAccount.before" />
+                                        <UITarget targetId="checkout.createAccount">
+                                            <GuestAccountCreation
+                                                cart={cart}
+                                                customerProfile={customerProfile}
+                                                onSaved={handleCreateAccountPreferenceChange}
+                                                savePaymentToProfile={
+                                                    paymentSubmissionRef.current.options?.savePaymentToProfile
+                                                }
+                                                showToast={showToast}
+                                                hideCreateAccountOption={hideCreateAccountAfterSkippedPasswordlessOtp}
+                                            />
+                                        </UITarget>
+                                        <UITarget targetId="checkout.createAccount.after" />
+                                    </div>
+                                )}
                                 {placeOrderFetcher.data &&
                                     !placeOrderFetcher.data.success &&
                                     placeOrderFetcher.data.error && (
                                         <CheckoutErrorBanner
-                                            ref={placeOrderErrorRef}
                                             message={placeOrderFetcher.data.error}
                                             className="w-full"
                                         />
                                     )}
                                 <UITarget targetId="checkout.placeOrder.before" />
                                 <UITarget targetId="checkout.placeOrder">
-                                    <form onSubmit={handlePlaceOrderSubmit} className="w-full lg:w-auto">
+                                    <form
+                                        onSubmit={handlePlaceOrderSubmit}
+                                        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
                                         <Button
                                             type="submit"
                                             disabled={
                                                 isPlacingOrder ||
-                                                (step === STEPS.PAYMENT && isSubmitting('payment')) ||
+                                                isPlaceOrderPending ||
+                                                isSubmitting('payment') ||
                                                 paymentFetcher.state === 'submitting'
                                             }
-                                            className="w-full lg:max-w-sm"
+                                            className="w-full shadow-2xs"
                                             size="lg">
-                                            {isPlacingOrder || (step === STEPS.PAYMENT && isSubmitting('payment'))
+                                            <Lock className="size-4" />
+                                            {isPlacingOrder || isPlaceOrderPending || isSubmitting('payment')
                                                 ? t('placeOrder.processing')
-                                                : t('placeOrder.button')}
+                                                : t('placeOrder.button', {
+                                                      total: formatCurrency(
+                                                          cart?.orderTotal ?? cart?.productTotal ?? 0,
+                                                          i18n.language,
+                                                          currency
+                                                      ),
+                                                  })}
                                         </Button>
                                     </form>
                                 </UITarget>
@@ -534,8 +698,10 @@ export default function CheckoutFormPage({
                         <UITarget targetId="checkout.mainContent.after" />
                     </div>
 
-                    {/* Order Summary Sidebar */}
-                    <div className="hidden lg:block lg:col-span-1">
+                    {/* Order Summary Sidebar - scrolls independently when content exceeds viewport */}
+                    <div
+                        className="hidden lg:block lg:col-span-1 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto"
+                        data-testid="checkout-order-summary-sidebar">
                         <UITarget targetId="checkout.sidebar.before" />
                         <div className="sticky top-8 space-y-6">
                             {/* Order Summary */}

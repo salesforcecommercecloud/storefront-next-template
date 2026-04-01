@@ -22,8 +22,10 @@ import {
 import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import { AUTH_TOKEN_INVALID_ERROR, authContext, authStorageContext } from '@/middlewares/auth.utils';
 import { correlationContext } from '@/lib/correlation';
+import { getLogger } from '@/lib/logger.server';
 import { maintenanceContext } from '@/lib/maintenance';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { getAppOrigin, getScapiBaseUrl, isAbsoluteURL } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 
@@ -45,37 +47,26 @@ const getSlasClientSecret = (): string | undefined => {
 };
 
 /**
- * Identifier for a Maintenance error.
- */
-export const MAINTENANCE_ERROR = 'MAINTENANCE_ERROR';
-
-/**
  * Create Commerce API clients with authentication middleware.
- * On the server in production, API requests will directly target the B2C Commerce API endpoints to saves an extra hop.
- * On the server in development, and generally on the client, API requests will be proxied through the MRT proxy to
- * either become visible in the dev tooling or to prevent CORS issues.
+ * API requests always target the B2C Commerce API endpoints directly (server-side).
+ * All SCAPI calls flow through React Router loaders, actions, and resource routes.
  * @param context - React Router context provider
  * @returns Configured commerce API clients
  */
 export function createApiClients(context: RouterContextProvider | Readonly<RouterContextProvider>) {
     const appOrigin = getAppOrigin();
-    const config = getConfig(context);
-    const { shortCode, proxy, callback, organizationId, siteId: configSiteId, clientId } = config.commerce.api;
+    const config = getConfig<AppConfig>(context);
+    const { shortCode, callback, organizationId, clientId } = config.commerce.api;
 
-    // Use the site from multi-site context (set by multi-site middleware on the server)
-    // Falls back to config.commerce.api.siteId on the client where multi-site context is not available
+    // Site ID is always resolved by multi-site middleware
     const multiSite = context.get(multiSiteContext);
-    const siteId = multiSite?.site.id ?? configSiteId;
+    if (!multiSite?.site?.id) {
+        throw new Error('Multi-site context not initialized. Ensure multi-site middleware is configured.');
+    }
+    const siteId = multiSite.site.id;
     const scapiProxyHost = typeof window === 'undefined' ? process.env.SCAPI_PROXY_HOST : undefined;
 
-    // @ts-expect-error: __DEV__ is a global variable existing to support dead code elimination
-    const baseUrl = __DEV__
-        ? typeof window === 'undefined' && scapiProxyHost
-            ? scapiProxyHost // Server-side with proxy host: use direct connection
-            : `${appOrigin}${proxy}` // Client-side or no proxy host: use standard proxy path through dev server
-        : typeof window === 'undefined'
-          ? getScapiBaseUrl(shortCode)
-          : `${appOrigin}${proxy}`;
+    const baseUrl = scapiProxyHost || getScapiBaseUrl(shortCode);
     // Use absolute URL if provided, otherwise construct from app origin
     const redirectUri = callback && isAbsoluteURL(callback) ? callback : `${appOrigin}${callback || ''}`;
 
@@ -106,27 +97,43 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         proxyHost: scapiProxyHost, // SDK handles org ID rewriting and auth flow selection internally
     } as Parameters<typeof createCommerceApiClients>[0]);
 
-    // Add authentication middleware - inject Bearer token from auth context
+    // Add authentication middleware - inject Bearer token and sfdc_dwsid from auth context
     const authMiddleware: Middleware = {
         async onRequest({ request }) {
-            // Skip auth header injection for SLAS auth endpoints
-            // These endpoints handle their own auth (Basic auth or no auth for PKCE)
             const url = new URL(request.url);
             const isSlasAuthEndpoint = SLAS_AUTH_ENDPOINTS.some((path) => url.pathname.includes(path));
-            if (isSlasAuthEndpoint) {
-                return request;
-            }
 
             // Get the auth session from context
             const authPromise = context.get(authContext);
             const session = await authPromise.ref;
-            if (!session) {
-                throw new Error('No session found');
+
+            // Inject sfdc_dwsid when available:
+            // - For SCAPI endpoints: always send it (maintains app-server affinity)
+            // - For SLAS refresh_token calls: send it (reuses existing bridged session)
+            // - For other SLAS calls (login, guest, social, passwordless): skip it
+            //   so SLAS issues a fresh session-bridged dwsid for the new auth state
+            if (session?.dwsid) {
+                if (!isSlasAuthEndpoint) {
+                    request.headers.set(DWSID_HEADER, session.dwsid);
+                } else {
+                    // For SLAS token endpoint, only send dwsid for refresh_token grant
+                    const clonedRequest = request.clone();
+                    const bodyText = await clonedRequest.text();
+                    const params = new URLSearchParams(bodyText);
+                    if (params.get('grant_type') === 'refresh_token') {
+                        request.headers.set(DWSID_HEADER, session.dwsid);
+                    }
+                }
             }
-            request.headers.set('Authorization', `Bearer ${session.accessToken}`);
-            if (session.dwsid) {
-                request.headers.set(DWSID_HEADER, session.dwsid);
+
+            // SLAS auth endpoints handle their own Authorization header (Basic auth or PKCE)
+            if (!isSlasAuthEndpoint) {
+                if (!session) {
+                    throw new Error('No session found');
+                }
+                request.headers.set('Authorization', `Bearer ${session.accessToken}`);
             }
+
             return request;
         },
     };
@@ -189,6 +196,52 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         },
     };
 
+    /**
+     * Logging middleware for SCAPI fetch requests.
+     *
+     * Logs all outgoing SCAPI requests on response with method, URL, status, and duration.
+     * - Success responses (< 400): logged at `debug` level
+     * - Error responses (>= 400): logged at `error` level
+     * - Server-side only
+     *
+     * @example
+     * ```
+     * [13:21:24.337] DEBUG: fetch GET /search/shopper-search/v1/.../product-search?q=shoes
+     *     status: 200
+     *     duration: 1280
+     * ```
+     */
+    const requestTimings = new WeakMap<Request, number>();
+    const loggingMiddleware: Middleware = {
+        onRequest({ request }) {
+            requestTimings.set(request, performance.now());
+            return request;
+        },
+        onResponse({ request, response }) {
+            const logger = getLogger(context);
+            const url = new URL(request.url);
+            const startTime = requestTimings.get(request);
+            const duration = startTime != null ? Math.round(performance.now() - startTime) : undefined;
+            const metadata: Record<string, unknown> = {
+                status: response.status,
+                ...(duration != null && { duration }),
+            };
+            const message = `fetch ${request.method} ${url.pathname}`;
+            if (response.status >= 400) {
+                logger.error(message, metadata);
+            } else {
+                logger.debug(message, metadata);
+            }
+            return response;
+        },
+    };
+
+    // Middleware registration order matters: openapi-fetch runs onRequest in registration
+    // order, but onResponse in reverse order. Logging is registered first so its onResponse
+    // runs last, after all other middleware have processed the request/response.
+    if (typeof window === 'undefined') {
+        clients.use(loggingMiddleware);
+    }
     clients.use(correlationMiddleware);
     clients.use(authMiddleware);
     clients.use(identifyingHeadersMiddleware);

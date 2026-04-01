@@ -16,14 +16,15 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import ProductCarouselSkeleton from '@/components/product-carousel/skeleton';
 import { getEnabledRecommendationTypes } from '@/lib/recommendations';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 /**
  * Main product section skeleton component
  * Includes mobile title, ProductView, and accordion sections
  */
 export function ProductMainSkeleton() {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     return (
         <>
             {/* Mobile Product Title - shown on mobile only */}
@@ -119,10 +120,18 @@ export function ProductMainSkeleton() {
  * // Generic recommendation with default count
  * <ProductRecommendationSkeleton />
  */
-export function ProductRecommendationSkeleton({ title, itemCount }: { title?: string; itemCount?: number }) {
-    const config = useConfig();
+export function ProductRecommendationSkeleton({
+    title,
+    itemCount,
+    className,
+}: {
+    title?: string;
+    itemCount?: number;
+    className?: string;
+}) {
+    const config = useConfig<AppConfig>();
     const defaultItemCount = itemCount ?? config.global.skeleton.defaultItemCount;
-    return <ProductCarouselSkeleton title={title} itemCount={defaultItemCount} />;
+    return <ProductCarouselSkeleton title={title} itemCount={defaultItemCount} className={className} />;
 }
 
 /**
@@ -148,7 +157,7 @@ export function ProductRecommendationSkeleton({ title, itemCount }: { title?: st
  * <ProductRecommendationsSkeleton count={3} />
  */
 export function ProductRecommendationsSkeleton({ count }: { count?: number }) {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const actualCount = count ?? getEnabledRecommendationTypes(config).length;
 
     return (

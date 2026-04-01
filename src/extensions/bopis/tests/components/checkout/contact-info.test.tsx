@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import ContactInfo from '@/components/checkout/components/contact-info';
 
 vi.mock('@/providers/basket', () => ({ useBasket: vi.fn() }));
@@ -34,7 +36,7 @@ const defaultSteps = {
     SHIPPING_ADDRESS: 2,
     SHIPPING_OPTIONS: 3,
     PAYMENT: 4,
-    REVIEW_ORDER: 5,
+    PLACE_ORDER: 5,
 } as const;
 
 const buildCheckoutContext = (overrides?: Record<string, unknown>) => ({
@@ -88,6 +90,8 @@ const createMockBasket = (overrides = {}) => ({
     ...overrides,
 });
 
+const otpFlowActiveRef = { current: false };
+
 const createDefaultProps = (overrides = {}) => ({
     onSubmit: vi.fn(),
     isLoading: false,
@@ -96,8 +100,23 @@ const createDefaultProps = (overrides = {}) => ({
     isEditing: true,
     onEdit: vi.fn(),
     onRegisteredUserChoseGuest: vi.fn(),
+    otpFlowActiveRef,
     ...overrides,
 });
+
+function renderWithRouter(ui: React.ReactElement) {
+    const router = createMemoryRouter(
+        [
+            { path: '/', element: ui },
+            {
+                path: '/action/authorize-passwordless-email',
+                action: () => ({ success: true, email: 'test@example.com' }),
+            },
+        ],
+        { initialEntries: ['/'], initialIndex: 0 }
+    );
+    return render(<RouterProvider router={router} />);
+}
 
 describe('ContactInfo - Multiship-BOPIS Scenarios', () => {
     let useBasket: ReturnType<typeof vi.fn>;
@@ -141,7 +160,7 @@ describe('ContactInfo - Multiship-BOPIS Scenarios', () => {
                     },
                 })
             );
-            render(<ContactInfo {...createDefaultProps()} />);
+            renderWithRouter(<ContactInfo {...createDefaultProps()} />);
 
             await waitFor(() => {
                 expect(screen.getByRole('button', { name: /continue to shipping/i })).toBeInTheDocument();
@@ -163,7 +182,7 @@ describe('ContactInfo - Multiship-BOPIS Scenarios', () => {
                     },
                 })
             );
-            render(<ContactInfo {...createDefaultProps()} />);
+            renderWithRouter(<ContactInfo {...createDefaultProps()} />);
 
             await waitFor(() => {
                 expect(screen.getByRole('button', { name: /continue to pickup/i })).toBeInTheDocument();
@@ -185,7 +204,7 @@ describe('ContactInfo - Multiship-BOPIS Scenarios', () => {
                     },
                 })
             );
-            render(<ContactInfo {...createDefaultProps()} />);
+            renderWithRouter(<ContactInfo {...createDefaultProps()} />);
 
             await waitFor(() => {
                 expect(screen.getByRole('button', { name: /continue to pickup/i })).toBeInTheDocument();

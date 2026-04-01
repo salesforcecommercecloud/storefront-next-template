@@ -18,9 +18,9 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 export function ProductTileSwatchesSkeleton({ count = 2 }: { count?: number }) {
     return (
-        <div className="product-tile-swatches-skeleton flex flex-wrap gap-2">
+        <div className="product-tile-swatches-skeleton flex items-center flex-wrap gap-1 mb-2 relative z-20">
             {Array.from({ length: count }, (_, i) => (
-                <Skeleton key={i} className="h-7 w-7 rounded-full" />
+                <Skeleton key={i} className="h-[22px] w-[22px] rounded-full" />
             ))}
         </div>
     );

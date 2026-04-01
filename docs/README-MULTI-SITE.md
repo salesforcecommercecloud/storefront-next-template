@@ -1,0 +1,518 @@
+# Multi-Site & Locale URL Routing
+
+This project supports multiple Commerce Cloud sites and locales within a single storefront deployment. The homepage (`/`) is **cookie-driven** — it never has a URL prefix and never redirects. All subpages use `/:siteId/:localeId/...` prefixes and are fully shareable.
+
+## Quick Start
+
+**In React components** — use `Link`, `NavLink`, or `useNavigate` from the template. They automatically prefix subpage URLs with the current site and locale. `/` is never prefixed:
+
+```typescript
+import { Link } from '@/components/link';
+
+// Renders as /global/en-GB/product/123
+<Link to="/product/123">View Product</Link>
+
+// Renders as / (never prefixed)
+<Link to="/">Home</Link>
+```
+
+**In server loaders/actions** — use `buildUrlFromContext` to prefix URLs. It also returns `/` bare:
+
+```typescript
+import { buildUrlFromContext } from '@/lib/url.server';
+
+export function loader({ context }: LoaderFunctionArgs) {
+    throw redirect(buildUrlFromContext('/login', context));
+    // → '/global/en-GB/login'
+
+    throw redirect(buildUrlFromContext('/', context));
+    // → '/' (always bare)
+}
+```
+
+## Architecture Overview
+
+The multi-site system consists of:
+
+1. **Multi-site middleware** (`multi-site.server.ts`): Resolves site and locale from the request URL path or cookies, stores them in router context
+2. **URL config** (`config.server.ts`): Defines the URL pattern (`prefix`, `search`) and alias mappings
+3. **`buildUrl`** (runtime SDK): Applies the URL prefix and search params to bare paths
+4. **`buildUrlFromContext`** (`src/lib/url.server.ts`): Server-side helper that reads site/locale from router context and calls `buildUrl`
+5. **`useCurrentSiteAndLocaleRef`** hook: Client-side helper that resolves the current site/locale aliases for URL building
+6. **`Link`, `NavLink`, `useNavigate`**: Multi-site-aware navigation primitives that call `buildUrl` internally
+
+### Homepage vs Subpages
+
+| | Homepage (`/`) | Subpages (`/product/123`, `/category/womens`, etc.) |
+|---|---|---|
+| **URL** | Always bare `/` | Prefixed: `/:siteId/:localeId/...` |
+| **Site resolution** | From `site_id` cookie | From URL path |
+| **First visit (no cookie)** | Default site used; SiteSwitcher in header allows switching | Site resolved from path |
+| **Shareable?** | No — content depends on viewer's cookie | Yes — deterministic from URL |
+
+### Request Flow
+
+1. User requests `/global/en-GB/product/123` (or `/` for the homepage)
+2. Multi-site middleware resolves site and locale:
+   - **Subpages**: from the URL path (`global` → `RefArchGlobal`, `en-GB` → locale)
+   - **Homepage `/`**: from the `site_id` cookie (no path to parse)
+3. Site and locale objects are stored in router context for downstream consumers
+4. i18next middleware reads the resolved locale and initializes translations
+5. Loaders, actions, and components access the resolved site/locale from context
+6. No redirects — the middleware passes through to `next()` directly
+
+## Configuration
+
+### URL Config
+
+The `url` config in `config.server.ts` controls how multi-site URLs are constructed. It has three properties:
+
+```typescript
+url: {
+    prefix: '/:siteId/:localeId',
+    search: '?lng=:localeId',
+    excludeRoutes: ['/resource/**', '/action/**'],
+}
+```
+
+- **`prefix`** — Path segments prepended to every subpage URL. Uses `:param` placeholders that are replaced with values from `params` at build time.
+- **`search`** — Query parameters appended to every subpage URL. Uses the same `:param` placeholder syntax. The **keys are literal query param names** — you choose them (see [Search Params](#search-params-urlsearch) below).
+- **`excludeRoutes`** — Glob patterns for routes that should NOT be wrapped with the prefix (e.g., API resource routes, server actions).
+
+Both `prefix` and `search` are optional. You can use either, both, or neither depending on your URL strategy.
+
+> **Important: `url.prefix` and `url.excludeRoutes` require a rebuild.**
+> These values are protected by `protectedPaths` in the config and **cannot be overridden via `PUBLIC__` environment variables** at runtime. Attempting to set `PUBLIC__app__url__prefix` or `PUBLIC__app__url__excludeRoutes` will throw an error. This is because `prefix` determines the React Router route structure, which is baked into the build — changing it at runtime would cause a mismatch between the routes the server expects and the routes the client has bundled. To change the URL prefix pattern, update `config.server.ts` and rebuild the application.
+
+### URL Config Use Cases
+
+Below are common URL patterns you can achieve by combining `prefix` and `search`. The available `:param` placeholders are **`:siteId`** and **`:localeId`**, which are resolved from the current site and locale refs (after alias mapping).
+
+#### Use Case 1: Site and locale in the path (default)
+
+```typescript
+url: {
+    prefix: '/:siteId/:localeId',
+    excludeRoutes: ['/resource/**', '/action/**'],
+}
+```
+
+| Page | URL |
+|------|-----|
+| Homepage | `/` |
+| Product (RefArchGlobal, en-GB) | `/global/en-GB/product/123` |
+| Product (RefArch, en-US) | `/us/en-US/product/123` |
+| Category (RefArchGlobal, it-IT) | `/global/it-IT/category/womens` |
+
+Best for: Most multi-site storefronts. Clean, fully deterministic URLs.
+
+#### Use Case 2: Locale only in the path
+
+```typescript
+url: {
+    prefix: '/:localeId',
+    excludeRoutes: ['/resource/**', '/action/**'],
+}
+```
+
+| Page | URL |
+|------|-----|
+| Homepage | `/` |
+| Product (en-GB) | `/en-GB/product/123` |
+| Product (en-US) | `/en-US/product/123` |
+| Category (it-IT) | `/it-IT/category/womens` |
+
+Best for: Single-site storefronts with multiple locales, or when the site is determined entirely by cookie/domain.
+
+#### Use Case 3: Site in the path, locale in search params
+
+```typescript
+url: {
+    prefix: '/:siteId',
+    search: '?lng=:localeId',
+    excludeRoutes: ['/resource/**', '/action/**'],
+}
+```
+
+| Page | URL |
+|------|-----|
+| Homepage | `/` |
+| Product (RefArchGlobal, en-GB) | `/global/product/123?lng=en-GB` |
+| Product (RefArch, en-US) | `/us/product/123?lng=en-US` |
+| Category (RefArchGlobal, it-IT) | `/global/category/womens?lng=it-IT` |
+
+Best for: When you want shorter path segments but still need the locale in the URL for shareability.
+
+#### Use Case 4: Everything in search params
+
+```typescript
+url: {
+    search: '?site=:siteId&lng=:localeId',
+    excludeRoutes: ['/resource/**', '/action/**'],
+}
+```
+
+| Page | URL |
+|------|-----|
+| Homepage | `/` |
+| Product | `/product/123?site=global&lng=en-GB` |
+| Category | `/category/womens?site=us&lng=en-US` |
+
+Best for: Storefronts that want clean paths and don't mind query params. Note that without a `prefix`, React Router doesn't need site/locale route params in its route definitions.
+
+#### Use Case 5: Locale only in search params
+
+```typescript
+url: {
+    search: '?lng=:localeId',
+    excludeRoutes: ['/resource/**', '/action/**'],
+}
+```
+
+| Page | URL |
+|------|-----|
+| Homepage | `/` |
+| Product | `/product/123?lng=en-GB` |
+| Category | `/category/womens?lng=it-IT` |
+
+Best for: Single-site storefronts that want locale-aware URLs without path changes.
+
+### Search Params (`url.search`)
+
+The `search` config uses standard query string syntax with `:param` placeholders:
+
+```typescript
+search: '?lng=:localeId'
+//       ^^^              → query param key (literal string — you choose this)
+//           ^^^^^^^^^^   → placeholder replaced with the resolved locale ref
+```
+
+**The keys are literal query param names** that appear in the URL. However, the keys are **not arbitrary** — they must match what the detection middleware looks for:
+
+- **Locale key must be `lng`** — this matches both the i18next cookie key and the default `localeDetectionConfig.lookupQuerystring`. Using a different key (e.g., `locale`, `language`) would cause i18next and locale detection to break.
+- **Site key must be `site`** (by default) — this matches the default `siteDetectionConfig.lookupQuerystring`. If you want a different key like `store`, you must also update `siteDetectionConfig.lookupQuerystring` to match (see [Detection Config](#detection-config) below).
+
+```typescript
+// ✅ Correct — keys match detection defaults
+search: '?lng=:localeId'                      // → ?lng=en-GB
+search: '?lng=:localeId&site=:siteId'         // → ?lng=en-GB&site=global
+
+// ✅ Custom site key — but you MUST also set siteDetectionConfig.lookupQuerystring to 'store'
+search: '?lng=:localeId&store=:siteId'        // → ?lng=en-GB&store=global
+```
+
+**The values must use `:param` syntax** to reference either `:siteId` or `:localeId`. You can also use literal values:
+
+```typescript
+search: '?lng=:localeId&site=:siteId'     // Both dynamic
+search: '?lng=:localeId&version=2'         // Mix of dynamic and static
+```
+
+Multiple params are separated with `&`, just like a normal query string.
+
+**Custom query param keys**: If you use a different key for site (e.g., `store` instead of `site`) or locale (e.g., `language` instead of `lng`), you must also update `siteDetectionConfig.lookupQuerystring` or `localeDetectionConfig.lookupQuerystring` to match. Otherwise the middleware won't find the values in the URL. See [Detection Config](#detection-config) below for details.
+
+**Interaction with existing query params**: `buildUrl` merges search config params with any query params already on the URL. Search config params are set via `searchParams.set()`, so they overwrite any existing param with the same key. Params with different keys are preserved:
+
+```typescript
+// url.search = '?lng=:localeId'
+buildUrl({ to: '/search?q=shoes&sort=price', ... })
+// → '/global/en-GB/search?q=shoes&sort=price&lng=en-GB'
+
+buildUrl({ to: '/search?lng=old-value', ... })
+// → '/global/en-GB/search?lng=en-GB'  (overwritten by config)
+```
+
+### Detection Config
+
+The URL config (`prefix`, `search`) controls how URLs are **built**. The detection config controls how site and locale are **read back** from incoming requests. These two must stay in sync.
+
+The SDK provides default detection config in [`createMultiSiteMiddleware`](../../storefront-next-runtime/src/multi-site/configs.ts):
+
+```typescript
+// Default site detection
+siteDetectionConfig: {
+    order: ['path', 'querystring', 'cookie', 'header'],
+    lookupFromPathIndex: 0,      // 1st path segment (e.g., /global/en-GB/... → 'global')
+    lookupQuerystring: 'site',   // ?site=global
+    lookupCookie: 'site_id',
+    lookupHeader: 'X-Site-Id',
+    caches: ['cookie'],
+}
+
+// Default locale detection
+localeDetectionConfig: {
+    order: ['path', 'querystring', 'cookie', 'header'],
+    lookupFromPathIndex: 1,      // 2nd path segment (e.g., /global/en-GB/... → 'en-GB')
+    lookupQuerystring: 'lng',    // ?lng=en-GB
+    lookupCookie: 'lng',
+    lookupHeader: 'Accept-Language',
+    caches: ['cookie'],
+}
+```
+
+**When to override detection config:**
+
+1. **You changed the prefix order** — If your prefix is `/:localeId/:siteId` (locale first, site second), you must flip the `lookupFromPathIndex` values:
+
+    ```typescript
+    // prefix: '/:localeId/:siteId'
+    siteDetectionConfig: { lookupFromPathIndex: 1 },   // site is now 2nd
+    localeDetectionConfig: { lookupFromPathIndex: 0 },  // locale is now 1st
+    ```
+
+2. **You removed site or locale from the prefix** — If your prefix is `/:localeId` (no site in path), remove `'path'` from the site detection order so it doesn't try to parse a path segment that isn't there:
+
+    ```typescript
+    // prefix: '/:localeId'
+    siteDetectionConfig: { order: ['querystring', 'cookie', 'header'] },
+    localeDetectionConfig: { lookupFromPathIndex: 0 },  // locale is now 1st
+    ```
+
+3. **You use a non-default querystring key for site** — If your search config uses `store=:siteId` instead of `site=:siteId`, update the detection to match:
+
+    ```typescript
+    // search: '?lng=:localeId&store=:siteId'
+    siteDetectionConfig: { lookupQuerystring: 'store' },
+    ```
+
+4. **You moved site/locale entirely to search params** — Remove `'path'` from both detection orders:
+
+    ```typescript
+    // search: '?site=:siteId&lng=:localeId' (no prefix)
+    siteDetectionConfig: { order: ['querystring', 'cookie', 'header'] },
+    localeDetectionConfig: { order: ['querystring', 'cookie', 'header'] },
+    ```
+
+**Rule of thumb**: The detection config tells the middleware *where to look* for site/locale values. The URL config tells `buildUrl` *where to put* them. If you change one, check whether the other still matches.
+
+To override detection config, pass `siteDetectionConfig` and/or `localeDetectionConfig` in the `MultiSiteConfig` object passed to `createMultiSiteMiddleware`. In this template, that's constructed in `src/middlewares/multi-site.server.ts`.
+
+### Site Alias Map
+
+Maps Commerce Cloud site IDs to shorter URL-friendly aliases:
+
+```typescript
+siteAliasMap: {
+    RefArchGlobal: 'global',
+    RefArch: 'us',
+}
+```
+
+With this config, the site `RefArchGlobal` appears as `global` in URLs: `/global/en-GB/product/123`
+
+### Locale Alias Map
+
+Maps locale IDs to shorter URL-friendly aliases:
+
+```typescript
+localeAliasMap: {
+    'en-US': 'us',
+    'es-US': 'es',
+}
+```
+
+With this config, the locale `en-US` appears as `us` in URLs: `/global/us/product/123`
+
+Both alias maps are optional. Without them, the raw site ID and locale ID appear in URLs.
+
+### Site and Locale Definitions
+
+Sites and their supported locales are defined under `commerce.sites`:
+
+```typescript
+commerce: {
+    sites: [
+        {
+            id: 'RefArchGlobal',
+            defaultLocale: 'en-GB',
+            supportedLocales: [
+                { id: 'en-GB', preferredCurrency: 'GBP' },
+                { id: 'fr-FR', preferredCurrency: 'EUR' },
+                { id: 'it-IT', preferredCurrency: 'EUR' },
+                { id: 'en-US', preferredCurrency: 'USD' },
+            ],
+        },
+    ],
+}
+```
+
+## Homepage & Site Switching
+
+The homepage (`/`) is always cookie-driven:
+
+- **First visit (no `site_id` cookie)**: The homepage renders using the default site. The SiteSwitcher in the header allows the user to switch sites.
+- **Returning visit (cookie exists)**: The homepage renders the site stored in the cookie.
+- **Site switching**: The header SiteSwitcher posts to `/action/set-site`, which sets the `site_id` cookie and redirects to `/`.
+
+## Client-Side Navigation
+
+### `useCurrentSiteAndLocaleRef` Hook
+
+Returns the resolved site and locale references (alias if configured, raw ID otherwise) for URL building:
+
+```typescript
+import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
+
+function MyComponent() {
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
+    // siteRef = 'global' (alias for RefArchGlobal)
+    // localeRef = 'en-GB' (no alias configured, uses raw ID)
+}
+```
+
+### Link and NavLink
+
+Drop-in replacements for React Router's `Link` and `NavLink`. They automatically apply the multi-site URL prefix to subpages:
+
+```typescript
+import { Link, NavLink } from '@/components/link';
+
+// Both produce /global/en-GB/product/123
+<Link to="/product/123">Product</Link>
+<NavLink to="/product/123">Product</NavLink>
+
+// to="/" is never prefixed — always renders as bare "/"
+<Link to="/">Home</Link>
+```
+
+Special cases:
+- **`to="/"`** is passed through unchanged — the homepage is always bare
+- External URLs (`http://`, `//`) are passed through unchanged
+- Non-string `to` values (objects) are passed through unchanged
+
+### useNavigate
+
+Multi-site-aware replacement for React Router's `useNavigate`:
+
+```typescript
+import { useNavigate } from '@/hooks/use-navigate';
+
+function MyComponent() {
+    const navigate = useNavigate();
+
+    // String path — prefixed automatically
+    navigate('/product/123');
+
+    // '/' — never prefixed
+    navigate('/');
+
+    // Object with pathname — pathname is prefixed (except '/')
+    navigate({ pathname: '/search', search: '?q=shoes' });
+
+    // History navigation — passed through
+    navigate(-1);
+}
+```
+
+### React Router Form Actions
+
+React Router's `<Form>` component does NOT go through `buildUrl`. If you use `<Form action="/some-path">`, you must prefix the action yourself:
+
+```typescript
+import { Form } from 'react-router';
+import { buildUrl } from '@salesforce/storefront-next-runtime/multi-site';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
+
+function LogoutButton() {
+    const config = useConfig();
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
+
+    const action = buildUrl({
+        to: '/logout',
+        urlConfig: config.url,
+        params: { siteId: siteRef, localeId: localeRef },
+    });
+
+    return (
+        <Form method="post" action={action}>
+            <button type="submit">Log Out</button>
+        </Form>
+    );
+}
+```
+
+## Server-Side Redirects
+
+All `redirect()` calls in loaders and actions must include the multi-site prefix for subpages. A bare `redirect('/login')` will produce a URL without the prefix, resulting in a 404.
+
+Use `buildUrlFromContext` — a server-side helper that reads the resolved site and locale from router context and applies the URL prefix. It returns `/` bare (cookie-driven homepage):
+
+```typescript
+import { redirect, type LoaderFunctionArgs } from 'react-router';
+import { buildUrlFromContext } from '@/lib/url.server';
+
+export function loader({ context }: LoaderFunctionArgs) {
+    throw redirect(buildUrlFromContext('/login', context));
+    // → '/global/en-GB/login'
+}
+```
+
+This is the `.server.ts` counterpart of the client-side `useCurrentSiteAndLocaleRef` + `buildUrl` pattern.
+
+## Site Switcher
+
+The site switcher (`src/components/site-switcher`) in the footer allows switching between sites at any time:
+
+1. User selects a new site from the dropdown
+2. Client-side `i18n.changeLanguage()` fires for immediate UX update
+3. Posts `siteId` to `/action/set-site`
+4. The server action sets `site_id` and `lng` cookies, then redirects to `/`
+5. Homepage renders with the new site's content (cookie-driven)
+
+## Locale Switcher
+
+The locale switcher (`src/components/locale-switcher`) changes the locale on the current page:
+
+1. Strips the current site/locale prefix from the URL using `sanitizePrefix`
+2. Rebuilds the URL with the new locale
+3. Calls `i18n.changeLanguage()` for immediate client-side update
+4. Submits `locale` and `pathname` to `/action/set-locale`
+5. The server action sets the `lng` cookie and redirects to the new URL
+6. The page reloads with the new locale, triggering full revalidation of all loaders
+
+## Engagement Data & Multi-Site
+
+Engagement adapters (Einstein, Active Data, Data Cloud) are initialized once at application startup with static configuration from `config.server.ts`. However, the current site and locale are injected dynamically at **event-send time** via `EventSiteInfo`, which is resolved from the multi-site middleware context.
+
+### How Site Context Flows to Adapters
+
+1. The `useAnalytics` hook calls `useSite()` to get the current site from router context
+2. It constructs an `EventSiteInfo` object: `{ siteId: site.id, localeId: i18n.language }`
+3. Every tracking call (e.g., `trackViewProduct`, `trackAddToCart`) passes `siteInfo` to the event mediator
+4. The mediator forwards `siteInfo` to each registered adapter's `sendEvent` method
+
+```typescript
+// In use-analytics.ts
+const site = useSite();
+const siteInfo = site ? { siteId: site.id, localeId: i18n.language } : undefined;
+
+// Passed to every tracking call
+mediator.track(event, siteInfo);
+```
+
+### Adapter Behavior Per Site
+
+| Adapter | Multi-site aware? | How it uses site context |
+|---------|-------------------|--------------------------|
+| **Active Data** | Yes | Uses `siteInfo.siteId` and `siteInfo.localeId` at event time to build the endpoint URL (`Sites-{siteId}-Site/{locale}`) |
+| **Einstein** | No (static) | Uses the `siteId` from config at initialization — ignores the `siteInfo` parameter at event time |
+| **Data Cloud** | N/A | Not yet implemented |
+
+Active Data automatically routes events to the correct Commerce Cloud site based on the shopper's current site context. Einstein currently sends all events to the single site configured in `config.server.ts` regardless of which site the shopper is browsing.
+
+### Configuration
+
+Engagement adapter config is defined once in `config.server.ts` under `app.engagement.adapters`. These settings are **protected paths** — they cannot be overridden via `PUBLIC__` environment variables at runtime (see [URL Config](#url-config) for a similar restriction). To change engagement adapter settings, update `config.server.ts` and rebuild.
+
+## Best Practices
+
+1. **Always use `Link`/`NavLink` from `@/components/link`** — never use React Router's Link directly. The template versions handle URL prefixing automatically
+2. **Always use `useNavigate` from `@/hooks/use-navigate`** — same reason as above
+3. **Always prefix server-side redirects** — every `redirect()` call in loaders and actions must use `buildUrlFromContext` from `@/lib/url.server`
+4. **Prefix `<Form action>` values manually** — React Router's `<Form>` does not go through `buildUrl`
+5. **Use alias maps for clean URLs** — configure `siteAliasMap` and `localeAliasMap` to keep URLs short and readable
+6. **Don't hardcode site/locale values** — always resolve them from context or the `useCurrentSiteAndLocaleRef` hook
+7. **`/` is always bare** — never manually prefix the homepage. `Link`, `useNavigate`, and `buildUrlFromContext` all enforce this automatically
+8. **Test with multiple sites and locales** — switch between sites and locales, verify all links, redirects, and form actions produce correct URLs

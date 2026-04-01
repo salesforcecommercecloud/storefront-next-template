@@ -21,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export function ExpressPaymentsSkeleton(): ReactElement {
     return (
         <div className="space-y-2" data-testid="express-payments-skeleton">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {[1, 2, 3, 4, 5].map((i) => (
                     <Skeleton key={i} className="h-12 w-full rounded-lg" />
                 ))}
@@ -245,6 +245,39 @@ export function MyCartSkeleton({ itemCount = 2 }: { itemCount?: number }): React
                                     <Skeleton className="h-4 w-16" />
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+export function CheckoutSkeleton(): ReactElement {
+    return (
+        <div className="space-y-6">
+            <div className="space-y-2">
+                <Skeleton className="h-8 w-64" />
+                <Skeleton className="h-4 w-96" />
+            </div>
+
+            <div className="flex space-x-4">
+                {Array.from({ length: 4 }, (_, index) => (
+                    <div key={`progress-item-${index}`} className="flex items-center space-x-2">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <Skeleton className="h-4 w-16" />
+                    </div>
+                ))}
+            </div>
+
+            <div className="space-y-6">
+                {Array.from({ length: 3 }, (_, index) => (
+                    <div key={`form-section-item-${index}`} className="rounded-lg border p-6">
+                        <Skeleton className="h-6 w-32 mb-4" />
+                        <div className="space-y-3">
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-2/3" />
                         </div>
                     </div>
                 ))}

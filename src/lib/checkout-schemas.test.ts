@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect } from 'vitest';
-import { createPaymentSchema, getPaymentDefaultValues } from './checkout-schemas';
+import { createPaymentSchema, getPaymentDefaultValues, parsePaymentFromFormData } from './checkout-schemas';
 import { getTranslation } from './i18next';
 
 const { t } = getTranslation();
@@ -71,7 +71,7 @@ describe('Payment Schema and Validation', () => {
             expect(result.error?.issues).toEqual(
                 expect.arrayContaining([
                     expect.objectContaining({
-                        message: 'Please fill in all payment fields or select a saved payment method', // Updated message
+                        message: 'Please enter your card number.', // Updated message
                     }),
                 ])
             );
@@ -94,7 +94,7 @@ describe('Payment Schema and Validation', () => {
             expect(result.error?.issues).toEqual(
                 expect.arrayContaining([
                     expect.objectContaining({
-                        message: 'Please fill in all payment fields or select a saved payment method', // Will likely validate card fields
+                        message: 'Please enter your card number.', // Will likely validate card fields
                     }),
                 ])
             );
@@ -182,6 +182,7 @@ describe('Payment Schema and Validation', () => {
                 billingSameAsShipping: true,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
+                savePaymentToProfile: false,
                 // Billing address fields - default to empty
                 billingFirstName: '',
                 billingLastName: '',
@@ -217,16 +218,16 @@ describe('Payment Schema and Validation', () => {
                 billingSameAsShipping: true,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
-                // Billing address populated from shipping
-                billingFirstName: 'John',
-                billingLastName: 'Doe',
-                billingAddress1: '123 Main St',
-                billingAddress2: 'Apt 4B',
-                billingCity: 'Anytown',
+                savePaymentToProfile: false,
+                billingFirstName: '',
+                billingLastName: '',
+                billingAddress1: '',
+                billingAddress2: '',
+                billingCity: '',
                 billingCountryCode: 'US',
-                billingStateCode: 'CA',
-                billingPostalCode: '12345',
-                billingPhone: '555-0123',
+                billingStateCode: '',
+                billingPostalCode: '',
+                billingPhone: '',
             });
         });
 
@@ -245,6 +246,7 @@ describe('Payment Schema and Validation', () => {
                 billingSameAsShipping: true,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
+                savePaymentToProfile: false,
                 // Billing address fields - default to empty
                 billingFirstName: '',
                 billingLastName: '',
@@ -284,17 +286,61 @@ describe('Payment Schema and Validation', () => {
                 billingSameAsShipping: true,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
-                // Billing address still uses shipping address
-                billingFirstName: 'John',
-                billingLastName: 'Doe',
-                billingAddress1: '123 Main St',
+                savePaymentToProfile: false,
+                billingFirstName: '',
+                billingLastName: '',
+                billingAddress1: '',
                 billingAddress2: '',
-                billingCity: 'Anytown',
+                billingCity: '',
                 billingCountryCode: 'US',
-                billingStateCode: 'CA',
-                billingPostalCode: '12345',
+                billingStateCode: '',
+                billingPostalCode: '',
                 billingPhone: '',
             });
+        });
+    });
+
+    describe('parsePaymentFromFormData', () => {
+        it('should parse savePaymentToProfile as true when formData has "true"', () => {
+            const formData = new FormData();
+            formData.set('savePaymentToProfile', 'true');
+            const result = parsePaymentFromFormData(formData);
+            expect(result.savePaymentToProfile).toBe(true);
+        });
+
+        it('should parse savePaymentToProfile as false when formData has "false"', () => {
+            const formData = new FormData();
+            formData.set('savePaymentToProfile', 'false');
+            const result = parsePaymentFromFormData(formData);
+            expect(result.savePaymentToProfile).toBe(false);
+        });
+
+        it('should parse savePaymentToProfile as false when formData omits the key', () => {
+            const formData = new FormData();
+            const result = parsePaymentFromFormData(formData);
+            expect(result.savePaymentToProfile).toBe(false);
+        });
+    });
+
+    describe('payment schema with savePaymentToProfile', () => {
+        it('should validate new card payment with savePaymentToProfile true', () => {
+            const paymentSchema = createPaymentSchema(t);
+            const validData = {
+                useSavedPaymentMethod: false,
+                selectedSavedPaymentMethod: undefined,
+                cardNumber: '4111111111111111',
+                expiryDate: '12/28',
+                cvv: '123',
+                cardholderName: 'John Doe',
+                billingSameAsShipping: true,
+                savePaymentToProfile: true,
+            };
+
+            const result = paymentSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+            if (result.success) {
+                expect(result.data.savePaymentToProfile).toBe(true);
+            }
         });
     });
 });

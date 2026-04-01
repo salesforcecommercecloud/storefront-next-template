@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { type LoaderFunctionArgs, useLocation } from 'react-router';
+import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
-import { getConfig, useConfig } from '@/config';
+import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+
 import { currencyContext } from '@/lib/currency';
+import { getLogger } from '@/lib/logger.server';
 import CategoryPagination from '@/components/category-pagination';
 import ActiveFilters from '@/components/category-refinements/active-filters';
+import FiltersButton from '@/components/category-refinements/filters-button';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
@@ -29,7 +34,15 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
+import { SeoMeta } from '@/components/seo-meta';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import {
+    getInitialFiltersOpen,
+    getSearchWithoutClientOnlyParams,
+    getSearchWithoutFiltersParam,
+    useFiltersPanelState,
+} from '@/hooks/use-filters-panel-state';
 
 @PageType({
     name: 'Search Results Page',
@@ -63,9 +76,11 @@ export type SearchPageData = {
     searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     page: Promise<PageWithComponentData>;
+    pageUrl: string;
     refine: string[];
     currency: string;
     locale: string;
+    initialFiltersOpen?: boolean;
 };
 
 /**
@@ -76,20 +91,24 @@ export type SearchPageData = {
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> {
     const { context, request } = args;
-    const { searchParams } = new URL(request.url);
+    const requestUrl = new URL(request.url);
+    const { searchParams } = requestUrl;
     const offset = parseInt(searchParams.get('offset') || '0', 10);
     const q = searchParams.get('q') ?? '';
     const sort = searchParams.get('sort') ?? '';
     const refine = searchParams.getAll('refine');
+    const initialFiltersOpen = getInitialFiltersOpen(searchParams);
     const currency = context.get(currencyContext) as string;
 
-    const config = getConfig(context);
-    // TODO: replace this with locale detection when multi site implementation starts
-    const currentSite = config.commerce.sites[0];
-    const locale = currentSite.defaultLocale;
+    const config = getConfig<AppConfig>(context);
+    const locale = (context.get(multiSiteContext) as MultiSiteContext).locale.id;
 
     const limit = config.search.products.hits.limit;
+
     const criticalCount = config.search.products.hits.critical ?? 2;
+
+    const logger = getLogger(context);
+    logger.debug('Search: loader starting', { q, offset, sort, refineCount: refine.length });
 
     const searchResultCritical = await fetchSearchProducts(context, {
         q,
@@ -99,6 +118,9 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
         refine,
         currency,
     });
+
+    logger.info('Search: results loaded', { query: q, total: searchResultCritical.total, offset });
+    const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
 
     return {
         searchTerm: q,
@@ -114,20 +136,48 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
         page: fetchPageWithComponentData(args, {
             pageId: 'search',
         }),
+        pageUrl,
         refine,
         currency,
         locale,
+        initialFiltersOpen,
     };
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
+export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
+    const clientOnlyParamsChanged =
+        currentUrl.pathname === nextUrl.pathname &&
+        currentUrl.search !== nextUrl.search &&
+        getSearchWithoutClientOnlyParams(currentUrl.search) === getSearchWithoutClientOnlyParams(nextUrl.search);
+
+    if (clientOnlyParamsChanged) {
+        return false;
+    }
+
+    return defaultShouldRevalidate;
+}
+
 export default function SearchPage({
-    loaderData: { searchTerm, searchResultCritical, searchResultNonCritical, page, refine, currency, locale },
+    loaderData: {
+        searchTerm,
+        searchResultCritical,
+        searchResultNonCritical,
+        page,
+        pageUrl,
+        refine,
+        currency,
+        locale,
+        initialFiltersOpen,
+    },
 }: {
     loaderData: SearchPageData;
 }) {
     const { t } = useTranslation('search');
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const limit = config.search.products.hits.limit;
+
+    const [filtersOpen, toggleFiltersOpen] = useFiltersPanelState(initialFiltersOpen);
 
     // Determine the maximum number of skeletons to display in the product grid
     // Out-of-the-box the idea is to not display more than 8 skeletons, i.e., two rows on a desktop device.
@@ -139,7 +189,26 @@ export default function SearchPage({
     const lastTrackedSearchRef = useRef<string | null>(null);
 
     const location = useLocation();
-    const pageKey = `${currency}-${locale}-${location.search}-${location.hash}`;
+    const navigation = useNavigation();
+    const searchWithoutFiltersParam = useMemo(() => getSearchWithoutFiltersParam(location.search), [location.search]);
+    const pageIdentity = `${currency}-${locale}`;
+    const analyticsKey = `${pageIdentity}-${searchWithoutFiltersParam}-${location.hash}`;
+    const productGridDataKey = `${pageIdentity}-${searchWithoutFiltersParam}`;
+    const selectedFiltersCount = useMemo(
+        () => new URLSearchParams(location.search).getAll('refine').length,
+        [location.search]
+    );
+    const isProductGridLoading = useMemo(() => {
+        if (navigation.state === 'idle' || !navigation.location) {
+            return false;
+        }
+        const currentRefines = new URLSearchParams(location.search).getAll('refine');
+        const nextRefines = new URLSearchParams(navigation.location.search).getAll('refine');
+        return (
+            currentRefines.length !== nextRefines.length ||
+            currentRefines.some((currentRefine, index) => currentRefine !== nextRefines[index])
+        );
+    }, [location.search, navigation.location, navigation.state]);
 
     const nonCriticalPromise = useMemo(
         () => searchResultNonCritical.then((r) => r.hits ?? []),
@@ -162,8 +231,8 @@ export default function SearchPage({
 
     useEffect(() => {
         // Only track if we haven't already tracked this search
-        if (pageKey !== lastTrackedSearchRef.current) {
-            lastTrackedSearchRef.current = pageKey;
+        if (analyticsKey !== lastTrackedSearchRef.current) {
+            lastTrackedSearchRef.current = analyticsKey;
 
             startTransition(() => {
                 void nonCriticalPromise
@@ -184,10 +253,27 @@ export default function SearchPage({
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [analytics, searchTerm, pageKey, nonCriticalPromise]);
+    }, [analytics, searchTerm, analyticsKey, nonCriticalPromise]);
 
     return (
-        <Fragment key={pageKey}>
+        <Fragment>
+            <SeoMeta
+                title={
+                    searchTerm
+                        ? t('titleWithQuery', { query: searchTerm, defaultValue: `Results for "${searchTerm}"` })
+                        : t('title', { defaultValue: 'Search' })
+                }
+                description={
+                    searchTerm
+                        ? t('meta.descriptionWithQuery', {
+                              query: searchTerm,
+                              count: searchResultCritical.total,
+                              defaultValue: `${searchResultCritical.total} results for "${searchTerm}"`,
+                          })
+                        : t('meta.description', { defaultValue: 'Search our store for products' })
+                }
+                openGraph={{ type: 'website', url: pageUrl }}
+            />
             <div className="pb-16">
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -208,20 +294,44 @@ export default function SearchPage({
                     <Region className="mb-8" page={page} regionId="searchTopFullWidth" />
 
                     <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="hidden lg:block w-64 flex-shrink-0">
-                            <CategoryRefinements result={searchResultCritical} refine={refine} />
+                        {/* Filters toggle button - mobile only (above panel) */}
+                        <div className="lg:hidden">
+                            <FiltersButton
+                                onClick={toggleFiltersOpen}
+                                isActive={filtersOpen}
+                                selectedFiltersCount={selectedFiltersCount}
+                            />
                         </div>
 
+                        {/* Category Refinements - toggles visibility on left side */}
+                        {filtersOpen && (
+                            <div className="w-full lg:w-64 lg:flex-shrink-0">
+                                <CategoryRefinements result={searchResultCritical} refine={refine} />
+                            </div>
+                        )}
+
                         <div className="flex-grow">
+                            {/* Filters toggle button - desktop only (inside content area) */}
+                            <div className="mb-4 hidden lg:block">
+                                <FiltersButton
+                                    onClick={toggleFiltersOpen}
+                                    isActive={filtersOpen}
+                                    selectedFiltersCount={selectedFiltersCount}
+                                />
+                            </div>
+
                             <ActiveFilters result={searchResultCritical} />
 
                             {/* searchTopContent */}
                             <Region className="mb-8" page={page} regionId="searchTopContent" />
 
                             <ProductGrid
+                                key={productGridDataKey}
                                 critical={searchResultCritical.hits ?? []}
                                 nonCritical={nonCriticalPromise}
                                 nonCriticalCount={nonCriticalCount}
+                                hasRefinementsPanel={filtersOpen}
+                                isLoading={isProductGridLoading}
                                 handleProductClick={handleProductClick}
                             />
 

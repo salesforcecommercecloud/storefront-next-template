@@ -16,8 +16,7 @@
 
 import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
-import { getAddressKey } from './address-utils';
-import { orderAddressToCustomerAddress } from '@/lib/address-utils';
+import { getAddressKey, orderAddressToCustomerAddress } from '@/lib/address-utils';
 
 /**
  * Consolidates addresses from basket shipments and customer profile into a single array.

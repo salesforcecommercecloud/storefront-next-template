@@ -45,12 +45,11 @@ describe('ExpressPayments Integration Tests', () => {
         test('renders all express payment buttons', () => {
             render(<ExpressPayments {...createDefaultProps()} />);
 
-            // Check for all payment buttons by their logos
-            expect(screen.getByAltText('Apple Pay')).toBeInTheDocument();
-            expect(screen.getByAltText('Google Pay')).toBeInTheDocument();
-            expect(screen.getByAltText('Amazon Pay')).toBeInTheDocument();
-            expect(screen.getByAltText('PayPal')).toBeInTheDocument();
-            expect(screen.getByAltText('Venmo')).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Apple Pay' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Google Pay' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Amazon Pay' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'PayPal' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Venmo' })).toBeInTheDocument();
         });
 
         test('renders divider with Or text', () => {
@@ -72,15 +71,11 @@ describe('ExpressPayments Integration Tests', () => {
 
             render(<ExpressPayments {...createDefaultProps()} />);
 
-            const applePayLogo = screen.getByAltText('Apple Pay');
-            const applePayButton = applePayLogo.closest('button');
-            expect(applePayButton).toBeInTheDocument();
-            if (applePayButton) {
-                await user.click(applePayButton);
-                expect(window.alert).toHaveBeenCalledWith(
-                    'Apple Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
-                );
-            }
+            const applePayButton = screen.getByRole('button', { name: 'Apple Pay' });
+            await user.click(applePayButton);
+            expect(window.alert).toHaveBeenCalledWith(
+                'Apple Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
+            );
         });
 
         test('shows alert when Google Pay button is clicked', async () => {
@@ -88,15 +83,11 @@ describe('ExpressPayments Integration Tests', () => {
 
             render(<ExpressPayments {...createDefaultProps()} />);
 
-            const googlePayLogo = screen.getByAltText('Google Pay');
-            const googlePayButton = googlePayLogo.closest('button');
-            expect(googlePayButton).toBeInTheDocument();
-            if (googlePayButton) {
-                await user.click(googlePayButton);
-                expect(window.alert).toHaveBeenCalledWith(
-                    'Google Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
-                );
-            }
+            const googlePayButton = screen.getByRole('button', { name: 'Google Pay' });
+            await user.click(googlePayButton);
+            expect(window.alert).toHaveBeenCalledWith(
+                'Google Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
+            );
         });
 
         test('shows alert when Amazon Pay button is clicked', async () => {
@@ -104,15 +95,11 @@ describe('ExpressPayments Integration Tests', () => {
 
             render(<ExpressPayments {...createDefaultProps()} />);
 
-            const amazonPayLogo = screen.getByAltText('Amazon Pay');
-            const amazonPayButton = amazonPayLogo.closest('button');
-            expect(amazonPayButton).toBeInTheDocument();
-            if (amazonPayButton) {
-                await user.click(amazonPayButton);
-                expect(window.alert).toHaveBeenCalledWith(
-                    'Amazon Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
-                );
-            }
+            const amazonPayButton = screen.getByRole('button', { name: 'Amazon Pay' });
+            await user.click(amazonPayButton);
+            expect(window.alert).toHaveBeenCalledWith(
+                'Amazon Pay express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
+            );
         });
 
         test('shows alert when PayPal button is clicked', async () => {
@@ -120,15 +107,11 @@ describe('ExpressPayments Integration Tests', () => {
 
             render(<ExpressPayments {...createDefaultProps()} />);
 
-            const paypalLogo = screen.getByAltText('PayPal');
-            const paypalButton = paypalLogo.closest('button');
-            expect(paypalButton).toBeInTheDocument();
-            if (paypalButton) {
-                await user.click(paypalButton);
-                expect(window.alert).toHaveBeenCalledWith(
-                    'PayPal express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
-                );
-            }
+            const paypalButton = screen.getByRole('button', { name: 'PayPal' });
+            await user.click(paypalButton);
+            expect(window.alert).toHaveBeenCalledWith(
+                'PayPal express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
+            );
         });
 
         test('shows alert when Venmo button is clicked', async () => {
@@ -136,15 +119,11 @@ describe('ExpressPayments Integration Tests', () => {
 
             render(<ExpressPayments {...createDefaultProps()} />);
 
-            const venmoLogo = screen.getByAltText('Venmo');
-            const venmoButton = venmoLogo.closest('button');
-            expect(venmoButton).toBeInTheDocument();
-            if (venmoButton) {
-                await user.click(venmoButton);
-                expect(window.alert).toHaveBeenCalledWith(
-                    'Venmo express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
-                );
-            }
+            const venmoButton = screen.getByRole('button', { name: 'Venmo' });
+            await user.click(venmoButton);
+            expect(window.alert).toHaveBeenCalledWith(
+                'Venmo express checkout would be processed here. This would skip all form steps and go directly to payment confirmation.'
+            );
         });
 
         test('does not show alerts when disabled', async () => {
@@ -152,12 +131,8 @@ describe('ExpressPayments Integration Tests', () => {
 
             render(<ExpressPayments {...createDefaultProps({ disabled: true })} />);
 
-            const applePayLogo = screen.getByAltText('Apple Pay');
-            const applePayButton = applePayLogo.closest('button');
-
-            if (applePayButton) {
-                await user.click(applePayButton);
-            }
+            const applePayButton = screen.getByRole('button', { name: 'Apple Pay' });
+            await user.click(applePayButton);
 
             // No alert should be shown when buttons are disabled
             expect(window.alert).not.toHaveBeenCalled();
@@ -180,20 +155,18 @@ describe('ExpressPayments Integration Tests', () => {
         test('renders static PayPal and Venmo buttons immediately', () => {
             render(<ExpressPayments {...createDefaultProps()} />);
 
-            // Static buttons render immediately without SDK loading
-            expect(screen.getByAltText('PayPal')).toBeInTheDocument();
-            expect(screen.getByAltText('Venmo')).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'PayPal' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Venmo' })).toBeInTheDocument();
         });
 
         test('static buttons match SDK appearance', () => {
             render(<ExpressPayments {...createDefaultProps()} />);
 
-            const paypalLogo = screen.getByAltText('PayPal');
-            const venmoLogo = screen.getByAltText('Venmo');
+            const paypalButton = screen.getByRole('button', { name: 'PayPal' });
+            const venmoButton = screen.getByRole('button', { name: 'Venmo' });
 
-            // Logos should be present
-            expect(paypalLogo).toBeInTheDocument();
-            expect(venmoLogo).toBeInTheDocument();
+            expect(paypalButton.querySelector('img')).toBeTruthy();
+            expect(venmoButton.querySelector('img')).toBeTruthy();
         });
     });
 
@@ -202,8 +175,8 @@ describe('ExpressPayments Integration Tests', () => {
             const { container } = render(<ExpressPayments {...createDefaultProps()} />);
 
             const gridContainer = container.querySelector('.grid');
-            expect(gridContainer).toHaveClass('sm:grid-cols-2');
-            expect(gridContainer).toHaveClass('lg:grid-cols-4');
+            expect(gridContainer).toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).toHaveClass('lg:grid-cols-5');
         });
 
         test('renders vertical layout when layout prop is "vertical"', () => {
@@ -211,8 +184,8 @@ describe('ExpressPayments Integration Tests', () => {
 
             const gridContainer = container.querySelector('.grid');
             expect(gridContainer).toHaveClass('grid-cols-1');
-            expect(gridContainer).not.toHaveClass('sm:grid-cols-2');
-            expect(gridContainer).not.toHaveClass('lg:grid-cols-4');
+            expect(gridContainer).not.toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).not.toHaveClass('lg:grid-cols-5');
         });
 
         test('vertical layout has tighter spacing', () => {
@@ -227,12 +200,11 @@ describe('ExpressPayments Integration Tests', () => {
         test('renders all static payment buttons', () => {
             render(<ExpressPayments {...createDefaultProps()} />);
 
-            // All buttons should render immediately as static components
-            expect(screen.getByAltText('Apple Pay')).toBeInTheDocument();
-            expect(screen.getByAltText('Google Pay')).toBeInTheDocument();
-            expect(screen.getByAltText('Amazon Pay')).toBeInTheDocument();
-            expect(screen.getByAltText('PayPal')).toBeInTheDocument();
-            expect(screen.getByAltText('Venmo')).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Apple Pay' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Google Pay' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Amazon Pay' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'PayPal' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Venmo' })).toBeInTheDocument();
         });
     });
 
@@ -298,13 +270,14 @@ describe('ExpressPayments Integration Tests', () => {
             });
         });
 
-        test('separator text has correct styling (separator-foreground, uppercase)', () => {
+        test('separator text has correct styling (foreground for a11y contrast, uppercase)', () => {
             const { container } = render(<ExpressPayments {...createDefaultProps()} />);
 
             const separator = container.querySelector('.relative.flex.items-center');
             const textElement = separator?.querySelector('span');
 
-            expect(textElement).toHaveClass('text-separator-foreground');
+            expect(textElement).toHaveClass('!text-foreground');
+            expect(textElement).toHaveAttribute('data-express-payments-separator-label');
             expect(textElement).toHaveClass('uppercase');
             expect(textElement).toHaveClass('font-medium');
             expect(textElement).toHaveClass('text-sm');
@@ -548,15 +521,15 @@ describe('ExpressPayments Integration Tests', () => {
             );
 
             let gridContainer = container.querySelector('.grid');
-            expect(gridContainer).toHaveClass('sm:grid-cols-2');
-            expect(gridContainer).toHaveClass('lg:grid-cols-4');
+            expect(gridContainer).toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).toHaveClass('lg:grid-cols-5');
 
             // Change to vertical
             rerender(<ExpressPayments {...createDefaultProps({ layout: 'vertical' })} />);
 
             gridContainer = container.querySelector('.grid');
             expect(gridContainer).toHaveClass('grid-cols-1');
-            expect(gridContainer).not.toHaveClass('sm:grid-cols-2');
+            expect(gridContainer).not.toHaveClass('sm:grid-cols-3');
         });
 
         test('updates separator position prop correctly', () => {
@@ -653,7 +626,7 @@ describe('ExpressPayments Integration Tests', () => {
             test('has white logo styling (brightness and invert filter)', () => {
                 render(<ApplePayLogo />);
                 const image = screen.getByAltText('Apple Pay');
-                expect(image.style.objectFit).toBe('contain');
+                expect(image).toHaveClass('object-contain');
                 expect(image.style.filter).toBe('brightness(0) invert(1)');
             });
         });
@@ -679,7 +652,7 @@ describe('ExpressPayments Integration Tests', () => {
             test('has correct styling', () => {
                 render(<GooglePayLogo />);
                 const image = screen.getByAltText('Google Pay');
-                expect(image.style.objectFit).toBe('contain');
+                expect(image).toHaveClass('object-contain');
             });
         });
 
@@ -704,7 +677,7 @@ describe('ExpressPayments Integration Tests', () => {
             test('has correct styling', () => {
                 render(<PayPalLogo />);
                 const image = screen.getByAltText('PayPal');
-                expect(image.style.objectFit).toBe('contain');
+                expect(image).toHaveClass('object-contain');
             });
         });
 
@@ -729,7 +702,7 @@ describe('ExpressPayments Integration Tests', () => {
             test('has white logo styling (brightness and invert filter)', () => {
                 render(<VenmoLogo />);
                 const image = screen.getByAltText('Venmo');
-                expect(image.style.objectFit).toBe('contain');
+                expect(image).toHaveClass('object-contain');
                 expect(image.style.filter).toBe('brightness(0) invert(1)');
             });
         });
@@ -760,8 +733,10 @@ describe('ExpressPayments Integration Tests', () => {
                 const onClick = vi.fn();
                 render(<StaticPayPalButton onClick={onClick} />);
 
-                const logo = screen.getByAltText('PayPal');
-                expect(logo).toBeInTheDocument();
+                const button = screen.getByRole('button', { name: 'PayPal' });
+                const logo = button.querySelector('img');
+                expect(logo).toBeTruthy();
+                expect(logo).toHaveAttribute('src');
             });
 
             test('is disabled when disabled prop is true', () => {
@@ -866,8 +841,10 @@ describe('ExpressPayments Integration Tests', () => {
                 const onClick = vi.fn();
                 render(<StaticVenmoButton onClick={onClick} />);
 
-                const logo = screen.getByAltText('Venmo');
-                expect(logo).toBeInTheDocument();
+                const button = screen.getByRole('button', { name: 'Venmo' });
+                const logo = button.querySelector('img');
+                expect(logo).toBeTruthy();
+                expect(logo).toHaveAttribute('src');
             });
 
             test('is disabled when disabled prop is true', () => {

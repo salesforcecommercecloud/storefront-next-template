@@ -18,7 +18,7 @@ import PopularCategory from '../index';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
+import { waitForStorybookReady, SITE_PREFIX } from '@storybook/test-utils';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 // @ts-expect-error Mock data file is JavaScript
 import { mockCategories, mockCategory as mockCategoryTies } from '@/components/__mocks__/mock-data';
@@ -166,7 +166,7 @@ export const Default: Story = {
 
         // Verify category link
         const link = canvas.getByRole('listitem');
-        await expect(link).toHaveAttribute('href', '/category/mens');
+        await expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/mens`);
     },
 };
 
@@ -190,7 +190,10 @@ export const WithCategoryProp: Story = {
 
         await expect(canvas.getByText('Ties')).toBeInTheDocument();
         await expect(canvas.getByText(/shop mens's ties/i)).toBeInTheDocument();
-        await expect(canvas.getByRole('listitem')).toHaveAttribute('href', '/category/mens-accessories-ties');
+        await expect(canvas.getByRole('listitem')).toHaveAttribute(
+            'href',
+            `${SITE_PREFIX}/category/mens-accessories-ties`
+        );
     },
 };
 

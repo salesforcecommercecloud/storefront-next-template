@@ -45,6 +45,7 @@ export default defineConfig({
         alias: {
             '@': path.resolve(__dirname, '../src'), // Proper path resolution for Storybook
             '@storybook/test-utils': path.resolve(__dirname, './test-utils'), // Storybook test utilities
+            '@fonts': path.resolve(__dirname, '../public/fonts'), // Fonts alias for easy customization
             // Ensure React 19 compatibility
             react: path.resolve(__dirname, '../node_modules/react'),
             'react-dom': path.resolve(__dirname, '../node_modules/react-dom'),

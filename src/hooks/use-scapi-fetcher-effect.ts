@@ -15,6 +15,9 @@
  */
 import { useEffect, useRef } from 'react';
 import type { ScapiFetcher } from './use-scapi-fetcher';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /**
  * Configuration object for the useScapiFetcherEffect hook
@@ -128,17 +131,13 @@ export function useScapiFetcherEffect<TData = unknown, TSubmitPayload = unknown>
                 try {
                     onSuccess(currentData);
                 } catch (error) {
-                    // Silently handle callback errors to prevent breaking the component
-                    // eslint-disable-next-line no-console
-                    console.error('Error in onSuccess callback:', error);
+                    logger.error('Error in onSuccess callback', { error });
                 }
             } else if (!currentSuccess && currentErrors && onError) {
                 try {
                     onError(currentErrors);
                 } catch (error) {
-                    // Silently handle callback errors to prevent breaking the component
-                    // eslint-disable-next-line no-console
-                    console.error('Error in onError callback:', error);
+                    logger.error('Error in onError callback', { error });
                 }
             }
         }

@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
+import { useContext, useEffect } from 'react';
 import CollapsibleSection from '.';
+import { CollapsibleLoadingContext } from './collapsible-loading-context';
+
+/** Click the summary and wait for all React effects to flush. */
+const clickSummary = (container: HTMLElement): Promise<void> =>
+    act(async () => {
+        fireEvent.click(container.querySelector('summary') as HTMLElement);
+        await Promise.resolve();
+    });
 
 describe('CollapsibleSection', () => {
     describe('label', () => {
@@ -27,19 +36,49 @@ describe('CollapsibleSection', () => {
         });
     });
 
-    describe('children', () => {
-        test('renders child content inside the details element', () => {
+    describe('children — lazy mounting', () => {
+        test('does not render children when closed by default', () => {
             render(
                 <CollapsibleSection label="Section">
                     <p>Child content here</p>
                 </CollapsibleSection>
             );
 
+            expect(screen.queryByText('Child content here')).not.toBeInTheDocument();
+        });
+
+        test('renders children immediately when defaultOpen is true', () => {
+            render(
+                <CollapsibleSection label="Section" defaultOpen>
+                    <p>Child content here</p>
+                </CollapsibleSection>
+            );
+
+            expect(screen.getByText('Child content here')).toBeInTheDocument();
+        });
+
+        test('mounts children on click and keeps them mounted after closing', async () => {
+            const { container } = render(
+                <CollapsibleSection label="Section">
+                    <p>Child content here</p>
+                </CollapsibleSection>
+            );
+
+            expect(screen.queryByText('Child content here')).not.toBeInTheDocument();
+
+            // Click to open — synchronous children appear once effects flush
+            await clickSummary(container);
+
+            expect(screen.getByText('Child content here')).toBeInTheDocument();
+
+            // Click to close — children stay mounted (lazy-mount preserved)
+            await clickSummary(container);
+
             expect(screen.getByText('Child content here')).toBeInTheDocument();
         });
     });
 
-    describe('defaultOpen', () => {
+    describe('open / close behaviour', () => {
         test('is closed by default when defaultOpen is not provided', () => {
             const { container } = render(<CollapsibleSection label="Section">content</CollapsibleSection>);
 
@@ -65,6 +104,24 @@ describe('CollapsibleSection', () => {
 
             expect(container.querySelector('details')).toHaveAttribute('open');
         });
+
+        test('opens on click when there is no loading child', async () => {
+            const { container } = render(<CollapsibleSection label="Section">content</CollapsibleSection>);
+
+            await clickSummary(container);
+
+            expect(container.querySelector('details')).toHaveAttribute('open');
+        });
+
+        test('closes on second click', async () => {
+            const { container } = render(<CollapsibleSection label="Section">content</CollapsibleSection>);
+
+            await clickSummary(container);
+            expect(container.querySelector('details')).toHaveAttribute('open');
+
+            await clickSummary(container);
+            expect(container.querySelector('details')).not.toHaveAttribute('open');
+        });
     });
 
     describe('className', () => {
@@ -89,11 +146,65 @@ describe('CollapsibleSection', () => {
     });
 
     describe('chevron icon', () => {
-        test('renders a chevron icon inside the summary', () => {
+        test('renders a chevron icon inside the summary when idle', () => {
             const { container } = render(<CollapsibleSection label="Section">content</CollapsibleSection>);
 
-            const svg = container.querySelector('summary svg');
-            expect(svg).toBeInTheDocument();
+            expect(container.querySelector('summary svg')).toBeInTheDocument();
+            expect(container.querySelector('summary [class*="animate-spin"]')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('loading state via CollapsibleLoadingContext', () => {
+        // Children's effects run before parent effects, so setLoading(true) in
+        // this child is always visible to CollapsibleSection's useEffect.
+        function LoadTrigger({ loading }: { loading: boolean }) {
+            const ctx = useContext(CollapsibleLoadingContext);
+            useEffect(() => {
+                ctx?.setLoading(loading);
+                return () => ctx?.setLoading(false);
+            }, [ctx, loading]);
+            return null;
+        }
+
+        test('shows spinner and defers open when child is loading', async () => {
+            const { container } = render(
+                <CollapsibleSection label="Section">
+                    <LoadTrigger loading={true} />
+                </CollapsibleSection>
+            );
+
+            await clickSummary(container);
+
+            // Spinner visible, chevron hidden, section still closed
+            expect(container.querySelector('summary [class*="animate-spin"]')).toBeInTheDocument();
+            expect(container.querySelector('summary svg')).not.toBeInTheDocument();
+            expect(container.querySelector('details')).not.toHaveAttribute('open');
+        });
+
+        test('opens and restores chevron once loading completes', async () => {
+            const { container, rerender } = render(
+                <CollapsibleSection label="Section">
+                    <LoadTrigger loading={true} />
+                </CollapsibleSection>
+            );
+
+            await clickSummary(container);
+
+            // Swap loading child for a non-loading one to simulate fetch completion
+            await act(async () => {
+                rerender(
+                    <CollapsibleSection label="Section">
+                        <LoadTrigger loading={false} />
+                    </CollapsibleSection>
+                );
+                await Promise.resolve();
+            });
+
+            await waitFor(() => {
+                expect(container.querySelector('details')).toHaveAttribute('open');
+            });
+            expect(container.querySelector('summary svg')).toBeInTheDocument();
+            expect(container.querySelector('summary [class*="animate-spin"]')).not.toBeInTheDocument();
         });
     });
 });

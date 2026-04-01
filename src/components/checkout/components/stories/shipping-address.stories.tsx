@@ -20,6 +20,7 @@ import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import ShippingAddress from '../shipping-address';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -391,6 +392,7 @@ const meta: Meta<typeof ShippingAddress> = {
     title: 'CHECKOUT/ShippingAddress',
     tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'padded',
         chromatic: {
             modes: {
@@ -481,6 +483,10 @@ export const Default: Story = {
         isCompleted: false,
         isEditing: true,
         actionData: undefined,
+        enableMultiAddress: false,
+        handleToggleShippingAddressMode: () => {
+            action('toggle-shipping-address-mode')();
+        },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -490,17 +496,17 @@ export const Default: Story = {
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // 7 textboxes (firstName, lastName, address1, address2, city, postalCode, phone); stateCode is a combobox
-        void expect(inputs.length).toBe(7);
+        // 6 textboxes (firstName, lastName, address1, address2, city, postalCode); stateCode is a combobox, no phone
+        void expect(inputs.length).toBe(6);
         void expect(buttons.length).toBeGreaterThan(0);
 
-        // Verify form labels are present
-        void expect(canvas.getByText('First Name')).toBeInTheDocument();
-        void expect(canvas.getByText('Last Name')).toBeInTheDocument();
-        void expect(canvas.getByText('Address')).toBeInTheDocument();
-        void expect(canvas.getByText('City')).toBeInTheDocument();
-        void expect(canvas.getByText('State/Province')).toBeInTheDocument();
-        void expect(canvas.getByText('Postal Code')).toBeInTheDocument();
+        // Verify form labels are present (may have asterisks for required fields)
+        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/Last Name/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/City/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/State/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/Zip Code/i)).toBeInTheDocument();
 
         // Verify component structure
         void expect(canvasElement).toBeInTheDocument();
@@ -519,6 +525,10 @@ export const WithExistingAddress: Story = {
         isCompleted: false,
         isEditing: true,
         actionData: undefined,
+        enableMultiAddress: false,
+        handleToggleShippingAddressMode: () => {
+            action('toggle-shipping-address-mode')();
+        },
     },
     parameters: {
         docs: {
@@ -536,16 +546,16 @@ export const WithExistingAddress: Story = {
         const buttons = canvas.queryAllByRole('button');
 
         // Same 7 textboxes as Default (stateCode is a combobox)
-        void expect(inputs.length).toBe(7);
+        void expect(inputs.length).toBe(6);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Verify this story has the same form structure as Default
-        void expect(canvas.getByText('First Name')).toBeInTheDocument();
-        void expect(canvas.getByText('Last Name')).toBeInTheDocument();
-        void expect(canvas.getByText('Address')).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/Last Name/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
 
         // Test that inputs are accessible and functional
-        const firstNameInput = canvas.getByLabelText('First Name');
+        const firstNameInput = canvas.getByLabelText(/First Name/i);
         void expect(firstNameInput).toBeInTheDocument();
         void expect(firstNameInput).not.toBeDisabled();
 
@@ -566,6 +576,10 @@ export const LoadingState: Story = {
         isCompleted: false,
         isEditing: true,
         actionData: undefined,
+        enableMultiAddress: false,
+        handleToggleShippingAddressMode: () => {
+            action('toggle-shipping-address-mode')();
+        },
     },
     parameters: {
         docs: {
@@ -583,14 +597,14 @@ export const LoadingState: Story = {
         const buttons = canvas.queryAllByRole('button');
 
         // In loading state, 7 textboxes (stateCode is combobox)
-        void expect(inputs.length).toBe(7);
+        void expect(inputs.length).toBe(6);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Test that loading state shows appropriate UI
-        void expect(canvas.getByText('First Name')).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
 
         // Verify that the loading state doesn't interfere with basic rendering
-        const firstNameInput = canvas.getByLabelText('First Name');
+        const firstNameInput = canvas.getByLabelText(/First Name/i);
         void expect(firstNameInput).toBeInTheDocument();
 
         // Test loading state visual feedback
@@ -610,6 +624,10 @@ export const CompletedState: Story = {
         isCompleted: true,
         isEditing: false,
         actionData: undefined,
+        enableMultiAddress: false,
+        handleToggleShippingAddressMode: () => {
+            action('toggle-shipping-address-mode')();
+        },
     },
     parameters: {
         docs: {
@@ -624,11 +642,10 @@ export const CompletedState: Story = {
 
         // Test CompletedState story: Verify summary view without form inputs
         const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
 
         // In completed state, there should be no form inputs (summary view only)
         void expect(inputs.length).toBe(0);
-        void expect(buttons.length).toBeGreaterThan(0); // May have edit buttons
+        // Change button is only visible when basket has an address; with no address we may have 0 buttons
 
         // Summary shows address when basket has one; with mock basket undefined it may be empty
         // Verify completed state visual presentation
@@ -651,6 +668,10 @@ export const WithFormError: Story = {
             step: 'shippingAddress',
             formError: 'Failed to save shipping address. Please try again.',
         },
+        enableMultiAddress: false,
+        handleToggleShippingAddressMode: () => {
+            action('toggle-shipping-address-mode')();
+        },
     },
     parameters: {
         docs: {
@@ -668,14 +689,14 @@ export const WithFormError: Story = {
         const buttons = canvas.queryAllByRole('button');
 
         // Standard 7 textboxes even with error (stateCode is combobox)
-        void expect(inputs.length).toBe(7);
+        void expect(inputs.length).toBe(6);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Test that form labels are still present
-        void expect(canvas.getByText('First Name')).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
 
         // Verify inputs remain functional despite error state
-        const firstNameInput = canvas.getByLabelText('First Name');
+        const firstNameInput = canvas.getByLabelText(/First Name/i);
         void expect(firstNameInput).toBeInTheDocument();
         void expect(firstNameInput).not.toBeDisabled();
 
@@ -704,6 +725,10 @@ export const WithValidationErrors: Story = {
                 city: 'City is required',
             },
         },
+        enableMultiAddress: false,
+        handleToggleShippingAddressMode: () => {
+            action('toggle-shipping-address-mode')();
+        },
     },
     parameters: {
         docs: {
@@ -721,17 +746,17 @@ export const WithValidationErrors: Story = {
         const buttons = canvas.queryAllByRole('button');
 
         // All 7 textbox fields even with validation errors (stateCode is combobox)
-        void expect(inputs.length).toBe(7);
+        void expect(inputs.length).toBe(6);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Test that required form labels are present
-        void expect(canvas.getByText('First Name')).toBeInTheDocument();
-        void expect(canvas.getByText('Last Name')).toBeInTheDocument();
-        void expect(canvas.getByText('Address')).toBeInTheDocument();
-        void expect(canvas.getByText('City')).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/Last Name/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/City/i)).toBeInTheDocument();
 
         // Verify inputs remain accessible for error correction
-        const firstNameInput = canvas.getByLabelText('First Name');
+        const firstNameInput = canvas.getByLabelText(/First Name/i);
         void expect(firstNameInput).toBeInTheDocument();
 
         // Test validation error state doesn't break component
@@ -751,6 +776,10 @@ export const InternationalAddress: Story = {
         isCompleted: false,
         isEditing: true,
         actionData: undefined,
+        enableMultiAddress: false,
+        handleToggleShippingAddressMode: () => {
+            action('toggle-shipping-address-mode')();
+        },
     },
     parameters: {
         docs: {
@@ -768,15 +797,15 @@ export const InternationalAddress: Story = {
         const buttons = canvas.queryAllByRole('button');
 
         // Standard 7 textboxes (stateCode may be combobox or textbox depending on country)
-        void expect(inputs.length).toBe(7);
+        void expect(inputs.length).toBe(6);
         void expect(buttons.length).toBeGreaterThan(0);
 
         // Test international-specific field handling
-        void expect(canvas.getByText('First Name')).toBeInTheDocument();
-        void expect(canvas.getByText('Address')).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
+        void expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
 
         // Verify international address form accessibility
-        const addressInput = canvas.getByLabelText('Address');
+        const addressInput = canvas.getByLabelText(/Address Line 1/i);
         void expect(addressInput).toBeInTheDocument();
 
         void expect(canvasElement).toBeInTheDocument();
@@ -795,6 +824,10 @@ export const DisabledState: Story = {
         isCompleted: false,
         isEditing: false,
         actionData: undefined,
+        enableMultiAddress: false,
+        handleToggleShippingAddressMode: () => {
+            action('toggle-shipping-address-mode')();
+        },
     },
     parameters: {
         docs: {

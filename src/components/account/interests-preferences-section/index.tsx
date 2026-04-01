@@ -26,6 +26,7 @@ import { XIcon } from 'lucide-react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useCustomerInterests, useCustomerPreferences } from '@/hooks/customer-preferences/use-customer-preferences';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 import type { PreferenceValue } from '@/lib/adapters/customer-preferences-types';
 
 export interface InterestsPreferencesSectionProps {
@@ -259,11 +260,15 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
 
     return (
         <>
-            <Card data-testid="interests-preferences-section">
-                <CardHeader className="flex flex-row items-start justify-between border-b border-muted-foreground/20 pb-4">
-                    <div className="space-y-1">
-                        <CardTitle className="text-lg font-semibold">{t('interestsPreferences.title')}</CardTitle>
-                        <CardDescription>{t('interestsPreferences.description')}</CardDescription>
+            <Card data-testid="interests-preferences-section" className="bg-card border-border">
+                <CardHeader className="flex flex-row items-start justify-between border-b border-border pb-4">
+                    <div className="space-y-1.5">
+                        <CardTitle className="text-base font-semibold text-foreground">
+                            {t('interestsPreferences.title')}
+                        </CardTitle>
+                        <CardDescription className="text-muted-foreground">
+                            {t('interestsPreferences.description')}
+                        </CardDescription>
                     </div>
                     {isEditing ? (
                         <div className="flex gap-2">
@@ -271,7 +276,8 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                 data-testid="interests-preferences-save-button"
                                 size="sm"
                                 onClick={() => void handleSave()}
-                                disabled={isSaving}>
+                                disabled={isSaving}
+                                className="rounded-sm">
                                 {isSaving ? t('common.saving') : t('common.save')}
                             </Button>
                             <Button
@@ -279,7 +285,8 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                 variant="outline"
                                 size="sm"
                                 onClick={handleCancel}
-                                disabled={isSaving}>
+                                disabled={isSaving}
+                                className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                                 {t('common.cancel')}
                             </Button>
                         </div>
@@ -288,7 +295,8 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                             data-testid="interests-preferences-edit-button"
                             variant="outline"
                             size="sm"
-                            onClick={handleEdit}>
+                            onClick={handleEdit}
+                            className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('common.edit')}
                         </Button>
                     )}
@@ -320,7 +328,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
 
                             {/* ===== INTERESTS SECTION ===== */}
                             <div className="space-y-3">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-foreground">
                                     {t('interests.title')}
                                 </p>
 
@@ -374,7 +382,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                         {/* Multi-select (Product Categories style) */}
                                         {pref.type === 'multi-select' && (
                                             <>
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                                <p className="text-xs font-semibold uppercase tracking-wide text-foreground">
                                                     {pref.name}
                                                 </p>
                                                 <div className="flex flex-wrap gap-2">
@@ -431,7 +439,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                         {/* Button Group (Shopping Preferences style) */}
                                         {pref.type === 'button-group' && pref.options && (
                                             <>
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                                <p className="text-xs font-semibold uppercase tracking-wide text-foreground">
                                                     {pref.name}
                                                 </p>
                                                 <div className="grid grid-cols-3 gap-3">
@@ -446,11 +454,15 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                                                     handleSelectButtonGroup(pref.id, option.value)
                                                                 }
                                                                 disabled={!isEditing}
-                                                                className={`rounded-md px-4 py-2.5 text-sm font-medium transition-colors ${
+                                                                className={cn(
+                                                                    'rounded-sm px-4 py-2.5 text-sm font-medium transition-colors',
                                                                     isSelected
-                                                                        ? 'bg-primary text-primary-foreground'
-                                                                        : 'border border-input bg-background text-foreground hover:bg-accent'
-                                                                } ${!isEditing ? 'cursor-default' : 'cursor-pointer'}`}>
+                                                                        ? 'bg-foreground text-background'
+                                                                        : isEditing
+                                                                          ? 'border border-border bg-card text-foreground hover:bg-muted/50'
+                                                                          : 'border border-border bg-card text-muted-foreground',
+                                                                    !isEditing ? 'cursor-default' : 'cursor-pointer'
+                                                                )}>
                                                                 {option.label}
                                                             </button>
                                                         );
@@ -470,7 +482,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
 
                                                 return (
                                                     <>
-                                                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                                        <p className="text-xs font-semibold uppercase tracking-wide text-foreground">
                                                             {pref.name}
                                                         </p>
                                                         {isEditing ? (

@@ -15,12 +15,16 @@
  */
 import { fetchCategories } from '@/lib/api/categories';
 import type { LoaderFunctionArgs } from 'react-router';
+import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 
 const dataLoader = (args: { componentData: unknown; context: LoaderFunctionArgs['context'] }) => {
     const { componentData, context: routeContext } = args;
 
-    // Extract parentId from component data, default to 'root'
-    const parentId = ((componentData as Record<string, unknown>)?.parentId as string) || 'root';
+    // Type cast to component structure
+    const comp = componentData as ShopperExperience.schemas['Component'];
+
+    // Extract parentId from component data (Page Designer attributes are in comp.data)
+    const parentId = (comp.data as { parentId?: string })?.parentId || 'root';
 
     return fetchCategories(routeContext, parentId, 1);
 };

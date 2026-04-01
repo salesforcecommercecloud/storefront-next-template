@@ -182,10 +182,7 @@ export default function CheckoutPickup({
                             <CardContent className="pt-0 pb-6 px-6">
                                 <div className="mt-0 mb-0">
                                     <div className="m-0 p-0" style={{ marginTop: 0, paddingTop: 0 }}>
-                                        <AddressDisplay
-                                            address={orderAddressFromStoreAddress(store)}
-                                            className="m-0 p-0"
-                                        />
+                                        <AddressDisplay address={orderAddressFromStoreAddress(store)} />
                                     </div>
                                     {(store.email || store.phone) && (
                                         <Typography

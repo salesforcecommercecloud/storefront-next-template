@@ -14,86 +14,108 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { updateSubscription } from '@/lib/api/consent';
+import { type UpdateSubscriptionBody, updateSubscriptionsBulk } from '@/lib/api/consent';
 import { getErrorMessage } from '@/lib/utils';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { getLogger } from '@/lib/logger.server';
 
 const VALID_CHANNELS = ['email', 'sms', 'whatsapp'] as const;
 const VALID_STATUSES = ['opt_in', 'opt_out'] as const;
 
-type UpdateMarketingConsentResponse = { success: true } | { success: false; error: string };
+type ResponseBody = { success: true } | { success: false; error: string; partialSuccess?: boolean };
+
+type UpdateItem = Record<string, unknown>;
+
+/** Returns first validation error message or null. */
+function validateUpdatesInput(updates: unknown[]): string | null {
+    if (!updates.length) return 'updates is required and must not be empty';
+    const trim = (v: unknown) => String(v ?? '').trim();
+    const low = (v: unknown) => String(v ?? '').toLowerCase();
+    for (const u of updates) {
+        const o = (u ?? {}) as UpdateItem;
+        if (!trim(o.subscriptionId)) return 'subscriptionId is required';
+        const ch = low(o.channel) as (typeof VALID_CHANNELS)[number];
+        if (!VALID_CHANNELS.includes(ch)) return `channel must be one of: ${VALID_CHANNELS.join(', ')}`;
+        if (!trim(o.contactPointValue)) return 'contactPointValue is required';
+        const st = low(o.status) as (typeof VALID_STATUSES)[number];
+        if (!VALID_STATUSES.includes(st)) return `status must be one of: ${VALID_STATUSES.join(', ')}`;
+    }
+    return null;
+}
 
 /**
- * Server action to update a single marketing consent subscription (opt-in/opt-out).
- *
- * Expects FormData with: subscriptionId, channel, contactPointValue, status.
- * Validates input then calls lib/api/consent updateSubscription() (Shopper Consents API POST).
- *
- * Components submit via:
- *   fetcher.submit({ subscriptionId, channel, contactPointValue, status }, { method: 'POST', action: '/action/update-marketing-consent' });
+ * Server action: POST JSON { updates: [{ subscriptionId, channel, contactPointValue, status }, ...] }.
+ * Validates input via validateUpdatesInput; calls SCAPI bulk endpoint (1–50 per request).
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+    const logger = getLogger(context);
+
+    logger.debug('UpdateMarketingConsent: starting', { method: request.method });
+
     if (request.method !== 'POST') {
-        return Response.json({ success: false, error: 'Method not allowed' } satisfies UpdateMarketingConsentResponse, {
-            status: 405,
-        });
+        logger.warn('UpdateMarketingConsent: method not allowed', { method: request.method });
+        return Response.json({ success: false, error: 'Method not allowed' } satisfies ResponseBody, { status: 405 });
     }
 
     try {
-        const formData = await request.formData();
-        const subscriptionId = formData.get('subscriptionId')?.toString();
-        const channel = formData.get('channel')?.toString();
-        const contactPointValue = formData.get('contactPointValue')?.toString();
-        const status = formData.get('status')?.toString();
+        const body = (await request.json()) as { updates?: unknown[] };
+        const updates = Array.isArray(body?.updates) ? body.updates : [];
 
-        if (!subscriptionId?.trim()) {
-            return Response.json(
-                { success: false, error: 'subscriptionId is required' } satisfies UpdateMarketingConsentResponse,
-                { status: 400 }
-            );
-        }
-        if (!channel || !VALID_CHANNELS.includes(channel as (typeof VALID_CHANNELS)[number])) {
-            return Response.json(
-                {
-                    success: false,
-                    error: `channel must be one of: ${VALID_CHANNELS.join(', ')}`,
-                } satisfies UpdateMarketingConsentResponse,
-                { status: 400 }
-            );
-        }
-        if (!contactPointValue?.trim()) {
-            return Response.json(
-                { success: false, error: 'contactPointValue is required' } satisfies UpdateMarketingConsentResponse,
-                { status: 400 }
-            );
-        }
-        if (!status || !VALID_STATUSES.includes(status as (typeof VALID_STATUSES)[number])) {
-            return Response.json(
-                {
-                    success: false,
-                    error: `status must be one of: ${VALID_STATUSES.join(', ')}`,
-                } satisfies UpdateMarketingConsentResponse,
-                { status: 400 }
-            );
+        logger.debug('UpdateMarketingConsent: validating updates', { updateCount: updates.length });
+
+        const validationError = validateUpdatesInput(updates);
+        if (validationError) {
+            logger.warn('UpdateMarketingConsent: validation failed', { error: validationError });
+            return Response.json({ success: false, error: validationError } satisfies ResponseBody, { status: 400 });
         }
 
-        await updateSubscription(context, {
-            subscriptionId: subscriptionId.trim(),
-            channel: channel as 'email' | 'sms' | 'whatsapp',
-            contactPointValue: contactPointValue.trim(),
-            status: status as 'opt_in' | 'opt_out',
+        const bodies: UpdateSubscriptionBody[] = updates.map((u) => {
+            const o = u as UpdateItem;
+            return {
+                subscriptionId: String(o.subscriptionId ?? '').trim(),
+                channel: String(o.channel ?? '').toLowerCase() as UpdateSubscriptionBody['channel'],
+                contactPointValue: String(o.contactPointValue ?? '').trim(),
+                status: String(o.status ?? '').toLowerCase() as UpdateSubscriptionBody['status'],
+            };
         });
 
-        return Response.json({ success: true } satisfies UpdateMarketingConsentResponse);
-    } catch (reason) {
+        const result = await updateSubscriptionsBulk(context, bodies);
+
+        // SCAPI bulk returns 200 when all succeed; 207 when some fail. Check per-item results.
+        const results = result?.results ?? [];
+        const failures = results.filter((r) => !r.success);
+
+        if (failures.length > 0) {
+            const allFailed = failures.length === results.length;
+            logger.warn('UpdateMarketingConsent: some or all updates failed', {
+                totalUpdates: results.length,
+                failedUpdates: failures.length,
+                allFailed,
+            });
+            return Response.json(
+                {
+                    success: false,
+                    error: allFailed
+                        ? 'All updates failed'
+                        : `${failures.length} of ${results.length} update(s) failed`,
+                    partialSuccess: !allFailed,
+                } satisfies ResponseBody,
+                { status: allFailed ? 500 : 207 }
+            );
+        }
+
+        logger.info('UpdateMarketingConsent: succeeded', { updateCount: results.length });
+        return Response.json({ success: true } satisfies ResponseBody);
+    } catch (error) {
+        logger.error('UpdateMarketingConsent: failed', { error });
         const errorMessage =
-            reason instanceof ApiError
-                ? getErrorMessage(reason)
-                : reason instanceof Error
-                  ? reason.message
+            error instanceof ApiError
+                ? getErrorMessage(error)
+                : error instanceof Error
+                  ? error.message
                   : 'Failed to update marketing consent';
-        return Response.json({ success: false, error: errorMessage } satisfies UpdateMarketingConsentResponse, {
-            status: reason instanceof ApiError ? reason.status : 500,
+        return Response.json({ success: false, error: errorMessage } satisfies ResponseBody, {
+            status: error instanceof ApiError ? error.status : 500,
         });
     }
 }

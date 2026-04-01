@@ -25,8 +25,8 @@ import { mockConfig } from '@/test-utils/config';
 // Mock the useConfig hook - use vi.hoisted to ensure it's available during mock setup
 const mockUseConfig = vi.hoisted(() => vi.fn());
 
-vi.mock('@/config', async () => {
-    const actual = await vi.importActual('@/config');
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
     return {
         ...actual,
         useConfig: mockUseConfig,

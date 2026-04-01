@@ -23,7 +23,7 @@ const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 // Mock the config module with inline values
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     getConfig: vi.fn(() => ({
         commerce: {
             api: {

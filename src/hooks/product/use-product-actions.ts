@@ -17,7 +17,8 @@
 'use client';
 
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useFetcher, useLocation, useNavigate } from 'react-router';
+import { useFetcher, useLocation } from 'react-router';
+import { useNavigate } from '@/hooks/use-navigate';
 import { useTranslation } from 'react-i18next';
 import type { ShopperProducts, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { useToast } from '@/components/toast';
@@ -27,7 +28,7 @@ import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
 import { isSelectedDeliveryOptionValid } from '@/extensions/bopis/lib/product-actions';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
-import { useBasket, useBasketUpdater } from '@/providers/basket';
+import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
@@ -47,6 +48,7 @@ interface UseProductActionsProps {
     initialQuantity?: number;
     maxQuantity?: number; // Max quantity allowed (for bonus products, etc.)
     itemId?: string; // Cart item ID for update operations
+    skipInventoryValidation?: boolean; // Skip inventory/orderable validation in canAddToCart (for wishlist)
 }
 
 /**
@@ -91,6 +93,7 @@ export function useProductActions({
     initialQuantity,
     maxQuantity,
     itemId,
+    skipInventoryValidation = false,
 }: UseProductActionsProps) {
     const { t } = useTranslation();
     const location = useLocation();
@@ -99,7 +102,6 @@ export function useProductActions({
     const isProductABundle = isProductBundle(product);
 
     const [isAddingToOrUpdatingCart, setIsAddingToOrUpdatingCart] = useState(false);
-    const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
     const hasHandledWishlistResponseRef = useRef(false);
     const [quantity, setQuantity] = useState(initialQuantity ?? 1);
 
@@ -108,6 +110,7 @@ export function useProductActions({
 
     // Get basket data for update operations
     const basket = useBasket();
+    const { setMiniCartOpen } = useMiniCart();
     const basketProductItems = basket?.productItems || [];
 
     // Toast notifications
@@ -130,23 +133,23 @@ export function useProductActions({
 
     // Check if pickup is selected for this product
     // Priority: existing basket item pickup store (basketPickupStore) OR pending pickup selection in context
+    // Pickup is stored by product.id (master) in DeliveryOptions; for variants, also check product.id
     const isPickupSelected = useMemo(() => {
-        // If basket item already has a pickup store, pickup is selected
         if (basketPickupStore) return true;
-        // Otherwise check if there's a pending pickup selection in context
-        return pickupContext?.pickupBasketItems?.has(productId) ?? false;
-    }, [basketPickupStore, pickupContext?.pickupBasketItems, productId]);
+        const items = pickupContext?.pickupBasketItems;
+        if (!items) return false;
+        return items.has(productId) || items.has(product.id);
+    }, [basketPickupStore, pickupContext?.pickupBasketItems, productId, product.id]);
 
     // Calculate store inventory ID based on delivery option
     // Priority: existing basket item pickup store (basketPickupStore) OR pending pickup selection in context
     const storeInventoryId = useMemo(() => {
         if (!isPickupSelected) return undefined;
-        // If basket item already has a pickup store, use its inventoryId
         if (basketPickupStore?.inventoryId) return basketPickupStore.inventoryId;
-        // Otherwise use inventoryId from pending pickup selection in context
-        const pickupInfo = pickupContext?.pickupBasketItems?.get(productId);
+        const pickupInfo =
+            pickupContext?.pickupBasketItems?.get(productId) ?? pickupContext?.pickupBasketItems?.get(product.id);
         return pickupInfo?.inventoryId;
-    }, [isPickupSelected, basketPickupStore, pickupContext?.pickupBasketItems, productId]);
+    }, [isPickupSelected, basketPickupStore, pickupContext?.pickupBasketItems, productId, product.id]);
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     // Inventory and stock calculations - considers delivery option, store/site inventory, and variant
@@ -233,6 +236,17 @@ export function useProductActions({
 
     // Can add to cart validation - defaults to false, only true when explicitly allowed
     const canAddToCart = useMemo(() => {
+        // Skip inventory/orderable validation if requested (for wishlist use case)
+        // For wishlist, check quantity > 0 and variant selection (if needed), but ignore stock levels
+        if (skipInventoryValidation) {
+            if (quantity <= 0) return false;
+
+            // Master/variant products still need a variant selected
+            if (isMasterOrVariantProduct && !currentVariant) return false;
+
+            return true;
+        }
+
         // Quantity must be valid
         // For bonus products with maxQuantity, use that instead of actualStockLevel
         const maxAllowed = maxQuantity !== undefined ? maxQuantity : actualStockLevel;
@@ -251,6 +265,7 @@ export function useProductActions({
         if (isMasterOrVariantProduct) {
             // Master products cannot be added to cart without a variant selection
             if (!currentVariant) return false;
+
             // Variant must be orderable from effective inventory (store or site)
             return effectiveInventory?.orderable === true;
         }
@@ -285,6 +300,7 @@ export function useProductActions({
         isMasterOrVariantProduct,
         isProductASet,
         isProductABundle,
+        skipInventoryValidation,
     ]);
 
     // Handle successful cart updates
@@ -298,9 +314,10 @@ export function useProductActions({
             updateBasket(basketData);
 
             setIsAddingToOrUpdatingCart(false);
-            // Only show toast for add to cart action, not edit cart
+            // Only show toast and open mini cart for add to cart action, not edit cart
             if (!itemId) {
                 addToast(t('product:addedToCart', { productName: product.name || 'product' }), 'success');
+                setMiniCartOpen(true);
             }
         } else if (cartFetcher.data?.success === false) {
             // Show error toast for both add and edit mode
@@ -320,8 +337,11 @@ export function useProductActions({
             return;
         }
         if (multipleItemsFetcher.data?.success && multipleItemsFetcher.data.basket) {
+            const basketData = multipleItemsFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
+            updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
             addToast(t('product:addedSetToCart'), 'success');
+            setMiniCartOpen(true);
         } else if (multipleItemsFetcher.data?.success === false) {
             addToast(t('product:failedToAddItemsToCart', { error: multipleItemsFetcher.data.error }), 'error');
             setIsAddingToOrUpdatingCart(false);
@@ -336,8 +356,11 @@ export function useProductActions({
             return;
         }
         if (bundleFetcher.data?.success && bundleFetcher.data.basket) {
+            const basketData = bundleFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
+            updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
             addToast(t('product:addedBundleToCart'), 'success');
+            setMiniCartOpen(true);
         } else if (bundleFetcher.data?.success === false) {
             addToast(t('product:failedToAddBundleToCart', { error: bundleFetcher.data.error }), 'error');
             setIsAddingToOrUpdatingCart(false);
@@ -345,38 +368,6 @@ export function useProductActions({
         //As addToast, setIsAddingToOrUpdatingCart are unlikely to change, we don't need to include them in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAddingToOrUpdatingCart, bundleFetcher.data]);
-
-    // Generic pending action tracker (after auth redirect)
-    // This tracks when actions are automatically executed after login
-    // Uses URL params directly - if URL has action params for this product, action is executing
-    const productToCheck = isMasterOrVariantProduct ? currentVariant : product;
-    const currentProductId = getProductId(productToCheck);
-
-    useEffect(() => {
-        if (!currentProductId) {
-            return;
-        }
-
-        // Check URL params to see if wishlist action is executing for this product
-        const urlParams = new URLSearchParams(location.search);
-        const urlAction = urlParams.get('action');
-        const urlActionParamsStr = urlParams.get('actionParams');
-
-        let isPendingWishlistAction = false;
-        if (urlAction === 'addToWishlist' && urlActionParamsStr) {
-            try {
-                const urlActionParams = JSON.parse(urlActionParamsStr);
-                const urlProductId = urlActionParams.productId;
-                isPendingWishlistAction = urlProductId === currentProductId;
-            } catch {
-                // Invalid JSON - ignore
-            }
-        }
-
-        // Show loading state if URL indicates action is executing for this product
-        // Always sync state with URL params - don't check current state to avoid timing issues
-        setIsAddingToWishlist(isPendingWishlistAction);
-    }, [currentProductId, location.search]);
 
     // Handle wishlist fetcher response (for both direct clicks and component-executed pending actions)
     useEffect(() => {
@@ -409,7 +400,6 @@ export function useProductActions({
 
         if (result?.success) {
             hasHandledWishlistResponseRef.current = true;
-            setIsAddingToWishlist(false);
 
             // If this was a pending action, clear URL params after successful execution
             if (isPendingAction) {
@@ -431,7 +421,6 @@ export function useProductActions({
             }
         } else if (result?.success === false || result?.error) {
             hasHandledWishlistResponseRef.current = true;
-            setIsAddingToWishlist(false);
 
             // If this was a pending action, clear URL params even on error
             if (isPendingAction) {
@@ -440,16 +429,9 @@ export function useProductActions({
 
             addToast(result.error || t('product:failedToAddProductToWishlist'), 'error');
         }
-        //As addToast, setIsAddingToWishlist, navigate are unlikely to change, we don't need to include them in the dependency array
+        //As addToast, navigate are unlikely to change, we don't need to include them in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        isAddingToWishlist,
-        wishlistFetcher.data,
-        wishlistFetcher.state,
-        product.name,
-        location.pathname,
-        location.search,
-    ]);
+    }, [wishlistFetcher.data, wishlistFetcher.state, product.name, location.pathname, location.search]);
 
     // Handle adding to cart
     const handleAddToCart = useCallback(async () => {
@@ -461,7 +443,10 @@ export function useProductActions({
         const price = productToAdd?.price;
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        const pickupInfo = pickupContext?.pickupBasketItems?.get(itemProductId ?? '');
+        // Pickup is stored by product.id (master) in DeliveryOptions; for variants, lookup by variant id may miss.
+        const pickupInfo =
+            pickupContext?.pickupBasketItems?.get(itemProductId ?? '') ??
+            (product.id !== itemProductId ? pickupContext?.pickupBasketItems?.get(product.id) : undefined);
         const storeId = pickupInfo?.storeId ?? null;
 
         // Validate pickup/delivery compatibility with existing basket items
@@ -530,8 +515,8 @@ export function useProductActions({
     const createProductActionHandler = useCallback(
         <TParams extends Record<string, unknown> = Record<string, unknown>>(config: {
             actionRoute: string;
-            isLoading: boolean;
-            setLoading: (loading: boolean) => void;
+            isLoading?: boolean;
+            setLoading?: (loading: boolean) => void;
             fetcher: ReturnType<typeof useFetcher>;
             errorMessage: string;
             buildFormData: (params: TParams) => FormData | Record<string, string>;
@@ -557,7 +542,7 @@ export function useProductActions({
                     return;
                 }
 
-                setLoading(true);
+                setLoading?.(true);
 
                 try {
                     const params = { productId: itemProductId, ...additionalParams } as unknown as TParams;
@@ -569,7 +554,7 @@ export function useProductActions({
                     // Note: fetcher.data may not be immediately available after submit()
                     // Response handling should be done in a useEffect that watches fetcher.state
                 } catch {
-                    setLoading(false);
+                    setLoading?.(false);
                     addToast(errorMessage, 'error');
                 }
             };
@@ -582,14 +567,12 @@ export function useProductActions({
         () =>
             createProductActionHandler<{ productId: string }>({
                 actionRoute: '/action/wishlist-add',
-                isLoading: isAddingToWishlist,
-                setLoading: setIsAddingToWishlist,
                 fetcher: wishlistFetcher,
                 errorMessage: t('product:failedToAddProductToWishlist'),
                 buildFormData: (params) => ({ productId: String(params.productId) }),
                 actionName: 'handleAddToWishlistBase',
             }),
-        [createProductActionHandler, isAddingToWishlist, wishlistFetcher, t]
+        [createProductActionHandler, wishlistFetcher, t]
     );
 
     // Wrap the base handler with auth requirement - must be called at render time (not in async functions)
@@ -632,7 +615,14 @@ export function useProductActions({
                 const productItems = productSelections.map((selection) => {
                     const selectionProductId = selection.variant?.productId || selection.product.id;
                     // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                    const pickupInfo = pickupContext?.pickupBasketItems?.get(selectionProductId);
+                    // Pickup can be stored by: (1) variant id, (2) master product id (per-child DeliveryOptions),
+                    // or (3) parent set product id (set-level DeliveryOptions). Try all.
+                    const pickupInfo =
+                        pickupContext?.pickupBasketItems?.get(selectionProductId) ??
+                        (selection.product.id !== selectionProductId
+                            ? pickupContext?.pickupBasketItems?.get(selection.product.id)
+                            : undefined) ??
+                        pickupContext?.pickupBasketItems?.get(product.id);
                     const inventoryId = pickupInfo?.inventoryId ?? null;
                     const storeId = pickupInfo?.storeId ?? null;
                     // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -667,6 +657,7 @@ export function useProductActions({
             }
         },
         [
+            product.id,
             isAddingToOrUpdatingCart,
             multipleItemsFetcher,
             addToast,
@@ -723,7 +714,7 @@ export function useProductActions({
 
                 // Track cart item add
                 void analytics.trackCartItemAdd({
-                    cartItems: [bundleItem, ...childSelections],
+                    cartItems: [bundleItem, ...childProductSelections],
                 });
             } catch {
                 setIsAddingToOrUpdatingCart(false);
@@ -936,8 +927,6 @@ export function useProductActions({
             cartFetcher.state === 'submitting' ||
             multipleItemsFetcher.state === 'submitting' ||
             bundleFetcher.state === 'submitting',
-        /** Indicates if an add-to-wishlist operation is currently in progress */
-        isAddingToWishlist,
         /** Current quantity selected for the product */
         quantity,
         /** Maximum quantity allowed (for bonus products, etc.) */

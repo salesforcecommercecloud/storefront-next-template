@@ -17,6 +17,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider, type ShouldRevalidateFunctionArgs } from 'react-router';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { shouldRevalidate } from './_app.account';
 
 vi.mock('@/middlewares/auth.server', () => ({
@@ -94,12 +95,14 @@ describe('AccountPage layout', () => {
                 {
                     path: '/account',
                     element: (
-                        <AccountPage
-                            loaderData={{
-                                customer: mockCustomer,
-                                subscriptions: mockSubscriptions,
-                            }}
-                        />
+                        <AllProvidersWrapper>
+                            <AccountPage
+                                loaderData={{
+                                    customer: mockCustomer,
+                                    subscriptions: mockSubscriptions,
+                                }}
+                            />
+                        </AllProvidersWrapper>
                     ),
                     children: [
                         {

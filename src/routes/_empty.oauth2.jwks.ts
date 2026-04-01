@@ -22,9 +22,11 @@
  *
  */
 import type { LoaderFunctionArgs } from 'react-router';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@/lib/i18next';
 import { getScapiBaseUrl } from '@/lib/utils';
+import { getLogger } from '@/lib/logger.server';
 
 interface JWKSResponse {
     keys: Array<{
@@ -47,7 +49,7 @@ interface JWKSResponse {
  */
 async function fetchUpstreamJWKS(context: LoaderFunctionArgs['context']): Promise<JWKSResponse> {
     const { t } = getTranslation(context);
-    const config = getConfig(context);
+    const config = getConfig<AppConfig>(context);
     if (!config) {
         throw new Error('App configuration not found in context');
     }
@@ -90,7 +92,9 @@ async function fetchUpstreamJWKS(context: LoaderFunctionArgs['context']): Promis
  */
 // Resource route for JWKS proxy serving
 export async function loader({ context }: LoaderFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
+    logger.debug('JWKSProxy: loader starting');
 
     try {
         // Fetch JWKS from upstream
@@ -111,6 +115,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
     } catch (error) {
         // For errors, we need to throw to trigger proper HTTP error responses
         // since JWKS consumers expect either valid JWKS or HTTP errors
+        logger.error('JWKSProxy: failed to fetch upstream JWKS', { error });
         const errorMessage = error instanceof Error ? error.message : t('errors:jwks.unknownError');
         throw new Error(errorMessage);
     }

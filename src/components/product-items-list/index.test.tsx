@@ -24,7 +24,7 @@ import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-n
 
 // Components
 import ProductItemsList from './index';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { CurrencyProvider } from '@/providers/currency';
 
@@ -951,7 +951,7 @@ describe('ProductItemsList', () => {
 
             // Check that per-unit price with "each" label is formatted correctly (qty > 1)
             // Total price: $59.98, Per-unit: $29.99 each
-            expect(screen.getAllByText('$29.99 each')).toHaveLength(2);
+            expect(screen.getAllByText('$29.99 each')).toHaveLength(1);
         });
 
         test('handles missing product data gracefully', () => {
@@ -972,7 +972,7 @@ describe('ProductItemsList', () => {
 
             // Check that per-unit price with "each" label is displayed (qty > 1)
             // priceAfterItemDiscount: 59.98 / quantity: 2 = $29.99 each
-            expect(screen.getAllByText('$29.99 each')).toHaveLength(2);
+            expect(screen.getAllByText('$29.99 each')).toHaveLength(1);
 
             // Check that quantity is displayed in the quantity picker
             expect(screen.getByDisplayValue('2')).toBeInTheDocument();

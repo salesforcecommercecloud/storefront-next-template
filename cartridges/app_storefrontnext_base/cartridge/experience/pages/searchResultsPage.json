@@ -20,5 +20,5 @@
         }
     ],
     "supported_aspect_types": [],
-    "route": "/search"
+    "route": "/:siteId/:localeId/search"
 }

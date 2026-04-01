@@ -17,7 +17,7 @@
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import type { RouterContextProvider } from 'react-router';
-import { isAddressEqual } from '@/extensions/multiship/lib/address-utils';
+import { isAddressEqual } from '@/lib/address-utils';
 import { getTranslation } from '@/lib/i18next';
 
 /**

@@ -18,7 +18,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { getTranslation } from '@/lib/i18next';
-import { CurrencyProvider } from '@/providers/currency';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
@@ -64,10 +64,10 @@ const mockFetcher = {
     ),
 };
 
-// Helper function to render component with Router and CurrencyProvider
+// Helper function to render component with Router and all providers
 const renderWithProviders = (component: React.ReactElement, currency: string = 'USD') => {
     const router = createMemoryRouter(
-        [{ path: '/', element: <CurrencyProvider value={currency}>{component}</CurrencyProvider> }],
+        [{ path: '*', element: <AllProvidersWrapper currency={currency}>{component}</AllProvidersWrapper> }],
         { initialEntries: ['/'] }
     );
     return render(<RouterProvider router={router} />);
@@ -170,7 +170,7 @@ describe('OrderSummary', () => {
     test('shows correct item count text for different quantities', () => {
         // Test zero items
         const emptyBasket = { ...mockBasket, productItems: [] };
-        const { rerender } = renderWithProviders(<OrderSummary basket={emptyBasket} />);
+        renderWithProviders(<OrderSummary basket={emptyBasket} />);
         expect(screen.getByText(t('cart:items.itemsInCart.zero'))).toBeInTheDocument();
 
         // Test one item
@@ -178,11 +178,7 @@ describe('OrderSummary', () => {
             ...mockBasket,
             productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1, price: 50.0 }],
         };
-        rerender(
-            <CurrencyProvider value="USD">
-                <OrderSummary basket={oneItemBasket} />
-            </CurrencyProvider>
-        );
+        renderWithProviders(<OrderSummary basket={oneItemBasket} />);
         expect(screen.getByText(t('cart:items.itemsInCart.one'))).toBeInTheDocument();
     });
 
@@ -415,7 +411,7 @@ describe('OrderSummary', () => {
     test('renders separator when promo code form is not shown', () => {
         renderWithProviders(<OrderSummary basket={mockBasket} showPromoCodeForm={false} />);
 
-        const separator = document.querySelector('.shrink-0.bg-border');
+        const separator = document.querySelector('hr.border-border');
         expect(separator).toBeInTheDocument();
     });
 

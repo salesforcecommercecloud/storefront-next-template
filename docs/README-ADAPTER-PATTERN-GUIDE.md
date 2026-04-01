@@ -258,7 +258,8 @@ export function getAllAdapters(): EngagementAdapter[] {
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { getAdapter } from '@/lib/adapters';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders';
 
 const RecommendersContext = createContext<RecommendersAdapter | undefined>(undefined);
@@ -272,7 +273,7 @@ export function RecommendersProvider({
     children, 
     adapterName = 'einstein' 
 }: RecommendersProviderProps) {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<RecommendersAdapter | undefined>(undefined);
 
     useEffect(() => {
@@ -754,7 +755,8 @@ Create a React Context provider and custom hook to inject the adapter into your 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { getAdapter } from '@/lib/adapters';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import type { YourFeatureAdapter } from '@/lib/adapters/types';
 
 /**
@@ -788,7 +790,7 @@ export function YourFeatureProvider({
     children, 
     adapterName = 'yourFeature' 
 }: YourFeatureProviderProps) {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<YourFeatureAdapter | undefined>(undefined);
 
     useEffect(() => {
@@ -857,7 +859,8 @@ import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders'
 import { getAdapter } from '@/lib/adapters';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 const RecommendersContext = createContext<RecommendersAdapter | undefined>(undefined);
 
@@ -880,7 +883,7 @@ const RecommendersProvider = ({
     children, 
     adapterName = EINSTEIN_ADAPTER_NAME 
 }: RecommendersProviderProps) => {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<RecommendersAdapter | undefined>(undefined);
 
     useEffect(() => {
@@ -930,7 +933,7 @@ Register your adapter instances during application startup using lazy initializa
 
 ```typescript
 // src/lib/adapters/initialize-adapters.ts
-import type { AppConfig } from '@/config';
+import type { AppConfig } from '@/types/config';
 import { getAllAdapters } from './adapter-store';
 
 let adaptersInitializationPromise: Promise<void> | undefined;
@@ -996,7 +999,7 @@ export async function ensureAdaptersInitialized(appConfig: AppConfig): Promise<v
 
 ```typescript
 // src/adapters/index.ts
-import type { AppConfig } from '@/config';
+import type { AppConfig } from '@/types/config';
 import { createEinsteinAdapter } from './einstein';
 import { addAdapter } from '@/lib/adapters';
 import { createActiveDataAdapter } from './active-data';
@@ -1020,7 +1023,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
                     host: engagementAdapterConfigs.einstein.host || '',
                     einsteinId: engagementAdapterConfigs.einstein.einsteinId || '',
                     realm: engagementAdapterConfigs.einstein.realm || '',
-                    siteId: engagementAdapterConfigs.einstein.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.einstein.siteId || '',
                     isProduction: engagementAdapterConfigs.einstein.isProduction || false,
                     eventToggles: engagementAdapterConfigs.einstein.eventToggles || {},
                 })
@@ -1036,7 +1039,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
                 'active-data',
                 createActiveDataAdapter({
                     host: engagementAdapterConfigs.activeData.host || '',
-                    siteId: engagementAdapterConfigs.activeData.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.activeData.siteId || '',
                     locale: engagementAdapterConfigs.activeData.locale || appConfig.site.locale,
                     siteUUID: engagementAdapterConfigs.activeData.siteUUID || '',
                     eventToggles: engagementAdapterConfigs.activeData.eventToggles || {},
@@ -1582,7 +1585,8 @@ import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders'
 import { getAdapter } from '@/lib/adapters';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 const RecommendersContext = createContext<RecommendersAdapter | undefined>(undefined);
 
@@ -1595,7 +1599,7 @@ export function RecommendersProvider({
     children, 
     adapterName = EINSTEIN_ADAPTER_NAME 
 }: RecommendersProviderProps) {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<RecommendersAdapter | undefined>(undefined);
 
     useEffect(() => {
@@ -1772,7 +1776,7 @@ export default function ProductRecommendations({
 
 ```typescript
 // src/lib/adapters/initialize-adapters.ts
-import type { AppConfig } from '@/config';
+import type { AppConfig } from '@/types/config';
 import { getAllAdapters } from './adapter-store';
 
 let adaptersInitializationPromise: Promise<void> | undefined;
@@ -1820,7 +1824,7 @@ export async function ensureAdaptersInitialized(appConfig: AppConfig): Promise<v
 
 ```typescript
 // src/adapters/index.ts
-import type { AppConfig } from '@/config';
+import type { AppConfig } from '@/types/config';
 import { createEinsteinAdapter } from './einstein';
 import { addAdapter } from '@/lib/adapters';
 import { createActiveDataAdapter } from './active-data';
@@ -1841,7 +1845,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
                     host: engagementAdapterConfigs.einstein.host || '',
                     einsteinId: engagementAdapterConfigs.einstein.einsteinId || '',
                     realm: engagementAdapterConfigs.einstein.realm || '',
-                    siteId: engagementAdapterConfigs.einstein.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.einstein.siteId || '',
                     isProduction: engagementAdapterConfigs.einstein.isProduction || false,
                     eventToggles: engagementAdapterConfigs.einstein.eventToggles || {},
                 })
@@ -1857,7 +1861,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
                 'active-data',
                 createActiveDataAdapter({
                     host: engagementAdapterConfigs.activeData.host || '',
-                    siteId: engagementAdapterConfigs.activeData.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.activeData.siteId || '',
                     locale: engagementAdapterConfigs.activeData.locale || appConfig.site.locale,
                     siteUUID: engagementAdapterConfigs.activeData.siteUUID || '',
                     eventToggles: engagementAdapterConfigs.activeData.eventToggles || {},
@@ -1906,6 +1910,23 @@ Configuration is driven by `appConfig` object, typically loaded from environment
     },
 }
 ```
+
+#### Multi-Site Considerations
+
+Engagement adapters are initialized once at application startup with static configuration. In a multi-site storefront, the current site and locale are passed dynamically at **event-send time** via `EventSiteInfo` (resolved from the multi-site middleware context). See [Multi-Site: Engagement Data](./README-MULTI-SITE.md#engagement-data--multi-site) for how site context flows to adapters.
+
+#### Environment Variable Overrides
+
+Most engagement adapter settings are **protected paths** — they cannot be overridden via `PUBLIC__` environment variables at runtime. Attempting to set `PUBLIC__app__engagement__adapters__einstein__*` or `PUBLIC__app__engagement__adapters__dataCloud__*` will throw an error. To change these values, update `config.server.ts` and rebuild.
+
+The exceptions are Active Data's `host` and `siteUUID`, which **can** be overridden via environment variables:
+
+```bash
+PUBLIC__app__engagement__adapters__activeData__host=https://your-host.commercecloud.salesforce.com
+PUBLIC__app__engagement__adapters__activeData__siteUUID=your-site-uuid
+```
+
+This allows deploying the same build to different environments that point to different Commerce Cloud instances without rebuilding.
 
 ---
 
@@ -2039,7 +2060,8 @@ export function createServiceNameAdapter(config: ServiceNameConfig): YourAdapter
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { getAdapter } from '@/lib/adapters';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import type { YourAdapter } from '@/lib/adapters/types';
 
 const YourFeatureContext = createContext<YourAdapter | undefined>(undefined);
@@ -2053,7 +2075,7 @@ export function YourFeatureProvider({
     children, 
     adapterName = 'yourFeature' 
 }: YourFeatureProviderProps) {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<YourAdapter | undefined>(undefined);
 
     useEffect(() => {
@@ -2228,7 +2250,7 @@ import { MockAdapter } from '@/adapters/__mocks__/mock-adapter';
 import { resetAdaptersInitialization } from '@/lib/adapters/initialize-adapters';
 
 // Mock the config
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: () => ({
         engagement: {
             adapters: {
@@ -2369,7 +2391,7 @@ import { createEinsteinAdapter } from '@/adapters/einstein';
 import { resetAdaptersInitialization } from '@/lib/adapters/initialize-adapters';
 
 // Mock the config
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: () => ({
         engagement: {
             adapters: {
@@ -2496,7 +2518,7 @@ async getRecommendations(context: RecommenderContext): Promise<Product[]> {
 ```typescript
 // ✅ Good - async lazy load with useState + useEffect
 export function YourFeatureProvider({ children }: { children: ReactNode }) {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<YourAdapter | undefined>(undefined);
 
     useEffect(() => {
@@ -2601,7 +2623,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
                     host: engagementAdapterConfigs.einstein.host,
                     einsteinId: engagementAdapterConfigs.einstein.einsteinId,
                     realm: engagementAdapterConfigs.einstein.realm || '',
-                    siteId: engagementAdapterConfigs.einstein.siteId || appConfig.commerce.api.siteId,
+                    siteId: engagementAdapterConfigs.einstein.siteId || '',
                     isProduction: engagementAdapterConfigs.einstein.isProduction || false,
                     eventToggles: engagementAdapterConfigs.einstein.eventToggles || {},
                 })
@@ -2657,7 +2679,7 @@ function YourComponent() {
 ```tsx
 // ✅ Good - reuses single instance with async initialization
 export function YourFeatureProvider({ children }: { children: ReactNode }) {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<YourAdapter | undefined>(undefined);
 
     useEffect(() => {
@@ -2749,7 +2771,7 @@ function App() {
 ```typescript
 // ✅ Good - lazy initialization in provider
 export function YourFeatureProvider({ children }: { children: ReactNode }) {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<YourAdapter | undefined>(undefined);
 
     useEffect(() => {

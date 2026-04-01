@@ -14,41 +14,19 @@
  * limitations under the License.
  */
 
-import type { ReactElement } from 'react';
-import { Link } from 'react-router';
+import type { ReactElement, ReactNode } from 'react';
+import { Link } from '@/components/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
-import { Check, X, ChevronRight, MapPin } from 'lucide-react';
+import { Check, ChevronRight, MapPin, X } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { useCurrency } from '@/providers/currency';
 import { cn } from '@/lib/utils';
+import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order-status';
 
-/**
- * Order status constants for display.
- */
-export const OrderDisplayStatus = {
-    CREATED: 'created',
-    NEW: 'new',
-    FAILED: 'failed',
-    FAILED_WITH_REOPEN: 'failed_with_reopen',
-    COMPLETED: 'completed',
-    CANCELLED: 'cancelled',
-} as const;
-
-export type OrderDisplayStatusType = (typeof OrderDisplayStatus)[keyof typeof OrderDisplayStatus];
-
-/**
- * Translation keys for order status labels.
- */
-type StatusLabelKey =
-    | 'orders.status.created'
-    | 'orders.status.new'
-    | 'orders.status.failed'
-    | 'orders.status.failedWithReopen'
-    | 'orders.status.completed'
-    | 'orders.status.cancelled';
+const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-md w-fit';
 
 /**
  * Product item in an order for thumbnail display.
@@ -100,62 +78,6 @@ export interface OrderListItemProps {
 }
 
 /**
- * Status configuration mapping for visual styling.
- * Uses translation keys for labels (resolved in OrderStatusBadge).
- */
-const STATUS_CONFIG: Record<
-    OrderDisplayStatusType,
-    {
-        className: string;
-        icon: React.ComponentType<{ className?: string }> | undefined;
-        labelKey: string;
-    }
-> = {
-    [OrderDisplayStatus.CREATED]: {
-        className: 'border-transparent bg-order-status-new text-order-status-new-foreground',
-        icon: undefined,
-        labelKey: 'orders.status.created',
-    },
-    [OrderDisplayStatus.NEW]: {
-        className: 'border-transparent bg-order-status-new text-order-status-new-foreground',
-        icon: undefined,
-        labelKey: 'orders.status.new',
-    },
-    [OrderDisplayStatus.FAILED]: {
-        className: 'border-transparent bg-order-status-cancelled text-order-status-cancelled-foreground',
-        icon: X,
-        labelKey: 'orders.status.failed',
-    },
-    [OrderDisplayStatus.FAILED_WITH_REOPEN]: {
-        className: 'border-transparent bg-order-status-warning text-order-status-warning-foreground',
-        icon: undefined,
-        labelKey: 'orders.status.failedWithReopen',
-    },
-    [OrderDisplayStatus.COMPLETED]: {
-        className: 'border-transparent bg-order-status-completed text-order-status-completed-foreground',
-        icon: Check,
-        labelKey: 'orders.status.completed',
-    },
-    [OrderDisplayStatus.CANCELLED]: {
-        className: 'border-transparent bg-order-status-cancelled text-order-status-cancelled-foreground',
-        icon: X,
-        labelKey: 'orders.status.cancelled',
-    },
-};
-
-/**
- * Get status configuration with fallback.
- */
-function getStatusConfig(status: string): {
-    className: string;
-    icon: React.ComponentType<{ className?: string }> | undefined;
-    labelKey: string;
-} {
-    const normalizedStatus = status.toLowerCase().replace(/\s+/g, '_') as OrderDisplayStatusType;
-    return STATUS_CONFIG[normalizedStatus] ?? STATUS_CONFIG[OrderDisplayStatus.CREATED];
-}
-
-/**
  * Format a date string for display using the current locale.
  */
 function formatOrderDate(dateString: string, locale: string, invalidDateLabel: string): string {
@@ -175,19 +97,28 @@ function formatOrderDate(dateString: string, locale: string, invalidDateLabel: s
     }
 }
 
-/**
- * Status badge component for order status display.
- */
-function OrderStatusBadge({ status, label }: { status: string; label?: string }): ReactElement {
+/** Known SCAPI status → colored badge; otherwise show `status` / `statusLabel` as-is (neutral). */
+function OrderStatusBadge({ status, label }: { status: string; label?: string }): ReactNode {
     const { t } = useTranslation('account');
-    const config = getStatusConfig(status);
-    const Icon = config.icon;
-    const displayLabel = label ?? t(config.labelKey as StatusLabelKey);
-
+    const config = getOrderStatusConfig(status);
+    const raw = label?.trim() || formatStatusFallbackLabel(status);
+    if (config) {
+        const Icon = config.icon === 'check' ? Check : config.icon === 'x' ? X : null;
+        return (
+            <Badge data-testid="order-status-badge" className={cn(BADGE_BASE_CLASSES, config.className)}>
+                {Icon ? <Icon data-testid="order-status-icon" className="mr-1 size-3.5" aria-hidden /> : null}
+                {label ?? t(config.labelKey)}
+            </Badge>
+        );
+    }
+    if (!raw) {
+        return null;
+    }
     return (
-        <Badge data-testid="order-status-badge" className={cn('gap-1 font-semibold', config.className)}>
-            {Icon && <Icon className="size-3" />}
-            {displayLabel}
+        <Badge
+            data-testid="order-status-badge"
+            className={cn(BADGE_BASE_CLASSES, 'border-transparent bg-muted text-foreground')}>
+            {raw}
         </Badge>
     );
 }
@@ -211,9 +142,11 @@ function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
                 )}
             </div>
             {item.quantity > 1 && (
-                <Badge className="absolute -top-1.5 -right-1.5 size-5 p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground">
+                <span
+                    className="absolute -top-1 -right-1 flex min-w-4 h-4 items-center justify-center rounded-none border-2 border-background bg-primary px-0.5 text-[10px] font-bold text-primary-foreground"
+                    aria-label={`Quantity: ${item.quantity}`}>
                     {item.quantity}
-                </Badge>
+                </span>
             )}
         </div>
     );
@@ -240,7 +173,7 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
     const fullAddress = `${location.address}, ${location.city}, ${location.state} ${location.postalCode}`;
 
     return (
-        <Card className="bg-order-pickup border-order-pickup-border p-0">
+        <Card className="bg-muted border-border p-0">
             <CardContent className="p-4 space-y-2">
                 <div className="flex items-center gap-2">
                     <MapPin className="size-4 text-muted-foreground" />
@@ -329,12 +262,20 @@ export function OrderListItem({
             to={orderDetailsUrl}
             className={cn('block transition-opacity hover:opacity-95 m-0', className)}
             onClick={() => onViewDetails?.(order.orderNo)}>
-            <Card className="py-0 rounded-none border-0 border-order-border shadow-none">
-                <CardContent className="p-6 space-y-4 border-b border-order-border hover:bg-muted">
-                    {/* Header: Order Info + Status */}
-                    <div className="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted">
+            <Card className="py-0 rounded-none border-0 border-border shadow-none border-b border-separator hover:bg-transparent">
+                <CardContent className="p-6 space-y-4 border-b border-separator">
+                    {/* Header: Order ID, Date, Total, Items + Status */}
+                    <div className="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted">
                         <div className="flex flex-wrap gap-x-8 gap-y-2">
-                            <div>
+                            <div className="space-y-2">
+                                <Typography variant="muted" as="p" className="text-xs">
+                                    {t('orders.tableHeaders.orderNumber')}
+                                </Typography>
+                                <Typography variant="small" as="p" className="text-foreground font-medium">
+                                    {order.orderNo.startsWith('#') ? order.orderNo : `#${order.orderNo}`}
+                                </Typography>
+                            </div>
+                            <div className="space-y-2">
                                 <Typography variant="muted" as="p" className="text-xs">
                                     {t('orders.orderDate')}
                                 </Typography>
@@ -342,7 +283,7 @@ export function OrderListItem({
                                     {formatOrderDate(order.orderDate, i18n.language, invalidDateLabel)}
                                 </Typography>
                             </div>
-                            <div>
+                            <div className="space-y-2">
                                 <Typography variant="muted" as="p" className="text-xs">
                                     {t('orders.total')}
                                 </Typography>
@@ -350,11 +291,11 @@ export function OrderListItem({
                                     {formatCurrency(order.total, i18n.language, order.currency ?? siteCurrency)}
                                 </Typography>
                             </div>
-                            <div>
+                            <div className="space-y-2">
                                 <Typography variant="muted" as="p" className="text-xs">
                                     {t('orders.items')}
                                 </Typography>
-                                <Typography variant="small" as="p" className="text-foreground">
+                                <Typography variant="small" as="p" className="text-foreground font-semibold">
                                     {order.itemCount}
                                 </Typography>
                             </div>
@@ -366,8 +307,9 @@ export function OrderListItem({
                     {/* Product Thumbnails */}
                     {productItems.length > 0 && (
                         <div className="flex flex-wrap gap-2">
-                            {visibleProducts.map((item) => (
-                                <ProductThumbnail key={item.productId} item={item} />
+                            {visibleProducts.map((item, idx) => (
+                                // eslint-disable-next-line react/no-array-index-key -- same productId can appear in multiple line items
+                                <ProductThumbnail key={`${item.productId}-${idx}`} item={item} />
                             ))}
                             {overflowCount > 0 && <OverflowIndicator count={overflowCount} />}
                         </div>
@@ -381,7 +323,7 @@ export function OrderListItem({
                         <Typography
                             variant="small"
                             as="span"
-                            className="inline-flex items-center gap-1 text-primary hover:underline">
+                            className="inline-flex items-center gap-1 text-foreground hover:underline">
                             {t('orders.viewOrderDetails', 'View Order Details')}
                             <ChevronRight className="size-4" />
                         </Typography>

@@ -71,7 +71,7 @@ The OTP Modal is typically used after a passwordless login request has been made
         },
     },
     args: {
-        isOpen: true,
+        isOpen: false,
         email: 'test@example.com',
         onSuccess: () => {},
         onClose: () => {},
@@ -89,7 +89,25 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+export const Closed: Story = {
+    args: {
+        isOpen: false,
+        email: 'closed@example.com',
+        onSuccess: fn(() => {}),
+        onClose: fn(() => {}),
+    },
+    play: async ({ canvasElement, step }) => {
+        await waitForStorybookReady(canvasElement);
+        const body = within(document.body);
+
+        await step('Verify modal is not in DOM', async () => {
+            await expect(body.queryByRole('dialog')).not.toBeInTheDocument();
+        });
+    },
+};
+
 export const Default: Story = {
+    tags: ['!autodocs'],
     args: {
         isOpen: true,
         email: 'user@example.com',
@@ -124,6 +142,7 @@ export const Default: Story = {
 };
 
 export const SixDigit: Story = {
+    tags: ['!autodocs'],
     args: {
         isOpen: true,
         email: 'user@example.com',
@@ -147,6 +166,7 @@ export const SixDigit: Story = {
 };
 
 export const WithGuestCheckout: Story = {
+    tags: ['!autodocs'],
     args: {
         isOpen: true,
         email: 'guest@example.com',
@@ -165,6 +185,7 @@ export const WithGuestCheckout: Story = {
 };
 
 export const WithResendCode: Story = {
+    tags: ['!autodocs'],
     args: {
         isOpen: true,
         email: 'resend@example.com',
@@ -185,6 +206,7 @@ export const WithResendCode: Story = {
 };
 
 export const UserInputInteraction: Story = {
+    tags: ['!autodocs'],
     args: {
         isOpen: true,
         email: 'interaction@example.com',
@@ -213,23 +235,6 @@ export const UserInputInteraction: Story = {
             for (let i = 0; i < length - 1; i++) {
                 await expect(inputs[i]).toHaveValue((i + 1).toString());
             }
-        });
-    },
-};
-
-export const Closed: Story = {
-    args: {
-        isOpen: false,
-        email: 'closed@example.com',
-        onSuccess: fn(() => {}),
-        onClose: fn(() => {}),
-    },
-    play: async ({ canvasElement, step }) => {
-        await waitForStorybookReady(canvasElement);
-        const body = within(document.body);
-
-        await step('Verify modal is not in DOM', async () => {
-            await expect(body.queryByRole('dialog')).not.toBeInTheDocument();
         });
     },
 };

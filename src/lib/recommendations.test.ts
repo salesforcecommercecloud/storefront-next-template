@@ -18,7 +18,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { getEnabledRecommendationTypes } from './recommendations';
 
 vi.mock('@/lib/api/search');
-vi.mock('@/config', async (importOriginal) => {
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual = await importOriginal();
     return {
         ...(actual as object),

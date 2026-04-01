@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, useMemo } from 'react';
-import { Link } from 'react-router';
+import { Link } from '@/components/link';
 import { User, LogIn } from 'lucide-react';
 import { useAuth } from '@/providers/auth';
 import { Button } from '@/components/ui/button';
@@ -35,7 +35,10 @@ export default function UserActions(): ReactElement {
     const icon = isAuthenticated ? <User className="size-5" /> : <LogIn className="size-5" />;
 
     const trigger = (
-        <Button variant="ghost" className="cursor-pointer lg:px-4 px-1" asChild>
+        <Button
+            variant="ghost"
+            className="cursor-pointer lg:px-4 px-1 hover:bg-transparent hover:opacity-50 transition-opacity"
+            asChild>
             <Link to={accountLink} aria-label={ariaLabel}>
                 {icon}
             </Link>

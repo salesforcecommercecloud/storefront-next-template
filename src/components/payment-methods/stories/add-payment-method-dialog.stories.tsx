@@ -58,7 +58,7 @@ export const Default: Story = {
     args: {
         open: true,
         onOpenChange: action('onOpenChange'),
-        onSubmit: action('onSubmit'),
+        onSubmitForm: action('onSubmitForm'),
         addresses: mockAddresses,
     },
 };
@@ -67,7 +67,7 @@ export const NoAddresses: Story = {
     args: {
         open: true,
         onOpenChange: action('onOpenChange'),
-        onSubmit: action('onSubmit'),
+        onSubmitForm: action('onSubmitForm'),
         addresses: [],
     },
 };

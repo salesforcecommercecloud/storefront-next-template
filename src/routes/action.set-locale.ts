@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { data, type ActionFunction } from 'react-router';
+import { redirect, type ActionFunction } from 'react-router';
 import { getMultiSiteCookies } from '@salesforce/storefront-next-runtime/multi-site';
+import { getLogger } from '@/lib/logger.server';
 
 /**
- * Server action to set the locale cookie
+ * Server action to set the locale cookie and redirect to the new locale URL.
  * This ensures the cookie is properly serialized using the same cookie object
  * that the server middleware uses to parse it
  *
@@ -25,32 +26,31 @@ import { getMultiSiteCookies } from '@salesforce/storefront-next-runtime/multi-s
  * the Set-Cookie HTTP header, which can only be done server-side.
  */
 export const action: ActionFunction = async ({ request, context }) => {
+    const logger = getLogger(context);
     const formData = await request.formData();
     const locale = formData.get('locale') as string;
+    const pathname = formData.get('pathname') as string;
+
+    logger.debug('SetLocale: starting', { locale, pathname });
 
     if (!locale) {
-        // The form data is missing the locale. This is a client error so we return a 400 response.
+        logger.warn('SetLocale: locale parameter missing');
         throw new Response('Locale is required', { status: 400 });
     }
 
     // Get cookies from multi-site middleware context
     const cookies = getMultiSiteCookies(context);
     if (!cookies) {
-        // If the site and locale cookies weren't initialized in the multi-site middleware, this is a server error
-        // so we return a 500 response.
+        logger.error('SetLocale: cookies not initialized');
         throw new Response('Site and locale cookies were not initialized', { status: 500 });
     }
 
-    // Set the cookie using the same cookie object that the middleware uses
     const cookieHeader = await cookies.localeCookie.serialize(locale);
 
-    // Return success without redirecting (useFetcher expects a response)
-    return data(
-        { success: true },
-        {
-            headers: {
-                'Set-Cookie': cookieHeader,
-            },
-        }
-    );
+    logger.info('SetLocale: succeeded', { locale, redirectTo: pathname || '/' });
+    return redirect(pathname || '/', {
+        headers: {
+            'Set-Cookie': cookieHeader,
+        },
+    });
 };

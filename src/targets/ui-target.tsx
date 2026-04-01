@@ -24,8 +24,12 @@
  * @param children - Default content to render if no target is registered (handled at build time)
  * @returns
  */
+
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
+
 export function UITarget({ targetId, children }: { targetId: string; children?: React.ReactNode }) {
-    // eslint-disable-next-line no-console
-    console.log('----- UITarget', targetId);
+    logger.debug('UITarget', { targetId });
     return <>{children}</>;
 }

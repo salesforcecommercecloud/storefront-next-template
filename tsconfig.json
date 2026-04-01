@@ -13,7 +13,8 @@
             "@/*": ["./src/*"],
             "+types/*": ["./types/*"],
             "@/config/server": ["./config.server.ts"],
-            "@storybook/test-utils": ["./.storybook/test-utils"]
+            "@storybook/test-utils": ["./.storybook/test-utils"],
+            "@fonts/*": ["./public/fonts/*"]
         },
         "esModuleInterop": true,
         "noEmit": true,
@@ -26,5 +27,5 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true
     },
-    "exclude": ["dist", "node_modules", "**/*-snapshot.tsx", ".storybook/tests/generated-stories/**"]
+    "exclude": ["dist", "node_modules", "**/*-snapshot.tsx", ".storybook/tests/generated-stories/**", "e2e"]
 }

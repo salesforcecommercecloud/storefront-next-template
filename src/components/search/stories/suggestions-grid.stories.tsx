@@ -19,8 +19,9 @@ import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
+import { CurrencyProvider } from '@/providers/currency';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -66,9 +67,11 @@ const meta: Meta<typeof SuggestionsGrid> = {
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <ActionLogger>
-                    <Story />
-                </ActionLogger>
+                <CurrencyProvider value={mockConfig.commerce.sites[0].defaultCurrency}>
+                    <ActionLogger>
+                        <Story />
+                    </ActionLogger>
+                </CurrencyProvider>
             </ConfigProvider>
         ),
     ],

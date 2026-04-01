@@ -85,6 +85,20 @@ vi.mock('@/providers/customer-preferences', () => ({
     default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
+    useConfig: () => ({
+        url: { prefix: '/:siteId/:localeId', excludeRoutes: ['/resource/**', '/action/**'] },
+    }),
+}));
+
+vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'global', localeRef: 'en-GB' }),
+}));
+
+vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
+    buildUrl: ({ to }: { to: string }) => `/global/en-GB${to}`,
+}));
+
 // --- Test data ---
 
 const mockCustomer: Customer = {

@@ -18,10 +18,12 @@ import ApplePayLogo from '../apple-pay-logo';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 const meta: Meta<typeof ApplePayLogo> = {
     title: 'CHECKOUT/ApplePayLogo',
     component: ApplePayLogo,
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'centered',
         docs: {
             description: {

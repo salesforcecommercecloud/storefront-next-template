@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { action } from './action.cart-pickup-store-update';
+import type { RouterContextProvider } from 'react-router';
+import { action as actionImpl } from './action.cart-pickup-store-update';
+
+const action = actionImpl as unknown as (args: any) => ReturnType<typeof actionImpl>;
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
@@ -145,8 +148,7 @@ describe('action.cart-pickup-store-update', () => {
             // Return undefined for any other context - tests can mock specific contexts as needed
             return undefined;
         }),
-    } as any;
-    const mockServerAction = vi.fn();
+    } as unknown as Readonly<RouterContextProvider>;
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -185,7 +187,6 @@ describe('action.cart-pickup-store-update', () => {
                     request,
                     context: mockContext,
                     params: {},
-                    serverAction: mockServerAction,
                 })
             ).rejects.toThrow();
         });
@@ -202,7 +203,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -218,7 +218,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -234,7 +233,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -253,7 +251,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -303,7 +300,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(true);
@@ -322,7 +318,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(true);
@@ -393,7 +388,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -418,7 +412,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -440,7 +433,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -485,7 +477,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             // Should still succeed, but only validate product-1
@@ -540,7 +531,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             // Should only fetch product-1 once (duplicates removed)
@@ -569,7 +559,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             // Should still proceed with update if no products data
@@ -590,7 +579,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -611,7 +599,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -638,7 +625,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -673,7 +659,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             // Should still return the original error, not the rollback error
@@ -696,7 +681,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -740,7 +724,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -771,7 +754,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(false);
@@ -815,7 +797,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             expect(response.success).toBe(true);
@@ -856,7 +837,6 @@ describe('action.cart-pickup-store-update', () => {
                 request,
                 context: mockContext,
                 params: {},
-                serverAction: mockServerAction,
             });
 
             // API should be called with undefined itemId, which will fail

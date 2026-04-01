@@ -20,8 +20,11 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { OrderDetails } from '../index';
+import { getTranslation } from '@/lib/i18next';
 import { ConfigWrapper } from '@/test-utils/config';
 import { CurrencyWrapper } from '@/test-utils/context-provider';
+
+const { t } = getTranslation();
 
 function productFixture(
     id: string,
@@ -89,7 +92,7 @@ const meta: Meta<typeof OrderDetails> = {
         docs: {
             description: {
                 component:
-                    'Order details page showing order info, shipments, line items, and order summary. In the app, data is loaded via `fetchOrderWithProducts` (SCAPI getOrder + getProducts); this story uses inline mock data with the same shape.',
+                    'Order details: order number with a decorative `#` prefix, **order status** badge (`getOrderStatusConfig` / `data-testid="order-status-badge"`, unknown values as raw text in a neutral badge), per-shipment **shipping status** (`getShippingStatusConfig` / `data-testid="shipping-status-badge"`, same raw fallback when not in the SCAPI enum), shipment rows showing only the shipment label (recipient names appear in the shipping address card only), line items, tracking and address cards, optional **payment methods** in the summary column, and order totals. In the app, data is loaded via `fetchOrderWithProducts` (SCAPI getOrder + getProducts); stories use inline mock data with the same shape.',
             },
         },
     },
@@ -130,6 +133,9 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByRole('heading', { level: 1 })).toBeInTheDocument();
+        await expect(canvas.getByTestId('order-number')).toHaveTextContent('INO001');
+        await expect(canvas.getByTestId('order-status-badge')).toHaveTextContent(t('account:orders.status.new'));
+        await expect(canvas.queryByTestId('shipping-status-badge')).not.toBeInTheDocument();
         await expect(canvas.getByText('First Product')).toBeInTheDocument();
     },
 };
@@ -185,22 +191,111 @@ export const MultipleShipments: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Order with two shipments and different recipients (Alice Smith, Bob Jones).',
+                story: 'Two shipments with different shipping addresses (Alice Smith, Bob Jones). Names appear only in each shipment’s **Shipping address** card, not on the shipment title row.',
             },
         },
     },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByTestId('order-status-badge')).toHaveTextContent(t('account:orders.status.new'));
+        await expect(canvas.queryByTestId('shipping-status-badge')).not.toBeInTheDocument();
+    },
 };
 
-export const ShippedStatus: Story = {
+export const CompletedStatus: Story = {
     args: {
-        order: { ...order, status: 'shipped' as ShopperOrders.schemas['Order']['status'] },
+        order: { ...order, status: 'completed' },
         productsById,
     },
     parameters: {
         docs: {
             description: {
-                story: 'Order with status "shipped" (displays in-transit label).',
+                story: 'Order with status `completed` — **order status** badge uses success styling (green).',
             },
         },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByTestId('order-status-badge')).toHaveTextContent(t('account:orders.status.completed'));
+    },
+};
+
+export const ReplacedStatus: Story = {
+    args: {
+        order: { ...order, status: 'replaced' },
+        productsById,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Order with status `replaced` — **order status** badge uses success styling (green).',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByTestId('order-status-badge')).toHaveTextContent(t('account:orders.status.replaced'));
+    },
+};
+
+export const WithShippingStatus: Story = {
+    args: {
+        order: {
+            ...order,
+            shipments: order.shipments?.map((s, i) => (i === 0 ? { ...s, shippingStatus: 'shipped' as const } : s)),
+        },
+        productsById,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'First shipment has `shippingStatus: "shipped"` — **shipping status** badge on the shipment row (success / green). Order status badge unchanged.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByTestId('order-status-badge')).toHaveTextContent(t('account:orders.status.new'));
+        await expect(canvas.getByTestId('shipping-status-badge')).toHaveTextContent(
+            t('account:orders.shippingStatus.shipped')
+        );
+    },
+};
+
+const orderWithPayment: ShopperOrders.schemas['Order'] = {
+    ...order,
+    paymentInstruments: [
+        {
+            paymentInstrumentId: 'pay-story-1',
+            paymentCard: { cardType: 'Visa', numberLastDigits: '4242' },
+        },
+    ],
+};
+
+export const WithPaymentMethod: Story = {
+    args: {
+        order: orderWithPayment,
+        productsById,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Order summary column includes **Payment method** when `paymentInstruments` include card last digits.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText(t('account:orders.paymentMethod'))).toBeInTheDocument();
+        const expected = t('account:orders.paymentMethodEndingIn', {
+            cardType: 'Visa',
+            lastDigits: '4242',
+        });
+        await expect(canvas.getByText(expected)).toBeInTheDocument();
     },
 };

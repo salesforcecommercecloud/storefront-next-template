@@ -19,6 +19,7 @@ import { action } from 'storybook/actions';
 import React, { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 const ERROR_BOUNDARY_HARNESS_ATTR = 'data-error-boundary-harness';
 
@@ -73,6 +74,7 @@ const meta: Meta<typeof CheckoutErrorBoundary> = {
     component: CheckoutErrorBoundary,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'centered',
         docs: {
             description: {

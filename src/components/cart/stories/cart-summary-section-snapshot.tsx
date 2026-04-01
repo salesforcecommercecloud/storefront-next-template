@@ -85,6 +85,7 @@ import { composeStories } from '@storybook/react-vite';
 
 import * as CartSummarySectionStories from './cart-summary-section.stories';
 import { render, cleanup } from '@testing-library/react';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const composed = composeStories(CartSummarySectionStories);
 
@@ -95,7 +96,11 @@ afterEach(() => {
 describe('CartSummarySection stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
-            const { container } = render(<Story />);
+            const { container } = render(
+                <AllProvidersWrapper>
+                    <Story />
+                </AllProvidersWrapper>
+            );
             expect(container.firstChild).toMatchSnapshot();
         });
     }

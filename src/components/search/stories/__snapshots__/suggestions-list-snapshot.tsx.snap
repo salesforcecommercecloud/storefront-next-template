@@ -10,7 +10,7 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
       class="-mx-4"
     >
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
       >
         <div
           class="flex items-center"
@@ -34,7 +34,7 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
             class="text-left"
           >
             <span
-              class="text-base font-medium text-foreground"
+              class="text-sm font-medium text-header-foreground"
             >
               Footwear
             </span>
@@ -42,7 +42,7 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
         </div>
       </button>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
       >
         <div
           class="flex items-center"
@@ -66,7 +66,7 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
             class="text-left"
           >
             <span
-              class="text-base font-medium text-foreground"
+              class="text-sm font-medium text-header-foreground"
             >
               Clothing
             </span>
@@ -74,7 +74,7 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
         </div>
       </button>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
       >
         <div
           class="flex items-center"
@@ -86,7 +86,7 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
             class="text-left"
           >
             <span
-              class="text-base font-medium text-foreground"
+              class="text-sm font-medium text-header-foreground"
             >
               Accessories
             </span>
@@ -110,7 +110,7 @@ exports[`SuggestionsList stories snapshot > SingleSuggestion story renders and m
       class="-mx-4"
     >
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
       >
         <div
           class="flex items-center"
@@ -134,7 +134,7 @@ exports[`SuggestionsList stories snapshot > SingleSuggestion story renders and m
             class="text-left"
           >
             <span
-              class="text-base font-medium text-foreground"
+              class="text-sm font-medium text-header-foreground"
             >
               Single Item
             </span>
@@ -156,7 +156,7 @@ exports[`SuggestionsList stories snapshot > WithProducts story renders and match
       class="-mx-4"
     >
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
       >
         <div
           class="flex items-center"
@@ -180,7 +180,7 @@ exports[`SuggestionsList stories snapshot > WithProducts story renders and match
             class="text-left"
           >
             <span
-              class="text-base font-medium text-foreground"
+              class="text-sm font-medium text-header-foreground"
             >
               Running Shoes
             </span>
@@ -188,7 +188,7 @@ exports[`SuggestionsList stories snapshot > WithProducts story renders and match
         </div>
       </button>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
       >
         <div
           class="flex items-center"
@@ -212,7 +212,7 @@ exports[`SuggestionsList stories snapshot > WithProducts story renders and match
             class="text-left"
           >
             <span
-              class="text-base font-medium text-foreground"
+              class="text-sm font-medium text-header-foreground"
             >
               Hiking Boots
             </span>
@@ -234,7 +234,7 @@ exports[`SuggestionsList stories snapshot > WithoutImages story renders and matc
       class="-mx-4"
     >
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
       >
         <div
           class="flex items-center"
@@ -246,7 +246,7 @@ exports[`SuggestionsList stories snapshot > WithoutImages story renders and matc
             class="text-left"
           >
             <span
-              class="text-base font-medium text-foreground"
+              class="text-sm font-medium text-header-foreground"
             >
               Category Without Image
             </span>
@@ -254,7 +254,7 @@ exports[`SuggestionsList stories snapshot > WithoutImages story renders and matc
         </div>
       </button>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
       >
         <div
           class="flex items-center"
@@ -266,7 +266,7 @@ exports[`SuggestionsList stories snapshot > WithoutImages story renders and matc
             class="text-left"
           >
             <span
-              class="text-base font-medium text-foreground"
+              class="text-sm font-medium text-header-foreground"
             >
               Another Category
             </span>

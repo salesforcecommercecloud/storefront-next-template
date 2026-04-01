@@ -16,6 +16,7 @@
 
 import 'reflect-metadata';
 import { render, screen, waitFor } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { type LoaderFunctionArgs, MemoryRouter } from 'react-router';
 import {
@@ -24,16 +25,29 @@ import {
     type ShopperProducts,
     type ShopperSearch,
 } from '@salesforce/storefront-next-runtime/scapi';
-import CategoryPage, { loader, ProductListingPageMetadata } from './_app.category.$categoryId';
+import CategoryPage, { loader, ProductListingPageMetadata, shouldRevalidate } from './_app.category.$categoryId';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchCategory } from '@/lib/api/categories';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
-import { type AppConfig, getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
 import { ConfigWrapper } from '@/test-utils/context-provider';
 import { generateCategorySchema } from '@/utils/category-schema';
 import { useAnalytics } from '@/hooks/use-analytics';
+
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    return {
+        ...actual,
+        useNavigation: () => ({ state: 'idle', location: undefined }),
+    };
+});
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
 
 type CategoryPageData = Awaited<ReturnType<typeof loader>>;
 
@@ -111,15 +125,20 @@ vi.mock('@/components/region', () => ({
 
 // Mock ProductGrid component
 vi.mock('@/components/product-grid', () => ({
-    default: ({ critical, handleProductClick }: any) => (
-        <div data-testid="product-grid">
-            {critical?.map((product: any) => (
-                <div key={product.productId} data-testid="product-item" onClick={() => handleProductClick?.(product)}>
-                    {product.productName}
-                </div>
-            ))}
-        </div>
-    ),
+    default: function ProductGridMock({ critical, handleProductClick }: any) {
+        return (
+            <div data-testid="product-grid">
+                {critical?.map((product: any) => (
+                    <div
+                        key={product.productId}
+                        data-testid="product-item"
+                        onClick={() => handleProductClick?.(product)}>
+                        {product.productName}
+                    </div>
+                ))}
+            </div>
+        );
+    },
 }));
 
 // Mock other components
@@ -143,8 +162,20 @@ vi.mock('@/components/category-refinements/active-filters', () => ({
     default: () => <div data-testid="active-filters" />,
 }));
 
+vi.mock('@/components/category-refinements/filters-button', () => ({
+    default: ({ onClick }: any) => (
+        <button data-testid="filters-button" onClick={onClick}>
+            Filters
+        </button>
+    ),
+}));
+
 vi.mock('@/components/category-sorting', () => ({
     default: () => <div data-testid="category-sorting" />,
+}));
+
+vi.mock('@/components/quick-filters', () => ({
+    default: () => <div data-testid="quick-filters" />,
 }));
 
 vi.mock('@/components/json-ld', () => ({
@@ -180,7 +211,7 @@ vi.mock('@/hooks/use-analytics', () => ({
 }));
 
 // Mock config
-vi.mock('@/config', async (importOriginal) => {
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual = await importOriginal<object>();
     const mockConfigValue = {
         commerce: {
@@ -283,7 +314,7 @@ describe('CategoryPage', () => {
 
             const result = await loader(args);
 
-            expect(fetchCategory).toHaveBeenCalledWith(mockContext, 'electronics', 0);
+            expect(fetchCategory).toHaveBeenCalledWith(mockContext, 'electronics', 1);
             expect(fetchSearchProducts).toHaveBeenCalledWith(mockContext, {
                 limit: 2,
                 offset: 0,
@@ -329,7 +360,7 @@ describe('CategoryPage', () => {
             );
         });
 
-        test('should strip existing cgid refinements and replace with route categoryId', async () => {
+        test('should honor existing cgid refinement from query params', async () => {
             const args: LoaderFunctionArgs = {
                 request: new Request(
                     'https://example.com/category/electronics?refine=cgid%3Dwomens&refine=color%3Dblue'
@@ -341,14 +372,14 @@ describe('CategoryPage', () => {
 
             const result = await loader(args);
 
-            // The old cgid=womens should be removed and replaced with cgid=electronics
+            // Existing cgid should be preserved so quick-filter category selection is respected.
             expect(fetchSearchProducts).toHaveBeenCalledWith(
                 mockContext,
                 expect.objectContaining({
-                    refine: ['color=blue', 'cgid=electronics'],
+                    refine: ['color=blue', 'cgid=womens'],
                 })
             );
-            expect(result.refine).toEqual(['color=blue', 'cgid=electronics']);
+            expect(result.refine).toEqual(['color=blue', 'cgid=womens']);
         });
 
         test('should return effectiveRefine as refine in loader result', async () => {
@@ -362,6 +393,27 @@ describe('CategoryPage', () => {
             const result = await loader(args);
 
             expect(result.refine).toEqual(['cgid=electronics']);
+        });
+
+        test('should parse filters query param into initialFiltersOpen', async () => {
+            const openArgs: LoaderFunctionArgs = {
+                request: new Request('https://example.com/category/electronics?filters=open'),
+                context: mockContext,
+                params: { categoryId: 'electronics' },
+                unstable_pattern: '/category/:categoryId',
+            };
+            const closedArgs: LoaderFunctionArgs = {
+                request: new Request('https://example.com/category/electronics?filters=closed'),
+                context: mockContext,
+                params: { categoryId: 'electronics' },
+                unstable_pattern: '/category/:categoryId',
+            };
+
+            const openResult = await loader(openArgs);
+            const closedResult = await loader(closedArgs);
+
+            expect(openResult.initialFiltersOpen).toBe(true);
+            expect(closedResult.initialFiltersOpen).toBe(false);
         });
 
         test('should throw 404 when category fetch fails with ApiError 404', async () => {
@@ -674,7 +726,10 @@ describe('CategoryPage', () => {
             expect(categorySchema).toBeDefined();
             expect(generateCategorySchema).toHaveBeenCalledWith({
                 category: mockCategory,
-                searchResult: mockSearchResult,
+                searchResult: expect.objectContaining({
+                    ...mockSearchResult,
+                    hits: [...(mockSearchResult.hits || []), ...(mockSearchResult.hits || [])],
+                }),
                 config: mockConfig,
                 pageUrl: 'https://example.com/category/electronics',
                 defaultCurrency: 'GBP',
@@ -701,6 +756,90 @@ describe('CategoryPage', () => {
     });
 
     describe('CategoryPage Component', () => {
+        test('should apply initialFiltersOpen from loader data', async () => {
+            const openLoaderData: CategoryPageData = {
+                category: mockCategory,
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                categoryId: 'electronics',
+                refine: ['cgid=electronics'],
+                currency: 'USD',
+                locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
+                initialFiltersOpen: true,
+                categorySchema: Promise.resolve(null),
+            };
+
+            const closedLoaderData: CategoryPageData = {
+                ...openLoaderData,
+                initialFiltersOpen: false,
+            };
+
+            const { unmount } = render(
+                <MemoryRouter initialEntries={['/category/electronics?filters=open']}>
+                    <ConfigWrapper>
+                        <CategoryPage loaderData={openLoaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
+            });
+
+            unmount();
+
+            render(
+                <MemoryRouter initialEntries={['/category/electronics?filters=closed']}>
+                    <ConfigWrapper>
+                        <CategoryPage loaderData={closedLoaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.queryByTestId('category-refinements')).not.toBeInTheDocument();
+            });
+        });
+
+        test('should not remount ProductGrid when only filters query param changes', async () => {
+            const user = userEvent.setup();
+            const loaderData: CategoryPageData = {
+                category: mockCategory,
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                categoryId: 'electronics',
+                refine: ['cgid=electronics'],
+                currency: 'USD',
+                locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
+                initialFiltersOpen: false,
+                categorySchema: Promise.resolve(null),
+            };
+
+            render(
+                <MemoryRouter initialEntries={['/category/electronics?filters=closed']}>
+                    <ConfigWrapper>
+                        <CategoryPage loaderData={loaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('product-grid')).toBeInTheDocument();
+            });
+            const productGridBefore = screen.getByTestId('product-grid');
+
+            await user.click(screen.getAllByTestId('filters-button')[0]);
+
+            await waitFor(() => {
+                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
+            });
+            expect(screen.getByTestId('product-grid')).toBe(productGridBefore);
+        });
+
         test('should render category page with all elements', async () => {
             const loaderData: CategoryPageData = {
                 category: mockCategory,
@@ -711,6 +850,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve({
                     '@context': 'https://schema.org',
                     '@type': 'CollectionPage',
@@ -731,7 +871,17 @@ describe('CategoryPage', () => {
                 expect(screen.getByTestId('category-breadcrumbs')).toBeInTheDocument();
                 expect(screen.getByText('Electronics (25)')).toBeInTheDocument();
                 expect(screen.getByTestId('category-sorting')).toBeInTheDocument();
-                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
+                const filterButtons = screen.getAllByTestId('filters-button');
+                // Both mobile and desktop toggle buttons render in JSDOM; responsive visibility is controlled by CSS classes.
+                expect(filterButtons).toHaveLength(2);
+                expect(filterButtons[0].closest('div')).toHaveClass('lg:hidden');
+                expect(filterButtons[1].closest('div')).toHaveClass(
+                    'mb-4',
+                    'hidden',
+                    'lg:flex',
+                    'lg:items-center',
+                    'lg:gap-4'
+                );
                 expect(screen.getByTestId('product-grid')).toBeInTheDocument();
                 expect(screen.getByTestId('category-pagination')).toBeInTheDocument();
             });
@@ -748,6 +898,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -775,6 +926,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -802,6 +954,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -828,6 +981,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -868,6 +1022,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -897,6 +1052,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve({
                     '@context': 'https://schema.org',
                     '@type': 'CollectionPage',
@@ -915,6 +1071,12 @@ describe('CategoryPage', () => {
             await waitFor(() => {
                 expect(screen.getByTestId('category-schema')).toBeInTheDocument();
             });
+
+            const productGrid = screen.getByTestId('product-grid');
+            const categorySchema = screen.getByTestId('category-schema');
+            expect(
+                Boolean(productGrid.compareDocumentPosition(categorySchema) & Node.DOCUMENT_POSITION_FOLLOWING)
+            ).toBe(true);
         });
 
         test('should not render JSON-LD schema when schema is null', async () => {
@@ -927,6 +1089,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -960,6 +1123,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -998,6 +1162,7 @@ describe('CategoryPage', () => {
                 refine: ['cgid=electronics'],
                 currency: 'USD',
                 locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
             };
 
@@ -1014,5 +1179,39 @@ describe('CategoryPage', () => {
                 expect(screen.getByText('Electronics (25)')).toBeInTheDocument();
             });
         });
+    });
+});
+
+describe('CategoryPage shouldRevalidate', () => {
+    test('returns false when only filters query param changes', () => {
+        const result = shouldRevalidate({
+            currentUrl: new URL('http://localhost/electronics?filters=closed&refine=cgid:electronics'),
+            nextUrl: new URL('http://localhost/electronics?filters=open&refine=cgid:electronics'),
+            defaultShouldRevalidate: true,
+            actionStatus: 200,
+            formAction: undefined,
+            formData: undefined,
+            formEncType: 'application/x-www-form-urlencoded',
+            formMethod: 'GET',
+            actionResult: undefined,
+        } as any);
+
+        expect(result).toBe(false);
+    });
+
+    test('uses default behavior when non-filters query params change', () => {
+        const result = shouldRevalidate({
+            currentUrl: new URL('http://localhost/electronics?filters=closed&sort=best-matches'),
+            nextUrl: new URL('http://localhost/electronics?filters=closed&sort=price-low-to-high'),
+            defaultShouldRevalidate: true,
+            actionStatus: 200,
+            formAction: undefined,
+            formData: undefined,
+            formEncType: 'application/x-www-form-urlencoded',
+            formMethod: 'GET',
+            actionResult: undefined,
+        } as any);
+
+        expect(result).toBe(true);
     });
 });

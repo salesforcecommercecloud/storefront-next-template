@@ -126,7 +126,7 @@ describe('Checkout Utils', () => {
             expect(result).toBe(CHECKOUT_STEPS.PAYMENT);
         });
 
-        it('should return REVIEW_ORDER when all required fields are present', () => {
+        it('should return PLACE_ORDER when all required fields are present', () => {
             const basket = {
                 basketId: 'test-basket',
                 customerInfo: { email: 'test@example.com' },
@@ -161,7 +161,7 @@ describe('Checkout Utils', () => {
             } as ShopperBasketsV2.schemas['Basket'];
 
             const result = computeStepFromBasket(basket, mockShipmentDistribution);
-            expect(result).toBe(CHECKOUT_STEPS.REVIEW_ORDER);
+            expect(result).toBe(CHECKOUT_STEPS.PLACE_ORDER);
         });
 
         it('should stay at SHIPPING_OPTIONS when user has not selected shipping yet', () => {
@@ -360,7 +360,7 @@ describe('Checkout Utils', () => {
             expect(result).toBe(CHECKOUT_STEPS.SHIPPING_ADDRESS);
         });
 
-        it('should return REVIEW_ORDER when customer has complete profile data', () => {
+        it('should return PLACE_ORDER when customer has complete profile data', () => {
             const basket = {
                 basketId: 'test',
                 customerInfo: { email: 'test@example.com' },
@@ -378,7 +378,7 @@ describe('Checkout Utils', () => {
             } as CustomerProfile;
 
             const result = computeFinalStepForReturningCustomer(basket, customerProfile, mockShipmentDistribution);
-            expect(result).toBe(CHECKOUT_STEPS.REVIEW_ORDER);
+            expect(result).toBe(CHECKOUT_STEPS.PLACE_ORDER);
         });
 
         it('should return PAYMENT when customer has addresses but no saved payment methods', () => {
@@ -397,7 +397,7 @@ describe('Checkout Utils', () => {
             expect(result).toBe(CHECKOUT_STEPS.PAYMENT);
         });
 
-        it('should return REVIEW_ORDER when customer has addresses and valid payment instrument in basket, even without saved payment methods', () => {
+        it('should return PLACE_ORDER when customer has addresses and valid payment instrument in basket, even without saved payment methods', () => {
             const basket = {
                 basketId: 'test',
                 customerInfo: { email: 'test@example.com' },
@@ -421,7 +421,7 @@ describe('Checkout Utils', () => {
             } as CustomerProfile;
 
             const result = computeFinalStepForReturningCustomer(basket, customerProfile, mockShipmentDistribution);
-            expect(result).toBe(CHECKOUT_STEPS.REVIEW_ORDER);
+            expect(result).toBe(CHECKOUT_STEPS.PLACE_ORDER);
         });
     });
 });

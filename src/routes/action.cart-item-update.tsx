@@ -33,6 +33,7 @@ import {
     createBasketErrorResponse,
 } from './types/action-responses';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { handleCartItemDeliveryOptionChange } from '@/extensions/bopis/lib/actions/cart-item-delivery-option-handler';
@@ -71,7 +72,9 @@ import { handleCartItemDeliveryOptionChange } from '@/extensions/bopis/lib/actio
  * @throws Error if no basket is found in the session
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<BasketActionResponse> {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('CartItemUpdate: action starting');
 
     if (request.method !== 'PATCH') {
         throw new Response(t('errors:methodNotAllowed'), { status: 405 });
@@ -79,6 +82,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
     const basketId = await ensureBasketId(context);
     if (!basketId) {
+        logger.warn('CartItemUpdate: no basket found');
         return createBasketErrorResponse(t('errors:noBasketFound'));
     }
 
@@ -90,12 +94,14 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const validationResult = cartItemUpdateSchema.safeParse(rawData);
 
         if (!validationResult.success) {
+            logger.warn('CartItemUpdate: validation failed', { issues: validationResult.error.issues });
             return createBasketErrorResponse(validationResult.error.issues[0]?.message || 'Invalid form data');
         }
 
         // Extract the validated fields
         const { itemId, productId, quantity } = validationResult.data;
 
+        logger.debug('CartItemUpdate: updating item', { itemId, productId, quantity, basketId });
         const clients = createApiClients(context);
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -128,11 +134,14 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         // Update the basket cache to reflect the changes
         updateBasketResource(context, updatedBasket);
 
+        logger.info('CartItemUpdate: item updated successfully');
         return createBasketSuccessResponse(updatedBasket);
     } catch (error) {
         if (error instanceof ApiError) {
+            logger.error('CartItemUpdate: API error updating item', { error });
             return createBasketErrorResponse(error.body?.detail || error.statusText);
         }
+        logger.error('CartItemUpdate: failed', { error });
         return createBasketErrorResponse(error instanceof Error ? error.message : 'An unexpected error occurred');
     }
 }

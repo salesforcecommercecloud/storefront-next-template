@@ -21,7 +21,7 @@ import {
     type JSX,
     type ReactNode,
 } from 'react';
-import { NavLink } from 'react-router';
+import { NavLink } from '@/components/link';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import {
     NavigationMenu,

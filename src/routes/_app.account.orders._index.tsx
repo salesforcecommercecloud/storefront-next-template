@@ -16,15 +16,24 @@
 
 import { type ReactElement, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Await, useNavigate, useLoaderData, type LoaderFunctionArgs, redirect } from 'react-router';
-import { OrderListHeader, OrderListBody, type Order } from '@/components/account/order-list';
-import { fetchCustomerOrders, DEFAULT_ORDERS_OFFSET, DEFAULT_ORDERS_LIMIT } from '@/lib/api/order';
+import { Await, useLoaderData, type LoaderFunctionArgs, redirect } from 'react-router';
+import { useNavigate } from '@/hooks/use-navigate';
+import { OrderListHeader, OrderListBody } from '@/components/account/order-list';
+import {
+    fetchCustomerOrders,
+    DEFAULT_ORDERS_OFFSET,
+    DEFAULT_ORDERS_LIMIT,
+    type CustomerOrdersResult,
+} from '@/lib/api/order';
 import { Card, CardContent } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
+import { SeoMeta } from '@/components/seo-meta';
+import { buildUrlFromContext } from '@/lib/url.server';
+import { getLogger } from '@/lib/logger.server';
 import { getAuth } from '@/middlewares/auth.server';
 
 type OrderListLoaderData = {
-    ordersPromise: Promise<Order[]>;
+    ordersPromise: Promise<CustomerOrdersResult>;
 };
 
 /**
@@ -33,10 +42,14 @@ type OrderListLoaderData = {
  */
 // eslint-disable-next-line react-refresh/only-export-components -- route file exports loader
 export function loader({ context, request }: LoaderFunctionArgs): OrderListLoaderData {
+    const logger = getLogger(context);
+    logger.debug('OrderList: loader starting');
+
     // Get customer ID from auth session
     const session = getAuth(context);
     if (!session.customerId) {
-        throw redirect('/login');
+        logger.warn('OrderList: no customerId, redirecting to login');
+        throw redirect(buildUrlFromContext('/login', context));
     }
 
     const { searchParams } = new URL(request.url);
@@ -57,11 +70,11 @@ export function loader({ context, request }: LoaderFunctionArgs): OrderListLoade
 function OrderListSkeleton(): ReactElement {
     return (
         <>
-            <div className="space-y-4 m-0 border-x border-t border-order-border">
+            <div className="space-y-4 m-0 border-x border-t border-border">
                 {[1, 2, 3].map((i) => (
-                    <Card key={i} className="py-0 rounded-none border-0 border-order-border shadow-none">
-                        <CardContent className="p-6 space-y-4 border-b border-order-border animate-pulse">
-                            <div className="flex flex-wrap items-start justify-between border-b border-order-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted">
+                    <Card key={i} className="py-0 rounded-none border-0 border-border shadow-none">
+                        <CardContent className="p-6 space-y-4 border-b border-border animate-pulse">
+                            <div className="flex flex-wrap items-start justify-between border-b border-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted">
                                 <div className="flex flex-wrap gap-x-8 gap-y-2">
                                     <div className="h-10 w-24 bg-muted-foreground/20 rounded" />
                                     <div className="h-10 w-20 bg-muted-foreground/20 rounded" />
@@ -77,7 +90,7 @@ function OrderListSkeleton(): ReactElement {
                     </Card>
                 ))}
             </div>
-            <div className="p-6 m-0 border-b border-x border-order-border rounded-b-xl">
+            <div className="p-6 m-0 border-b border-x border-border rounded-b-xl">
                 <div className="h-5 w-32 bg-muted-foreground/20 rounded" />
             </div>
         </>
@@ -90,7 +103,7 @@ function OrderListSkeleton(): ReactElement {
 function OrderListError(): ReactElement {
     const { t } = useTranslation('account');
     return (
-        <Card className="border-order-border">
+        <Card className="border-border">
             <CardContent className="p-12 text-center space-y-4">
                 <Typography variant="p" className="text-muted-foreground">
                     {t('orders.errorDescription')}
@@ -115,11 +128,20 @@ export default function OrderListPage(): ReactElement {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="order-history-page text-sm space-y-0">
+            <SeoMeta title={t('meta.orderHistoryTitle', { defaultValue: 'Order History' })} noIndex />
             <OrderListHeader title={t('navigation.orderHistory')} subtitle={t('orders.subtitle')} />
             <Suspense fallback={<OrderListSkeleton />}>
                 <Await resolve={loaderData.ordersPromise} errorElement={<OrderListError />}>
-                    {(orders) => <OrderListBody orders={orders} onViewDetails={handleViewDetails} />}
+                    {(result) => (
+                        <OrderListBody
+                            orders={result.orders}
+                            total={result.total}
+                            offset={result.offset}
+                            limit={result.limit}
+                            onViewDetails={handleViewDetails}
+                        />
+                    )}
                 </Await>
             </Suspense>
         </div>

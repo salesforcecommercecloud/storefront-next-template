@@ -19,7 +19,7 @@ import { type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useDynamicImageContext } from '@/providers/dynamic-image';
 import { ProductImageContainer } from './index';
 
-vi.mock('react-router', () => ({
+vi.mock('@/components/link', () => ({
     Link: ({ children, to, ...props }: any) => (
         <a href={to} {...props}>
             {children}

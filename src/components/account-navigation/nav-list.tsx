@@ -22,6 +22,8 @@ export interface AccountNavItemData {
     icon: LucideIcon;
     label: string;
     disabled?: boolean;
+    /** When true, NavLink is only active for exact path match (e.g. /account not /account/overview). */
+    end?: boolean;
     action?: string;
     method?: 'post' | 'get';
 }

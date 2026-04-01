@@ -75,7 +75,7 @@ describe('ProductQuantityPicker', () => {
     });
 
     test('displays stock level warning when quantity exceeds stock level', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={5} stockLevel={3} />);
+        render(<ProductQuantityPicker {...defaultProps} value="5" stockLevel={3} />);
 
         const expectedMessage = t('quantitySelector:onlyLeft', { stockLevel: '3' });
         expect(screen.getByText(expectedMessage)).toBeInTheDocument();
@@ -87,7 +87,7 @@ describe('ProductQuantityPicker', () => {
         render(
             <ProductQuantityPicker
                 {...defaultProps}
-                value={5}
+                value="5"
                 stockLevel={3}
                 isBundle={true}
                 productName="Bundle Product"
@@ -102,7 +102,7 @@ describe('ProductQuantityPicker', () => {
     });
 
     test('displays bundle stock warning with default product name when productName is not provided', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={5} stockLevel={3} isBundle={true} />);
+        render(<ProductQuantityPicker {...defaultProps} value="5" stockLevel={3} isBundle={true} />);
 
         const expectedMessage = t('quantitySelector:onlyLeftForProduct', {
             stockLevel: '3',
@@ -112,19 +112,19 @@ describe('ProductQuantityPicker', () => {
     });
 
     test('does not display stock warning when stock level is not exceeded', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={2} stockLevel={5} />);
+        render(<ProductQuantityPicker {...defaultProps} value="2" stockLevel={5} />);
 
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
 
     test('does not display stock warning when stockLevel is undefined', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={5} />);
+        render(<ProductQuantityPicker {...defaultProps} value="5" />);
 
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
 
     test('does not display stock warning when stockLevel is 0', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={5} stockLevel={0} />);
+        render(<ProductQuantityPicker {...defaultProps} value="5" stockLevel={0} />);
 
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
@@ -133,7 +133,7 @@ describe('ProductQuantityPicker', () => {
         render(
             <ProductQuantityPicker
                 {...defaultProps}
-                value={5}
+                value="5"
                 stockLevel={3}
                 isOutOfStock={true}
                 productName="Test Product"
@@ -149,7 +149,7 @@ describe('ProductQuantityPicker', () => {
     });
 
     test('passes correct props to QuantityPicker', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={3} productName="Test Product" />);
+        render(<ProductQuantityPicker {...defaultProps} value="3" productName="Test Product" />);
 
         // Check that the QuantityPicker receives the correct props
         const quantityInput = screen.getByDisplayValue('3');
@@ -158,7 +158,7 @@ describe('ProductQuantityPicker', () => {
     });
 
     test('initializes with value prop and maintains internal state', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={1} />);
+        render(<ProductQuantityPicker {...defaultProps} value="1" />);
 
         expect(screen.getByDisplayValue('1')).toBeInTheDocument();
     });
@@ -178,7 +178,7 @@ describe('ProductQuantityPicker', () => {
     });
 
     test('displays inventory message with correct styling', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={5} stockLevel={3} />);
+        render(<ProductQuantityPicker {...defaultProps} value="5" stockLevel={3} />);
 
         const inventoryMessage = screen.getByRole('alert');
         expect(inventoryMessage).toHaveClass('text-destructive', 'font-medium');
@@ -193,7 +193,7 @@ describe('ProductQuantityPicker', () => {
     });
 
     test('handles empty productName gracefully in bundle stock message', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={5} stockLevel={3} isBundle={true} productName="" />);
+        render(<ProductQuantityPicker {...defaultProps} value="5" stockLevel={3} isBundle={true} productName="" />);
 
         // Component uses default product name when productName is empty
         const expectedMessage = t('quantitySelector:onlyLeftForProduct', {
@@ -204,7 +204,7 @@ describe('ProductQuantityPicker', () => {
     });
 
     test('does not display inventory message when stock level equals quantity', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={3} stockLevel={3} />);
+        render(<ProductQuantityPicker {...defaultProps} value="3" stockLevel={3} />);
 
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
@@ -223,7 +223,7 @@ describe('ProductQuantityPicker', () => {
     });
 
     test('maintains correct aria attributes for accessibility', () => {
-        render(<ProductQuantityPicker {...defaultProps} value={5} stockLevel={3} />);
+        render(<ProductQuantityPicker {...defaultProps} value="5" stockLevel={3} />);
 
         const inventoryMessage = screen.getByRole('alert');
         expect(inventoryMessage).toHaveAttribute('aria-live', 'polite');
@@ -250,7 +250,7 @@ describe('ProductQuantityPicker', () => {
         const user = userEvent.setup();
         const mockOnChange = vi.fn();
 
-        render(<ProductQuantityPicker {...defaultProps} value={1} stockLevel={3} onChange={mockOnChange} />);
+        render(<ProductQuantityPicker {...defaultProps} value="1" stockLevel={3} onChange={mockOnChange} />);
 
         // Initially no warning should be shown
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
@@ -268,7 +268,7 @@ describe('ProductQuantityPicker', () => {
     test('handles multiple prop combinations correctly', () => {
         render(
             <ProductQuantityPicker
-                value={2}
+                value="2"
                 onChange={vi.fn()}
                 className="test-class"
                 stockLevel={10}

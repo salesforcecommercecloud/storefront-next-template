@@ -33,8 +33,25 @@ describe('InventoryMessage', () => {
         },
     };
 
-    it('renders in-stock message when product has stock', () => {
+    it('renders in-stock message with count when product has stock', () => {
         render(<InventoryMessage product={baseProduct} />);
+
+        expect(screen.getByText('In Stock (10 units) ready to be shipped')).toBeInTheDocument();
+    });
+
+    it('renders in-stock message without count when ats is undefined', () => {
+        const productNoAts = {
+            ...baseProduct,
+            inventory: {
+                id: 'test-inventory',
+                orderable: true,
+                backorderable: false,
+                preorderable: false,
+            },
+        };
+
+        // ats is undefined so custom status is needed (default logic requires ats > 0 for in-stock)
+        render(<InventoryMessage product={productNoAts} getInventoryStatus={() => 'in-stock'} />);
 
         expect(screen.getByText('In stock')).toBeInTheDocument();
     });
@@ -104,7 +121,7 @@ describe('InventoryMessage', () => {
     });
 
     it('uses variant inventory when currentVariant is provided', () => {
-        const variant: ShopperProducts.schemas['Variant'] = {
+        const variant = {
             productId: 'test-product',
             variationValues: {},
             inventory: {
@@ -114,7 +131,7 @@ describe('InventoryMessage', () => {
                 backorderable: true,
                 preorderable: false,
             },
-        };
+        } as unknown as ShopperProducts.schemas['Variant'];
 
         render(<InventoryMessage product={baseProduct} currentVariant={variant} />);
 
@@ -150,6 +167,65 @@ describe('InventoryMessage', () => {
         expect(screen.getByText('Inventory unavailable')).not.toHaveAttribute('aria-hidden');
     });
 
+    describe('low stock', () => {
+        it('renders low-stock message when stock is at or below threshold', () => {
+            const lowStockProduct = {
+                ...baseProduct,
+                inventory: {
+                    id: 'test-inventory',
+                    ats: 3,
+                    orderable: true,
+                    backorderable: false,
+                    preorderable: false,
+                },
+            };
+
+            render(<InventoryMessage product={lowStockProduct} lowStockThreshold={5} />);
+
+            expect(screen.getByText('Low stock - Only 3 left')).toBeInTheDocument();
+        });
+
+        it('renders low-stock message at exact threshold', () => {
+            const lowStockProduct = {
+                ...baseProduct,
+                inventory: {
+                    id: 'test-inventory',
+                    ats: 5,
+                    orderable: true,
+                    backorderable: false,
+                    preorderable: false,
+                },
+            };
+
+            render(<InventoryMessage product={lowStockProduct} lowStockThreshold={5} />);
+
+            expect(screen.getByText('Low stock - Only 5 left')).toBeInTheDocument();
+        });
+
+        it('renders in-stock message when stock is above threshold', () => {
+            render(<InventoryMessage product={baseProduct} lowStockThreshold={5} />);
+
+            expect(screen.getByText('In Stock (10 units) ready to be shipped')).toBeInTheDocument();
+        });
+
+        it('does not show low-stock when threshold is 0 (default)', () => {
+            const lowStockProduct = {
+                ...baseProduct,
+                inventory: {
+                    id: 'test-inventory',
+                    ats: 3,
+                    orderable: true,
+                    backorderable: false,
+                    preorderable: false,
+                },
+            };
+
+            render(<InventoryMessage product={lowStockProduct} />);
+
+            expect(screen.getByText('In Stock (3 units) ready to be shipped')).toBeInTheDocument();
+        });
+    });
+
     describe('custom getInventoryStatus function', () => {
         it('uses custom getInventoryStatus function when provided', () => {
             const customGetInventoryStatus = vi.fn().mockReturnValue('in-stock');
@@ -157,11 +233,11 @@ describe('InventoryMessage', () => {
             render(<InventoryMessage product={baseProduct} getInventoryStatus={customGetInventoryStatus} />);
 
             expect(customGetInventoryStatus).toHaveBeenCalledWith(baseProduct, undefined);
-            expect(screen.getByText('In stock')).toBeInTheDocument();
+            expect(screen.getByText('In Stock (10 units) ready to be shipped')).toBeInTheDocument();
         });
 
         it('uses custom getInventoryStatus function with variant when provided', () => {
-            const variant: ShopperProducts.schemas['Variant'] = {
+            const variant = {
                 productId: 'test-product',
                 variationValues: {},
                 inventory: {
@@ -171,7 +247,7 @@ describe('InventoryMessage', () => {
                     backorderable: true,
                     preorderable: false,
                 },
-            };
+            } as unknown as ShopperProducts.schemas['Variant'];
 
             const customGetInventoryStatus = vi.fn().mockReturnValue('back-order');
 
@@ -224,7 +300,7 @@ describe('InventoryMessage', () => {
         it('falls back to default getInventoryStatus when custom function is not provided', () => {
             render(<InventoryMessage product={baseProduct} />);
 
-            expect(screen.getByText('In stock')).toBeInTheDocument();
+            expect(screen.getByText('In Stock (10 units) ready to be shipped')).toBeInTheDocument();
         });
     });
 });

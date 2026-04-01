@@ -20,8 +20,7 @@ import { extractResponseError } from '@/lib/utils';
 import { updateShipmentAddress, createDeliveryShipment } from '@/extensions/multiship/lib/api/basket';
 import { updateBasketWithCustomerInfoFallback } from '@/extensions/multiship/lib/basket-utils';
 import { isRegisteredCustomer, getCurrentCustomer, saveCustomerAddress } from '@/lib/api/customer';
-import { getAddressKey, isAddressEqual } from '@/extensions/multiship/lib/address-utils';
-import { customerAddressToOrderAddress } from '@/lib/address-utils';
+import { getAddressKey, isAddressEqual, customerAddressToOrderAddress } from '@/lib/address-utils';
 import { getTranslation } from '@/lib/i18next';
 import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders';
 

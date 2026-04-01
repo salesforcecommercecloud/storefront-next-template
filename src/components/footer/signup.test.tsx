@@ -28,11 +28,21 @@ describe('Footer Signup', () => {
         vi.stubGlobal('alert', alertMock);
     });
 
-    test('renders heading and description text', () => {
-        render(<Signup />);
+    test('renders form with email input and submit button', () => {
+        const { container } = render(<Signup />);
 
-        expect(screen.getByText('Be the first to know')).toBeInTheDocument();
-        expect(screen.getByText('Sign up to stay in the loop about the hottest deals')).toBeInTheDocument();
+        // Signup component should render a form
+        const form = container.querySelector('form');
+        expect(form).toBeInTheDocument();
+
+        // Form should contain email input and submit button
+        const emailInput = screen.getByPlaceholderText('Your email');
+        const submitButton = screen.getByRole('button', { name: 'Subscribe' });
+
+        expect(emailInput).toBeInTheDocument();
+        expect(submitButton).toBeInTheDocument();
+        expect(form).toContainElement(emailInput);
+        expect(form).toContainElement(submitButton);
     });
 
     test('renders email input with placeholder', () => {

@@ -103,12 +103,12 @@ exports[`ChildProductCard stories snapshot > Controlled story renders and matche
               </span>
             </div>
             <div
-              class="flex flex-wrap gap-2 focus:outline-none"
+              class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
             >
               <button
                 aria-checked="true"
                 aria-label="Gold"
-                class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
                 position="relative"
                 role="radio"
                 tabindex="0"
@@ -119,7 +119,7 @@ exports[`ChildProductCard stories snapshot > Controlled story renders and matche
                 >
                   <div
                     aria-label="Turquoise and Gold Bracelet, Gold, swatch"
-                    class="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                    class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
                     style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwe64c51d1/images/swatch/PG.60119239.JJ887XX.CP.jpg");"
                   />
                 </div>
@@ -245,12 +245,12 @@ exports[`ChildProductCard stories snapshot > Default story renders and matches s
               </span>
             </div>
             <div
-              class="flex flex-wrap gap-2 focus:outline-none"
+              class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
             >
               <a
                 aria-checked="true"
                 aria-label="Gold"
-                class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
                 href="/?013742002836M=color%3DJJ887XX"
                 position="relative"
                 role="radio"
@@ -261,7 +261,7 @@ exports[`ChildProductCard stories snapshot > Default story renders and matches s
                 >
                   <div
                     aria-label="Turquoise and Gold Bracelet, Gold, swatch"
-                    class="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                    class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
                     style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwe64c51d1/images/swatch/PG.60119239.JJ887XX.CP.jpg");"
                   />
                 </div>

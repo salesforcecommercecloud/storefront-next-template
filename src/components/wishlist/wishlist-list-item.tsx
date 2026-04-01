@@ -16,10 +16,12 @@
 'use client';
 
 import { type ReactElement, useEffect, useRef } from 'react';
-import { Link, useFetcher } from 'react-router';
+import { useFetcher } from 'react-router';
+import { Link } from '@/components/link';
 import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { useCurrency } from '@/providers/currency';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
 import { toImageUrl } from '@/lib/dynamic-image';
@@ -27,6 +29,8 @@ import { createProductUrl, getDisplayVariationValues, requiresVariantSelection }
 import { useToast } from '@/components/toast';
 import InventoryMessage from '@/components/inventory-message';
 import ProductPrice from '@/components/product-price';
+import { Button } from '@/components/ui/button';
+import { useProductActions } from '@/hooks/product/use-product-actions';
 
 type Product = ShopperProducts.schemas['Product'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -44,11 +48,11 @@ interface WishlistListItemProps {
  */
 export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistListItemProps): ReactElement {
     const { t } = useTranslation('product');
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const currency = useCurrency();
     const { addToast } = useToast();
     const removeFetcher = useFetcher<{ success: boolean; error?: string }>();
-    const hasHandledResponse = useRef(false);
+    const hasHandledRemoveResponse = useRef(false);
 
     // When SCAPI returns the product by its variant ID, the product itself has type.variant = true
     // and carries variationValues — the user explicitly chose this variant before saving.
@@ -60,6 +64,21 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
     const matchedVariant = !isProductVariant
         ? product.variants?.find((v) => v.productId === wishlistItem.productId)
         : undefined;
+
+    // Determine the current variant to pass to useProductActions:
+    // - If product IS a variant, use the product itself (cast to Variant type)
+    // - If product is a master, use the matched variant (or undefined if not found)
+    const currentVariant = isProductVariant ? (product as ShopperProducts.schemas['Variant']) : matchedVariant;
+
+    // Use the product actions hook for cart operations
+    // Skip inventory validation for wishlist - users should be able to attempt adding
+    // out-of-stock items (the cart action will handle the error)
+    const { handleAddToCart, isAddingToOrUpdatingCart, canAddToCart } = useProductActions({
+        product,
+        currentVariant,
+        initialQuantity: 1,
+        skipInventoryValidation: true,
+    });
     const isSpecificVariant = isProductVariant || Boolean(matchedVariant);
     const needsVariantSelection = !isSpecificVariant && requiresVariantSelection(product);
 
@@ -95,21 +114,21 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
 
     // Handle remove action response
     useEffect(() => {
-        if (removeFetcher.state === 'idle' && removeFetcher.data && !hasHandledResponse.current) {
+        if (removeFetcher.state === 'idle' && removeFetcher.data && !hasHandledRemoveResponse.current) {
             const result = removeFetcher.data;
             if (result?.success) {
-                hasHandledResponse.current = true;
+                hasHandledRemoveResponse.current = true;
                 addToast(t('removedFromWishlist'), 'success');
                 if (wishlistItem.id) {
                     onRemove(wishlistItem.id);
                 }
             } else if (result?.success === false || result?.error) {
-                hasHandledResponse.current = true;
+                hasHandledRemoveResponse.current = true;
                 addToast(result.error ?? t('failedToRemoveFromWishlist'), 'error');
             }
         }
         if (removeFetcher.state === 'submitting') {
-            hasHandledResponse.current = false;
+            hasHandledRemoveResponse.current = false;
         }
     }, [removeFetcher.state, removeFetcher.data, addToast, onRemove, wishlistItem.id, t]);
 
@@ -187,8 +206,22 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
                     </div>
 
                     {/* Price */}
-                    <div className="flex-shrink-0 md:text-right">
+                    <div className="flex flex-col gap-2 flex-shrink-0 md:items-end md:text-right">
                         <ProductPrice type="unit" product={product} currency={currency} />
+                        {canAddToCart ? (
+                            <Button
+                                onClick={() => void handleAddToCart()}
+                                disabled={isAddingToOrUpdatingCart}
+                                size="sm"
+                                variant="default"
+                                className="w-full md:w-auto md:min-w-28">
+                                {isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
+                            </Button>
+                        ) : needsVariantSelection ? (
+                            <Button asChild size="sm" variant="outline" className="w-full md:w-auto md:min-w-28">
+                                <Link to={pdpUrl}>{t('selectOptions')}</Link>
+                            </Button>
+                        ) : null}
                     </div>
                 </div>
             </div>

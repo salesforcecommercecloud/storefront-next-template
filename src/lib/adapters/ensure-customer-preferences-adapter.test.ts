@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ensureCustomerPreferencesAdapterRegistered } from './ensure-customer-preferences-adapter';
-import type { AppConfig } from '@/config';
+import type { AppConfig } from '@/types/config';
 
 const mockHasCustomerPreferencesAdapters = vi.fn();
 const mockAddCustomerPreferencesAdapter = vi.fn();
@@ -31,6 +31,16 @@ const mockCreateCustomerPreferencesMockAdapter = vi.fn();
 
 vi.mock('@/adapters/customer-preferences-mock', () => ({
     createCustomerPreferencesMockAdapter: (...args: unknown[]) => mockCreateCustomerPreferencesMockAdapter(...args),
+}));
+
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => mockLogger),
 }));
 
 const mockAppConfig = {} as AppConfig;
@@ -76,16 +86,13 @@ describe('ensureCustomerPreferencesAdapterRegistered', () => {
         mockCreateCustomerPreferencesMockAdapter.mockImplementation(() => {
             throw new Error('Adapter creation failed');
         });
-        const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
         await expect(ensureCustomerPreferencesAdapterRegistered(mockAppConfig)).resolves.toBeUndefined();
 
         if (import.meta.env.DEV) {
-            expect(consoleSpy).toHaveBeenCalledWith(
-                'Failed to register customer preferences adapter:',
-                'Adapter creation failed'
-            );
+            expect(mockLogger.warn).toHaveBeenCalledWith('Failed to register customer preferences adapter', {
+                error: expect.any(Error),
+            });
         }
-        consoleSpy.mockRestore();
     });
 });

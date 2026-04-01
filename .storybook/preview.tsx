@@ -5,6 +5,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { applyProviders } from '../src/lib/provider-utils';
 import { storybookProviders } from './storybook-providers';
 import { inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
+import { masterProduct } from '@/components/__mocks__/master-variant-product';
 import '../src/app.css'; // Import global CSS
 import { TargetProviders } from '@/targets/target-providers';
 
@@ -81,6 +82,74 @@ const RouterWrapper = ({ Story }: { Story: ComponentType }) => {
                         // Used by OTP Modal component's useFetcher hook
                         path: '/action/verify-otp',
                         action: async () => ({ success: false, error: 'Mock OTP verification action' }),
+                    },
+                    {
+                        // Mock action route for cart item quantity updates
+                        // Used by useCartQuantityUpdate hook via fetcher.submit()
+                        path: '/action/cart-item-update',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for cart item removal
+                        // Used by useCartQuantityUpdate hook for remove operations
+                        path: '/action/cart-item-remove',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for bonus product addition
+                        // Used by useBonusProductAdd hook via fetcher.submit()
+                        path: '/action/bonus-product-add',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for checkout registration
+                        // Used by RegisterCustomerSelection component via fetcher.submit()
+                        path: '/action/initiate-checkout-registration',
+                        action: () => ({ success: true, email: 'test@example.com' }),
+                    },
+                    {
+                        // Mock action route for adding items to cart
+                        // Used by useProductActions hook via fetcher.submit()
+                        path: '/action/cart-item-add',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for adding product sets to cart
+                        // Used by useProductActions hook via fetcher.submit()
+                        path: '/action/cart-set-add',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for adding product bundles to cart
+                        // Used by useProductActions hook via fetcher.submit()
+                        path: '/action/cart-bundle-add',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for adding items to wishlist
+                        // Used by useWishlist hook via fetcher.submit()
+                        path: '/action/wishlist-add',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for removing items from wishlist
+                        // Used by useWishlist hook via fetcher.submit()
+                        path: '/action/wishlist-remove',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock loader for SCAPI resource calls (e.g. product fetches inside CartItemModal).
+                        // useScapiFetcher calls fetcher.load('/resource/api/client/:resource') — without a
+                        // loader here React Router throws a 404 when Quick Add opens the modal.
+                        path: '/resource/api/client/:resource',
+                        loader: () => ({ success: true, data: masterProduct }),
+                    },
+                    {
+                        // Catch-all: absorbs navigations triggered by interactive components
+                        // (e.g. swatch <Link>, Quick Add "Buy it Now", product tile clicks).
+                        // Returns the user to the story root so the 404 error page is never shown.
+                        path: '*',
+                        element: WrappedStory,
                     },
                 ],
                 {

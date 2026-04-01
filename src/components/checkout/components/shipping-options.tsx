@@ -16,6 +16,7 @@
 import { type FormEvent, useEffect, useMemo, useRef } from 'react';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/typography';
@@ -27,13 +28,14 @@ import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi
 import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '@/providers/currency';
+import { formatCurrency } from '@/lib/currency';
 
 interface ShippingMethod {
     id: string;
     name: string;
     description?: string;
     price: number;
-    estimatedArrivalTime?: string;
 }
 
 interface ShippingOptionsProps {
@@ -58,28 +60,41 @@ export default function ShippingOptions({
 }: ShippingOptionsProps) {
     const cart = useBasket();
     const customerProfile = useCustomerProfile();
+    const currency = useCurrency();
+    const { i18n } = useTranslation();
 
     const availableShippingMethods: ShippingMethod[] = useMemo(
         () =>
             shippingMethods?.applicableShippingMethods
-                ?.filter(
-                    (method) => method.id && method.name && typeof method.price === 'number' && !isNaN(method.price)
+                ?.filter((method): method is NonNullable<typeof method> & { id: string; name: string; price: number } =>
+                    Boolean(method.id && method.name && typeof method.price === 'number' && !Number.isNaN(method.price))
                 )
                 .map((method) => ({
                     id: method.id,
                     name: method.name,
                     description: method.description,
                     price: method.price,
-                    estimatedArrivalTime: method.estimatedArrivalTime,
                 })) || [],
         [shippingMethods?.applicableShippingMethods]
     );
     const { t } = useTranslation('checkout');
 
     const selectedMethod = cart?.shipments?.[0]?.shippingMethod;
-    const summaryArrivalTime = (selectedMethod?.estimatedArrivalTime ?? selectedMethod?.c_estimatedArrivalTime) as
-        | string
-        | undefined;
+    // Basket may only have shippingMethod.id after prefill; resolve name/price from applicable methods for summary
+    const summaryMethod: ShippingMethod | undefined = useMemo(() => {
+        if (!selectedMethod?.id) return undefined;
+        const fromList = availableShippingMethods.find((m) => m.id === selectedMethod.id);
+        if (fromList) return fromList;
+        return {
+            id: selectedMethod.id,
+            name: selectedMethod.name ?? selectedMethod.id,
+            description: selectedMethod.description,
+            price: typeof selectedMethod.price === 'number' ? selectedMethod.price : 0,
+        };
+    }, [selectedMethod, availableShippingMethods]);
+    const isGuest = !customerProfile?.customer?.customerId;
+    const hideChangeForGuest = isGuest && !selectedMethod;
+    const isUpcomingStep = !isEditing && !selectedMethod;
 
     const defaultShippingMethodId = getDefaultShippingMethod(
         availableShippingMethods,
@@ -140,78 +155,68 @@ export default function ShippingOptions({
     // For single page layout, always show the component but in collapsed state when not editing
     // The ToggleCard will handle the collapsed/expanded state based on editing prop
 
-    const stepTitle = <span className="text-lg font-semibold text-foreground">{t('shippingOptions.title')}</span>;
+    const stepTitle = (
+        <span className="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground">
+            {t('shippingOptions.title')}
+        </span>
+    );
 
     return (
         <ToggleCard
             id="shipping-options"
-            title={stepTitle as React.ReactNode}
+            title={stepTitle}
             editing={isEditing}
+            disabled={false}
             onEdit={onEdit}
             editLabel={t('common.edit')}
+            disableEdit={hideChangeForGuest || isUpcomingStep}
+            showHeaderSeparator
             isLoading={isLoading}>
             <ToggleCardEdit>
-                <form method="post" className="space-y-6" onSubmit={handleSubmit}>
+                {/* Body vertical rhythm: header→content uses ToggleCard gap-4 (16px); no extra pt (Figma Body container 25706:53930). */}
+                <form method="post" className="flex flex-col gap-4" onSubmit={handleSubmit}>
                     {shippingOptionsError && <CheckoutErrorBanner message={shippingOptionsError} />}
 
-                    <div className="space-y-4">
-                        <label className="text-sm font-medium text-foreground">{t('shippingOptions.title')}</label>
-
+                    <div className="flex flex-col gap-4">
                         {availableShippingMethods.length > 0 ? (
                             <RadioGroup
                                 name="shippingMethodId"
                                 defaultValue={selectedMethod?.id || defaultShippingMethodId || ''}
                                 required
-                                aria-label={t('shippingOptions.title')}>
+                                aria-label={t('shippingOptions.title')}
+                                className="flex flex-col gap-4">
                                 {availableShippingMethods.map((method) => (
-                                    <div
+                                    <label
                                         key={method.id}
-                                        className="group flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
-                                        <RadioGroupItem
-                                            value={method.id}
-                                            id={method.id}
-                                            className="w-5 h-5"
-                                            autoFocus={isEditing && availableShippingMethods.indexOf(method) === 0}
-                                        />
-                                        <Label
-                                            htmlFor={method.id}
-                                            className="flex-1 cursor-pointer group-has-[:checked]:text-foreground">
-                                            <div className="space-y-1">
-                                                {method.estimatedArrivalTime && (
-                                                    <Typography
-                                                        variant="small"
-                                                        className="text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base">
-                                                        {t('shippingOptions.arrives', {
-                                                            estimatedArrivalTime: method.estimatedArrivalTime,
-                                                        })}
-                                                    </Typography>
-                                                )}
-                                                <Typography
-                                                    variant="small"
-                                                    className="text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base">
-                                                    {t('shippingOptions.priceAndMethod', {
-                                                        price:
-                                                            method.price === 0
-                                                                ? t('shippingOptions.free')
-                                                                : `$${method.price.toFixed(2)}`,
-                                                        methodName: method.name,
-                                                    })}
-                                                </Typography>
-                                                {method.description && (
-                                                    <Typography
-                                                        variant="small"
-                                                        className="text-muted-foreground group-has-[:checked]:text-foreground font-bold text-base">
-                                                        {method.description}
-                                                    </Typography>
-                                                )}
-                                            </div>
-                                        </Label>
-                                    </div>
+                                        htmlFor={method.id}
+                                        className="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground">
+                                        <div className="flex items-center gap-2">
+                                            <RadioGroupItem
+                                                value={method.id}
+                                                id={method.id}
+                                                className="shrink-0"
+                                                autoFocus={isEditing && availableShippingMethods.indexOf(method) === 0}
+                                            />
+                                            <span className="flex-1 text-sm font-medium leading-none">
+                                                {method.name}
+                                            </span>
+                                            <span className="shrink-0 text-sm font-semibold leading-none">
+                                                {method.price === 0
+                                                    ? t('shippingOptions.free')
+                                                    : formatCurrency(method.price, i18n.language, currency)}
+                                            </span>
+                                        </div>
+                                        {method.description && (
+                                            <span className="pl-6 text-sm text-muted-foreground">
+                                                {method.description}
+                                            </span>
+                                        )}
+                                    </label>
                                 ))}
                             </RadioGroup>
                         ) : (
-                            <div className="flex items-center justify-center p-8 border-2 border-dashed border-muted rounded-lg">
-                                <div className="text-center space-y-2">
+                            <div className="flex justify-center rounded-lg border-2 border-dashed border-muted p-8">
+                                <div className="space-y-2 text-center">
                                     <Typography variant="p" className="text-muted-foreground">
                                         {t('shippingOptions.noMethodsAvailable')}
                                     </Typography>
@@ -223,49 +228,53 @@ export default function ShippingOptions({
                         )}
                     </div>
 
-                    <div className="flex justify-end">
+                    {availableShippingMethods.length > 0 && (
+                        <div className="flex items-center gap-2 rounded-lg border border-border-subtle p-4">
+                            <Checkbox id="shipping-options-gift-wrapping" name="giftWrapping" value="true" />
+                            <Label htmlFor="shipping-options-gift-wrapping" className="cursor-pointer">
+                                {(t as (key: string) => string)('shippingOptions.giftWrappingLabel')}
+                            </Label>
+                        </div>
+                    )}
+
+                    <div className="w-full pt-2">
                         <Button
                             type="submit"
                             disabled={isLoading || availableShippingMethods.length === 0}
-                            size="lg"
-                            className="min-w-48">
-                            {isLoading
-                                ? t('shippingOptions.saving')
-                                : availableShippingMethods.length === 0
-                                  ? t('shippingOptions.noMethodsAvailable')
-                                  : t('shippingOptions.continue')}
+                            className="w-full">
+                            {isLoading ? t('shippingOptions.saving') : t('shippingOptions.continue')}
                         </Button>
                     </div>
                 </form>
             </ToggleCardEdit>
 
             <ToggleCardSummary>
-                <div className="space-y-2">
-                    {selectedMethod ? (
-                        <div className="space-y-2">
-                            {summaryArrivalTime && (
-                                <Typography variant="small" className="text-muted-foreground">
+                {summaryMethod ? (
+                    <div className="space-y-1.5">
+                        <div className="space-y-1.5">
+                            {summaryMethod.description && (
+                                <p className="text-sm font-normal leading-5 text-foreground">
                                     {t('shippingOptions.arrives', {
-                                        estimatedArrivalTime: summaryArrivalTime,
+                                        estimatedArrivalTime: summaryMethod.description,
                                     })}
-                                </Typography>
+                                </p>
                             )}
-                            <Typography variant="small" className="text-muted-foreground">
+                            <p className="text-sm font-normal leading-5 text-foreground">
                                 {t('shippingOptions.priceAndMethod', {
                                     price:
-                                        selectedMethod.price === 0
+                                        summaryMethod.price === 0
                                             ? t('shippingOptions.free')
-                                            : `$${(selectedMethod.price ?? 0).toFixed(2)}`,
-                                    methodName: selectedMethod.name || '',
+                                            : formatCurrency(summaryMethod.price ?? 0, i18n.language, currency),
+                                    methodName: summaryMethod.name || '',
                                 })}
-                            </Typography>
+                            </p>
                         </div>
-                    ) : (
-                        <Typography variant="p" className="text-muted-foreground">
-                            {t('shippingOptions.enterAddressFirst')}
-                        </Typography>
-                    )}
-                </div>
+                    </div>
+                ) : (
+                    <p className="text-sm text-muted-foreground">
+                        {isGuest ? t('shippingOptions.completePreviousSteps') : t('shippingOptions.enterAddressFirst')}
+                    </p>
+                )}
             </ToggleCardSummary>
         </ToggleCard>
     );

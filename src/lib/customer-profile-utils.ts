@@ -26,7 +26,8 @@ export function getContactInfoFromCustomer(customerProfile?: CustomerProfile) {
 
     const customer = customerProfile.customer;
     return {
-        email: customer.email || '',
+        // SCAPI Customer uses login as the email/username identifier
+        email: customer.login || customer.email || '',
         firstName: customer.firstName || '',
         lastName: customer.lastName || '',
         phone: customer.phoneHome || customer.phoneBusiness || customer.phoneMobile || '',
@@ -119,24 +120,17 @@ export function getPaymentMethodsFromCustomer(customerProfile?: CustomerProfile)
     }
 
     return customerProfile.paymentInstruments.map((instrument, index) => {
-        // Generate a clean display string using card type and expiration
-        const cardType = instrument.paymentCard?.cardType || 'Card';
-        const expirationMonth = instrument.paymentCard?.expirationMonth;
-        const expirationYear = instrument.paymentCard?.expirationYear;
-
-        // Create a display identifier like "Visa •••• (exp 11/34)"
-        let displayNumber = `${cardType} ••••`;
-        if (expirationMonth && expirationYear) {
-            const expMonth = expirationMonth.toString().padStart(2, '0');
-            const expYear = expirationYear.toString().slice(-2);
-            displayNumber += ` (exp ${expMonth}/${expYear})`;
-        }
-
         return {
             id: instrument.paymentInstrumentId || `payment_${index}`,
             type: instrument.paymentMethodId || 'CREDIT_CARD',
             cardType: instrument.paymentCard?.cardType || 'unknown',
-            maskedNumber: displayNumber, // Use our clean display format
+            // API expects full masked format (e.g. '************1234'). Prefer API's maskedNumber;
+            // otherwise build from numberLastDigits (last 4 digits only).
+            maskedNumber:
+                instrument.paymentCard?.maskedNumber ||
+                (instrument.paymentCard?.numberLastDigits
+                    ? `************${instrument.paymentCard.numberLastDigits}`
+                    : undefined),
             expirationMonth: instrument.paymentCard?.expirationMonth,
             expirationYear: instrument.paymentCard?.expirationYear,
             cardholderName: instrument.paymentCard?.holder || '',
@@ -237,7 +231,11 @@ export function hasCustomerDataForPrefill(customerProfile?: CustomerProfile): {
     hasPaymentMethods: boolean;
     hasAnyData: boolean;
 } {
-    const hasContactInfo = !!(customerProfile?.customer?.email || customerProfile?.customer?.firstName);
+    const hasContactInfo = !!(
+        customerProfile?.customer?.login ||
+        customerProfile?.customer?.email ||
+        customerProfile?.customer?.firstName
+    );
     const hasAddresses = !!(customerProfile?.addresses && customerProfile.addresses.length > 0);
     const hasPaymentMethods = !!(customerProfile?.paymentInstruments && customerProfile.paymentInstruments.length > 0);
 

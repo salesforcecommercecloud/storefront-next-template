@@ -17,7 +17,7 @@ import { describe, expect, test, vi, beforeEach } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
 import { createShopperContext } from './shopper-context';
 import { createApiClients } from '@/lib/api-clients';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { createTestContext } from '@/lib/test-utils';
 
 // Mock dependencies
@@ -25,7 +25,7 @@ vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(),
 }));
 
-vi.mock('@/config', async (importOriginal) => {
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual = await importOriginal();
     return {
         ...(actual || {}),
@@ -34,7 +34,7 @@ vi.mock('@/config', async (importOriginal) => {
 });
 
 describe('shopper-context API', () => {
-    let mockContext: RouterContextProvider;
+    let mockContext: Readonly<RouterContextProvider>;
     let mockShopperContextClient: any;
 
     beforeEach(() => {
@@ -49,7 +49,6 @@ describe('shopper-context API', () => {
             commerce: {
                 api: {
                     organizationId: 'test-org-id',
-                    siteId: 'test-site-id',
                 },
             },
         } as any);
@@ -74,7 +73,7 @@ describe('shopper-context API', () => {
                         usid,
                     },
                     query: {
-                        siteId: 'test-site-id',
+                        siteId: 'RefArchGlobal',
                     },
                 },
                 body: expect.objectContaining({ sourceCode: 'email' }),
@@ -286,7 +285,7 @@ describe('shopper-context API', () => {
                         usid,
                     },
                     query: {
-                        siteId: 'test-site-id',
+                        siteId: 'RefArchGlobal',
                     },
                 },
                 body: expect.objectContaining(body),
@@ -310,7 +309,7 @@ describe('shopper-context API', () => {
                         usid,
                     },
                     query: {
-                        siteId: 'test-site-id',
+                        siteId: 'RefArchGlobal',
                     },
                 },
                 body: expect.objectContaining(body),
@@ -334,7 +333,7 @@ describe('shopper-context API', () => {
                         usid,
                     },
                     query: {
-                        siteId: 'test-site-id',
+                        siteId: 'RefArchGlobal',
                     },
                 },
                 body: expect.objectContaining(body),
@@ -356,7 +355,7 @@ describe('shopper-context API', () => {
                         usid,
                     },
                     query: {
-                        siteId: 'test-site-id',
+                        siteId: 'RefArchGlobal',
                     },
                 },
                 body: expect.objectContaining(body),
@@ -379,7 +378,7 @@ describe('shopper-context API', () => {
                         usid,
                     },
                     query: {
-                        siteId: 'test-site-id',
+                        siteId: 'RefArchGlobal',
                     },
                 },
                 body: expect.objectContaining(body),
@@ -408,7 +407,7 @@ describe('shopper-context API', () => {
                         usid,
                     },
                     query: {
-                        siteId: 'test-site-id',
+                        siteId: 'RefArchGlobal',
                     },
                 },
                 body: expect.objectContaining(body),
@@ -429,7 +428,7 @@ describe('shopper-context API', () => {
                             usid: 'test-usid',
                         }),
                         query: expect.objectContaining({
-                            siteId: 'test-site-id',
+                            siteId: 'RefArchGlobal',
                         }),
                     }),
                 })

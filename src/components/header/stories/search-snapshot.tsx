@@ -61,7 +61,8 @@ vi.mock('@/hooks/use-transform-search-suggestions', () => ({
     useTransformSearchSuggestions: () => null,
 }));
 
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => ({
+    ...(await importOriginal<Record<string, unknown>>()),
     useConfig: () => ({
         pages: {
             search: {

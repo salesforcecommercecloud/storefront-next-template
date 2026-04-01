@@ -21,7 +21,7 @@ import { fetchCustomerOrders } from '@/lib/api/order';
 import { getAuth } from '@/middlewares/auth.server';
 import type { Order } from '@/components/account/order-list';
 import { createTestContext } from '@/lib/test-utils';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 vi.mock('@/lib/api/order', () => ({
     fetchCustomerOrders: vi.fn(),
@@ -31,6 +31,15 @@ vi.mock('@/lib/api/order', () => ({
 
 vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(),
+}));
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
 }));
 
 const mockGetAuth = vi.mocked(getAuth);
@@ -92,7 +101,12 @@ describe('AccountOrders Page', () => {
     });
 
     const renderAccountOrders = async (ordersData: Order[] = mockOrders) => {
-        vi.mocked(fetchCustomerOrders).mockResolvedValue(ordersData);
+        vi.mocked(fetchCustomerOrders).mockResolvedValue({
+            orders: ordersData,
+            total: ordersData.length,
+            offset: 0,
+            limit: 10,
+        });
 
         const router = createMemoryRouter(
             [
@@ -108,9 +122,9 @@ describe('AccountOrders Page', () => {
         );
 
         const result = render(
-            <CurrencyWrapper>
+            <AllProvidersWrapper>
                 <RouterProvider router={router} />
-            </CurrencyWrapper>
+            </AllProvidersWrapper>
         );
 
         // Wait for the Await promise to resolve and actual content to render.
@@ -131,7 +145,12 @@ describe('AccountOrders Page', () => {
     describe('loader', () => {
         test('fetches orders for authenticated customer', () => {
             const context = createTestContext();
-            vi.mocked(fetchCustomerOrders).mockResolvedValue(mockOrders);
+            vi.mocked(fetchCustomerOrders).mockResolvedValue({
+                orders: mockOrders,
+                total: mockOrders.length,
+                offset: 0,
+                limit: 10,
+            });
 
             const result = loader({
                 context,
@@ -165,7 +184,7 @@ describe('AccountOrders Page', () => {
     describe('Page Content', () => {
         test('renders Order History title', async () => {
             await renderAccountOrders();
-            expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent('Order History');
+            expect(screen.getByRole('heading', { level: 4 })).toHaveTextContent('Order History');
         });
 
         test('renders subtitle', async () => {
@@ -180,9 +199,9 @@ describe('AccountOrders Page', () => {
             const orderLinks = screen.getAllByRole('link');
             const orderHrefs = orderLinks.map((link) => link.getAttribute('href'));
 
-            expect(orderHrefs).toContain('/account/orders/ORD-2024-001');
-            expect(orderHrefs).toContain('/account/orders/ORD-2024-002');
-            expect(orderHrefs).toContain('/account/orders/ORD-2024-003');
+            expect(orderHrefs).toContain('/global/en-GB/account/orders/ORD-2024-001');
+            expect(orderHrefs).toContain('/global/en-GB/account/orders/ORD-2024-002');
+            expect(orderHrefs).toContain('/global/en-GB/account/orders/ORD-2024-003');
         });
 
         test('renders View Details buttons', async () => {
@@ -205,19 +224,19 @@ describe('AccountOrders Page', () => {
         test('renders created status badge', async () => {
             await renderAccountOrders();
             const createdBadge = screen.getByText('Created').closest('span');
-            expect(createdBadge).toHaveClass('bg-order-status-new');
+            expect(createdBadge).toHaveClass('bg-info');
         });
 
         test('renders new status badge', async () => {
             await renderAccountOrders();
             const newBadge = screen.getByText('New').closest('span');
-            expect(newBadge).toHaveClass('bg-order-status-new');
+            expect(newBadge).toHaveClass('bg-info');
         });
 
         test('renders completed status badge', async () => {
             await renderAccountOrders();
             const completedBadge = screen.getByText('Completed').closest('span');
-            expect(completedBadge).toHaveClass('bg-order-status-completed');
+            expect(completedBadge).toHaveClass('bg-status-positive');
         });
     });
 
@@ -225,7 +244,19 @@ describe('AccountOrders Page', () => {
         test('shows loading skeleton while fetching orders', async () => {
             // Mock a delayed response
             vi.mocked(fetchCustomerOrders).mockImplementation(
-                () => new Promise((resolve) => setTimeout(() => resolve(mockOrders), 200))
+                () =>
+                    new Promise((resolve) =>
+                        setTimeout(
+                            () =>
+                                resolve({
+                                    orders: mockOrders,
+                                    total: mockOrders.length,
+                                    offset: 0,
+                                    limit: 10,
+                                }),
+                            200
+                        )
+                    )
             );
 
             const router = createMemoryRouter(
@@ -242,9 +273,9 @@ describe('AccountOrders Page', () => {
             );
 
             render(
-                <CurrencyWrapper>
+                <AllProvidersWrapper>
                     <RouterProvider router={router} />
-                </CurrencyWrapper>
+                </AllProvidersWrapper>
             );
 
             // Wait for skeleton to appear (router needs a tick to render)
@@ -279,9 +310,9 @@ describe('AccountOrders Page', () => {
             );
 
             render(
-                <CurrencyWrapper>
+                <AllProvidersWrapper>
                     <RouterProvider router={router} />
-                </CurrencyWrapper>
+                </AllProvidersWrapper>
             );
 
             await waitFor(() => {

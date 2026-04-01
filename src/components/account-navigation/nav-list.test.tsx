@@ -17,6 +17,7 @@ import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { Heart, MapPin, ShoppingBag, User } from 'lucide-react';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { AccountNavList } from './nav-list';
 
 const mockNavigationItems = [
@@ -34,14 +35,11 @@ const mockDisabledNavigationItems = [
 ];
 
 const createTestWrapper = (component: React.ReactElement, initialPath = '/account') => {
-    // Using createMemoryRouter in framework mode is fine
-    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
     const router = createMemoryRouter(
         [
             {
                 path: '/account',
-                element: component,
+                element: <AllProvidersWrapper>{component}</AllProvidersWrapper>,
             },
         ],
         { initialEntries: [initialPath] }
@@ -64,10 +62,16 @@ describe('<AccountNavList />', () => {
     test('renders each item with correct href attributes', () => {
         render(createTestWrapper(<AccountNavList items={mockNavigationItems} />));
 
-        expect(screen.getByRole('link', { name: 'Account Details' })).toHaveAttribute('href', '/account');
-        expect(screen.getByRole('link', { name: 'Wishlist' })).toHaveAttribute('href', '/account/wishlist');
-        expect(screen.getByRole('link', { name: 'Orders' })).toHaveAttribute('href', '/account/orders');
-        expect(screen.getByRole('link', { name: 'Addresses' })).toHaveAttribute('href', '/account/addresses');
+        expect(screen.getByRole('link', { name: 'Account Details' })).toHaveAttribute('href', '/global/en-GB/account');
+        expect(screen.getByRole('link', { name: 'Wishlist' })).toHaveAttribute(
+            'href',
+            '/global/en-GB/account/wishlist'
+        );
+        expect(screen.getByRole('link', { name: 'Orders' })).toHaveAttribute('href', '/global/en-GB/account/orders');
+        expect(screen.getByRole('link', { name: 'Addresses' })).toHaveAttribute(
+            'href',
+            '/global/en-GB/account/addresses'
+        );
     });
 
     test('renders nothing when items is an empty array', () => {

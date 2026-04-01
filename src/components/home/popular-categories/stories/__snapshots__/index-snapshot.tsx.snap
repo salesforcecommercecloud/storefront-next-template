@@ -17,12 +17,12 @@ exports[`PopularCategories stories snapshot > CustomPadding story renders and ma
           <h2
             class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
-            Step into Elegance
+            Style for Real Life
           </h2>
           <p
             class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
           >
-            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+            At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
         </div>
         <div
@@ -439,12 +439,12 @@ exports[`PopularCategories stories snapshot > Default story renders and matches 
           <h2
             class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
-            Step into Elegance
+            Style for Real Life
           </h2>
           <p
             class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
           >
-            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+            At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
         </div>
         <div
@@ -544,12 +544,12 @@ exports[`PopularCategories stories snapshot > Loading story renders and matches 
           <h2
             class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
-            Step into Elegance
+            Style for Real Life
           </h2>
           <p
             class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
           >
-            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+            At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
         </div>
         <div
@@ -633,12 +633,12 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
           <h2
             class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
-            Step into Elegance
+            Style for Real Life
           </h2>
           <p
             class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
           >
-            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+            At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
         </div>
         <div
@@ -1237,12 +1237,12 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
           <h2
             class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
-            Step into Elegance
+            Style for Real Life
           </h2>
           <p
             class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
           >
-            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+            At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
         </div>
         <div
@@ -1659,12 +1659,12 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
           <h2
             class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
           >
-            Step into Elegance
+            Style for Real Life
           </h2>
           <p
             class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
           >
-            At Salesforce Foundations, we believe design should be accessible, innovative, and timeless. Our collections are crafted for the modern individual who values quality, form, and lasting beauty.
+            At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
         </div>
         <div
@@ -1720,24 +1720,24 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                         <source
                           media="(min-width: 1024px)"
                           sizes="300px"
-                          srcset="/images/hero-cube.webp?sw=300&q=70 300w, /images/hero-cube.webp?sw=600&q=70 600w"
+                          srcset="/images/hero-01.webp?sw=300&q=70 300w, /images/hero-01.webp?sw=600&q=70 600w"
                           type="image/webp"
                         />
                         <source
                           media="(min-width: 768px)"
                           sizes="280px"
-                          srcset="/images/hero-cube.webp?sw=280&q=70 280w, /images/hero-cube.webp?sw=560&q=70 560w"
+                          srcset="/images/hero-01.webp?sw=280&q=70 280w, /images/hero-01.webp?sw=560&q=70 560w"
                           type="image/webp"
                         />
                         <source
                           media="(min-width: 640px)"
                           sizes="260px"
-                          srcset="/images/hero-cube.webp?sw=260&q=70 260w, /images/hero-cube.webp?sw=520&q=70 520w"
+                          srcset="/images/hero-01.webp?sw=260&q=70 260w, /images/hero-01.webp?sw=520&q=70 520w"
                           type="image/webp"
                         />
                         <source
                           sizes="240px"
-                          srcset="/images/hero-cube.webp?sw=240&q=70 240w, /images/hero-cube.webp?sw=480&q=70 480w"
+                          srcset="/images/hero-01.webp?sw=240&q=70 240w, /images/hero-01.webp?sw=480&q=70 480w"
                           type="image/webp"
                         />
                         <img
@@ -1745,7 +1745,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                           class="w-full h-full object-cover"
                           fetchpriority="auto"
                           loading="eager"
-                          src="/images/hero-cube.jpg?sfrm=webp"
+                          src="/images/hero-01.jpg?sfrm=webp"
                         />
                       </picture>
                     </div>
@@ -1803,24 +1803,24 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                         <source
                           media="(min-width: 1024px)"
                           sizes="300px"
-                          srcset="/images/hero-cube.webp?sw=300&q=70 300w, /images/hero-cube.webp?sw=600&q=70 600w"
+                          srcset="/images/hero-01.webp?sw=300&q=70 300w, /images/hero-01.webp?sw=600&q=70 600w"
                           type="image/webp"
                         />
                         <source
                           media="(min-width: 768px)"
                           sizes="280px"
-                          srcset="/images/hero-cube.webp?sw=280&q=70 280w, /images/hero-cube.webp?sw=560&q=70 560w"
+                          srcset="/images/hero-01.webp?sw=280&q=70 280w, /images/hero-01.webp?sw=560&q=70 560w"
                           type="image/webp"
                         />
                         <source
                           media="(min-width: 640px)"
                           sizes="260px"
-                          srcset="/images/hero-cube.webp?sw=260&q=70 260w, /images/hero-cube.webp?sw=520&q=70 520w"
+                          srcset="/images/hero-01.webp?sw=260&q=70 260w, /images/hero-01.webp?sw=520&q=70 520w"
                           type="image/webp"
                         />
                         <source
                           sizes="240px"
-                          srcset="/images/hero-cube.webp?sw=240&q=70 240w, /images/hero-cube.webp?sw=480&q=70 480w"
+                          srcset="/images/hero-01.webp?sw=240&q=70 240w, /images/hero-01.webp?sw=480&q=70 480w"
                           type="image/webp"
                         />
                         <img
@@ -1828,7 +1828,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                           class="w-full h-full object-cover"
                           fetchpriority="auto"
                           loading="eager"
-                          src="/images/hero-cube.jpg?sfrm=webp"
+                          src="/images/hero-01.jpg?sfrm=webp"
                         />
                       </picture>
                     </div>
@@ -1886,24 +1886,24 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                         <source
                           media="(min-width: 1024px)"
                           sizes="300px"
-                          srcset="/images/hero-cube.webp?sw=300&q=70 300w, /images/hero-cube.webp?sw=600&q=70 600w"
+                          srcset="/images/hero-01.webp?sw=300&q=70 300w, /images/hero-01.webp?sw=600&q=70 600w"
                           type="image/webp"
                         />
                         <source
                           media="(min-width: 768px)"
                           sizes="280px"
-                          srcset="/images/hero-cube.webp?sw=280&q=70 280w, /images/hero-cube.webp?sw=560&q=70 560w"
+                          srcset="/images/hero-01.webp?sw=280&q=70 280w, /images/hero-01.webp?sw=560&q=70 560w"
                           type="image/webp"
                         />
                         <source
                           media="(min-width: 640px)"
                           sizes="260px"
-                          srcset="/images/hero-cube.webp?sw=260&q=70 260w, /images/hero-cube.webp?sw=520&q=70 520w"
+                          srcset="/images/hero-01.webp?sw=260&q=70 260w, /images/hero-01.webp?sw=520&q=70 520w"
                           type="image/webp"
                         />
                         <source
                           sizes="240px"
-                          srcset="/images/hero-cube.webp?sw=240&q=70 240w, /images/hero-cube.webp?sw=480&q=70 480w"
+                          srcset="/images/hero-01.webp?sw=240&q=70 240w, /images/hero-01.webp?sw=480&q=70 480w"
                           type="image/webp"
                         />
                         <img
@@ -1911,7 +1911,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                           class="w-full h-full object-cover"
                           fetchpriority="auto"
                           loading="eager"
-                          src="/images/hero-cube.jpg?sfrm=webp"
+                          src="/images/hero-01.jpg?sfrm=webp"
                         />
                       </picture>
                     </div>
@@ -1969,24 +1969,24 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                         <source
                           media="(min-width: 1024px)"
                           sizes="300px"
-                          srcset="/images/hero-cube.webp?sw=300&q=70 300w, /images/hero-cube.webp?sw=600&q=70 600w"
+                          srcset="/images/hero-01.webp?sw=300&q=70 300w, /images/hero-01.webp?sw=600&q=70 600w"
                           type="image/webp"
                         />
                         <source
                           media="(min-width: 768px)"
                           sizes="280px"
-                          srcset="/images/hero-cube.webp?sw=280&q=70 280w, /images/hero-cube.webp?sw=560&q=70 560w"
+                          srcset="/images/hero-01.webp?sw=280&q=70 280w, /images/hero-01.webp?sw=560&q=70 560w"
                           type="image/webp"
                         />
                         <source
                           media="(min-width: 640px)"
                           sizes="260px"
-                          srcset="/images/hero-cube.webp?sw=260&q=70 260w, /images/hero-cube.webp?sw=520&q=70 520w"
+                          srcset="/images/hero-01.webp?sw=260&q=70 260w, /images/hero-01.webp?sw=520&q=70 520w"
                           type="image/webp"
                         />
                         <source
                           sizes="240px"
-                          srcset="/images/hero-cube.webp?sw=240&q=70 240w, /images/hero-cube.webp?sw=480&q=70 480w"
+                          srcset="/images/hero-01.webp?sw=240&q=70 240w, /images/hero-01.webp?sw=480&q=70 480w"
                           type="image/webp"
                         />
                         <img
@@ -1994,7 +1994,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                           class="w-full h-full object-cover"
                           fetchpriority="auto"
                           loading="eager"
-                          src="/images/hero-cube.jpg?sfrm=webp"
+                          src="/images/hero-01.jpg?sfrm=webp"
                         />
                       </picture>
                     </div>

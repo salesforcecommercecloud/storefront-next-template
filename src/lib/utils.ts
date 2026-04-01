@@ -18,6 +18,40 @@ import { twMerge } from 'tailwind-merge';
 import type { Json } from '+types/lang';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
+/**
+ * Get the configurable base path for the application.
+ * This is a runtime-safe version that works in both client and server without importing dev tooling.
+ *
+ * @returns The base path (e.g., '/site-a') or empty string
+ */
+export function getBasePath(): string {
+    // Server-side: read from process.env
+    if (typeof window === 'undefined') {
+        const basePath = process.env.MRT_ENV_BASE_PATH?.trim();
+        if (!basePath) return '';
+
+        // Base Path conditions match those imposed by MRT
+        if (!/^\/[a-zA-Z0-9_.+$~"'@:-]{1,63}$/.test(basePath)) {
+            throw new Error(
+                `Invalid base path: "${basePath}". ` +
+                    "Base path must be a single segment starting with '/' (e.g., '/site-a'), " +
+                    'contain only URL-safe characters, and be at most 63 characters after the leading slash.'
+            );
+        }
+
+        return basePath;
+    }
+
+    // Client-side: extract from bundle path
+    // In production, the bundle path already includes the base path
+    if (window._BASE_PATH) {
+        return window._BASE_PATH;
+    }
+
+    // Fallback: no base path
+    return '';
+}
+
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
@@ -317,10 +351,13 @@ export const resolveAssetUrl = (url: string): string => {
         return url;
     }
 
-    // If the URL already contains the bundle path (e.g., from a static import), return it as-is
+    // If the URL already contains the bundle path, it's already transformed (e.g., from a static import) — return as-is
+    // This is to avoid double transformation of the URL
     if (url.includes('/mobify/bundle/')) {
         return url;
     }
+
+    const basePath = getBasePath();
 
     // Determine the bundle ID
     // Falls back to 'local' if _BUNDLE_ID is undefined (e.g., in dev mode where bundle config isn't injected)
@@ -332,8 +369,8 @@ export const resolveAssetUrl = (url: string): string => {
         return url.startsWith('/') ? url : `/${url}`;
     }
 
-    // In MRT, prepend the bundle path
-    const bundlePath = `/mobify/bundle/${bundleId}/client/`;
+    // In MRT, prepend the bundle path with base path
+    const bundlePath = `${basePath}/mobify/bundle/${bundleId}/client/`;
     const normalizedUrl = url.startsWith('/') ? url.slice(1) : url;
 
     return `${bundlePath}${normalizedUrl}`;

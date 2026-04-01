@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { redirect, Link, Form, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { redirect, Form, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
 // services
 import { registerCustomer } from '@/lib/api/auth/register';
 
 // components
 import { SignupForm } from '@/components/signup-form';
+import { SeoMeta } from '@/components/seo-meta';
 
 // utils
 import { isPasswordValid } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
 import { getTranslation } from '@/lib/i18next';
 import { useTranslation } from 'react-i18next';
+import { getLogger } from '@/lib/logger.server';
 
 type SignupActionResponse = {
     error?: string;
@@ -48,6 +51,7 @@ export function loader({ context }: LoaderFunctionArgs): null | Response {
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<SignupActionResponse | Response> {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();
     const firstName = formData.get('firstName')?.toString();
@@ -56,15 +60,20 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     const password = formData.get('password')?.toString();
     const confirmPassword = formData.get('confirmPassword')?.toString();
 
+    logger.debug('Signup: starting');
+
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
+        logger.warn('Signup: missing required fields');
         return { error: t('signup:allFieldsRequired') };
     }
 
     if (password !== confirmPassword) {
+        logger.warn('Signup: passwords do not match');
         return { error: t('signup:passwordsDoNotMatch') };
     }
 
     if (!isPasswordValid(password)) {
+        logger.warn('Signup: password not secure');
         return { error: t('signup:passwordNotSecure') };
     }
 
@@ -80,9 +89,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     });
 
     if (!result.success) {
+        logger.warn('Signup: registration failed');
         return { error: result.error || t('errors:genericTryAgain') };
     }
 
+    logger.info('Signup: registration succeeded');
     // Registration and auto-login successful - redirect to return URL
     const url = new URL(request.url);
     const returnUrl = url.searchParams.get('returnUrl') || '/';
@@ -96,28 +107,37 @@ export default function Signup(): ReactElement {
     const { t } = useTranslation('signup');
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">{t('title')}</h2>
-                    <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
+        <>
+            <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+                <SeoMeta
+                    title={t('meta.title', { defaultValue: 'Sign Up' })}
+                    description={t('meta.description', {
+                        defaultValue: 'Create an account to save your preferences and track your orders.',
+                    })}
+                    openGraph={{ type: 'website' }}
+                />
+                <div className="max-w-md w-full space-y-8">
+                    <div>
+                        <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
+                        <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
+                    </div>
+
+                    <Card className="p-8">
+                        <Form method="POST">
+                            <SignupForm error={error} />
+
+                            <div className="text-center mt-6">
+                                <p className="text-sm text-muted-foreground">
+                                    {t('haveAccountQuestion')}
+                                    <Link to="/login" className="font-medium text-primary hover:underline">
+                                        {t('signIn')}
+                                    </Link>
+                                </p>
+                            </div>
+                        </Form>
+                    </Card>
                 </div>
-
-                <Card className="p-8">
-                    <Form method="POST">
-                        <SignupForm error={error} />
-
-                        <div className="text-center mt-6">
-                            <p className="text-sm text-muted-foreground">
-                                {t('haveAccountQuestion')}
-                                <Link to="/login" className="font-medium text-primary hover:underline">
-                                    {t('signIn')}
-                                </Link>
-                            </p>
-                        </div>
-                    </Form>
-                </Card>
             </div>
-        </div>
+        </>
     );
 }

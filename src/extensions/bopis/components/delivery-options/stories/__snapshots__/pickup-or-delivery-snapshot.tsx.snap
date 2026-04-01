@@ -62,10 +62,10 @@ exports[`PickupOrDelivery stories snapshot > Default story renders and matches s
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-primary"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-primary"
           >
             <div
-              class="w-2.5 h-2.5 rounded-full bg-primary"
+              class="w-2 h-2 rounded-pill bg-primary"
             />
           </div>
         </div>
@@ -109,7 +109,7 @@ exports[`PickupOrDelivery stories snapshot > Default story renders and matches s
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
           />
         </div>
         <div
@@ -175,7 +175,7 @@ exports[`PickupOrDelivery stories snapshot > DeliveryDisabled story renders and 
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
           />
         </div>
         <div
@@ -244,10 +244,10 @@ exports[`PickupOrDelivery stories snapshot > DeliveryDisabled story renders and 
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-primary"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-primary"
           >
             <div
-              class="w-2.5 h-2.5 rounded-full bg-primary"
+              class="w-2 h-2 rounded-pill bg-primary"
             />
           </div>
         </div>
@@ -347,10 +347,10 @@ exports[`PickupOrDelivery stories snapshot > DesktopLayout story renders and mat
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-primary"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-primary"
           >
             <div
-              class="w-2.5 h-2.5 rounded-full bg-primary"
+              class="w-2 h-2 rounded-pill bg-primary"
             />
           </div>
         </div>
@@ -394,7 +394,7 @@ exports[`PickupOrDelivery stories snapshot > DesktopLayout story renders and mat
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
           />
         </div>
         <div
@@ -493,10 +493,10 @@ exports[`PickupOrDelivery stories snapshot > MobileLayout story renders and matc
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-primary"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-primary"
           >
             <div
-              class="w-2.5 h-2.5 rounded-full bg-primary"
+              class="w-2 h-2 rounded-pill bg-primary"
             />
           </div>
         </div>
@@ -540,7 +540,7 @@ exports[`PickupOrDelivery stories snapshot > MobileLayout story renders and matc
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
           />
         </div>
         <div
@@ -604,7 +604,7 @@ exports[`PickupOrDelivery stories snapshot > NoStoreSelected story renders and m
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
           />
         </div>
         <div
@@ -673,10 +673,10 @@ exports[`PickupOrDelivery stories snapshot > NoStoreSelected story renders and m
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-primary"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-primary"
           >
             <div
-              class="w-2.5 h-2.5 rounded-full bg-primary"
+              class="w-2 h-2 rounded-pill bg-primary"
             />
           </div>
         </div>
@@ -767,10 +767,10 @@ exports[`PickupOrDelivery stories snapshot > PickupDisabled story renders and ma
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-primary"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-primary"
           >
             <div
-              class="w-2.5 h-2.5 rounded-full bg-primary"
+              class="w-2 h-2 rounded-pill bg-primary"
             />
           </div>
         </div>
@@ -816,7 +816,7 @@ exports[`PickupOrDelivery stories snapshot > PickupDisabled story renders and ma
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
           />
         </div>
         <div
@@ -889,7 +889,7 @@ exports[`PickupOrDelivery stories snapshot > PickupSelected story renders and ma
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
           />
         </div>
         <div
@@ -958,10 +958,10 @@ exports[`PickupOrDelivery stories snapshot > PickupSelected story renders and ma
           class="mt-0.5 shrink-0"
         >
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-primary"
+            class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-primary"
           >
             <div
-              class="w-2.5 h-2.5 rounded-full bg-primary"
+              class="w-2 h-2 rounded-pill bg-primary"
             />
           </div>
         </div>

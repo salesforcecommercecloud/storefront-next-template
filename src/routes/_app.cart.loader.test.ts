@@ -36,6 +36,15 @@ vi.mock('@/lib/api-clients', () => ({
     })),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 import { getBasket, getBasketSnapshot } from '@/middlewares/basket.server';
 
 describe('Cart route loader', () => {
@@ -73,7 +82,7 @@ describe('Cart route loader', () => {
     });
 
     test('returns basketDataPromise and basketSnapshot', () => {
-        const result = loader(createLoaderArgs());
+        const result = loader(createLoaderArgs()) as any;
 
         expect(result).toHaveProperty('basketDataPromise');
         expect(result).toHaveProperty('basketSnapshot');
@@ -86,7 +95,7 @@ describe('Cart route loader', () => {
     });
 
     test('basketDataPromise resolves to basket, products, promotions', async () => {
-        const result = loader(createLoaderArgs());
+        const result = loader(createLoaderArgs()) as any;
         const data = await result.basketDataPromise;
 
         expect(data).toHaveProperty('basket');
@@ -111,7 +120,7 @@ describe('Cart route loader', () => {
         });
         mockGetProducts.mockResolvedValue({ data: { data: [] } });
 
-        const result = loader(createLoaderArgs());
+        const result = loader(createLoaderArgs()) as any;
         const data = await result.basketDataPromise;
 
         expect(data.basket?.productItems).toEqual([]);

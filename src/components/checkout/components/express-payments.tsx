@@ -20,6 +20,7 @@ import StaticPayPalButton from './static-paypal-button';
 import StaticVenmoButton from './static-venmo-button';
 import ApplePayLogo from './apple-pay-logo';
 import GooglePayLogo from './google-pay-logo';
+import AmazonPayLogo from './amazon-pay-logo';
 import { useTranslation } from 'react-i18next';
 
 interface ExpressPaymentsProps {
@@ -175,11 +176,8 @@ export default function ExpressPayments({
         }
     };
 
-    // Determine grid layout classes based on layout prop
     const gridClasses =
-        layout === 'vertical'
-            ? 'grid grid-cols-1 gap-3' // Vertical: Single column, tighter spacing
-            : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'; // Horizontal: Responsive grid
+        layout === 'vertical' ? 'grid grid-cols-1 gap-3' : 'grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3';
 
     // Separator component (reusable for top or bottom placement)
     const separator = (
@@ -187,7 +185,9 @@ export default function ExpressPayments({
             {/* Left line */}
             <div className="flex-1 h-[2px] bg-separator" />
             {/* Text */}
-            <span className="px-4 text-separator-foreground font-medium uppercase text-sm whitespace-nowrap">
+            <span
+                className="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+                data-express-payments-separator-label="">
                 {separatorText}
             </span>
             {/* Right line */}
@@ -200,7 +200,7 @@ export default function ExpressPayments({
             {/* Separator at top (if configured) */}
             {separatorPosition === 'top' && separator}
 
-            {/* Express Payment Buttons - Horizontal: 4 buttons on desktop (Venmo hidden), 5 on mobile (Venmo visible) | Vertical: All buttons stacked */}
+            {/* Express Payment Buttons */}
             <div className={gridClasses}>
                 {/* Apple Pay Button */}
                 <Button
@@ -209,7 +209,7 @@ export default function ExpressPayments({
                     className="w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
                     size="lg"
                     aria-label={applePayLabel}>
-                    <ApplePayLogo className="flex-shrink-0" />
+                    <ApplePayLogo className="flex-shrink-0" decorative />
                 </Button>
 
                 {/* Google Pay Button */}
@@ -219,25 +219,17 @@ export default function ExpressPayments({
                     className="w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
                     size="lg"
                     aria-label={googlePayLabel}>
-                    <GooglePayLogo className="flex-shrink-0" />
+                    <GooglePayLogo className="flex-shrink-0" decorative />
                 </Button>
 
-                {/* Amazon Pay Button - Official Amazon Pay styling per iOS documentation */}
+                {/* Amazon Pay Button */}
                 <Button
                     onClick={handleAmazonPayClick}
                     disabled={disabled}
-                    className="w-full h-12 bg-[#FFD814] hover:bg-[#F7CA00] border-[#FFD814] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
+                    className="w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
                     size="lg"
                     aria-label={amazonPayLabel}>
-                    {/* Amazon Pay Official Logo from https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg */}
-                    <img
-                        src="https://m.media-amazon.com/images/G/01/AmazonPay/ux/squid_ink_pwa.svg"
-                        alt={amazonPayLabel}
-                        width="62"
-                        height="20"
-                        className="h-5"
-                        style={{ objectFit: 'contain' }}
-                    />
+                    <AmazonPayLogo className="flex-shrink-0" decorative />
                 </Button>
 
                 {/* PayPal & Venmo Static Buttons - Always visible, never replaced */}

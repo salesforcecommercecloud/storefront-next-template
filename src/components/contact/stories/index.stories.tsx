@@ -19,12 +19,14 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { getTranslation } from '@/lib/i18next';
 import { ToasterTheme } from '@/components/toast';
 import Contact from '../index';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 const meta: Meta<typeof Contact> = {
     title: 'COMMON/Contact',
     component: Contact,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'fullscreen',
         docs: {
             description: {

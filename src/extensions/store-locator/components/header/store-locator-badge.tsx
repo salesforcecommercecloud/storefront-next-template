@@ -73,13 +73,16 @@ export default function StoreLocatorBadge(): ReactElement {
                 fallback={
                     <Button
                         variant="ghost"
-                        className="pointer-events-none"
+                        className="pointer-events-none hover:bg-transparent"
                         aria-label={t('storeLocator.trigger.ariaLabel')}>
                         <Store className="size-6" />
                     </Button>
                 }>
                 <StoreLocatorSheet open={true} onOpenChange={handleOpenChange}>
-                    <Button variant="ghost" aria-label={t('storeLocator.trigger.openAriaLabel')}>
+                    <Button
+                        variant="ghost"
+                        className="hover:bg-transparent hover:opacity-50 transition-opacity"
+                        aria-label={t('storeLocator.trigger.openAriaLabel')}>
                         <Store className="size-6" />
                     </Button>
                 </StoreLocatorSheet>
@@ -88,7 +91,11 @@ export default function StoreLocatorBadge(): ReactElement {
     }
 
     return (
-        <Button variant="ghost" onClick={() => setClicked(true)} aria-label={t('storeLocator.trigger.ariaLabel')}>
+        <Button
+            variant="ghost"
+            className="hover:bg-transparent hover:opacity-50 transition-opacity"
+            onClick={() => setClicked(true)}
+            aria-label={t('storeLocator.trigger.ariaLabel')}>
             <Store className="size-6" />
         </Button>
     );

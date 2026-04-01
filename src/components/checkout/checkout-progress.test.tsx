@@ -26,7 +26,7 @@ describe('CheckoutProgress', () => {
         expect(screen.getAllByText('Shipping')).toHaveLength(2);
         expect(screen.getAllByText('Delivery')).toHaveLength(2);
         expect(screen.getAllByText('Payment')).toHaveLength(2);
-        expect(screen.getAllByText('Review')).toHaveLength(2);
+        expect(screen.getAllByText('Place Order')).toHaveLength(2);
     });
 
     it('highlights the current step', () => {
@@ -89,7 +89,7 @@ describe('CheckoutProgress', () => {
         expect(screen.getAllByText('Delivery address')).toHaveLength(1);
         expect(screen.getAllByText('Shipping method')).toHaveLength(1);
         expect(screen.getAllByText('Payment method')).toHaveLength(1);
-        expect(screen.getAllByText('Confirm order')).toHaveLength(1);
+        expect(screen.getAllByText('Place order')).toHaveLength(1);
     });
 
     it('handles all checkout steps correctly', () => {
@@ -98,12 +98,12 @@ describe('CheckoutProgress', () => {
             CHECKOUT_STEPS.SHIPPING_ADDRESS,
             CHECKOUT_STEPS.SHIPPING_OPTIONS,
             CHECKOUT_STEPS.PAYMENT,
-            CHECKOUT_STEPS.REVIEW_ORDER,
+            CHECKOUT_STEPS.PLACE_ORDER,
         ];
 
         steps.forEach((step) => {
             const { unmount } = render(<CheckoutProgress currentStep={step} />);
-            expect(screen.getAllByText(/Contact Info|Shipping|Delivery|Payment|Review/)).toBeTruthy();
+            expect(screen.getAllByText(/Contact Info|Shipping|Delivery|Payment|Place Order/)).toBeTruthy();
             unmount();
         });
     });
@@ -111,7 +111,7 @@ describe('CheckoutProgress', () => {
     it('renders with multiple completed steps', () => {
         const { container } = render(
             <CheckoutProgress
-                currentStep={CHECKOUT_STEPS.REVIEW_ORDER}
+                currentStep={CHECKOUT_STEPS.PLACE_ORDER}
                 completedSteps={[
                     CHECKOUT_STEPS.CONTACT_INFO,
                     CHECKOUT_STEPS.SHIPPING_ADDRESS,

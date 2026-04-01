@@ -31,16 +31,17 @@ vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
     })),
 }));
 
-vi.mock('react-router', async () => {
-    const actual = await vi.importActual('react-router');
-    return {
-        ...actual,
-        data: (body: any, init?: ResponseInit) => ({ data: body, init }),
-    };
-});
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
 
 describe('action.set-locale', () => {
-    test('should return success response with locale cookie when given valid locale', async () => {
+    test('should return redirect response with locale cookie when given valid locale', async () => {
         const locale = 'es';
         const mockRequest = createFormDataRequest('http://localhost/action/set-locale', 'POST', {
             locale,
@@ -53,14 +54,14 @@ describe('action.set-locale', () => {
             unstable_pattern: 'action/set-locale',
         };
 
-        const result: any = await action(args);
+        const result = (await action(args)) as Response;
 
-        // Verify the response contains success data
-        expect(result.data).toEqual({ success: true });
+        // Verify the response is a redirect
+        expect(result.status).toBe(302);
+        expect(result.headers.get('Location')).toBe('/');
 
-        // Verify a Set-Cookie header is present (the actual cookie format is implementation detail)
-        expect(result.init.headers['Set-Cookie']).toBeDefined();
-        expect(result.init.headers['Set-Cookie']).toContain('lng=');
+        // Verify a Set-Cookie header is present
+        expect(result.headers.get('Set-Cookie')).toContain('lng=');
     });
 
     test('should handle different valid locale values', async () => {
@@ -78,10 +79,10 @@ describe('action.set-locale', () => {
                 unstable_pattern: 'action/set-locale',
             };
 
-            const result: any = await action(args);
+            const result = (await action(args)) as Response;
 
-            expect(result.data).toEqual({ success: true });
-            expect(result.init.headers['Set-Cookie']).toBeDefined();
+            expect(result.status).toBe(302);
+            expect(result.headers.get('Set-Cookie')).toContain('lng=');
         }
     });
 

@@ -25,7 +25,7 @@ import {
 } from '@/lib/api/basket';
 import {
     savePaymentMethodToCustomer,
-    registerGuestUser,
+    type PaymentInstrumentForSave,
     saveShippingAddressToCustomer,
     saveBillingAddressToCustomer,
     updateCustomerContactInfo,
@@ -34,45 +34,48 @@ import {
 import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { createErrorResponse } from '@/lib/error-handler';
 import { getTranslation } from '@/lib/i18next';
+import { buildUrlFromContext } from '@/lib/url.server';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket';
+import { getLogger } from '@/lib/logger.server';
+
+function placeOrderErrorResponse(body: { success: false; error: string; step: string }) {
+    return Response.json(body, { status: 400 });
+}
 
 /**
  * Server action for placing an order.
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
 
     try {
-        // Parse form data to get create account preference
+        // Parse form data to get create account preference and save-payment option
         const formData = await request.formData();
         const shouldCreateAccount = formData.get('shouldCreateAccount') === 'true';
+        const savePaymentToProfile = formData.get('savePaymentToProfile') === 'true';
 
         // Get current basket
         const basketResource = await getBasket(context);
         const basket = basketResource.current;
+        logger.debug('PlaceOrder: starting', { basketId: basket?.basketId });
 
         if (!basket || !basket.basketId) {
-            return Response.json(
-                {
-                    success: false,
-                    error: t('errors:checkout.noActiveBasket'),
-                    step: 'placeOrder',
-                },
-                { status: 400 }
-            );
+            return placeOrderErrorResponse({
+                success: false,
+                error: t('errors:checkout.noActiveBasket'),
+                step: 'placeOrder',
+            });
         }
 
         // Validate that basket has all required information
         if (!basket.customerInfo?.email) {
-            return Response.json(
-                {
-                    success: false,
-                    error: t('checkout:contactInfo.emailRequired'),
-                    step: 'placeOrder',
-                },
-                { status: 400 }
-            );
+            return placeOrderErrorResponse({
+                success: false,
+                error: t('checkout:contactInfo.emailRequired'),
+                step: 'placeOrder',
+            });
         }
 
         // Build a map of shipmentId -> item count for efficient lookups
@@ -94,25 +97,19 @@ export async function action({ request, context }: ActionFunctionArgs) {
         // Check that all non-empty shipments have shipping address and method
         for (const shipment of nonEmptyShipments) {
             if (!shipment.shippingAddress) {
-                return Response.json(
-                    {
-                        success: false,
-                        error: t('errors:api.shippingAddressRequired'),
-                        step: 'placeOrder',
-                    },
-                    { status: 400 }
-                );
+                return placeOrderErrorResponse({
+                    success: false,
+                    error: t('errors:api.shippingAddressRequired'),
+                    step: 'placeOrder',
+                });
             }
 
             if (!shipment.shippingMethod) {
-                return Response.json(
-                    {
-                        success: false,
-                        error: t('errors:checkout.shippingMethodRequired'),
-                        step: 'placeOrder',
-                    },
-                    { status: 400 }
-                );
+                return placeOrderErrorResponse({
+                    success: false,
+                    error: t('errors:checkout.shippingMethodRequired'),
+                    step: 'placeOrder',
+                });
             }
         }
 
@@ -124,16 +121,26 @@ export async function action({ request, context }: ActionFunctionArgs) {
             if (customerId) {
                 try {
                     const customerProfile = await getCustomerProfileForCheckout(context, customerId);
+                    if (!customerProfile) {
+                        return placeOrderErrorResponse({
+                            success: false,
+                            error: t('errors:api.unableToLoadCustomerProfile'),
+                            step: 'placeOrder',
+                        });
+                    }
                     const savedPaymentMethods = getPaymentMethodsFromCustomer(customerProfile);
 
                     if (savedPaymentMethods.length > 0) {
-                        // Apply the first/preferred saved payment method to the basket
                         const preferredMethod =
                             savedPaymentMethods.find((method) => method.preferred) || savedPaymentMethods[0];
 
+                        // SFCC requires customerPaymentInstrumentId to charge a saved payment instrument.
+                        // paymentCard (cardType, maskedNumber, etc.) is display metadata only and cannot
+                        // be used to charge a saved card.
                         const paymentInfo = {
                             paymentMethodId: 'CREDIT_CARD',
                             customerPaymentInstrumentId: preferredMethod.id,
+                            amount: basket.orderTotal ?? 0,
                         };
 
                         // Get billing address (use shipping address or customer's billing address)
@@ -166,44 +173,32 @@ export async function action({ request, context }: ActionFunctionArgs) {
                             };
                             updateBasketResource(context, preservedBasket);
                         } else {
-                            return Response.json(
-                                {
-                                    success: false,
-                                    error: t('errors:api.billingAddressRequired'),
-                                    step: 'placeOrder',
-                                },
-                                { status: 400 }
-                            );
+                            return placeOrderErrorResponse({
+                                success: false,
+                                error: t('errors:api.billingAddressRequired'),
+                                step: 'placeOrder',
+                            });
                         }
                     } else {
-                        return Response.json(
-                            {
-                                success: false,
-                                error: t('errors:api.paymentInformationRequired'),
-                                step: 'placeOrder',
-                            },
-                            { status: 400 }
-                        );
-                    }
-                } catch {
-                    return Response.json(
-                        {
+                        return placeOrderErrorResponse({
                             success: false,
                             error: t('errors:api.paymentInformationRequired'),
                             step: 'placeOrder',
-                        },
-                        { status: 400 }
-                    );
-                }
-            } else {
-                return Response.json(
-                    {
+                        });
+                    }
+                } catch {
+                    return placeOrderErrorResponse({
                         success: false,
                         error: t('errors:api.paymentInformationRequired'),
                         step: 'placeOrder',
-                    },
-                    { status: 400 }
-                );
+                    });
+                }
+            } else {
+                return placeOrderErrorResponse({
+                    success: false,
+                    error: t('errors:api.paymentInformationRequired'),
+                    step: 'placeOrder',
+                });
             }
         }
 
@@ -211,14 +206,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const updatedBasket = (await getBasket(context)).current;
 
         if (!updatedBasket?.billingAddress) {
-            return Response.json(
-                {
-                    success: false,
-                    error: t('errors:api.billingAddressRequired'),
-                    step: 'placeOrder',
-                },
-                { status: 400 }
-            );
+            return placeOrderErrorResponse({
+                success: false,
+                error: t('errors:api.billingAddressRequired'),
+                step: 'placeOrder',
+            });
         }
 
         // @sfdc-extension-line SFDC_EXT_MULTISHIP
@@ -227,14 +219,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const currency = getBasketCurrency(context, updatedBasket);
 
         if (!updatedBasket?.basketId) {
-            return Response.json(
-                {
-                    success: false,
-                    error: t('errors:api.basketNotFound'),
-                    step: 'placeOrder',
-                },
-                { status: 400 }
-            );
+            return placeOrderErrorResponse({
+                success: false,
+                error: t('errors:api.basketNotFound'),
+                step: 'placeOrder',
+            });
         }
 
         const calculatedBasket = await calculateBasket(context, updatedBasket.basketId, currency);
@@ -250,6 +239,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         });
 
         if (!order || !order.orderNo) {
+            logger.error('PlaceOrder: empty order response', { basketId: calculatedBasket.basketId });
             return Response.json(
                 {
                     success: false,
@@ -260,78 +250,92 @@ export async function action({ request, context }: ActionFunctionArgs) {
             );
         }
 
-        // Create account for guest user if shopper opted for registration
-        let registrationResult = undefined;
-        if (shouldCreateAccount && order.customerInfo?.email) {
-            try {
-                registrationResult = await registerGuestUser(context, order.customerInfo.email, {
-                    orderNo: order.orderNo,
-                    customerInfo: order.customerInfo,
-                    shippingAddress: order.shipments?.[0]?.shippingAddress,
-                });
+        logger.info('PlaceOrder: order created', { orderNo: order.orderNo, basketId: calculatedBasket.basketId });
 
-                if (registrationResult.success) {
-                    // Save customer information to the newly created account if auto-login succeeded
-                    if (registrationResult.customerId && registrationResult.autoLoggedIn) {
-                        const savePromises = [];
+        // Check if user registered via email verification during checkout (passwordless flow)
+        const auth = getAuth(context);
+        const registeredViaCheckout = auth.userType === 'registered' && auth.customerId && shouldCreateAccount;
 
-                        // Save payment method
-                        if (order.paymentInstruments?.[0]) {
-                            savePromises.push(
-                                savePaymentMethodToCustomer(
-                                    context,
-                                    registrationResult.customerId,
-                                    order.paymentInstruments[0]
-                                )
-                            );
-                        }
+        // The contact-info phone is passed from the client as a form field because basket
+        // transfers during OTP registration can strip phone from the billing address.
+        // Fall back to the basket/order billing address if the form field is absent.
+        const contactPhone =
+            formData.get('contactPhone')?.toString() ||
+            updatedBasket.billingAddress?.phone ||
+            order.billingAddress?.phone;
 
-                        // Save shipping address
-                        if (order.shipments?.[0]?.shippingAddress) {
-                            savePromises.push(
-                                saveShippingAddressToCustomer(
-                                    context,
-                                    registrationResult.customerId,
-                                    order.shipments[0].shippingAddress
-                                )
-                            );
-                        }
+        // Save checkout information to customer profile
+        if (auth.customerId) {
+            const savePromises: Promise<unknown>[] = [];
 
-                        // Save billing address (always save if exists)
-                        if (order.billingAddress) {
-                            savePromises.push(
-                                saveBillingAddressToCustomer(
-                                    context,
-                                    registrationResult.customerId,
-                                    order.billingAddress
-                                )
-                            );
-                        }
-
-                        // Update customer contact information (phone, etc.)
-                        const contactInfo = {
-                            phone: order.shipments?.[0]?.shippingAddress?.phone || order.billingAddress?.phone,
-                            email: order.customerInfo?.email,
-                            firstName: order.customerInfo?.firstName,
-                            lastName: order.customerInfo?.lastName,
-                        };
-
-                        if (contactInfo.phone || contactInfo.firstName || contactInfo.lastName) {
-                            savePromises.push(
-                                updateCustomerContactInfo(context, registrationResult.customerId, contactInfo)
-                            );
-                        }
-
-                        // Execute all save operations in parallel
-                        // Don't wait for them to complete to avoid delaying the order confirmation
-                        void Promise.all(savePromises);
-                    }
-                } else {
-                    // Don't fail the order if account creation fails
-                    // TODO: Need to discuss error handling in UX requirements. Show we show a toast type message?
+            // For newly registered customers (via OTP), save all their checkout info
+            if (registeredViaCheckout) {
+                // Always save payment for checkout-registration: the "Save for future use"
+                // checkbox implies saving all checkout data to the new profile.
+                if (order.paymentInstruments?.[0]) {
+                    savePromises.push(
+                        savePaymentMethodToCustomer(
+                            context,
+                            auth.customerId,
+                            order.paymentInstruments[0] as PaymentInstrumentForSave
+                        ).catch((error) => {
+                            logger.error('PlaceOrder: failed to save payment method', { error });
+                        })
+                    );
                 }
-            } catch {
-                // Don't fail the order if account creation fails
+
+                // Save shipping address
+                if (order.shipments?.[0]?.shippingAddress) {
+                    savePromises.push(
+                        saveShippingAddressToCustomer(
+                            context,
+                            auth.customerId,
+                            order.shipments[0].shippingAddress
+                        ).catch((error) => {
+                            logger.error('PlaceOrder: failed to save shipping address', { error });
+                        })
+                    );
+                }
+
+                // Save billing address
+                if (order.billingAddress) {
+                    savePromises.push(
+                        saveBillingAddressToCustomer(context, auth.customerId, order.billingAddress).catch((error) => {
+                            logger.error('PlaceOrder: failed to save billing address', { error });
+                        })
+                    );
+                }
+
+                // Save phone number to customer profile (phoneHome)
+                if (contactPhone) {
+                    savePromises.push(
+                        updateCustomerContactInfo(context, auth.customerId, {
+                            phone: contactPhone,
+                        }).catch((error) => {
+                            logger.error('Failed to save phone number for new customer', {
+                                error: error instanceof Error ? error : String(error),
+                            });
+                        })
+                    );
+                }
+            }
+            // For existing registered customers, only save payment if opted in
+            // Do not automatically save addresses to avoid creating duplicates.
+            else if (savePaymentToProfile && order.paymentInstruments?.[0]) {
+                savePromises.push(
+                    savePaymentMethodToCustomer(
+                        context,
+                        auth.customerId,
+                        order.paymentInstruments[0] as PaymentInstrumentForSave
+                    ).catch((error) => {
+                        logger.error('PlaceOrder: failed to save payment method', { error });
+                    })
+                );
+            }
+
+            // Execute all save operations in parallel (don't block order confirmation)
+            if (savePromises.length > 0) {
+                void Promise.all(savePromises);
             }
         }
 
@@ -341,20 +345,16 @@ export async function action({ request, context }: ActionFunctionArgs) {
         destroyBasket(context);
 
         // Redirect to order confirmation page on success
-        // This uses React Router's redirect utility for proper navigation
         // Include account creation and auto-login status as query parameters if account was created
-        let orderConfirmationUrl = `/order-confirmation/${order.orderNo}`;
+        let orderConfirmationUrl = buildUrlFromContext(`/order-confirmation/${order.orderNo}`, context);
 
-        if (shouldCreateAccount && order.customerInfo?.email) {
+        if (registeredViaCheckout && order.customerInfo?.email) {
+            // User registered during checkout - include this in query params for order confirmation
             const params = new URLSearchParams({
                 accountCreated: 'true',
                 email: order.customerInfo.email,
+                autoLoggedIn: 'true',
             });
-
-            // Add auto-login status if available (only set if we actually attempted registration)
-            if (typeof registrationResult !== 'undefined') {
-                params.set('autoLoggedIn', registrationResult.autoLoggedIn ? 'true' : 'false');
-            }
 
             orderConfirmationUrl += `?${params.toString()}`;
         }

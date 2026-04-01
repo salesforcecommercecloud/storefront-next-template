@@ -23,7 +23,7 @@ const { t } = getTranslation();
 import { RemoveItemButtonWithConfirmation } from './remove-item-button-with-confirmation';
 import type { ActionResponse } from '@/routes/types/action-responses';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 
 // Mock the toast hook

@@ -17,8 +17,9 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import PopularCategory from './index';
-import { ConfigProvider } from '@/config/context';
-import { mockConfig } from '@/test-utils/config';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { mockConfig, SITE_PREFIX } from '@/test-utils/config';
+import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/multi-site';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock decorators (minimal mocking to avoid testing them)
@@ -44,6 +45,7 @@ vi.mock('react-i18next', () => ({
             };
             return translations[key] || key;
         },
+        i18n: { language: 'en-GB' },
     }),
 }));
 
@@ -55,12 +57,27 @@ const mockCategory: ShopperProducts.schemas['Category'] = {
     c_slotBannerImage: '/images/new-arrivals-banner.jpg',
 };
 
+const mockSite: Site = {
+    id: 'RefArchGlobal',
+    defaultLocale: 'en-GB',
+    defaultCurrency: 'GBP',
+    supportedLocales: [
+        { id: 'en-GB', preferredCurrency: 'GBP' },
+        { id: 'it-IT', preferredCurrency: 'EUR' },
+    ],
+    supportedCurrencies: ['EUR', 'GBP'],
+};
+
 const renderComponent = (component: React.ReactElement) => {
     const router = createMemoryRouter(
         [
             {
                 path: '/',
-                element: <ConfigProvider config={mockConfig}>{component}</ConfigProvider>,
+                element: (
+                    <ConfigProvider config={mockConfig}>
+                        <SiteProvider value={mockSite}>{component}</SiteProvider>
+                    </ConfigProvider>
+                ),
             },
         ],
         { initialEntries: ['/'] }
@@ -79,7 +96,7 @@ describe('PopularCategory', () => {
         expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         expect(screen.getByText('Shop all new arrivals including women and mens clothing')).toBeInTheDocument();
         expect(screen.getByText('Shop Now')).toBeInTheDocument();
-        expect(screen.getByRole('listitem')).toHaveAttribute('href', '/category/newarrivals');
+        expect(screen.getByRole('listitem')).toHaveAttribute('href', `${SITE_PREFIX}/category/newarrivals`);
     });
 
     test('renders category with category prop (programmatic use)', () => {
@@ -168,7 +185,7 @@ describe('PopularCategory', () => {
         renderComponent(<PopularCategory data={mockCategory} />);
 
         const link = screen.getByRole('listitem');
-        expect(link).toHaveAttribute('href', '/category/newarrivals');
+        expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/newarrivals`);
     });
 
     test('handles category with empty id', () => {
@@ -180,7 +197,7 @@ describe('PopularCategory', () => {
         renderComponent(<PopularCategory data={categoryWithEmptyId} />);
 
         const link = screen.getByRole('listitem');
-        expect(link).toHaveAttribute('href', '/category/');
+        expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/`);
     });
 
     test('handles category with empty name', () => {

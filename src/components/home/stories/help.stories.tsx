@@ -19,7 +19,7 @@ import Help from '../help';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
+import { waitForStorybookReady, SITE_PREFIX } from '@storybook/test-utils';
 
 function HelpStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -116,6 +116,6 @@ export const Default: Story = {
         // Check for contact button
         const contactButton = await canvas.findByRole('link', { name: /contact us/i }, { timeout: 5000 });
         await expect(contactButton).toBeInTheDocument();
-        await expect(contactButton).toHaveAttribute('href', '/contact');
+        await expect(contactButton).toHaveAttribute('href', `${SITE_PREFIX}/contact`);
     },
 };

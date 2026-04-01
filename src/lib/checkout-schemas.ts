@@ -16,6 +16,9 @@
 import { z } from 'zod';
 import type { TFunction } from 'i18next';
 
+/** Accept any TFunction for schema factories (namespace branding differs by usage) */
+type SchemaTFunction = TFunction | ((key: string) => string);
+
 /**
  * Checkout validation schemas using factory functions to prevent i18next race conditions.
  *
@@ -30,7 +33,7 @@ import type { TFunction } from 'i18next';
  */
 
 // Contact Info Schema Factory
-export const createContactInfoSchema = (t: TFunction) => {
+export const createContactInfoSchema = (t: SchemaTFunction) => {
     return z.object({
         email: z.string().min(1, t('checkout:contactInfo.emailRequired')).email(t('checkout:contactInfo.emailInvalid')),
         countryCode: z
@@ -41,36 +44,37 @@ export const createContactInfoSchema = (t: TFunction) => {
             }),
         phone: z
             .string()
-            .optional()
-            .refine((val) => !val || val.length >= 10, {
-                message: 'Phone number must be at least 10 digits',
+            .min(1, t('checkout:contactInfo.phoneRequired'))
+            .refine((val) => val.replace(/\D/g, '').length >= 10, {
+                message: String(t('checkout:contactInfo.phoneInvalid')),
             }),
     });
 };
 
 // Shipping Address Schema Factory
-export const createShippingAddressSchema = (t: TFunction) => {
+export const createShippingAddressSchema = (t: SchemaTFunction) => {
     return z.object({
         firstName: z.string().min(1, t('checkout:shippingAddress.firstNameRequired')),
         lastName: z.string().min(1, t('checkout:shippingAddress.lastNameRequired')),
         address1: z.string().min(1, t('checkout:shippingAddress.addressRequired')),
         address2: z.string().optional(),
         city: z.string().min(1, t('checkout:shippingAddress.cityRequired')),
-        stateCode: z.string().optional(), // Optional for international compatibility
-        postalCode: z.string().optional(), // Optional for international compatibility
+        stateCode: z.string().min(1, t('checkout:shippingAddress.stateRequired')),
+        postalCode: z.string().min(1, t('checkout:shippingAddress.postalCodeRequired')),
+        phoneCountryCode: z.string().optional(),
         phone: z.string().optional(),
     });
 };
 
 // Shipping Options Schema Factory
-export const createShippingOptionsSchema = (t: TFunction) => {
+export const createShippingOptionsSchema = (t: SchemaTFunction) => {
     return z.object({
         shippingMethodId: z.string().min(1, t('checkout:shippingOptions.selectRequired')),
     });
 };
 
 // Payment Schema Factory with conditional billing validation
-export const createPaymentSchema = (t: TFunction) => {
+export const createPaymentSchema = (t: SchemaTFunction) => {
     return z
         .object({
             cardNumber: z.string().optional(),
@@ -91,6 +95,8 @@ export const createPaymentSchema = (t: TFunction) => {
             billingPostalCode: z.string().optional(),
             billingPhone: z.string().optional(),
             billingCountryCode: z.string().optional(),
+            // Registered shoppers: save this payment method to profile when place order is clicked
+            savePaymentToProfile: z.boolean().optional(),
         })
         .superRefine((data, ctx) => {
             // If using saved payment method, skip all card validations
@@ -105,7 +111,7 @@ export const createPaymentSchema = (t: TFunction) => {
                 ctx.addIssue({
                     code: 'custom',
                     path: ['cardNumber'],
-                    message: 'Please fill in all payment fields or select a saved payment method',
+                    message: 'Please enter your card number.',
                 });
             }
 
@@ -113,7 +119,7 @@ export const createPaymentSchema = (t: TFunction) => {
                 ctx.addIssue({
                     code: 'custom',
                     path: ['cardholderName'],
-                    message: 'Cardholder name is required',
+                    message: 'Please enter your name as shown on your card.',
                 });
             }
 
@@ -121,7 +127,7 @@ export const createPaymentSchema = (t: TFunction) => {
                 ctx.addIssue({
                     code: 'custom',
                     path: ['expiryDate'],
-                    message: 'Expiry date is required',
+                    message: 'Please enter your expiration date.',
                 });
             }
 
@@ -129,7 +135,7 @@ export const createPaymentSchema = (t: TFunction) => {
                 ctx.addIssue({
                     code: 'custom',
                     path: ['cvv'],
-                    message: 'CVV is required',
+                    message: 'Please enter your security code.',
                 });
             }
 
@@ -226,25 +232,68 @@ export const createPaymentSchema = (t: TFunction) => {
                 });
             }
         })
-        .refine(
-            (data) => {
-                // If billing is NOT same as shipping, require billing address fields
-                if (!data.billingSameAsShipping) {
-                    return (
-                        data.billingFirstName?.trim() &&
-                        data.billingLastName?.trim() &&
-                        data.billingAddress1?.trim() &&
-                        data.billingCity?.trim() &&
-                        data.billingCountryCode?.trim()
-                    );
+        .superRefine((data, ctx) => {
+            // If billing is NOT same as shipping, require billing address fields and add per-field errors with custom messages.
+            // Use fallbacks so Zod never gets a falsy message (which would show "Invalid input") and so we never show the raw key.
+            const msg = (key: string, fallback: string) => {
+                const value = t(key);
+                if (typeof value !== 'string' || !value.trim()) return fallback;
+                const keyWithoutNs = key.includes(':') ? (key.split(':').pop() ?? key) : key;
+                if (value === key || value === keyWithoutNs || value.includes(':')) return fallback;
+                return value;
+            };
+            if (!data.billingSameAsShipping) {
+                if (!data.billingFirstName?.trim()) {
+                    ctx.addIssue({
+                        code: 'custom',
+                        path: ['billingFirstName'],
+                        message: msg('checkout:payment.billingFirstNameRequired', 'Please enter your first name.'),
+                    });
                 }
-                return true;
-            },
-            {
-                message: t('checkout:payment.billingAddressRequired'),
-                path: ['billingFirstName'], // Show error on first name field
+                if (!data.billingLastName?.trim()) {
+                    ctx.addIssue({
+                        code: 'custom',
+                        path: ['billingLastName'],
+                        message: msg('checkout:payment.billingLastNameRequired', 'Please enter your last name.'),
+                    });
+                }
+                if (!data.billingAddress1?.trim()) {
+                    ctx.addIssue({
+                        code: 'custom',
+                        path: ['billingAddress1'],
+                        message: msg('checkout:payment.billingAddress1Required', 'Please enter your address.'),
+                    });
+                }
+                if (!data.billingCity?.trim()) {
+                    ctx.addIssue({
+                        code: 'custom',
+                        path: ['billingCity'],
+                        message: msg('checkout:payment.billingCityRequired', 'Please enter your city.'),
+                    });
+                }
+                if (!data.billingPostalCode?.trim()) {
+                    ctx.addIssue({
+                        code: 'custom',
+                        path: ['billingPostalCode'],
+                        message: msg('checkout:payment.billingPostalCodeRequired', 'Please enter your zip code.'),
+                    });
+                }
+                if (!data.billingStateCode?.trim()) {
+                    ctx.addIssue({
+                        code: 'custom',
+                        path: ['billingStateCode'],
+                        message: msg('checkout:payment.billingStateRequired', 'Please select your state.'),
+                    });
+                }
+                if (!data.billingCountryCode?.trim()) {
+                    ctx.addIssue({
+                        code: 'custom',
+                        path: ['billingCountryCode'],
+                        message: msg('checkout:payment.billingCountryRequired', 'Please select your country.'),
+                    });
+                }
             }
-        );
+        });
 };
 
 // Default values generators
@@ -276,15 +325,16 @@ export const getPaymentDefaultValues = (params: {
         // Saved payment method fields - default to new payment method
         useSavedPaymentMethod: false,
         selectedSavedPaymentMethod: undefined,
-        billingFirstName: shippingAddress?.firstName || '',
-        billingLastName: shippingAddress?.lastName || '',
-        billingAddress1: shippingAddress?.address1 || '',
-        billingAddress2: shippingAddress?.address2 || '',
-        billingCity: shippingAddress?.city || '',
-        billingStateCode: shippingAddress?.stateCode || '',
-        billingPostalCode: shippingAddress?.postalCode || '',
-        billingPhone: shippingAddress?.phone || '',
-        billingCountryCode: shippingAddress?.countryCode || 'US',
+        billingFirstName: '',
+        billingLastName: '',
+        billingAddress1: '',
+        billingAddress2: '',
+        billingCity: '',
+        billingStateCode: '',
+        billingPostalCode: '',
+        billingPhone: '',
+        billingCountryCode: 'US',
+        savePaymentToProfile: false,
     };
 };
 
@@ -308,6 +358,7 @@ export const parseShippingAddressFromFormData = (formData: FormData): ShippingAd
         city: formData.get('city')?.toString() || '',
         stateCode: formData.get('stateCode')?.toString() || '',
         postalCode: formData.get('postalCode')?.toString() || '',
+        phoneCountryCode: formData.get('phoneCountryCode')?.toString() || '',
         phone: formData.get('phone')?.toString() || '',
     };
 };
@@ -337,6 +388,7 @@ export const parsePaymentFromFormData = (formData: FormData): PaymentData => {
         // Saved payment method fields
         useSavedPaymentMethod: formData.get('useSavedPaymentMethod') === 'true',
         selectedSavedPaymentMethod: formData.get('selectedSavedPaymentMethod')?.toString() || undefined,
+        savePaymentToProfile: formData.get('savePaymentToProfile') === 'true',
     };
 };
 

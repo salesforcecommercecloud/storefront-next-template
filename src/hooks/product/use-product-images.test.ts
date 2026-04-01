@@ -23,16 +23,14 @@
 
 import { describe, it, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { createElement, type ComponentType, type ReactNode } from 'react';
+import { createElement, type ReactNode } from 'react';
 import { useProductImages } from './use-product-images';
-import { ConfigProvider, type AppConfig } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
-const ConfigProviderWrapper = ConfigProvider as ComponentType<{ config: AppConfig }>;
-
 const wrapper = ({ children }: { children: ReactNode }) =>
-    createElement(ConfigProviderWrapper, { config: mockConfig }, children);
+    createElement(ConfigProvider, { config: mockConfig }, children);
 
 const createMockProduct = (
     imageGroups?: ShopperProducts.schemas['ImageGroup'][]

@@ -15,23 +15,10 @@
  */
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '..');
-
-// Mock config.server.ts so tests don't depend on real config data.
-// loadConfig() inside the runtime dynamically imports this file.
-vi.mock('../config.server.ts', () => ({
-    default: {
-        app: {
-            url: {
-                prefix: '/',
-                excludeRoutes: ['/resource/**', '/action/**'],
-            },
-        },
-    },
-}));
 
 describe('routes.ts', () => {
     let originalReactRouterAppDirectory: string;
@@ -49,8 +36,15 @@ describe('routes.ts', () => {
         const { default: routes } = await import('./routes');
         const resolvedRoutes = await routes;
 
-        // Find the `_app` layout route (pathless layout) at the top level (no wrapper when prefix is '/')
-        const defaultLayout = resolvedRoutes.find((r: any) => r.id === 'routes/_app');
+        // With multi-site URL prefix configured, routes are wrapped under a multi-site-wrapper
+        const wrapper = resolvedRoutes.find((r: any) => r.id === 'multi-site-wrapper');
+        expect(wrapper).toBeDefined();
+        expect(wrapper?.children).toBeDefined();
+
+        const wrappedRoutes = wrapper?.children ?? [];
+
+        // Find the `_app` layout route (pathless layout) inside the wrapper
+        const defaultLayout = wrappedRoutes.find((r: any) => r.id === 'routes/_app');
         expect(defaultLayout).toBeDefined();
         expect(defaultLayout?.file).toBe('routes/_app.tsx');
         expect(defaultLayout?.children).toBeDefined();
@@ -82,8 +76,8 @@ describe('routes.ts', () => {
             ])
         );
 
-        // Find the _empty layout route (pathless layout) at the top level
-        const emptyLayout = resolvedRoutes.find((r: any) => r.id === 'routes/_empty');
+        // Find the _empty layout route (pathless layout) inside the wrapper
+        const emptyLayout = wrappedRoutes.find((r: any) => r.id === 'routes/_empty');
         expect(emptyLayout).toBeDefined();
         expect(emptyLayout?.file).toBe('routes/_empty.tsx');
         expect(emptyLayout?.children).toBeDefined();
@@ -105,5 +99,9 @@ describe('routes.ts', () => {
                 }),
             ])
         );
+
+        // Verify root index route is duplicated at the top level for homepage access at '/'
+        const rootDuplicate = resolvedRoutes.find((r: any) => r.id === 'routes/_app--root-duplicate');
+        expect(rootDuplicate).toBeDefined();
     });
 });

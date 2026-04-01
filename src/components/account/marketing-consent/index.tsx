@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 /**
- * Marketing consent (subscriptions) – loader and action wiring
- *
- * - GET (subscriptions): loader in routes/_app.account.tsx calls getSubscriptions(context) and passes
- *   subscriptions via Outlet context. Component receives them as a prop; it does not fetch.
- * - POST (update subscription): routes/action.update-marketing-consent.ts; hook use-update-marketing-consent
- *   submits to /action/update-marketing-consent; on success parent revalidates to refresh subscriptions.
+ * Marketing consent: view/edit preferences with Edit → change switches → Save (one batch request).
  */
 import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,14 +24,12 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/toast';
 import { useUpdateMarketingConsent } from '@/hooks/use-update-marketing-consent';
+import { cn } from '@/lib/utils';
 
 type ConsentSubscription = ShopperConsents.schemas['ConsentSubscription'];
-
-/** Channel type from Shopper Consents API. */
 type ConsentChannel = 'email' | 'sms' | 'whatsapp';
 
 export type MarketingConsentSubscriptions = ShopperConsents.schemas['ConsentSubscriptionResponse'] | null;
-
 export type ContactPointValueByChannel = Partial<Record<ConsentChannel, string>>;
 
 export interface MarketingConsentProps {
@@ -45,33 +38,20 @@ export interface MarketingConsentProps {
     onConsentUpdated?: () => void;
 }
 
-function channelLabel(channelId: string): string {
-    return channelId.charAt(0).toUpperCase() + channelId.slice(1).toLowerCase();
-}
+const KEY_SEP = '::';
 
-/** Status for a subscription on a channel: from consentStatus entry for that channel, or defaultStatus. */
-function getStatusForChannel(sub: ConsentSubscription, channelId: string): 'opt_in' | 'opt_out' {
+function getStatus(sub: ConsentSubscription, channelId: string): 'opt_in' | 'opt_out' {
     const entry = sub.consentStatus?.find((e) => e.channel === channelId);
     return entry?.status ?? sub.defaultStatus ?? 'opt_out';
 }
 
-/** User's contact point for a channel (from account). Sent as contactPointValue in the update POST. */
-function getContactPointForChannel(
-    channelId: ConsentChannel,
-    contactPointValueByChannel?: ContactPointValueByChannel | null
-): string | undefined {
-    return contactPointValueByChannel?.[channelId];
+function toKey(subscriptionId: string, channelId: string): string {
+    return `${subscriptionId}${KEY_SEP}${channelId}`;
 }
 
-/** Section grouping subscriptions by channel (channelId is from API sub.channels). */
-type ChannelSection = {
-    channelId: ConsentChannel;
-    channelLabel: string;
-    items: ConsentSubscription[];
-};
+type Section = { channelId: ConsentChannel; channelLabel: string; items: ConsentSubscription[] };
 
-/** Group subscriptions by channel; each subscription appears under every channel in its channels array. Order follows API (first-seen channel order). */
-function groupByChannel(subscriptions: ConsentSubscription[]): ChannelSection[] {
+function groupByChannel(subscriptions: ConsentSubscription[]): Section[] {
     const byChannel = new Map<ConsentChannel, ConsentSubscription[]>();
     for (const sub of subscriptions) {
         for (const channelId of sub.channels ?? []) {
@@ -82,9 +62,123 @@ function groupByChannel(subscriptions: ConsentSubscription[]): ChannelSection[] 
     }
     return Array.from(byChannel, ([channelId, items]) => ({
         channelId,
-        channelLabel: channelLabel(channelId),
+        channelLabel: channelId.charAt(0).toUpperCase() + channelId.slice(1).toLowerCase(),
         items,
     }));
+}
+
+function stateFromSections(sections: Section[]): Record<string, boolean> {
+    const out: Record<string, boolean> = {};
+    for (const section of sections) {
+        for (const sub of section.items) {
+            out[toKey(sub.subscriptionId, section.channelId)] = getStatus(sub, section.channelId) === 'opt_in';
+        }
+    }
+    return out;
+}
+
+/**
+ * Marketing consent state.
+ *
+ * - serverState: from props (subscriptions), read-only.
+ * - When editing: show draft. On Save we set override and clear draft so the next paint shows override (no flicker).
+ * - When not editing: show override ?? serverState. Override is set on Save and cleared when subscriptions change or on error.
+ */
+function useMarketingConsentState(
+    subscriptions: MarketingConsentSubscriptions | null,
+    channelSections: Section[],
+    contactPointValueByChannel: ContactPointValueByChannel | null | undefined,
+    onConsentUpdated?: () => void
+) {
+    const { t } = useTranslation('account');
+    const { addToast } = useToast();
+    const [isEditing, setIsEditing] = useState(false);
+    const [draft, setDraft] = useState<Record<string, boolean>>({});
+    const [override, setOverride] = useState<Record<string, boolean> | null>(null);
+
+    const { updateBatch, isUpdating } = useUpdateMarketingConsent(
+        useCallback(() => {
+            onConsentUpdated?.();
+        }, [onConsentUpdated]),
+        useCallback(
+            (_message: string, data?: { partialSuccess?: boolean }) => {
+                setOverride(null);
+                if (data?.partialSuccess) {
+                    addToast(t('marketingConsent.partialSuccess'), 'info');
+                    setIsEditing(false);
+                    onConsentUpdated?.();
+                } else {
+                    addToast(t('marketingConsent.updateError'), 'error');
+                    setIsEditing(false);
+                }
+            },
+            [addToast, t, onConsentUpdated]
+        )
+    );
+
+    useEffect(() => setOverride(null), [subscriptions]);
+
+    const serverState = useMemo(() => stateFromSections(channelSections), [channelSections]);
+    const displayState = isEditing ? draft : (override ?? serverState);
+
+    const handleEdit = useCallback(() => {
+        setDraft({ ...(override ?? serverState) });
+        setIsEditing(true);
+    }, [override, serverState]);
+
+    const handleCancel = useCallback(() => {
+        setIsEditing(false);
+        setDraft({});
+    }, []);
+
+    const handleSave = useCallback(() => {
+        const contactByChannel = contactPointValueByChannel ?? {};
+        const payloads: Array<{
+            subscriptionId: string;
+            channel: ConsentChannel;
+            contactPointValue: string;
+            status: 'opt_in' | 'opt_out';
+        }> = [];
+        for (const key of Object.keys(draft)) {
+            if (draft[key] === serverState[key]) continue;
+            const [subscriptionId, channelId] = key.split(KEY_SEP) as [string, ConsentChannel];
+            const contactPointValue = contactByChannel[channelId];
+            if (!contactPointValue) continue;
+            payloads.push({
+                subscriptionId,
+                channel: channelId,
+                contactPointValue,
+                status: draft[key] ? 'opt_in' : 'opt_out',
+            });
+        }
+        if (payloads.length > 0) {
+            setOverride({ ...draft });
+            updateBatch(payloads);
+        } else {
+            setOverride(null);
+        }
+        setIsEditing(false);
+        setDraft({});
+    }, [contactPointValueByChannel, draft, serverState, updateBatch]);
+
+    const handleSwitchChange = useCallback(
+        (subscriptionId: string, channelId: ConsentChannel, checked: boolean) => {
+            if (!isEditing) return;
+            setDraft((prev) => ({ ...prev, [toKey(subscriptionId, channelId)]: checked }));
+        },
+        [isEditing]
+    );
+
+    return {
+        isEditing,
+        draft,
+        displayState,
+        isUpdating,
+        handleEdit,
+        handleCancel,
+        handleSave,
+        handleSwitchChange,
+    };
 }
 
 export function MarketingConsent({
@@ -93,133 +187,114 @@ export function MarketingConsent({
     onConsentUpdated,
 }: MarketingConsentProps): ReactElement | null {
     const { t } = useTranslation('account');
-    const { addToast } = useToast();
-
-    const onUpdateSuccess = useCallback(() => {
-        onConsentUpdated?.();
-    }, [onConsentUpdated]);
-
     const subscriptions = subscriptionsProp ?? null;
-
-    /** Optimistic checked state per subscription+channel. Cleared when subscriptions update (revalidation) or on error. */
-    const [optimisticOverrides, setOptimisticOverrides] = useState<Record<string, boolean>>({});
-
-    useEffect(() => {
-        setOptimisticOverrides({});
-    }, [subscriptions]);
-
-    const clearOptimisticOverrides = useCallback(() => {
-        setOptimisticOverrides({});
-    }, []);
-
-    const onUpdateError = useCallback(() => {
-        addToast(t('marketingConsent.updateError'), 'error');
-        clearOptimisticOverrides();
-    }, [addToast, clearOptimisticOverrides, t]);
-
-    const { updateSubscription, isUpdating } = useUpdateMarketingConsent(onUpdateSuccess, onUpdateError);
-
     const channelSections = useMemo(() => groupByChannel(subscriptions?.data ?? []), [subscriptions]);
 
-    const statusToLabel = (status: 'opt_in' | 'opt_out'): string =>
-        status === 'opt_in' ? t('marketingConsent.optedIn') : t('marketingConsent.optedOut');
+    const { isEditing, draft, displayState, isUpdating, handleEdit, handleCancel, handleSave, handleSwitchChange } =
+        useMarketingConsentState(subscriptions, channelSections, contactPointValueByChannel, onConsentUpdated);
 
-    const handleSwitchChange = useCallback(
-        (sub: ConsentSubscription, channelId: ConsentChannel, newChecked: boolean) => {
-            const contactPointValue = getContactPointForChannel(channelId, contactPointValueByChannel);
-            if (!contactPointValue) return;
-            const key = `${sub.subscriptionId}-${channelId}`;
-            setOptimisticOverrides((prev) => ({ ...prev, [key]: newChecked }));
-            updateSubscription({
-                subscriptionId: sub.subscriptionId,
-                channel: channelId,
-                contactPointValue,
-                status: newChecked ? 'opt_in' : 'opt_out',
-            });
-        },
-        [contactPointValueByChannel, updateSubscription]
-    );
+    const hasData = Array.isArray(subscriptions?.data) && (subscriptions?.data?.length ?? 0) > 0;
+    if (!hasData) return null;
 
-    const hasSubscriptionData = Array.isArray(subscriptions?.data) && (subscriptions?.data?.length ?? 0) > 0;
-    if (!hasSubscriptionData) {
-        return null;
-    }
-
-    const renderContent = (): ReactElement => {
-        return (
-            <div className="space-y-4">
-                {channelSections.map((section, sectionIndex) => (
-                    <section
-                        key={section.channelId}
-                        className={sectionIndex > 0 ? 'border-t border-muted-foreground/10 pt-4' : ''}
-                        aria-labelledby={`marketing-consent-channel-${section.channelId}`}>
-                        <h2
-                            id={`marketing-consent-channel-${section.channelId}`}
-                            className="text-sm font-semibold text-foreground mb-2">
-                            {section.channelLabel}
-                        </h2>
-                        <ul className="space-y-2 pl-4" role="list">
-                            {section.items.map((sub) => {
-                                const status = getStatusForChannel(sub, section.channelId);
-                                const serverChecked = status === 'opt_in';
-                                const overrideKey = `${sub.subscriptionId}-${section.channelId}`;
-                                const checked =
-                                    optimisticOverrides[overrideKey] !== undefined
-                                        ? optimisticOverrides[overrideKey]
-                                        : serverChecked;
-                                const title = sub.title ?? sub.subscriptionId;
-                                const contactPointValue = getContactPointForChannel(
-                                    section.channelId,
-                                    contactPointValueByChannel
-                                );
-                                const canUpdate = Boolean(contactPointValue);
-                                return (
-                                    <li
-                                        key={`${section.channelId}-${sub.subscriptionId}`}
-                                        className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between py-1">
-                                        <div className="space-y-1 min-w-0">
-                                            {sub.title != null && sub.title !== '' && (
-                                                <p className="text-sm font-medium text-foreground">{sub.title}</p>
-                                            )}
-                                            {sub.subtitle != null && sub.subtitle !== '' && (
-                                                <p className="text-sm text-muted-foreground">{sub.subtitle}</p>
-                                            )}
-                                        </div>
-                                        <Switch
-                                            checked={checked}
-                                            disabled={!canUpdate || isUpdating}
-                                            aria-label={`${title}: ${
-                                                checked ? statusToLabel('opt_in') : statusToLabel('opt_out')
-                                            }`}
-                                            onCheckedChange={(value) =>
-                                                handleSwitchChange(sub, section.channelId, value === true)
-                                            }
-                                            className="shrink-0 sm:ml-4"
-                                        />
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </section>
-                ))}
-                <p className="text-sm text-muted-foreground pt-4 border-t border-muted-foreground/10">
-                    {t('marketingConsent.disclaimer')}
-                </p>
-            </div>
-        );
-    };
+    const statusLabel = (optIn: boolean) => (optIn ? t('marketingConsent.optedIn') : t('marketingConsent.optedOut'));
 
     return (
         <Card data-section="marketing-consent">
             <CardHeader className="border-b border-muted-foreground/20 pb-4">
                 <CardTitle>{t('marketingConsent.title')}</CardTitle>
                 <CardAction>
-                    <Button variant="outline" size="sm" type="button" aria-label={t('marketingConsent.editA11y')}>
-                        {t('marketingConsent.edit')}
-                    </Button>
+                    {isEditing ? (
+                        <div className="flex flex-wrap items-center gap-2">
+                            <Button
+                                type="button"
+                                variant="default"
+                                size="sm"
+                                onClick={handleSave}
+                                disabled={isUpdating}>
+                                {t('common.save')}
+                            </Button>
+                            <Button type="button" variant="outline" size="sm" onClick={handleCancel}>
+                                {t('common.cancel')}
+                            </Button>
+                        </div>
+                    ) : (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            type="button"
+                            aria-label={t('marketingConsent.editA11y')}
+                            onClick={handleEdit}
+                            disabled={isUpdating}
+                            className="cursor-pointer">
+                            {t('marketingConsent.edit')}
+                        </Button>
+                    )}
                 </CardAction>
             </CardHeader>
-            <CardContent className="pt-6">{renderContent()}</CardContent>
+            <CardContent className="pt-6">
+                <div className="space-y-4">
+                    {channelSections.map((section, idx) => {
+                        const contactPoint = contactPointValueByChannel?.[section.channelId];
+                        const disabled = !isEditing || !contactPoint;
+                        return (
+                            <section
+                                key={section.channelId}
+                                className={idx === 0 ? '' : 'border-t border-muted-foreground/10 pt-4'}
+                                aria-labelledby={`marketing-consent-channel-${section.channelId}`}>
+                                <h2
+                                    id={`marketing-consent-channel-${section.channelId}`}
+                                    className="text-sm font-semibold text-foreground mb-2">
+                                    {section.channelLabel}
+                                </h2>
+                                <ul className="space-y-2 pl-4" role="list">
+                                    {section.items.map((sub) => {
+                                        const key = toKey(sub.subscriptionId, section.channelId);
+                                        const checked = isEditing
+                                            ? (draft[key] ?? displayState[key])
+                                            : displayState[key];
+                                        const title = sub.title ?? sub.subscriptionId;
+                                        return (
+                                            <li
+                                                key={key}
+                                                className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between py-1">
+                                                <div className="space-y-1 min-w-0">
+                                                    {sub.title != null && sub.title !== '' && (
+                                                        <p className="text-sm font-medium text-foreground">
+                                                            {sub.title}
+                                                        </p>
+                                                    )}
+                                                    {sub.subtitle != null && sub.subtitle !== '' && (
+                                                        <p className="text-sm text-muted-foreground">{sub.subtitle}</p>
+                                                    )}
+                                                </div>
+                                                <Switch
+                                                    checked={!!checked}
+                                                    disabled={disabled}
+                                                    aria-label={`${title}: ${statusLabel(!!checked)}`}
+                                                    onCheckedChange={(value) =>
+                                                        handleSwitchChange(
+                                                            sub.subscriptionId,
+                                                            section.channelId,
+                                                            value === true
+                                                        )
+                                                    }
+                                                    className={cn(
+                                                        'shrink-0 sm:ml-4',
+                                                        !isEditing && 'cursor-default disabled:cursor-default'
+                                                    )}
+                                                />
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            </section>
+                        );
+                    })}
+                    <p className="text-sm text-muted-foreground pt-4 border-t border-muted-foreground/10">
+                        {t('marketingConsent.disclaimer')}
+                    </p>
+                </div>
+            </CardContent>
         </Card>
     );
 }

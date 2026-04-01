@@ -20,7 +20,8 @@ import { cn } from '@/lib/utils';
 import { DynamicImage } from '@/components/dynamic-image';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { toImageUrl } from '@/lib/dynamic-image';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { useTranslation } from 'react-i18next';
 
 interface Suggestion {
@@ -40,7 +41,7 @@ interface SuggestionsProps {
 
 const Suggestions: React.FC<SuggestionsProps> = ({ suggestions, searchPhrase, closeAndNavigate, className }) => {
     const analytics = useAnalytics();
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const { t } = useTranslation('common');
     if (!suggestions || suggestions.length === 0) {
         return null;
@@ -63,13 +64,13 @@ const Suggestions: React.FC<SuggestionsProps> = ({ suggestions, searchPhrase, cl
                     <button
                         key={suggestion.link}
                         onMouseDown={() => handleClick(suggestion)}
-                        className="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0">
+                        className="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0">
                         <div className="flex items-center">
                             <div className="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0">
                                 {suggestion.image ? (
                                     <DynamicImage
                                         src={`${toImageUrl({ src: suggestion.image, config })}[?sw={width}]`}
-                                        alt={suggestion.name || t('suggestionImageAlt') || 'Suggestion Image'}
+                                        alt={suggestion.name || t('suggestionImageAlt')}
                                         className="w-full h-full"
                                         imageProps={{
                                             className: 'w-full h-full object-cover rounded-full',
@@ -79,7 +80,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({ suggestions, searchPhrase, cl
                                 ) : null}
                             </div>
                             <div className="text-left">
-                                <span className="text-base font-medium text-foreground">{suggestion.name}</span>
+                                <span className="text-sm font-medium text-header-foreground">{suggestion.name}</span>
                             </div>
                         </div>
                     </button>

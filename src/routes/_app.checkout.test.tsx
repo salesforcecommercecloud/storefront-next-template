@@ -15,6 +15,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { type LoaderFunctionArgs, type ClientLoaderFunctionArgs, MemoryRouter } from 'react-router';
+import { createLoaderArgs } from '@/lib/test-utils';
 import { render, screen } from '@testing-library/react';
 import type React from 'react';
 
@@ -52,6 +53,8 @@ vi.mock('@/providers/basket', () => ({
             {children}
         </div>
     ),
+    useBasketUpdater: () => vi.fn(),
+    useBasketHydrated: () => true,
 }));
 
 vi.mock('@/components/checkout-error-boundary', () => ({
@@ -114,12 +117,8 @@ describe('Checkout Route SSR', () => {
             mockUniversalServerLoader.mockResolvedValue(mockResult);
 
             const mockRequest = new Request('http://localhost/checkout');
-            const mockContext = { set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
+            const mockContext = { set: vi.fn(), get: vi.fn() } as any;
+            const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             const result = await mockLoader(args);
 
@@ -131,12 +130,8 @@ describe('Checkout Route SSR', () => {
             mockUniversalServerLoader.mockRejectedValue(new Error('Server error'));
 
             const mockRequest = new Request('http://localhost/checkout');
-            const mockContext = { set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
+            const mockContext = { set: vi.fn(), get: vi.fn() } as any;
+            const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             try {
                 await mockLoader(args);
@@ -199,12 +194,8 @@ describe('Checkout Route SSR', () => {
             mockUniversalServerLoader.mockResolvedValue(serverResult);
 
             const mockRequest = new Request('http://localhost/checkout');
-            const mockContext = { set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
+            const mockContext = { set: vi.fn(), get: vi.fn() } as any;
+            const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             const result = await mockLoader(args);
 
@@ -248,12 +239,8 @@ describe('Checkout Route SSR', () => {
             mockUniversalServerLoader.mockRejectedValue(new Error('Network failure'));
 
             const mockRequest = new Request('http://localhost/checkout');
-            const mockContext = { set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-            } as any;
+            const mockContext = { set: vi.fn(), get: vi.fn() } as any;
+            const args = createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/checkout' });
 
             try {
                 await mockLoader(args);
@@ -272,12 +259,8 @@ describe('Checkout Route SSR', () => {
             const malformedRequest = new Request('http://localhost/checkout');
             malformedRequest.headers.set('Cookie', 'malformed-cookie-data');
 
-            const mockContext = { set: vi.fn() };
-            const args: LoaderFunctionArgs = {
-                request: malformedRequest,
-                params: {},
-                context: mockContext,
-            } as any;
+            const mockContext = { set: vi.fn(), get: vi.fn() } as any;
+            const args = createLoaderArgs(malformedRequest, mockContext, { unstable_pattern: '/checkout' });
 
             const result = await mockLoader(args);
             expect(result).toEqual(mockResult);
@@ -353,7 +336,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: Promise.resolve(null),
                 shippingMethodsMap: Promise.resolve({}),
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(
@@ -382,7 +365,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: Promise.resolve(mockCustomerProfile),
                 shippingMethodsMap: Promise.resolve({}),
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(
@@ -409,7 +392,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: Promise.resolve(null),
                 shippingMethodsMap: Promise.resolve(mockShippingMethodsMap),
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(
@@ -470,7 +453,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: undefined,
                 shippingMethodsMap: Promise.resolve({}),
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(
@@ -490,7 +473,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: Promise.resolve(null),
                 shippingMethodsMap: undefined,
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(
@@ -510,7 +493,7 @@ describe('Checkout Route Components', () => {
                 customerProfile: undefined,
                 shippingMethodsMap: undefined,
                 productMap: Promise.resolve({}),
-                basket: undefined,
+                basket: null,
             };
 
             render(

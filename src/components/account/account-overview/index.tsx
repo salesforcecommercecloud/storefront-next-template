@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense, useMemo } from 'react';
-import { Link } from 'react-router';
+import { Link } from '@/components/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import ProductRecommendations from '@/components/product-recommendations';
 import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
-import { User, Heart, Receipt, MapPin, ChevronRight } from 'lucide-react';
+import { User, CreditCard, Receipt, MapPin } from 'lucide-react';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
 import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
+import { AppDownloadSection } from '@/components/account/app-download-section';
+import { AccountHelp } from '@/components/account/account-help';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -33,7 +35,6 @@ interface QuickLinkItem {
     path: string;
     icon: React.ElementType;
     label: string;
-    description: string;
 }
 
 /**
@@ -52,12 +53,12 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
     const firstName = customer?.firstName || t('overview.defaultName');
 
     return (
-        <Card>
+        <Card className="py-0">
             <CardContent className="p-6">
-                <h1 className="text-3xl font-bold text-foreground mb-2">
+                <h1 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1">
                     {t('overview.welcomeBack', { name: firstName })}
                 </h1>
-                <p className="text-muted-foreground">{t('overview.welcomeSubtitle')}</p>
+                <p className="text-sm text-muted-foreground">{t('overview.welcomeSubtitle')}</p>
             </CardContent>
         </Card>
     );
@@ -68,10 +69,10 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
  */
 export function WelcomeSectionSkeleton(): ReactElement {
     return (
-        <Card>
+        <Card className="py-0">
             <CardContent className="p-6">
-                <Skeleton className="h-9 w-64 mb-2" />
-                <Skeleton className="h-5 w-96 max-w-full" />
+                <Skeleton className="h-6 w-64 mb-1" />
+                <Skeleton className="h-4 w-96 max-w-full" />
             </CardContent>
         </Card>
     );
@@ -88,48 +89,40 @@ export function QuickLinksSection(): ReactElement {
             path: '/account',
             icon: User,
             label: t('navigation.accountDetails'),
-            description: t('overview.quickLinks.accountDetailsDesc'),
+        },
+        {
+            path: '/account/addresses',
+            icon: MapPin,
+            label: t('navigation.manageAddresses'),
+        },
+        {
+            path: '/account/payment-methods',
+            icon: CreditCard,
+            label: t('navigation.paymentMethods'),
         },
         {
             path: '/account/orders',
             icon: Receipt,
             label: t('navigation.orderHistory'),
-            description: t('overview.quickLinks.orderHistoryDesc'),
-        },
-        {
-            path: '/account/wishlist',
-            icon: Heart,
-            label: t('navigation.wishlist'),
-            description: t('overview.quickLinks.wishlistDesc'),
-        },
-        {
-            path: '/account/addresses',
-            icon: MapPin,
-            label: t('navigation.addresses'),
-            description: t('overview.quickLinks.addressesDesc'),
         },
     ];
 
     return (
-        <Card>
+        <Card className="py-0">
             <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-foreground mb-4">{t('overview.quickLinks.title')}</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <h2 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4">
+                    {t('overview.quickLinks.title')}
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {quickLinks.map((link) => {
                         const Icon = link.icon;
                         return (
                             <Link key={link.path} to={link.path} className="group">
-                                <div className="h-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary">
-                                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                                        <Icon className="h-6 w-6 text-primary" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="font-medium text-foreground group-hover:text-primary transition-colors">
-                                            {link.label}
-                                        </h3>
-                                        <p className="text-sm text-muted-foreground truncate">{link.description}</p>
-                                    </div>
-                                    <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+                                <div className="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary">
+                                    <Icon className="h-4 w-4 text-foreground group-hover:text-primary transition-colors" />
+                                    <h3 className="text-sm font-medium text-foreground text-center leading-5 group-hover:text-primary transition-colors">
+                                        {link.label}
+                                    </h3>
                                 </div>
                             </Link>
                         );
@@ -145,17 +138,16 @@ export function QuickLinksSection(): ReactElement {
  */
 export function QuickLinksSectionSkeleton(): ReactElement {
     return (
-        <Card>
+        <Card className="py-0">
             <CardContent className="p-6">
                 <Skeleton className="h-7 w-32 mb-4" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="h-full flex items-center gap-4 p-4 rounded-xl border">
-                            <Skeleton className="w-12 h-12 rounded-lg" />
-                            <div className="flex-1">
-                                <Skeleton className="h-5 w-24 mb-1" />
-                                <Skeleton className="h-4 w-40" />
-                            </div>
+                        <div
+                            key={i}
+                            className="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border">
+                            <Skeleton className="w-4 h-4" />
+                            <Skeleton className="h-5 w-24" />
                         </div>
                     ))}
                 </div>
@@ -180,10 +172,21 @@ export function CuratedForYouSection(): ReactElement {
     );
 
     return (
-        <Card>
+        <Card className="py-0">
             <CardContent className="p-6">
-                <Suspense fallback={<ProductRecommendationSkeleton title={t('overview.curatedForYou.title')} />}>
-                    <ProductRecommendations recommender={curatedRecommender} />
+                <Suspense
+                    fallback={
+                        <ProductRecommendationSkeleton
+                            title={t('overview.curatedForYou.title')}
+                            className="max-w-none -mx-6 md:py-0"
+                        />
+                    }>
+                    <ProductRecommendations
+                        recommender={curatedRecommender}
+                        titleClassName="text-[length:var(--account-section-header)] font-semibold text-foreground tracking-tight"
+                        subtitle={t('overview.curatedForYou.subtitle')}
+                        className="max-w-none -mx-6 md:py-0"
+                    />
                 </Suspense>
             </CardContent>
         </Card>
@@ -195,9 +198,9 @@ export function CuratedForYouSection(): ReactElement {
  */
 export function CuratedForYouSectionSkeleton(): ReactElement {
     return (
-        <Card>
+        <Card className="py-0">
             <CardContent className="p-6">
-                <ProductRecommendationSkeleton />
+                <ProductRecommendationSkeleton className="max-w-none -mx-6 md:py-0" />
             </CardContent>
         </Card>
     );
@@ -213,11 +216,58 @@ export function CuratedForYouSectionSkeleton(): ReactElement {
  */
 export function AccountOverview({ customer }: AccountOverviewProps): ReactElement {
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             <WelcomeSection customer={customer} />
             <CuratedForYouSection />
+            <AccountHelp />
+            <AppDownloadSection />
             <QuickLinksSection />
         </div>
+    );
+}
+
+/**
+ * Skeleton for the App Download section
+ */
+export function AppDownloadSectionSkeleton(): ReactElement {
+    return (
+        <Card className="py-0">
+            <CardContent className="p-6">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div className="flex-1">
+                        <Skeleton className="h-7 w-48 mb-2" />
+                        <Skeleton className="h-4 w-full max-w-xl mb-6" />
+                        <div className="flex flex-wrap gap-3">
+                            <Skeleton className="h-12 w-32" />
+                            <Skeleton className="h-12 w-36" />
+                        </div>
+                    </div>
+                    <div className="flex flex-col items-center gap-2 lg:flex-shrink-0">
+                        <Skeleton className="w-40 h-40 rounded-lg" />
+                        <Skeleton className="h-4 w-16" />
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+/**
+ * Skeleton for the Account Help section
+ */
+export function AccountHelpSkeleton(): ReactElement {
+    return (
+        <Card className="py-0">
+            <CardContent className="p-6">
+                <Skeleton className="h-7 w-48 mb-2" />
+                <Skeleton className="h-4 w-full max-w-xl mb-4" />
+                <div className="flex flex-wrap gap-3">
+                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-10 w-36" />
+                    <Skeleton className="h-10 w-32" />
+                </div>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -226,9 +276,11 @@ export function AccountOverview({ customer }: AccountOverviewProps): ReactElemen
  */
 export function AccountOverviewSkeleton(): ReactElement {
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             <WelcomeSectionSkeleton />
             <CuratedForYouSectionSkeleton />
+            <AccountHelpSkeleton />
+            <AppDownloadSectionSkeleton />
             <QuickLinksSectionSkeleton />
         </div>
     );

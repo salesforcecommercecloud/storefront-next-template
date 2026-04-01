@@ -17,10 +17,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { OrderListItem, type OrderListItemData } from './index';
 
-const renderWithProviders = (ui: React.ReactElement) => render(ui, { wrapper: CurrencyWrapper });
+const renderWithProviders = (ui: React.ReactElement) => render(ui, { wrapper: AllProvidersWrapper });
 
 // Mock react-router
 vi.mock('react-router', async (importOriginal) => {
@@ -153,16 +153,24 @@ describe('OrderListItem', () => {
 
     describe('status variants', () => {
         it.each([
+            ['created', 'Created'],
+            ['new', 'New'],
             ['completed', 'Completed'],
             ['cancelled', 'Cancelled'],
-            ['new', 'New'],
+            ['replaced', 'Replaced'],
             ['failed', 'Failed'],
-            ['failed_with_reopen', 'Failed With Reopen'],
         ])('renders %s status correctly', (status, expectedLabel) => {
             const order = { ...mockOrder, status, statusLabel: expectedLabel };
             renderWithProviders(<OrderListItem order={order} />);
 
             expect(screen.getByText(expectedLabel)).toBeInTheDocument();
+        });
+
+        it('renders icon for mapped status that has one', () => {
+            const order = { ...mockOrder, status: 'completed', statusLabel: 'Completed' };
+            renderWithProviders(<OrderListItem order={order} />);
+
+            expect(screen.getByTestId('order-status-icon')).toBeInTheDocument();
         });
     });
 
@@ -274,16 +282,18 @@ describe('OrderListItem', () => {
             expect(screen.getByText('Invalid Date')).toBeInTheDocument();
         });
 
-        it('renders fallback status styling for unknown status', () => {
+        it('renders raw status in neutral badge when not in SCAPI enum (prefers statusLabel)', () => {
             const order: OrderListItemData = {
                 ...mockOrder,
-                status: 'unknown_status',
-                statusLabel: 'Unknown',
+                status: 'processing',
+                statusLabel: 'Processing',
             };
 
             renderWithProviders(<OrderListItem order={order} />);
 
-            expect(screen.getByText('Unknown')).toBeInTheDocument();
+            const badge = screen.getByTestId('order-status-badge');
+            expect(badge).toHaveTextContent('Processing');
+            expect(badge.className).toContain('bg-muted');
         });
 
         it('renders without productItems', () => {
@@ -301,7 +311,7 @@ describe('OrderListItem', () => {
             renderWithProviders(<OrderListItem order={mockOrder} />);
 
             const link = screen.getByText('View Order Details');
-            expect(link.closest('a')).toHaveAttribute('href', '/account/orders/ORD-001-2024');
+            expect(link.closest('a')).toHaveAttribute('href', '/global/en-GB/account/orders/ORD-001-2024');
         });
 
         it('uses translated label when statusLabel is not provided', () => {

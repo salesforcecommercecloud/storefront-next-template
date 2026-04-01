@@ -16,7 +16,8 @@
 import type { ReactElement } from 'react';
 import { Form } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { useTranslation } from 'react-i18next';
 
 interface SocialLoginButtonsProps {
@@ -24,7 +25,7 @@ interface SocialLoginButtonsProps {
 }
 
 export function SocialLoginButtons({ redirectPath }: SocialLoginButtonsProps = {}): ReactElement | null {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const { t } = useTranslation('login');
     const socialIDPs: string[] = config.features.socialLogin.providers;
 

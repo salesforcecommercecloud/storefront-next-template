@@ -30,7 +30,8 @@ vi.mock('react-router', () => ({
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => fetcherMock,
     useFetchers: () => [],
-
+    useResolvedPath: (to: string) => ({ pathname: to, search: '', hash: '', state: null, key: 'test' }),
+    useRevalidator: () => ({ revalidate: vi.fn(), state: 'idle' }),
     useNavigate: () => () => {},
     useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
     useNavigation: () => ({
@@ -53,7 +54,8 @@ vi.mock('react-router-dom', async (importOriginal) => {
         ...actual,
         useFetcher: () => fetcherMock,
         useFetchers: () => [],
-
+        useResolvedPath: (to: string) => ({ pathname: to, search: '', hash: '', state: null, key: 'test' }),
+        useRevalidator: () => ({ revalidate: vi.fn(), state: 'idle' }),
         useNavigate: () => () => {},
         useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
         useNavigation: () => ({
@@ -76,27 +78,18 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 vi.mock('@/providers/basket', () => ({
-    useBasket: () => ({
-        basket: null,
-        isLoading: false,
-    }),
+    useBasket: () => undefined,
 }));
+/** Guest checkout: hook returns context.customerProfile directly (see use-customer-profile.ts). */
 vi.mock('@/hooks/checkout/use-customer-profile', () => ({
-    useCustomerProfile: () => ({
-        customerProfile: {
-            email: 'test@example.com',
-            firstName: 'John',
-            lastName: 'Doe',
-        },
-        isLoading: false,
-    }),
+    useCustomerProfile: () => undefined,
 }));
 
 vi.mock('@/hooks/use-checkout', () => ({
     useCheckoutContext: () => ({
         step: 1,
         computedStep: 1,
-        STEPS: { CONTACT_INFO: 1, PICKUP: 1.5, SHIPPING_ADDRESS: 2, SHIPPING_OPTIONS: 3, PAYMENT: 4, REVIEW_ORDER: 5 },
+        STEPS: { CONTACT_INFO: 1, PICKUP: 1.5, SHIPPING_ADDRESS: 2, SHIPPING_OPTIONS: 3, PAYMENT: 4, PLACE_ORDER: 5 },
         goToStep: vi.fn(),
         goToNextStep: vi.fn(),
         exitEditMode: vi.fn(),

@@ -26,6 +26,8 @@ import { getStoreName } from '@/extensions/bopis/lib/store-utils';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 
 interface PickupOrDeliveryProps {
+    /** Optional unique id for radio inputs (prevents duplicate-id bugs when multiple instances on page) */
+    instanceId?: string;
     /** Current selected delivery option. When undefined, no option is pre-selected. */
     value?: DeliveryOption | undefined;
     /** Callback function when delivery option changes */
@@ -62,6 +64,7 @@ interface PickupOrDeliveryProps {
  * ```
  */
 export default function PickupOrDelivery({
+    instanceId,
     value,
     onChange,
     isPickupDisabled = false,
@@ -72,6 +75,8 @@ export default function PickupOrDelivery({
     deliveryDays,
 }: PickupOrDeliveryProps): ReactElement {
     const { t } = useTranslation('extBopis');
+    const deliveryId = instanceId ? `delivery-option-${instanceId}` : 'delivery-option';
+    const pickupId = instanceId ? `pickup-option-${instanceId}` : 'pickup-option';
     const handleValueChange = (newValue: string) => {
         if (onChange && (newValue === DELIVERY_OPTIONS.DELIVERY || newValue === DELIVERY_OPTIONS.PICKUP)) {
             onChange(newValue as DeliveryOption);
@@ -97,7 +102,7 @@ export default function PickupOrDelivery({
                 data-testid="delivery-option-select">
                 {/* Delivery Card */}
                 <Label
-                    htmlFor="delivery-option"
+                    htmlFor={deliveryId}
                     className={cn(
                         'flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer',
                         value === DELIVERY_OPTIONS.DELIVERY
@@ -107,19 +112,17 @@ export default function PickupOrDelivery({
                     )}>
                     <RadioGroupItem
                         value={DELIVERY_OPTIONS.DELIVERY}
-                        id="delivery-option"
+                        id={deliveryId}
                         disabled={isDeliveryDisabled}
                         className="sr-only"
                     />
                     <div className="mt-0.5 shrink-0">
                         <div
                             className={cn(
-                                'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors',
+                                'w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors',
                                 value === DELIVERY_OPTIONS.DELIVERY ? 'border-primary' : 'border-muted-foreground/20'
                             )}>
-                            {value === DELIVERY_OPTIONS.DELIVERY && (
-                                <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-                            )}
+                            {value === DELIVERY_OPTIONS.DELIVERY && <div className="w-2 h-2 rounded-pill bg-primary" />}
                         </div>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -144,7 +147,7 @@ export default function PickupOrDelivery({
 
                 {/* Pickup Card */}
                 <Label
-                    htmlFor="pickup-option"
+                    htmlFor={pickupId}
                     onClick={() => {
                         if (!isPickupDisabled && !pickupStore) {
                             openStoreLocator();
@@ -159,19 +162,17 @@ export default function PickupOrDelivery({
                     )}>
                     <RadioGroupItem
                         value={DELIVERY_OPTIONS.PICKUP}
-                        id="pickup-option"
+                        id={pickupId}
                         disabled={isPickupDisabled}
                         className="sr-only"
                     />
                     <div className="mt-0.5 shrink-0">
                         <div
                             className={cn(
-                                'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors',
+                                'w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors',
                                 value === DELIVERY_OPTIONS.PICKUP ? 'border-primary' : 'border-muted-foreground/20'
                             )}>
-                            {value === DELIVERY_OPTIONS.PICKUP && (
-                                <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-                            )}
+                            {value === DELIVERY_OPTIONS.PICKUP && <div className="w-2 h-2 rounded-pill bg-primary" />}
                         </div>
                     </div>
                     <div className="flex-1 min-w-0">

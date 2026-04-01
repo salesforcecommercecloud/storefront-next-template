@@ -19,12 +19,12 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, useState, useId, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider, useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { CurrencyProvider } from '@/providers/currency';
 import { mockConfig } from '@/test-utils/config';
 import { NativeSelect } from '@/components/ui/native-select';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/config';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -76,7 +76,7 @@ const mockFetcherSubmit = fn();
 function CurrencySwitcherMock({ initialCurrency = 'GBP' }: { initialCurrency?: string }): ReactElement {
     const id = useId();
     const { t } = useTranslation('currencySwitcher');
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     // this will change when multi site support is implemented. Use first site for now
     const currentSite = config.commerce.sites[0];
     const [currentCurrency, setCurrentCurrency] = useState(initialCurrency);

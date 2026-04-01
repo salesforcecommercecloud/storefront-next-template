@@ -19,7 +19,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useRuleBasedBonusProducts } from './use-rule-based-bonus-products';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
 
 const mockLoad = vi.fn();
 const mockFetcher = {
@@ -34,7 +34,7 @@ vi.mock('@/hooks/use-scapi-fetcher', () => ({
     useScapiFetcher: vi.fn(() => mockFetcher),
 }));
 
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: vi.fn(() => ({
         search: {
             products: {

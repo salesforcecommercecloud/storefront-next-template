@@ -16,14 +16,15 @@
 'use client';
 
 import { createContext, useContext, useState, type ComponentPropsWithoutRef, type ReactElement } from 'react';
-import { NavLink } from 'react-router';
+import { NavLink } from '@/components/link';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '@/components/navigation-menu';
 import { Button } from '@/components/ui/button';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toImageUrl } from '@/lib/dynamic-image';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { NavigationMenuLink } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 
@@ -46,17 +47,19 @@ function hasBanner(category?: ShopperProducts.schemas['Category']): category is 
 }
 
 function isVertical(category?: ShopperProducts.schemas['Category']): category is ShopperProducts.schemas['Category'] {
-    return (
-        typeof category?.c_headerMenuOrientation === 'string' &&
-        category?.c_headerMenuOrientation?.toLowerCase() === 'vertical'
-    );
+    // Default to vertical if not set
+    if (!category?.c_headerMenuOrientation) {
+        return true;
+    }
+    // Only horizontal if explicitly set to "horizontal"
+    return category.c_headerMenuOrientation.toLowerCase() !== 'horizontal';
 }
 
 function CategoryBanner({
     category,
     ...props
 }: ComponentPropsWithoutRef<'a'> & { category: ShopperProducts.schemas['Category'] }) {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const imageSrc = toImageUrl({ src: (category?.c_slotBannerImage as string) ?? '', config });
 
     return (
@@ -113,14 +116,13 @@ export function MobileMenuDropdown(): ReactElement | null {
     return (
         <div
             className={cn(
-                'lg:hidden absolute left-0 right-0 top-full bg-background border-b border-border shadow-lg z-40 max-h-[70vh] overflow-y-auto',
+                'lg:hidden absolute left-0 right-0 top-full bg-header-background text-header-foreground border-b border-border shadow-lg z-40 max-h-[70vh] overflow-y-auto',
                 { hidden: !context.isOpen }
             )}
             aria-hidden={!context.isOpen}>
             <nav className="px-4 py-4" aria-label={t('mobileNavigation', 'Mobile navigation menu')}>
                 <ul className="space-y-1">
                     {context.categories.map((category) => {
-                        const colorClass = category.id === 'top-seller' ? '!text-primary' : '';
                         const hasChildren = hasSubcategories(category);
                         const isExpanded = expandedCategories.has(category.id);
 
@@ -131,10 +133,7 @@ export function MobileMenuDropdown(): ReactElement | null {
                                     <NavLink
                                         to={`/category/${category.id}`}
                                         onClick={context.close}
-                                        className={cn(
-                                            'flex-1 py-3 text-base font-medium hover:text-primary',
-                                            colorClass
-                                        )}>
+                                        className="flex-1 py-3 text-base font-medium hover:opacity-70 transition-opacity">
                                         {category.name}
                                     </NavLink>
 
@@ -144,7 +143,7 @@ export function MobileMenuDropdown(): ReactElement | null {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => toggleCategory(category.id)}
-                                            className="ml-2 p-2 h-auto shrink-0"
+                                            className="ml-2 p-2 h-auto shrink-0 hover:bg-transparent hover:opacity-50 transition-opacity"
                                             aria-label={
                                                 isExpanded
                                                     ? t('collapseCategory', `Collapse ${category.name}`)
@@ -168,7 +167,7 @@ export function MobileMenuDropdown(): ReactElement | null {
                                                 <NavLink
                                                     to={`/category/${subcategory.id}`}
                                                     onClick={context.close}
-                                                    className="block py-2 text-sm hover:text-primary">
+                                                    className="block py-2 text-sm hover:opacity-70 transition-opacity">
                                                     {subcategory.name}
                                                 </NavLink>
                                             </li>
@@ -230,7 +229,7 @@ export default function ResponsiveNavigationMenu({
                             variant="ghost"
                             size="icon"
                             onClick={mobileMenuContext.toggle}
-                            className="lg:hidden"
+                            className="lg:hidden hover:bg-transparent hover:opacity-50 transition-opacity"
                             aria-label={mobileMenuOpen ? t('closeMenu', 'Close menu') : t('openMenu', 'Open menu')}
                             aria-expanded={mobileMenuOpen}>
                             {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -240,8 +239,10 @@ export default function ResponsiveNavigationMenu({
                         <div className="hidden lg:flex items-center h-full">
                             <CategoryNavigationMenu
                                 categories={categories}
+                                delayDuration={0}
                                 propsViewport={() => ({
-                                    className: 'rounded-none border-0 border-b border-border shadow-lg',
+                                    className:
+                                        'rounded-none border-0 border-b border-border shadow-lg [&[data-state=open]]:animate-[menuSlideDown_0.15s_ease-in] [&[data-state=closed]]:animate-none will-change-transform',
                                     style: {
                                         position: 'fixed',
                                         top: 'var(--header-height)',
@@ -251,11 +252,12 @@ export default function ResponsiveNavigationMenu({
                                     },
                                 })}
                                 propsContentContainer={() => ({
-                                    className: '!p-0 !left-auto !right-auto !w-full md:!w-full',
+                                    className:
+                                        '!p-0 !left-auto !right-auto !w-full md:!w-full !animate-none !transition-none',
                                 })}
                                 propsContent={({ category }) => ({
                                     className: cn(
-                                        'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8',
+                                        'px-9',
                                         hasBanner(category) &&
                                             (isVertical(category)
                                                 ? 'grid md:grid-cols-[1fr_.3fr] items-start'
@@ -264,10 +266,10 @@ export default function ResponsiveNavigationMenu({
                                 })}
                                 propsList={({ parent, categories: subCategories, level }) => {
                                     if (level === 1) {
-                                        if (hasBanner(parent) && isVertical(parent)) {
+                                        if (isVertical(parent)) {
                                             return {
                                                 style: defaultListStyle,
-                                                className: 'p-0 -mx-2 -mt-2',
+                                                className: 'flex flex-col gap-0 p-0 -mx-2 -mt-2',
                                             };
                                         }
                                         return {
@@ -279,11 +281,8 @@ export default function ResponsiveNavigationMenu({
                                         };
                                     }
                                 }}
-                                propsElement={({ category, level }) => {
-                                    const colorClass =
-                                        level === 0 && category.id === 'top-seller' ? 'text-primary' : '';
-                                    const sizeClass = 'text-sm font-medium';
-                                    return { className: `${colorClass} ${sizeClass}` };
+                                propsElement={() => {
+                                    return { className: 'text-sm font-medium' };
                                 }}
                                 renderSlotListAfter={({ level, parent }) => {
                                     if (level === 1 && hasBanner(parent)) {

@@ -8,7 +8,11 @@ exports[`CollapsibleSection stories snapshot > Default story renders and matches
   <summary
     class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
   >
-    Description:
+    <span
+      class="flex items-center gap-2"
+    >
+      Description:
+    </span>
     <svg
       aria-hidden="true"
       class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
@@ -27,9 +31,13 @@ exports[`CollapsibleSection stories snapshot > Default story renders and matches
       />
     </svg>
   </summary>
-  <p>
-    This is the collapsible body content.
-  </p>
+  <div
+    class="pb-4"
+  >
+    <p>
+      This is the collapsible body content.
+    </p>
+  </div>
 </details>
 `;
 
@@ -41,7 +49,11 @@ exports[`CollapsibleSection stories snapshot > OpenByDefault story renders and m
   <summary
     class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
   >
-    Details:
+    <span
+      class="flex items-center gap-2"
+    >
+      Details:
+    </span>
     <svg
       aria-hidden="true"
       class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
@@ -60,9 +72,13 @@ exports[`CollapsibleSection stories snapshot > OpenByDefault story renders and m
       />
     </svg>
   </summary>
-  <p>
-    This content is visible on load.
-  </p>
+  <div
+    class="pb-4"
+  >
+    <p>
+      This content is visible on load.
+    </p>
+  </div>
 </details>
 `;
 
@@ -73,7 +89,11 @@ exports[`CollapsibleSection stories snapshot > ToggleInteraction story renders a
   <summary
     class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
   >
-    Click to expand:
+    <span
+      class="flex items-center gap-2"
+    >
+      Click to expand:
+    </span>
     <svg
       aria-hidden="true"
       class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
@@ -92,9 +112,9 @@ exports[`CollapsibleSection stories snapshot > ToggleInteraction story renders a
       />
     </svg>
   </summary>
-  <p>
-    Expanded body content.
-  </p>
+  <div
+    class="pb-4"
+  />
 </details>
 `;
 
@@ -105,7 +125,11 @@ exports[`CollapsibleSection stories snapshot > WithCustomClass story renders and
   <summary
     class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
   >
-    Specifications:
+    <span
+      class="flex items-center gap-2"
+    >
+      Specifications:
+    </span>
     <svg
       aria-hidden="true"
       class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
@@ -124,8 +148,8 @@ exports[`CollapsibleSection stories snapshot > WithCustomClass story renders and
       />
     </svg>
   </summary>
-  <p>
-    Custom-styled collapsible content.
-  </p>
+  <div
+    class="pb-4"
+  />
 </details>
 `;

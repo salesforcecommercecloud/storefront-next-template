@@ -18,6 +18,8 @@ import type {
     BuyNowPayLaterMessageData,
     CareInstructionsData,
     EstimatedDeliveryData,
+    FaqQuestionsData,
+    HtmlContent,
     IngredientsData,
     ProductDescriptionData,
     ReturnsAndWarrantyData,
@@ -101,6 +103,11 @@ export interface ProductContentAdapter {
     getTechSpecs?(productId?: string): Promise<TechSpecsData>;
 
     /**
+     * Get FAQ questions for the "Ask assistant" collapsible section on PDP
+     */
+    getFaqQuestions?(productId?: string): Promise<FaqQuestionsData>;
+
+    /**
      * Get lightweight reviews summary for accordion header (count, rating, distribution, AI summary).
      * Use this on mount so the header can show without loading the full review list.
      */
@@ -128,3 +135,18 @@ export interface ProductContentAdapter {
      */
     getShippingEstimates?(productId?: string, zipcode?: string): Promise<ShippingEstimate>;
 }
+
+/**
+ * Union of ProductContentAdapter method names whose return type is Promise<HtmlContent>.
+ * Automatically stays in sync as the adapter interface evolves — no manual string union to maintain.
+ *
+ * Required<> strips the optional ? marker from each property so the extends check matches
+ * the function type rather than `functionType | undefined`.
+ */
+export type HtmlContentAdapterMethod = {
+    [K in keyof ProductContentAdapter]-?: Required<ProductContentAdapter>[K] extends (
+        productId?: string
+    ) => Promise<HtmlContent>
+        ? K
+        : never;
+}[keyof ProductContentAdapter];

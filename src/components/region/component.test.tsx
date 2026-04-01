@@ -19,6 +19,16 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { Component } from './component';
 import type { ComponentType } from './index';
 
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => mockLogger),
+}));
+
 // Mock registry
 vi.mock('@/lib/registry', () => ({
     registry: {
@@ -129,6 +139,7 @@ describe('Component', () => {
                 isFragment: false,
                 isVisible: true,
                 isLocalized: true,
+                contentLinkUuid: undefined,
             });
         });
 
@@ -192,6 +203,7 @@ describe('Component', () => {
                 isFragment: false,
                 isVisible: false,
                 isLocalized: false,
+                contentLinkUuid: undefined,
             });
         });
 
@@ -225,6 +237,7 @@ describe('Component', () => {
                 isFragment: false,
                 isVisible: false,
                 isLocalized: false,
+                contentLinkUuid: undefined,
             });
         });
 
@@ -311,7 +324,6 @@ describe('Component', () => {
 
     describe('Error handling', () => {
         test('renders nothing and logs error when data loading fails', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
             (registry.getFallback as any).mockReturnValue(undefined);
 
             const Dynamic: FC<any> = () => <div data-testid="should-not-render" />;
@@ -330,20 +342,15 @@ describe('Component', () => {
                 expect(screen.queryByTestId('should-not-render')).not.toBeInTheDocument();
             });
 
-            // Verify error was logged with context
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-                '[Page Designer] Failed to load data for component "error-comp" (hero):',
-                testError
-            );
+            expect(mockLogger.error).toHaveBeenCalledWith('Failed to load data for component "error-comp" (hero)', {
+                error: testError,
+            });
 
             // Verify nothing rendered
             expect(container.textContent).toBe('');
-
-            consoleErrorSpy.mockRestore();
         });
 
         test('error fallback receives component context for debugging', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
             (registry.getFallback as any).mockReturnValue(undefined);
             (registry.getComponent as any).mockReturnValue(() => <div data-testid="content" />);
 
@@ -360,13 +367,11 @@ describe('Component', () => {
             render(<Component component={component} regionId="header" />);
 
             await waitFor(() => {
-                expect(consoleErrorSpy).toHaveBeenCalledWith(
-                    '[Page Designer] Failed to load data for component "special-hero" (advanced-hero):',
-                    apiError
+                expect(mockLogger.error).toHaveBeenCalledWith(
+                    'Failed to load data for component "special-hero" (advanced-hero)',
+                    { error: apiError }
                 );
             });
-
-            consoleErrorSpy.mockRestore();
         });
     });
 
@@ -462,6 +467,7 @@ describe('Component', () => {
                 isFragment: false,
                 isVisible: true,
                 isLocalized: true,
+                contentLinkUuid: undefined,
             });
         });
 
@@ -491,7 +497,71 @@ describe('Component', () => {
                 isFragment: false,
                 isVisible: false,
                 isLocalized: false,
+                contentLinkUuid: undefined,
             });
+        });
+
+        test('extracts contentLinkUuid from component', async () => {
+            (registry.getFallback as any).mockReturnValue(undefined);
+
+            let capturedMetadata: any;
+            const Dynamic: FC<any> = (props) => {
+                capturedMetadata = props.designMetadata;
+                return <div data-testid="content-link-test" />;
+            };
+            (registry.getComponent as any).mockReturnValue(Dynamic);
+
+            const component: ComponentType = {
+                id: 'fragment-comp',
+                typeId: 'hero',
+                fragment: true,
+                contentLinkUuid: 'uuid-12345-abcde',
+                designMetadata: {
+                    id: 'fragment-comp',
+                    name: 'Reusable Hero',
+                    isFragment: true,
+                    isVisible: true,
+                    isLocalized: false,
+                },
+                visible: true,
+            };
+
+            mockUseComponentDataById.mockReturnValue(undefined);
+
+            render(<Component component={component} regionId="main" />);
+
+            expect(await screen.findByTestId('content-link-test')).toBeInTheDocument();
+            expect(capturedMetadata).toEqual({
+                id: 'fragment-comp',
+                name: 'Reusable Hero',
+                isFragment: true,
+                isVisible: true,
+                isLocalized: false,
+                contentLinkUuid: 'uuid-12345-abcde',
+            });
+        });
+
+        test('handles missing contentLinkUuid', async () => {
+            (registry.getFallback as any).mockReturnValue(undefined);
+
+            let capturedMetadata: any;
+            const Dynamic: FC<any> = (props) => {
+                capturedMetadata = props.designMetadata;
+                return <div data-testid="no-uuid-test" />;
+            };
+            (registry.getComponent as any).mockReturnValue(Dynamic);
+
+            const component: ComponentType = {
+                id: 'regular-comp',
+                typeId: 'banner',
+            };
+
+            mockUseComponentDataById.mockReturnValue(undefined);
+
+            render(<Component component={component} regionId="main" />);
+
+            expect(await screen.findByTestId('no-uuid-test')).toBeInTheDocument();
+            expect(capturedMetadata.contentLinkUuid).toBeUndefined();
         });
     });
 });

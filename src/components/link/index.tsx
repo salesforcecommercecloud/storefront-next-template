@@ -21,29 +21,26 @@ import {
     type NavLinkProps as RouterNavLinkProps,
 } from 'react-router';
 import { buildUrl, useSite } from '@salesforce/storefront-next-runtime/multi-site';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 
 /**
  * Multi-site-aware <Link>. Drop-in replacement for React Router's <Link>.
  * Automatically prepends URL prefix and appends search params from Url config.
  * When no SiteProvider is mounted, behaves identically to React Router's Link.
- *
- * TODO: Move this component to storefront-next-runtime once useConfig is available
- * in the runtime package. Currently it must live in the template because it depends
- * on useConfig (template-only) to read urlConfig and siteAliasMap.
  */
 export const Link = forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link({ to: _to, ...rest }, ref) {
     const site = useSite();
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
+
     const to =
-        typeof _to === 'string' && site
+        typeof _to === 'string' && _to !== '/' && site
             ? buildUrl({
                   to: _to,
                   urlConfig: config.url,
-                  params: {
-                      siteId: config.siteAliasMap?.[site.id] ?? site.id,
-                      localeId: site.defaultLocale,
-                  },
+                  params: { siteId: siteRef, localeId: localeRef },
               })
             : _to;
     return <RouterLink ref={ref} to={to} {...rest} />;
@@ -55,16 +52,14 @@ export const Link = forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link
  */
 export const NavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps>(function NavLink({ to: _to, ...rest }, ref) {
     const site = useSite();
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const to =
-        typeof _to === 'string' && site
+        typeof _to === 'string' && _to !== '/' && site
             ? buildUrl({
                   to: _to,
                   urlConfig: config.url,
-                  params: {
-                      siteId: config.siteAliasMap?.[site.id] ?? site.id,
-                      localeId: site.defaultLocale,
-                  },
+                  params: { siteId: siteRef, localeId: localeRef },
               })
             : _to;
     return <RouterNavLink ref={ref} to={to} {...rest} />;

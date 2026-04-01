@@ -12,7 +12,7 @@ exports[`SuggestionsSection stories snapshot > CategoriesOnly story renders and 
         class="mb-2"
       >
         <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
         >
           Categories
         </div>
@@ -24,7 +24,7 @@ exports[`SuggestionsSection stories snapshot > CategoriesOnly story renders and 
             class="-mx-4"
           >
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -48,7 +48,7 @@ exports[`SuggestionsSection stories snapshot > CategoriesOnly story renders and 
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Footwear
                   </span>
@@ -56,7 +56,7 @@ exports[`SuggestionsSection stories snapshot > CategoriesOnly story renders and 
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -68,7 +68,7 @@ exports[`SuggestionsSection stories snapshot > CategoriesOnly story renders and 
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Clothing
                   </span>
@@ -89,7 +89,7 @@ exports[`SuggestionsSection stories snapshot > CategoriesOnly story renders and 
           class="mb-2"
         >
           <div
-            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
           >
             Categories
           </div>
@@ -101,7 +101,7 @@ exports[`SuggestionsSection stories snapshot > CategoriesOnly story renders and 
               class="-mx-4"
             >
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -125,7 +125,7 @@ exports[`SuggestionsSection stories snapshot > CategoriesOnly story renders and 
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Footwear
                     </span>
@@ -133,7 +133,7 @@ exports[`SuggestionsSection stories snapshot > CategoriesOnly story renders and 
                 </div>
               </button>
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -145,7 +145,7 @@ exports[`SuggestionsSection stories snapshot > CategoriesOnly story renders and 
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Clothing
                     </span>
@@ -179,7 +179,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
         class="mb-2"
       >
         <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
         >
           Categories
         </div>
@@ -191,7 +191,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
             class="-mx-4"
           >
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -215,7 +215,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Footwear
                   </span>
@@ -223,7 +223,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -235,7 +235,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Clothing
                   </span>
@@ -249,7 +249,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
         class="mb-2"
       >
         <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
         >
           Products
         </div>
@@ -261,7 +261,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
             class="-mx-4"
           >
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -285,7 +285,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Running Shoes
                   </span>
@@ -293,7 +293,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -317,7 +317,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Hiking Boots
                   </span>
@@ -325,7 +325,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -349,7 +349,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Casual Sneakers
                   </span>
@@ -363,7 +363,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
         class="mb-2"
       >
         <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
         >
           Popular Searches
         </div>
@@ -375,7 +375,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
             class="-mx-4"
           >
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -387,7 +387,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Shoes
                   </span>
@@ -395,7 +395,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -407,7 +407,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Boots
                   </span>
@@ -428,7 +428,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
           class="mb-2"
         >
           <div
-            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
           >
             Categories
           </div>
@@ -440,7 +440,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
               class="-mx-4"
             >
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -464,7 +464,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Footwear
                     </span>
@@ -472,7 +472,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                 </div>
               </button>
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -484,7 +484,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Clothing
                     </span>
@@ -498,7 +498,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
           class="mb-2"
         >
           <div
-            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
           >
             Popular Searches
           </div>
@@ -510,7 +510,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
               class="-mx-4"
             >
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -522,7 +522,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Shoes
                     </span>
@@ -530,7 +530,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                 </div>
               </button>
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -542,7 +542,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Boots
                     </span>
@@ -591,15 +591,14 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                   </div>
                 </div>
                 <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
                 >
                   Running Shoes
                 </p>
                 <p
-                  class="text-sm font-semibold text-foreground"
+                  class="text-sm font-medium text-header-foreground"
                 >
-                  £
-                  99.99
+                  £99.99
                 </p>
               </div>
             </a>
@@ -631,15 +630,14 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                   </div>
                 </div>
                 <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
                 >
                   Hiking Boots
                 </p>
                 <p
-                  class="text-sm font-semibold text-foreground"
+                  class="text-sm font-medium text-header-foreground"
                 >
-                  £
-                  149.99
+                  £149.99
                 </p>
               </div>
             </a>
@@ -671,15 +669,14 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
                   </div>
                 </div>
                 <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
                 >
                   Casual Sneakers
                 </p>
                 <p
-                  class="text-sm font-semibold text-foreground"
+                  class="text-sm font-medium text-header-foreground"
                 >
-                  £
-                  79.99
+                  £79.99
                 </p>
               </div>
             </a>
@@ -693,7 +690,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
           class="text-center w-full"
         >
           <a
-            class="text-foreground hover:text-foreground/80 font-medium text-base"
+            class="text-header-foreground hover:text-header-foreground/80 font-medium text-sm"
             href="/search?q=shoes"
           >
             View All
@@ -717,7 +714,7 @@ exports[`SuggestionsSection stories snapshot > PopularSearchesOnly story renders
         class="mb-2"
       >
         <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
         >
           Popular Searches
         </div>
@@ -729,7 +726,7 @@ exports[`SuggestionsSection stories snapshot > PopularSearchesOnly story renders
             class="-mx-4"
           >
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -741,7 +738,7 @@ exports[`SuggestionsSection stories snapshot > PopularSearchesOnly story renders
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Shoes
                   </span>
@@ -749,7 +746,7 @@ exports[`SuggestionsSection stories snapshot > PopularSearchesOnly story renders
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -761,7 +758,7 @@ exports[`SuggestionsSection stories snapshot > PopularSearchesOnly story renders
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Boots
                   </span>
@@ -782,7 +779,7 @@ exports[`SuggestionsSection stories snapshot > PopularSearchesOnly story renders
           class="mb-2"
         >
           <div
-            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
           >
             Popular Searches
           </div>
@@ -794,7 +791,7 @@ exports[`SuggestionsSection stories snapshot > PopularSearchesOnly story renders
               class="-mx-4"
             >
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -806,7 +803,7 @@ exports[`SuggestionsSection stories snapshot > PopularSearchesOnly story renders
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Shoes
                     </span>
@@ -814,7 +811,7 @@ exports[`SuggestionsSection stories snapshot > PopularSearchesOnly story renders
                 </div>
               </button>
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -826,7 +823,7 @@ exports[`SuggestionsSection stories snapshot > PopularSearchesOnly story renders
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Boots
                     </span>
@@ -860,7 +857,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
         class="mb-2"
       >
         <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
         >
           Products
         </div>
@@ -872,7 +869,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
             class="-mx-4"
           >
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -896,7 +893,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Running Shoes
                   </span>
@@ -904,7 +901,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -928,7 +925,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Hiking Boots
                   </span>
@@ -936,7 +933,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -960,7 +957,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Casual Sneakers
                   </span>
@@ -1015,15 +1012,14 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
                   </div>
                 </div>
                 <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
                 >
                   Running Shoes
                 </p>
                 <p
-                  class="text-sm font-semibold text-foreground"
+                  class="text-sm font-medium text-header-foreground"
                 >
-                  £
-                  99.99
+                  £99.99
                 </p>
               </div>
             </a>
@@ -1055,15 +1051,14 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
                   </div>
                 </div>
                 <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
                 >
                   Hiking Boots
                 </p>
                 <p
-                  class="text-sm font-semibold text-foreground"
+                  class="text-sm font-medium text-header-foreground"
                 >
-                  £
-                  149.99
+                  £149.99
                 </p>
               </div>
             </a>
@@ -1095,15 +1090,14 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
                   </div>
                 </div>
                 <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
                 >
                   Casual Sneakers
                 </p>
                 <p
-                  class="text-sm font-semibold text-foreground"
+                  class="text-sm font-medium text-header-foreground"
                 >
-                  £
-                  79.99
+                  £79.99
                 </p>
               </div>
             </a>
@@ -1117,7 +1111,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
           class="text-center w-full"
         >
           <a
-            class="text-foreground hover:text-foreground/80 font-medium text-base"
+            class="text-header-foreground hover:text-header-foreground/80 font-medium text-sm"
             href="/search?q=shoes"
           >
             View All
@@ -1141,12 +1135,12 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
         class="mb-2"
       >
         <p
-          class="text-base text-foreground pl-12"
+          class="text-base text-header-foreground pl-12"
         >
           Did you mean
            
           <a
-            class="text-foreground hover:text-foreground/80 font-medium"
+            class="text-header-foreground hover:text-header-foreground/80 font-medium"
             href="/search?q=shoes"
           >
             shoes
@@ -1158,7 +1152,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
         class="mb-2"
       >
         <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
         >
           Categories
         </div>
@@ -1170,7 +1164,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
             class="-mx-4"
           >
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -1194,7 +1188,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Footwear
                   </span>
@@ -1202,7 +1196,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -1214,7 +1208,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Clothing
                   </span>
@@ -1228,7 +1222,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
         class="mb-2"
       >
         <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
         >
           Products
         </div>
@@ -1240,7 +1234,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
             class="-mx-4"
           >
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -1264,7 +1258,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Running Shoes
                   </span>
@@ -1272,7 +1266,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -1296,7 +1290,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Hiking Boots
                   </span>
@@ -1304,7 +1298,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -1328,7 +1322,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Casual Sneakers
                   </span>
@@ -1342,7 +1336,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
         class="mb-2"
       >
         <div
-          class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+          class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
         >
           Popular Searches
         </div>
@@ -1354,7 +1348,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
             class="-mx-4"
           >
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -1366,7 +1360,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Shoes
                   </span>
@@ -1374,7 +1368,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
               </div>
             </button>
             <button
-              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+              class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
             >
               <div
                 class="flex items-center"
@@ -1386,7 +1380,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                   class="text-left"
                 >
                   <span
-                    class="text-base font-medium text-foreground"
+                    class="text-sm font-medium text-header-foreground"
                   >
                     Boots
                   </span>
@@ -1407,12 +1401,12 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
           class="mb-2"
         >
           <p
-            class="text-base text-foreground pl-12"
+            class="text-base text-header-foreground pl-12"
           >
             Did you mean
              
             <a
-              class="text-foreground hover:text-foreground/80 font-medium"
+              class="text-header-foreground hover:text-header-foreground/80 font-medium"
               href="/search?q=shoes"
             >
               shoes
@@ -1424,7 +1418,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
           class="mb-2"
         >
           <div
-            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
           >
             Categories
           </div>
@@ -1436,7 +1430,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
               class="-mx-4"
             >
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -1460,7 +1454,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Footwear
                     </span>
@@ -1468,7 +1462,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                 </div>
               </button>
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -1480,7 +1474,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Clothing
                     </span>
@@ -1494,7 +1488,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
           class="mb-2"
         >
           <div
-            class="text-sm text-muted-foreground font-light mb-1 pl-12 "
+            class="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12"
           >
             Popular Searches
           </div>
@@ -1506,7 +1500,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
               class="-mx-4"
             >
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -1518,7 +1512,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Shoes
                     </span>
@@ -1526,7 +1520,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                 </div>
               </button>
               <button
-                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-base mt-0"
+                class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
               >
                 <div
                   class="flex items-center"
@@ -1538,7 +1532,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                     class="text-left"
                   >
                     <span
-                      class="text-base font-medium text-foreground"
+                      class="text-sm font-medium text-header-foreground"
                     >
                       Boots
                     </span>
@@ -1587,15 +1581,14 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                   </div>
                 </div>
                 <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
                 >
                   Running Shoes
                 </p>
                 <p
-                  class="text-sm font-semibold text-foreground"
+                  class="text-sm font-medium text-header-foreground"
                 >
-                  £
-                  99.99
+                  £99.99
                 </p>
               </div>
             </a>
@@ -1627,15 +1620,14 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                   </div>
                 </div>
                 <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
                 >
                   Hiking Boots
                 </p>
                 <p
-                  class="text-sm font-semibold text-foreground"
+                  class="text-sm font-medium text-header-foreground"
                 >
-                  £
-                  149.99
+                  £149.99
                 </p>
               </div>
             </a>
@@ -1667,15 +1659,14 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
                   </div>
                 </div>
                 <p
-                  class="text-sm font-medium text-foreground mb-1 line-clamp-2"
+                  class="text-sm font-medium text-header-foreground mb-1 line-clamp-2"
                 >
                   Casual Sneakers
                 </p>
                 <p
-                  class="text-sm font-semibold text-foreground"
+                  class="text-sm font-medium text-header-foreground"
                 >
-                  £
-                  79.99
+                  £79.99
                 </p>
               </div>
             </a>
@@ -1689,7 +1680,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
           class="text-center w-full"
         >
           <a
-            class="text-foreground hover:text-foreground/80 font-medium text-base"
+            class="text-header-foreground hover:text-header-foreground/80 font-medium text-sm"
             href="/search?q=shoes"
           >
             View All

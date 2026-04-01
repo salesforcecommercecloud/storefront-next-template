@@ -32,72 +32,82 @@ describe('StarIcon', () => {
             expect(svg).toHaveAttribute('viewBox', '0 0 20 20');
         });
 
-        test('renders with fill currentColor', () => {
+        test('renders a path with a stroke', () => {
             const { container } = render(<StarIcon opacity={1} filled={true} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveAttribute('fill', 'currentColor');
+            const path = container.querySelector('path');
+            expect(path).toBeInTheDocument();
+            expect(path).toHaveAttribute('stroke');
+            expect(path).toHaveAttribute('stroke-width', '1');
         });
     });
 
-    describe('filled state', () => {
-        test('applies yellow color when filled is true', () => {
+    describe('fully filled state', () => {
+        test('uses rating color for fill and stroke', () => {
             const { container } = render(<StarIcon opacity={1} filled={true} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-rating');
+            const path = container.querySelector('path');
+            expect(path).toHaveAttribute('fill', 'var(--color-rating)');
+            expect(path).toHaveAttribute('stroke', 'var(--color-rating)');
         });
 
-        test('applies muted color when filled is false', () => {
-            const { container } = render(<StarIcon opacity={1} filled={false} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-muted-foreground/30');
-        });
-
-        test('does not have muted color when filled is true', () => {
+        test('does not render a gradient', () => {
             const { container } = render(<StarIcon opacity={1} filled={true} />);
-            const svg = container.querySelector('svg');
-            expect(svg).not.toHaveClass('text-muted-foreground/30');
-        });
-
-        test('does not have yellow color when filled is false', () => {
-            const { container } = render(<StarIcon opacity={1} filled={false} />);
-            const svg = container.querySelector('svg');
-            expect(svg).not.toHaveClass('text-rating');
+            expect(container.querySelector('linearGradient')).not.toBeInTheDocument();
         });
     });
 
-    describe('opacity prop', () => {
-        test('applies full opacity when opacity is 1', () => {
-            const { container } = render(<StarIcon opacity={1} filled={true} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveStyle({ opacity: '1' });
+    describe('unfilled state', () => {
+        test('uses white fill and border-subtle stroke', () => {
+            const { container } = render(<StarIcon opacity={1} filled={false} />);
+            const path = container.querySelector('path');
+            expect(path).toHaveAttribute('fill', 'white');
+            expect(path).toHaveAttribute('stroke', 'var(--color-border-subtle)');
         });
 
-        test('applies zero opacity when opacity is 0', () => {
-            const { container } = render(<StarIcon opacity={0} filled={true} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveStyle({ opacity: '0' });
+        test('does not render a gradient', () => {
+            const { container } = render(<StarIcon opacity={0} filled={false} />);
+            expect(container.querySelector('linearGradient')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('partially filled state', () => {
+        test('renders a linearGradient for partial fill', () => {
+            const { container } = render(<StarIcon opacity={0.6} filled={true} />);
+            const gradient = container.querySelector('linearGradient');
+            expect(gradient).toBeInTheDocument();
         });
 
-        test('applies partial opacity when opacity is 0.5', () => {
+        test('sets gradient stops at the correct percentage', () => {
+            const { container } = render(<StarIcon opacity={0.7} filled={true} />);
+            const stops = container.querySelectorAll('stop');
+            expect(stops).toHaveLength(2);
+            expect(stops[0]).toHaveAttribute('offset', '70%');
+            expect(stops[1]).toHaveAttribute('offset', '70%');
+        });
+
+        test('first gradient stop is rating color and second is white', () => {
             const { container } = render(<StarIcon opacity={0.5} filled={true} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveStyle({ opacity: '0.5' });
+            const stops = container.querySelectorAll('stop');
+            expect(stops[0]).toHaveAttribute('stop-color', 'var(--color-rating)');
+            expect(stops[1]).toHaveAttribute('stop-color', 'white');
         });
 
-        test('applies decimal opacity correctly', () => {
-            const { container } = render(<StarIcon opacity={0.75} filled={true} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveStyle({ opacity: '0.75' });
+        test('path fill references the gradient', () => {
+            const { container } = render(<StarIcon opacity={0.5} filled={true} />);
+            const path = container.querySelector('path');
+            const gradient = container.querySelector('linearGradient');
+            expect(path?.getAttribute('fill')).toBe(`url(#${gradient?.id})`);
         });
 
-        test('works with various opacity values', () => {
-            const opacities = [0, 0.2, 0.4, 0.6, 0.8, 1];
+        test('uses border-subtle stroke for partial fill', () => {
+            const { container } = render(<StarIcon opacity={0.5} filled={true} />);
+            const path = container.querySelector('path');
+            expect(path).toHaveAttribute('stroke', 'var(--color-border-subtle)');
+        });
 
-            opacities.forEach((opacity) => {
-                const { container } = render(<StarIcon opacity={opacity} filled={true} />);
-                const svg = container.querySelector('svg');
-                expect(svg).toHaveStyle({ opacity: opacity.toString() });
-            });
+        test('rounds fill percentage to nearest integer', () => {
+            const { container } = render(<StarIcon opacity={0.33} filled={true} />);
+            const stops = container.querySelectorAll('stop');
+            expect(stops[0]).toHaveAttribute('offset', '33%');
         });
     });
 
@@ -108,24 +118,16 @@ describe('StarIcon', () => {
             expect(svg).toHaveClass('custom-class');
         });
 
-        test('preserves base classes with custom className', () => {
+        test('preserves shrink-0 base class with custom className', () => {
             const { container } = render(<StarIcon opacity={1} filled={true} className="w-8 h-8" />);
             const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-rating', 'w-8', 'h-8');
-        });
-
-        test('can override color with custom className', () => {
-            // eslint-disable-next-line custom/color-linter
-            const { container } = render(<StarIcon opacity={1} filled={true} className="text-red-500" />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-red-500');
+            expect(svg).toHaveClass('shrink-0', 'w-8', 'h-8');
         });
 
         test('applies multiple custom classes', () => {
-            // eslint-disable-next-line custom/color-linter
-            const { container } = render(<StarIcon opacity={1} filled={true} className="w-6 h-6 text-blue-400" />);
+            const { container } = render(<StarIcon opacity={1} filled={true} className="w-6 h-6" />);
             const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('w-6', 'h-6', 'text-blue-400');
+            expect(svg).toHaveClass('w-6', 'h-6');
         });
     });
 
@@ -158,33 +160,20 @@ describe('StarIcon', () => {
         });
     });
 
-    describe('combined states', () => {
-        test('renders filled star with partial opacity', () => {
-            const { container } = render(<StarIcon opacity={0.6} filled={true} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-rating');
-            expect(svg).toHaveStyle({ opacity: '0.6' });
+    describe('edge cases', () => {
+        test('opacity of 0 with filled=true renders as unfilled visually (0% gradient)', () => {
+            const { container } = render(<StarIcon opacity={0} filled={true} />);
+            const path = container.querySelector('path');
+            // opacity=0 + filled=true → fillValue clamped to 0, not partial, not fully filled
+            // Falls to the else branch → white fill
+            expect(path).toHaveAttribute('fill', 'white');
         });
 
-        test('renders unfilled star with partial opacity', () => {
-            const { container } = render(<StarIcon opacity={0.3} filled={false} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-muted-foreground/30');
-            expect(svg).toHaveStyle({ opacity: '0.3' });
-        });
-
-        test('renders filled star with custom size', () => {
-            const { container } = render(<StarIcon opacity={1} filled={true} className="w-12 h-12" />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-rating', 'w-12', 'h-12');
-            expect(svg).toHaveStyle({ opacity: '1' });
-        });
-
-        test('renders unfilled star with zero opacity', () => {
-            const { container } = render(<StarIcon opacity={0} filled={false} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toHaveClass('text-muted-foreground/30');
-            expect(svg).toHaveStyle({ opacity: '0' });
+        test('opacity of exactly 1 with filled=true is fully filled (no gradient)', () => {
+            const { container } = render(<StarIcon opacity={1} filled={true} />);
+            expect(container.querySelector('linearGradient')).not.toBeInTheDocument();
+            const path = container.querySelector('path');
+            expect(path).toHaveAttribute('fill', 'var(--color-rating)');
         });
     });
 });

@@ -17,7 +17,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { CurrencyWrapper } from '@/test-utils/context-provider';
 

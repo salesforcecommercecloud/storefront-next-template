@@ -25,6 +25,7 @@ const mockOpen = vi.fn();
 const mockStoreLocator = {
     selectedStoreInfo: null as { inventoryId: string; name: string } | null,
     open: mockOpen,
+    isOpen: false,
 };
 
 vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
@@ -37,12 +38,15 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => <MemoryRout
 describe('RefineInventory', () => {
     const mockToggleFilter = vi.fn();
     const mockIsFilterSelected = vi.fn();
+    const mockHasActiveFilter = vi.fn();
 
     beforeEach(() => {
         mockToggleFilter.mockClear();
         mockIsFilterSelected.mockClear();
+        mockHasActiveFilter.mockClear();
         mockOpen.mockClear();
         mockStoreLocator.selectedStoreInfo = null;
+        mockHasActiveFilter.mockImplementation(() => false);
     });
 
     test('renders the component with heading and checkbox', () => {
@@ -50,7 +54,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -64,7 +72,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -76,7 +88,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -86,6 +102,7 @@ describe('RefineInventory', () => {
 
     test('checkbox is checked when filter is selected', () => {
         mockIsFilterSelected.mockReturnValue(true);
+        mockHasActiveFilter.mockImplementation((attributeId) => attributeId === 'ilids');
         mockStoreLocator.selectedStoreInfo = {
             inventoryId: 'inventory_m_store_store1',
             name: 'Downtown Store',
@@ -93,7 +110,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -110,7 +131,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -127,7 +152,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -144,7 +173,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -163,7 +196,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -178,7 +215,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -196,7 +237,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -215,7 +260,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -233,7 +282,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 
@@ -252,7 +305,11 @@ describe('RefineInventory', () => {
 
         render(
             <TestWrapper>
-                <RefineInventory isFilterSelected={mockIsFilterSelected} toggleFilter={mockToggleFilter} />
+                <RefineInventory
+                    isFilterSelected={mockIsFilterSelected}
+                    hasActiveFilter={mockHasActiveFilter}
+                    toggleFilter={mockToggleFilter}
+                />
             </TestWrapper>
         );
 

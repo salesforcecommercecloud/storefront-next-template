@@ -112,11 +112,11 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
 
         // Verify main container exists
-        const container = canvasElement.querySelector('.space-y-6');
+        const container = canvasElement.querySelector('.space-y-5');
         await expect(container).toBeInTheDocument();
 
         // Verify page header skeleton exists
-        const headerSkeleton = canvasElement.querySelector('.h-8.w-40');
+        const headerSkeleton = canvasElement.querySelector('.h-6.w-40');
         await expect(headerSkeleton).toBeInTheDocument();
 
         // Verify profile card exists

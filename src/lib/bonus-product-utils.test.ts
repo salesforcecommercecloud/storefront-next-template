@@ -73,6 +73,7 @@ describe('getPromotionCalloutTextFromProduct', () => {
                 {
                     promotionId: 'promo-1',
                     calloutMsg: 'Buy one, get 2 free ties',
+                    promotionalPrice: 0,
                 },
             ],
         });
@@ -86,6 +87,7 @@ describe('getPromotionCalloutTextFromProduct', () => {
                 {
                     promotionId: 'promo-1',
                     calloutMsg: '<strong>Buy one</strong>, get <em>2 free</em> ties',
+                    promotionalPrice: 0,
                 },
             ],
         });
@@ -122,6 +124,7 @@ describe('getPromotionCalloutTextFromProduct', () => {
                 {
                     promotionId: 'promo-1',
                     calloutMsg: 'Some promotion',
+                    promotionalPrice: 0,
                 },
             ],
         });
@@ -134,6 +137,8 @@ describe('getPromotionCalloutTextFromProduct', () => {
             productPromotions: [
                 {
                     promotionId: 'promo-1',
+                    calloutMsg: '',
+                    promotionalPrice: 0,
                 },
             ],
         });
@@ -397,6 +402,7 @@ describe('getAttachedBonusPromotions', () => {
                     {
                         promotionId: 'promo-1',
                         calloutMsg: 'Buy one suit, get 2 free ties',
+                        promotionalPrice: 0,
                     },
                 ],
             }),
@@ -448,10 +454,13 @@ describe('getAttachedBonusPromotions', () => {
                 productPromotions: [
                     {
                         promotionId: 'discount-20',
+                        calloutMsg: '',
+                        promotionalPrice: 0,
                     },
                     {
                         promotionId: 'promo-1',
                         calloutMsg: 'Buy one suit, get 2 free ties',
+                        promotionalPrice: 0,
                     },
                 ],
             }),
@@ -500,6 +509,7 @@ describe('getAttachedBonusPromotions', () => {
                     {
                         promotionId: 'promo-1',
                         calloutMsg: 'Buy one suit, get 2 free ties',
+                        promotionalPrice: 0,
                     },
                 ],
             }),
@@ -541,6 +551,7 @@ describe('getAttachedBonusPromotions', () => {
                     {
                         promotionId: 'promo-1',
                         calloutMsg: 'Buy one suit, get 2 free ties',
+                        promotionalPrice: 0,
                     },
                 ],
             }),
@@ -582,10 +593,12 @@ describe('getAttachedBonusPromotions', () => {
                     {
                         promotionId: 'promo-1',
                         calloutMsg: 'Get 2 free ties',
+                        promotionalPrice: 0,
                     },
                     {
                         promotionId: 'promo-2',
                         calloutMsg: 'Get 1 free belt',
+                        promotionalPrice: 0,
                     },
                 ],
             }),
@@ -672,6 +685,7 @@ describe('getAttachedBonusPromotions', () => {
                     {
                         promotionId: 'promo-1',
                         calloutMsg: '<strong>Buy one</strong> suit, get <em>2 free</em> ties',
+                        promotionalPrice: 0,
                     },
                 ],
             }),

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { Link } from 'react-router';
+import { Link } from '@/components/link';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
 import {
@@ -57,13 +57,18 @@ export function OrderItemsList({ items, productsById }: OrderItemsListProps): Re
         <ul className="space-y-4">
             {items.map((item, index) => {
                 const productData = item.productId ? productsById[item.productId] : undefined;
-                const productKey = item.itemId ?? `${item.productId}-${index}`;
+                const productKey = item.itemId ? `${item.itemId}-${index}` : `${item.productId ?? 'item'}-${index}`;
                 const productName = item.productName;
                 const enrichedItem: EnrichedProductItem = { ...productData, ...item } as EnrichedProductItem;
                 return (
                     <li key={productKey} data-testid="order-item">
-                        <div className="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 sm:flex-row sm:items-center">
-                            <ProductItemVariantImage productItem={enrichedItem} className="h-24 w-24 rounded-none" />
+                        <div className="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center">
+                            <Link to={`/product/${item.productId}`} className="flex-shrink-0 block">
+                                <ProductItemVariantImage
+                                    productItem={enrichedItem}
+                                    className="h-24 w-24 rounded-none"
+                                />
+                            </Link>
                             <div className="min-w-0 flex-1 space-y-1">
                                 <ProductItemVariantName productItem={enrichedItem} />
                                 <ProductItemVariantAttributes productItem={enrichedItem} />

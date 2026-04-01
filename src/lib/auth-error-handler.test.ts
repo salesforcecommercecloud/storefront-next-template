@@ -16,31 +16,27 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { ERROR_MESSAGE_KEYS, extractErrorMessage, getPasswordlessErrorMessageKey } from './auth-error-handler';
+import {
+    ERROR_MESSAGE_KEYS,
+    extractErrorMessage,
+    getPasswordlessErrorMessageKey,
+    getPasswordResetErrorMessageKey,
+} from './auth-error-handler';
 
 describe('getPasswordlessErrorMessageKey', () => {
-    it('returns FEATURE_UNAVAILABLE for known passwordless feature unavailable messages', () => {
-        const messages = [
-            'No callback_uri is registered for this client',
-            "Callback_uri doesn't match the registered value",
-            'Monthly quota exceeded for passwordless login',
-            'Passwordless permissions error: feature disabled',
-            'Client secret is not provided for passwordless login',
-        ];
-
-        for (const message of messages) {
-            expect(getPasswordlessErrorMessageKey(message)).toBe(ERROR_MESSAGE_KEYS.FEATURE_UNAVAILABLE);
-        }
+    it.each([
+        'No callback_uri is registered for this client',
+        "Callback_uri doesn't match the registered value",
+        'Monthly quota exceeded for passwordless login',
+        'Passwordless permissions error: feature disabled',
+        'Client secret is not provided for passwordless login',
+    ])('returns FEATURE_UNAVAILABLE for "%s"', (message) => {
+        expect(getPasswordlessErrorMessageKey(message)).toBe(ERROR_MESSAGE_KEYS.FEATURE_UNAVAILABLE);
     });
 
     it('returns TOO_MANY_LOGIN_ATTEMPTS when too many requests are detected', () => {
         const message = 'Too many login requests. Please try again later.';
         expect(getPasswordlessErrorMessageKey(message)).toBe(ERROR_MESSAGE_KEYS.TOO_MANY_LOGIN_ATTEMPTS);
-    });
-
-    it('returns EXPIRED_TOKEN for expired token errors', () => {
-        const message = 'Your token has expired, please request a new one.';
-        expect(getPasswordlessErrorMessageKey(message)).toBe(ERROR_MESSAGE_KEYS.EXPIRED_TOKEN);
     });
 
     it('returns INVALID_TOKEN for invalid token errors', () => {
@@ -51,6 +47,33 @@ describe('getPasswordlessErrorMessageKey', () => {
     it('returns GENERIC for unknown error messages', () => {
         const message = 'Some unexpected error from backend';
         expect(getPasswordlessErrorMessageKey(message)).toBe(ERROR_MESSAGE_KEYS.GENERIC);
+    });
+});
+
+describe('getPasswordResetErrorMessageKey', () => {
+    it.each([
+        'No callback_uri is registered for this client',
+        "Callback_uri doesn't match the registered value",
+        'Monthly quota exceeded for password resets',
+    ])('returns FEATURE_UNAVAILABLE for "%s"', (message) => {
+        expect(getPasswordResetErrorMessageKey(message)).toBe(ERROR_MESSAGE_KEYS.FEATURE_UNAVAILABLE);
+    });
+
+    it('returns TOO_MANY_PASSWORD_RESET_ATTEMPTS when rate limited', () => {
+        const message = 'Too many password reset requests. Please try again later.';
+        expect(getPasswordResetErrorMessageKey(message)).toBe(ERROR_MESSAGE_KEYS.TOO_MANY_PASSWORD_RESET_ATTEMPTS);
+    });
+
+    it.each(['Invalid authentication token provided.', 'invalid token', 'INVALID TOKEN'])(
+        'returns INVALID_TOKEN for "%s"',
+        (message) => {
+            expect(getPasswordResetErrorMessageKey(message)).toBe(ERROR_MESSAGE_KEYS.INVALID_TOKEN);
+        }
+    );
+
+    it('returns GENERIC for unknown error messages', () => {
+        const message = 'Some unexpected error from backend';
+        expect(getPasswordResetErrorMessageKey(message)).toBe(ERROR_MESSAGE_KEYS.GENERIC);
     });
 });
 
@@ -92,10 +115,7 @@ describe('extractErrorMessage', () => {
         expect(extractErrorMessage(error)).toBe('fallback message');
     });
 
-    it('returns "Unknown error" for non-object, non-string inputs', () => {
-        expect(extractErrorMessage(null)).toBe('Unknown error');
-        expect(extractErrorMessage(undefined)).toBe('Unknown error');
-        expect(extractErrorMessage(42)).toBe('Unknown error');
-        expect(extractErrorMessage({})).toBe('Unknown error');
+    it.each([null, undefined, 42, {}])('returns "Unknown error" for %s', (input) => {
+        expect(extractErrorMessage(input)).toBe('Unknown error');
     });
 });

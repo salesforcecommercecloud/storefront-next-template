@@ -16,15 +16,12 @@
 import type { ReactElement } from 'react';
 
 // React Router
-import { Link } from 'react-router';
+import { Link } from '@/components/link';
 
 // UI Components
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
 
-// Icons
-import { ShoppingCart, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface EmptyCartProps {
@@ -37,7 +34,7 @@ interface EmptyCartProps {
  * This component provides:
  * - Empty cart state display with icon and messaging
  * - Different messages for registered vs guest users
- * - Continue shopping and sign-in action buttons
+ * - Start Shopping action button
  * - Responsive design with proper spacing
  *
  * Used by cart-content components to display empty cart state.
@@ -53,45 +50,35 @@ export default function EmptyCart({ isRegistered = false }: EmptyCartProps): Rea
     return (
         <div className="bg-muted flex-1 min-w-full w-full" data-testid="sf-cart-empty">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
-                <Card className="max-w-md mx-auto">
-                    <CardContent className="p-8 text-center">
-                        <div className="space-y-6">
-                            {/* Empty Cart Icon */}
-                            <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-                                <ShoppingCart className="w-8 h-8 text-muted-foreground" />
-                            </div>
+                <div className="bg-background rounded-lg shadow-md p-8 md:p-16 text-center">
+                    {/* Empty Cart Icon */}
+                    <svg
+                        className="w-24 h-24 text-muted-foreground/30 mx-auto mb-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                        />
+                    </svg>
 
-                            {/* Empty Cart Message */}
-                            <div className="space-y-2">
-                                <Typography
-                                    variant="h2"
-                                    as="h2"
-                                    className="text-xl text-center font-semibold text-foreground">
-                                    {t('empty.title')}
-                                </Typography>
-                                <p className="text-muted-foreground">
-                                    {isRegistered ? t('empty.registeredMessage') : t('empty.guestMessage')}
-                                </p>
-                            </div>
+                    {/* Empty Cart Message */}
+                    <Typography variant="h2" as="h2" className="text-xl text-center font-semibold text-foreground mb-2">
+                        {t('empty.title')}
+                    </Typography>
+                    <p className="text-sm text-muted-foreground mb-8">
+                        {isRegistered ? t('empty.registeredMessage') : t('empty.guestMessage')}
+                    </p>
 
-                            {/* Action Buttons */}
-                            <div className="space-y-3">
-                                <Button asChild className="w-full">
-                                    <Link to="/">{t('empty.continueShopping')}</Link>
-                                </Button>
-
-                                {!isRegistered && (
-                                    <Button asChild variant="outline" className="w-full">
-                                        <Link to="/account" className="flex items-center justify-center gap-2">
-                                            <User className="w-4 h-4" />
-                                            {t('empty.signIn')}
-                                        </Link>
-                                    </Button>
-                                )}
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                    {/* Action Button */}
+                    <Button asChild>
+                        <Link to="/">{t('empty.continueShopping')}</Link>
+                    </Button>
+                </div>
             </div>
         </div>
     );

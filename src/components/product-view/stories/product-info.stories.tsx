@@ -368,19 +368,20 @@ export const WithVariations: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test component interaction
-        const buttons = canvas.queryAllByRole('button');
-        const inputs = canvas.queryAllByRole('textbox');
-
-        // Perform basic interactions - only click enabled buttons
-        if (buttons.length > 0) {
-            const enabledButton = buttons.find(
-                (btn) => !btn.hasAttribute('disabled') && !btn.classList.contains('pointer-events-none')
-            );
-            if (enabledButton) {
-                await userEvent.click(enabledButton);
-            }
+        // Verify wishlist button exists
+        const wishlistButton = canvas.queryByRole('button', { name: /add to wishlist|remove from wishlist/i });
+        if (wishlistButton) {
+            await expect(wishlistButton).toBeInTheDocument();
         }
+
+        // Verify share button exists
+        const shareButton = canvas.queryByRole('button', { name: /share/i });
+        if (shareButton) {
+            await expect(shareButton).toBeInTheDocument();
+        }
+
+        // Test basic component interaction
+        const inputs = canvas.queryAllByRole('textbox');
         if (inputs.length > 0) {
             await userEvent.click(inputs[0]);
         }

@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { AppConfig } from '@/config';
+import type { AppConfig } from '@/types/config';
 import {
     addCustomerPreferencesAdapter,
     CUSTOMER_PREFERENCES_MOCK_ADAPTER_NAME,
     hasCustomerPreferencesAdapters,
 } from './customer-preferences-store';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /**
  * Ensures the default customer preferences adapter (mock) is registered.
@@ -43,8 +46,7 @@ export async function ensureCustomerPreferencesAdapterRegistered(_appConfig: App
         );
     } catch (error) {
         if (import.meta.env.DEV) {
-            // eslint-disable-next-line no-console
-            console.warn('Failed to register customer preferences adapter:', (error as Error).message);
+            logger.warn('Failed to register customer preferences adapter', { error });
         }
     }
 }

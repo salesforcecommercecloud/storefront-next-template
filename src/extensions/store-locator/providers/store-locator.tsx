@@ -19,10 +19,9 @@ import { createContext, type PropsWithChildren, useContext, useRef, useSyncExter
 import {
     type StoreLocatorStore,
     type StoreApi,
-    createStoreLocatorStore,
     type SelectedStoreInfo,
+    createStoreLocatorStore,
 } from '@/extensions/store-locator/stores/store-locator-store';
-import { getCookieFromDocumentAs, getSelectedStoreInfoCookieName } from '@/extensions/store-locator/utils';
 
 export type StoreLocatorStoreApi = StoreApi<StoreLocatorStore>;
 
@@ -32,20 +31,21 @@ const StoreLocatorContext = createContext<StoreLocatorStoreApi | undefined>(unde
  * StoreLocatorProvider
  *
  * Provides a scoped store instance for the store locator feature. Hydrates the
- * initially selected store id from a cookie scoped by site id.
+ * initially selected store from the root loader's `selectedStoreInfo` (set by
+ * middleware from the cookie).
  *
  * @param children - React subtree that needs access to store locator state
+ * @param selectedStoreInfo - Initial selected store from the root loader (cookie-based)
  * @returns ReactElement
  */
-const StoreLocatorProvider = ({ children }: PropsWithChildren) => {
+const StoreLocatorProvider = ({
+    children,
+    selectedStoreInfo,
+}: PropsWithChildren<{ selectedStoreInfo?: SelectedStoreInfo | null }>) => {
     const storeRef = useRef<StoreLocatorStoreApi | null>(null);
     if (storeRef.current === null) {
-        // Hydrate selected store info from cookie (includes id, name, inventoryId)
-        const cookieName = getSelectedStoreInfoCookieName();
-        const initSelectedStoreInfo = getCookieFromDocumentAs<SelectedStoreInfo>(cookieName);
-
         storeRef.current = createStoreLocatorStore({
-            selectedStoreInfo: initSelectedStoreInfo,
+            selectedStoreInfo: selectedStoreInfo ?? null,
         });
     }
 

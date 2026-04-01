@@ -78,7 +78,8 @@ describe('WriteReviewModalContent', () => {
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
         await user.click(screen.getByRole('button', { name: 'Submit Review' }));
         expect(screen.getByRole('alert')).toBeInTheDocument();
-        expect(screen.getByText('Please select a rating')).toBeInTheDocument();
+        expect(screen.getByRole('alert')).toHaveTextContent('Please select a rating');
+        expect(screen.getByRole('alert')).toHaveTextContent('Please fix the following:');
     });
 
     it('calls onClose when form is valid and submitted', async () => {

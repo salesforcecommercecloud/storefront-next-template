@@ -18,9 +18,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { getTranslation } from '@/lib/i18next';
-import UserActions from './user-actions';
-import AuthProvider from '@/providers/auth';
 import type { SessionData } from '@/lib/api/types';
+import AuthProvider from '@/providers/auth';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import UserActions from './user-actions';
 
 const { t } = getTranslation();
 
@@ -29,7 +30,11 @@ const createTestWrapper = (component: React.ReactElement, session?: SessionData)
         [
             {
                 path: '*',
-                element: session ? <AuthProvider value={session}>{component}</AuthProvider> : component,
+                element: (
+                    <AllProvidersWrapper>
+                        {session ? <AuthProvider value={session}>{component}</AuthProvider> : component}
+                    </AllProvidersWrapper>
+                ),
             },
         ],
         { initialEntries: ['/'] }
@@ -52,7 +57,7 @@ describe('UserActions', () => {
 
             const triggerLink = screen.getByRole('link', { name: t('header:signIn') });
             expect(triggerLink).toBeInTheDocument();
-            expect(triggerLink).toHaveAttribute('href', '/login');
+            expect(triggerLink).toHaveAttribute('href', '/global/en-GB/login');
             expect(screen.queryByRole('link', { name: /my account/i })).not.toBeInTheDocument();
 
             await user.hover(triggerLink);
@@ -63,10 +68,10 @@ describe('UserActions', () => {
             // After menu opens, there are two "Sign In" links - trigger and menu button
             const signInLinks = screen.getAllByRole('link', { name: t('header:signIn') });
             expect(signInLinks.length).toBeGreaterThanOrEqual(1);
-            expect(signInLinks[0]).toHaveAttribute('href', '/login');
+            expect(signInLinks[0]).toHaveAttribute('href', '/global/en-GB/login');
             expect(screen.getByRole('link', { name: t('header:menu.createAccount') })).toHaveAttribute(
                 'href',
-                '/signup'
+                '/global/en-GB/signup'
             );
         });
 
@@ -97,7 +102,7 @@ describe('UserActions', () => {
 
             const link = screen.getByRole('link', { name: t('account:myAccount') });
             expect(link).toBeInTheDocument();
-            expect(link).toHaveAttribute('href', '/account/overview');
+            expect(link).toHaveAttribute('href', '/global/en-GB/account/overview');
             expect(screen.queryByRole('link', { name: t('header:signIn') })).not.toBeInTheDocument();
 
             await user.hover(link);
@@ -109,23 +114,23 @@ describe('UserActions', () => {
             expect(screen.getByText(t('header:menu.yourAccount'))).toBeInTheDocument();
             expect(screen.getByRole('link', { name: t('account:navigation.wishlist') })).toHaveAttribute(
                 'href',
-                '/account/wishlist'
+                '/global/en-GB/account/wishlist'
             );
             expect(screen.getByRole('link', { name: t('account:navigation.overview') })).toHaveAttribute(
                 'href',
-                '/account/overview'
+                '/global/en-GB/account/overview'
             );
             expect(screen.getByRole('link', { name: t('account:navigation.orderHistory') })).toHaveAttribute(
                 'href',
-                '/account/orders'
+                '/global/en-GB/account/orders'
             );
             expect(screen.getByRole('link', { name: t('account:navigation.accountDetails') })).toHaveAttribute(
                 'href',
-                '/account'
+                '/global/en-GB/account'
             );
             expect(screen.getByRole('link', { name: t('header:menu.addressBook') })).toHaveAttribute(
                 'href',
-                '/account/addresses'
+                '/global/en-GB/account/addresses'
             );
             expect(screen.getByRole('button', { name: t('account:navigation.logOut') })).toBeInTheDocument();
         });

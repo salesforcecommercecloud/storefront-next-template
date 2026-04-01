@@ -20,7 +20,7 @@ import { render, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 
 // Components
-import { CartItemEditModal } from '@/components/cart-item-edit-modal';
+import { CartItemModal as CartItemEditModal } from '@/components/cart-item-modal';
 
 // Mock data
 import { variantProduct } from '@/components/__mocks__/master-variant-product';
@@ -116,12 +116,16 @@ describe('CartItemEditModal', () => {
             render(<RouterProvider router={router} />);
 
             await waitFor(() => {
-                // Find the getProduct call which should have the inventoryIds
-                const getProductCall = allCapturedCalls.find(
-                    (call) => call.service === 'shopperProducts' && call.method === 'getProduct'
+                // The variant fetcher (edit-mode) should include inventoryIds for a pickup item.
+                // There are two getProduct calls (initial + variant fetcher); find the one with inventoryIds.
+                const pickupCall = allCapturedCalls.find(
+                    (call) =>
+                        call.service === 'shopperProducts' &&
+                        call.method === 'getProduct' &&
+                        call.params?.query?.inventoryIds !== undefined
                 );
-                expect(getProductCall).toBeDefined();
-                expect(getProductCall?.params?.query?.inventoryIds).toEqual(['inventory-store-123']);
+                expect(pickupCall).toBeDefined();
+                expect(pickupCall?.params?.query?.inventoryIds).toEqual(['inventory-store-123']);
             });
         });
 
@@ -158,12 +162,14 @@ describe('CartItemEditModal', () => {
             render(<RouterProvider router={router} />);
 
             await waitFor(() => {
-                // Find the getProduct call which should NOT have inventoryIds
-                const getProductCall = allCapturedCalls.find(
-                    (call) => call.service === 'shopperProducts' && call.method === 'getProduct'
+                // None of the getProduct calls should include inventoryIds for a non-pickup item.
+                const hasInventoryIdsCall = allCapturedCalls.some(
+                    (call) =>
+                        call.service === 'shopperProducts' &&
+                        call.method === 'getProduct' &&
+                        call.params?.query?.inventoryIds !== undefined
                 );
-                expect(getProductCall).toBeDefined();
-                expect(getProductCall?.params?.query?.inventoryIds).toBeUndefined();
+                expect(hasInventoryIdsCall).toBe(false);
             });
         });
 
@@ -196,12 +202,14 @@ describe('CartItemEditModal', () => {
             render(<RouterProvider router={router} />);
 
             await waitFor(() => {
-                // Find the getProduct call which should NOT have inventoryIds
-                const getProductCall = allCapturedCalls.find(
-                    (call) => call.service === 'shopperProducts' && call.method === 'getProduct'
+                // Without pickup context no getProduct call should include inventoryIds.
+                const hasInventoryIdsCall = allCapturedCalls.some(
+                    (call) =>
+                        call.service === 'shopperProducts' &&
+                        call.method === 'getProduct' &&
+                        call.params?.query?.inventoryIds !== undefined
                 );
-                expect(getProductCall).toBeDefined();
-                expect(getProductCall?.params?.query?.inventoryIds).toBeUndefined();
+                expect(hasInventoryIdsCall).toBe(false);
             });
         });
     });

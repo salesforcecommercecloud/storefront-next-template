@@ -15,7 +15,7 @@
  */
 import type { LoaderFunctionArgs } from 'react-router';
 import { fetchPage, type PageDesignerPageParams } from '@/lib/api/page';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { registry } from '@/lib/registry';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
 
@@ -107,8 +107,16 @@ function collectFromRegions(
 export async function fetchPageWithComponentData(
     args: LoaderFunctionArgs,
     params: PageParams
-): Promise<PageWithComponentData> {
-    const page = await fetchPageFromLoader(args, params);
+): Promise<PageWithComponentData | null> {
+    let page: ShopperExperience.schemas['Page'];
+    try {
+        page = await fetchPageFromLoader(args, params);
+    } catch (e) {
+        if (e instanceof ApiError && e.status === 404) {
+            return null;
+        }
+        throw e;
+    }
 
     const componentData: Record<string, Promise<unknown>> = {};
     // Process top-level regions and recursively process nested regions

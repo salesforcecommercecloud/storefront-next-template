@@ -16,21 +16,25 @@
 import { type ReactElement } from 'react';
 import {
     redirect,
-    Link,
     useActionData,
     type LoaderFunctionArgs,
     type ActionFunctionArgs,
     // type ClientActionFunctionArgs,
 } from 'react-router';
+import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
+import { SeoMeta } from '@/components/seo-meta';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
 import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import OtpModal from '@/components/login/otp-modal';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
 import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@/lib/i18next';
+import { updateBasketResource } from '@/middlewares/basket.server';
 
 // services
 import {
@@ -43,6 +47,7 @@ import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
 import { authorizeIDP } from '@/lib/api/auth/social-login';
 import { mergeBasket } from '@/lib/api/basket';
 import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+import { getLogger } from '@/lib/logger.server';
 
 type LoginActionResponse = {
     success: boolean;
@@ -65,12 +70,15 @@ type LoginLoaderData = {
     actionParams?: string | null;
     showOTPForm?: boolean;
     otpLength?: number;
+    pageUrl: string;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader({ request, context }: LoaderFunctionArgs) {
+    const logger = getLogger(context);
     const session = getAuth(context);
     const url = new URL(request.url);
+    const pageUrl = buildCanonicalUrl(url.origin, url.pathname, url.search);
     const returnUrl = url.searchParams.get('returnUrl');
 
     // If user is already logged in as registered user, redirect to returnUrl or home
@@ -82,6 +90,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         userType === 'registered' &&
         customerId
     ) {
+        logger.debug('Login: already authenticated, redirecting');
         return redirect(returnUrl || '/');
     }
 
@@ -97,7 +106,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const error = url.searchParams.get('error');
 
     // Get runtime config to determine if passwordless login is enabled
-    const config = getConfig(context);
+    const config = getConfig<AppConfig>(context);
     const isSlasPrivate = config.commerce.api.privateKeyEnabled;
     const isPasswordlessLoginEnabled = config.features.passwordlessLogin.enabled && isSlasPrivate;
     const isSocialLoginEnabled = Boolean(config.features.socialLogin?.enabled);
@@ -119,14 +128,14 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
             try {
                 await mergeBasket(context);
             } catch (basketError) {
-                // eslint-disable-next-line no-console
-                console.error('Failed to merge basket during passwordless login:', basketError);
-                // Continue with login even if basket merge fails
+                logger.error('Login: basket merge failed during passwordless login', { error: basketError });
             }
 
+            logger.info('Login: passwordless verification succeeded');
             return redirect(returnUrl || '/');
         } catch (verifyError) {
             // Auto-verification failed - show error with OTP form
+            logger.warn('Login: passwordless auto-verification failed');
             const errorMessage = extractErrorMessage(verifyError);
             const errorKey = getPasswordlessErrorMessageKey(errorMessage);
             const { t } = getTranslation(context);
@@ -142,6 +151,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
                 action: pendingAction,
                 actionParams,
                 otpLength: config.auth.otpLength,
+                pageUrl,
             };
         }
     }
@@ -158,6 +168,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         action: pendingAction,
         actionParams,
         otpLength: config.auth.otpLength,
+        pageUrl,
     };
 }
 
@@ -168,7 +179,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<LoginActionResponse> {
-    const config = getConfig(context);
+    const logger = getLogger(context);
+    const config = getConfig<AppConfig>(context);
     const { t } = getTranslation(context);
     const genericError = t('errors:genericTryAgain');
 
@@ -199,10 +211,10 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 redirectURI: finalRedirectURI,
             });
             if (result.success && result.redirectUrl) {
-                // Redirect to social login provider (auth happens in callback)
+                logger.info('Login: social redirect initiated', { provider });
                 return { success: true, redirectUrl: result.redirectUrl };
             }
-            // Social login failed - redirect back with generic error
+            logger.warn('Login: social authorization failed', { provider });
             return { success: false, error: genericError };
         } else if (loginMode === 'passwordless') {
             // Passwordless login flow
@@ -232,6 +244,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
             try {
                 await authorizePasswordless(context, { userid: email, redirectPath: finalRedirectPath });
+                logger.info('Login: passwordless code sent');
                 // Passwordless authorization sent - redirect to login page with OTP form
                 const params = new URLSearchParams();
                 params.set('otp', 'true');
@@ -259,8 +272,19 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             }
             const result = await loginRegisteredUser(context, { email, password });
             if (!result.success) {
-                // Return generic error - don't expose specific login failure reasons
+                logger.warn('Login: standard login failed');
                 return { success: false, error: genericError };
+            }
+
+            logger.info('Login: standard login succeeded');
+            // Login successful - merge basket on server before redirecting
+            try {
+                const mergedBasket = await mergeBasket(context);
+                if (mergedBasket) {
+                    updateBasketResource(context, mergedBasket);
+                }
+            } catch (error) {
+                logger.error('Login: basket merge failed', { error });
             }
 
             // Login successful - redirect to returnUrl if provided, otherwise home
@@ -323,6 +347,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
         actionParams,
         showOTPForm,
         otpLength,
+        pageUrl,
     } = loaderData;
 
     // Prefer actionData error (from form submission) over loaderData error (from URL params)
@@ -378,10 +403,17 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
 
     return (
         <>
+            <SeoMeta
+                title={t('meta.title', { defaultValue: 'Sign In' })}
+                description={t('meta.description', {
+                    defaultValue: 'Sign in to your account to view orders, manage your wishlist, and more.',
+                })}
+                openGraph={{ type: 'website', url: pageUrl }}
+            />
             <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8">
                     <div>
-                        <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">{t('title')}</h2>
+                        <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
                         <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                     </div>
 

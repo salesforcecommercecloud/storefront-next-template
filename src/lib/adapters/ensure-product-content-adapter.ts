@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { AppConfig } from '@/config';
+import type { AppConfig } from '@/types/config';
 import {
     addProductContentAdapter,
     hasProductContentAdapters,
     PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME,
 } from './product-content-store';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /**
  * Ensures the default product content adapter (mock) is registered.
@@ -43,8 +46,7 @@ export async function ensureProductContentAdapterRegistered(_appConfig: AppConfi
         );
     } catch (error) {
         if (import.meta.env.DEV) {
-            // eslint-disable-next-line no-console
-            console.warn('Failed to register product content adapter:', (error as Error).message);
+            logger.warn('Failed to register product content adapter', { error });
         }
     }
 }

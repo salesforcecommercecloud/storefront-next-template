@@ -55,23 +55,44 @@ describe('RegionWrapper', () => {
         decoratedCalls.length = 0;
     });
 
-    test('(runtime) renders plain RegionRenderer', () => {
+    test('(runtime) renders plain RegionRenderer without className', () => {
         vi.mocked(usePageDesignerMode).mockReturnValue({ isDesignMode: false, isPreviewMode: false });
         const region = makeRegion('r1', ['a', 'b']);
 
         const { container } = render(
-            <RegionWrapper region={region} className="x">
+            <RegionWrapper region={region}>
                 <div data-testid="kid" />
             </RegionWrapper>
         );
 
-        // RegionRenderer now just returns children without a wrapper
+        // RegionRenderer returns children without a wrapper when no className
         const kid = screen.getByTestId('kid');
         expect(kid).toBeInTheDocument();
         expect(decoratedCalls).toHaveLength(0);
 
-        // Verify no extra wrapper is created
+        // Verify no extra wrapper is created when no className
         expect(container.firstChild).toBe(kid);
+    });
+
+    test('(runtime) renders RegionRenderer with className wrapper', () => {
+        vi.mocked(usePageDesignerMode).mockReturnValue({ isDesignMode: false, isPreviewMode: false });
+        const region = makeRegion('r1', ['a', 'b']);
+
+        const { container } = render(
+            <RegionWrapper region={region} className="flex gap-4">
+                <div data-testid="kid" />
+            </RegionWrapper>
+        );
+
+        // RegionRenderer wraps children in div when className provided
+        const kid = screen.getByTestId('kid');
+        expect(kid).toBeInTheDocument();
+        expect(decoratedCalls).toHaveLength(0);
+
+        // Verify wrapper div has the className
+        const wrapper = container.firstChild;
+        expect(wrapper).toHaveClass('flex', 'gap-4');
+        expect(wrapper).toContainElement(kid);
     });
 
     test('(design mode) decorated renderer gets metadata', () => {

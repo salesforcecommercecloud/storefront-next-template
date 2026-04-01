@@ -39,6 +39,7 @@ import { Input } from '@/components/ui/input';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { accountDestructiveButtonClasses, accountDestructiveIconHoverClasses } from '@/lib/account-action-styles';
 
 const AUTHORIZED_PERSON_FORM_NS = 'account' as const;
 const MODAL_VALIDATION_PREFIX = 'storePreferences.authorizedPickupPeople.modal' as const;
@@ -218,7 +219,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
             <Card>
                 <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                        <CardTitle className="text-lg">
+                        <CardTitle className="text-lg-xl">
                             {t('storePreferences.authorizedPickupPeople.heading')}
                         </CardTitle>
                         <CardDescription className="mt-1">
@@ -245,16 +246,16 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                     className="flex flex-col gap-2 rounded-lg border border-border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div className="min-w-0 flex-1">
                                         <div className="flex flex-wrap items-center gap-2">
-                                            <span className="font-medium text-foreground">
+                                            <span className="text-sm font-medium text-foreground">
                                                 {person.firstName} {person.lastName}
                                             </span>
-                                            <Badge variant="secondary">
+                                            <Badge className="rounded border-0 bg-active-bg px-2 py-0.5 text-xs font-medium text-active-foreground">
                                                 {t('storePreferences.authorizedPickupPeople.statusActive')}
                                             </Badge>
                                         </div>
                                         <p className="text-sm text-muted-foreground mt-1">{person.email}</p>
                                         {person.relationship && (
-                                            <p className="text-sm text-muted-foreground">
+                                            <p className="text-xs text-muted-foreground">
                                                 {t('storePreferences.authorizedPickupPeople.relationshipLabel', {
                                                     relationship: RELATIONSHIP_KEYS.includes(
                                                         person.relationship as (typeof RELATIONSHIP_KEYS)[number]
@@ -272,6 +273,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                             type="button"
                                             variant="ghost"
                                             size="icon-sm"
+                                            className="cursor-pointer hover:bg-muted/80"
                                             onClick={() => openEdit(person)}
                                             aria-label={t('storePreferences.authorizedPickupPeople.edit')}>
                                             <Pencil className="size-4" aria-hidden />
@@ -282,7 +284,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                             size="icon-sm"
                                             onClick={() => handleDeleteClick(person)}
                                             aria-label={t('storePreferences.authorizedPickupPeople.delete')}
-                                            className="text-destructive hover:bg-destructive/10 hover:text-destructive">
+                                            className={accountDestructiveIconHoverClasses}>
                                             <Trash2 className="size-4" aria-hidden />
                                         </Button>
                                     </div>
@@ -291,9 +293,11 @@ export default function AuthorizedPickupPeople(): ReactElement {
                         </ul>
                     )}
 
-                    <Alert className="border-primary/30 bg-primary/10 [&>svg]:text-primary" variant="default">
+                    <Alert className="border-border bg-muted/60 [&>svg]:text-primary" variant="default">
                         <InfoIcon className="size-4" aria-hidden />
-                        <AlertDescription>{t('storePreferences.authorizedPickupPeople.idNote')}</AlertDescription>
+                        <AlertDescription className="text-xs">
+                            {t('storePreferences.authorizedPickupPeople.idNote')}
+                        </AlertDescription>
                     </Alert>
                 </CardContent>
             </Card>
@@ -315,9 +319,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                         <AlertDialogCancel>
                             {t('storePreferences.authorizedPickupPeople.deleteConfirmCancel')}
                         </AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDeleteConfirm}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        <AlertDialogAction onClick={handleDeleteConfirm} className={accountDestructiveButtonClasses}>
                             {t('storePreferences.authorizedPickupPeople.deleteConfirmRemove')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -332,7 +334,10 @@ export default function AuthorizedPickupPeople(): ReactElement {
                 }}>
                 <DialogContent className="sm:max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>{modalTitle}</DialogTitle>
+                        <DialogTitle
+                            style={{ fontSize: 'var(--text-lg-xl)', lineHeight: 'var(--text-lg-xl--line-height)' }}>
+                            {modalTitle}
+                        </DialogTitle>
                     </DialogHeader>
 
                     <Form {...form}>
@@ -354,7 +359,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-account-action-destructive" />
                                         </FormItem>
                                     )}
                                 />
@@ -374,7 +379,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-account-action-destructive" />
                                         </FormItem>
                                     )}
                                 />
@@ -396,7 +401,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-account-action-destructive" />
                                     </FormItem>
                                 )}
                             />
@@ -430,14 +435,14 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                                 </NativeSelect>
                                             </div>
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-account-action-destructive" />
                                     </FormItem>
                                 )}
                             />
 
-                            <Alert className="border-primary/30 bg-primary/10 [&>svg]:text-primary" variant="default">
+                            <Alert className="border-border bg-muted/60 [&>svg]:text-primary" variant="default">
                                 <InfoIcon className="size-4" aria-hidden />
-                                <AlertDescription>
+                                <AlertDescription className="text-xs">
                                     {t('storePreferences.authorizedPickupPeople.modal.modalNote')}
                                 </AlertDescription>
                             </Alert>

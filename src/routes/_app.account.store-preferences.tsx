@@ -16,12 +16,14 @@
 import { type ReactElement } from 'react';
 import { type LoaderFunctionArgs } from 'react-router';
 import StorePreferences from '@/components/store-preferences';
+import { SeoMeta } from '@/components/seo-meta';
+import { useTranslation } from 'react-i18next';
 import { getTranslation } from '@/lib/i18next';
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 import { createApiClients } from '@/lib/api-clients';
-import { getCookieFromRequestAs, getSelectedStoreInfoCookieName } from '@/extensions/store-locator/utils';
-import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
+import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Loader function to fetch preferred store details from cookie.
@@ -30,12 +32,12 @@ import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-
  * selectedStoreInfo cookie and fetches full store details from SCAPI.
  */
 // eslint-disable-next-line react-refresh/only-export-components -- Loader exports are required by React Router
-export async function loader({ request, context }: LoaderFunctionArgs) {
+export async function loader({ context }: LoaderFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
 
     // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
-    const cookieName = getSelectedStoreInfoCookieName();
-    const selectedStoreInfo = getCookieFromRequestAs<SelectedStoreInfo>(request, cookieName);
+    const selectedStoreInfo = context.get(selectedStoreContext);
 
     if (selectedStoreInfo?.id) {
         try {
@@ -51,8 +53,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
             const preferredStore = storesData?.data?.[0] || null;
             return { preferredStore, error: null };
         } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Failed to fetch preferred store:', error);
+            logger.error('StorePreferences: failed to fetch preferred store', { error });
             return {
                 preferredStore: null,
                 error: t('storePreferences.preferredStore.error'),
@@ -68,5 +69,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
  * Store Preferences route – renders at /account/store-preferences.
  */
 export default function AccountStorePreferencesRoute(): ReactElement {
-    return <StorePreferences />;
+    const { t } = useTranslation('account');
+    return (
+        <>
+            <SeoMeta title={t('meta.storePreferencesTitle', { defaultValue: 'Store Preferences' })} noIndex />
+            <StorePreferences />
+        </>
+    );
 }

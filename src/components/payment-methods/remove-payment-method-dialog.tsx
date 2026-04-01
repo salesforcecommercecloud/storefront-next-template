@@ -20,6 +20,7 @@ import { AlertTriangle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { accountDestructiveButtonClasses } from '@/lib/account-action-styles';
 import { getCardIcon } from '@/lib/card-icon-utils';
 import { getCardTypeDisplay } from '@/lib/payment-utils';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
@@ -69,13 +70,17 @@ export function RemovePaymentMethodDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader className="mb-2">
-                    <DialogTitle className="text-xl">{t('paymentMethods.removePaymentMethod')}</DialogTitle>
+                    <DialogTitle
+                        className="font-semibold text-foreground"
+                        style={{ fontSize: 'var(--text-lg-xl)', lineHeight: 'var(--text-lg-xl--line-height)' }}>
+                        {t('paymentMethods.removePaymentMethod')}
+                    </DialogTitle>
                 </DialogHeader>
 
                 <div className="space-y-4">
                     <p className="text-sm text-muted-foreground">{t('paymentMethods.removeConfirmation')}</p>
 
-                    <Card className="border-border py-0">
+                    <Card className="rounded-none border-border bg-muted/60 py-0">
                         <div className="p-4">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-medium">{t('paymentMethods.paymentMethod')}</span>
@@ -91,7 +96,7 @@ export function RemovePaymentMethodDialog({
                             </p>
                             {paymentMethod.isDefault && (
                                 <div className="mt-2">
-                                    <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">
+                                    <span className="px-2 py-0.5 bg-muted border border-border text-primary text-xs font-semibold rounded">
                                         {t('paymentMethods.default')}
                                     </span>
                                 </div>
@@ -100,9 +105,11 @@ export function RemovePaymentMethodDialog({
                     </Card>
 
                     {paymentMethod.isDefault && (
-                        <div className="flex gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-                            <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-                            <p className="text-sm text-destructive">{t('paymentMethods.defaultRemovalWarning')}</p>
+                        <div className="mt-4 flex gap-3 p-3 rounded-lg bg-warning-bg border border-warning-border">
+                            <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" aria-hidden />
+                            <p className="text-xs text-warning-foreground">
+                                {t('paymentMethods.defaultRemovalWarning')}
+                            </p>
                         </div>
                     )}
                 </div>
@@ -111,7 +118,7 @@ export function RemovePaymentMethodDialog({
                     <Button variant="outline" onClick={handleClose} disabled={isLoading}>
                         {t('paymentMethods.cancel')}
                     </Button>
-                    <Button variant="destructive" onClick={handleConfirm} disabled={isLoading}>
+                    <Button className={accountDestructiveButtonClasses} onClick={handleConfirm} disabled={isLoading}>
                         {t('paymentMethods.remove')}
                     </Button>
                 </div>

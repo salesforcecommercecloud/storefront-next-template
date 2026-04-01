@@ -17,139 +17,83 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { ConfigWrapper, mockConfig } from '@/test-utils/config';
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { ConfigWrapper } from '@/test-utils/config';
 import { CurrencyProvider } from '@/providers/currency';
 import ProductGrid from './index';
 
-const addSourceSpy = vi.fn();
-const hasSourceSpy = vi.fn();
-
-vi.mock('@/providers/dynamic-image', async (importOriginal) => {
-    const original = await importOriginal<typeof import('@/providers/dynamic-image')>();
-    return {
-        ...original,
-        useDynamicImageContext: () => {
-            // Get the real context value
-            const originalContext = original.useDynamicImageContext();
-            // Wrap `addSource` to spy on calls while preserving original behavior
-            return {
-                ...originalContext,
-                addSource: (src: string) => {
-                    if (typeof originalContext?.addSource === 'function') {
-                        const result = originalContext?.addSource(src);
-                        addSourceSpy(src, result);
-                        return result;
-                    }
-                    return false;
-                },
-                hasSource: (src: string) => {
-                    if (typeof originalContext?.hasSource === 'function') {
-                        const result = originalContext?.hasSource(src);
-                        hasSourceSpy(src, result);
-                        return result;
-                    }
-                    return false;
-                },
-            };
-        },
-    };
-});
-
-vi.mock('@/lib/product-utils', () => ({
-    createProductUrl: vi.fn(() => '/product/test-product'),
-    getImagesForColor: vi.fn((product, color) => {
-        const colorSuffix = color || 'default';
-        return [
-            {
-                link: `https://example.com/${product.productId}-${colorSuffix}.jpg`,
-                disBaseLink: `https://example.com/${product.productId}-${colorSuffix}.jpg`,
-                alt: `${product.productName} Image`,
-            },
-        ];
-    }),
-    getDecoratedVariationAttributes: vi.fn(() => [
-        {
-            id: 'color',
-            name: 'Colour',
-            values: [
-                {
-                    value: 'navy',
-                    name: 'Navy',
-                    swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
-                },
-            ],
-        },
-    ]),
+// Render ProductTile as a minimal element that exposes all props under test as data attributes.
+// This isolates the grid's own behaviour from ProductTile internals.
+vi.mock('@/components/product-tile', () => ({
+    ProductTile: ({
+        product,
+        topCategoryName,
+        showPickupAvailable,
+        handleProductClick,
+    }: {
+        product: ShopperSearch.schemas['ProductSearchHit'];
+        topCategoryName?: string;
+        showPickupAvailable?: boolean;
+        handleProductClick?: (p: ShopperSearch.schemas['ProductSearchHit']) => void;
+    }) => (
+        <div
+            data-testid={`product-tile-${product.productId}`}
+            data-top-category={topCategoryName ?? ''}
+            data-pickup={String(showPickupAvailable ?? false)}>
+            <button onClick={() => handleProductClick?.(product)}>{product.productName}</button>
+        </div>
+    ),
+    ProductTileProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-vi.mock('@/lib/currency', () => ({
-    formatCurrency: vi.fn((price) => `$${price}`),
-}));
+const dynamicImageValueSpy = vi.fn();
 
-vi.mock('@/lib/product-badges', () => ({
-    getProductBadges: vi.fn(() => ({
-        hasBadges: false,
-        badges: [],
-    })),
-}));
-
-vi.mock('@/config/get-config', () => ({
-    useConfig: () => mockConfig,
+vi.mock('@/providers/dynamic-image', () => ({
+    default: ({ children, value }: { children: React.ReactNode; value?: { widths?: string[] } }) => {
+        dynamicImageValueSpy(value);
+        return <>{children}</>;
+    },
 }));
 
 vi.mock('@/components/category-skeleton', () => ({
-    ProductTileSkeleton: () => <div data-testid="product-tile-skeleton">product-tile-skeleton</div>,
-    ProductTileSwatchesSkeleton: () => (
-        <div data-testid="product-tile-swatches-skeleton">product-tile-swatches-skeleton</div>
-    ),
+    ProductTileSkeleton: () => <div data-testid="product-tile-skeleton" />,
 }));
 
-const createMockProduct = (id: string, name: string): ShopperSearch.schemas['ProductSearchHit'] => ({
+type ProductHit = ShopperSearch.schemas['ProductSearchHit'];
+
+const makeProduct = (id: string, name: string): ProductHit => ({
     productId: id,
     productName: name,
     price: 99.99,
-    variationAttributes: [
-        {
-            id: 'color',
-            values: [{ value: 'navy', name: 'Navy' }],
-        },
-    ],
-    imageGroups: [
-        {
-            viewType: 'medium',
-            images: [
-                {
-                    alt: `${name} image`,
-                    link: `https://example.com/${id}.jpg`,
-                    disBaseLink: `https://example.com/${id}.jpg`,
-                },
-            ],
-        },
-    ],
 });
 
-const mockProducts = [
-    createMockProduct('product-1', 'Product One'),
-    createMockProduct('product-2', 'Product Two'),
-    createMockProduct('product-3', 'Product Three'),
-];
+const p1 = makeProduct('p1', 'Product One');
+const p2 = makeProduct('p2', 'Product Two');
+const p3 = makeProduct('p3', 'Product Three');
 
-const mockProductsExtended = [
-    ...mockProducts,
-    createMockProduct('product-4', 'Product Four'),
-    createMockProduct('product-5', 'Product Five'),
-    createMockProduct('product-6', 'Product Six'),
-];
+interface RenderOptions {
+    critical?: ProductHit[];
+    nonCritical?: Promise<ProductHit[]>;
+    nonCriticalCount?: number;
+    hasRefinementsPanel?: boolean;
+    handleProductClick?: (p: ProductHit) => void;
+    topCategoryName?: string;
+    isLoading?: boolean;
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    showPickupAvailable?: boolean;
+}
 
-const renderComponent = (
-    props: {
-        critical?: ShopperSearch.schemas['ProductSearchHit'][];
-        nonCritical?: Promise<ShopperSearch.schemas['ProductSearchHit'][]>;
-        nonCriticalCount?: number;
-        handleProductClick?: (product: ShopperSearch.schemas['ProductSearchHit']) => void;
-    } = {}
-) => {
+const renderGrid = ({
+    critical,
+    nonCritical,
+    nonCriticalCount,
+    hasRefinementsPanel,
+    handleProductClick,
+    topCategoryName,
+    isLoading,
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    showPickupAvailable,
+}: RenderOptions = {}) => {
     const router = createMemoryRouter(
         [
             {
@@ -158,22 +102,19 @@ const renderComponent = (
                     <ConfigWrapper>
                         <CurrencyProvider value="USD">
                             <ProductGrid
-                                critical={props.critical ?? (!props.nonCritical ? mockProductsExtended : [])}
-                                nonCritical={props.nonCritical}
-                                nonCriticalCount={props.nonCriticalCount}
-                                handleProductClick={props.handleProductClick}
+                                critical={critical}
+                                nonCritical={nonCritical}
+                                nonCriticalCount={nonCriticalCount}
+                                hasRefinementsPanel={hasRefinementsPanel}
+                                handleProductClick={handleProductClick}
+                                topCategoryName={topCategoryName}
+                                isLoading={isLoading}
+                                // @sfdc-extension-line SFDC_EXT_BOPIS
+                                showPickupAvailable={showPickupAvailable}
                             />
                         </CurrencyProvider>
                     </ConfigWrapper>
                 ),
-            },
-            {
-                path: '/product/:productId',
-                element: <div>Product Page</div>,
-            },
-            {
-                path: '*',
-                element: <div>Navigated</div>,
             },
         ],
         { initialEntries: ['/test'] }
@@ -181,181 +122,213 @@ const renderComponent = (
     return render(<RouterProvider router={router} />);
 };
 
-describe('ProductGrid', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
+describe('ProductGrid — critical products', () => {
+    beforeEach(() => vi.clearAllMocks());
+    afterEach(() => vi.restoreAllMocks());
+
+    test('renders all critical products', () => {
+        renderGrid({ critical: [p1, p2, p3] });
+
+        expect(screen.getByTestId('product-tile-p1')).toBeInTheDocument();
+        expect(screen.getByTestId('product-tile-p2')).toBeInTheDocument();
+        expect(screen.getByTestId('product-tile-p3')).toBeInTheDocument();
     });
 
-    afterEach(() => {
-        vi.restoreAllMocks();
+    test('renders no tiles when critical is an empty array', () => {
+        renderGrid({ critical: [] });
+
+        expect(screen.queryByTestId(/^product-tile-p/)).not.toBeInTheDocument();
     });
 
-    test('renders all products in the grid', () => {
-        renderComponent();
+    test('renders no tiles when critical is undefined', () => {
+        renderGrid({ critical: undefined });
 
-        expect(screen.getByText('Product One')).toBeInTheDocument();
-        expect(screen.getByText('Product Two')).toBeInTheDocument();
-        expect(screen.getByText('Product Three')).toBeInTheDocument();
+        expect(screen.queryByTestId(/^product-tile-p/)).not.toBeInTheDocument();
     });
 
-    test('displays empty state message when no products', () => {
-        renderComponent({ critical: [] });
+    test('calls handleProductClick when a critical tile is clicked', async () => {
+        const user = userEvent.setup();
+        const handleProductClick = vi.fn();
+        renderGrid({ critical: [p1, p2], handleProductClick });
+
+        await user.click(screen.getByText('Product One'));
+
+        expect(handleProductClick).toHaveBeenCalledOnce();
+        expect(handleProductClick).toHaveBeenCalledWith(p1);
+    });
+
+    test('threads topCategoryName to every critical tile', () => {
+        renderGrid({ critical: [p1, p2], topCategoryName: 'Women' });
+
+        expect(screen.getByTestId('product-tile-p1')).toHaveAttribute('data-top-category', 'Women');
+        expect(screen.getByTestId('product-tile-p2')).toHaveAttribute('data-top-category', 'Women');
+    });
+
+    test('passes empty topCategoryName when prop is omitted', () => {
+        renderGrid({ critical: [p1] });
+
+        expect(screen.getByTestId('product-tile-p1')).toHaveAttribute('data-top-category', '');
+    });
+});
+
+describe('ProductGrid — non-critical products', () => {
+    beforeEach(() => vi.clearAllMocks());
+    afterEach(() => vi.restoreAllMocks());
+
+    test('shows skeleton tiles while nonCritical is pending', () => {
+        renderGrid({
+            critical: [],
+            nonCritical: new Promise(() => {}),
+            nonCriticalCount: 3,
+        });
+
+        expect(screen.getAllByTestId('product-tile-skeleton')).toHaveLength(3);
+    });
+
+    test('shows no skeletons when nonCriticalCount defaults to 0', () => {
+        renderGrid({
+            critical: [],
+            nonCritical: new Promise(() => {}),
+            // nonCriticalCount intentionally omitted — defaults to 0
+        });
+
+        expect(screen.queryByTestId('product-tile-skeleton')).not.toBeInTheDocument();
+    });
+
+    test('renders products after nonCritical resolves', async () => {
+        await act(() => renderGrid({ critical: [], nonCritical: Promise.resolve([p1, p2]) }));
+
+        expect(screen.getByTestId('product-tile-p1')).toBeInTheDocument();
+        expect(screen.getByTestId('product-tile-p2')).toBeInTheDocument();
+        expect(screen.queryByTestId('product-tile-skeleton')).not.toBeInTheDocument();
+    });
+
+    test('calls handleProductClick when a non-critical tile is clicked', async () => {
+        const user = userEvent.setup();
+        const handleProductClick = vi.fn();
+        await act(() => renderGrid({ critical: [], nonCritical: Promise.resolve([p2, p3]), handleProductClick }));
+
+        await user.click(screen.getByText('Product Two'));
+
+        expect(handleProductClick).toHaveBeenCalledOnce();
+        expect(handleProductClick).toHaveBeenCalledWith(p2);
+    });
+
+    test('threads topCategoryName to non-critical tiles', async () => {
+        await act(() => renderGrid({ critical: [], nonCritical: Promise.resolve([p1]), topCategoryName: 'Men' }));
+
+        expect(screen.getByTestId('product-tile-p1')).toHaveAttribute('data-top-category', 'Men');
+    });
+});
+
+describe('ProductGrid — mixed critical and non-critical', () => {
+    beforeEach(() => vi.clearAllMocks());
+    afterEach(() => vi.restoreAllMocks());
+
+    test('renders critical products immediately and non-critical products after resolve', async () => {
+        await act(() => renderGrid({ critical: [p1, p2], nonCritical: Promise.resolve([p3]) }));
+
+        expect(screen.getByTestId('product-tile-p1')).toBeInTheDocument();
+        expect(screen.getByTestId('product-tile-p2')).toBeInTheDocument();
+        expect(screen.getByTestId('product-tile-p3')).toBeInTheDocument();
+    });
+
+    test('does not show empty message when both critical and non-critical have products', async () => {
+        await act(() => renderGrid({ critical: [p1], nonCritical: Promise.resolve([p2]) }));
+
+        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+    });
+
+    test('shows loading overlay while a refinement navigation is pending', () => {
+        renderGrid({ critical: [p1, p2], nonCriticalCount: 2, isLoading: true });
+
+        expect(screen.getByTestId('product-grid-loading-state')).toBeInTheDocument();
+    });
+});
+
+describe('ProductGrid — empty state', () => {
+    beforeEach(() => vi.clearAllMocks());
+    afterEach(() => vi.restoreAllMocks());
+
+    test('shows empty message when critical is empty and nonCritical is not provided', () => {
+        renderGrid({ critical: [] });
 
         expect(screen.getByText('No products found')).toBeInTheDocument();
     });
 
-    test('calls handleProductClick when product is clicked', async () => {
-        const user = userEvent.setup();
-        const handleProductClick = vi.fn();
-        renderComponent({ handleProductClick });
+    test('shows empty message when both critical and non-critical resolve empty', async () => {
+        await act(() => renderGrid({ critical: [], nonCritical: Promise.resolve([]) }));
 
-        const productLink = screen.getByRole('link', { name: 'Product One' });
-        await user.click(productLink);
+        expect(screen.getByText('No products found')).toBeInTheDocument();
+    });
 
-        expect(handleProductClick).toHaveBeenCalledWith(mockProducts[0]);
+    test('hides empty message when critical has products', () => {
+        renderGrid({ critical: [p1] });
+
+        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+    });
+
+    test('hides empty message when non-critical resolves with products and critical is empty', async () => {
+        await act(() => renderGrid({ critical: [], nonCritical: Promise.resolve([p1]) }));
+
+        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+    });
+
+    test('hides empty message when critical has products even if non-critical resolves empty', async () => {
+        await act(() => renderGrid({ critical: [p1], nonCritical: Promise.resolve([]) }));
+
+        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
+    });
+
+    test('uses refinement-aware image widths when hasRefinementsPanel is true', () => {
+        dynamicImageValueSpy.mockClear();
+        renderGrid({ critical: [p1], hasRefinementsPanel: true });
+
+        expect(dynamicImageValueSpy).toHaveBeenCalledWith(
+            expect.objectContaining({ widths: ['40vw', '25vw', '18vw', '14vw', '16vw', '16vw'] })
+        );
+    });
+
+    test('uses full-width image widths when hasRefinementsPanel is false', () => {
+        dynamicImageValueSpy.mockClear();
+        renderGrid({ critical: [p1], hasRefinementsPanel: false });
+
+        expect(dynamicImageValueSpy).toHaveBeenCalledWith(
+            expect.objectContaining({ widths: ['40vw', '25vw', '18vw', '18vw', '20vw', '20vw'] })
+        );
     });
 });
 
-describe('ProductGrid critical/non-critical split', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+describe('ProductGrid — BOPIS showPickupAvailable', () => {
+    beforeEach(() => vi.clearAllMocks());
+    afterEach(() => vi.restoreAllMocks());
+
+    test('passes showPickupAvailable=false to tiles by default', () => {
+        renderGrid({ critical: [p1, p2], showPickupAvailable: false });
+
+        expect(screen.getByTestId('product-tile-p1')).toHaveAttribute('data-pickup', 'false');
+        expect(screen.getByTestId('product-tile-p2')).toHaveAttribute('data-pickup', 'false');
     });
 
-    afterEach(() => {
-        vi.restoreAllMocks();
+    test('passes showPickupAvailable=true to critical tiles', () => {
+        renderGrid({ critical: [p1, p2], showPickupAvailable: true });
+
+        expect(screen.getByTestId('product-tile-p1')).toHaveAttribute('data-pickup', 'true');
+        expect(screen.getByTestId('product-tile-p2')).toHaveAttribute('data-pickup', 'true');
     });
 
-    test('renders critical array immediately', () => {
-        renderComponent({ critical: mockProducts.slice(0, 2) });
-
-        expect(screen.getByText('Product One')).toBeInTheDocument();
-        expect(screen.getByText('Product Two')).toBeInTheDocument();
-    });
-
-    test('renders non-critical array deferred', () => {
-        const { queryAllByTestId } = renderComponent({
-            nonCritical: Promise.resolve(mockProductsExtended.slice(2)),
-            nonCriticalCount: 4,
-        });
-        // Verify skeleton tiles
-        expect(queryAllByTestId('product-tile-skeleton')).toHaveLength(4);
-    });
-
-    test('renders critical and nonCritical arrays together', async () => {
-        const criticalProducts = mockProductsExtended.slice(0, 2);
-        const nonCriticalProducts = Promise.resolve(mockProductsExtended.slice(2));
-
-        await act(() => renderComponent({ critical: criticalProducts, nonCritical: nonCriticalProducts }));
-
-        // Critical products render immediately
-        expect(screen.getByText('Product One')).toBeInTheDocument();
-        expect(screen.getByText('Product Two')).toBeInTheDocument();
-
-        // NonCritical products render after lazy resolves (immediate in tests)
-        expect(screen.getByText('Product Three')).toBeInTheDocument();
-        expect(screen.getByText('Product Four')).toBeInTheDocument();
-        expect(screen.getByText('Product Five')).toBeInTheDocument();
-        expect(screen.getByText('Product Six')).toBeInTheDocument();
-        expect(screen.queryAllByTestId('product-tile-skeleton')).toHaveLength(0);
-    });
-
-    test('does not display empty state when nonCritical has items', async () => {
+    test('passes showPickupAvailable=true to non-critical tiles', async () => {
         await act(() =>
-            renderComponent({ critical: [], nonCritical: Promise.resolve(mockProducts), nonCriticalCount: 3 })
+            renderGrid({
+                critical: [],
+                nonCritical: Promise.resolve([p1, p2]),
+                showPickupAvailable: true,
+            })
         );
-        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
-        expect(screen.getByText('Product One')).toBeInTheDocument();
-    });
 
-    test('displays empty state when nonCritical resolves to empty array', async () => {
-        await act(() => renderComponent({ critical: [], nonCritical: Promise.resolve([]) }));
-        expect(screen.getByText('No products found')).toBeInTheDocument();
-    });
-
-    test('does not display empty state when critical has products but nonCritical is empty', async () => {
-        await act(() => renderComponent({ critical: mockProducts.slice(0, 2), nonCritical: Promise.resolve([]) }));
-
-        expect(screen.queryByText('No products found')).not.toBeInTheDocument();
-        expect(screen.getByText('Product One')).toBeInTheDocument();
-        expect(screen.getByText('Product Two')).toBeInTheDocument();
-    });
-
-    test('calls handleProductClick for non-critical array products after lazy resolves', async () => {
-        const user = userEvent.setup();
-        const handleProductClick = vi.fn();
-
-        await act(() => {
-            return renderComponent({
-                critical: mockProductsExtended.slice(0, 2),
-                nonCritical: Promise.resolve(mockProductsExtended.slice(2)),
-                nonCriticalCount: 4,
-                handleProductClick,
-            });
-        });
-
-        // Wait for non-critical products to render
-        const productLink = await screen.findByRole('link', { name: 'Product Five' });
-        await user.click(productLink);
-
-        expect(handleProductClick).toHaveBeenCalledWith(mockProductsExtended[4]);
+        expect(screen.getByTestId('product-tile-p1')).toHaveAttribute('data-pickup', 'true');
+        expect(screen.getByTestId('product-tile-p2')).toHaveAttribute('data-pickup', 'true');
     });
 });
-
-describe('ProductGrid DynamicImageProvider Integration', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
-
-    afterEach(() => {
-        vi.restoreAllMocks();
-    });
-
-    test('Verify calls to the DynamicImageProvider context from nested components', async () => {
-        await act(() => {
-            return renderComponent({
-                critical: mockProductsExtended.slice(0, 2),
-                nonCritical: Promise.resolve(mockProductsExtended.slice(2)),
-                nonCriticalCount: 4,
-            });
-        });
-
-        // Verify `addSource` was called by each ProductTile with its image URL
-        expect(addSourceSpy).toHaveBeenCalledTimes(6);
-        expect(addSourceSpy).toHaveBeenNthCalledWith(
-            1,
-            'https://example.com/product-1-default.jpg',
-            expect.any(Boolean)
-        );
-        expect(addSourceSpy).toHaveBeenNthCalledWith(
-            2,
-            'https://example.com/product-2-default.jpg',
-            expect.any(Boolean)
-        );
-
-        // Verify `hasSource` was called by each DynamicImage to check priority
-        expect(hasSourceSpy).toHaveBeenCalledTimes(6);
-        expect(hasSourceSpy).toHaveBeenNthCalledWith(
-            1,
-            'https://example.com/product-1-default.jpg',
-            expect.any(Boolean)
-        );
-        expect(hasSourceSpy).toHaveBeenNthCalledWith(
-            2,
-            'https://example.com/product-2-default.jpg',
-            expect.any(Boolean)
-        );
-
-        expect(addSourceSpy.mock.calls[0][1]).toBe(false); // not implemented
-        expect(addSourceSpy.mock.calls[1][1]).toBe(false); // not implemented
-        expect(addSourceSpy.mock.calls[2][1]).toBe(false); // not implemented
-        expect(addSourceSpy.mock.calls[3][1]).toBe(false); // not implemented
-        expect(addSourceSpy.mock.calls[4][1]).toBe(false); // not implemented
-        expect(addSourceSpy.mock.calls[5][1]).toBe(false); // not implemented
-        expect(hasSourceSpy.mock.calls[0][1]).toBe(true); // returns true, despite `addSourceSpy` not implemented
-        expect(hasSourceSpy.mock.calls[1][1]).toBe(true); // returns true, despite `addSourceSpy` not implemented
-        expect(hasSourceSpy.mock.calls[2][1]).toBe(false);
-        expect(hasSourceSpy.mock.calls[3][1]).toBe(false);
-        expect(hasSourceSpy.mock.calls[4][1]).toBe(false);
-        expect(hasSourceSpy.mock.calls[5][1]).toBe(false);
-    });
-});
+// @sfdc-extension-block-end SFDC_EXT_BOPIS

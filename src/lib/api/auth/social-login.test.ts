@@ -18,7 +18,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { authorizeIDP, loginIDPUser, handleSocialLoginLanding } from './social-login';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { mergeBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
 import { TrackingConsent } from '@/types/tracking-consent';
@@ -48,7 +48,7 @@ vi.mock('@/middlewares/auth.utils', () => ({
     isTrackingConsentEnabled: vi.fn(() => false),
 }));
 
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     getConfig: vi.fn(() => ({
         commerce: {
             api: {
@@ -62,6 +62,16 @@ vi.mock('@/lib/utils', () => ({
     getErrorMessage: vi.fn((err?: any) => (err && err.message) || 'An error occurred'),
     getAppOrigin: vi.fn(() => 'https://example.com'),
     isAbsoluteURL: vi.fn((url: string) => url.startsWith('http')),
+}));
+
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => mockLogger),
 }));
 
 const mockIsTrackingConsentEnabled = vi.mocked(isTrackingConsentEnabled);
@@ -420,8 +430,6 @@ describe('handleSocialLoginCallback', () => {
         it('should handle basket merge errors gracefully and still redirect', async () => {
             mockMergeBasket.mockRejectedValue(new Error('Basket merge failed'));
 
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
             const mockRequest = new Request('http://localhost:5173/social-callback?code=auth_code_123');
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const args: LoaderFunctionArgs = {
@@ -433,12 +441,12 @@ describe('handleSocialLoginCallback', () => {
             const result = await handleSocialLoginLanding(args);
 
             expect(mockMergeBasket).toHaveBeenCalled();
-            expect(consoleErrorSpy).toHaveBeenCalledWith('[Social Login] Failed to merge basket:', expect.any(Error));
+            expect(mockLogger.error).toHaveBeenCalledWith('SocialLogin: basket merge failed', {
+                error: expect.any(Error),
+            });
             // Should still redirect to home despite basket merge failure
             expect(result.status).toBe(302);
             expect(result.headers.get('Location')).toBe('/');
-
-            consoleErrorSpy.mockRestore();
         });
 
         it('should use config callbackUri for redirectURI construction', async () => {

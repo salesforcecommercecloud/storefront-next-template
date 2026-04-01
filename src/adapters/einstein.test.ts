@@ -291,6 +291,7 @@ describe('Einstein Adapter', () => {
                     },
                 ],
                 amount: 59.98,
+                checkoutType: 'one-click',
             });
         });
 
@@ -510,6 +511,7 @@ describe('Einstein Adapter', () => {
                 stepName: 'shipping',
                 stepNumber: 1,
                 basketId: 'test-basket-id',
+                checkoutType: 'one-click',
             });
         });
     });

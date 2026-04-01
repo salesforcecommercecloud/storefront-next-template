@@ -20,13 +20,18 @@ import { expect, test, describe, afterEach, vi } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
 import { ConfigWrapper } from '@/test-utils/config';
 
-vi.mock('react-router', () => ({
-    NavLink: ({ to, children, ...props }: { to: string; children: React.ReactNode; [key: string]: unknown }) => (
-        <a href={to} {...props}>
-            {children}
-        </a>
-    ),
-}));
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    return {
+        ...actual,
+        useNavigate: () => vi.fn(),
+        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
+        useResolvedPath: () => ({ pathname: '/', search: '', hash: '' }),
+        useHref: () => '/',
+        Link: (props: any) => <a href={props.to} {...props}>{props.children}</a>,
+        NavLink: (props: any) => <a href={props.to} {...props}>{props.children}</a>,
+    };
+});
 
 const composed = composeStories(SwatchesStories);
 

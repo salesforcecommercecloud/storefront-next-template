@@ -17,6 +17,7 @@ import React from 'react';
 import { render, screen, fireEvent, act, cleanup } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach, afterEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import HeroCarousel, { type HeroSlide } from './index';
 import type { CarouselApi } from '@/components/ui/carousel';
 
@@ -85,14 +86,11 @@ vi.mock('@/components/ui/button', () => ({
 
 // Router testing helper
 const renderWithRouter = (component: React.ReactElement) => {
-    // Using createMemoryRouter in framework mode is fine
-    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
     const router = createMemoryRouter(
         [
             {
-                path: '/',
-                element: component,
+                path: '*',
+                element: <AllProvidersWrapper>{component}</AllProvidersWrapper>,
             },
         ],
         { initialEntries: ['/'] }
@@ -118,12 +116,12 @@ describe('HeroCarousel', () => {
             expect(screen.getByTestId('carousel')).toBeInTheDocument();
             expect(screen.getByText('First Slide')).toBeInTheDocument();
             expect(screen.getByText('First subtitle')).toBeInTheDocument();
-            expect(screen.getByRole('link', { name: 'Shop Now' })).toHaveAttribute('href', '/shop');
+            expect(screen.getByRole('link', { name: 'Shop Now' })).toHaveAttribute('href', '/global/en-GB/shop');
 
             // Check for Learn More links with specific hrefs
             const learnMoreLinks = screen.getAllByRole('link', { name: 'Learn More' });
             expect(learnMoreLinks).toHaveLength(2);
-            expect(learnMoreLinks[0]).toHaveAttribute('href', '/learn-more');
+            expect(learnMoreLinks[0]).toHaveAttribute('href', '/global/en-GB/learn-more');
             expect(learnMoreLinks[1]).toHaveAttribute('href', '/');
         });
 

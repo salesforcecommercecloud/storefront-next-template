@@ -14,82 +14,47 @@
  * limitations under the License.
  */
 import { createRef } from 'react';
-import { render, cleanup } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, render } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router';
+import { afterEach, describe, expect, test } from 'vitest';
+import i18next from 'i18next';
+import { AllProvidersWrapper, ConfigWrapper } from '@/test-utils/context-provider';
 import { Link, NavLink } from './index';
 
-const mockUseSite = vi.fn();
-vi.mock('@salesforce/storefront-next-runtime/multi-site', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@salesforce/storefront-next-runtime/multi-site')>();
-    return {
-        ...actual,
-        useSite: (...args: unknown[]) => mockUseSite(...args),
-    };
-});
-
-const mockUseConfig = vi.fn();
-vi.mock('@/config', () => ({
-    useConfig: (...args: unknown[]) => mockUseConfig(...args),
-}));
-
 function renderWithRouter(ui: React.ReactElement) {
-    return render(<MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>);
+    const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{ui}</AllProvidersWrapper> }], {
+        initialEntries: ['/'],
+    });
+    return render(<RouterProvider router={router} />);
 }
 
-const defaultSite = {
-    id: 'RefArchGlobal',
-    defaultCurrency: 'GBP',
-    defaultLocale: 'en-GB',
-    supportedCurrencies: ['EUR', 'GBP'],
-    supportedLocales: [
-        { id: 'en-GB', preferredCurrency: 'GBP' },
-        { id: 'de-DE', preferredCurrency: 'EUR' },
-    ],
-};
-
-const defaultConfig = {
-    url: { prefix: '/:siteId', search: '?lng=:localeId' },
-    siteAliasMap: { RefArchGlobal: 'global' },
-};
+// Without SiteProvider — Link falls back to plain URLs
+function renderWithoutSite(ui: React.ReactElement) {
+    const router = createMemoryRouter([{ path: '*', element: <ConfigWrapper>{ui}</ConfigWrapper> }], {
+        initialEntries: ['/'],
+    });
+    return render(<RouterProvider router={router} />);
+}
 
 describe('Link', () => {
-    afterEach(() => {
+    afterEach(async () => {
         cleanup();
-        vi.resetAllMocks();
+        await i18next.changeLanguage('en-GB');
     });
 
-    it('renders a multi-site URL with prefix and search params', () => {
-        mockUseSite.mockReturnValue(defaultSite);
-        mockUseConfig.mockReturnValue(defaultConfig);
-
+    test('renders a multi-site prefixed URL', () => {
         const { getByRole } = renderWithRouter(<Link to="/product/123">Product</Link>);
 
-        expect(getByRole('link')).toHaveAttribute('href', '/global/product/123?lng=en-GB');
+        expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
     });
 
-    it('uses the raw site id when no alias is configured', () => {
-        mockUseSite.mockReturnValue(defaultSite);
-        mockUseConfig.mockReturnValue({ url: { prefix: '/:siteId' } });
-
-        const { getByRole } = renderWithRouter(<Link to="/category">Category</Link>);
-
-        expect(getByRole('link')).toHaveAttribute('href', '/RefArchGlobal/category');
-    });
-
-    it('renders a plain href when site context is not available', () => {
-        mockUseSite.mockReturnValue(undefined);
-        mockUseConfig.mockReturnValue(defaultConfig);
-
-        const { getByRole } = renderWithRouter(<Link to="/product/123">Product</Link>);
+    test('renders a plain href when site context is not available', () => {
+        const { getByRole } = renderWithoutSite(<Link to="/product/123">Product</Link>);
 
         expect(getByRole('link')).toHaveAttribute('href', '/product/123');
     });
 
-    it('passes through an object `to` prop without transformation', () => {
-        mockUseSite.mockReturnValue(defaultSite);
-        mockUseConfig.mockReturnValue(defaultConfig);
-
+    test('passes through an object `to` prop without transformation', () => {
         const { getByRole } = renderWithRouter(
             <Link to={{ pathname: '/product/123', search: '?color=red' }}>Product</Link>
         );
@@ -97,10 +62,7 @@ describe('Link', () => {
         expect(getByRole('link')).toHaveAttribute('href', '/product/123?color=red');
     });
 
-    it('forwards a ref to the anchor element', () => {
-        mockUseSite.mockReturnValue(undefined);
-        mockUseConfig.mockReturnValue(defaultConfig);
-
+    test('forwards a ref to the anchor element', () => {
         const ref = createRef<HTMLAnchorElement>();
         renderWithRouter(
             <Link to="/test" ref={ref}>
@@ -111,10 +73,15 @@ describe('Link', () => {
         expect(ref.current).toBeInstanceOf(HTMLAnchorElement);
     });
 
-    it('passes additional props to the rendered anchor', () => {
-        mockUseSite.mockReturnValue(undefined);
-        mockUseConfig.mockReturnValue(defaultConfig);
+    test('uses the current i18n language for locale segment', async () => {
+        await i18next.changeLanguage('it-IT');
 
+        const { getByRole } = renderWithRouter(<Link to="/product/123">Product</Link>);
+
+        expect(getByRole('link')).toHaveAttribute('href', '/global/it-IT/product/123');
+    });
+
+    test('passes additional props to the rendered anchor', () => {
         const { getByRole } = renderWithRouter(
             <Link to="/test" className="my-link" data-testid="custom">
                 Test
@@ -125,36 +92,33 @@ describe('Link', () => {
         expect(link).toHaveClass('my-link');
         expect(link).toHaveAttribute('data-testid', 'custom');
     });
+
+    test('does not prefix root path "/"', () => {
+        const { getByRole } = renderWithRouter(<Link to="/">Home</Link>);
+
+        expect(getByRole('link')).toHaveAttribute('href', '/');
+    });
 });
 
 describe('NavLink', () => {
-    afterEach(() => {
+    afterEach(async () => {
         cleanup();
-        vi.resetAllMocks();
+        await i18next.changeLanguage('en-GB');
     });
 
-    it('renders a multi-site URL with prefix and search params', () => {
-        mockUseSite.mockReturnValue(defaultSite);
-        mockUseConfig.mockReturnValue(defaultConfig);
-
+    test('renders a multi-site prefixed URL', () => {
         const { getByRole } = renderWithRouter(<NavLink to="/product/123">Product</NavLink>);
 
-        expect(getByRole('link')).toHaveAttribute('href', '/global/product/123?lng=en-GB');
+        expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
     });
 
-    it('renders a plain href when site context is not available', () => {
-        mockUseSite.mockReturnValue(undefined);
-        mockUseConfig.mockReturnValue(defaultConfig);
-
-        const { getByRole } = renderWithRouter(<NavLink to="/product/123">Product</NavLink>);
+    test('renders a plain href when site context is not available', () => {
+        const { getByRole } = renderWithoutSite(<NavLink to="/product/123">Product</NavLink>);
 
         expect(getByRole('link')).toHaveAttribute('href', '/product/123');
     });
 
-    it('forwards a ref to the anchor element', () => {
-        mockUseSite.mockReturnValue(undefined);
-        mockUseConfig.mockReturnValue(defaultConfig);
-
+    test('forwards a ref to the anchor element', () => {
         const ref = createRef<HTMLAnchorElement>();
         renderWithRouter(
             <NavLink to="/test" ref={ref}>

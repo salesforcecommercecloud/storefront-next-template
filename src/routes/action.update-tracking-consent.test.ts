@@ -23,6 +23,14 @@ import { TrackingConsent } from '@/types/tracking-consent';
 // Mock dependencies
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/middlewares/auth.utils');
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
 
 const mockRefreshAccessToken = vi.mocked(refreshAccessToken);
 const mockGetAuth = vi.mocked(getAuth);

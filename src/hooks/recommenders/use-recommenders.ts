@@ -19,6 +19,7 @@ import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next
 import { useRecommendersAdapter } from '@/providers/recommenders';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 import { encodeBase64Url } from '@/lib/url';
+import { getBasePath } from '@/lib/utils';
 import { useAuth } from '@/providers/auth';
 import { useCurrency } from '@/providers/currency';
 
@@ -203,7 +204,9 @@ export const useRecommenders = (isEnabled: boolean = true) => {
                 };
                 const parameters = JSON.stringify(options);
                 const resource = encodeBase64Url(`["${client}","${method}",${parameters}]`);
-                const url = `/resource/api/client/${resource}`;
+                // Append a base path to the resource URL because we are making a raw fetch call
+                // from the client side
+                const url = `${getBasePath()}/resource/api/client/${resource}`;
 
                 const response = await fetch(url);
 

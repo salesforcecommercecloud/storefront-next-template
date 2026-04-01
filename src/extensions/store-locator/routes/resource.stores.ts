@@ -18,6 +18,7 @@ import { data, type LoaderFunctionArgs } from 'react-router';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server-side loader to search for stores.
@@ -36,6 +37,8 @@ import { createApiClients } from '@/lib/api-clients';
  */
 // Resource route for store search API
 export async function loader({ request, context }: LoaderFunctionArgs) {
+    const logger = getLogger(context);
+    logger.debug('StoreSearch: loader starting');
     try {
         const url = new URL(request.url);
         const mode = url.searchParams.get('mode') ?? 'input';
@@ -77,6 +80,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
             stores,
         });
     } catch (error) {
+        logger.error('StoreSearch: search failed', { error });
         const { responseMessage, status_code } = await extractResponseError(error as Error);
         return data(
             {

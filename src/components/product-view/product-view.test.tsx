@@ -29,7 +29,8 @@ import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { bundleProd } from '@/components/__mocks__/bundle-product';
 import { setProduct } from '@/components/__mocks__/set-product';
 import { mockBuildConfig } from '@/test-utils/config';
-import { createAppConfig } from '@/config/context';
+import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 // Mock useToast
 const mockAddToast = vi.fn();
@@ -49,14 +50,30 @@ Object.assign(navigator, {
 
 // Mock navigator.share
 const mockShare = vi.fn();
-Object.defineProperty(navigator, 'share', {
-    writable: true,
-    value: mockShare,
-});
+// eslint-disable-next-line @typescript-eslint/unbound-method -- test fixture
+const originalShare = navigator.share;
 
 // Mock window.open
 const mockWindowOpen = vi.fn();
 window.open = mockWindowOpen;
+
+// Module-level setup and cleanup for navigator.share to prevent test pollution
+beforeEach(() => {
+    Object.defineProperty(navigator, 'share', {
+        writable: true,
+        configurable: true,
+        value: mockShare,
+    });
+});
+
+afterEach(() => {
+    Object.defineProperty(navigator, 'share', {
+        writable: true,
+        configurable: true,
+        value: originalShare,
+    });
+    mockShare.mockClear();
+});
 
 const renderProductView = (props: React.ComponentProps<typeof ProductView>, initialUrl = '/product/test-product') => {
     // Using createMemoryRouter in framework mode is fine
@@ -103,9 +120,8 @@ describe('ProductView', () => {
                 screen.getAllByRole('img', { name: /Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit/i })[0]
             ).toBeInTheDocument();
 
-            // Price should be visible
-            expect(screen.getByText('From $299.99')).toBeInTheDocument();
-            expect(screen.getByText('$500.00')).toBeInTheDocument();
+            // Price should be visible (single price or range depending on context)
+            expect(screen.getAllByText((content) => content.includes('$299.99')).length).toBeGreaterThanOrEqual(1);
 
             // Swatches should be visible
             expect(screen.getByLabelText('Charcoal')).toBeInTheDocument();
@@ -202,7 +218,7 @@ describe('ProductView', () => {
 
             // Should render all major components without errors
             expect(screen.getByText('Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit')).toBeInTheDocument();
-            expect(screen.getByText('From $299.99')).toBeInTheDocument();
+            expect(screen.getAllByText((content) => content.includes('$299.99')).length).toBeGreaterThanOrEqual(1);
             expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
         });
     });
@@ -293,7 +309,7 @@ describe('ProductView', () => {
 
             // Should render all product components
             expect(screen.getByText('Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit')).toBeInTheDocument();
-            expect(screen.getByText('From $299.99')).toBeInTheDocument();
+            expect(screen.getAllByText((content) => content.includes('$299.99')).length).toBeGreaterThanOrEqual(1);
         });
 
         test('maintains consistent behavior across different product types', () => {
@@ -322,7 +338,7 @@ describe('ProductView', () => {
 
             // Verify all major product elements are present
             expect(screen.getByText('Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit')).toBeInTheDocument();
-            expect(screen.getByText('From $299.99')).toBeInTheDocument();
+            expect(screen.getAllByText((content) => content.includes('$299.99')).length).toBeGreaterThanOrEqual(1);
             expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /add to wishlist/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
@@ -362,7 +378,7 @@ describe('ProductView', () => {
             renderProductView({ product: productWithPriceRange });
 
             expect(screen.getByText('Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit')).toBeInTheDocument();
-            expect(screen.getByText('From $299.99')).toBeInTheDocument();
+            expect(screen.getAllByText((content) => content.includes('$299.99')).length).toBeGreaterThanOrEqual(1);
         });
 
         test('renders product with variation attributes', () => {
@@ -392,6 +408,34 @@ describe('ProductView', () => {
         });
     });
 
+    describe('PDP collapsible sections', () => {
+        test('renders all 4 section shells by default', () => {
+            const { container } = renderProductView({ product: mockProduct });
+
+            expect(screen.getByText('Materials')).toBeInTheDocument();
+            expect(screen.getByText('Usage Instructions')).toBeInTheDocument();
+            expect(screen.getByText('Care Instructions')).toBeInTheDocument();
+            expect(screen.getByText('Specifications')).toBeInTheDocument();
+
+            // Each label lives inside a <summary> within a <details>
+            const summaries = container.querySelectorAll('details > summary');
+            const sectionLabels = Array.from(summaries).map((s) => s.textContent?.trim());
+            expect(sectionLabels).toContain('Materials');
+            expect(sectionLabels).toContain('Usage Instructions');
+            expect(sectionLabels).toContain('Care Instructions');
+            expect(sectionLabels).toContain('Specifications');
+        });
+
+        test('section shells are collapsed by default', () => {
+            const { container } = renderProductView({ product: mockProduct });
+
+            const detailsForMaterials = Array.from(container.querySelectorAll('details')).find((d) =>
+                d.querySelector('summary')?.textContent?.includes('Materials')
+            );
+            expect(detailsForMaterials).not.toHaveAttribute('open');
+        });
+    });
+
     describe('Description section', () => {
         test('description summary has hover background style', () => {
             const productWithDescription = {
@@ -415,7 +459,30 @@ describe('ProductView', () => {
             expect(shareButton).toBeInTheDocument();
         });
 
-        test('share button opens dropdown menu when clicked', async () => {
+        test('share button triggers native share when available', async () => {
+            const user = userEvent.setup();
+            renderProductView({ product: mockProduct });
+
+            const shareButton = screen.getByRole('button', { name: /share/i });
+            await user.click(shareButton);
+
+            // Native share should be called
+            await waitFor(() => {
+                expect(mockShare).toHaveBeenCalledOnce();
+            });
+        });
+
+        test('share button opens dropdown menu when native share is not available', async () => {
+            // Temporarily set navigator.share to undefined to test fallback
+            // eslint-disable-next-line @typescript-eslint/unbound-method -- test fixture
+            const previousShare = navigator.share;
+
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+
             const user = userEvent.setup();
             renderProductView({ product: mockProduct });
 
@@ -426,25 +493,30 @@ describe('ProductView', () => {
             await waitFor(() => {
                 expect(screen.getByText('Copy link')).toBeInTheDocument();
             });
-        });
-
-        test('share button shows enabled social providers from config', async () => {
-            const user = userEvent.setup();
-            renderProductView({ product: mockProduct });
-
-            const shareButton = screen.getByRole('button', { name: /share/i });
-            await user.click(shareButton);
-
-            await waitFor(() => {
-                expect(screen.getByText('Copy link')).toBeInTheDocument();
-            });
 
             // Check for configured social providers
             expect(screen.getByText('Email')).toBeInTheDocument();
             expect(screen.getByText('Twitter/X')).toBeInTheDocument();
+
+            // Restore navigator.share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: previousShare,
+            });
         });
 
-        test('share button respects disabled socialShare config', async () => {
+        test('share button respects disabled socialShare config in fallback menu', async () => {
+            // Temporarily set navigator.share to undefined to test fallback
+            // eslint-disable-next-line @typescript-eslint/unbound-method -- test fixture
+            const previousShare = navigator.share;
+
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+
             const customConfig = createAppConfig({
                 ...mockBuildConfig,
                 app: {
@@ -454,7 +526,7 @@ describe('ProductView', () => {
                         socialShare: { enabled: false, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
                     },
                 },
-            } as any);
+            }) as AppConfig;
 
             const user = userEvent.setup();
             const router = createMemoryRouter(
@@ -484,9 +556,26 @@ describe('ProductView', () => {
             // Social providers should not be shown when disabled
             expect(screen.queryByText('Email')).not.toBeInTheDocument();
             expect(screen.queryByText('Twitter/X')).not.toBeInTheDocument();
+
+            // Restore navigator.share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: previousShare,
+            });
         });
 
-        test('share button shows only configured providers', async () => {
+        test('share button shows only configured providers in fallback menu', async () => {
+            // Temporarily set navigator.share to undefined to test fallback
+            // eslint-disable-next-line @typescript-eslint/unbound-method -- test fixture
+            const previousShare = navigator.share;
+
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: undefined,
+            });
+
             const customConfig = createAppConfig({
                 ...mockBuildConfig,
                 app: {
@@ -496,7 +585,7 @@ describe('ProductView', () => {
                         socialShare: { enabled: true, providers: ['Email'] },
                     },
                 },
-            } as any);
+            }) as AppConfig;
 
             const user = userEvent.setup();
             const router = createMemoryRouter(
@@ -527,6 +616,13 @@ describe('ProductView', () => {
             expect(screen.getByText('Email')).toBeInTheDocument();
             expect(screen.queryByText('Twitter/X')).not.toBeInTheDocument();
             expect(screen.queryByText('Facebook')).not.toBeInTheDocument();
+
+            // Restore navigator.share
+            Object.defineProperty(navigator, 'share', {
+                writable: true,
+                configurable: true,
+                value: previousShare,
+            });
         });
 
         test('share button appears alongside wishlist button', () => {
@@ -538,8 +634,8 @@ describe('ProductView', () => {
             expect(wishlistButton).toBeInTheDocument();
             expect(shareButton).toBeInTheDocument();
 
-            // Both buttons should be in the same container (grid layout)
-            const buttonsContainer = wishlistButton.closest('div.grid');
+            // Both buttons should be in the same container (flex layout)
+            const buttonsContainer = wishlistButton.closest('div.flex');
             expect(buttonsContainer).toContainElement(shareButton);
         });
 

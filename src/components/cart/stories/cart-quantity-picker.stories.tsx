@@ -18,10 +18,12 @@ import CartQuantityPicker from '../cart-quantity-picker';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { Badge } from '@/components/ui/badge';
+import { Info, ShoppingCart } from 'lucide-react';
 
 const QUANTITY_PICKER_HARNESS_ATTR = 'data-quantity-picker-harness';
 
@@ -130,60 +132,59 @@ const meta: Meta<typeof CartQuantityPicker> = {
         docs: {
             description: {
                 component: `
-A cart-specific quantity picker component that wraps the base QuantityPicker with cart-specific logic including API integration, debouncing, and error handling.
+A cart-specific quantity picker that wraps the base \`QuantityPicker\` with API integration, debounced updates, stock validation, and remove-item confirmation.
+
+## Design
+
+Renders a right-aligned "Quantity:" label above a compact stepper control. The stepper uses a single \`border border-input rounded-lg\` wrapper with flush −/+ buttons and a borderless numeric input — matching the reference cart item design.
 
 ## Features
 
-- **Quantity Input**: Number input for quantity with increment/decrement buttons
-- **Debounced Updates**: Prevents API spam with configurable debounce delay
-- **Stock Validation**: Validates quantity against stock levels
-- **Error Handling**: Shows error messages and rolls back on failure
-- **Remove Confirmation**: Shows confirmation dialog when quantity is set to 0
-- **Optimistic Updates**: Updates UI immediately for better UX
-- **Loading States**: Disables input during API calls
+- **Single-border stepper**: Clean picker with \`−\` and \`+\` buttons inside one rounded border
+- **Right-aligned label**: "Quantity:" text in \`text-sm text-muted-foreground\` aligned right above the picker
+- **Debounced API calls**: Configurable delay (default from \`config.pages.cart.quantityUpdateDebounce\`) prevents request spam
+- **Stock validation**: Warns when quantity exceeds available stock with a destructive-coloured message
+- **Remove confirmation**: Shows a \`ConfirmationDialog\` when quantity is set to 0
+- **Optimistic updates**: UI updates immediately; rolls back on API failure
+- **Loading state**: Disables the picker while the fetcher is submitting
 
 ## Usage
 
-The CartQuantityPicker is used in:
-- Cart item lists
-- Shopping cart pages
-- Cart item editing
-- Quantity management
-
 \`\`\`tsx
-import CartQuantityPicker from '../cart-quantity-picker';
+import CartQuantityPicker from '@/components/cart/cart-quantity-picker';
 
-function CartItem({ item }) {
-  return (
-    <div>
-      <CartQuantityPicker
-        value={item.quantity.toString()}
-        itemId={item.itemId}
-        stockLevel={item.stockLevel}
-      />
-    </div>
-  );
-}
+// In a cart item row — right column on desktop
+<div className="hidden md:flex flex-col items-end">
+  <CartQuantityPicker
+    value={item.quantity.toString()}
+    itemId={item.itemId}
+    stockLevel={item.stockLevel}
+  />
+</div>
 \`\`\`
 
 ## Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| \`value\` | \`string\` | - | Current quantity value as string |
-| \`itemId\` | \`string\` | - | Cart item ID for API calls |
-| \`className\` | \`string\` | \`undefined\` | Custom className for styling |
-| \`debounceDelay\` | \`number\` | From config | Debounce delay in milliseconds |
-| \`stockLevel\` | \`number\` | \`undefined\` | Stock level for validation |
-| \`disabled\` | \`boolean\` | \`false\` | Disable quantity picker |
+| \`value\` | \`string\` | — | Current quantity as a string |
+| \`itemId\` | \`string\` | — | Cart item ID used for API calls |
+| \`className\` | \`string\` | \`undefined\` | Additional CSS classes on the wrapper |
+| \`debounceDelay\` | \`number\` | From config | Override the default debounce (ms) |
+| \`stockLevel\` | \`number\` | \`undefined\` | Available stock for validation |
+| \`max\` | \`number\` | \`undefined\` | Hard maximum (e.g. bonus product limit) |
+| \`disabled\` | \`boolean\` | \`false\` | Locks the picker (bonus / read-only items) |
 
-## Behavior
+## Stories
 
-- **Debouncing**: Waits for user to stop typing before making API call
-- **Stock Validation**: Warns if quantity exceeds available stock
-- **Remove Confirmation**: Asks for confirmation when setting quantity to 0
-- **Error Rollback**: Reverts to previous value if API call fails
-- **Loading State**: Disables input during submission
+| Story | Description |
+|-------|-------------|
+| **Default** | Standard picker with value 1 |
+| **HighQuantity** | Picker pre-set to 10 |
+| **WithStockLevel** | Picker with stock-level validation (stock = 10) |
+| **Disabled** | Fully disabled state |
+| **WithCustomDebounce** | Shorter 500 ms debounce |
+| **InCartItem** | Full cart-item row with delivery header, product details, action links, and the picker in the desktop right column |
                 `,
             },
         },
@@ -395,6 +396,52 @@ CartQuantityPicker with stock level validation:
     },
 };
 
+export const AtStockLimit: Story = {
+    args: {
+        value: '10',
+        itemId: 'item-123',
+        stockLevel: 10,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: `
+CartQuantityPicker at the stock limit:
+
+### Stock Limit Features:
+- **Increment disabled**: Cannot increase beyond available stock
+- **Stock message**: Shows "Maximum stock reached" when at the limit
+- **Decrement available**: Can still decrease quantity
+- **Clear feedback**: Shopper understands why they cannot add more
+
+### Use Cases:
+- Items at maximum available quantity
+- Allocation-limited products
+- Stock-constrained items
+                `,
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Test quantity input shows stock level value
+        const quantityInput = canvasElement.querySelector('input[type="number"]') as HTMLInputElement;
+        await expect(quantityInput).toBeInTheDocument();
+        await expect(quantityInput).toHaveValue(10);
+
+        // Test increment button is disabled at stock limit
+        const incrementButton = await canvas.findByRole('button', { name: /increment/i }, { timeout: 5000 });
+        await expect(incrementButton).toBeDisabled();
+
+        // Test "Maximum stock reached" message is shown
+        const stockMessage = await canvas.findByRole('alert');
+        await expect(stockMessage).toBeInTheDocument();
+        await expect(stockMessage).toHaveTextContent('Maximum stock reached');
+    },
+};
+
 export const Disabled: Story = {
     args: {
         value: '1',
@@ -472,14 +519,105 @@ CartQuantityPicker with custom debounce delay:
 
 export const InCartItem: Story = {
     render: () => (
-        <div className="w-full max-w-2xl p-4 border rounded-lg">
-            <div className="flex items-start gap-4">
-                <div className="w-24 h-24 bg-muted rounded" />
-                <div className="flex-1">
-                    <h3 className="font-semibold text-lg">Premium Cotton T-Shirt</h3>
-                    <p className="text-sm text-muted-foreground">Blue, Large</p>
-                    <p className="text-lg font-bold mt-2">$29.99</p>
-                    <div className="mt-4">
+        <div className="flex justify-center w-full">
+            <div className="bg-card rounded-lg shadow-md p-4 md:p-8 w-full max-w-3xl">
+                {/* Delivery Header */}
+                <div className="flex items-start gap-2 mb-6">
+                    <Info className="w-5 h-5 text-foreground mt-1 shrink-0" />
+                    <div>
+                        <h2 className="text-lg md:text-xl font-medium text-foreground">Delivery - 1 out of 1 items</h2>
+                        <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                            478 Artisan Way, Somerville, MA 02145
+                        </p>
+                    </div>
+                </div>
+
+                {/* Cart Item Row */}
+                <div className="flex gap-4 md:gap-6 py-4 px-4 md:px-6">
+                    {/* Product Image */}
+                    <a
+                        className="flex-shrink-0 w-20 h-20 md:w-28 md:h-28 bg-muted rounded-lg overflow-hidden block hover:opacity-90 transition-opacity"
+                        href="#"
+                        onClick={(e) => e.preventDefault()}>
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                            <ShoppingCart className="w-10 h-10" />
+                        </div>
+                    </a>
+
+                    {/* Product Details */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                            <a
+                                className="text-sm md:text-base font-medium line-clamp-2 text-foreground hover:underline flex-1"
+                                href="#"
+                                onClick={(e) => e.preventDefault()}>
+                                Solid Cylinder
+                            </a>
+                            {/* Mobile delivery badge */}
+                            <div className="md:hidden flex-shrink-0">
+                                <Badge variant="secondary" className="rounded-md gap-1">
+                                    <ShoppingCart className="w-3 h-3" />
+                                    Delivery
+                                </Badge>
+                            </div>
+                        </div>
+                        <div className="text-xs md:text-sm text-muted-foreground mb-2">
+                            <span>Size: M</span>
+                        </div>
+                        <p className="hidden md:block text-sm text-muted-foreground mb-3">
+                            Robust cylindrical form with timeless appeal.
+                        </p>
+
+                        {/* Mobile price & quantity */}
+                        <div className="md:hidden">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="text-sm font-semibold text-foreground">$59.00</span>
+                            </div>
+                            <div className="mb-2">
+                                <CartQuantityPicker value="2" itemId="item-123" stockLevel={10} />
+                            </div>
+                        </div>
+
+                        {/* Actions row */}
+                        <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3">
+                            <label className="flex items-center gap-2 text-xs md:text-sm text-foreground cursor-pointer">
+                                <input
+                                    className="w-4 h-4 rounded border-input text-primary focus:ring-primary"
+                                    type="checkbox"
+                                />
+                                <span>This is a gift.</span>
+                            </label>
+                            <div className="flex gap-3 items-center">
+                                <button
+                                    className="text-xs md:text-sm text-primary hover:text-primary/80 font-medium focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                                    aria-label="Edit Solid Cylinder">
+                                    Edit
+                                </button>
+                                <button
+                                    className="text-xs md:text-sm text-primary hover:text-primary/80 font-medium focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                                    aria-label="Remove Solid Cylinder from cart">
+                                    Remove
+                                </button>
+                                <button
+                                    className="text-xs md:text-sm text-primary hover:text-primary/80 font-medium focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                                    aria-label="Add Solid Cylinder to wishlist">
+                                    Add to Wishlist
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Desktop right column: delivery badge, price, quantity */}
+                    <div className="hidden md:flex flex-col items-end flex-shrink-0 min-w-[140px]">
+                        <div className="mb-2">
+                            <Badge variant="secondary" className="rounded-md gap-1">
+                                <ShoppingCart className="w-3 h-3" />
+                                Delivery
+                            </Badge>
+                        </div>
+                        <div className="text-right mb-4">
+                            <span className="text-lg font-semibold text-foreground">$59.00</span>
+                        </div>
                         <CartQuantityPicker value="2" itemId="item-123" stockLevel={10} />
                     </div>
                 </div>
@@ -487,20 +625,22 @@ export const InCartItem: Story = {
         </div>
     ),
     parameters: {
+        layout: 'padded',
         docs: {
             description: {
                 story: `
-CartQuantityPicker integrated into a cart item display:
+CartQuantityPicker integrated into a full cart item layout matching the reference design:
 
-### Integration Features:
-- **Cart item layout**: Quantity picker in cart item context
-- **Product context**: Shows quantity for specific product
-- **Stock awareness**: Includes stock level validation
-- **Visual hierarchy**: Clear quantity control placement
+### Layout Features:
+- **Delivery header**: Info icon with delivery count and shipping address
+- **Product image**: Rounded thumbnail linking to product
+- **Product details**: Name, variant (size), description (desktop), price
+- **Action row**: "This is a gift" checkbox, Edit / Remove / Add to Wishlist links in primary blue
+- **Responsive**: Mobile shows price and quantity inline; desktop shows right column with delivery badge, price, and quantity stepper
+- **Reuses components**: Badge, CartQuantityPicker
 
 ### Use Cases:
 - Cart item lists
-- Product item displays
 - Cart content pages
 - Shopping cart interfaces
                 `,

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { LoaderFunctionArgs } from 'react-router';
 import { loader } from './resource.basket-products';
-import { createTestContext } from '@/lib/test-utils';
+import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 
 // Mock getBasket
 vi.mock('@/middlewares/basket.server', () => ({
@@ -29,7 +28,7 @@ vi.mock('@/lib/api-clients', () => ({
 }));
 
 // Mock getConfig - use importOriginal to preserve other exports like appConfigContext
-vi.mock('@/config', async (importOriginal) => {
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual = await importOriginal();
     return {
         ...(actual as Record<string, unknown>),
@@ -37,12 +36,21 @@ vi.mock('@/config', async (importOriginal) => {
             commerce: {
                 api: {
                     organizationId: 'test-org',
-                    siteId: 'test-site',
+                    siteId: 'RefArchGlobal',
                 },
             },
         })),
     };
 });
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
 
 import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
@@ -79,16 +87,15 @@ describe('resource.basket-products', () => {
         vi.clearAllMocks();
     });
 
-    const createLoaderArgs = (): LoaderFunctionArgs => ({
-        params: {},
-        context: mockContext,
-        request: new Request('http://localhost/resource/basket-products'),
-    });
+    const getLoaderArgs = () =>
+        createLoaderArgs(new Request('http://localhost/resource/basket-products'), mockContext, {
+            unstable_pattern: '/resource/basket-products',
+        });
 
     it('should return empty object when basket is undefined', async () => {
         vi.mocked(getBasket).mockResolvedValue({ current: undefined } as any);
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({});
         expect(mockGetProducts).not.toHaveBeenCalled();
@@ -99,7 +106,7 @@ describe('resource.basket-products', () => {
             current: { basketId: 'basket-123', productItems: [] },
         } as any);
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({});
         expect(mockGetProducts).not.toHaveBeenCalled();
@@ -116,7 +123,7 @@ describe('resource.basket-products', () => {
             },
         } as any);
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({});
         expect(mockGetProducts).not.toHaveBeenCalled();
@@ -139,7 +146,7 @@ describe('resource.basket-products', () => {
             },
         });
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({
             'product-1': mockProduct1,
@@ -152,7 +159,7 @@ describe('resource.basket-products', () => {
                     organizationId: 'test-org',
                 },
                 query: {
-                    siteId: 'test-site',
+                    siteId: 'RefArchGlobal',
                     ids: ['product-1', 'product-2'],
                     allImages: true,
                     perPricebook: true,
@@ -172,7 +179,7 @@ describe('resource.basket-products', () => {
 
         mockGetProducts.mockRejectedValue(new Error('API Error'));
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({});
     });
@@ -189,7 +196,7 @@ describe('resource.basket-products', () => {
             data: { data: null },
         });
 
-        const result = await loader(createLoaderArgs());
+        const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({});
     });
@@ -212,7 +219,7 @@ describe('resource.basket-products', () => {
             },
         });
 
-        await loader(createLoaderArgs());
+        await loader(getLoaderArgs());
 
         // Should only request product-1
         expect(mockGetProducts).toHaveBeenCalledWith(
@@ -225,4 +232,67 @@ describe('resource.basket-products', () => {
             })
         );
     });
+
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    it('should include inventoryIds when basket has pickup shipments', async () => {
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'basket-123',
+                productItems: [
+                    {
+                        itemId: 'item-1',
+                        productId: 'product-1',
+                        quantity: 3,
+                        shipmentId: 'pickup-shipment-1',
+                        inventoryId: 'store-inventory-001',
+                    },
+                ],
+                shipments: [
+                    {
+                        shipmentId: 'pickup-shipment-1',
+                        c_fromStoreId: 'store-burlington',
+                    },
+                ],
+            },
+        } as any);
+
+        mockGetProducts.mockResolvedValue({
+            data: { data: [mockProduct1] },
+        });
+
+        await loader(getLoaderArgs());
+
+        expect(mockGetProducts).toHaveBeenCalledWith(
+            expect.objectContaining({
+                params: expect.objectContaining({
+                    query: expect.objectContaining({
+                        ids: ['product-1'],
+                        inventoryIds: expect.arrayContaining(['store-inventory-001']),
+                    }),
+                }),
+            })
+        );
+    });
+
+    it('should not include inventoryIds when basket has no pickup shipments', async () => {
+        vi.mocked(getBasket).mockResolvedValue({
+            current: {
+                basketId: 'basket-123',
+                productItems: [
+                    { itemId: 'item-1', productId: 'product-1', quantity: 1, shipmentId: 'delivery-shipment' },
+                ],
+                shipments: [{ shipmentId: 'delivery-shipment' }],
+            },
+        } as any);
+
+        mockGetProducts.mockResolvedValue({
+            data: { data: [mockProduct1] },
+        });
+
+        await loader(getLoaderArgs());
+
+        const callQuery = mockGetProducts.mock.calls[0][0].params.query;
+        expect(callQuery).not.toHaveProperty('inventoryIds');
+    });
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
 });

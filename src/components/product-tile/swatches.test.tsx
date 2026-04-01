@@ -17,61 +17,83 @@ import { vi, test, describe, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { DecoratedVariationAttribute } from '@/lib/product-utils';
-import Swatches from './swatches';
+import type { DecoratedVariationAttributeValue } from '@/lib/product-utils';
+import { ProductTileSwatches } from './swatches';
 import { ConfigWrapper } from '@/test-utils/config';
 
-const mockColorAttributes: DecoratedVariationAttribute[] = [
+// toImageUrl returns the raw image link in tests; mock it to avoid config dependency inside swatches
+vi.mock('@/lib/dynamic-image', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/dynamic-image')>();
+    return {
+        ...actual,
+        toImageUrl: vi.fn(({ image }: { image: { link: string } }) => image.link),
+    };
+});
+
+const colorValues: DecoratedVariationAttributeValue[] = [
     {
-        id: 'color',
-        name: 'Colour',
-        values: [
-            {
-                value: 'navy',
-                name: 'Navy',
-                href: '/product/test?color=navy',
-                swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
-            },
-            {
-                value: 'red',
-                name: 'Red',
-                href: '/product/test?color=red',
-                swatch: { link: 'https://example.com/red.jpg', disBaseLink: 'https://example.com/red.jpg' },
-            },
-            {
-                value: 'blue',
-                name: 'Blue',
-                href: '/product/test?color=blue',
-                swatch: { link: 'https://example.com/blue.jpg', disBaseLink: 'https://example.com/blue.jpg' },
-            },
-            {
-                value: 'black',
-                name: 'Black',
-                href: '/product/test?color=black',
-                swatch: { link: 'https://example.com/black.jpg', disBaseLink: 'https://example.com/black.jpg' },
-            },
-        ],
+        value: 'navy',
+        name: 'Navy',
+        href: '/product/test?color=navy',
+        swatch: { link: 'https://example.com/navy.jpg', disBaseLink: 'https://example.com/navy.jpg' },
+    },
+    {
+        value: 'red',
+        name: 'Red',
+        href: '/product/test?color=red',
+        swatch: { link: 'https://example.com/red.jpg', disBaseLink: 'https://example.com/red.jpg' },
+    },
+    {
+        value: 'blue',
+        name: 'Blue',
+        href: '/product/test?color=blue',
+    },
+    {
+        value: 'black',
+        name: 'Black',
+        href: '/product/test?color=black',
     },
 ];
 
-const defaultProps = {
-    variationAttributes: mockColorAttributes,
-    maxSwatches: 2,
-    selectedAttributeValue: null,
-    handleAttributeChange: vi.fn(),
-    disableSwatchInteraction: false,
-    swatchMode: 'click' as const,
-};
+interface RenderOptions {
+    selectedAttributeValue?: string | null;
+    onSwatchHover?: (value: string) => void;
+    onSwatchClick?: () => void;
+    productName?: string;
+    totalColorCount?: number;
+    maxSwatches?: number;
+    colorValues?: DecoratedVariationAttributeValue[];
+    productHref?: string;
+}
 
-// Swatch uses NavLink which requires a router context
-const renderSwatches = (props = {}) => {
-    const mergedProps = { ...defaultProps, ...props };
+const renderSwatches = ({
+    selectedAttributeValue = null,
+    onSwatchHover = vi.fn(),
+    onSwatchClick = vi.fn(),
+    productName = 'Test Product',
+    totalColorCount = colorValues.length,
+    maxSwatches = 2,
+    colorValues: values = colorValues.slice(0, 2),
+    productHref = '/product/test',
+}: RenderOptions = {}) => {
     const router = createMemoryRouter(
         [
             {
                 path: '/test',
-                element: <Swatches {...mergedProps} />,
+                element: (
+                    <ProductTileSwatches
+                        colorValues={values}
+                        selectedAttributeValue={selectedAttributeValue}
+                        onSwatchHover={onSwatchHover}
+                        onSwatchClick={onSwatchClick}
+                        productName={productName}
+                        totalColorCount={totalColorCount}
+                        maxSwatches={maxSwatches}
+                        productHref={productHref}
+                    />
+                ),
             },
+            { path: '*', element: <div>navigated</div> },
         ],
         { initialEntries: ['/test'] }
     );
@@ -82,111 +104,139 @@ const renderSwatches = (props = {}) => {
     );
 };
 
-describe('Swatches', () => {
-    test('renders a swatch group with the correct aria label', () => {
-        renderSwatches();
-
-        const swatchGroup = screen.getByRole('radiogroup', { name: 'Colour' });
-        expect(swatchGroup).toBeInTheDocument();
-    });
-
-    test('renders swatches limited by maxSwatches', () => {
-        renderSwatches({ maxSwatches: 2 });
-
-        const swatches = screen.getAllByRole('radio');
-        expect(swatches).toHaveLength(2);
-    });
-
-    test('renders all swatches when maxSwatches is large enough', () => {
-        renderSwatches({ maxSwatches: 4 });
-
-        const swatches = screen.getAllByRole('radio');
-        expect(swatches).toHaveLength(4);
-    });
-
-    test('shows overflow indicator (+N) when there are more swatches than maxSwatches', () => {
-        // 4 colors, maxSwatches=2 → should show +2
-        renderSwatches({ maxSwatches: 2 });
-
-        const plusIndicator = screen.getByTitle('+2');
-        expect(plusIndicator).toBeInTheDocument();
-    });
-
-    test('does not show overflow indicator when swatches fit within maxSwatches', () => {
-        renderSwatches({ maxSwatches: 4 });
-
-        const plusIndicator = screen.queryByTitle(/^\+\d+$/);
-        expect(plusIndicator).not.toBeInTheDocument();
-    });
-
-    test('calls handleAttributeChange when a swatch is clicked', async () => {
-        const handleAttributeChange = vi.fn();
-        const user = userEvent.setup();
-        renderSwatches({ handleAttributeChange });
-
-        const swatches = screen.getAllByRole('radio');
-        await user.click(swatches[0]);
-
-        expect(handleAttributeChange).toHaveBeenCalledWith('navy');
-    });
-
-    test('allows switching between swatches', async () => {
-        const handleAttributeChange = vi.fn();
-        const user = userEvent.setup();
-        renderSwatches({ handleAttributeChange });
-
-        const swatches = screen.getAllByRole('radio');
-        await user.click(swatches[1]);
-        expect(handleAttributeChange).toHaveBeenCalledWith('red');
-
-        await user.click(swatches[0]);
-        expect(handleAttributeChange).toHaveBeenCalledWith('navy');
-    });
-
-    test('marks the selected swatch', () => {
-        renderSwatches({ selectedAttributeValue: 'red' });
-
-        const swatches = screen.getAllByRole('radio');
-        // The second swatch (red) should be checked
-        expect(swatches[1]).toBeChecked();
-        expect(swatches[0]).not.toBeChecked();
-    });
-
-    test('renders only the selected variant swatch in read-only wishlist mode', () => {
-        renderSwatches({
-            disableSwatchInteraction: true,
-            selectedVariantColorValue: 'navy',
-        });
-
-        const swatches = screen.getAllByRole('radio');
-        expect(swatches).toHaveLength(1);
-    });
-
-    test('does not show overflow indicator in read-only wishlist mode', () => {
-        renderSwatches({
-            disableSwatchInteraction: true,
-            selectedVariantColorValue: 'navy',
-        });
-
-        const plusIndicator = screen.queryByTitle(/^\+\d+$/);
-        expect(plusIndicator).not.toBeInTheDocument();
-    });
-
-    test('does not render swatches when variationAttributes is empty', () => {
-        renderSwatches({
-            variationAttributes: [],
-        });
-
-        const swatchGroup = screen.queryByRole('radiogroup');
-        expect(swatchGroup).not.toBeInTheDocument();
-    });
-
-    test('renders color swatches with background image styles', () => {
+describe('ProductTileSwatches', () => {
+    test('renders a container with an accessible label for available colors', () => {
         const { container } = renderSwatches();
+        expect(container.querySelector('[aria-label="Available colors"]')).toBeInTheDocument();
+    });
 
-        // Color swatches should have background image divs
-        const swatchImage = container.querySelector('[aria-label="Navy"].bg-no-repeat');
-        expect(swatchImage).toBeInTheDocument();
-        expect(swatchImage).toHaveStyle({ backgroundImage: 'url(https://example.com/navy.jpg)' });
+    test('renders one swatch link per colorValue', () => {
+        renderSwatches({ colorValues: colorValues.slice(0, 2), maxSwatches: 2, totalColorCount: 2 });
+        expect(screen.getAllByRole('link')).toHaveLength(2);
+    });
+
+    test('renders accessible label per swatch combining product name and colour name', () => {
+        renderSwatches();
+        expect(screen.getByRole('link', { name: /view test product in navy/i })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /view test product in red/i })).toBeInTheDocument();
+    });
+
+    test('marks the selected swatch with aria-current="true" and leaves others without it', () => {
+        renderSwatches({ selectedAttributeValue: 'red', totalColorCount: 2 });
+        const navySwatch = screen.getByRole('link', { name: /view test product in navy/i });
+        const redSwatch = screen.getByRole('link', { name: /view test product in red/i });
+        expect(navySwatch).not.toHaveAttribute('aria-current');
+        expect(redSwatch).toHaveAttribute('aria-current', 'true');
+        expect(screen.getAllByRole('link')).toHaveLength(2);
+    });
+
+    test('shows overflow indicator when totalColorCount exceeds maxSwatches', () => {
+        // 4 total colours, showing 2 → overflow = 2
+        renderSwatches({
+            colorValues: colorValues.slice(0, 2),
+            maxSwatches: 2,
+            totalColorCount: 4,
+        });
+        expect(screen.getByTitle('+2 more')).toBeInTheDocument();
+    });
+
+    test('does not show overflow indicator when all swatches fit', () => {
+        renderSwatches({
+            colorValues: colorValues.slice(0, 4),
+            maxSwatches: 4,
+            totalColorCount: 4,
+        });
+        expect(screen.queryByTitle(/^\+\d+/)).not.toBeInTheDocument();
+    });
+
+    test('calls onSwatchHover with the colour value when mouse enters a swatch', async () => {
+        const onSwatchHover = vi.fn();
+        const user = userEvent.setup();
+        renderSwatches({ onSwatchHover });
+
+        const navySwatch = screen.getByRole('link', { name: /view test product in navy/i });
+        await user.hover(navySwatch);
+
+        expect(onSwatchHover).toHaveBeenCalledWith('navy');
+    });
+
+    test('calls onSwatchClick when a swatch is clicked', async () => {
+        const onSwatchClick = vi.fn();
+        const user = userEvent.setup();
+        renderSwatches({ onSwatchClick });
+
+        const navySwatch = screen.getByRole('link', { name: /view test product in navy/i });
+        await user.click(navySwatch);
+
+        expect(onSwatchClick).toHaveBeenCalled();
+    });
+
+    test('renders swatch image when swatch data is provided', () => {
+        renderSwatches();
+        const navySwatch = screen.getByRole('link', { name: /view test product in navy/i });
+        const img = navySwatch.querySelector('img');
+        expect(img).toBeInTheDocument();
+        expect(img).toHaveAttribute('src', 'https://example.com/navy.jpg');
+    });
+
+    test('does not render swatch image when swatch is absent', () => {
+        renderSwatches({
+            colorValues: [{ value: 'blue', name: 'Blue', href: '/product/test?color=blue' }],
+            totalColorCount: 1,
+            maxSwatches: 1,
+        });
+        const blueSwatch = screen.getByRole('link', { name: /view test product in blue/i });
+        expect(blueSwatch.querySelector('img')).not.toBeInTheDocument();
+    });
+
+    test('renders an empty component when colorValues is empty', () => {
+        renderSwatches({ colorValues: [], totalColorCount: 0, maxSwatches: 5 });
+        expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    });
+
+    test('caps overflow indicator display count at 99', () => {
+        renderSwatches({
+            colorValues: colorValues.slice(0, 2),
+            maxSwatches: 2,
+            totalColorCount: 200,
+        });
+        // overflowCount = 200 - 2 = 198, capped to 99
+        expect(screen.getByTitle('+99 more')).toBeInTheDocument();
+    });
+
+    test('overflow indicator is a link pointing to productHref', () => {
+        renderSwatches({
+            colorValues: colorValues.slice(0, 2),
+            maxSwatches: 2,
+            totalColorCount: 4,
+            productHref: '/product/my-product',
+        });
+        const overflowLink = screen.getByTitle('+2 more');
+        expect(overflowLink.tagName).toBe('A');
+        expect(overflowLink).toHaveAttribute('href', '/product/my-product');
+    });
+
+    test('overflow indicator has an accessible label with product name and total count', () => {
+        renderSwatches({
+            colorValues: colorValues.slice(0, 2),
+            maxSwatches: 2,
+            totalColorCount: 5,
+            productName: 'Blue Shirt',
+        });
+        expect(screen.getByRole('link', { name: /view all 5 colors for blue shirt/i })).toBeInTheDocument();
+    });
+
+    test('overflow indicator fires onSwatchClick on click', async () => {
+        const onSwatchClick = vi.fn();
+        const user = userEvent.setup();
+        renderSwatches({
+            colorValues: colorValues.slice(0, 2),
+            maxSwatches: 2,
+            totalColorCount: 4,
+            onSwatchClick,
+        });
+        const overflowLink = screen.getByTitle('+2 more');
+        await user.click(overflowLink);
+        expect(onSwatchClick).toHaveBeenCalledTimes(1);
     });
 });

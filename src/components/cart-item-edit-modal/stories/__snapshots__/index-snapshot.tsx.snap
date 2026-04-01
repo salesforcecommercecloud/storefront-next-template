@@ -1,7 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`CartItemEditModal stories snapshot > Closed story renders and matches snapshot 1`] = `null`;
-
-exports[`CartItemEditModal stories snapshot > WithHighQuantity story renders and matches snapshot 1`] = `null`;
-
-exports[`CartItemEditModal stories snapshot > WithVariants story renders and matches snapshot 1`] = `null`;

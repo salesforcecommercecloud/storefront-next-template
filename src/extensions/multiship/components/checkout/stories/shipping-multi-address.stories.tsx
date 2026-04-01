@@ -243,6 +243,9 @@ export const Default: Story = {
         expect(canvas.getByTestId('delivery-address-select-item-2')).toBeInTheDocument();
         expect(canvas.getByTestId('delivery-address-select-item-3')).toBeInTheDocument();
 
+        // Each select must have an accessible name (label association) for a11y
+        expect(canvas.getAllByRole('combobox', { name: /delivery address/i })).toHaveLength(3);
+
         // Verify component structure
         expect(canvasElement).toBeInTheDocument();
     },
@@ -363,6 +366,7 @@ export const SingleProduct: Story = {
 
         expect(canvas.getByText('Test Product One')).toBeInTheDocument();
         expect(canvas.getByTestId('delivery-address-select-item-1')).toBeInTheDocument();
+        expect(canvas.getAllByRole('combobox', { name: /delivery address/i })).toHaveLength(1);
     },
 };
 

@@ -23,12 +23,6 @@ vi.mock('@/extensions/store-locator/stores/store-locator-store', () => ({
     createStoreLocatorStore: vi.fn(),
 }));
 
-// Mock the utils function
-vi.mock('@/extensions/store-locator/utils', () => ({
-    getCookieFromDocumentAs: vi.fn(),
-    getSelectedStoreInfoCookieName: vi.fn(),
-}));
-
 // Test component that uses the hook
 const TestComponent = () => {
     const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
@@ -62,7 +56,6 @@ const TestComponentOutsideProvider = () => {
 
 describe('StoreLocatorProvider', () => {
     const mockCreateStoreLocatorStore = vi.fn();
-    const mockGetSelectedStoreInfoFromDocument = vi.fn();
     const mockStore = {
         getState: vi.fn(),
         setState: vi.fn(),
@@ -73,22 +66,10 @@ describe('StoreLocatorProvider', () => {
     beforeEach(async () => {
         vi.clearAllMocks();
 
-        // Setup mocks
         const { createStoreLocatorStore } = await import('@/extensions/store-locator/stores/store-locator-store');
-        const { getCookieFromDocumentAs, getSelectedStoreInfoCookieName } = await import(
-            '@/extensions/store-locator/utils'
-        );
-
         vi.mocked(createStoreLocatorStore).mockImplementation(mockCreateStoreLocatorStore);
-        vi.mocked(getCookieFromDocumentAs).mockImplementation(mockGetSelectedStoreInfoFromDocument);
-        vi.mocked(getSelectedStoreInfoCookieName).mockReturnValue('selectedStoreInfo_test');
 
         mockCreateStoreLocatorStore.mockReturnValue(mockStore);
-        mockGetSelectedStoreInfoFromDocument.mockReturnValue({
-            id: 'initial-store',
-            name: 'Initial Store',
-            inventoryId: 'initial-inventory',
-        });
     });
 
     it('renders children', () => {
@@ -102,9 +83,8 @@ describe('StoreLocatorProvider', () => {
         expect(screen.getByText('Test Child')).toBeInTheDocument();
     });
 
-    it('creates store with initial selected store info', async () => {
+    it('creates store with initial selected store info from prop', async () => {
         const { createStoreLocatorStore } = await import('@/extensions/store-locator/stores/store-locator-store');
-        const { getCookieFromDocumentAs } = await import('@/extensions/store-locator/utils');
 
         const initialStoreInfo = {
             id: 'test-store',
@@ -112,25 +92,19 @@ describe('StoreLocatorProvider', () => {
             inventoryId: 'test-inventory',
         };
 
-        vi.mocked(getCookieFromDocumentAs).mockReturnValue(initialStoreInfo);
-
         render(
-            <StoreLocatorProvider>
+            <StoreLocatorProvider selectedStoreInfo={initialStoreInfo}>
                 <div>Test</div>
             </StoreLocatorProvider>
         );
 
-        expect(vi.mocked(getCookieFromDocumentAs)).toHaveBeenCalled();
         expect(vi.mocked(createStoreLocatorStore)).toHaveBeenCalledWith({
             selectedStoreInfo: initialStoreInfo,
         });
     });
 
-    it('creates store with null when no initial store info', async () => {
+    it('creates store with null when no selectedStoreInfo prop is provided', async () => {
         const { createStoreLocatorStore } = await import('@/extensions/store-locator/stores/store-locator-store');
-        const { getCookieFromDocumentAs } = await import('@/extensions/store-locator/utils');
-
-        vi.mocked(getCookieFromDocumentAs).mockReturnValue(null);
 
         render(
             <StoreLocatorProvider>
@@ -143,8 +117,21 @@ describe('StoreLocatorProvider', () => {
         });
     });
 
+    it('creates store with null when selectedStoreInfo prop is null', async () => {
+        const { createStoreLocatorStore } = await import('@/extensions/store-locator/stores/store-locator-store');
+
+        render(
+            <StoreLocatorProvider selectedStoreInfo={null}>
+                <div>Test</div>
+            </StoreLocatorProvider>
+        );
+
+        expect(vi.mocked(createStoreLocatorStore)).toHaveBeenCalledWith({
+            selectedStoreInfo: null,
+        });
+    });
+
     it('provides store context to children', () => {
-        // Mock the store to return test data
         mockStore.getState.mockReturnValue({
             selectedStoreInfo: { id: 'test-store', name: 'Test Store', inventoryId: 'test-inventory' },
             setSelectedStoreInfo: vi.fn(),
@@ -180,7 +167,6 @@ describe('StoreLocatorProvider', () => {
             );
         };
 
-        // Mock the store to return test data
         mockStore.getState.mockReturnValue({
             selectedStoreInfo: { id: 'test-store', name: 'Test Store', inventoryId: 'test-inventory' },
         });
@@ -196,7 +182,6 @@ describe('StoreLocatorProvider', () => {
     });
 
     it('useStoreLocator works with null selected store info', () => {
-        // Mock the store to return null selected store info
         mockStore.getState.mockReturnValue({
             selectedStoreInfo: null,
         });

@@ -56,7 +56,7 @@ vi.mock('@/hooks/product/use-current-variant', () => ({
     useCurrentVariant: () => null,
 }));
 
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: vi.fn(() => ({
         engagement: {
             adapters: {
@@ -624,17 +624,6 @@ describe('useProductActions', () => {
                 );
 
                 expect(result.current.isAddingToOrUpdatingCart).toBe(false);
-            });
-
-            test('isAddingToWishlist starts as false', () => {
-                const { result } = renderHook(
-                    () => useProductActions({ product: standardProd, currentVariant: null }),
-                    {
-                        wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
-                    }
-                );
-
-                expect(result.current.isAddingToWishlist).toBe(false);
             });
         });
 

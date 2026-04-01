@@ -22,6 +22,21 @@ vi.mock('@/providers/basket', () => ({ useBasket: vi.fn() }));
 vi.mock('@/hooks/checkout/use-customer-profile', () => ({
     useCustomerProfile: vi.fn(() => null),
 }));
+vi.mock('@/providers/auth', () => ({
+    useAuth: vi.fn(() => ({ customerId: 'cust-123' })),
+}));
+
+const mockSubmit = vi.fn();
+vi.mock('@/hooks/use-scapi-fetcher', () => ({
+    useScapiFetcher: vi.fn(() => ({
+        data: null,
+        state: 'idle',
+        submit: mockSubmit,
+    })),
+}));
+vi.mock('@/hooks/use-scapi-fetcher-effect', () => ({
+    useScapiFetcherEffect: vi.fn(),
+}));
 
 const createMockBasket = (overrides = {}) => ({
     basketId: 'test-basket-123',

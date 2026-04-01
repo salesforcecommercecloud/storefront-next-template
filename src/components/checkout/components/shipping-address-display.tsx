@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 import type { AddressBookItem } from '@/lib/customer-profile-utils';
 import { formatAddress, isAddressEmpty } from '@/lib/address-utils';
+import { stripCountryCode } from '@/lib/phone-utils';
 
 export type ShippingAddressDisplayProps = {
     /** Address to display (order/basket address shape). When null/undefined or empty, nothing is rendered. */
@@ -48,28 +49,44 @@ export function ShippingAddressDisplay({
     const { nameLine, streetLine, cityLine } = formatAddress(address);
 
     return (
-        <div className="space-y-2">
+        <div className={isCard ? 'space-y-1.5' : 'text-sm font-normal leading-5 text-foreground'}>
             <div className={isCard ? 'flex flex-wrap items-center gap-2' : undefined}>
-                <Typography variant="small" className={isCard ? 'text-foreground' : 'text-muted-foreground'}>
-                    {nameLine}
-                </Typography>
-                {isCard && address.preferred && <Badge variant="default">{t('shippingAddress.defaultBadge')}</Badge>}
+                {isCard ? (
+                    <>
+                        <Typography variant="small" className="text-sm font-medium text-foreground">
+                            {nameLine}
+                        </Typography>
+                        {address.preferred && <Badge variant="info">{t('shippingAddress.defaultBadge')}</Badge>}
+                    </>
+                ) : (
+                    <p>{nameLine}</p>
+                )}
             </div>
-            {streetLine && (
-                <Typography variant="small" className="text-muted-foreground">
-                    {streetLine}
-                </Typography>
-            )}
-            {cityLine && (
-                <Typography variant="small" className="text-muted-foreground">
-                    {cityLine}
-                </Typography>
-            )}
-            {displayPhone && address.phone && (
-                <Typography variant="small" className="text-muted-foreground">
-                    {address.phone}
-                </Typography>
-            )}
+            {streetLine &&
+                (isCard ? (
+                    <Typography variant="small" className="text-sm text-muted-foreground">
+                        {streetLine}
+                    </Typography>
+                ) : (
+                    <p>{streetLine}</p>
+                ))}
+            {cityLine &&
+                (isCard ? (
+                    <Typography variant="small" className="text-sm text-muted-foreground">
+                        {cityLine}
+                    </Typography>
+                ) : (
+                    <p>{cityLine}</p>
+                ))}
+            {displayPhone &&
+                address.phone &&
+                (isCard ? (
+                    <Typography variant="small" className="text-sm text-muted-foreground">
+                        {stripCountryCode(address.phone)}
+                    </Typography>
+                ) : (
+                    <p>{stripCountryCode(address.phone)}</p>
+                ))}
         </div>
     );
 }

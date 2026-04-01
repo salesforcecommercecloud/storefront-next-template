@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { createCookie, RouterContextProvider } from 'react-router';
-import { createTestContext } from '@/lib/test-utils';
+import { createCookie, RouterContextProvider, type MiddlewareFunction } from 'react-router';
+import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getCookieConfig } from '@/lib/cookie-utils';
 import createBasketMiddleware, {
@@ -26,6 +26,17 @@ import createBasketMiddleware, {
     getBasketSnapshot,
     type BasketSnapshot,
 } from './basket.server';
+
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => mockLogger),
+}));
 
 vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(),
@@ -45,15 +56,17 @@ vi.mock('@/lib/cookie-utils', () => ({
 describe('basket.server middleware', () => {
     let mockRequest: Request;
     let mockContext: ReturnType<typeof createTestContext>;
-    let mockNext: ReturnType<typeof vi.fn>;
+    let mockNext: Parameters<MiddlewareFunction<Response>>[1];
     const createArgs = (request: Request, context: Readonly<RouterContextProvider>) =>
-        ({ request, context, params: {}, unstable_pattern: '' }) as any;
+        createLoaderArgs(request, context, { unstable_pattern: '' });
 
     beforeEach(() => {
         vi.clearAllMocks();
         mockRequest = new Request('https://example.com');
         mockContext = createTestContext();
-        mockNext = vi.fn().mockResolvedValue(new Response('ok'));
+        mockNext = vi.fn().mockResolvedValue(new Response('ok')) as unknown as Parameters<
+            MiddlewareFunction<Response>
+        >[1];
     });
 
     test('lazy mode does not load basket or set cookie by default', async () => {
@@ -213,7 +226,7 @@ describe('basket.server middleware', () => {
             destroyBasket(mockContext);
             await Promise.resolve();
             return new Response('ok');
-        });
+        }) as unknown as Parameters<MiddlewareFunction<Response>>[1];
 
         const response = (await middleware(createArgs(mockRequest, mockContext), next)) as Response;
 

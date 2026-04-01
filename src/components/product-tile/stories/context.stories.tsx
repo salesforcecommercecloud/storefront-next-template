@@ -13,81 +13,78 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
-import { ConfigProvider } from '@/config/context';
-import { mockConfig } from '@/test-utils/config';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
-import { ProductTileProvider, useProductTileContext } from '../context';
+import { ProductTileProvider } from '../context';
+import ProductTile from '../index';
+// @ts-expect-error mock file is JS
+import { mockProductSearchItem } from '../../__mocks__/product-search-hit-data';
+import DynamicImageProvider from '@/providers/dynamic-image';
 
-/**
- * Simple consumer component that renders context values for snapshot testing.
- */
-function ContextConsumer() {
-    const { config, t, currency, swatchMode, getBadges } = useProductTileContext();
-
-    const { hasBadges, badges } = getBadges({
-        productId: 'test-product',
-        representedProduct: { c_isSale: true },
-    } as never);
-
-    return (
-        <dl data-testid="context-consumer">
-            <dt>currency</dt>
-            <dd data-testid="currency">{currency ?? 'undefined'}</dd>
-
-            <dt>swatchMode</dt>
-            <dd data-testid="swatch-mode">{swatchMode}</dd>
-
-            <dt>translation</dt>
-            <dd data-testid="translation">{t('moreOptions')}</dd>
-
-            <dt>config.defaultSiteId</dt>
-            <dd data-testid="default-site-id">{config.defaultSiteId}</dd>
-
-            <dt>hasBadges</dt>
-            <dd data-testid="has-badges">{String(hasBadges)}</dd>
-
-            <dt>badges</dt>
-            <dd data-testid="badges">{badges.map((b) => b.label).join(', ')}</dd>
-        </dl>
-    );
-}
-
-const meta: Meta = {
+const meta: Meta<typeof ProductTileProvider> = {
     title: 'Components/ProductTile/Context',
+    component: ProductTileProvider,
     tags: ['autodocs'],
     parameters: {
         layout: 'centered',
+        docs: {
+            description: {
+                component: `
+**ProductTileProvider** hoists shared hooks (navigation, config, currency, swatch mode, badge logic) out of
+individual tiles into a single context. This reduces hydration cost when many tiles are rendered together
+(e.g. a product grid) and ensures a single \`matchMedia\` subscription drives swatch-mode across all tiles.
+
+When \`ProductTileProvider\` is not present, \`ProductTile\` falls back to calling each hook directly — so the
+provider is optional but recommended for grids of 3+ tiles.
+                `,
+            },
+        },
     },
-    decorators: [
-        (Story) => (
-            <ConfigProvider config={mockConfig}>
-                <CurrencyWrapper currency="GBP">
-                    <ProductTileProvider>
-                        <Story />
-                    </ProductTileProvider>
-                </CurrencyWrapper>
-            </ConfigProvider>
-        ),
-    ],
 };
 
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<typeof ProductTileProvider>;
 
 export const Default: Story = {
-    render: () => <ContextConsumer />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
+    decorators: [
+        (Story) => (
+            <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
+                <div className="w-64">
+                    <Story />
+                </div>
+            </DynamicImageProvider>
+        ),
+    ],
+    render: () => (
+        <ProductTileProvider>
+            <ProductTile product={mockProductSearchItem} />
+        </ProductTileProvider>
+    ),
+};
 
-        await expect(canvas.getByTestId('currency')).toBeInTheDocument();
-        await expect(canvas.getByTestId('swatch-mode')).toBeInTheDocument();
-        await expect(canvas.getByTestId('translation')).toBeInTheDocument();
-        await expect(canvas.getByTestId('default-site-id')).toBeInTheDocument();
-        await expect(canvas.getByTestId('has-badges')).toHaveTextContent('true');
-        await expect(canvas.getByTestId('badges')).toHaveTextContent('Sale');
+export const MultiTileGrid: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'Multiple tiles sharing a single provider — one matchMedia subscription serves all swatch-mode consumers.',
+            },
+        },
     },
+    decorators: [
+        (Story) => (
+            <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
+                <Story />
+            </DynamicImageProvider>
+        ),
+    ],
+    render: () => (
+        <ProductTileProvider>
+            <div className="grid grid-cols-2 gap-4 w-[32rem]">
+                <ProductTile product={mockProductSearchItem} />
+                <ProductTile product={mockProductSearchItem} />
+                <ProductTile product={mockProductSearchItem} />
+                <ProductTile product={mockProductSearchItem} />
+            </div>
+        </ProductTileProvider>
+    ),
 };

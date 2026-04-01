@@ -20,7 +20,11 @@ import {
     CUSTOMER_PREFERENCES_MOCK_ADAPTER_NAME,
 } from '@/lib/adapters/customer-preferences-store';
 import { ensureCustomerPreferencesAdapterRegistered } from '@/lib/adapters/ensure-customer-preferences-adapter';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 const CustomerPreferencesContext = createContext<CustomerInterestsPreferencesAdapter | undefined>(undefined);
 
@@ -42,7 +46,7 @@ const CustomerPreferencesProvider = ({
     children,
     adapterName = CUSTOMER_PREFERENCES_MOCK_ADAPTER_NAME,
 }: CustomerPreferencesProviderProps) => {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<CustomerInterestsPreferencesAdapter | undefined>(undefined);
 
     useEffect(() => {
@@ -55,8 +59,7 @@ const CustomerPreferencesProvider = ({
             } catch (error) {
                 // Silently handle initialization errors - preferences will simply not display
                 if (import.meta.env.DEV) {
-                    // eslint-disable-next-line no-console
-                    console.warn('Failed to initialize customer preferences adapter:', error);
+                    logger.warn('Failed to initialize customer preferences adapter', { error });
                 }
             }
         };

@@ -18,19 +18,67 @@ import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import MyCart from './index';
 
-const mockProductItemsList = vi.fn();
-
-vi.mock('@/components/product-items-list', () => ({
-    __esModule: true,
-    default: (props: unknown) => {
-        mockProductItemsList(props);
-        return <div data-testid="product-items-list" />;
+vi.mock('react-i18next', () => ({
+    useTranslation: (ns?: string) => {
+        const tCheckout = (key: string, opts?: { amount?: number }) => {
+            if (key === 'myCart.title') return 'My Cart';
+            if (key === 'myCart.saved') return `Saved ${opts?.amount ?? ''}`;
+            return key;
+        };
+        const tCart = (key: string) => (key === 'attributes.promotions' ? 'Promotions' : key);
+        return {
+            t: ns === 'cart' ? tCart : tCheckout,
+            i18n: { language: 'en' },
+            tCart,
+        };
     },
 }));
 
+vi.mock('@/providers/currency', () => ({
+    useCurrency: () => 'USD',
+}));
+
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
+    useConfig: () => ({}),
+}));
+
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    return {
+        ...actual,
+        Link: ({ children, to }: { children: ReactNode; to: string }) => <a href={to}>{children}</a>,
+    };
+});
+
+vi.mock('@/components/promo-popover', () => ({
+    __esModule: true,
+    default: ({ children }: { children: ReactNode }) => <div data-testid="promo-popover">{children}</div>,
+}));
+
+vi.mock('@/components/product-price', () => ({
+    __esModule: true,
+    default: () => <span data-testid="product-price" />,
+}));
+
+vi.mock('@/targets/ui-target', () => ({
+    UITarget: () => null,
+}));
+
+vi.mock('@/lib/dynamic-image', () => ({
+    toImageUrl: () => '',
+}));
+
 vi.mock('@/components/ui/accordion', () => {
-    const Accordion = ({ children, defaultValue }: { children: ReactNode; defaultValue?: string }) => (
-        <div data-testid="accordion" data-default-value={defaultValue}>
+    const Accordion = ({
+        children,
+        defaultValue,
+        ...rest
+    }: {
+        children: ReactNode;
+        defaultValue?: string;
+        [key: string]: unknown;
+    }) => (
+        <div data-testid="accordion" data-default-value={defaultValue} {...rest}>
             {children}
         </div>
     );
@@ -54,12 +102,12 @@ describe('MyCart', () => {
         ],
     };
 
-    const productMap = {
+    const productMap: Record<string, { id: string; name: string }> = {
         'item-1': { id: 'prod-1', name: 'Product 1' },
     };
 
     beforeEach(() => {
-        mockProductItemsList.mockClear();
+        vi.clearAllMocks();
     });
 
     it('renders the cart title with total quantity', () => {
@@ -75,44 +123,23 @@ describe('MyCart', () => {
         expect(accordion).toHaveAttribute('data-default-value', 'my-cart-items');
     });
 
-    it('passes summary props to ProductItemsList', () => {
+    it('renders a card per product item', () => {
         render(<MyCart basket={basket} productMap={productMap} />);
 
-        expect(mockProductItemsList).toHaveBeenCalledTimes(1);
-        expect(mockProductItemsList).toHaveBeenCalledWith(
-            expect.objectContaining({
-                productItems: basket.productItems,
-                productsByItemId: productMap,
-                variant: 'summary',
-                separateCards: true,
-            })
-        );
+        expect(screen.getByTestId('my-cart-item-prod-1')).toBeInTheDocument();
+        expect(screen.getByTestId('my-cart-item-prod-2')).toBeInTheDocument();
     });
 
-    it('passes promotions to ProductItemsList when provided', () => {
-        const promotions = {
-            'promo-1': { id: 'promo-1', name: 'Test Promotion', calloutMsg: 'Save 20%' },
-        };
+    it('displays product name from productMap when available', () => {
+        render(<MyCart basket={basket} productMap={productMap} />);
 
-        render(<MyCart basket={basket} productMap={productMap} promotions={promotions} />);
-
-        expect(mockProductItemsList).toHaveBeenCalledTimes(1);
-        expect(mockProductItemsList).toHaveBeenCalledWith(
-            expect.objectContaining({
-                productItems: basket.productItems,
-                productsByItemId: productMap,
-                promotions,
-                variant: 'summary',
-                separateCards: true,
-            })
-        );
+        expect(screen.getByText('Product 1')).toBeInTheDocument();
     });
 
     it('handles missing promotions gracefully', () => {
         render(<MyCart basket={basket} productMap={productMap} />);
 
-        expect(mockProductItemsList).toHaveBeenCalledTimes(1);
-        const callArgs = mockProductItemsList.mock.calls[0][0];
-        expect(callArgs.promotions).toBeUndefined();
+        expect(screen.getByText(/My Cart \(3\)/)).toBeInTheDocument();
+        expect(screen.getByTestId('my-cart-item-prod-1')).toBeInTheDocument();
     });
 });

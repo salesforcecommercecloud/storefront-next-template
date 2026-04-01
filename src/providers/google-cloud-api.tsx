@@ -17,7 +17,8 @@
 
 import type { PropsWithChildren } from 'react';
 import { APIProvider } from '@vis.gl/react-google-maps';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 /**
  * Resolve the Google Cloud API key from the configuration
@@ -28,7 +29,7 @@ import { useConfig } from '@/config';
  * @returns The Google Cloud API key if configured, undefined otherwise
  */
 function useGoogleCloudAPIKey(): string {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const apiKey = config.features.googleCloudAPI.apiKey;
 
     return apiKey;

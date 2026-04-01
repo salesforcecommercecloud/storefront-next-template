@@ -46,18 +46,18 @@ exports[`CurrentPrice Snapshots > Range snapshot 1`] = `
 <div>
   <div>
     <span
-      aria-label="Current price from $49.99"
+      aria-label="Current price: $49.99"
       aria-live="polite"
       class="leading-7 [&:not(:first-child)]:mt-6 text-left font-semibold"
     >
-      From $49.99
+      $49.99
     </span>
     <span
       aria-atomic="true"
       aria-live="polite"
       class="sr-only"
     >
-      Current price from $49.99
+      Current price: $49.99
     </span>
   </div>
 </div>

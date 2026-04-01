@@ -1,5 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`CartQuantityPicker stories snapshot > AtStockLimit story renders and matches snapshot 1`] = `null`;
+
 exports[`CartQuantityPicker stories snapshot > Default story renders and matches snapshot 1`] = `null`;
 
 exports[`CartQuantityPicker stories snapshot > Disabled story renders and matches snapshot 1`] = `null`;

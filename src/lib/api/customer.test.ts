@@ -21,6 +21,7 @@ import {
     customerLookup,
     extractNameFromEmail,
     registerGuestUser,
+    savePaymentMethodToCustomer,
 } from './customer';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients';
@@ -31,6 +32,9 @@ import { createTestContext } from '@/lib/test-utils';
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/api-clients');
 vi.mock('@/lib/api/auth/standard-login');
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
 
 const mockContext = createTestContext();
 const { t } = getTranslation();
@@ -619,6 +623,120 @@ describe('Customer API', () => {
             expect(result.customerId).toBeUndefined();
             expect(result.password).toBeUndefined();
             expect(result.autoLoggedIn).toBeUndefined();
+        });
+    });
+
+    describe('savePaymentMethodToCustomer', () => {
+        test('sends full card number when paymentCard.number is provided', async () => {
+            const createCustomerPaymentInstrument = vi.fn().mockResolvedValue(undefined);
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: { createCustomerPaymentInstrument },
+            } as any);
+
+            const result = await savePaymentMethodToCustomer(mockContext, 'cust-1', {
+                paymentMethodId: 'CREDIT_CARD',
+                paymentCard: {
+                    cardType: 'Visa',
+                    number: '4111111111111111',
+                    expirationMonth: 12,
+                    expirationYear: 2030,
+                    holder: 'Jane Doe',
+                },
+            });
+
+            expect(result).toBe(true);
+            expect(createCustomerPaymentInstrument).toHaveBeenCalledWith({
+                params: { path: { customerId: 'cust-1' } },
+                body: expect.objectContaining({
+                    paymentMethodId: 'CREDIT_CARD',
+                    paymentCard: expect.objectContaining({
+                        cardType: 'Visa',
+                        number: '4111111111111111',
+                        expirationMonth: 12,
+                        expirationYear: 2030,
+                        holder: 'Jane Doe',
+                    }),
+                }),
+            });
+        });
+
+        test('derives number from numberLastDigits when paymentCard.number is missing (e.g. order instrument)', async () => {
+            const createCustomerPaymentInstrument = vi.fn().mockResolvedValue(undefined);
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: { createCustomerPaymentInstrument },
+            } as any);
+
+            const result = await savePaymentMethodToCustomer(mockContext, 'cust-2', {
+                paymentMethodId: 'CREDIT_CARD',
+                paymentCard: {
+                    cardType: 'Visa',
+                    expirationMonth: 1,
+                    expirationYear: 2039,
+                    holder: 'Test User',
+                    numberLastDigits: '4242',
+                },
+            });
+
+            expect(result).toBe(true);
+            expect(createCustomerPaymentInstrument).toHaveBeenCalledWith({
+                params: { path: { customerId: 'cust-2' } },
+                body: expect.objectContaining({
+                    paymentCard: expect.objectContaining({
+                        number: '************4242',
+                        cardType: 'Visa',
+                        holder: 'Test User',
+                    }),
+                }),
+            });
+        });
+
+        test('derives number from maskedNumber when number and numberLastDigits are missing', async () => {
+            const createCustomerPaymentInstrument = vi.fn().mockResolvedValue(undefined);
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: { createCustomerPaymentInstrument },
+            } as any);
+
+            const result = await savePaymentMethodToCustomer(mockContext, 'cust-3', {
+                paymentMethodId: 'CREDIT_CARD',
+                paymentCard: {
+                    cardType: 'Mastercard',
+                    expirationMonth: 6,
+                    expirationYear: 2028,
+                    holder: 'Another User',
+                    maskedNumber: '************5678',
+                },
+            });
+
+            expect(result).toBe(true);
+            expect(createCustomerPaymentInstrument).toHaveBeenCalledWith({
+                params: { path: { customerId: 'cust-3' } },
+                body: expect.objectContaining({
+                    paymentCard: expect.objectContaining({
+                        number: '************5678',
+                    }),
+                }),
+            });
+        });
+
+        test('returns false when API throws', async () => {
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperCustomers: {
+                    createCustomerPaymentInstrument: vi.fn().mockRejectedValue(new Error('API error')),
+                },
+            } as any);
+
+            const result = await savePaymentMethodToCustomer(mockContext, 'cust-1', {
+                paymentMethodId: 'CREDIT_CARD',
+                paymentCard: {
+                    cardType: 'Visa',
+                    number: '4111111111111111',
+                    expirationMonth: 12,
+                    expirationYear: 2030,
+                    holder: 'Jane Doe',
+                },
+            });
+
+            expect(result).toBe(false);
         });
     });
 });

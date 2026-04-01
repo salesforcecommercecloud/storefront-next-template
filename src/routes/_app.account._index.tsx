@@ -16,7 +16,7 @@
 import { useEffect, useMemo, type ReactElement, Suspense, useState } from 'react';
 import { useOutletContext, Await, useFetcher, useRevalidator } from 'react-router';
 import { ToggleCard, ToggleCardSummary, ToggleCardEdit } from '@/components/toggle-card';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AccountDetailSkeleton } from '@/components/account-detail-skeleton';
 import { PasswordUpdateForm } from '@/components/password-update-form';
@@ -27,10 +27,16 @@ import { useToast } from '@/components/toast';
 import type { ShopperConsents, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
+import { SeoMeta } from '@/components/seo-meta';
 import { useAuth } from '@/providers/auth';
 import CustomerPreferencesProvider from '@/providers/customer-preferences';
 import { useTranslation } from 'react-i18next';
 import { formatDateForLocale } from '@/lib/date-utils';
+import { FETCHER_STATES } from '@/lib/fetcher-states';
+import { buildUrl } from '@salesforce/storefront-next-runtime/multi-site';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
+import type { AppConfig } from '@/types/config';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -65,6 +71,8 @@ function AccountDetailsContent({
     const revalidator = useRevalidator();
     const auth = useAuth();
     const { t, i18n } = useTranslation('account');
+    const config = useConfig<AppConfig>();
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const customerId = auth?.customerId;
 
     const updateProfileFetcher = useScapiFetcher('shopperCustomers', 'updateCustomer', {
@@ -172,6 +180,7 @@ function AccountDetailsContent({
         setProfileOverride({
             firstName: formData.firstName,
             lastName: formData.lastName,
+            phoneHome: formData.phone ?? undefined,
             gender: formData.gender ? Number(formData.gender) : undefined,
             birthday: formData.birthday ?? undefined,
         });
@@ -213,6 +222,11 @@ function AccountDetailsContent({
         // Get email from customer data (userInfo) and password from formData
         if (userInfo.email && formData.password) {
             // Submit login request with the new password
+            const loginAction = buildUrl({
+                to: '/login',
+                urlConfig: config.url,
+                params: { siteId: siteRef, localeId: localeRef },
+            });
             void loginFetcher.submit(
                 {
                     email: userInfo.email,
@@ -221,7 +235,7 @@ function AccountDetailsContent({
                 },
                 {
                     method: 'POST',
-                    action: '/login',
+                    action: loginAction,
                 }
             );
         } else {
@@ -260,89 +274,124 @@ function AccountDetailsContent({
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {/* Page Header Card */}
-            <Card>
-                <CardContent className="py-6">
-                    <h1 className="text-2xl font-bold text-foreground" tabIndex={0}>
+            <Card className="bg-card border-border">
+                <CardContent className="px-6 py-3">
+                    <h1
+                        className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
+                        tabIndex={0}>
                         {t('title')}
                     </h1>
-                    <p className="text-sm text-muted-foreground mt-1">{t('subtitle')}</p>
+                    <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
                 </CardContent>
             </Card>
 
-            {/* Personal Information Toggle Card */}
-            <ToggleCard
-                id="profile"
-                title={t('profile.title')}
-                description={t('profile.description')}
-                editing={isEditingProfile}
-                onEdit={handleProfileEdit}
-                editVariant="outline"
-                showHeaderSeparator>
-                <ToggleCardSummary>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.firstName')}</p>
-                            <p className="text-sm font-medium text-foreground">
-                                {displayCustomer?.firstName || t('profile.notProvided')}
-                            </p>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.lastName')}</p>
-                            <p className="text-sm font-medium text-foreground">
-                                {displayCustomer?.lastName || t('profile.notProvided')}
-                            </p>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.email')}</p>
-                            <p className="text-sm font-medium text-foreground">
-                                {userInfo.email || t('profile.notProvided')}
-                            </p>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.phoneNumber')}</p>
-                            <p className="text-sm font-medium text-foreground">
-                                {userInfo.phoneNumber || t('profile.notProvided')}
-                            </p>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.gender')}</p>
-                            <p className="text-sm font-medium text-foreground">
-                                {displayCustomer?.gender === 1
-                                    ? t('profile.genderOptions.male')
-                                    : displayCustomer?.gender === 2
-                                      ? t('profile.genderOptions.female')
-                                      : t('profile.notProvided')}
-                            </p>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('profile.dateOfBirth')}</p>
-                            <p className="text-sm font-medium text-foreground">
-                                {formatDateForLocale(displayCustomer?.birthday, i18n.language) ||
-                                    t('profile.notProvided')}
-                            </p>
-                        </div>
+            {/* Personal Information – same layout as Interests & Preferences (header actions top right) */}
+            <Card data-testid="profile-card" className="bg-card border-border">
+                <CardHeader className="flex flex-row items-start justify-between border-b border-border pb-4">
+                    <div className="space-y-1.5">
+                        <CardTitle className="text-base font-semibold text-foreground">{t('profile.title')}</CardTitle>
+                        <CardDescription className="text-muted-foreground">{t('profile.description')}</CardDescription>
                     </div>
-                </ToggleCardSummary>
+                    {isEditingProfile ? (
+                        <div className="flex gap-2">
+                            <Button
+                                type="submit"
+                                form="customer-profile-form"
+                                size="sm"
+                                disabled={updateProfileFetcher.state === FETCHER_STATES.SUBMITTING}
+                                className="rounded-sm">
+                                {updateProfileFetcher.state === FETCHER_STATES.SUBMITTING
+                                    ? t('common.saving')
+                                    : t('common.save')}
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={handleCustomerProfileCancel}
+                                disabled={updateProfileFetcher.state === FETCHER_STATES.SUBMITTING}
+                                className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                                {t('common.cancel')}
+                            </Button>
+                        </div>
+                    ) : (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleProfileEdit}
+                            className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            {t('common.edit')}
+                        </Button>
+                    )}
+                </CardHeader>
 
-                <ToggleCardEdit>
-                    <CustomerProfileForm
-                        initialData={{
-                            firstName: displayCustomer?.firstName || '',
-                            lastName: displayCustomer?.lastName || '',
-                            email: displayCustomer?.email || displayCustomer?.login || '',
-                            phone: displayCustomer?.phoneHome || displayCustomer?.phoneMobile || '',
-                            gender: displayCustomer?.gender !== undefined ? String(displayCustomer.gender) : '',
-                            birthday: displayCustomer?.birthday || '',
-                        }}
-                        updateFetcher={updateProfileFetcher}
-                        onSuccess={handleCustomerProfileSuccess}
-                        onError={handleCustomerProfileError}
-                        onCancel={handleCustomerProfileCancel}
-                    />
-                </ToggleCardEdit>
-            </ToggleCard>
+                <CardContent className="pt-6">
+                    {isEditingProfile ? (
+                        <CustomerProfileForm
+                            formId="customer-profile-form"
+                            hideActions
+                            initialData={{
+                                firstName: displayCustomer?.firstName || '',
+                                lastName: displayCustomer?.lastName || '',
+                                email: displayCustomer?.email || displayCustomer?.login || '',
+                                phone: displayCustomer?.phoneHome || displayCustomer?.phoneMobile || '',
+                                gender: displayCustomer?.gender !== undefined ? String(displayCustomer.gender) : '',
+                                birthday: displayCustomer?.birthday || '',
+                            }}
+                            updateFetcher={updateProfileFetcher}
+                            onSuccess={handleCustomerProfileSuccess}
+                            onError={handleCustomerProfileError}
+                            onCancel={handleCustomerProfileCancel}
+                        />
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium text-foreground">{t('profile.firstName')}</p>
+                                <p className="text-sm text-foreground" data-testid="profile-value-firstName">
+                                    {displayCustomer?.firstName || t('profile.notProvided')}
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium text-foreground">{t('profile.lastName')}</p>
+                                <p className="text-sm text-foreground" data-testid="profile-value-lastName">
+                                    {displayCustomer?.lastName || t('profile.notProvided')}
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium text-foreground">{t('profile.email')}</p>
+                                <p className="text-sm text-foreground" data-testid="profile-value-email">
+                                    {userInfo.email || t('profile.notProvided')}
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium text-foreground">{t('profile.phoneNumber')}</p>
+                                <p className="text-sm text-foreground" data-testid="profile-value-phone">
+                                    {userInfo.phoneNumber || t('profile.notProvided')}
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium text-foreground">{t('profile.gender')}</p>
+                                <p className="text-sm text-foreground" data-testid="profile-value-gender">
+                                    {displayCustomer?.gender === 1
+                                        ? t('profile.genderOptions.male')
+                                        : displayCustomer?.gender === 2
+                                          ? t('profile.genderOptions.female')
+                                          : t('profile.notProvided')}
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium text-foreground">{t('profile.dateOfBirth')}</p>
+                                <p className="text-sm text-foreground" data-testid="profile-value-birthday">
+                                    {formatDateForLocale(displayCustomer?.birthday, i18n.language) ||
+                                        t('profile.notProvided')}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
 
             {/* Interests & Preferences Section */}
             {customerId && (
@@ -361,14 +410,19 @@ function AccountDetailsContent({
                 title={t('password.title')}
                 description={t('password.description')}
                 editing={isEditingPassword}
-                showHeaderSeparator>
+                showHeaderSeparator
+                className="bg-card border-border">
                 <ToggleCardSummary>
                     <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{t('password.password')}</p>
-                            <p className="text-sm font-medium text-foreground">{t('password.hiddenPassword')}</p>
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-foreground">{t('password.password')}</p>
+                            <p className="text-sm text-foreground">{t('password.hiddenPassword')}</p>
                         </div>
-                        <Button variant="outline" size="sm" onClick={handlePasswordEdit}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handlePasswordEdit}
+                            className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('password.changePassword')}
                         </Button>
                     </div>
@@ -403,6 +457,7 @@ function AccountDetailsContent({
  */
 export default function AccountDetails(): ReactElement {
     const { customer: customerPromise, subscriptions: subscriptionsPromise } = useOutletContext<AccountLayoutContext>();
+    const { t } = useTranslation('account');
 
     // Stable promise reference so Await does not reset (unmount children) on every re-render.
     const dataPromise = useMemo(
@@ -411,13 +466,16 @@ export default function AccountDetails(): ReactElement {
     );
 
     return (
-        <Suspense fallback={<AccountDetailSkeleton />}>
-            <Await resolve={dataPromise}>
-                {([customer, subscriptions]: [
-                    Customer | null,
-                    ShopperConsents.schemas['ConsentSubscriptionResponse'] | null,
-                ]) => <AccountDetailsContent customer={customer} subscriptions={subscriptions} />}
-            </Await>
-        </Suspense>
+        <>
+            <SeoMeta title={t('meta.accountDetailsTitle', { defaultValue: 'Account Details' })} noIndex />
+            <Suspense fallback={<AccountDetailSkeleton />}>
+                <Await resolve={dataPromise}>
+                    {([customer, subscriptions]: [
+                        Customer | null,
+                        ShopperConsents.schemas['ConsentSubscriptionResponse'] | null,
+                    ]) => <AccountDetailsContent customer={customer} subscriptions={subscriptions} />}
+                </Await>
+            </Suspense>
+        </>
     );
 }

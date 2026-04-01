@@ -518,9 +518,9 @@ describe('Grid Component', () => {
             id: 'test-grid',
             typeId: 'grid',
             regions: [
-                { id: 'column-1', components: [] },
-                { id: 'column-2', components: [] },
-                { id: 'column-3', components: [] },
+                { id: 'column_1', components: [] },
+                { id: 'column_2', components: [] },
+                { id: 'column_3', components: [] },
             ],
         } as any;
 
@@ -544,17 +544,17 @@ describe('Grid Component', () => {
             expect(grid).toBeInTheDocument();
 
             // Should have exactly N regions
-            const regions = screen.getAllByTestId(/^region-column-/);
+            const regions = screen.getAllByTestId(/^region-column_/);
             expect(regions).toHaveLength(columns);
 
             // Assert each expected region exists
             for (let i = 1; i <= columns; i++) {
-                expect(screen.getByTestId(`region-column-${i}`)).toBeInTheDocument();
+                expect(screen.getByTestId(`region-column_${i}`)).toBeInTheDocument();
             }
 
             // Assert unwanted regions don't exist
             for (let i = columns + 1; i <= 6; i++) {
-                expect(screen.queryByTestId(`region-column-${i}`)).not.toBeInTheDocument();
+                expect(screen.queryByTestId(`region-column_${i}`)).not.toBeInTheDocument();
             }
         });
 
@@ -579,8 +579,8 @@ describe('Grid Component', () => {
             expect(screen.queryByTestId('child-content')).not.toBeInTheDocument();
 
             // Only regions should be present
-            expect(screen.getByTestId('region-column-1')).toBeInTheDocument();
-            expect(screen.getByTestId('region-column-2')).toBeInTheDocument();
+            expect(screen.getByTestId('region-column_1')).toBeInTheDocument();
+            expect(screen.getByTestId('region-column_2')).toBeInTheDocument();
         });
 
         it('should combine Page Designer attributes with dynamic regions', () => {
@@ -605,7 +605,7 @@ describe('Grid Component', () => {
             expect(grid.className).toContain('items-start');
 
             // Check that 4 regions are created
-            const regions = screen.getAllByTestId(/^region-column-/);
+            const regions = screen.getAllByTestId(/^region-column_/);
             expect(regions).toHaveLength(4);
         });
     });

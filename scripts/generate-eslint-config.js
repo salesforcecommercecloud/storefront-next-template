@@ -167,7 +167,17 @@ ${parentRulesContent}`;
 // Template-specific overrides (Storybook)
 const { storybookOverrides } = await import('./eslint.storybook-overrides.js');
 
-export default [...baseConfig, ...storybookOverrides];
+/**
+ * Ignore the e2e sub-package — it has its own eslint.config.mjs with
+ * CodeceptJS-specific rules. ESLint v9 flat config does not auto-discover
+ * nested config files, so without this ignore the root config would apply
+ * TypeScript-aware rules to e2e files (e.g. .prettierrc.mjs) that are not
+ * covered by the e2e tsconfig, causing parser errors.
+ *
+ * Linting is still enforced: \`pnpm lint\` delegates to \`pnpm --filter ./e2e lint\`
+ * which runs the e2e package's own config.
+ */
+export default [{ ignores: ['e2e/**'] }, ...baseConfig, ...storybookOverrides];
 `;
 
     console.log('✏️  Writing eslint.config.js...');

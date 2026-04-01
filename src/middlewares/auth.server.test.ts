@@ -18,7 +18,9 @@ import { RouterContextProvider } from 'react-router';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import { type AuthStorageData, AUTH_TOKEN_INVALID_ERROR, authStorageContext } from '@/middlewares/auth.utils';
 import { performanceTimerContext } from '@/middlewares/performance-metrics';
-import { appConfigContext, type AppConfig } from '@/config';
+import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { i18nextContext } from '@/lib/i18next';
 import { mockConfig } from '@/test-utils/config';
 import { TrackingConsent } from '@/types/tracking-consent';
 import authMiddleware, {
@@ -33,8 +35,21 @@ import authMiddleware, {
     updateAuth,
     destroyAuth,
     flashAuth,
+    clearInvalidSessionAndRestoreGuest,
 } from './auth.server';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+
+const mockLogger = {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+};
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => mockLogger),
+    loggerContext: {},
+}));
 
 // Mock createApiClients to return mocked auth namespace
 const mockAuth = {
@@ -112,6 +127,11 @@ vi.mock('@/lib/utils', () => ({
     stringToBase64: vi.fn((str: string) => Buffer.from(str).toString('base64')),
 }));
 
+const mockI18next = {
+    getLocale: vi.fn(() => 'en-US'),
+    getI18nextInstance: vi.fn(),
+};
+
 function getMockTokenResponse(): ShopperLogin.schemas['TokenResponse'] {
     return {
         access_token: 'access-token-123',
@@ -158,16 +178,11 @@ function mockContext(
     );
 
     // Create mock app config
-    const appConfig: AppConfig = {
-        ...mockConfig,
-        commerce: {
-            ...mockConfig.commerce,
-            api: {
-                ...mockConfig.commerce.api,
-                privateKeyEnabled: isSlasPrivate,
-            },
-        },
-    };
+    // Use structuredClone to create a deep copy of the mockConfig object to prevent test pollution
+    const appConfig: AppConfig = structuredClone(mockConfig);
+
+    // Override commerce.api.privateKeyEnabled after cloning
+    appConfig.commerce.api.privateKeyEnabled = isSlasPrivate;
 
     // Mock provider.get to return storage, performance timer, i18next, or appConfig based on context key
     vi.spyOn(provider, 'get').mockImplementation((key) => {
@@ -177,11 +192,8 @@ function mockContext(
         if (key === appConfigContext) {
             return appConfig;
         }
-        // Check if key is i18next context (check symbol description)
-        if (key && typeof key === 'symbol' && String(key).includes('i18nextContext')) {
-            return {
-                getLocale: () => 'en-US',
-            };
+        if (key === i18nextContext) {
+            return mockI18next;
         }
         return storage;
     });
@@ -321,6 +333,10 @@ describe('auth middleware (server)', () => {
                 refreshToken,
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: 'test-dwsid' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: refreshAccessToken starting', {
+                hasTrackingConsent: false,
+            });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: refreshAccessToken succeeded');
         });
 
         it('should include client secret when SLAS is private', async () => {
@@ -347,6 +363,9 @@ describe('auth middleware (server)', () => {
             mockAuth.refreshToken.mockRejectedValue(mockError);
 
             await expect(refreshAccessToken(provider, refreshToken)).rejects.toThrow('Invalid refresh token');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: refreshAccessToken failed', {
+                error: mockError,
+            });
         });
 
         it('should include DNT value when provided in options', async () => {
@@ -471,6 +490,11 @@ describe('auth middleware (server)', () => {
                 usid: undefined,
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: 'guest-dwsid' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: loginGuestUser starting', {
+                hasUsid: false,
+                isSlasPrivate: false,
+            });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: loginGuestUser succeeded');
         });
 
         it('should login guest user with usid', async () => {
@@ -510,6 +534,9 @@ describe('auth middleware (server)', () => {
             mockAuth.loginAsGuest.mockRejectedValue(mockError);
 
             await expect(loginGuestUser(provider)).rejects.toThrow('Guest login failed');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: loginGuestUser failed', {
+                error: mockError,
+            });
         });
     });
 
@@ -533,6 +560,11 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: 'registered-dwsid' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: loginRegisteredUser starting', {
+                hasUsid: true,
+                hasTrackingConsent: false,
+            });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: loginRegisteredUser succeeded');
         });
 
         it('should login registered user with custom parameters', async () => {
@@ -589,6 +621,9 @@ describe('auth middleware (server)', () => {
             mockAuth.loginWithCredentials.mockRejectedValue(mockError);
 
             await expect(loginRegisteredUser(provider, email, password)).rejects.toThrow('Invalid credentials');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: loginRegisteredUser failed', {
+                error: mockError,
+            });
         });
 
         it('should include DNT value when feature is enabled and DNT exists in auth context', async () => {
@@ -714,6 +749,10 @@ describe('auth middleware (server)', () => {
                     locale: 'en-US',
                 })
             );
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: authorizePasswordless starting', {
+                mode: 'email',
+            });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: authorizePasswordless succeeded');
         });
 
         it('should authorize passwordless with redirect path', async () => {
@@ -750,6 +789,9 @@ describe('auth middleware (server)', () => {
             mockAuth.passwordless.authorize.mockRejectedValue(mockError);
 
             await expect(authorizePasswordless(provider, { userid })).rejects.toThrow('Authorization failed');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: authorizePasswordless failed', {
+                error: mockError,
+            });
         });
 
         it('should return response with non-200 status', async () => {
@@ -789,6 +831,10 @@ describe('auth middleware (server)', () => {
                 usid: 'usid',
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: 'pwdless-dwsid' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: getPasswordLessAccessToken starting', {
+                hasUsid: true,
+            });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: getPasswordLessAccessToken succeeded');
         });
 
         it('should include DNT value when feature is enabled and DNT exists in auth context', async () => {
@@ -920,6 +966,9 @@ describe('auth middleware (server)', () => {
             mockAuth.passwordless.exchangeToken.mockRejectedValue(mockError);
 
             await expect(getPasswordLessAccessToken(provider, token)).rejects.toThrow('Invalid token');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: getPasswordLessAccessToken failed', {
+                error: mockError,
+            });
         });
     });
 
@@ -932,17 +981,18 @@ describe('auth middleware (server)', () => {
 
             await getPasswordResetToken(provider, { email });
 
-            expect(mockAuth.password.requestReset).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    userId: email,
-                    callbackUri: 'https://example.com/reset-password-callback',
-                    locale: 'en-US',
-                })
-            );
+            expect(mockAuth.password.requestReset).toHaveBeenCalledWith({
+                userId: email,
+                callbackUri: 'https://example.com/reset-password-callback',
+                mode: 'email',
+                locale: 'en-US',
+            });
 
             // Verify performance timer was called
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authGetPasswordResetToken', 'start');
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authGetPasswordResetToken', 'end');
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: getPasswordResetToken starting', { mode: 'email' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: getPasswordResetToken succeeded');
         });
 
         it('should request password reset token with private SLAS and include authorization header', async () => {
@@ -954,13 +1004,29 @@ describe('auth middleware (server)', () => {
             await getPasswordResetToken(provider, { email });
 
             // Note: Authorization header is now handled internally by createApiClients
-            expect(mockAuth.password.requestReset).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    userId: email,
-                    callbackUri: 'https://example.com/reset-password-callback',
-                    locale: 'en-US',
-                })
-            );
+            expect(mockAuth.password.requestReset).toHaveBeenCalledWith({
+                userId: email,
+                callbackUri: 'https://example.com/reset-password-callback',
+                mode: 'email',
+                locale: 'en-US',
+            });
+        });
+
+        it('should request password reset token with callback mode', async () => {
+            const { provider, appConfig } = mockContext({}, false);
+            appConfig.features.resetPassword.mode = 'callback';
+            const email = 'test@example.com';
+
+            mockAuth.password.requestReset.mockResolvedValue(undefined);
+
+            await getPasswordResetToken(provider, { email });
+
+            expect(mockAuth.password.requestReset).toHaveBeenCalledWith({
+                userId: email,
+                callbackUri: 'https://example.com/reset-password-callback',
+                mode: 'callback',
+                locale: 'en-US',
+            });
         });
 
         it('should handle absolute callback URI', async () => {
@@ -972,13 +1038,29 @@ describe('auth middleware (server)', () => {
 
             await getPasswordResetToken(provider, { email });
 
-            expect(mockAuth.password.requestReset).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    userId: email,
-                    callbackUri: 'https://custom-domain.com/reset',
-                    locale: 'en-US',
-                })
-            );
+            expect(mockAuth.password.requestReset).toHaveBeenCalledWith({
+                userId: email,
+                callbackUri: 'https://custom-domain.com/reset',
+                mode: 'email',
+                locale: 'en-US',
+            });
+        });
+
+        it('should handle undefined callback URI', async () => {
+            const { provider, appConfig } = mockContext({}, false);
+            delete appConfig.features.resetPassword.callbackUri;
+            const email = 'test@example.com';
+
+            mockAuth.password.requestReset.mockResolvedValue(undefined);
+
+            await getPasswordResetToken(provider, { email });
+            // When callbackUri is undefined, it should be passed as undefined to requestReset
+            expect(mockAuth.password.requestReset).toHaveBeenCalledWith({
+                userId: email,
+                callbackUri: undefined,
+                mode: 'email',
+                locale: 'en-US',
+            });
         });
 
         it('should handle relative callback URI and prepend app origin', async () => {
@@ -990,13 +1072,12 @@ describe('auth middleware (server)', () => {
 
             await getPasswordResetToken(provider, { email });
 
-            expect(mockAuth.password.requestReset).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    userId: email,
-                    callbackUri: 'https://example.com/reset-password',
-                    locale: 'en-US',
-                })
-            );
+            expect(mockAuth.password.requestReset).toHaveBeenCalledWith({
+                userId: email,
+                callbackUri: 'https://example.com/reset-password',
+                mode: 'email',
+                locale: 'en-US',
+            });
         });
 
         it('should handle password reset token request failure', async () => {
@@ -1007,6 +1088,9 @@ describe('auth middleware (server)', () => {
             mockAuth.password.requestReset.mockRejectedValue(mockError);
 
             await expect(getPasswordResetToken(provider, { email })).rejects.toThrow('Failed to send reset email');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: getPasswordResetToken failed', {
+                error: mockError,
+            });
         });
 
         it('should call performance timer even on failure', async () => {
@@ -1043,6 +1127,8 @@ describe('auth middleware (server)', () => {
             // Verify performance timer was called
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authResetPasswordWithToken', 'start');
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authResetPasswordWithToken', 'end');
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: resetPasswordWithToken starting');
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: resetPasswordWithToken succeeded');
         });
 
         it('should reset password with private SLAS and include authorization header', async () => {
@@ -1093,6 +1179,9 @@ describe('auth middleware (server)', () => {
             await expect(resetPasswordWithToken(provider, { email, token, newPassword })).rejects.toThrow(
                 'Invalid or expired token'
             );
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: resetPasswordWithToken failed', {
+                error: mockError,
+            });
         });
 
         it('should handle password reset failure due to weak password', async () => {
@@ -1989,6 +2078,165 @@ describe('auth middleware (server)', () => {
                 (call) => call[0] === '' && call[1]?.expires instanceof Date
             );
             expect(deleteCalls.length).toBeGreaterThan(0);
+        });
+
+        it.each([
+            {
+                userType: 'guest' as const,
+                refreshTokenCookie: 'cc-nx-g',
+                isb: 'uido:slas::upn:Guest::uidn:Guest User::gcid:token-guest-id::chid:RefArchGlobal',
+                expectedCustomerId: 'token-guest-id',
+            },
+            {
+                userType: 'registered' as const,
+                refreshTokenCookie: 'cc-nx',
+                isb: 'uido:ecom::upn:user@example.com::uidn:Test User::gcid:guest-id::rcid:registered-id::chid:RefArchGlobal',
+                expectedCustomerId: 'registered-id',
+            },
+        ])(
+            'should derive customerId from isb claim for $userType user and trigger cookie update on mismatch',
+            async ({ refreshTokenCookie, isb, expectedCustomerId }) => {
+                const now = Math.floor(Date.now() / 1000);
+                const exp = now + 1800;
+                const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb }))}.signature`;
+
+                mockParseAllCookies.mockReturnValue({
+                    [refreshTokenCookie]: 'refresh-token',
+                    'cc-at': mockAccessToken,
+                    customerId: 'stale-cookie-customer-id',
+                });
+
+                const request = new Request('https://example.com/test');
+                const context = new RouterContextProvider();
+                const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+                vi.spyOn(context, 'get').mockImplementation((key) => {
+                    if (key === performanceTimerContext) return mockPerformanceTimer;
+                    if (key === appConfigContext) return mockConfig;
+                    return storage;
+                });
+
+                vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                    if (typeof value === 'object' && value instanceof Map) {
+                        value.forEach((v, k) => storage.set(k, v));
+                    }
+                });
+
+                const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+                mockCreateCookie.mockReturnValue({ serialize: mockSerialize });
+
+                const mockResponse = new Response('OK');
+                const next = vi.fn().mockResolvedValue(mockResponse);
+
+                await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+
+                expect(storage.get('customerId')).toBe(expectedCustomerId);
+                expect(mockSerialize).toHaveBeenCalled();
+            }
+        );
+
+        it('should not trigger cookie update when token customerId matches cookie', async () => {
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const isb = 'uido:slas::upn:Guest::uidn:Guest User::gcid:same-customer-id::chid:RefArchGlobal';
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb }))}.signature`;
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+                customerId: 'same-customer-id',
+            });
+
+            const request = new Request('https://example.com/test');
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+            mockCreateCookie.mockReturnValue({ serialize: mockSerialize });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+
+            expect(storage.get('customerId')).toBe('same-customer-id');
+            expect(mockSerialize).not.toHaveBeenCalled();
+        });
+
+        it('should fall back to cookie customerId when isb claim is missing from token', async () => {
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+                customerId: 'cookie-customer-id',
+            });
+
+            const request = new Request('https://example.com/test');
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+
+            expect(storage.get('customerId')).toBe('cookie-customer-id');
+        });
+    });
+
+    describe('clearInvalidSessionAndRestoreGuest', () => {
+        it('should log info on successful guest session restore', async () => {
+            const data = getMockAuthData();
+            const { provider } = mockContext(data);
+            const mockTokenResponse = getMockTokenResponse();
+
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            await clearInvalidSessionAndRestoreGuest(provider);
+
+            expect(mockLogger.info).toHaveBeenCalledWith('Auth: clearing invalid session and restoring guest');
+            expect(mockLogger.info).toHaveBeenCalledWith('Auth: guest session restored successfully');
+        });
+
+        it('should log error on guest session restore failure', async () => {
+            const data = getMockAuthData();
+            const { provider } = mockContext(data);
+            const mockError = new Error('Guest login failed');
+
+            mockAuth.loginAsGuest.mockRejectedValue(mockError);
+
+            await expect(clearInvalidSessionAndRestoreGuest(provider)).rejects.toThrow('Guest login failed');
+            expect(mockLogger.info).toHaveBeenCalledWith('Auth: clearing invalid session and restoring guest');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: guest session restore failed', {
+                error: mockError,
+            });
         });
     });
 });

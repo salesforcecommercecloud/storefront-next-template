@@ -133,6 +133,21 @@ const baseConfig = defineConfig([
             },
         },
         rules: {
+            // Enforce multi-site-aware navigation imports
+            'no-restricted-imports': [
+                'warn',
+                {
+                    paths: [
+                        {
+                            name: 'react-router',
+                            importNames: ['Link', 'NavLink', 'useNavigate'],
+                            message:
+                                'Import Link/NavLink from "@/components/link" and useNavigate from "@/hooks/use-navigate" for multi-site URL prefixing.',
+                        },
+                    ],
+                },
+            ],
+
             // Override/extend rules from recommended configs
             '@typescript-eslint/consistent-type-exports': 'error',
             '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
@@ -195,7 +210,7 @@ const baseConfig = defineConfig([
 
             // General code quality rules
             'import/no-namespace': 'error',
-            'no-console': 'warn',
+            'no-console': 'error',
             'no-debugger': 'error',
             'no-alert': 'warn',
             'no-var': 'error',
@@ -231,6 +246,20 @@ const baseConfig = defineConfig([
         },
     },
     {
+        // Multi-site navigation wrappers — these legitimately import from react-router
+        files: ['**/src/components/link/index.tsx', '**/src/hooks/use-navigate.ts'],
+        rules: {
+            'no-restricted-imports': 'off',
+        },
+    },
+    {
+        // Logger utility — wraps console.* for centralized logging
+        files: ['**/src/lib/logger.ts'],
+        rules: {
+            'no-console': 'off',
+        },
+    },
+    {
         // Build/tooling files
         files: ['**/*.config.{js,ts}', '**/scripts/**/*.{js,ts}'],
         languageOptions: {
@@ -256,6 +285,7 @@ const baseConfig = defineConfig([
             '@typescript-eslint/no-explicit-any': 'off',
             'no-console': 'off',
             'max-len': 'off',
+            'no-restricted-imports': 'off',
         },
     },
     {
@@ -310,4 +340,14 @@ const baseConfig = defineConfig([
 // Template-specific overrides (Storybook)
 const { storybookOverrides } = await import('./eslint.storybook-overrides.js');
 
-export default [...baseConfig, ...storybookOverrides];
+/**
+ * Ignore the e2e sub-package — it has its own eslint.config.mjs with
+ * CodeceptJS-specific rules. ESLint v9 flat config does not auto-discover
+ * nested config files, so without this ignore the root config would apply
+ * TypeScript-aware rules to e2e files (e.g. .prettierrc.mjs) that are not
+ * covered by the e2e tsconfig, causing parser errors.
+ *
+ * Linting is still enforced: `pnpm lint` delegates to `pnpm --filter ./e2e lint`
+ * which runs the e2e package's own config.
+ */
+export default [{ ignores: ['e2e/**'] }, ...baseConfig, ...storybookOverrides];

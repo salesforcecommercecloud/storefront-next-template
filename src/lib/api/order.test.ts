@@ -439,10 +439,10 @@ describe('fetchCustomerOrders', () => {
     });
 
     test('calls getCustomerOrders with customerId in path and default pagination', async () => {
-        mockGetCustomerOrders.mockResolvedValue({ data: { data: [] } });
+        mockGetCustomerOrders.mockResolvedValue({ data: { data: [], total: 0, offset: 0, limit: 10 } });
 
         const context = createTestContext({ currency: 'USD' });
-        await fetchCustomerOrders(context, 'customer-123');
+        const result = await fetchCustomerOrders(context, 'customer-123');
 
         expect(mockGetCustomerOrders).toHaveBeenCalledWith({
             params: {
@@ -453,13 +453,14 @@ describe('fetchCustomerOrders', () => {
                 },
             },
         });
+        expect(result).toEqual({ orders: [], total: 0, offset: 0, limit: 10 });
     });
 
     test('calls getCustomerOrders with custom pagination options', async () => {
-        mockGetCustomerOrders.mockResolvedValue({ data: { data: [] } });
+        mockGetCustomerOrders.mockResolvedValue({ data: { data: [], total: 0, offset: 10, limit: 25 } });
 
         const context = createTestContext({ currency: 'USD' });
-        await fetchCustomerOrders(context, 'customer-456', {
+        const result = await fetchCustomerOrders(context, 'customer-456', {
             offset: 10,
             limit: 25,
         });
@@ -473,6 +474,8 @@ describe('fetchCustomerOrders', () => {
                 },
             },
         });
+        expect(result.offset).toBe(10);
+        expect(result.limit).toBe(25);
     });
 
     test('fetches product images and enriches orders', async () => {
@@ -488,6 +491,9 @@ describe('fetchCustomerOrders', () => {
                         productItems: [{ productId: 'prod-1', quantity: 2, itemId: 'item-1' }],
                     },
                 ],
+                total: 1,
+                offset: 0,
+                limit: 10,
             },
         });
         mockGetProducts.mockResolvedValue({
@@ -508,7 +514,7 @@ describe('fetchCustomerOrders', () => {
         });
 
         const context = createTestContext({ currency: 'USD' });
-        const orders = await fetchCustomerOrders(context, 'customer-123');
+        const result = await fetchCustomerOrders(context, 'customer-123');
 
         expect(mockGetProducts).toHaveBeenCalledWith({
             params: {
@@ -519,8 +525,8 @@ describe('fetchCustomerOrders', () => {
                 },
             },
         });
-        expect(orders).toHaveLength(1);
-        expect(orders[0].productItems?.[0]).toMatchObject({
+        expect(result.orders).toHaveLength(1);
+        expect(result.orders[0].productItems?.[0]).toMatchObject({
             productId: 'prod-1',
             imageUrl: 'https://example.com/prod1.jpg',
             imageAlt: 'Product 1',
@@ -543,6 +549,9 @@ describe('fetchCustomerOrders', () => {
                         ],
                     },
                 ],
+                total: 2,
+                offset: 0,
+                limit: 10,
             },
         });
         mockGetProducts.mockResolvedValue({ data: { data: [] } });
@@ -563,7 +572,7 @@ describe('fetchCustomerOrders', () => {
 
     test('skips getProducts when orders have no product items', async () => {
         mockGetCustomerOrders.mockResolvedValue({
-            data: { data: [{ orderNo: 'ORD-1', productItems: [] }] },
+            data: { data: [{ orderNo: 'ORD-1', productItems: [] }], total: 1, offset: 0, limit: 10 },
         });
 
         const context = createTestContext({ currency: 'USD' });
@@ -583,56 +592,60 @@ describe('fetchCustomerOrders', () => {
                         productItems: [{ productId: 'prod-1', quantity: 1 }],
                     },
                 ],
+                total: 1,
+                offset: 0,
+                limit: 10,
             },
         });
         mockGetProducts.mockRejectedValue(new Error('Products API error'));
 
         const context = createTestContext({ currency: 'USD' });
-        const orders = await fetchCustomerOrders(context, 'customer-123');
+        const result = await fetchCustomerOrders(context, 'customer-123');
 
-        expect(orders).toHaveLength(1);
-        expect(orders[0].orderNo).toBe('ORD-1');
-        expect(orders[0].productItems?.[0]?.imageUrl).toBeUndefined();
+        expect(result.orders).toHaveLength(1);
+        expect(result.orders[0].orderNo).toBe('ORD-1');
+        expect(result.orders[0].productItems?.[0]?.imageUrl).toBeUndefined();
     });
 
-    test('returns empty array when no orders', async () => {
-        mockGetCustomerOrders.mockResolvedValue({ data: { data: [] } });
+    test('returns empty result when no orders', async () => {
+        mockGetCustomerOrders.mockResolvedValue({ data: { data: [], total: 0, offset: 0, limit: 10 } });
 
         const context = createTestContext({ currency: 'USD' });
-        const orders = await fetchCustomerOrders(context, 'customer-123');
+        const result = await fetchCustomerOrders(context, 'customer-123');
 
-        expect(orders).toEqual([]);
+        expect(result).toEqual({ orders: [], total: 0, offset: 0, limit: 10 });
         expect(mockGetProducts).not.toHaveBeenCalled();
     });
 
-    test('returns empty array when data is undefined', async () => {
+    test('returns empty result when data is undefined', async () => {
         mockGetCustomerOrders.mockResolvedValue({ data: {} });
 
         const context = createTestContext({ currency: 'USD' });
-        const orders = await fetchCustomerOrders(context, 'customer-123');
+        const result = await fetchCustomerOrders(context, 'customer-123');
 
-        expect(orders).toEqual([]);
+        expect(result.orders).toEqual([]);
+        expect(result.total).toBe(0);
     });
 
-    test('returns empty array when getCustomerOrders fails', async () => {
+    test('returns empty result when getCustomerOrders fails', async () => {
         mockGetCustomerOrders.mockRejectedValue(new Error('API error'));
 
         const context = createTestContext({ currency: 'USD' });
-        const orders = await fetchCustomerOrders(context, 'customer-123');
+        const result = await fetchCustomerOrders(context, 'customer-123');
 
-        expect(orders).toEqual([]);
+        expect(result).toEqual({ orders: [], total: 0, offset: 0, limit: 10 });
     });
 
     test('handles orders with undefined productItems', async () => {
         mockGetCustomerOrders.mockResolvedValue({
-            data: { data: [{ orderNo: 'ORD-1' }] },
+            data: { data: [{ orderNo: 'ORD-1' }], total: 1, offset: 0, limit: 10 },
         });
 
         const context = createTestContext({ currency: 'USD' });
-        const orders = await fetchCustomerOrders(context, 'customer-123');
+        const result = await fetchCustomerOrders(context, 'customer-123');
 
-        expect(orders).toHaveLength(1);
-        expect(orders[0].productItems).toBeUndefined();
+        expect(result.orders).toHaveLength(1);
+        expect(result.orders[0].productItems).toBeUndefined();
         expect(mockGetProducts).not.toHaveBeenCalled();
     });
 
@@ -645,14 +658,17 @@ describe('fetchCustomerOrders', () => {
                         productItems: [{ productId: 'prod-1', quantity: 1 }],
                     },
                 ],
+                total: 1,
+                offset: 0,
+                limit: 10,
             },
         });
         mockGetProducts.mockResolvedValue({ data: {} });
 
         const context = createTestContext({ currency: 'USD' });
-        const orders = await fetchCustomerOrders(context, 'customer-123');
+        const result = await fetchCustomerOrders(context, 'customer-123');
 
-        expect(orders).toHaveLength(1);
-        expect(orders[0].productItems?.[0]?.imageUrl).toBeUndefined();
+        expect(result.orders).toHaveLength(1);
+        expect(result.orders[0].productItems?.[0]?.imageUrl).toBeUndefined();
     });
 });

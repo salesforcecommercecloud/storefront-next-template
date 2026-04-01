@@ -17,7 +17,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import PopularCategories from './popular-categories';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
@@ -100,7 +100,7 @@ describe('PopularCategories', () => {
 
         // Wait for categories to load
         await waitFor(() => {
-            expect(screen.getByText('Step into Elegance')).toBeInTheDocument();
+            expect(screen.getByText('Style for Real Life')).toBeInTheDocument();
         });
     });
 
@@ -129,7 +129,7 @@ describe('PopularCategories', () => {
         // Wait for component to load
         await waitFor(
             () => {
-                expect(screen.getByText('Step into Elegance')).toBeInTheDocument();
+                expect(screen.getByText('Style for Real Life')).toBeInTheDocument();
             },
             { timeout: 3000 }
         );
@@ -147,7 +147,7 @@ describe('PopularCategories', () => {
         // Wait for component to load
         await waitFor(
             () => {
-                expect(screen.getByText('Step into Elegance')).toBeInTheDocument();
+                expect(screen.getByText('Style for Real Life')).toBeInTheDocument();
             },
             { timeout: 3000 }
         );

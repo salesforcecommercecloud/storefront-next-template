@@ -23,10 +23,6 @@ import { useProduct } from '@/providers/product-context';
 import { useCurrency } from '@/providers/currency';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
-import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
-
-// Get unique recommender values for enum
-const EINSTEIN_RECOMMENDER_VALUES = Array.from(new Set(Object.values(EINSTEIN_RECOMMENDERS))) as string[];
 
 /**
  * Configuration for a single recommender
@@ -50,7 +46,15 @@ export class ProductRecommendationsMetadata {
         name: 'Recommender Name',
         description: 'Unique identifier for the Einstein recommender',
         type: 'enum',
-        values: EINSTEIN_RECOMMENDER_VALUES,
+        // Values must be inline literals for the AST parser in generate-cartridge.
+        values: [
+            'pdp-similar-items',
+            'viewed-recently-einstein',
+            'product-to-product-einstein',
+            'complete-the-set',
+            'home-top-revenue-for-category',
+            'products-in-all-categories',
+        ],
         required: true,
     })
     recommenderName?: string;
@@ -84,6 +88,14 @@ export interface ProductRecommendationsProps {
     recommenderType?: 'recommender' | 'zone';
     products?: Product[];
     args?: Record<string, unknown>;
+    /** Optional className for the carousel title (e.g. smaller text on account overview). */
+    titleClassName?: string;
+    /** Optional subtitle displayed below the carousel title. */
+    subtitle?: string;
+    /** Optional label for the header link text (no URL = plain text) */
+    shopAllText?: string;
+    /** Optional className to apply to the carousel wrapper */
+    className?: string;
 }
 
 /**
@@ -112,6 +124,10 @@ export default function ProductRecommendations({
     recommenderType: recommenderTypeProp,
     products: productsProp,
     args,
+    titleClassName,
+    subtitle,
+    shopAllText,
+    className,
 }: ProductRecommendationsProps): ReactElement | null {
     const { getRecommendations, getZoneRecommendations, recommendations, isLoading, error } = useRecommenders(true);
     const currency = useCurrency();
@@ -170,6 +186,11 @@ export default function ProductRecommendations({
         return JSON.stringify(args);
     }, [args]);
 
+    // Reset dedup when fetch functions change (e.g. adapter becomes available)
+    useEffect(() => {
+        lastFetchRef.current = null;
+    }, [getRecommendations, getZoneRecommendations]);
+
     // Fetch recommendations when component mounts or dependencies change
     useEffect(() => {
         if (!recommenderName) {
@@ -204,7 +225,7 @@ export default function ProductRecommendations({
             void getRecommendations(recommenderName, products, args);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [recommenderName, recommenderType, productsKey, argsKey, currency]);
+    }, [recommenderName, recommenderType, productsKey, argsKey, currency, getRecommendations, getZoneRecommendations]);
 
     // Early return if no recommender configured
     if (!recommender || !recommender.name || !recommender.title) {
@@ -239,7 +260,14 @@ export default function ProductRecommendations({
     // Products are already in ProductSearchHit format from the hook enrichment
     return (
         <div>
-            <ProductCarousel products={productRecs} title={recommendations.displayMessage || recommender.title} />
+            <ProductCarousel
+                products={productRecs}
+                title={recommendations.displayMessage || recommender.title}
+                titleClassName={titleClassName}
+                subtitle={subtitle}
+                shopAllText={shopAllText}
+                className={className}
+            />
         </div>
     );
 }

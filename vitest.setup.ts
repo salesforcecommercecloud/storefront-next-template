@@ -26,11 +26,26 @@ import 'vitest-localstorage-mock';
 // Windows converts '/path' to 'file:///path' which is invalid (missing drive letter)
 vi.mock('/favicon.ico', () => ({ default: '/favicon.ico' }));
 vi.mock('/images/GoogleMaps_Logo_Gray_4x.png', () => ({ default: '/images/GoogleMaps_Logo_Gray_4x.png' }));
-vi.mock('/images/hero-cube.webp', () => ({
-    default: '/images/hero-cube.webp',
+vi.mock('/images/logo.svg', () => ({ default: '/images/logo.svg' }));
+// Market Street hero images (default theme)
+vi.mock('/images/hero-01.webp', () => ({
+    default: '/images/hero-01.webp',
 }));
-vi.mock('/images/hero-new-arrivals.webp', () => ({
-    default: '/images/hero-new-arrivals.webp',
+vi.mock('/images/hero-02.webp', () => ({
+    default: '/images/hero-02.webp',
+}));
+vi.mock('/images/hero-03.webp', () => ({
+    default: '/images/hero-03.webp',
+}));
+vi.mock('/images/hero-04.webp', () => ({
+    default: '/images/hero-04.webp',
+}));
+// Foundations theme images
+vi.mock('/images/foundations/hero-carousel/hero-cube.webp', () => ({
+    default: '/images/foundations/hero-carousel/hero-cube.webp',
+}));
+vi.mock('/images/foundations/hero-carousel/hero-new-arrivals.webp', () => ({
+    default: '/images/foundations/hero-carousel/hero-new-arrivals.webp',
 }));
 vi.mock('/images/foundations/foundations-logo.svg', () => ({
     default: '/images/foundations/foundations-logo.svg',
@@ -52,6 +67,10 @@ vi.mock('/images/apple-pay-logo.svg', () => ({
     default:
         'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
 }));
+vi.mock('/images/amazon-pay-logo.svg', () => ({
+    default:
+        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
+}));
 vi.mock('/images/google-pay-logo.svg', () => ({
     default:
         'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
@@ -63,6 +82,15 @@ vi.mock('/images/paypal.svg', () => ({
 vi.mock('/images/venmo.svg', () => ({
     default:
         'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
+}));
+// App store badge SVGs (added in PR #1272) - return data URLs to match Vite's test environment behavior
+vi.mock('/images/app-store-badge.svg', () => ({
+    default:
+        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iNDAiPjwvc3ZnPg==',
+}));
+vi.mock('/images/google-play-badge.svg', () => ({
+    default:
+        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUiIGhlaWdodD0iNDAiPjwvc3ZnPg==',
 }));
 
 // Clear engagement-related PUBLIC__ env vars before any modules load
@@ -77,7 +105,7 @@ for (const key of Object.keys(process.env)) {
 // Set window.__APP_CONFIG__ before any modules are imported
 // This ensures getConfig() works during module initialization in tests where it is used before the config provider is rendered.
 // to initialize AuthContext for hydration.
-(window as Window & { __APP_CONFIG__: typeof mockConfig }).__APP_CONFIG__ = mockConfig;
+(window as unknown as Window & { __APP_CONFIG__: typeof mockConfig }).__APP_CONFIG__ = mockConfig;
 
 // Initialize i18next for tests that use components with useTranslation
 // This runs before all tests but individual tests can reinitialize as needed

@@ -10,7 +10,8 @@ This is a React Server Component (RSC) template application for Salesforce Comme
   - `./src/routes/` - React Router routes (file-based routing)
   - `./src/components/` - React components
   - `./src/lib/` - Shared utilities, hooks, and business logic
-  - `./src/config/` - Configuration files
+  - `./src/types/config.ts` - Template-specific config types (`AppConfig`, `Config`)
+  - `./config.server.ts` - Configuration defaults (project root)
   - `./src/extensions/` - Optional feature extensions
 - `./.storybook/` - Storybook configuration and stories
 - `./public/` - Static assets
@@ -201,6 +202,7 @@ See [docs/README-TESTS.md](./docs/README-TESTS.md) and [.storybook/README-STORYB
 - [docs/README-I18N.md](./docs/README-I18N.md) - Internationalization and localization
 - [docs/README-DATA.md](./docs/README-DATA.md) - Data fetching with adapters
 - [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) - Performance optimization
+- [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) - UI and styling (Tailwind, shadcn, design tokens)
 - [docs/README-ADAPTER-PATTERN-GUIDE.md](./docs/README-ADAPTER-PATTERN-GUIDE.md) - Adapter pattern for API integration
 - [docs/README-STORY-COVERAGE.md](./docs/README-STORY-COVERAGE.md) - Storybook coverage tracking
 - [.storybook/README-STORYBOOK.md](./.storybook/README-STORYBOOK.md) - Storybook setup and best practices
@@ -212,6 +214,8 @@ See [docs/README-TESTS.md](./docs/README-TESTS.md) and [.storybook/README-STORYB
 - Use `cn()` utility from `@/lib/utils` to merge class names
 - Avoid hard-coded colors; use design tokens (e.g., `bg-foreground`, `text-muted-foreground`)
 - Responsive breakpoints: `sm`, `md`, `lg`, `xl`, `2xl`
+
+See [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) for complete UI and styling documentation.
 
 ## Component Patterns
 

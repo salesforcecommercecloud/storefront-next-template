@@ -151,7 +151,7 @@ export const Default: Story = {
         await new Promise((resolve) => setTimeout(resolve, 100));
 
         // Verify title is rendered
-        const title = await canvas.findByText('Step into Elegance', {}, { timeout: 3000 });
+        const title = await canvas.findByText('Style for Real Life', {}, { timeout: 3000 });
         await expect(title).toBeInTheDocument();
 
         // Check for category cards (they should be rendered by ContentCard)
@@ -220,7 +220,7 @@ export const WithDirectData: Story = {
         const canvas = within(canvasElement);
 
         // Should render immediately without loading state
-        await expect(canvas.getByText('Step into Elegance')).toBeInTheDocument();
+        await expect(canvas.getByText('Style for Real Life')).toBeInTheDocument();
         await expect(canvas.getByText('Jewelry')).toBeInTheDocument();
     },
 };
@@ -300,7 +300,7 @@ export const CustomPadding: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(canvas.getByText('Step into Elegance')).toBeInTheDocument();
+        await expect(canvas.getByText('Style for Real Life')).toBeInTheDocument();
 
         // Verify the container is rendered
         const container = canvasElement.querySelector('.max-w-7xl');
@@ -327,7 +327,7 @@ export const Empty: Story = {
         const canvas = within(canvasElement);
 
         // No title or category cards should render when data is empty
-        await expect(canvas.queryByText('Step into Elegance')).not.toBeInTheDocument();
+        await expect(canvas.queryByText('Style for Real Life')).not.toBeInTheDocument();
         const shopNowButtons = canvas.queryAllByText(/shop now/i);
         await expect(shopNowButtons.length).toBe(0);
     },
@@ -354,7 +354,7 @@ export const SkeletonState: Story = {
 
         // No title or categories should be rendered
         const canvas = within(canvasElement);
-        await expect(canvas.queryByText('Step into Elegance')).not.toBeInTheDocument();
+        await expect(canvas.queryByText('Style for Real Life')).not.toBeInTheDocument();
         const shopNowButtons = canvas.queryAllByText(/shop now/i);
         await expect(shopNowButtons.length).toBe(0);
     },
@@ -379,7 +379,7 @@ export const InteractionTest: Story = {
         const canvas = within(canvasElement);
 
         // Wait for component to render
-        const title = await canvas.findByText('Step into Elegance', {}, { timeout: 3000 });
+        const title = await canvas.findByText('Style for Real Life', {}, { timeout: 3000 });
         await expect(title).toBeInTheDocument();
 
         // Find all "Shop Now" buttons/links - these are the category links

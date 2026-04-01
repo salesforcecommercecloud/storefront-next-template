@@ -17,6 +17,7 @@ import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { User, LogOut } from 'lucide-react';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { AccountNavItem } from './nav-item';
 
 const mockNavItem = {
@@ -27,14 +28,11 @@ const mockNavItem = {
 };
 
 const createTestWrapper = (component: React.ReactElement, initialPath = '/account') => {
-    // Using createMemoryRouter in framework mode is fine
-    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
     const router = createMemoryRouter(
         [
             {
                 path: '/account',
-                element: component,
+                element: <AllProvidersWrapper>{component}</AllProvidersWrapper>,
             },
         ],
         { initialEntries: [initialPath] }
@@ -48,7 +46,7 @@ describe('<AccountNavItem />', () => {
             render(createTestWrapper(<AccountNavItem item={mockNavItem} />));
             const link = screen.getByRole('link', { name: 'Account Details' });
             expect(link).toBeInTheDocument();
-            expect(link).toHaveAttribute('href', '/account');
+            expect(link).toHaveAttribute('href', '/global/en-GB/account');
             expect(screen.getByTestId('Account Details-icon')).toBeInTheDocument();
             expect(screen.getAllByRole('link')).toHaveLength(1);
         });
@@ -107,7 +105,7 @@ describe('<AccountNavItem />', () => {
             const form = container.querySelector('form');
             expect(form).toBeInTheDocument();
             expect(form).toHaveAttribute('method', 'post');
-            expect(form).toHaveAttribute('action', '/logout');
+            expect(form).toHaveAttribute('action', '/global/en-GB/logout');
             expect(form).toHaveClass('w-full');
         });
 
@@ -125,7 +123,7 @@ describe('<AccountNavItem />', () => {
 
             const button = screen.getByRole('button', { name: 'Log Out' });
             expect(button).toHaveClass('w-full', 'px-3', 'py-2', 'text-left');
-            expect(button).toHaveClass('text-muted-foreground');
+            expect(button).toHaveClass('text-foreground');
         });
 
         test('logout button uses default POST method when method is not specified', () => {

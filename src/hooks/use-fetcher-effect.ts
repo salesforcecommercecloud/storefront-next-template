@@ -15,6 +15,9 @@
  */
 import { useEffect, useRef } from 'react';
 import type { FetcherWithComponents } from 'react-router';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /**
  * Configuration object for the useFetcherEffect hook
@@ -23,8 +26,8 @@ import type { FetcherWithComponents } from 'react-router';
 export interface FetcherEffectConfig<TData = unknown> {
     /** Callback function called when the fetcher operation succeeds */
     onSuccess?: (data: TData | undefined) => void;
-    /** Callback function called when the fetcher operation fails */
-    onError?: (error: string | string[]) => void;
+    /** Callback function called when the fetcher operation fails; receives error message(s) and optional response data */
+    onError?: (error: string | string[], data?: TData) => void;
 }
 
 /**
@@ -161,17 +164,13 @@ export function useFetcherEffect<TData = unknown>(
                 try {
                     onSuccess(currentData);
                 } catch (callbackError) {
-                    // Silently handle callback errors to prevent breaking the component
-                    // eslint-disable-next-line no-console
-                    console.error('Error in onSuccess callback:', callbackError);
+                    logger.error('Error in onSuccess callback', { error: callbackError });
                 }
             } else if (!success && error !== undefined && onError) {
                 try {
-                    onError(error);
+                    onError(error, currentData);
                 } catch (callbackError) {
-                    // Silently handle callback errors to prevent breaking the component
-                    // eslint-disable-next-line no-console
-                    console.error('Error in onError callback:', callbackError);
+                    logger.error('Error in onError callback', { error: callbackError });
                 }
             }
         }

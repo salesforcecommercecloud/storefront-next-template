@@ -17,7 +17,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { render, waitFor } from '@testing-library/react';
 import { createTestContext } from '@/lib/test-utils';
 import { type PropsWithChildren } from 'react';
-import { createRoutesStub } from 'react-router';
+import { createRoutesStub, RouterContextProvider } from 'react-router';
 import type { PublicSessionData } from '@/lib/api/types';
 import type AppComponent from './root';
 import type { ErrorBoundary as RootErrorBoundary, Layout as RootLayout, loader as RootLoader } from './root';
@@ -26,14 +26,12 @@ let App: typeof AppComponent;
 let ErrorBoundary: typeof RootErrorBoundary;
 let Layout: typeof RootLayout;
 let loader: typeof RootLoader;
+let meta: Awaited<typeof import('./root')>['meta'];
 const defaultClientAuth: PublicSessionData = {
     customerId: 'test-customer',
     userType: 'registered',
 };
 import { mockConfig } from '@/test-utils/config';
-// @sfdc-extension-block-start SFDC_EXT_HYBRID_PROXY
-import { isProxyPath } from './extensions/hybrid-proxy/config';
-// @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
 
 vi.mock('@/lib/i18next.client', async () => {
     const i18next = await import('i18next');
@@ -70,6 +68,19 @@ vi.mock('@/lib/i18next.client', async () => {
     };
 });
 
+vi.mock('@/lib/load-fonts', () => ({
+    loadFonts: vi.fn(),
+}));
+
+// Mock font file imports (used in root.tsx links function)
+vi.mock('@fonts/sen/sen-500.woff2?url', () => ({
+    default: '/mocked-fonts/sen-500.woff2',
+}));
+
+vi.mock('@fonts/sen/sen-600.woff2?url', () => ({
+    default: '/mocked-fonts/sen-600.woff2',
+}));
+
 vi.mock('@/components/toast', async () => ({
     ...(await vi.importActual('@/components/toast')),
     ToasterTheme: () => <div data-testid="toaster">Toaster</div>,
@@ -91,9 +102,9 @@ vi.mock('@/extensions/hybrid-proxy/config', () => ({
 }));
 // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
 
-vi.mock('@/config', async () => {
-    const actual = await vi.importActual('@/config');
-    const { ConfigContext, createAppConfig } = await import('@/config/context');
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
+    const { ConfigContext, createAppConfig } = await import('@salesforce/storefront-next-runtime/config');
     const { mockBuildConfig } = await import('@/test-utils/config');
 
     return {
@@ -160,10 +171,11 @@ beforeAll(async () => {
     ErrorBoundary = rootModule.ErrorBoundary;
     Layout = rootModule.Layout;
     loader = rootModule.loader;
+    meta = rootModule.meta;
 });
 
 function createLoaderContext(options: Parameters<typeof createTestContext>[0] = {}) {
-    const context = createTestContext(options);
+    const context = createTestContext(options) as RouterContextProvider;
     const baseGet = context.get.bind(context);
     const authFallback = new Map() as Map<string, unknown> & { ref?: PublicSessionData };
     const authSession =
@@ -220,18 +232,11 @@ describe('root.tsx', () => {
             expect(html).toBeInTheDocument();
             expect(html).toHaveAttribute('lang', 'en-US');
 
-            const title = document.querySelector('title');
-            expect(title).toBeInTheDocument();
-            expect(title?.textContent).toBe('NextGen PWA Kit Store');
-
             const charset = document.head.querySelector('meta[charset="utf-8"]');
             const viewport = document.head.querySelector('meta[name="viewport"]');
-            const description = document.head.querySelector('meta[name="description"]');
             expect(charset).toBeInTheDocument();
             expect(viewport).toBeInTheDocument();
-            expect(description).toBeInTheDocument();
             expect(viewport).toHaveAttribute('content', 'width=device-width, initial-scale=1');
-            expect(description).toHaveAttribute('content', 'Welcome to our web store for high performers!');
 
             const favicon = document.querySelector('link[rel="icon"]');
             expect(favicon).toBeInTheDocument();
@@ -281,8 +286,8 @@ describe('root.tsx', () => {
 
                 const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Oops!')).toBeInTheDocument();
-                expect(getByText('Test error')).toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText('Error: Test error')).toBeInTheDocument();
 
                 const stackElement = getByText(stackText);
                 expect(stackElement).toBeInTheDocument();
@@ -295,8 +300,7 @@ describe('root.tsx', () => {
 
                 const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Oops!')).toBeInTheDocument();
-                expect(getByText('An unexpected error occurred.')).toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
 
                 const stackElement = getByText(stackText);
                 expect(stackElement).toBeInTheDocument();
@@ -313,7 +317,8 @@ describe('root.tsx', () => {
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
                 expect(getByText('404')).toBeInTheDocument();
-                expect(getByText('The requested page could not be found.')).toBeInTheDocument();
+                expect(getByText('Page not found')).toBeInTheDocument();
+                expect(getByText(/The requested page could not be found/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -327,8 +332,9 @@ describe('root.tsx', () => {
                 };
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Error')).toBeInTheDocument();
-                expect(getByText('Internal Server Error')).toBeInTheDocument();
+                expect(getByText('500')).toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText(/Internal Server Error/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -348,22 +354,18 @@ describe('root.tsx', () => {
 
             it('should render normal error with message', () => {
                 const error = new Error('Test error');
-                const { container, getByText } = render(<ErrorBoundary error={error} />);
+                error.stack = undefined;
+                const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Oops!')).toBeInTheDocument();
-                expect(getByText('An unexpected error occurred.')).toBeInTheDocument();
-                expect(container.querySelector('pre')).not.toBeInTheDocument();
-                expect(container.querySelector('code')).not.toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText('Error: Test error')).toBeInTheDocument();
             });
 
             it('should render normal error without message', () => {
                 const error = new Error('');
-                const { container, getByText } = render(<ErrorBoundary error={error} />);
+                const { getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Oops!')).toBeInTheDocument();
-                expect(getByText('An unexpected error occurred.')).toBeInTheDocument();
-                expect(container.querySelector('pre')).not.toBeInTheDocument();
-                expect(container.querySelector('code')).not.toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
             });
 
             it('should render predefined 404 error message for route errors with 404 status', () => {
@@ -376,7 +378,8 @@ describe('root.tsx', () => {
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
                 expect(getByText('404')).toBeInTheDocument();
-                expect(getByText('The requested page could not be found.')).toBeInTheDocument();
+                expect(getByText('Page not found')).toBeInTheDocument();
+                expect(getByText(/The requested page could not be found/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -390,8 +393,9 @@ describe('root.tsx', () => {
                 };
                 const { container, getByText } = render(<ErrorBoundary error={error} />);
 
-                expect(getByText('Error')).toBeInTheDocument();
-                expect(getByText('Internal Server Error')).toBeInTheDocument();
+                expect(getByText('500')).toBeInTheDocument();
+                expect(getByText('Something went wrong')).toBeInTheDocument();
+                expect(getByText(/Internal Server Error/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -522,97 +526,7 @@ describe('root.tsx', () => {
             delete (window as any).__APP_CONFIG__;
         });
 
-        // @sfdc-extension-block-start SFDC_EXT_HYBRID_PROXY
-        describe('Hybrid Proxy Integration', () => {
-            it('should render normal app structure when not on proxy path', async () => {
-                vi.mocked(isProxyPath).mockReturnValue(false);
-
-                // Create a mock i18next instance for testing
-                const i18next = await import('i18next');
-                const { initReactI18next } = await import('react-i18next');
-                const testI18nInstance = i18next.default.createInstance();
-                await testI18nInstance.use(initReactI18next).init({
-                    lng: 'en-US',
-                    fallbackLng: 'en-US',
-                    resources: { 'en-US': { translation: {} } },
-                });
-
-                const Stub = createRoutesStub([
-                    {
-                        id: 'root',
-                        path: '/',
-                        Component: App,
-                        loader: () => ({
-                            clientAuth: {
-                                customerId: 'test-customer',
-                                userType: 'registered',
-                            },
-                            basketSnapshot: null,
-                            appConfig: mockConfig,
-                            locale: 'en-US',
-                            currency: 'USD',
-                            getI18next: () => testI18nInstance,
-                        }),
-                    },
-                ]);
-
-                const { getByTestId, queryByTestId } = render(<Stub initialEntries={['/']} />);
-
-                await waitFor(() => {
-                    expect(getByTestId('page-designer-provider')).toBeInTheDocument(); // <-- part of the conditional App content
-                    expect(getByTestId('config-provider')).toBeInTheDocument(); // <-- always there
-                    expect(queryByTestId('hybrid-proxy-interceptor')).not.toBeInTheDocument();
-                });
-            });
-
-            it('should render interceptor and hide app structure when on proxy path', async () => {
-                vi.mocked(isProxyPath).mockReturnValue(true);
-
-                // Create a mock i18next instance for testing
-                const i18next = await import('i18next');
-                const { initReactI18next } = await import('react-i18next');
-                const testI18nInstance = i18next.default.createInstance();
-                await testI18nInstance.use(initReactI18next).init({
-                    lng: 'en-US',
-                    fallbackLng: 'en-US',
-                    resources: { 'en-US': { translation: {} } },
-                });
-
-                const Stub = createRoutesStub([
-                    {
-                        id: 'root',
-                        // The actual path doesn't matter here since we mock isProxyPath() to return true
-                        path: '/cart',
-                        Component: App,
-                        loader: () => ({
-                            clientAuth: {
-                                customerId: 'test-customer',
-                                userType: 'registered',
-                            },
-                            basketSnapshot: null,
-                            appConfig: mockConfig,
-                            locale: 'en-US',
-                            currency: 'USD',
-                            getI18next: () => testI18nInstance,
-                        }),
-                    },
-                ]);
-
-                const { getByTestId, queryByTestId } = render(<Stub initialEntries={['/cart']} />);
-
-                await waitFor(() => {
-                    expect(getByTestId('hybrid-proxy-interceptor')).toBeInTheDocument();
-                    expect(getByTestId('config-provider')).toBeInTheDocument(); // <-- always there
-                    expect(queryByTestId('page-designer-provider')).not.toBeInTheDocument(); // <-- part of the conditional App content
-                });
-            });
-        });
-
         describe('BackNavigationRevalidator', () => {
-            beforeEach(() => {
-                vi.mocked(isProxyPath).mockReturnValue(false);
-            });
-
             it('calls revalidate once when hybrid is enabled and navigation type is back_forward', async () => {
                 const revalidateMock = vi.fn();
                 const reactRouter = await import('react-router');
@@ -634,7 +548,7 @@ describe('root.tsx', () => {
                     resources: { 'en-US': { translation: {} } },
                 });
 
-                const appConfigWithHybrid = { ...mockConfig, site: { hybrid: { enabled: true } } };
+                const appConfigWithHybrid = { ...mockConfig, hybrid: { enabled: true } };
 
                 const Stub = createRoutesStub([
                     {
@@ -687,7 +601,7 @@ describe('root.tsx', () => {
                     resources: { 'en-US': { translation: {} } },
                 });
 
-                const appConfigWithHybrid = { ...mockConfig, site: { hybrid: { enabled: true } } };
+                const appConfigWithHybrid = { ...mockConfig, hybrid: { enabled: true } };
 
                 const Stub = createRoutesStub([
                     {
@@ -774,7 +688,6 @@ describe('root.tsx', () => {
                 vi.restoreAllMocks();
             });
         });
-        // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
     });
 
     describe('loader function', () => {
@@ -815,7 +728,7 @@ describe('root.tsx', () => {
             expect(result).toHaveProperty('getI18next');
             expect(typeof result.clientAuth).toBe('object');
             expect(typeof result.getI18next).toBe('function');
-            expect(result.locale).toBe('en-US');
+            expect(result.locale).toEqual({ id: 'en-GB', preferredCurrency: 'GBP' });
         });
 
         it('should return clientAuth with non-sensitive session data', async () => {
@@ -859,7 +772,7 @@ describe('root.tsx', () => {
             expect(result.clientAuth).not.toHaveProperty('accessToken');
             expect(result.clientAuth).not.toHaveProperty('refreshToken');
             expect(result.appConfig).toBeDefined();
-            expect(result.locale).toBe('en-US');
+            expect(result.locale).toEqual({ id: 'en-GB', preferredCurrency: 'GBP' });
             expect(typeof result.getI18next).toBe('function');
         });
 
@@ -980,6 +893,34 @@ describe('root.tsx', () => {
             const { clientMiddleware } = await import('./root');
             expect(Array.isArray(clientMiddleware)).toBe(true);
             expect(clientMiddleware.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe('meta function', () => {
+        function buildMetaArgs(loaderData: any) {
+            return {
+                data: loaderData,
+                loaderData,
+                location: { pathname: '/', search: '', hash: '', state: null, key: 'default' },
+                matches: [] as any,
+                params: {},
+            } as Parameters<typeof meta>[0];
+        }
+
+        it('returns seoMeta from loaderData when present', () => {
+            const seoMeta = [{ tagName: 'link', rel: 'canonical', href: 'https://example.com/' }];
+            const result = meta(buildMetaArgs({ seoMeta }));
+            expect(result).toEqual(seoMeta);
+        });
+
+        it('returns empty array when loaderData is undefined', () => {
+            const result = meta(buildMetaArgs(undefined));
+            expect(result).toEqual([]);
+        });
+
+        it('returns empty array when seoMeta is not in loaderData', () => {
+            const result = meta(buildMetaArgs({}));
+            expect(result).toEqual([]);
         });
     });
 });

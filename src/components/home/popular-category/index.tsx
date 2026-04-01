@@ -17,15 +17,16 @@ import type { ComponentProps } from 'react';
 import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import type { ComponentType } from '@/components/region';
-import { Link } from 'react-router';
+import { Link } from '@/components/link';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { DynamicImage } from '@/components/dynamic-image';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { useTranslation } from 'react-i18next';
-import heroImage from '/images/hero-cube.webp';
+import heroImage from '/images/hero-01.webp';
 import { loader as loaders } from './loaders';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 interface PopularCategoryProps extends ComponentProps<'div'> {
     // Category data from Page Designer (via loader) or programmatic use
@@ -81,7 +82,7 @@ export default function PopularCategory({
     data,
 }: PopularCategoryProps) {
     const { t } = useTranslation('home');
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
 
     // Use data from loader (Page Designer) or category prop (programmatic use)
     // If category is a string, it's from Page Designer and we should ignore it (wait for loader data)

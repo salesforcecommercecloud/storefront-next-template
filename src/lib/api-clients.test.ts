@@ -30,7 +30,7 @@ vi.mock('@/lib/utils', async (importOriginal) => {
     };
 });
 
-vi.mock('@/config', async (importOriginal) => {
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual = await importOriginal<typeof vi.importActual>();
     return {
         ...actual,
@@ -38,7 +38,6 @@ vi.mock('@/config', async (importOriginal) => {
             commerce: {
                 api: {
                     shortCode: 'kv7kzm78',
-                    proxy: '/mobify/proxy/api',
                     clientId: 'test-client-id',
                     organizationId: 'test-org-id',
                     siteId: 'test-site-id',
@@ -86,31 +85,25 @@ vi.mock('@salesforce/storefront-next-runtime/scapi', () => ({
 
 describe('createApiClients', () => {
     let mockContextProvider: RouterContextProvider;
-    let mockGetAppOrigin: ReturnType<typeof vi.fn>;
     let mockGetConfig: ReturnType<typeof vi.fn>;
     let mockCreateCommerceApiClients: ReturnType<typeof vi.fn>;
 
     beforeEach(async () => {
         vi.clearAllMocks();
-        mockContextProvider = createTestContext();
+        mockContextProvider = createTestContext() as unknown as RouterContextProvider;
 
         // Get mocked functions
-        const utilsModule = await import('@/lib/utils');
-        mockGetAppOrigin = utilsModule.getAppOrigin as ReturnType<typeof vi.fn>;
-
-        const configModule = await import('@/config');
+        const configModule = await import('@salesforce/storefront-next-runtime/config');
         mockGetConfig = configModule.getConfig as ReturnType<typeof vi.fn>;
 
         const scapiModule = await import('@salesforce/storefront-next-runtime/scapi');
         mockCreateCommerceApiClients = scapiModule.createCommerceApiClients as ReturnType<typeof vi.fn>;
 
         // Reset mock implementations
-        mockGetAppOrigin.mockReturnValue('https://example.com');
         mockGetConfig.mockReturnValue({
             commerce: {
                 api: {
                     shortCode: 'kv7kzm78',
-                    proxy: '/mobify/proxy/api',
                     clientId: 'test-client-id',
                     organizationId: 'test-org-id',
                     siteId: 'test-site-id',
@@ -189,160 +182,59 @@ describe('createApiClients', () => {
             );
         });
 
-        it('should fall back to config siteId when multi-site context is not set', () => {
-            createApiClients(mockContextProvider);
+        it('should throw when multi-site context is not set', () => {
+            // Explicitly clear multi-site context to simulate no multi-site middleware
+            mockContextProvider.set(multiSiteContext, null);
 
-            expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    siteId: 'test-site-id',
-                })
-            );
+            expect(() => createApiClients(mockContextProvider)).toThrow('Multi-site context not initialized');
         });
     });
 
     describe('baseUrl configuration', () => {
-        describe('development mode (__DEV__ = true)', () => {
-            beforeEach(() => {
-                vi.stubGlobal('__DEV__', true);
-            });
-
-            it('should use MRT proxy URL in development', () => {
-                createApiClients(mockContextProvider);
-                expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
-                    expect.objectContaining({
-                        baseUrl: 'https://example.com/mobify/proxy/api',
-                    })
-                );
-            });
-
-            it('should handle different proxy paths', () => {
-                mockGetConfig.mockReturnValue({
-                    commerce: {
-                        api: {
-                            shortCode: 'kv7kzm78',
-                            proxy: '/custom/api/path',
-                        },
-                        sites: [
-                            {
-                                defaultCurrency: 'USD',
-                                supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
-                                supportedCurrencies: ['USD'],
-                            },
-                        ],
-                    },
-                });
-
-                createApiClients(mockContextProvider);
-                expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
-                    expect.objectContaining({
-                        baseUrl: 'https://example.com/custom/api/path',
-                    })
-                );
-                expect(mockGetAppOrigin).toHaveBeenCalled();
-            });
-
-            it('should handle empty proxy path', () => {
-                mockGetConfig.mockReturnValue({
-                    commerce: {
-                        api: {
-                            shortCode: 'kv7kzm78',
-                            proxy: '',
-                        },
-                        sites: [
-                            {
-                                defaultCurrency: 'USD',
-                                supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
-                                supportedCurrencies: ['USD'],
-                            },
-                        ],
-                    },
-                });
-
-                createApiClients(mockContextProvider);
-
-                expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
-                    expect.objectContaining({
-                        baseUrl: 'https://example.com',
-                    })
-                );
-                expect(mockGetAppOrigin).toHaveBeenCalled();
-            });
+        it('should use direct SCAPI URL from shortCode', () => {
+            createApiClients(mockContextProvider);
+            expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    baseUrl: 'https://kv7kzm78.api.commercecloud.salesforce.com',
+                })
+            );
         });
 
-        describe('production mode (__DEV__ = false)', () => {
-            beforeEach(() => {
-                vi.stubGlobal('__DEV__', false);
-            });
+        it('should use SCAPI_PROXY_HOST when set (server-side)', () => {
+            vi.stubGlobal('window', undefined);
+            vi.stubEnv('SCAPI_PROXY_HOST', 'https://scw:25010');
 
-            describe('server-side (typeof window === "undefined")', () => {
-                beforeEach(() => {
-                    vi.stubGlobal('window', undefined);
-                });
+            createApiClients(mockContextProvider);
+            expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    baseUrl: 'https://scw:25010',
+                    proxyHost: 'https://scw:25010',
+                })
+            );
+        });
 
-                it('should use B2C Commerce API URL on server', () => {
-                    createApiClients(mockContextProvider);
-                    expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
-                        expect.objectContaining({
-                            baseUrl: 'https://kv7kzm78.api.commercecloud.salesforce.com',
-                        })
-                    );
-                });
-
-                it('should use SCAPI_PROXY_HOST when set', () => {
-                    vi.stubEnv('SCAPI_PROXY_HOST', 'https://scw:25010');
-
-                    createApiClients(mockContextProvider);
-                    expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
-                        expect.objectContaining({
-                            baseUrl: 'https://scw:25010',
-                            proxyHost: 'https://scw:25010',
-                        })
-                    );
-                });
-
-                it('should use shortCode from config', () => {
-                    mockGetConfig.mockReturnValue({
-                        commerce: {
-                            api: {
-                                shortCode: 'custom123',
-                                proxy: '/mobify/proxy/api',
-                            },
-                            sites: [
-                                {
-                                    defaultCurrency: 'USD',
-                                    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
-                                    supportedCurrencies: ['USD'],
-                                },
-                            ],
+        it('should use shortCode from config', () => {
+            mockGetConfig.mockReturnValue({
+                commerce: {
+                    api: {
+                        shortCode: 'custom123',
+                    },
+                    sites: [
+                        {
+                            defaultCurrency: 'USD',
+                            supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
+                            supportedCurrencies: ['USD'],
                         },
-                    });
-
-                    createApiClients(mockContextProvider);
-                    expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
-                        expect.objectContaining({
-                            baseUrl: 'https://custom123.api.commercecloud.salesforce.com',
-                        })
-                    );
-                });
+                    ],
+                },
             });
 
-            describe('client-side (typeof window !== "undefined")', () => {
-                beforeEach(() => {
-                    vi.stubGlobal('window', {
-                        location: { origin: 'https://client-example.com' },
-                    });
-                });
-
-                it('should use proxy URL on client', () => {
-                    createApiClients(mockContextProvider);
-
-                    expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
-                        expect.objectContaining({
-                            baseUrl: 'https://example.com/mobify/proxy/api',
-                        })
-                    );
-                });
-            });
+            createApiClients(mockContextProvider);
+            expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    baseUrl: 'https://custom123.api.commercecloud.salesforce.com',
+                })
+            );
         });
     });
 
@@ -490,9 +382,14 @@ describe('createApiClients', () => {
                 expect(result.url).toBe(mockRequest.url);
             });
 
-            it('should skip adding headers for SLAS auth endpoints', async () => {
+            it('should skip Authorization and sfdc_dwsid for non-refresh SLAS auth endpoints', async () => {
                 const mockRequest = new Request(
-                    'https://api.example.com/shopper/auth/v1/organizations/test/oauth2/token'
+                    'https://api.example.com/shopper/auth/v1/organizations/test/oauth2/token',
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'grant_type=authorization_code_pkce&code=test-code',
+                    }
                 );
                 const mockSession: SessionData = {
                     accessToken: 'test-token',
@@ -507,7 +404,52 @@ describe('createApiClients', () => {
 
                 const result = await authMiddleware.onRequest({ request: mockRequest });
 
-                // Headers should not be added for SLAS auth endpoints
+                expect(result.headers.get('Authorization')).toBeNull();
+                expect(result.headers.get('sfdc_dwsid')).toBeNull();
+            });
+
+            it('should inject sfdc_dwsid for SLAS refresh_token calls', async () => {
+                const mockRequest = new Request(
+                    'https://api.example.com/shopper/auth/v1/organizations/test/oauth2/token',
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'grant_type=refresh_token&refresh_token=test-refresh',
+                    }
+                );
+                const mockSession: SessionData = {
+                    accessToken: 'test-token',
+                    customerId: 'test-customer',
+                    userType: 'registered',
+                    dwsid: 'test-dwsid',
+                };
+
+                mockContextProvider.set(authContext, {
+                    ref: Promise.resolve(mockSession),
+                });
+
+                const result = await authMiddleware.onRequest({ request: mockRequest });
+
+                expect(result.headers.get('Authorization')).toBeNull();
+                expect(result.headers.get('sfdc_dwsid')).toBe('test-dwsid');
+            });
+
+            it('should not inject sfdc_dwsid for SLAS auth endpoints when session has no dwsid', async () => {
+                const mockRequest = new Request(
+                    'https://api.example.com/shopper/auth/v1/organizations/test/oauth2/token'
+                );
+                const mockSession: SessionData = {
+                    accessToken: 'test-token',
+                    customerId: 'test-customer',
+                    userType: 'registered',
+                };
+
+                mockContextProvider.set(authContext, {
+                    ref: Promise.resolve(mockSession),
+                });
+
+                const result = await authMiddleware.onRequest({ request: mockRequest });
+
                 expect(result.headers.get('Authorization')).toBeNull();
                 expect(result.headers.get('sfdc_dwsid')).toBeNull();
             });

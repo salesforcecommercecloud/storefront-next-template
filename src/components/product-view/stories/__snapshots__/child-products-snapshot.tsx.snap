@@ -106,12 +106,12 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                 </span>
               </div>
               <div
-                class="flex flex-wrap gap-2 focus:outline-none"
+                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
               >
                 <a
                   aria-checked="true"
                   aria-label="Gold"
-                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
                   href="/?013742002836M=color%3DJJ887XX"
                   position="relative"
                   role="radio"
@@ -122,7 +122,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   >
                     <div
                       aria-label="Turquoise and Gold Bracelet, Gold, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwe64c51d1/images/swatch/PG.60119239.JJ887XX.CP.jpg");"
                     />
                   </div>
@@ -239,12 +239,12 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                 </span>
               </div>
               <div
-                class="flex flex-wrap gap-2 focus:outline-none"
+                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
               >
                 <a
                   aria-checked="true"
                   aria-label="Gold"
-                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
                   href="/?013742002805M=color%3DJJ887XX"
                   position="relative"
                   role="radio"
@@ -255,7 +255,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   >
                     <div
                       aria-label="Turquoise and Gold Necklace, Gold, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwef2fba24/images/swatch/PG.60119236.JJ887XX.CP.jpg");"
                     />
                   </div>
@@ -372,12 +372,12 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                 </span>
               </div>
               <div
-                class="flex flex-wrap gap-2 focus:outline-none"
+                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
               >
                 <a
                   aria-checked="true"
                   aria-label="Gold"
-                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-black"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
                   href="/?013742002799M=color%3DJJ887XX"
                   position="relative"
                   role="radio"
@@ -388,7 +388,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   >
                     <div
                       aria-label="Turquoise and Gold Hoop Earring, Gold, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwde3c3e85/images/swatch/PG.60119235.JJ887XX.CP.jpg");"
                     />
                   </div>
@@ -425,27 +425,19 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             Quantity:
           </label>
           <div
-            class="flex items-center space-x-1"
+            class="inline-flex items-center border border-input rounded-lg"
           >
             <button
               aria-label="Decrement Quantity for Turquoise Jewelry Bundle"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-              data-size="icon"
-              data-slot="button"
+              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="quantity-decrement"
-              data-variant="outline"
               disabled=""
             >
-              <span
-                class="text-sm"
-              >
-                −
-              </span>
+              −
             </button>
             <input
               aria-label="Quantity:"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              data-slot="input"
+              class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               min="1"
               step="1"
               type="number"
@@ -453,17 +445,10 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             />
             <button
               aria-label="Increment Quantity for Turquoise Jewelry Bundle"
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-              data-size="icon"
-              data-slot="button"
+              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="quantity-increment"
-              data-variant="outline"
             >
-              <span
-                class="text-sm"
-              >
-                +
-              </span>
+              +
             </button>
           </div>
         </div>
@@ -492,7 +477,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               <label
                 class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
-                for="delivery-option"
+                for="delivery-option-womens-jewelry-bundleM"
               >
                 <button
                   aria-checked="false"
@@ -500,7 +485,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   data-radix-collection-item=""
                   data-slot="radio-group-item"
                   data-state="unchecked"
-                  id="delivery-option"
+                  id="delivery-option-womens-jewelry-bundleM"
                   role="radio"
                   tabindex="-1"
                   type="button"
@@ -510,7 +495,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   class="mt-0.5 shrink-0"
                 >
                   <div
-                    class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                    class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                   />
                 </div>
                 <div
@@ -535,7 +520,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               <label
                 class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
-                for="pickup-option"
+                for="pickup-option-womens-jewelry-bundleM"
               >
                 <button
                   aria-checked="false"
@@ -543,7 +528,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   data-radix-collection-item=""
                   data-slot="radio-group-item"
                   data-state="unchecked"
-                  id="pickup-option"
+                  id="pickup-option-womens-jewelry-bundleM"
                   role="radio"
                   tabindex="-1"
                   type="button"
@@ -553,7 +538,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   class="mt-0.5 shrink-0"
                 >
                   <div
-                    class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                    class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                   />
                 </div>
                 <div
@@ -610,6 +595,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
         class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-64"
         data-size="lg"
         data-slot="button"
+        data-testid="add-to-cart"
         data-variant="default"
       >
         Add Bundle to Cart
@@ -646,11 +632,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price from £110.99"
+              aria-label="Current price: £110.99"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              From £110.99
+              £110.99
             </span>
             <span
               aria-atomic="true"
@@ -658,12 +644,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Quilted Jacket
-              Current price from £110.99
+              Current price: £110.99
             </span>
              
             <span
               aria-label="List price from £159.00"
-              class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground line-through"
+              class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
             >
               £159.00
             </span>
@@ -680,7 +666,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              class="line-clamp-2"
+              class="line-clamp-2 text-[inherit] font-medium"
             >
               $10 off product set
             </span>
@@ -777,12 +763,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="flex flex-wrap gap-2 focus:outline-none"
+                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
               >
                 <a
                   aria-checked="false"
                   aria-label="royal"
-                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518447M=color%3DJJ5FUXX"
                   position="relative"
                   role="radio"
@@ -793,7 +779,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   >
                     <div
                       aria-label="Quilted Jacket, royal, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw1d0ec998/images/swatch/PG.10205921.JJ5FUXX.CP.jpg");"
                     />
                   </div>
@@ -820,12 +806,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="S"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518447M=size%3D9SM"
                   position="relative"
                   role="radio"
@@ -844,7 +830,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518447M=size%3D9MD"
                   position="relative"
                   role="radio"
@@ -863,7 +849,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="L"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518447M=size%3D9LG"
                   position="relative"
                   role="radio"
@@ -882,7 +868,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="XL"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518447M=size%3D9XL"
                   position="relative"
                   role="radio"
@@ -912,27 +898,19 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               Quantity:
             </label>
             <div
-              class="flex items-center space-x-1"
+              class="inline-flex items-center border border-input rounded-lg"
             >
               <button
                 aria-label="Decrement Quantity for Quilted Jacket"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                data-size="icon"
-                data-slot="button"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
-                data-variant="outline"
                 disabled=""
               >
-                <span
-                  class="text-sm"
-                >
-                  −
-                </span>
+                −
               </button>
               <input
                 aria-label="Quantity:"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                data-slot="input"
+                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -940,17 +918,10 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Quilted Jacket"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                data-size="icon"
-                data-slot="button"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
-                data-variant="outline"
               >
-                <span
-                  class="text-sm"
-                >
-                  +
-                </span>
+                +
               </button>
             </div>
           </div>
@@ -985,7 +956,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="delivery-option"
+                    for="delivery-option-25518447M"
                   >
                     <button
                       aria-checked="false"
@@ -993,7 +964,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="delivery-option"
+                      id="delivery-option-25518447M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -1003,7 +974,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -1028,7 +999,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="pickup-option"
+                    for="pickup-option-25518447M"
                   >
                     <button
                       aria-checked="false"
@@ -1036,7 +1007,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="pickup-option"
+                      id="pickup-option-25518447M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -1046,7 +1017,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -1084,6 +1055,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full"
             data-size="sm"
             data-slot="button"
+            data-testid="add-to-cart"
             data-variant="default"
             disabled=""
           >
@@ -1110,11 +1082,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price from £69.00"
+              aria-label="Current price: £69.00"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              From £69.00
+              £69.00
             </span>
             <span
               aria-atomic="true"
@@ -1122,7 +1094,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Pull On Pant
-              Current price from £69.00
+              Current price: £69.00
             </span>
              
           </div>
@@ -1130,7 +1102,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              class="line-clamp-2"
+              class="line-clamp-2 text-[inherit] font-medium"
             >
               $10 off product set
             </span>
@@ -1227,12 +1199,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="flex flex-wrap gap-2 focus:outline-none"
+                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
               >
                 <a
                   aria-checked="false"
                   aria-label="Grey Heather"
-                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518704M=color%3DJJ2XNXX"
                   position="relative"
                   role="radio"
@@ -1243,7 +1215,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   >
                     <div
                       aria-label="Pull On Pant, Grey Heather, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw811d3399/images/swatch/PG.10218785.JJ2XNXX.CP.jpg");"
                     />
                   </div>
@@ -1270,12 +1242,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="XS"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518704M=size%3D9XS"
                   position="relative"
                   role="radio"
@@ -1294,7 +1266,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="S"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518704M=size%3D9SM"
                   position="relative"
                   role="radio"
@@ -1313,7 +1285,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518704M=size%3D9MD"
                   position="relative"
                   role="radio"
@@ -1332,7 +1304,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="L"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518704M=size%3D9LG"
                   position="relative"
                   role="radio"
@@ -1351,7 +1323,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="XL"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25518704M=size%3D9XL"
                   position="relative"
                   role="radio"
@@ -1381,27 +1353,19 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               Quantity:
             </label>
             <div
-              class="flex items-center space-x-1"
+              class="inline-flex items-center border border-input rounded-lg"
             >
               <button
                 aria-label="Decrement Quantity for Pull On Pant"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                data-size="icon"
-                data-slot="button"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
-                data-variant="outline"
                 disabled=""
               >
-                <span
-                  class="text-sm"
-                >
-                  −
-                </span>
+                −
               </button>
               <input
                 aria-label="Quantity:"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                data-slot="input"
+                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -1409,17 +1373,10 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Pull On Pant"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                data-size="icon"
-                data-slot="button"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
-                data-variant="outline"
               >
-                <span
-                  class="text-sm"
-                >
-                  +
-                </span>
+                +
               </button>
             </div>
           </div>
@@ -1454,7 +1411,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="delivery-option"
+                    for="delivery-option-25518704M"
                   >
                     <button
                       aria-checked="false"
@@ -1462,7 +1419,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="delivery-option"
+                      id="delivery-option-25518704M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -1472,7 +1429,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -1497,7 +1454,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="pickup-option"
+                    for="pickup-option-25518704M"
                   >
                     <button
                       aria-checked="false"
@@ -1505,7 +1462,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="pickup-option"
+                      id="pickup-option-25518704M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -1515,7 +1472,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -1553,6 +1510,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full"
             data-size="sm"
             data-slot="button"
+            data-testid="add-to-cart"
             data-variant="default"
             disabled=""
           >
@@ -1579,11 +1537,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              aria-label="Current price from £99.00"
+              aria-label="Current price: £99.00"
               aria-live="polite"
               class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
             >
-              From £99.00
+              £99.00
             </span>
             <span
               aria-atomic="true"
@@ -1591,7 +1549,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Zerrick
-              Current price from £99.00
+              Current price: £99.00
             </span>
              
           </div>
@@ -1599,7 +1557,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="items-center gap-2"
           >
             <span
-              class="line-clamp-2"
+              class="line-clamp-2 text-[inherit] font-medium"
             >
               $10 off product set
             </span>
@@ -1696,12 +1654,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="flex flex-wrap gap-2 focus:outline-none"
+                class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
               >
                 <a
                   aria-checked="false"
                   aria-label="Black"
-                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=color%3DBLACKLE"
                   position="relative"
                   role="radio"
@@ -1712,7 +1670,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   >
                     <div
                       aria-label="Zerrick, Black, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwaaf5a5ba/images/swatch/PG.CJZERRICK.BLACKLE.CP.jpg");"
                     />
                   </div>
@@ -1720,7 +1678,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="Taupe"
-                  class="border-2 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-full w-7 h-7 p-1 cursor-pointer border-transparent"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=color%3DTAUPETX"
                   position="relative"
                   role="radio"
@@ -1731,7 +1689,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   >
                     <div
                       aria-label="Zerrick, Taupe, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-full"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw114ea19c/images/swatch/PG.CJZERRICK.TAUPETX.CP.jpg");"
                     />
                   </div>
@@ -1758,12 +1716,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="6"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=size%3D060"
                   position="relative"
                   role="radio"
@@ -1782,7 +1740,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="6.5"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=size%3D065"
                   position="relative"
                   role="radio"
@@ -1801,7 +1759,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="7"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=size%3D070"
                   position="relative"
                   role="radio"
@@ -1820,7 +1778,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="7.5"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=size%3D075"
                   position="relative"
                   role="radio"
@@ -1839,7 +1797,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="8"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=size%3D080"
                   position="relative"
                   role="radio"
@@ -1858,7 +1816,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="8.5"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=size%3D085"
                   position="relative"
                   role="radio"
@@ -1877,7 +1835,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="9"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=size%3D090"
                   position="relative"
                   role="radio"
@@ -1896,7 +1854,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="9.5"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=size%3D095"
                   position="relative"
                   role="radio"
@@ -1915,7 +1873,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="10"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=size%3D100"
                   position="relative"
                   role="radio"
@@ -1934,7 +1892,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="11"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=size%3D110"
                   position="relative"
                   role="radio"
@@ -1972,12 +1930,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/?25772717M=width%3DM"
                   position="relative"
                   role="radio"
@@ -2007,27 +1965,19 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               Quantity:
             </label>
             <div
-              class="flex items-center space-x-1"
+              class="inline-flex items-center border border-input rounded-lg"
             >
               <button
                 aria-label="Decrement Quantity for Zerrick"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                data-size="icon"
-                data-slot="button"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
-                data-variant="outline"
                 disabled=""
               >
-                <span
-                  class="text-sm"
-                >
-                  −
-                </span>
+                −
               </button>
               <input
                 aria-label="Quantity:"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                data-slot="input"
+                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -2035,17 +1985,10 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Zerrick"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                data-size="icon"
-                data-slot="button"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
-                data-variant="outline"
               >
-                <span
-                  class="text-sm"
-                >
-                  +
-                </span>
+                +
               </button>
             </div>
           </div>
@@ -2080,7 +2023,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="delivery-option"
+                    for="delivery-option-25772717M"
                   >
                     <button
                       aria-checked="false"
@@ -2088,7 +2031,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="delivery-option"
+                      id="delivery-option-25772717M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -2098,7 +2041,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -2123,7 +2066,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="pickup-option"
+                    for="pickup-option-25772717M"
                   >
                     <button
                       aria-checked="false"
@@ -2131,7 +2074,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="pickup-option"
+                      id="pickup-option-25772717M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -2141,7 +2084,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -2179,6 +2122,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 w-full"
             data-size="sm"
             data-slot="button"
+            data-testid="add-to-cart"
             data-variant="default"
             disabled=""
           >
@@ -2210,7 +2154,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               <label
                 class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
-                for="delivery-option"
+                for="delivery-option-winter-lookM"
               >
                 <button
                   aria-checked="false"
@@ -2218,7 +2162,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   data-radix-collection-item=""
                   data-slot="radio-group-item"
                   data-state="unchecked"
-                  id="delivery-option"
+                  id="delivery-option-winter-lookM"
                   role="radio"
                   tabindex="-1"
                   type="button"
@@ -2228,7 +2172,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   class="mt-0.5 shrink-0"
                 >
                   <div
-                    class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                    class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                   />
                 </div>
                 <div
@@ -2253,7 +2197,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               <label
                 class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
-                for="pickup-option"
+                for="pickup-option-winter-lookM"
               >
                 <button
                   aria-checked="false"
@@ -2261,7 +2205,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   data-radix-collection-item=""
                   data-slot="radio-group-item"
                   data-state="unchecked"
-                  id="pickup-option"
+                  id="pickup-option-winter-lookM"
                   role="radio"
                   tabindex="-1"
                   type="button"
@@ -2271,7 +2215,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   class="mt-0.5 shrink-0"
                 >
                   <div
-                    class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                    class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                   />
                 </div>
                 <div
@@ -2328,6 +2272,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
         class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 min-w-64"
         data-size="lg"
         data-slot="button"
+        data-testid="add-to-cart"
         data-variant="default"
         disabled=""
       >

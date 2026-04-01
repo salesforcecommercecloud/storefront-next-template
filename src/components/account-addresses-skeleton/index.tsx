@@ -25,18 +25,22 @@ import { Skeleton } from '@/components/ui/skeleton';
 export function AccountAddressesSkeleton() {
     const { t } = useTranslation('account');
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {/* Page Header Skeleton */}
-            <Card className="p-6">
-                <div className="flex items-start justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-foreground" tabIndex={0}>
-                            {t('navigation.addresses')}
-                        </h1>
-                        <Skeleton className="h-4 w-48 mt-2" />
+            <Card className="bg-card border-border">
+                <CardContent className="px-6 py-3">
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <h1
+                                className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
+                                tabIndex={0}>
+                                {t('navigation.addresses')}
+                            </h1>
+                            <Skeleton className="h-4 w-48" />
+                        </div>
+                        <Skeleton className="h-9 w-36" />
                     </div>
-                    <Skeleton className="h-9 w-36" />
-                </div>
+                </CardContent>
             </Card>
 
             {/* Address Cards Vertical Stack Skeleton */}

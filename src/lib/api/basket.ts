@@ -16,7 +16,7 @@
 import { createApiClients } from '@/lib/api-clients';
 import type { RouterContextProvider } from 'react-router';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getConfig } from '@/config';
+import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 
 /**
  * Get the appropriate currency for basket calculations
@@ -30,10 +30,24 @@ export function getBasketCurrency(
     if (basket?.currency) {
         return basket.currency;
     }
-    const appConfig = getConfig(context);
+    return (context.get(multiSiteContext) as MultiSiteContext).site.defaultCurrency;
+}
 
-    // fallback value
-    return appConfig.commerce.sites[0].defaultCurrency;
+/**
+ * Remove a payment instrument from the basket using the Commerce API
+ */
+export async function removePaymentInstrumentFromBasket(
+    context: Readonly<RouterContextProvider>,
+    basketId: string,
+    paymentInstrumentId: string
+): Promise<ShopperBasketsV2.schemas['Basket']> {
+    const clients = createApiClients(context);
+    const { data: basket } = await clients.shopperBasketsV2.removePaymentInstrumentFromBasket({
+        params: {
+            path: { basketId, paymentInstrumentId },
+        },
+    });
+    return basket;
 }
 
 /**
@@ -127,6 +141,7 @@ export async function mergeBasket(
         params: {
             query: {
                 merge: true,
+                populateCustomerDetails: true,
             },
         },
     });

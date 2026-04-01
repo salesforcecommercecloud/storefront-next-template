@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import CollapsibleHtmlSection from './collapsible-html-section';
 import { HTML_CONTENT_STYLES } from '@/components/html-fragment/styles';
+
+/** Click the summary and wait for all React effects to flush. */
+const openSection = (container: HTMLElement): Promise<void> =>
+    act(async () => {
+        fireEvent.click(container.querySelector('summary') as HTMLElement);
+        await Promise.resolve();
+    });
 
 describe('CollapsibleHtmlSection', () => {
     describe('label', () => {
@@ -29,14 +36,16 @@ describe('CollapsibleHtmlSection', () => {
     });
 
     describe('content', () => {
-        test('renders plain text content via HtmlFragment', () => {
-            render(<CollapsibleHtmlSection label="Section" content="A premium product." />);
+        test('renders plain text content via HtmlFragment after opening', async () => {
+            const { container } = render(<CollapsibleHtmlSection label="Section" content="A premium product." />);
+
+            await openSection(container);
 
             expect(screen.getByText('A premium product.')).toBeInTheDocument();
         });
 
-        test('renders HTML content via HtmlFragment', () => {
-            render(
+        test('renders HTML content via HtmlFragment after opening', async () => {
+            const { container } = render(
                 <CollapsibleHtmlSection
                     label="Section"
                     content="<ul><li>Feature one</li><li>Feature two</li></ul>"
@@ -44,34 +53,42 @@ describe('CollapsibleHtmlSection', () => {
                 />
             );
 
+            await openSection(container);
+
             expect(screen.getByText('Feature one')).toBeInTheDocument();
             expect(screen.getByText('Feature two')).toBeInTheDocument();
         });
     });
 
     describe('contentType', () => {
-        test('applies plain-text styles when contentType is not provided', () => {
-            render(<CollapsibleHtmlSection label="Section" content="Some text" />);
+        test('applies plain-text styles when contentType is not provided', async () => {
+            const { container } = render(<CollapsibleHtmlSection label="Section" content="Some text" />);
+
+            await openSection(container);
 
             expect(screen.getByTestId('html-fragment').className).toBe(HTML_CONTENT_STYLES['plain-text']);
         });
 
-        test('applies bulleted-list styles when contentType is bulleted-list', () => {
-            render(
+        test('applies bulleted-list styles when contentType is bulleted-list', async () => {
+            const { container } = render(
                 <CollapsibleHtmlSection label="Section" content="<ul><li>Item</li></ul>" contentType="bulleted-list" />
             );
+
+            await openSection(container);
 
             expect(screen.getByTestId('html-fragment').className).toBe(HTML_CONTENT_STYLES['bulleted-list']);
         });
 
-        test('applies table-2-column styles when contentType is table-2-column', () => {
-            render(
+        test('applies table-2-column styles when contentType is table-2-column', async () => {
+            const { container } = render(
                 <CollapsibleHtmlSection
                     label="Section"
                     content="<table><tr><td>Key:</td><td>Value</td></tr></table>"
                     contentType="table-2-column"
                 />
             );
+
+            await openSection(container);
 
             expect(screen.getByTestId('html-fragment').className).toBe(HTML_CONTENT_STYLES['table-2-column']);
         });

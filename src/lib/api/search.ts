@@ -16,7 +16,8 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 type QueryParameters = Omit<Partial<ShopperSearch.operations['productSearch']['parameters']['query']>, 'refine'> & {
     refine?: ShopperSearch.operations['productSearch']['parameters']['query']['refine'] | string[];
@@ -62,7 +63,7 @@ export const fetchSearchProducts = (
      * currently orderable products.
      */
     const refineSet = new Set<string>(params.refine || []);
-    const appConfig = getConfig(context);
+    const appConfig = getConfig<AppConfig>(context);
     if (appConfig?.search.products.refine?.orderableOnly === true) {
         // Make sure we don't accidentally overwrite any existing orderable_only refinements to avoid conflicts
         const orderableOnly = [...refineSet].find((r: string) => r.startsWith('orderable_only='));

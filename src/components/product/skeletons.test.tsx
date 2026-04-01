@@ -24,7 +24,7 @@ vi.mock('@/lib/recommendations', () => ({
 }));
 
 // Mock the config
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: () => ({
         global: {
             skeleton: {

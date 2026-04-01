@@ -39,9 +39,15 @@ import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares
 import { createApiClients } from '@/lib/api-clients';
 import { currencyContext } from '@/lib/currency';
 
+// Logging
+import { getLogger } from '@/lib/logger.server';
+
 // Components
 import CartSkeleton from '@/components/cart/cart-skeleton';
 import CartContent from '@/components/cart/cart-content';
+import { SeoMeta } from '@/components/seo-meta';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
+import { useTranslation } from 'react-i18next';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores';
@@ -61,6 +67,7 @@ type CartPageData = {
         storesByStoreId: Record<string, ShopperStores.schemas['Store']>;
     }>;
     basketSnapshot: BasketSnapshot | null;
+    pageUrl: string;
 };
 
 /**
@@ -273,7 +280,13 @@ async function fetchProductsInBasket(
  * @returns Promise resolving to cart page data with basket and product details
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export const loader: LoaderFunction = ({ context }: LoaderFunctionArgs): CartPageData => {
+export const loader: LoaderFunction = ({ context, request }: LoaderFunctionArgs): CartPageData => {
+    const logger = getLogger(context);
+    logger.debug('Cart: loader starting');
+
+    const requestUrl = new URL(request.url);
+    const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
+
     const basketPromise = getBasket(context, { ensureBasket: true }).then(
         (basketResult) => basketResult.current ?? ({} as ShopperBasketsV2.schemas['Basket'])
     );
@@ -314,6 +327,7 @@ export const loader: LoaderFunction = ({ context }: LoaderFunctionArgs): CartPag
     return {
         basketDataPromise,
         basketSnapshot,
+        pageUrl,
     };
 };
 
@@ -331,6 +345,7 @@ export const loader: LoaderFunction = ({ context }: LoaderFunctionArgs): CartPag
  * @returns JSX element representing the cart page
  */
 export default function Cart(): ReactElement {
+    const { t } = useTranslation('cart');
     const pageData = useLoaderData<CartPageData>();
     const content = (
         <Await resolve={pageData.basketDataPromise}>
@@ -367,14 +382,23 @@ export default function Cart(): ReactElement {
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     return (
-        <Suspense
-            fallback={
-                <CartSkeleton
-                    isRegistered={false}
-                    productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0}
-                />
-            }>
-            {finalContent}
-        </Suspense>
+        <>
+            <SeoMeta
+                title={t('meta.title', { defaultValue: 'Cart' })}
+                description={t('meta.description', {
+                    defaultValue: 'Review the items in your shopping cart and proceed to checkout.',
+                })}
+                openGraph={{ type: 'website', url: pageData.pageUrl }}
+            />
+            <Suspense
+                fallback={
+                    <CartSkeleton
+                        isRegistered={false}
+                        productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0}
+                    />
+                }>
+                {finalContent}
+            </Suspense>
+        </>
     );
 }

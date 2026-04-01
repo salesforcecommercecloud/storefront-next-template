@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 import type { MiddlewareFunction } from 'react-router';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { getAuth } from './auth.server';
 import { isPageDesignerMode, extractQualifiersFromUrl, updateShopperContext } from '@/lib/shopper-context-utils';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server-side middleware to update shopper context based on URL query parameters and cookies.
@@ -24,22 +26,26 @@ import { isPageDesignerMode, extractQualifiersFromUrl, updateShopperContext } fr
  * Reuses updateShopperContext for API update and cookie serialization.
  */
 const shopperContextMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
+    const logger = getLogger(context);
     const url = new URL(request.url);
-    const config = getConfig(context);
+    const config = getConfig<AppConfig>(context);
     let response: Response | undefined;
 
     // Check feature flag - skip if shopper context is disabled
     if (!config.features.shopperContext.enabled) {
+        logger.debug('ShopperContext: skipped, feature disabled');
         return await next();
     }
 
     // Skip if Page Designer edit/preview mode
     if (isPageDesignerMode(url)) {
+        logger.debug('ShopperContext: skipped, Page Designer mode');
         return await next();
     }
 
     const session = getAuth(context);
     if (!session.usid) {
+        logger.debug('ShopperContext: skipped, no USID');
         return await next();
     }
 
@@ -61,11 +67,11 @@ const shopperContextMiddleware: MiddlewareFunction<Response> = async ({ request,
             response.headers.append('Set-Cookie', header);
         }
 
+        logger.debug('ShopperContext: middleware succeeded');
         return response;
     } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Shopper context server middleware error:', {
-            error: error instanceof Error ? error.message : String(error),
+        logger.error('ShopperContext: middleware failed', {
+            error,
             usid: session.usid,
             url: request.url,
         });

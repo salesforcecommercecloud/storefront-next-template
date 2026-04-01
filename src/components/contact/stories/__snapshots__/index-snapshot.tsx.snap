@@ -30,7 +30,6 @@ exports[`Contact stories snapshot > Default story renders and matches snapshot 1
             <a
               class="text-primary underline"
               href="tel:180080606453"
-              to="tel:180080606453"
             >
               1-800-8060-6453
             </a>
@@ -59,17 +58,20 @@ exports[`Contact stories snapshot > Default story renders and matches snapshot 1
         <div
           class="flex flex-col gap-2"
         >
-          <div
-            class="text-sm font-medium leading-none text-left"
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm leading-5 font-normal text-foreground"
+            data-slot="label"
+            for="contact-full-name"
           >
             Name
             <span
-              class="leading-7 [&:not(:first-child)]:mt-6 text-left text-destructive"
+              class="text-destructive"
             >
               *
             </span>
-          </div>
+          </label>
           <input
+            aria-required="true"
             class="file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md border transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-input bg-background text-foreground placeholder:text-muted-foreground shadow-xs h-10 px-3 py-2 text-sm leading-5"
             data-slot="input"
             id="contact-full-name"
@@ -81,17 +83,20 @@ exports[`Contact stories snapshot > Default story renders and matches snapshot 1
         <div
           class="flex flex-col gap-2"
         >
-          <div
-            class="text-sm font-medium leading-none text-left"
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm leading-5 font-normal text-foreground"
+            data-slot="label"
+            for="contact-email"
           >
             Email
             <span
-              class="leading-7 [&:not(:first-child)]:mt-6 text-left text-destructive"
+              class="text-destructive"
             >
               *
             </span>
-          </div>
+          </label>
           <input
+            aria-required="true"
             autocomplete="email"
             class="file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md border transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-input bg-background text-foreground placeholder:text-muted-foreground shadow-xs h-10 px-3 py-2 text-sm leading-5"
             data-slot="input"
@@ -105,17 +110,20 @@ exports[`Contact stories snapshot > Default story renders and matches snapshot 1
         <div
           class="flex flex-col gap-2"
         >
-          <div
-            class="text-sm font-medium leading-none text-left"
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm leading-5 font-normal text-foreground"
+            data-slot="label"
+            for="contact-topic"
           >
             Label
             <span
-              class="leading-7 [&:not(:first-child)]:mt-6 text-left text-destructive"
+              class="text-destructive"
             >
               *
             </span>
-          </div>
+          </label>
           <input
+            aria-required="true"
             class="file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md border transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-input bg-background text-foreground placeholder:text-muted-foreground shadow-xs h-10 px-3 py-2 text-sm leading-5"
             data-slot="input"
             id="contact-topic"
@@ -127,17 +135,20 @@ exports[`Contact stories snapshot > Default story renders and matches snapshot 1
         <div
           class="flex flex-col gap-2"
         >
-          <div
-            class="text-sm font-medium leading-none text-left"
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm leading-5 font-normal text-foreground"
+            data-slot="label"
+            for="contact-message"
           >
             Message
             <span
-              class="leading-7 [&:not(:first-child)]:mt-6 text-left text-destructive"
+              class="text-destructive"
             >
               *
             </span>
-          </div>
+          </label>
           <textarea
+            aria-required="true"
             class="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-48 resize-none text-sm leading-5"
             data-slot="textarea"
             id="contact-message"
@@ -198,7 +209,6 @@ exports[`Contact stories snapshot > FormValidationAndSubmission story renders an
             <a
               class="text-primary underline"
               href="tel:180080606453"
-              to="tel:180080606453"
             >
               1-800-8060-6453
             </a>
@@ -227,17 +237,20 @@ exports[`Contact stories snapshot > FormValidationAndSubmission story renders an
         <div
           class="flex flex-col gap-2"
         >
-          <div
-            class="text-sm font-medium leading-none text-left"
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm leading-5 font-normal text-foreground"
+            data-slot="label"
+            for="contact-full-name"
           >
             Name
             <span
-              class="leading-7 [&:not(:first-child)]:mt-6 text-left text-destructive"
+              class="text-destructive"
             >
               *
             </span>
-          </div>
+          </label>
           <input
+            aria-required="true"
             class="file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md border transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-input bg-background text-foreground placeholder:text-muted-foreground shadow-xs h-10 px-3 py-2 text-sm leading-5"
             data-slot="input"
             id="contact-full-name"
@@ -249,17 +262,20 @@ exports[`Contact stories snapshot > FormValidationAndSubmission story renders an
         <div
           class="flex flex-col gap-2"
         >
-          <div
-            class="text-sm font-medium leading-none text-left"
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm leading-5 font-normal text-foreground"
+            data-slot="label"
+            for="contact-email"
           >
             Email
             <span
-              class="leading-7 [&:not(:first-child)]:mt-6 text-left text-destructive"
+              class="text-destructive"
             >
               *
             </span>
-          </div>
+          </label>
           <input
+            aria-required="true"
             autocomplete="email"
             class="file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md border transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-input bg-background text-foreground placeholder:text-muted-foreground shadow-xs h-10 px-3 py-2 text-sm leading-5"
             data-slot="input"
@@ -273,17 +289,20 @@ exports[`Contact stories snapshot > FormValidationAndSubmission story renders an
         <div
           class="flex flex-col gap-2"
         >
-          <div
-            class="text-sm font-medium leading-none text-left"
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm leading-5 font-normal text-foreground"
+            data-slot="label"
+            for="contact-topic"
           >
             Label
             <span
-              class="leading-7 [&:not(:first-child)]:mt-6 text-left text-destructive"
+              class="text-destructive"
             >
               *
             </span>
-          </div>
+          </label>
           <input
+            aria-required="true"
             class="file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 w-full min-w-0 rounded-md border transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-input bg-background text-foreground placeholder:text-muted-foreground shadow-xs h-10 px-3 py-2 text-sm leading-5"
             data-slot="input"
             id="contact-topic"
@@ -295,17 +314,20 @@ exports[`Contact stories snapshot > FormValidationAndSubmission story renders an
         <div
           class="flex flex-col gap-2"
         >
-          <div
-            class="text-sm font-medium leading-none text-left"
+          <label
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm leading-5 font-normal text-foreground"
+            data-slot="label"
+            for="contact-message"
           >
             Message
             <span
-              class="leading-7 [&:not(:first-child)]:mt-6 text-left text-destructive"
+              class="text-destructive"
             >
               *
             </span>
-          </div>
+          </label>
           <textarea
+            aria-required="true"
             class="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-48 resize-none text-sm leading-5"
             data-slot="textarea"
             id="contact-message"

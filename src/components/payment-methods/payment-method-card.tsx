@@ -61,7 +61,7 @@ export function PaymentMethodCard({ paymentMethod, onRemove, onSetDefault }: Pay
                             {displayName} **** {paymentMethod.last4}
                         </span>
                         {paymentMethod.isDefault && (
-                            <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">
+                            <span className="px-2 py-0.5 bg-muted border border-border text-primary text-xs font-semibold rounded">
                                 {t('paymentMethods.default')}
                             </span>
                         )}
@@ -80,10 +80,14 @@ export function PaymentMethodCard({ paymentMethod, onRemove, onSetDefault }: Pay
                             size="sm"
                             disabled={paymentMethod.isDefault}
                             onClick={onSetDefault}
-                            className="h-auto p-0 text-sm">
+                            className="h-auto p-0 text-sm cursor-pointer">
                             {t('paymentMethods.setDefault')}
                         </Button>
-                        <Button variant="link" size="sm" onClick={onRemove} className="h-auto p-0 text-sm">
+                        <Button
+                            variant="link"
+                            size="sm"
+                            onClick={onRemove}
+                            className="h-auto p-0 text-sm cursor-pointer">
                             {t('paymentMethods.remove')}
                         </Button>
                     </div>

@@ -27,7 +27,8 @@ import { type ReactElement, useCallback, useEffect, useState } from 'react';
 
 // Hooks
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 // Components
 import { ConfirmationDialog } from '@/components/confirmation-dialog';
@@ -62,7 +63,7 @@ export function RemoveItemButtonWithConfirmation({
     config,
     className = '',
 }: RemoveItemButtonWithConfirmationProps): ReactElement {
-    const appConfig = useConfig();
+    const appConfig = useConfig<AppConfig>();
     const removeAction = config?.action || appConfig.pages.cart.removeAction;
     const confirmDescription = config?.confirmDescription || appConfig.pages.cart.confirmDescription || '';
     const { t } = useTranslation('removeItem');
@@ -119,7 +120,7 @@ export function RemoveItemButtonWithConfirmation({
                 variant="link"
                 size="sm"
                 disabled={isLoading}
-                className={`font-bold ${className ?? ''}`}
+                className={`text-xs cursor-pointer hover:no-underline ${className ?? ''}`}
                 title={t('title')}
                 data-testid={`remove-item-${itemId}`}
                 aria-busy={isLoading}

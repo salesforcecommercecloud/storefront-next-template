@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import type { AppConfig } from '@/config';
+import type { AppConfig } from '@/types/config';
+import { buildProductSchemaUrl, buildCategorySchemaUrl } from './schema-url';
 
 /**
  * Schema.org CollectionPage with ItemList for Product Listing Pages
@@ -59,11 +60,60 @@ export interface CategorySchema extends Record<string, unknown> {
     };
 }
 
+function getProductUrl(
+    product: ShopperSearch.schemas['ProductSearchHit'],
+    pageUrl: string,
+    baseUrl: string
+): string | undefined {
+    // Use common schema URL builder to construct product URLs.
+    // This ensures consistency across all schema generation.
+    return buildProductSchemaUrl({
+        productId: product.productId,
+        origin: baseUrl,
+        currentPageUrl: pageUrl,
+    });
+}
+
+function getEffectivePrice(product: ShopperSearch.schemas['ProductSearchHit']): number | undefined {
+    const hitType = (product as { hitType?: string }).hitType;
+    const variants = (
+        product as {
+            variants?: Array<{
+                price?: number;
+                productPromotions?: Array<{ promotionalPrice?: number }>;
+            }>;
+        }
+    ).variants;
+    const candidates = hitType === 'master' && Array.isArray(variants) && variants.length > 0 ? variants : [product];
+
+    let minEffectivePrice = Number.POSITIVE_INFINITY;
+    for (const candidate of candidates) {
+        const promotions = candidate.productPromotions || [];
+        const lowestPromo = promotions.reduce<number | undefined>((lowest, promo) => {
+            const promoPrice = promo.promotionalPrice;
+            if (typeof promoPrice !== 'number') return lowest;
+            if (lowest === undefined) return promoPrice;
+            return promoPrice < lowest ? promoPrice : lowest;
+        }, undefined);
+
+        const basePrice = candidate.price;
+        if (typeof basePrice !== 'number' && typeof lowestPromo !== 'number') continue;
+
+        // PLP schema price should be promo price when available, otherwise lowest sale/current price.
+        const effectivePrice = lowestPromo ?? basePrice;
+        if (typeof effectivePrice !== 'number') continue;
+        if (effectivePrice < minEffectivePrice) {
+            minEffectivePrice = effectivePrice;
+        }
+    }
+
+    return Number.isFinite(minEffectivePrice) ? minEffectivePrice : undefined;
+}
+
 function determineAvailability(
     product: ShopperSearch.schemas['ProductSearchHit'],
     config?: AppConfig
 ): string | undefined {
-    // Make sure explicit `orderable` property takes precedence over `orderableOnly` config
     if (product?.orderable === true) {
         return 'https://schema.org/InStock';
     } else if (product?.orderable === false) {
@@ -126,8 +176,12 @@ export function generateCategorySchema({
                 '@type': 'ListItem',
                 position: index + 1,
                 name: parent.name,
-                // parentCategoryTree items only have id and name
-                item: parent.id && baseUrl ? `${baseUrl}/category/${parent.id}` : undefined,
+                // Use common schema URL builder for breadcrumb category links
+                item: buildCategorySchemaUrl({
+                    categoryId: parent.id,
+                    origin: baseUrl,
+                    currentPageUrl: pageUrl,
+                }),
             });
         });
     }
@@ -140,17 +194,17 @@ export function generateCategorySchema({
         item: pageUrl,
     });
 
-    // Build item list from products (limit to first 20 for performance)
-    const MAX_ITEMS = 20;
+    // Build item list from PLP products, capped for schema payload size.
+    const MAX_ITEMS = 24;
     const products = searchResult?.hits?.slice(0, MAX_ITEMS) || [];
     const itemListElements = products.map((product, index) => {
-        const productUrl = product.productId && baseUrl ? `${baseUrl}/product/${product.productId}` : undefined;
+        const productUrl = getProductUrl(product, pageUrl, baseUrl);
 
         // Get primary image
         const imageUrl = product.image?.link || product.image?.disBaseLink;
 
-        // Get price information
-        const price = product.price;
+        // Use effective sale price when promotions are present.
+        const price = getEffectivePrice(product);
         const currency = product.currency || defaultCurrency;
 
         // Check availability using the `orderableOnly` flag from the global search config.

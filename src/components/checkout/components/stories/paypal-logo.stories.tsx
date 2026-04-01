@@ -18,10 +18,12 @@ import PayPalLogo from '../paypal-logo';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 const meta: Meta<typeof PayPalLogo> = {
     title: 'CHECKOUT/PayPalLogo',
     component: PayPalLogo,
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'centered',
         docs: {
             description: {

@@ -81,6 +81,7 @@ vi.mock('@/providers/basket', () => ({
         }
         return undefined;
     },
+    useMiniCart: () => ({ miniCartOpen: false, setMiniCartOpen: vi.fn() }),
 }));
 
 import { composeStories } from '@storybook/react-vite';

@@ -3,26 +3,29 @@
 exports[`OrderSummary stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -53,7 +56,7 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -117,7 +120,7 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -158,8 +161,11 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -176,12 +182,6 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>
@@ -192,26 +192,29 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
 exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -242,7 +245,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -306,7 +309,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -345,8 +348,11 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -363,12 +369,6 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>
@@ -379,26 +379,29 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
 exports[`OrderSummary stories snapshot > EstimateMode story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -429,7 +432,7 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -493,7 +496,7 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -534,8 +537,11 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -552,12 +558,6 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>
@@ -568,26 +568,29 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
 exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -618,7 +621,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -687,7 +690,9 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                     <div
                       class="space-y-5"
                     >
-                      <div>
+                      <div
+                        class="border-b border-muted-foreground/10 last:border-b-0"
+                      >
                         <div
                           class="grid md:grid-cols-[112px_1fr] grid-cols-[72px_1fr] gap-4"
                           data-testid="sf-product-item-summary-029407331227M"
@@ -709,10 +714,10 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                             class="flex-1 space-y-1 min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-start gap-2 min-w-0"
+                              class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                                class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                               >
                                 <a
                                   class="text-foreground hover:text-primary block break-words"
@@ -725,14 +730,14 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                             </div>
                             <div>
                               <div
-                                class="text-sm text-muted-foreground"
+                                class="text-xs text-muted-foreground"
                               >
                                 Qty:
                                  
                                 2
                               </div>
                               <div
-                                class="text-sm text-muted-foreground space-y-1 mb-1"
+                                class="text-xs text-muted-foreground space-y-1 mb-1"
                               >
                                 <div>
                                   Color
@@ -740,6 +745,12 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                   Navy
                                 </div>
                               </div>
+                              <span
+                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                data-slot="badge"
+                              >
+                                Saved £40.62
+                              </span>
                             </div>
                             <div
                               class="items-center gap-2 text-sm"
@@ -760,11 +771,27 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 Current price: £19.19
                               </span>
                                
+                              <span
+                                aria-label="List price: £39.50"
+                                class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                              >
+                                £39.50
+                              </span>
+                              <span
+                                aria-atomic="true"
+                                aria-live="polite"
+                                class="sr-only"
+                              >
+                                Solid Silk Tie
+                                List price: £39.50
+                              </span>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div>
+                      <div
+                        class="border-b border-muted-foreground/10 last:border-b-0"
+                      >
                         <div
                           class="grid md:grid-cols-[112px_1fr] grid-cols-[72px_1fr] gap-4"
                           data-testid="sf-product-item-summary-701643477180M"
@@ -786,10 +813,10 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                             class="flex-1 space-y-1 min-w-0"
                           >
                             <div
-                              class="mb-4 flex items-start gap-2 min-w-0"
+                              class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                                class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                               >
                                 <a
                                   class="text-foreground hover:text-primary block break-words"
@@ -802,14 +829,14 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                             </div>
                             <div>
                               <div
-                                class="text-sm text-muted-foreground"
+                                class="text-xs text-muted-foreground"
                               >
                                 Qty:
                                  
                                 1
                               </div>
                               <div
-                                class="text-sm text-muted-foreground space-y-1 mb-1"
+                                class="text-xs text-muted-foreground space-y-1 mb-1"
                               >
                                 <div>
                                   Color
@@ -822,6 +849,12 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                   M
                                 </div>
                               </div>
+                              <span
+                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                data-slot="badge"
+                              >
+                                Saved £43.81
+                              </span>
                             </div>
                             <div
                               class="items-center gap-2 text-sm"
@@ -842,12 +875,26 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 Current price: £35.19
                               </span>
                                
+                              <span
+                                aria-label="List price: £79.00"
+                                class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                              >
+                                £79.00
+                              </span>
+                              <span
+                                aria-atomic="true"
+                                aria-live="polite"
+                                class="sr-only"
+                              >
+                                Floral Ruffle Top
+                                List price: £79.00
+                              </span>
                             </div>
                             <div
                               class="items-center gap-2 text-sm"
                             >
                               <span
-                                class="line-clamp-2"
+                                class="line-clamp-2 text-[inherit] font-medium"
                               >
                                 Buy one Long Center Seam Skirt and get 2 tops
                               </span>
@@ -868,7 +915,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -909,8 +956,11 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -927,12 +977,6 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>
@@ -943,24 +987,24 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
 exports[`OrderSummary stories snapshot > Minimal story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -1001,8 +1045,11 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -1019,12 +1066,6 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>
@@ -1035,26 +1076,29 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
 exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -1085,7 +1129,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -1149,7 +1193,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -1168,7 +1212,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                 20% Off Discount
               </span>
               <span
-                class="text-success text-sm font-semibold"
+                class="text-success text-xs font-semibold"
               >
                 -£59.99
               </span>
@@ -1202,29 +1246,14 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
               </span>
             </div>
           </div>
-          <div
-            class="space-y-4 w-full text-sm"
-          >
-            <div
-              class="flex w-full justify-between items-center"
-            >
-              <span
-                class="font-bold"
-              >
-                Order Total
-              </span>
-              <span
-                class="font-bold"
-              >
-                £73.57
-              </span>
-            </div>
-          </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
             class="w-full"
           >
             <div
-              class="mb-3"
+              class="mb-0"
               data-orientation="vertical"
               data-slot="accordion"
             >
@@ -1242,7 +1271,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                   <button
                     aria-controls="radix-«x»"
                     aria-expanded="false"
-                    class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-2"
+                    class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
                     data-orientation="vertical"
                     data-radix-collection-item=""
                     data-slot="accordion-trigger"
@@ -1253,7 +1282,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                     <span
                       class="flex-1 text-left text-sm font-medium"
                     >
-                      Enter a Promotion Code
+                      Do you have a promo code?
                     </span>
                     <svg
                       aria-hidden="true"
@@ -1321,6 +1350,27 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
               </div>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
+          <div
+            class="space-y-2 w-full text-sm pt-2"
+          >
+            <div
+              class="flex w-full justify-between items-center"
+            >
+              <span
+                class="font-bold"
+              >
+                Order Total
+              </span>
+              <span
+                class="font-bold"
+              >
+                £73.57
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1331,26 +1381,29 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
 exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -1381,7 +1434,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -1445,7 +1498,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -1486,29 +1539,14 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
               </span>
             </div>
           </div>
-          <div
-            class="space-y-4 w-full text-sm"
-          >
-            <div
-              class="flex w-full justify-between items-center"
-            >
-              <span
-                class="font-bold"
-              >
-                Order Total
-              </span>
-              <span
-                class="font-bold"
-              >
-                £73.57
-              </span>
-            </div>
-          </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
             class="w-full"
           >
             <div
-              class="mb-3"
+              class="mb-0"
               data-orientation="vertical"
               data-slot="accordion"
             >
@@ -1526,7 +1564,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
                   <button
                     aria-controls="radix-«x»"
                     aria-expanded="false"
-                    class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-2"
+                    class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
                     data-orientation="vertical"
                     data-radix-collection-item=""
                     data-slot="accordion-trigger"
@@ -1537,7 +1575,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
                     <span
                       class="flex-1 text-left text-sm font-medium"
                     >
-                      Enter a Promotion Code
+                      Do you have a promo code?
                     </span>
                     <svg
                       aria-hidden="true"
@@ -1572,6 +1610,27 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
               </div>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
+          <div
+            class="space-y-2 w-full text-sm pt-2"
+          >
+            <div
+              class="flex w-full justify-between items-center"
+            >
+              <span
+                class="font-bold"
+              >
+                Order Total
+              </span>
+              <span
+                class="font-bold"
+              >
+                £73.57
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1582,30 +1641,33 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
 exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
-        <h3
-          class="text-xl font-semibold tracking-tight text-left"
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
           id="order-summary-heading"
         >
-          Summary
-        </h3>
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -1646,8 +1708,11 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -1664,12 +1729,6 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>
@@ -1680,20 +1739,20 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
 exports[`OrderSummary stories snapshot > WithoutHeading story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
     data-slot="card"
   >
     <div
-      class="p-6"
+      class="px-[var(--cart-summary-px)]"
       data-slot="card-content"
     >
       <div
-        class="space-y-5"
+        class="space-y-4"
         data-testid="sf-order-summary"
       >
         <div
           aria-labelledby="order-summary-heading"
-          class="space-y-4"
+          class="space-y-2"
           role="region"
         >
           <div
@@ -1724,7 +1783,7 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
                   type="button"
                 >
                   <span
-                    class="flex-1 text-left text-base text-primary"
+                    class="flex-1 text-left text-sm text-primary"
                   >
                     <svg
                       aria-hidden="true"
@@ -1788,7 +1847,7 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
             </div>
           </div>
           <div
-            class="space-y-4 text-sm"
+            class="space-y-2 text-sm"
           >
             <div
               class="flex justify-between items-center"
@@ -1829,8 +1888,11 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
               </span>
             </div>
           </div>
+          <hr
+            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+          />
           <div
-            class="space-y-4 w-full text-sm"
+            class="space-y-2 w-full text-sm pt-2"
           >
             <div
               class="flex w-full justify-between items-center"
@@ -1847,12 +1909,6 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
               </span>
             </div>
           </div>
-          <div
-            class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px w-full"
-            data-orientation="horizontal"
-            data-slot="separator"
-            role="none"
-          />
         </div>
       </div>
     </div>

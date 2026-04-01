@@ -16,7 +16,8 @@
 import { type ElementType, type ImgHTMLAttributes, useMemo } from 'react';
 import { preload } from 'react-dom';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { cn, isServer } from '@/lib/utils';
 import {
     defaultImageFormats,
@@ -310,7 +311,7 @@ const DynamicImage = ({
     data: _data,
     ...rest
 }: DynamicImageProps) => {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const {
         images: {
             quality: defaultQuality = 70,
@@ -320,15 +321,26 @@ const DynamicImage = ({
         } = {},
     } = config;
 
+    // Page Designer passes image-type attributes as objects — normalize to a plain string.
+    // SFCC image objects can use several URL properties depending on source and context.
+    const resolvedSrc =
+        src && typeof src === 'object'
+            ? ((src as Record<string, unknown>).absURL as string) ||
+              ((src as Record<string, unknown>).url as string) ||
+              ((src as Record<string, unknown>).disBaseLink as string) ||
+              ((src as Record<string, unknown>).link as string) ||
+              ''
+            : (src ?? '');
+
     // Parse widths if it's a string (from Page Designer)
     const parsedWidths = useMemo(() => parseWidthsString(widths), [widths]);
 
     // When DIS is disabled, transform the source URL to relative static paths
     // and skip all DIS-dependent behavior (format conversion, responsive <source> generation).
     const transformedSrc = useMemo(() => {
-        if (enableDis) return src;
-        return toImageUrl({ src, config }) || src;
-    }, [src, config, enableDis]);
+        if (enableDis) return resolvedSrc;
+        return toImageUrl({ src: resolvedSrc, config }) || resolvedSrc;
+    }, [resolvedSrc, config, enableDis]);
 
     // When DIS is disabled, use empty formats to skip <source> generation and format conversion.
     // Without DIS, format conversion (webp/avif) and server-side resizing are not available.

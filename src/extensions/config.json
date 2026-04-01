@@ -31,15 +31,6 @@
             "folder": "theme-switcher",
             "defaultOn": false,
             "dependencies": []
-        },
-        "SFDC_EXT_HYBRID_PROXY": {
-            "name": "Hybrid Proxy",
-            "description": "Proxies specific routes to an SFRA instance for hybrid deployments",
-            "installationInstructions": "instructions/install-hybrid-proxy.mdc",
-            "uninstallationInstructions": "instructions/uninstall-hybrid-proxy.mdc",
-            "folder": "hybrid-proxy",
-            "defaultOn": false,
-            "dependencies": []
         }
     }
 }

@@ -19,6 +19,16 @@ import { useUpdateMarketingConsent } from './use-update-marketing-consent';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 
+const mockLogger = vi.hoisted(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+}));
+vi.mock('@/lib/logger', () => ({
+    createLogger: vi.fn(() => mockLogger),
+}));
+
 const mockSubmit = vi.fn();
 const createMockFetcher = (overrides: { state?: string; data?: unknown } = {}) => ({
     state: (overrides.state ?? 'idle') as 'idle' | 'loading' | 'submitting',
@@ -52,73 +62,76 @@ describe('useUpdateMarketingConsent', () => {
     });
 
     describe('when the user has not started an update', () => {
-        it('exposes a way to update consent and reports not loading', () => {
+        it('exposes updateBatch and reports not loading', () => {
             const { result } = renderHook(() => useUpdateMarketingConsent());
 
-            expect(typeof result.current.updateSubscription).toBe('function');
+            expect(typeof result.current.updateBatch).toBe('function');
             expect(result.current.isUpdating).toBe(false);
         });
     });
 
-    describe('when the user opts in or out of a subscription', () => {
-        it('sends opt-in for email with the user’s email address', () => {
+    describe('when the user submits a batch', () => {
+        it('sends JSON body with updates array', () => {
             const { result } = renderHook(() => useUpdateMarketingConsent());
 
-            const payload = {
-                subscriptionId: 'sub-1',
-                channel: 'email' as const,
-                contactPointValue: 'user@example.com',
-                status: 'opt_in' as const,
-            };
+            const updates = [
+                {
+                    subscriptionId: 'sub-1',
+                    channel: 'email' as const,
+                    contactPointValue: 'user@example.com',
+                    status: 'opt_in' as const,
+                },
+            ];
 
             act(() => {
-                result.current.updateSubscription(payload);
+                result.current.updateBatch(updates);
             });
 
             expect(mockSubmit).toHaveBeenCalledTimes(1);
-            const [formData, options] = mockSubmit.mock.calls[0];
-            expect(formData).toBeInstanceOf(FormData);
-            expect(formData.get('subscriptionId')).toBe('sub-1');
-            expect(formData.get('channel')).toBe('email');
-            expect(formData.get('contactPointValue')).toBe('user@example.com');
-            expect(formData.get('status')).toBe('opt_in');
+            const [body, options] = mockSubmit.mock.calls[0];
+            expect(body).toEqual({ updates });
             expect(options).toEqual({
                 method: 'POST',
                 action: '/action/update-marketing-consent',
+                encType: 'application/json',
             });
         });
 
-        it('sends opt-out for SMS with the user’s phone number', () => {
+        it('does not submit when updates array is empty', () => {
             const { result } = renderHook(() => useUpdateMarketingConsent());
 
             act(() => {
-                result.current.updateSubscription({
+                result.current.updateBatch([]);
+            });
+
+            expect(mockSubmit).not.toHaveBeenCalled();
+        });
+
+        it('sends multiple updates in one request', () => {
+            const { result } = renderHook(() => useUpdateMarketingConsent());
+
+            const updates = [
+                {
+                    subscriptionId: 'sub-1',
+                    channel: 'email' as const,
+                    contactPointValue: 'a@b.com',
+                    status: 'opt_in' as const,
+                },
+                {
                     subscriptionId: 'sub-2',
-                    channel: 'sms',
-                    contactPointValue: '+15551234567',
-                    status: 'opt_out',
-                });
-            });
-
-            const [formData] = mockSubmit.mock.calls[0];
-            expect(formData.get('status')).toBe('opt_out');
-            expect(formData.get('channel')).toBe('sms');
-        });
-
-        it('sends opt-in for WhatsApp with the user’s phone number', () => {
-            const { result } = renderHook(() => useUpdateMarketingConsent());
+                    channel: 'sms' as const,
+                    contactPointValue: '+1',
+                    status: 'opt_out' as const,
+                },
+            ];
 
             act(() => {
-                result.current.updateSubscription({
-                    subscriptionId: 'sub-3',
-                    channel: 'whatsapp',
-                    contactPointValue: '+15559876543',
-                    status: 'opt_in',
-                });
+                result.current.updateBatch(updates);
             });
 
-            const [formData] = mockSubmit.mock.calls[0];
-            expect(formData.get('channel')).toBe('whatsapp');
+            const [body, options] = mockSubmit.mock.calls[0];
+            expect(body).toEqual({ updates });
+            expect(options.encType).toBe('application/json');
         });
     });
 
@@ -131,12 +144,12 @@ describe('useUpdateMarketingConsent', () => {
             expect(result.current.isUpdating).toBe(true);
         });
 
-        it('is true while the response is being processed', () => {
+        it('is false while the response is being processed (loading) — align with checkout/cart: disable only when submitting', () => {
             mockFetcher = createMockFetcher({ state: 'loading' });
             vi.spyOn(ReactRouter, 'useFetcher').mockImplementation(() => mockFetcher as any);
 
             const { result } = renderHook(() => useUpdateMarketingConsent());
-            expect(result.current.isUpdating).toBe(true);
+            expect(result.current.isUpdating).toBe(false);
         });
 
         it('is false when no request is in progress', () => {
@@ -163,20 +176,19 @@ describe('useUpdateMarketingConsent', () => {
             const onError = vi.fn();
             mockFetcher = createMockFetcher({ state: 'submitting', data: null });
             vi.spyOn(ReactRouter, 'useFetcher').mockImplementation(() => mockFetcher as any);
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
             const { rerender } = renderHook(() => useUpdateMarketingConsent(undefined, onError));
             expect(onError).not.toHaveBeenCalled();
 
             mockFetcher.state = 'idle';
             mockFetcher.data = { success: false, error: 'Subscription update failed' };
             rerender();
-            expect(onError).toHaveBeenCalledWith('Subscription update failed');
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-                'Marketing consent update failed:',
-                'Subscription update failed'
-            );
-            consoleErrorSpy.mockRestore();
+            expect(onError).toHaveBeenCalledWith('Subscription update failed', {
+                success: false,
+                error: 'Subscription update failed',
+            });
+            expect(mockLogger.error).toHaveBeenCalledWith('Marketing consent update failed', {
+                message: 'Subscription update failed',
+            });
         });
     });
 });

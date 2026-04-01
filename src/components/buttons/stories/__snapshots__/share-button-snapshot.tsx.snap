@@ -5,18 +5,33 @@ exports[`ShareButton stories snapshot > CustomStyling story renders and matches 
   data-share-harness="true"
 >
   <button
-    aria-expanded="false"
-    aria-haspopup="menu"
     aria-label="Share"
-    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 bg-blue-600 hover:bg-blue-700 text-white"
-    data-size="lg"
-    data-slot="dropdown-menu-trigger"
-    data-state="closed"
-    data-variant="outline"
-    id="radix-_r_a_"
+    class="w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-blue-600 hover:bg-blue-700 text-white"
     type="button"
   >
-    Share
+    <svg
+      aria-hidden="true"
+      class="w-5 h-5 text-muted-foreground transition-all duration-200 ease-in-out"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="1.5"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+      />
+      <polyline
+        points="16 6 12 2 8 6"
+      />
+      <line
+        x1="12"
+        x2="12"
+        y1="2"
+        y2="15"
+      />
+    </svg>
   </button>
 </div>
 `;
@@ -26,18 +41,33 @@ exports[`ShareButton stories snapshot > Default story renders and matches snapsh
   data-share-harness="true"
 >
   <button
-    aria-expanded="false"
-    aria-haspopup="menu"
     aria-label="Share"
-    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4"
-    data-size="lg"
-    data-slot="dropdown-menu-trigger"
-    data-state="closed"
-    data-variant="outline"
-    id="radix-_r_0_"
+    class="bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     type="button"
   >
-    Share
+    <svg
+      aria-hidden="true"
+      class="w-5 h-5 text-muted-foreground transition-all duration-200 ease-in-out"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="1.5"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+      />
+      <polyline
+        points="16 6 12 2 8 6"
+      />
+      <line
+        x1="12"
+        x2="12"
+        y1="2"
+        y2="15"
+      />
+    </svg>
   </button>
 </div>
 `;
@@ -70,18 +100,33 @@ exports[`ShareButton stories snapshot > InProductCard story renders and matches 
       class="flex justify-between items-center"
     >
       <button
-        aria-expanded="false"
-        aria-haspopup="menu"
         aria-label="Share"
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 text-sm"
-        data-size="lg"
-        data-slot="dropdown-menu-trigger"
-        data-state="closed"
-        data-variant="outline"
-        id="radix-_r_c_"
+        class="bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 text-sm"
         type="button"
       >
-        Share
+        <svg
+          aria-hidden="true"
+          class="w-5 h-5 text-muted-foreground transition-all duration-200 ease-in-out"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+          />
+          <polyline
+            points="16 6 12 2 8 6"
+          />
+          <line
+            x1="12"
+            x2="12"
+            y1="2"
+            y2="15"
+          />
+        </svg>
       </button>
       <button
         class="px-4 py-2 bg-primary text-primary-foreground rounded"
@@ -98,18 +143,33 @@ exports[`ShareButton stories snapshot > LimitedProviders story renders and match
   data-share-harness="true"
 >
   <button
-    aria-expanded="false"
-    aria-haspopup="menu"
     aria-label="Share"
-    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4"
-    data-size="lg"
-    data-slot="dropdown-menu-trigger"
-    data-state="closed"
-    data-variant="outline"
-    id="radix-_r_4_"
+    class="bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     type="button"
   >
-    Share
+    <svg
+      aria-hidden="true"
+      class="w-5 h-5 text-muted-foreground transition-all duration-200 ease-in-out"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="1.5"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+      />
+      <polyline
+        points="16 6 12 2 8 6"
+      />
+      <line
+        x1="12"
+        x2="12"
+        y1="2"
+        y2="15"
+      />
+    </svg>
   </button>
 </div>
 `;
@@ -119,18 +179,33 @@ exports[`ShareButton stories snapshot > NoProviders story renders and matches sn
   data-share-harness="true"
 >
   <button
-    aria-expanded="false"
-    aria-haspopup="menu"
     aria-label="Share"
-    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4"
-    data-size="lg"
-    data-slot="dropdown-menu-trigger"
-    data-state="closed"
-    data-variant="outline"
-    id="radix-_r_8_"
+    class="bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     type="button"
   >
-    Share
+    <svg
+      aria-hidden="true"
+      class="w-5 h-5 text-muted-foreground transition-all duration-200 ease-in-out"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="1.5"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+      />
+      <polyline
+        points="16 6 12 2 8 6"
+      />
+      <line
+        x1="12"
+        x2="12"
+        y1="2"
+        y2="15"
+      />
+    </svg>
   </button>
 </div>
 `;
@@ -140,18 +215,33 @@ exports[`ShareButton stories snapshot > SingleProvider story renders and matches
   data-share-harness="true"
 >
   <button
-    aria-expanded="false"
-    aria-haspopup="menu"
     aria-label="Share"
-    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4"
-    data-size="lg"
-    data-slot="dropdown-menu-trigger"
-    data-state="closed"
-    data-variant="outline"
-    id="radix-_r_6_"
+    class="bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     type="button"
   >
-    Share
+    <svg
+      aria-hidden="true"
+      class="w-5 h-5 text-muted-foreground transition-all duration-200 ease-in-out"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="1.5"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+      />
+      <polyline
+        points="16 6 12 2 8 6"
+      />
+      <line
+        x1="12"
+        x2="12"
+        y1="2"
+        y2="15"
+      />
+    </svg>
   </button>
 </div>
 `;
@@ -161,18 +251,33 @@ exports[`ShareButton stories snapshot > WithCustomProduct story renders and matc
   data-share-harness="true"
 >
   <button
-    aria-expanded="false"
-    aria-haspopup="menu"
     aria-label="Share"
-    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4"
-    data-size="lg"
-    data-slot="dropdown-menu-trigger"
-    data-state="closed"
-    data-variant="outline"
-    id="radix-_r_2_"
+    class="bg-background w-9 h-9 p-2 shadow-md flex items-center justify-center transition-all duration-200 ease-in-out border-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     type="button"
   >
-    Share
+    <svg
+      aria-hidden="true"
+      class="w-5 h-5 text-muted-foreground transition-all duration-200 ease-in-out"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="1.5"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+      />
+      <polyline
+        points="16 6 12 2 8 6"
+      />
+      <line
+        x1="12"
+        x2="12"
+        y1="2"
+        y2="15"
+      />
+    </svg>
   </button>
 </div>
 `;

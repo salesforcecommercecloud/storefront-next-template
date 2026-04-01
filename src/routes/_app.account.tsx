@@ -15,14 +15,26 @@
  */
 import { useMemo, type ReactElement } from 'react';
 import { Outlet, type LoaderFunctionArgs, redirect, type ShouldRevalidateFunctionArgs } from 'react-router';
-import { House, User, Heart, ShoppingBag, MapPin, CreditCard, Building, LogOut } from 'lucide-react';
-import { getAuth as getAuthServer } from '@/middlewares/auth.server';
-import { getCustomer } from '@/lib/api/customer';
-import { getSubscriptions } from '@/lib/api/consent';
-import { Card, CardContent } from '@/components/ui/card';
-import { AccountNavList, type AccountNavItemData } from '@/components/account-navigation';
-import type { ShopperCustomers, ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
+import { House, User, Heart, ShoppingBag, MapPin, CreditCard, Building, LogOut } from 'lucide-react';
+
+// Runtime SDK
+import type { ShopperCustomers, ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
+
+// Components
+import { AccountNavList, type AccountNavItemData } from '@/components/account-navigation';
+import { Card, CardContent } from '@/components/ui/card';
+
+// Lib
+import { getSubscriptions } from '@/lib/api/consent';
+import { getCustomer } from '@/lib/api/customer';
+import { buildUrlFromContext } from '@/lib/url.server';
+
+// Logging
+import { getLogger } from '@/lib/logger.server';
+
+// middleware
+import { getAuth as getAuthServer } from '@/middlewares/auth.server';
 
 /**
  * Type definition for the account page loader data
@@ -41,6 +53,9 @@ type AccountPageData = {
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs) {
+    const logger = getLogger(args.context);
+    logger.debug('Account: loader starting');
+
     const session = getAuthServer(args.context);
     const { accessToken, accessTokenExpiry, userType, customerId } = session;
 
@@ -51,7 +66,8 @@ export function loader(args: LoaderFunctionArgs) {
         userType !== 'registered' ||
         !customerId
     ) {
-        throw redirect('/login');
+        logger.warn('Account: authentication validation failed, redirecting to login');
+        throw redirect(buildUrlFromContext('/login', args.context));
     }
 
     const customer = getCustomer(args.context, customerId);
@@ -96,6 +112,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                 path: '/account',
                 icon: User,
                 label: t('navigation.accountDetails'),
+                end: true,
             },
             {
                 path: '/account/wishlist',
@@ -139,38 +156,36 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    {/* Mobile Navigation Accordion */}
-                    <div className="lg:hidden">
-                        <Card className="bg-muted/30">
-                            <CardContent className="p-4">
-                                <h2 className="text-lg font-semibold text-foreground mb-4">{t('myAccount')}</h2>
-                                <nav className="space-y-1">
-                                    <AccountNavList items={navigationItems} isMobile={true} />
-                                    <div className="mt-4 pt-4 border-t border-border">
+            <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 w-full">
+                    {/* Nav column: mobile accordion + desktop sidebar (one cell so sidebar stays left of content) */}
+                    <div className="w-full lg:w-fit">
+                        {/* Mobile Navigation Accordion */}
+                        <div className="lg:hidden">
+                            <Card className="bg-muted/30">
+                                <CardContent className="p-4">
+                                    <h2 className="text-lg font-semibold text-foreground mb-4">{t('myAccount')}</h2>
+                                    <nav className="space-y-1">
+                                        <AccountNavList items={navigationItems} isMobile={true} />
                                         <AccountNavList items={[logoutItem]} isMobile={true} />
-                                    </div>
-                                </nav>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    {/* Desktop Sidebar Navigation */}
-                    <div className="hidden lg:block lg:col-span-1">
-                        <div className="space-y-4">
-                            <h2 className="text-lg font-semibold text-foreground">{t('myAccount')}</h2>
-                            <nav className="space-y-1">
-                                <AccountNavList items={navigationItems} />
-                                <div className="mt-4 pt-4 border-t border-border">
+                                    </nav>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        {/* Desktop Sidebar Navigation */}
+                        <div className="hidden lg:block">
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-semibold text-foreground">{t('myAccount')}</h2>
+                                <nav className="space-y-1">
+                                    <AccountNavList items={navigationItems} />
                                     <AccountNavList items={[logoutItem]} />
-                                </div>
-                            </nav>
+                                </nav>
+                            </div>
                         </div>
                     </div>
 
                     {/* Main Content - Child routes render here */}
-                    <div className="lg:col-span-3">
+                    <div className="min-w-0">
                         <Outlet context={outletContext} />
                     </div>
                 </div>

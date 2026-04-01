@@ -22,8 +22,8 @@
  */
 
 import { createElement, type ReactNode } from 'react';
-import { ConfigProvider, createAppConfig } from '@/config/context';
-import type { Config } from '@/config/schema';
+import { ConfigProvider, createAppConfig, deepMerge } from '@salesforce/storefront-next-runtime/config';
+import type { Config } from '@/types/config';
 import { TrackingConsent } from '@/types/tracking-consent';
 
 /**
@@ -64,12 +64,16 @@ export const mockBuildConfig: Config = {
                 enableRecentSearches: true,
                 suggestionsDebounce: 100,
             },
+            maintenancePage: {
+                sharedMaintenancePage: false,
+                cdnUrl: 'http://prd.cmp.cdn.commercecloud.salesforce.com',
+                forwardedHost: '',
+            },
         },
         commerce: {
             api: {
                 clientId: 'test-client',
                 organizationId: 'test-org',
-                siteId: 'test-site',
                 shortCode: 'test123',
                 proxy: '/mobify/proxy/api',
                 callback: '/callback',
@@ -88,6 +92,13 @@ export const mockBuildConfig: Config = {
                     ],
                     supportedCurrencies: ['EUR', 'GBP'],
                 },
+                {
+                    id: 'RefArch',
+                    defaultLocale: 'en-US',
+                    defaultCurrency: 'USD',
+                    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
+                    supportedCurrencies: ['USD'],
+                },
             ],
         },
         defaultSiteId: 'RefArchGlobal',
@@ -98,10 +109,12 @@ export const mockBuildConfig: Config = {
             },
             passwordlessLogin: {
                 enabled: false,
+                mode: 'email' as const,
                 callbackUri: '/passwordless-login-callback',
                 landingUri: '/passwordless-login-landing',
             },
             resetPassword: {
+                mode: 'email' as const,
                 callbackUri: '/reset-password-callback',
                 landingUri: '/reset-password-landing',
             },
@@ -115,6 +128,9 @@ export const mockBuildConfig: Config = {
             enabled: false,
             legacyRoutes: [],
         },
+        auth: {
+            otpLength: 6 as const,
+        },
         i18n: {
             fallbackLng: 'en-GB',
             supportedLngs: ['it-IT', 'en-GB'], // Fallback language should be last
@@ -124,6 +140,7 @@ export const mockBuildConfig: Config = {
             productListing: {
                 defaultProductTileImgAspectRatio: 1,
             },
+            inventory: { lowStockThreshold: 5, maxStockDisplay: 99 },
             carousel: { defaultItemCount: 4 },
             badges: [
                 { propertyName: 'c_isSale', label: 'Sale', color: 'orange', priority: 1 },
@@ -279,6 +296,10 @@ export const mockBuildConfig: Config = {
         siteAliasMap: {
             RefArchGlobal: 'global',
         },
+        url: {
+            prefix: '/:siteId/:localeId',
+            excludeRoutes: ['/resource/**', '/action/**'],
+        },
     },
 };
 
@@ -286,6 +307,19 @@ export const mockBuildConfig: Config = {
  * Pre-created mock config for convenience
  */
 export const mockConfig = createAppConfig(mockBuildConfig);
+
+/**
+ * The default URL prefix applied by multi-site routing in tests.
+ * Derived from the first configured site and its default locale.
+ *
+ * Use in test assertions where links are expected to include the site/locale prefix:
+ * @example
+ * ```ts
+ * expect(link).toHaveAttribute('href', `${SITE_PREFIX}/product/123`);
+ * ```
+ */
+const defaultSite = mockBuildConfig.app.commerce.sites[0];
+export const SITE_PREFIX = `/${defaultSite.id}/${defaultSite.defaultLocale}`;
 
 /**
  * React Testing Library wrapper component that provides ConfigProvider context
@@ -318,7 +352,9 @@ export function ConfigWrapper({ children }: { children: ReactNode }) {
  * ```
  */
 export function createConfigWrapper(configOverrides?: Partial<Config>) {
-    const customConfig = configOverrides ? createAppConfig({ ...mockBuildConfig, ...configOverrides }) : mockConfig;
+    const customConfig = configOverrides
+        ? createAppConfig(deepMerge(mockBuildConfig, configOverrides as Record<string, unknown>))
+        : mockConfig;
 
     return function CustomConfigWrapper({ children }: { children: ReactNode }) {
         return createElement(ConfigProvider, { config: customConfig, children } as never);

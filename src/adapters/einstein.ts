@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { AnalyticsEvent, AnalyticsUser } from '@salesforce/storefront-next-runtime/events';
+import type { AnalyticsEvent, AnalyticsUser, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
 import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
 import type { ShopperProducts, ShopperBasketsV2, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import type { Recommendation, RecommendersAdapter, Product } from '@/hooks/recommenders/use-recommenders';
@@ -107,6 +107,7 @@ export type EinsteinProduct = {
 };
 
 export type EinsteinConfig = EngagementAdapterConfig & {
+    siteId: string;
     host: string;
     einsteinId: string;
     isProduction: boolean;
@@ -280,6 +281,7 @@ function convertEventToEinsteinActivity(event: AnalyticsEvent, realm: string, is
                     extractEinsteinItemInfoFromCartItem(item)
                 ),
                 amount: event.basket.productSubTotal ?? 0,
+                checkoutType: 'one-click',
             };
 
         case 'checkout_step':
@@ -288,6 +290,7 @@ function convertEventToEinsteinActivity(event: AnalyticsEvent, realm: string, is
                 stepName: event.stepName,
                 stepNumber: event.stepNumber,
                 basketId: event.basket.basketId,
+                checkoutType: 'one-click',
             };
 
         case 'view_page':
@@ -503,7 +506,7 @@ export function createEinsteinAdapter(config: EinsteinConfig): EinsteinUnifiedAd
         name: EINSTEIN_ADAPTER_NAME,
 
         // EngagementAdapter methods
-        sendEvent: async (event: AnalyticsEvent): Promise<unknown> => {
+        sendEvent: async (event: AnalyticsEvent, _siteInfo?: EventSiteInfo): Promise<unknown> => {
             // Don't send events that are not enabled for this adapter
             if (!config.eventToggles[event.eventType]) {
                 return Promise.resolve({});

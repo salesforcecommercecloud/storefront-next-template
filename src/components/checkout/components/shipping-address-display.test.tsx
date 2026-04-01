@@ -72,8 +72,8 @@ describe('ShippingAddressDisplay', () => {
             expect(screen.getByText('123 Main St Apt 4')).toBeInTheDocument();
             expect(screen.getByText('94102, San Francisco, CA, US')).toBeInTheDocument();
             expect(screen.queryByText('555-123-4567')).not.toBeInTheDocument();
-            expect(container.querySelectorAll('[class*="text-muted-foreground"]').length).toBeGreaterThan(0);
-            expect(container.querySelector('.space-y-2')).toBeInTheDocument();
+            // Summary variant uses <p> tags, not Typography with text-muted-foreground
+            expect(container.querySelectorAll('p').length).toBeGreaterThan(0);
         });
 
         test('renders only present fields for minimal address', () => {
@@ -139,6 +139,18 @@ describe('ShippingAddressDisplay', () => {
         test('card variant shows default badge when address.preferred is true', () => {
             render(<ShippingAddressDisplay address={{ ...fullAddress, preferred: true }} variant="card" />);
             expect(screen.getByText('Default')).toBeInTheDocument();
+        });
+
+        test('card variant uses Typography with space-y-1.5 and text-muted-foreground', () => {
+            const { container } = render(<ShippingAddressDisplay address={fullAddress} variant="card" />);
+            expect(container.querySelector('.space-y-1\\.5')).toBeInTheDocument();
+            expect(container.querySelectorAll('[class*="text-muted-foreground"]').length).toBeGreaterThan(0);
+        });
+
+        test('summary variant uses p tags without special styling classes', () => {
+            const { container } = render(<ShippingAddressDisplay address={fullAddress} variant="summary" />);
+            expect(container.querySelectorAll('p').length).toBeGreaterThan(0);
+            expect(container.querySelector('.space-y-1\\.5')).not.toBeInTheDocument();
         });
 
         test('summary variant does not show default badge when address.preferred is true', () => {

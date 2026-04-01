@@ -40,7 +40,7 @@ vi.mock('@/lib/api-clients', () => ({
     })),
 }));
 
-vi.mock('@/config', async (importOriginal) => {
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual: any = await importOriginal();
     return {
         ...actual,

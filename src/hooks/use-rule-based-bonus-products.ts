@@ -17,7 +17,8 @@
 import { useMemo, useEffect } from 'react';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 const DEFAULT_BONUS_PRODUCT_SEARCH_PARAMS = { limit: 25, offset: 0 };
 
@@ -38,7 +39,7 @@ export function useRuleBasedBonusProducts(
 ) {
     const { enabled = true, limit, offset } = options;
 
-    const appConfig = useConfig();
+    const appConfig = useConfig<AppConfig>();
     const parameters = useMemo(() => {
         // Build refine array with all promotion IDs and the bonus product type filter
         const refine = [

@@ -29,6 +29,9 @@ vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/api/basket');
 vi.mock('@/lib/i18next');
 vi.mock('@/middlewares/auth.utils');
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
 
 const mockCreateApiClients = vi.mocked(createApiClients);
 const mockGetAuth = vi.mocked(getAuth);

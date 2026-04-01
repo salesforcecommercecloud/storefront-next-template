@@ -15,8 +15,8 @@
  */
 'use client';
 
-import { useEffect, useMemo, useState, useCallback } from 'react';
-import { useFetcher, useRevalidator } from 'react-router';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import { useFetcher } from 'react-router';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
@@ -55,9 +55,11 @@ export function useStoreLocatorList() {
     const setShouldSearch = useStoreLocator((s) => s.setShouldSearch);
 
     const fetcher = useFetcher<SearchStoresResult>();
-    const revalidator = useRevalidator();
+    const storeFetcher = useFetcher();
     const [page, setPage] = useState<number>(1);
     const [hasSearched, setHasSearched] = useState<boolean>(false);
+    // Track intentional search loads to distinguish from revalidation-triggered loads
+    const isSearchingRef = useRef(false);
 
     useEffect(() => {
         if (!shouldSearch) return;
@@ -89,6 +91,7 @@ export function useStoreLocatorList() {
 
         if (canFetch) {
             setHasSearched(true);
+            isSearchingRef.current = true;
             void fetcher.load(`/resource/stores?${params.toString()}`);
             setShouldSearch(false);
         }
@@ -103,27 +106,33 @@ export function useStoreLocatorList() {
         deviceCoordinates.longitude,
     ]);
 
+    // Clear the intentional search flag once the fetcher settles
+    if (fetcher.state === 'idle' && isSearchingRef.current) {
+        isSearchingRef.current = false;
+    }
+
     const stores = useMemo(() => fetcher.data?.stores?.data ?? [], [fetcher.data]);
     const hasError = useMemo(() => fetcher.data?.success === false, [fetcher.data]);
     const showCount = page * 10;
     const storesPaginated = stores.slice(0, showCount);
 
-    const isLoading = fetcher.state === 'loading';
+    // Only show loading skeleton for intentional searches, not revalidation-triggered reloads
+    const isLoading = fetcher.state === 'loading' && isSearchingRef.current;
 
-    // Wrapper function that updates store selection and triggers revalidation
-    // When inventoryId changes, we need to revalidate to refresh product data with new store inventory.
+    // Wrapper function that updates store selection via server action.
+    // Optimistically updates client state, then submits to server action which
+    // sets the cookie via middleware Set-Cookie. React Router auto-revalidates after action.
     const setSelectedStoreInfo = useCallback(
         (info: SelectedStoreInfo | null) => {
-            const previousInventoryId = selectedStoreInfo?.inventoryId;
+            // Optimistic client state update
             setSelectedStoreInfoRaw(info);
 
-            // Trigger revalidation when inventoryId changes (store selection changed)
-            // This ensures pages like PDP refresh with new inventory data
-            if (info?.inventoryId !== previousInventoryId) {
-                void revalidator.revalidate();
-            }
+            // Submit to server action for cookie persistence
+            const formData = new FormData();
+            formData.set('storeInfo', info ? JSON.stringify(info) : '');
+            void storeFetcher.submit(formData, { method: 'POST', action: '/action/set-selected-store' });
         },
-        [setSelectedStoreInfoRaw, selectedStoreInfo?.inventoryId, revalidator]
+        [setSelectedStoreInfoRaw, storeFetcher]
     );
 
     return {

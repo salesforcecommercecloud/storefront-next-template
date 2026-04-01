@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useFetcher } from 'react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket, useBasketUpdater } from '@/providers/basket';
 import type { ContactInfoData, PaymentData } from '@/lib/checkout-schemas';
@@ -25,8 +25,7 @@ import {
     type CheckoutStep,
 } from '@/components/checkout/utils/checkout-context-types';
 
-// Action route - all checkout actions go through the checkout route
-const checkoutActionRoute = '/checkout';
+// Place order uses a dedicated action route (excluded from multi-site prefix via /action/**)
 const placeOrderActionRoute = '/action/place-order';
 
 /**
@@ -55,6 +54,17 @@ type ActionLifecycle = {
     state: ActionState;
 };
 
+/** Options passed when placing order (e.g. from payment form at time of Place Order click) */
+export type PlaceOrderOptionsRef = MutableRefObject<{ savePaymentToProfile?: boolean } | null>;
+
+/** Single ref coordinating payment submission and place-order flow to avoid race conditions */
+export type PaymentSubmissionRef = MutableRefObject<{
+    formDataGetter: (() => PaymentData) | null;
+    shouldPlaceOrderAfterPayment: boolean;
+    options: { savePaymentToProfile?: boolean } | null;
+    setFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null;
+}>;
+
 /**
  * Custom hook for managing checkout form actions using React Router fetchers.
  *
@@ -62,6 +72,8 @@ type ActionLifecycle = {
  * using React Router's useFetcher for handling form submissions without navigation.
  * Each fetcher is keyed to maintain separate state for each checkout step.
  *
+ * @param options.paymentSubmissionRef - Ref holding form data getter, place-order-after-payment flag, and options (preferred over placeOrderOptionsRef)
+ * @param options.placeOrderOptionsRef - Optional ref for place-order options (legacy; use paymentSubmissionRef for new code)
  * @returns Object containing checkout action functions and fetcher states
  * @returns submitContactInfo - Function to submit contact information
  * @returns submitShippingAddress - Function to submit shipping address
@@ -73,7 +85,15 @@ type ActionLifecycle = {
  * @returns paymentFetcher - React Router fetcher for payment requests
  * @returns isSubmitting - Function to check if a specific step is submitting
  */
-export function useCheckoutActions() {
+/** When true, contact step should not advance (e.g. OTP modal is open or authorize in flight). */
+export type OtpFlowActiveRef = MutableRefObject<boolean>;
+
+export function useCheckoutActions(options?: {
+    paymentSubmissionRef?: PaymentSubmissionRef;
+    placeOrderOptionsRef?: PlaceOrderOptionsRef;
+    /** When .current is true, do not advance from contact step after submit (OTP modal flow). */
+    otpFlowActiveRef?: OtpFlowActiveRef;
+}) {
     const { exitEditMode, editingStep } = useCheckoutContext();
     const updateBasket = useBasketUpdater();
     const basket = useBasket();
@@ -91,6 +111,9 @@ export function useCheckoutActions() {
     // Create account state
     const [shouldCreateAccount, setShouldCreateAccount] = useState(false);
     const [savedPaymentMethods, setSavedPaymentMethods] = useState(new Set<string>());
+
+    // Stores the contact phone across basket mutations
+    const contactPhoneRef = useRef<string | null>(null);
 
     // Reset lifecycle when entering a new edit step
     useEffect(() => {
@@ -145,6 +168,11 @@ export function useCheckoutActions() {
             return;
         }
 
+        // Do not advance from contact step when OTP modal is open or authorize is in flight
+        if (step === CHECKOUT_STEPS.CONTACT_INFO && options?.otpFlowActiveRef?.current) {
+            return;
+        }
+
         // Transition: BASKET_UPDATED -> COMPLETED
         actionRef.current = { step, state: ActionState.COMPLETED };
         exitEditMode();
@@ -154,7 +182,7 @@ export function useCheckoutActions() {
     /**
      * Submits contact information to the contact info action.
      *
-     * @param data - Contact form data containing email
+     * @param data - Contact form data containing email and phone
      */
     const submitContactInfo = (data: ContactInfoData) => {
         // Prevent concurrent submissions
@@ -165,14 +193,20 @@ export function useCheckoutActions() {
         // Transition: IDLE -> SUBMITTED
         actionRef.current = { step: CHECKOUT_STEPS.CONTACT_INFO, state: ActionState.SUBMITTED };
 
+        // Persist the full phone (with country code)
+        if (data.phone) {
+            contactPhoneRef.current = `${data.countryCode || '+1'} ${data.phone}`;
+        }
+
         // Convert typed data to FormData for fetcher submission
         const formData = new FormData();
         formData.append('intent', CHECKOUT_ACTION_INTENTS.CONTACT_INFO);
         formData.append('email', data.email);
+        if (data.phone) formData.append('phone', data.phone);
+        if (data.countryCode) formData.append('countryCode', data.countryCode);
 
         void contactFetcher.submit(formData, {
             method: 'post',
-            action: checkoutActionRoute,
         });
     };
 
@@ -195,7 +229,6 @@ export function useCheckoutActions() {
 
         void shippingAddressFetcher.submit(formData, {
             method: 'post',
-            action: checkoutActionRoute,
         });
     };
 
@@ -218,7 +251,6 @@ export function useCheckoutActions() {
 
         void shippingOptionsFetcher.submit(formData, {
             method: 'post',
-            action: checkoutActionRoute,
         });
     };
 
@@ -266,7 +298,6 @@ export function useCheckoutActions() {
         // Submit payment form data
         void paymentFetcher.submit(formData, {
             method: 'post',
-            action: checkoutActionRoute,
         });
     };
 
@@ -323,6 +354,17 @@ export function useCheckoutActions() {
         }
         const formData = new FormData();
         formData.append('shouldCreateAccount', shouldCreateAccount ? 'true' : 'false');
+        const placeOrderOpts =
+            options?.paymentSubmissionRef?.current?.options ?? options?.placeOrderOptionsRef?.current;
+        if (placeOrderOpts?.savePaymentToProfile) {
+            formData.append('savePaymentToProfile', 'true');
+        }
+        // Pass the contact phone captured at submission time
+        const contactPhone =
+            contactPhoneRef.current || basket?.billingAddress?.phone || basket?.shipments?.[0]?.shippingAddress?.phone;
+        if (contactPhone) {
+            formData.append('contactPhone', contactPhone);
+        }
         void placeOrderFetcher.submit(formData, {
             method: 'post',
             action: placeOrderActionRoute,

@@ -17,7 +17,8 @@ import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import MaintenancePage, { loader } from './_empty.maintenance';
-import type { AppConfig } from '@/config';
+import type { AppConfig } from '@/types/config';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 // Mock the config module
 const mockConfig: AppConfig = {
@@ -30,8 +31,21 @@ const mockConfig: AppConfig = {
     },
 } as AppConfig;
 
-vi.mock('@/config', () => ({
-    getConfig: vi.fn(() => mockConfig),
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>();
+    return {
+        ...actual,
+        getConfig: vi.fn(() => mockConfig),
+    };
+});
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
 }));
 
 describe('MaintenancePage', () => {
@@ -62,7 +76,11 @@ describe('MaintenancePage', () => {
                 }
             );
 
-            render(<RouterProvider router={router} />);
+            render(
+                <AllProvidersWrapper>
+                    <RouterProvider router={router} />
+                </AllProvidersWrapper>
+            );
 
             // Wait for navigation to complete
             await screen.findByText('Site Under Maintenance');
@@ -85,7 +103,11 @@ describe('MaintenancePage', () => {
                 }
             );
 
-            const { container } = render(<RouterProvider router={router} />);
+            const { container } = render(
+                <AllProvidersWrapper>
+                    <RouterProvider router={router} />
+                </AllProvidersWrapper>
+            );
 
             // Wait for content to load
             await screen.findByText('Site Under Maintenance');
@@ -110,7 +132,11 @@ describe('MaintenancePage', () => {
                 }
             );
 
-            render(<RouterProvider router={router} />);
+            render(
+                <AllProvidersWrapper>
+                    <RouterProvider router={router} />
+                </AllProvidersWrapper>
+            );
 
             await screen.findByText('Custom Maintenance');
             expect(screen.getByText('Be back soon!')).toBeInTheDocument();

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import { data, type ActionFunction } from 'react-router';
-import { getConfig } from '@/config';
 import { updateCurrency } from '@/middlewares/currency.server';
+import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action to set the currency cookie
@@ -28,24 +29,31 @@ import { updateCurrency } from '@/middlewares/currency.server';
  */
 
 export const action: ActionFunction = async ({ request, context }) => {
+    const logger = getLogger(context);
     const formData = await request.formData();
     const currency = formData.get('currency') as string;
 
+    logger.debug('SetCurrency: starting', { currency });
+
     if (!currency) {
+        logger.warn('SetCurrency: currency parameter missing');
         throw new Response('Currency is required', { status: 400 });
     }
 
-    const config = getConfig(context);
-    // this will change when multi site implementation starts, for now we use first site in the list
-    const currentSite = config.commerce.sites[0];
+    const currentSite = (context.get(multiSiteContext) as MultiSiteContext).site;
     // Validate currency
     if (!currentSite.supportedCurrencies.includes(currency)) {
+        logger.warn('SetCurrency: unsupported currency', {
+            currency,
+            supportedCurrencies: currentSite.supportedCurrencies,
+        });
         throw new Response(`Currency "${currency}" is not supported`, { status: 400 });
     }
 
     // Update currency storage (like updateAuth pattern)
     updateCurrency(context, currency);
 
+    logger.info('SetCurrency: succeeded', { currency });
     // Return simple success response
     return data({ success: true });
 };

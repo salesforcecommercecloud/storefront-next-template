@@ -15,53 +15,122 @@
  */
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useToast } from '@/components/toast';
 import { useRequireAuth } from '@/hooks/use-require-auth';
+import type { WishlistActionResponse } from '@/lib/api/wishlist';
+
 /**
  * Hook for wishlist functionality using action routes for server-side state management.
  * Note: This hook maintains optimistic client-side state. For server-side wishlist data,
  * use the loader in account.wishlist.tsx route.
+ *
+ * Fetcher responses are handled via useEffect rather than by reading fetcher.data
+ * immediately after submit — the latter causes a stale closure because fetcher.data
+ * is updated through React state and is only current on the next render.
  */
 export const useWishlist = () => {
     const { t } = useTranslation();
-    const addFetcher = useFetcher();
-    const removeFetcher = useFetcher();
+    const addFetcher = useFetcher<WishlistActionResponse>();
+    const removeFetcher = useFetcher<WishlistActionResponse>();
     const { addToast } = useToast();
 
     // Optimistic client-side state for tracking wishlist items
     const [wishlistItems, setWishlistItems] = useState<Set<string>>(new Set());
 
-    const productIds = useMemo(() => wishlistItems, [wishlistItems]);
+    // Refs to carry operation context into the useEffect handlers
+    const pendingAddRef = useRef<{ productId: string; productName: string } | null>(null);
+    const pendingRemoveRef = useRef<{ productId: string } | null>(null);
+    const hasHandledAddRef = useRef(false);
+    const hasHandledRemoveRef = useRef(false);
 
     const isLoading = addFetcher.state !== 'idle' || removeFetcher.state !== 'idle';
+
+    // Handle add response — reading fetcher.data here (not in the submit callback)
+    // ensures we always see the current value rather than a stale closure snapshot.
+    useEffect(() => {
+        if (addFetcher.state === 'submitting') {
+            hasHandledAddRef.current = false;
+            return;
+        }
+
+        if (addFetcher.state === 'idle' && addFetcher.data && pendingAddRef.current && !hasHandledAddRef.current) {
+            hasHandledAddRef.current = true;
+            const result = addFetcher.data;
+            const { productId, productName } = pendingAddRef.current;
+            pendingAddRef.current = null;
+
+            if (result.success) {
+                if (result.alreadyInWishlist) {
+                    addToast(t('product:alreadyInWishlist', { productName }), 'info');
+                } else {
+                    addToast(t('product:addedToWishlist', { productName }), 'success');
+                }
+            } else {
+                setWishlistItems((prev) => {
+                    const next = new Set(prev);
+                    next.delete(productId);
+                    return next;
+                });
+                addToast(result.error || t('product:failedToAddToWishlist'), 'error');
+            }
+        }
+    }, [addFetcher.state, addFetcher.data, addToast, t]);
+
+    // Handle remove response
+    useEffect(() => {
+        if (removeFetcher.state === 'submitting') {
+            hasHandledRemoveRef.current = false;
+            return;
+        }
+
+        if (
+            removeFetcher.state === 'idle' &&
+            removeFetcher.data &&
+            pendingRemoveRef.current &&
+            !hasHandledRemoveRef.current
+        ) {
+            hasHandledRemoveRef.current = true;
+            const result = removeFetcher.data;
+            const { productId } = pendingRemoveRef.current;
+            pendingRemoveRef.current = null;
+
+            if (result.success) {
+                addToast(t('product:removedFromWishlist'), 'success');
+            } else {
+                setWishlistItems((prev) => {
+                    const next = new Set(prev);
+                    next.add(productId);
+                    return next;
+                });
+                addToast(result.error || t('product:failedToAddToWishlist'), 'error');
+            }
+        }
+    }, [removeFetcher.state, removeFetcher.data, addToast, t]);
 
     const isItemInWishlist = useCallback(
         (product: ShopperSearch.schemas['ProductSearchHit'], variant?: ShopperSearch.schemas['ProductSearchHit']) => {
             const productId = variant?.productId || product.productId;
-            return productId ? productIds.has(productId) : false;
+            return productId ? wishlistItems.has(productId) : false;
         },
-        [productIds]
+        [wishlistItems]
     );
 
-    // Base toggle function (without auth check)
+    // Base toggle function (without auth check).
+    // Fire-and-forget: submit is called synchronously and the useEffect handlers
+    // above react to the fetcher state/data changes on subsequent renders.
     const toggleWishlistBase = useCallback(
-        async (
-            product: ShopperSearch.schemas['ProductSearchHit'],
-            variant?: ShopperSearch.schemas['ProductSearchHit']
-        ) => {
+        (product: ShopperSearch.schemas['ProductSearchHit'], variant?: ShopperSearch.schemas['ProductSearchHit']) => {
             const productId = variant?.productId || product.productId;
             if (!productId) {
                 addToast(t('product:failedToAddToWishlist'), 'error');
                 return;
             }
 
-            const isInWishlist = productIds.has(productId);
-            const fetcher = isInWishlist ? removeFetcher : addFetcher;
-            const actionRoute = isInWishlist ? '/action/wishlist-remove' : '/action/wishlist-add';
+            const isInWishlist = wishlistItems.has(productId);
 
             // Optimistic update
             setWishlistItems((prev) => {
@@ -74,79 +143,28 @@ export const useWishlist = () => {
                 return next;
             });
 
-            try {
-                await fetcher.submit(
-                    // In this case, we have access to only the product id (not item id)
-                    { productId },
-                    {
-                        method: 'POST',
-                        action: actionRoute,
-                    }
-                );
-
-                const result = fetcher.data as
-                    | {
-                          success: boolean;
-                          error?: string;
-                          alreadyInWishlist?: boolean;
-                      }
-                    | undefined;
-                if (result?.success) {
-                    if (isInWishlist) {
-                        addToast(t('product:removedFromWishlist') || 'Removed from wishlist', 'success');
-                    } else if (result.alreadyInWishlist) {
-                        // Product is already in wishlist - optimistic update was correct, keep it
-                        // No need to revert since the product should be in the wishlist
-                        addToast(
-                            t('product:alreadyInWishlist', { productName: product.productName || 'product' }) ||
-                                'Product is already in your wishlist',
-                            'info'
-                        );
-                    } else {
-                        addToast(
-                            t('product:addedToWishlist', { productName: product.productName || 'product' }) ||
-                                'Added to wishlist',
-                            'success'
-                        );
-                    }
-                } else {
-                    // Revert optimistic update on error
-                    setWishlistItems((prev) => {
-                        const next = new Set(prev);
-                        if (isInWishlist) {
-                            next.add(productId);
-                        } else {
-                            next.delete(productId);
-                        }
-                        return next;
-                    });
-                    addToast(result?.error || t('product:failedToAddToWishlist'), 'error');
-                }
-            } catch {
-                // Revert optimistic update on error
-                setWishlistItems((prev) => {
-                    const next = new Set(prev);
-                    if (isInWishlist) {
-                        next.add(productId);
-                    } else {
-                        next.delete(productId);
-                    }
-                    return next;
-                });
-                addToast(t('product:failedToAddToWishlist'), 'error');
+            // Store context for the effect handlers, then submit
+            if (isInWishlist) {
+                pendingRemoveRef.current = { productId };
+                // In this case, we have access to only the product id (not item id)
+                void removeFetcher.submit({ productId }, { method: 'POST', action: '/action/wishlist-remove' });
+            } else {
+                pendingAddRef.current = { productId, productName: product.productName || 'product' };
+                void addFetcher.submit({ productId }, { method: 'POST', action: '/action/wishlist-add' });
             }
         },
-        [productIds, addFetcher, removeFetcher, addToast, t]
+        [wishlistItems, addFetcher, removeFetcher, addToast, t]
     );
 
     // Wrap with auth requirement
     const toggleWishlist = useRequireAuth(toggleWishlistBase as (...args: unknown[]) => Promise<unknown>, {
-        actionName: 'toggleWishlist',
+        actionName: 'addToWishlist',
         getActionParams: (...args: unknown[]) => {
             const product = args[0] as ShopperSearch.schemas['ProductSearchHit'];
             const variant = args[1] as ShopperSearch.schemas['ProductSearchHit'] | undefined;
             const productId = variant?.productId || product.productId;
-            return productId ? { productId } : {};
+            const productName = product.productName;
+            return productId ? { productId, productName } : {};
         },
         getReturnUrl: () => window.location.pathname + window.location.search,
         toastMessage: t('product:signInToAddToWishlist'),
@@ -156,7 +174,7 @@ export const useWishlist = () => {
     ) => Promise<void>;
 
     return {
-        wishlist: Array.from(productIds),
+        wishlist: Array.from(wishlistItems),
         isLoading,
         isItemInWishlist,
         toggleWishlist,

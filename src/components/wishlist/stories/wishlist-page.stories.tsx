@@ -21,7 +21,7 @@ import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-n
 import { WishlistPageContent, WishlistSkeleton } from '../wishlist-page';
 import { masterProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { CurrencyProvider } from '@/providers/currency';
 import { mockConfig } from '@/test-utils/config';
 

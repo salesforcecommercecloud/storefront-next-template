@@ -19,7 +19,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { OrderList, OrderListHeader, OrderListBody, type Order } from '../index';
-import heroNewArrivals from '/images/hero-new-arrivals.webp';
+import heroNewArrivals from '/images/hero-02.webp';
 import { CurrencyWrapper } from '@/test-utils/context-provider';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
@@ -87,8 +87,8 @@ const testOrders: Order[] = [
     {
         orderNo: 'INV003',
         orderDate: '2024-09-10T08:00:00Z',
-        status: 'failed_with_reopen',
-        statusLabel: 'Failed With Reopen',
+        status: 'failed',
+        statusLabel: 'Failed',
         total: 54.0,
         itemCount: 4,
         productItems: [
@@ -191,7 +191,7 @@ export const Default: Story = {
         const canvas = within(canvasElement);
 
         // Check title is rendered
-        const heading = canvas.getByRole('heading', { level: 3 });
+        const heading = canvas.getByRole('heading', { name: 'Order History' });
         await expect(heading).toHaveTextContent('Order History');
 
         // Check subtitle is rendered
@@ -347,7 +347,7 @@ export const HeaderWithSubtitle: StoryObj<typeof OrderListHeader> = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(canvas.getByRole('heading', { level: 3 })).toHaveTextContent('Order History');
+        await expect(canvas.getByRole('heading', { name: 'Order History' })).toHaveTextContent('Order History');
         await expect(canvas.getByText('View and track your orders')).toBeInTheDocument();
     },
 };
@@ -358,7 +358,7 @@ export const HeaderWithoutSubtitle: StoryObj<typeof OrderListHeader> = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(canvas.getByRole('heading', { level: 3 })).toHaveTextContent('My Orders');
+        await expect(canvas.getByRole('heading', { name: 'My Orders' })).toHaveTextContent('My Orders');
     },
 };
 

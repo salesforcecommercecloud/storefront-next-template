@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { Link } from 'react-router';
+import { Link } from '@/components/link';
 import { useTranslation } from 'react-i18next';
 
 export default function StoreLocatorFooter(): ReactElement {
     const { t } = useTranslation('extStoreLocator');
     return (
         <li>
-            <Link to="/store-locator" className="hover:underline">
+            <Link to="/store-locator" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 {t('footer.links.storeLocator')}
             </Link>
         </li>

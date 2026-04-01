@@ -15,13 +15,15 @@
  */
 import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect, type RouterContextProvider } from 'react-router';
 import { extractResponseError, getAppOrigin } from '@/lib/utils';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import {
     resetMarketingCloudTokenCache,
     sendMarketingCloudEmail,
     validateSlasCallbackToken,
 } from '@/lib/marketing-cloud';
 import { getTranslation } from '@/lib/i18next';
+import { getLogger } from '@/lib/logger.server';
 
 // Re-export for backwards compatibility with tests
 export { resetMarketingCloudTokenCache };
@@ -36,7 +38,7 @@ async function sendResetPasswordEmail(
 ): Promise<object> {
     const base = getAppOrigin();
 
-    const config = getConfig(context);
+    const config = getConfig<AppConfig>(context);
     const landingPath = config.features.resetPassword.landingUri;
     const magicLink = `${base}${landingPath}?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email_id)}`;
 
@@ -52,12 +54,14 @@ async function sendResetPasswordEmail(
  * Processes SLAS callback token and sends magic link email
  */
 export async function handleResetPasswordCallback({ request, context }: ActionFunctionArgs) {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
 
     try {
         const slasCallbackToken = request.headers.get('x-slas-callback-token');
 
         if (!slasCallbackToken) {
+            logger.warn('ResetPassword: missing SLAS callback token');
             return {
                 success: false,
                 error: t('errors:passwordless.missingCallbackToken'),
@@ -70,6 +74,10 @@ export async function handleResetPasswordCallback({ request, context }: ActionFu
         const { email_id, token } = body as { email_id: string; token: string };
 
         if (!email_id || !token) {
+            logger.warn('ResetPassword: missing required fields', {
+                hasEmailId: Boolean(email_id),
+                hasToken: Boolean(token),
+            });
             return {
                 success: false,
                 error: t('errors:passwordless.missingRequiredFields'),
@@ -78,14 +86,14 @@ export async function handleResetPasswordCallback({ request, context }: ActionFu
 
         const result = await sendResetPasswordEmail(context, email_id, token);
 
+        logger.info('ResetPassword: email sent');
         return {
             success: true,
             result,
         };
     } catch (error) {
         const { responseMessage } = await extractResponseError(error);
-        // eslint-disable-next-line no-console
-        console.error('[Reset Password Callback] Error:', responseMessage);
+        logger.error('ResetPassword: callback failed', { error });
 
         return {
             success: false,

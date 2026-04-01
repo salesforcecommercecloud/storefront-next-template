@@ -22,7 +22,7 @@ import { getTranslation } from '@/lib/i18next';
 const { t } = getTranslation();
 import CartQuantityPicker from './cart-quantity-picker';
 import { useCartQuantityUpdate } from '@/hooks/use-cart-quantity-update';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 
 // Mock the useCartQuantityUpdate hook
@@ -78,6 +78,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 2,
             stockValidationError: null,
+            stockMax: undefined,
             showRemoveConfirmation: false,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,
@@ -105,6 +106,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 5,
             stockValidationError: 'Only 3 left in stock',
+            stockMax: 3,
             showRemoveConfirmation: false,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,
@@ -130,6 +132,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 0,
             stockValidationError: null,
+            stockMax: undefined,
             showRemoveConfirmation: true,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,
@@ -158,6 +161,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 0,
             stockValidationError: null,
+            stockMax: undefined,
             showRemoveConfirmation: true,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,
@@ -180,6 +184,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 0,
             stockValidationError: null,
+            stockMax: undefined,
             showRemoveConfirmation: true,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,
@@ -238,6 +243,7 @@ describe('CartQuantityPicker', () => {
         vi.mocked(useCartQuantityUpdate).mockReturnValue({
             quantity: 0,
             stockValidationError: null,
+            stockMax: undefined,
             showRemoveConfirmation: true,
             handleQuantityChange: mockHandleQuantityChange,
             handleQuantityBlur: mockHandleQuantityBlur,

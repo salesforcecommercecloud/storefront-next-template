@@ -50,7 +50,7 @@ import { composeStories } from '@storybook/react-vite';
 
 import * as MyCartStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
-import { ConfigProvider } from '@/config';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import type { ReactNode } from 'react';
 

@@ -17,10 +17,15 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useLocation, useFetcher, useNavigation, useNavigate } from 'react-router';
+import { useLocation, useFetcher, useNavigation } from 'react-router';
+import { useNavigate } from '@/hooks/use-navigate';
 import { useAuth } from '@/providers/auth';
 import { useToast } from '@/components/toast';
 import type { ActionHandler, ActionResponse } from './action-registry';
+import { getSearchWithoutActionParams } from './use-filters-panel-state';
+
+/** Actions whose lifecycle is owned by the mounting component (not the root-level hook). */
+const COMPONENT_HANDLED_ACTIONS = new Set(['addToWishlist']);
 
 /**
  * Lazy-load the action registry only when needed.
@@ -116,9 +121,7 @@ export function useExecutePendingAction() {
             return;
         }
 
-        // Skip actions that are handled by components (e.g., addToWishlist)
-        // Components execute these actions when they mount, ensuring the UI is ready
-        if (actionName === 'addToWishlist') {
+        if (COMPONENT_HANDLED_ACTIONS.has(actionName)) {
             return;
         }
 
@@ -136,7 +139,10 @@ export function useExecutePendingAction() {
                 params = JSON.parse(actionParamsStr);
             } catch {
                 // Invalid JSON - clear URL params and return
-                void navigate(location.pathname, { replace: true });
+                void navigate(
+                    { pathname: location.pathname, search: getSearchWithoutActionParams(location.search) },
+                    { replace: true }
+                );
                 hasExecutedRef.current = false;
                 return;
             }
@@ -152,7 +158,10 @@ export function useExecutePendingAction() {
                 const handler = registry[actionName];
                 if (!handler) {
                     // Clear URL params and return
-                    void navigate(location.pathname, { replace: true });
+                    void navigate(
+                        { pathname: location.pathname, search: getSearchWithoutActionParams(location.search) },
+                        { replace: true }
+                    );
                     hasExecutedRef.current = false;
                     return;
                 }
@@ -168,7 +177,10 @@ export function useExecutePendingAction() {
                 });
             } catch {
                 // Invalid JSON or other error - clear URL params
-                void navigate(location.pathname, { replace: true });
+                void navigate(
+                    { pathname: location.pathname, search: getSearchWithoutActionParams(location.search) },
+                    { replace: true }
+                );
                 hasExecutedRef.current = false;
             }
         })();
@@ -186,9 +198,7 @@ export function useExecutePendingAction() {
             return;
         }
 
-        // Skip actions that are handled by components (e.g., addToWishlist)
-        // Components handle their own responses and show toasts
-        if (actionName === 'addToWishlist') {
+        if (COMPONENT_HANDLED_ACTIONS.has(actionName)) {
             return;
         }
 
@@ -199,7 +209,10 @@ export function useExecutePendingAction() {
                 params = JSON.parse(actionParamsStr);
             } catch {
                 // Invalid JSON - clear URL params and return
-                void navigate(location.pathname, { replace: true });
+                void navigate(
+                    { pathname: location.pathname, search: getSearchWithoutActionParams(location.search) },
+                    { replace: true }
+                );
                 return;
             }
         }
@@ -218,7 +231,10 @@ export function useExecutePendingAction() {
 
                 // Clear URL params - this signals to components that action is complete
                 // Use navigate to ensure React Router's useLocation updates
-                void navigate(location.pathname, { replace: true });
+                void navigate(
+                    { pathname: location.pathname, search: getSearchWithoutActionParams(location.search) },
+                    { replace: true }
+                );
                 hasExecutedRef.current = false;
 
                 // Handle success or error based on result
@@ -237,7 +253,10 @@ export function useExecutePendingAction() {
             ) {
                 // Fetcher completed but no data - might be an error
                 // Clear URL params to prevent stuck loading state
-                void navigate(location.pathname, { replace: true });
+                void navigate(
+                    { pathname: location.pathname, search: getSearchWithoutActionParams(location.search) },
+                    { replace: true }
+                );
             }
         });
     }, [

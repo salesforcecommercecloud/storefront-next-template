@@ -13,42 +13,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+vi.mock('@/components/link', () => ({
+    Link: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
+        const { to, children, ...rest } = props ?? {};
+        return (
+            <a href={typeof to === 'string' ? to : undefined} {...rest}>
+                {children}
+            </a>
+        );
+    },
+    NavLink: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
+        const { to, children, ...rest } = props ?? {};
+        return (
+            <a href={typeof to === 'string' ? to : undefined} {...rest}>
+                {children}
+            </a>
+        );
+    },
+}));
+
+vi.mock('@/config', () => ({
+    useConfig: () => ({}),
+    getConfig: () => ({}),
+    ConfigProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    createAppConfig: (config: unknown) => config,
+    appConfigContext: {},
+    getBadgeVariant: () => 'default',
+}));
+
+vi.mock('@/hooks/use-navigate', () => ({
+    useNavigate: () => () => {},
+}));
+
+vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
+}));
+
+vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
+    useSite: () => null,
+    buildUrl: ({ to }: { to: string }) => to,
+    SiteProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+vi.mock('@/providers/currency', () => ({
+    useCurrency: () => 'GBP',
+    CurrencyProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
 import { composeStories } from '@storybook/react-vite';
 
 import * as SwatchStories from './swatch.stories';
 import { expect, test, describe, afterEach, vi } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
 
-vi.mock('react-router', () => ({
-    NavLink: ({
-        to,
-        children,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        preventScrollReset,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        relative,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        replace,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        state,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        viewTransition,
-        ...props
-    }: {
-        to: string;
-        children: React.ReactNode;
-        preventScrollReset?: unknown;
-        relative?: unknown;
-        replace?: unknown;
-        state?: unknown;
-        viewTransition?: unknown;
-        [key: string]: unknown;
-    }) => (
-        <a href={to} {...props}>
-            {children}
-        </a>
-    ),
-}));
+vi.mock('react-router', async (importOriginal) => {
+    const original = (await importOriginal()) as Record<string, unknown>;
+    return {
+        ...original,
+        NavLink: ({ to, children, ...props }: { to: string; children: React.ReactNode; [key: string]: unknown }) => (
+            <a href={to} {...props}>
+                {children}
+            </a>
+        ),
+    };
+});
 
 const composed = composeStories(SwatchStories);
 

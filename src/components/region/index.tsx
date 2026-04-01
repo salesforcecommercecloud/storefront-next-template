@@ -38,14 +38,17 @@ type PageWithDesignMetadata = PageDecoratorProps<ShopperExperience.schemas['Page
 
 // Props when rendering a page-level region
 interface PageRegionProps extends HTMLAttributes<HTMLDivElement> {
-    page: Promise<PageWithDesignMetadata> | PageWithDesignMetadata;
+    page: Promise<PageWithDesignMetadata | null> | PageWithDesignMetadata | null;
     component?: never;
     regionId: string;
     fallbackElement?: ReactNode;
     errorElement?: ReactNode;
 }
 
-export type ComponentType = ComponentDecoratorProps<ShopperExperience.schemas['Component']>;
+export type ComponentType = ComponentDecoratorProps<ShopperExperience.schemas['Component']> & {
+    contentLinkUuid?: string;
+    fragment?: boolean;
+};
 
 // Props when rendering a component-level region (nested)
 interface ComponentRegionProps extends HTMLAttributes<HTMLDivElement> {
@@ -76,18 +79,19 @@ function renderRegionContent(
     className: string | undefined,
     rest: HTMLAttributes<HTMLDivElement>
 ) {
-    const content = (
-        <RegionWrapper region={region} designMetadata={getDesignMetadata(regionId, metadata)} {...rest}>
-            {region.components?.map(
-                (comp) => comp.id && <Component key={comp.id} component={comp as ComponentType} regionId={region.id} />
-            )}
+    return (
+        <RegionWrapper
+            region={region}
+            designMetadata={getDesignMetadata(regionId, metadata)}
+            className={className}
+            {...rest}>
+            {region.components?.map((comp) => {
+                const typedComp = comp as ComponentType;
+                const key = typedComp.contentLinkUuid ?? typedComp.id;
+                return typedComp.id && <Component key={key} component={typedComp} regionId={region.id} />;
+            })}
         </RegionWrapper>
     );
-
-    if (className) {
-        return <div className={className}>{content}</div>;
-    }
-    return content;
 }
 
 /**
@@ -146,7 +150,11 @@ export function Region(props: RegionProps) {
         <Suspense fallback={fallbackElement}>
             <Await resolve={pagePromise} errorElement={errorElement}>
                 {(resolvedPage) => {
-                    const region = resolvedPage?.regions?.find((r) => r.id === regionId);
+                    if (!resolvedPage) {
+                        return errorElement ?? null;
+                    }
+
+                    const region = resolvedPage.regions?.find((r) => r.id === regionId);
                     if (!region) {
                         return errorElement ?? null;
                     }

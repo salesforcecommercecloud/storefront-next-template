@@ -40,7 +40,8 @@ vi.mock('@/components/toast', () => ({
 }));
 
 // Mock useConfig
-vi.mock('@/config/get-config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => ({
+    ...(await importOriginal<Record<string, unknown>>()),
     useConfig: () => ({
         pages: {
             cart: {

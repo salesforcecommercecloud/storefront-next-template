@@ -19,10 +19,34 @@ const { t } = getTranslation();
 import { render, screen } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { ConfigProvider } from '@/config';
-import { mockConfig } from '@/test-utils/config';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { mockConfig, SITE_PREFIX } from '@/test-utils/config';
 import { CurrencyProvider } from '@/providers/currency';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/multi-site';
 import Footer from './index';
+
+// Mock categories data
+const mockCategories: ShopperProducts.schemas['Category'] = {
+    id: 'root',
+    name: 'Root',
+    categories: [
+        { id: 'mens', name: "Men's" },
+        { id: 'womens', name: "Women's" },
+        { id: 'electronics', name: 'Electronics' },
+    ],
+};
+
+const mockSite: Site = {
+    id: 'RefArchGlobal',
+    defaultLocale: 'en-GB',
+    defaultCurrency: 'GBP',
+    supportedLocales: [
+        { id: 'en-GB', preferredCurrency: 'GBP' },
+        { id: 'it-IT', preferredCurrency: 'EUR' },
+    ],
+    supportedCurrencies: ['EUR', 'GBP'],
+};
 
 // Helper function to render component with router context
 const renderWithRouter = (component: React.ReactElement, currency: string = 'USD') => {
@@ -32,7 +56,9 @@ const renderWithRouter = (component: React.ReactElement, currency: string = 'USD
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <CurrencyProvider value={currency}>{component}</CurrencyProvider>
+                        <SiteProvider value={mockSite}>
+                            <CurrencyProvider value={currency}>{component}</CurrencyProvider>
+                        </SiteProvider>
                     </ConfigProvider>
                 ),
             },
@@ -46,51 +72,64 @@ const renderWithRouter = (component: React.ReactElement, currency: string = 'USD
 
 describe('Footer', () => {
     test('renders all section headings', () => {
-        renderWithRouter(<Footer />);
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
-        expect(screen.getByText(t('footer:sections.customerSupport'))).toBeInTheDocument();
-        expect(screen.getByText(t('footer:sections.account'))).toBeInTheDocument();
-        expect(screen.getByText(t('footer:sections.ourCompany'))).toBeInTheDocument();
-        // @sfdc-extension-line SFDC_EXT_INTERNAL_THEME_SWITCHER
-        expect(screen.getByText(t('footer:sections.switchThemes'))).toBeInTheDocument();
-        expect(screen.getByText(t('footer:sections.switchLanguage'))).toBeInTheDocument();
-        expect(screen.getByText(t('footer:sections.switchCurrency'))).toBeInTheDocument();
+        expect(screen.getByText(t('footer:sections.shop'))).toBeInTheDocument();
+        expect(screen.getByText(t('footer:sections.help'))).toBeInTheDocument();
+        expect(screen.getByText(t('footer:sections.about'))).toBeInTheDocument();
+        // Newsletter title now appears as h2 in prominent section
+        expect(screen.getByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).toBeInTheDocument();
     });
 
-    test('renders Customer Support section links', () => {
-        renderWithRouter(<Footer />);
+    test('renders Shop section with category links', async () => {
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
+        // Wait for categories to load
+        const mensLink = await screen.findByRole('link', { name: "Men's" });
+        expect(mensLink).toBeInTheDocument();
+        expect(mensLink).toHaveAttribute('href', `${SITE_PREFIX}/category/mens`);
+
+        const womensLink = screen.getByRole('link', { name: "Women's" });
+        expect(womensLink).toBeInTheDocument();
+        expect(womensLink).toHaveAttribute('href', `${SITE_PREFIX}/category/womens`);
+
+        const electronicsLink = screen.getByRole('link', { name: 'Electronics' });
+        expect(electronicsLink).toBeInTheDocument();
+        expect(electronicsLink).toHaveAttribute('href', `${SITE_PREFIX}/category/electronics`);
+    });
+
+    test('renders Help section links', () => {
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+
+        // Help section now includes Contact Us, Shipping, Order Status, and Sign in
         const contactLink = screen.getByRole('link', { name: t('footer:links.contactUs') });
         expect(contactLink).toBeInTheDocument();
-        expect(contactLink).toHaveAttribute('href', '/contact');
+        expect(contactLink).toHaveAttribute('href', `${SITE_PREFIX}/contact`);
 
         const shippingLink = screen.getByRole('link', { name: t('footer:links.shipping') });
         expect(shippingLink).toBeInTheDocument();
-        expect(shippingLink).toHaveAttribute('href', '/shipping');
-    });
-
-    test('renders Account section links', () => {
-        renderWithRouter(<Footer />);
+        expect(shippingLink).toHaveAttribute('href', `${SITE_PREFIX}/shipping`);
+        expect(shippingLink).toHaveAttribute('href', `${SITE_PREFIX}/shipping`);
 
         const orderStatusLink = screen.getByRole('link', { name: t('footer:links.orderStatus') });
         expect(orderStatusLink).toBeInTheDocument();
-        expect(orderStatusLink).toHaveAttribute('href', '/orders');
+        expect(orderStatusLink).toHaveAttribute('href', `${SITE_PREFIX}/orders`);
 
         const signInLink = screen.getByRole('link', { name: t('footer:links.signInOrCreateAccount') });
         expect(signInLink).toBeInTheDocument();
-        expect(signInLink).toHaveAttribute('href', '/login');
+        expect(signInLink).toHaveAttribute('href', `${SITE_PREFIX}/login`);
     });
 
     test('renders Our Company section links', () => {
-        renderWithRouter(<Footer />);
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
         const aboutUsLink = screen.getByRole('link', { name: t('footer:links.aboutUs') });
         expect(aboutUsLink).toBeInTheDocument();
-        expect(aboutUsLink).toHaveAttribute('href', '/about-us');
+        expect(aboutUsLink).toHaveAttribute('href', `${SITE_PREFIX}/about-us`);
     });
 
     test('renders social media links with correct aria-labels and hrefs', () => {
-        renderWithRouter(<Footer />);
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
         const youtubeLink = screen.getByLabelText(t('footer:socialMedia.youtubeLabel'));
         expect(youtubeLink).toBeInTheDocument();
@@ -109,46 +148,34 @@ describe('Footer', () => {
         expect(facebookLink).toHaveAttribute('href', 'https://facebook.com/CommerceCloud/');
     });
 
-    test('renders Signup component content', () => {
-        renderWithRouter(<Footer />);
+    test('renders newsletter section with signup form', () => {
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
-        // Check for Signup component content
-        expect(screen.getByText('Be the first to know')).toBeInTheDocument();
-        expect(screen.getByPlaceholderText('Your email')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Subscribe' })).toBeInTheDocument();
+        // Check for newsletter title and description
+        expect(screen.getByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).toBeInTheDocument();
+        expect(screen.getByText(t('footer:newsletter.description'))).toBeInTheDocument();
+
+        // Check for Signup form elements
+        expect(screen.getByPlaceholderText(t('footer:newsletter.emailPlaceholder'))).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: t('footer:newsletter.subscribeButton') })).toBeInTheDocument();
     });
 
-    test('renders all selectors, Theme (if installed), Locale and Currency Switcher', () => {
-        renderWithRouter(<Footer />);
+    test('renders all selectors, Locale and Currency Switcher', () => {
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
-        // Check for ThemeSwitcher select and options
+        // Check for Locale and Currency switchers
         const selectors = screen.getAllByRole('combobox');
-        let expectedLength = 2;
-        // @sfdc-extension-line SFDC_EXT_INTERNAL_THEME_SWITCHER
-        expectedLength += 2; // Theme switcher now has 2 selectors (family and mode)
-        expect(selectors).toHaveLength(expectedLength);
+        expect(selectors).toHaveLength(2);
     });
-
-    // @sfdc-extension-block-start SFDC_EXT_INTERNAL_THEME_SWITCHER
-    test('renders ThemeSwitcher component with theme family and mode options', () => {
-        renderWithRouter(<Footer />);
-        // Theme family options
-        expect(screen.getByRole('option', { name: t('themeSwitcher:marketStreet') })).toBeInTheDocument();
-        expect(screen.getByRole('option', { name: t('themeSwitcher:foundations') })).toBeInTheDocument();
-        // Theme mode options
-        expect(screen.getByRole('option', { name: t('themeSwitcher:lightTheme') })).toBeInTheDocument();
-        expect(screen.getByRole('option', { name: t('themeSwitcher:darkTheme') })).toBeInTheDocument();
-    });
-    // @sfdc-extension-block-end SFDC_EXT_INTERNAL_THEME_SWITCHER
 
     test('renders LocaleSwitcher component with locale options', () => {
-        renderWithRouter(<Footer />);
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
         expect(screen.getByRole('option', { name: 'English (UK)' })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: 'Italian (Italy)' })).toBeInTheDocument();
     });
 
     test('renders copyright text with current year', () => {
-        renderWithRouter(<Footer />);
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
         const currentYear = new Date().getFullYear();
         const copyrightText = `© ${currentYear} ${t('footer:copyright')}`;
@@ -157,23 +184,52 @@ describe('Footer', () => {
     });
 
     test('renders footer element with theme-aware classes', () => {
-        const { container } = renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />, 'USD');
 
         const footer = container.querySelector('footer');
         expect(footer).toBeInTheDocument();
-        expect(footer).toHaveClass('bg-footer-background');
+
+        // Footer should have mt-auto class
+        expect(footer).toHaveClass('mt-auto');
+
+        // Newsletter section should have primary background
+        const newsletterSection = footer?.querySelector('.bg-primary');
+        expect(newsletterSection).toBeInTheDocument();
+
+        // Links section should have footer background
+        const linksSection = footer?.querySelector('.bg-footer-background');
+        expect(linksSection).toBeInTheDocument();
     });
 
-    test('all navigation links have hover:underline class', () => {
-        renderWithRouter(<Footer />);
+    test('all navigation links have proper styling classes', async () => {
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
         const contactLink = screen.getByRole('link', { name: t('footer:links.contactUs') });
-        expect(contactLink).toHaveClass('hover:underline');
+        expect(contactLink).toHaveClass('text-sm');
+        expect(contactLink).toHaveClass('text-muted-foreground');
+        expect(contactLink).toHaveClass('hover:text-foreground');
+        expect(contactLink).toHaveClass('transition-colors');
 
         const shippingLink = screen.getByRole('link', { name: t('footer:links.shipping') });
-        expect(shippingLink).toHaveClass('hover:underline');
+        expect(shippingLink).toHaveClass('text-sm');
+        expect(shippingLink).toHaveClass('transition-colors');
 
         const orderStatusLink = screen.getByRole('link', { name: t('footer:links.orderStatus') });
-        expect(orderStatusLink).toHaveClass('hover:underline');
+        expect(orderStatusLink).toHaveClass('text-sm');
+        expect(orderStatusLink).toHaveClass('transition-colors');
+
+        // Check category links as well
+        const mensLink = await screen.findByRole('link', { name: "Men's" });
+        expect(mensLink).toHaveClass('text-sm');
+        expect(mensLink).toHaveClass('transition-colors');
+    });
+
+    test('renders without categories prop', () => {
+        renderWithRouter(<Footer />);
+
+        // Footer should still render with Shop section header but no category links
+        expect(screen.getByText(t('footer:sections.shop'))).toBeInTheDocument();
+        expect(screen.getByText(t('footer:sections.help'))).toBeInTheDocument();
+        expect(screen.getByText(t('footer:sections.about'))).toBeInTheDocument();
     });
 });

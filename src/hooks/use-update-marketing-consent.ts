@@ -15,6 +15,9 @@
  */
 import { useFetcher } from 'react-router';
 import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger();
 
 /** Payload for updating a single marketing consent subscription (opt-in/opt-out). */
 export interface UpdateMarketingConsentPayload {
@@ -24,48 +27,54 @@ export interface UpdateMarketingConsentPayload {
     status: 'opt_in' | 'opt_out';
 }
 
+/** Response shape from the update-marketing-consent action. */
+export type UpdateMarketingConsentResponse = {
+    success: boolean;
+    error?: string;
+    partialSuccess?: boolean;
+};
+
 /**
- * Hook that encapsulates the "update marketing consent" API call.
- * Keeps the action URL and submit logic out of UI components.
+ * Hook for updating marketing consent. Submit one batch of changes per Save.
  *
- * @param onSuccess - Called after a successful update (e.g. refetch or revalidate).
- * @param onError - Called when the action returns success: false with an error message.
- * @returns updateSubscription(payload), isUpdating
+ * Uses fetcher state for isUpdating (aligned with checkout/cart): buttons are disabled only
+ * while fetcher.state === 'submitting'. No local isSubmitting state.
+ *
+ * @param onSuccess - Called after a successful update (e.g. revalidate).
+ * @param onError - Called when the action returns success: false; receives message and optional response data (e.g. partialSuccess for 207).
+ * @returns updateBatch(updates), isUpdating (true only while fetcher.state === 'submitting')
  */
 export function useUpdateMarketingConsent(
     onSuccess?: () => void,
-    onError?: (message: string) => void
+    onError?: (message: string, data?: UpdateMarketingConsentResponse) => void
 ): {
-    updateSubscription: (payload: UpdateMarketingConsentPayload) => void;
+    updateBatch: (updates: UpdateMarketingConsentPayload[]) => void;
     isUpdating: boolean;
 } {
-    const fetcher = useFetcher<{ success: boolean; error?: string }>();
+    const fetcher = useFetcher<UpdateMarketingConsentResponse>();
 
     useFetcherEffect(fetcher, {
         onSuccess: () => {
             onSuccess?.();
         },
-        onError: (error) => {
+        onError: (error, data) => {
             const message = Array.isArray(error) ? error.join(', ') : error;
-            // eslint-disable-next-line no-console
-            console.error('Marketing consent update failed:', message);
-            onError?.(message);
+            logger.error('Marketing consent update failed', { message });
+            onError?.(message, data);
         },
     });
 
-    const updateSubscription = (payload: UpdateMarketingConsentPayload): void => {
-        const formData = new FormData();
-        formData.set('subscriptionId', payload.subscriptionId);
-        formData.set('channel', payload.channel);
-        formData.set('contactPointValue', payload.contactPointValue);
-        formData.set('status', payload.status);
-        void fetcher.submit(formData, {
+    const updateBatch = (updates: UpdateMarketingConsentPayload[]): void => {
+        if (updates.length === 0) return;
+        void fetcher.submit({ updates } as unknown as FormData, {
             method: 'POST',
             action: '/action/update-marketing-consent',
+            encType: 'application/json',
         });
     };
 
-    const isUpdating = fetcher.state === 'submitting' || fetcher.state === 'loading';
+    // Align with rest of the app: disable only while submitting. Button re-enables when state leaves 'submitting'.
+    const isUpdating = fetcher.state === 'submitting';
 
-    return { updateSubscription, isUpdating };
+    return { updateBatch, isUpdating };
 }

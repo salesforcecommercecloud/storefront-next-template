@@ -22,8 +22,14 @@ import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import { currencyContext } from '@/lib/currency';
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Fetches full product details for all items in the basket
@@ -32,9 +38,12 @@ import { currencyContext } from '@/lib/currency';
 export async function loader({
     context,
 }: LoaderFunctionArgs): Promise<Record<string, ShopperProducts.schemas['Product']>> {
+    const logger = getLogger(context);
+    logger.debug('BasketProducts: loader starting');
     const basket = (await getBasket(context)).current;
 
     if (!basket?.productItems?.length) {
+        logger.debug('BasketProducts: no product items in basket');
         return {};
     }
 
@@ -42,12 +51,19 @@ export async function loader({
     const productIds = basket.productItems.map((item) => item.productId).filter((id): id is string => Boolean(id));
 
     if (productIds.length === 0) {
+        logger.debug('BasketProducts: no valid product IDs found');
         return {};
     }
 
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    // Collect unique inventory IDs from pickup shipments to fetch store-level inventory
+    const inventoryIds = getInventoryIdsFromPickupShipments(basket);
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
     try {
-        const config = getConfig(context);
+        const config = getConfig<AppConfig>(context);
         const clients = createApiClients(context);
+        const { site } = context.get(multiSiteContext) as MultiSiteContext;
         const currency = context.get(currencyContext) as string;
 
         // Fetch product details
@@ -57,11 +73,15 @@ export async function loader({
                     organizationId: config.commerce.api.organizationId,
                 },
                 query: {
-                    siteId: config.commerce.api.siteId,
+                    siteId: site.id,
                     ids: productIds,
                     allImages: true,
                     perPricebook: true,
                     ...(currency ? { currency } : {}),
+                    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                    // Include store inventory IDs for pickup items
+                    ...(inventoryIds.length > 0 ? { inventoryIds } : {}),
+                    // @sfdc-extension-block-end SFDC_EXT_BOPIS
                 },
             },
         });
@@ -78,7 +98,8 @@ export async function loader({
             },
             {} as Record<string, ShopperProducts.schemas['Product']>
         );
-    } catch {
+    } catch (error) {
+        logger.error('BasketProducts: failed to fetch product details', { error });
         // Return empty object on error - mini cart will show basic data
         return {};
     }

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { Link } from 'react-router';
+import type { LoaderFunctionArgs } from 'react-router';
+import { Link } from '@/components/link';
 import {
     Breadcrumb,
     BreadcrumbList,
@@ -26,9 +27,12 @@ import {
 import ContentCard from '@/components/content-card';
 import Contact from '@/components/contact';
 import { Typography } from '@/components/typography';
+import { SeoMeta } from '@/components/seo-meta';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { PageType } from '@/lib/decorators/page-type';
 import { useTranslation } from 'react-i18next';
-import visionImage from '/images/hero-new-arrivals.webp';
+import { getLogger } from '@/lib/logger.server';
+import visionImage from '/images/hero-02.webp';
 
 @PageType({
     name: 'About Us Page',
@@ -36,6 +40,23 @@ import visionImage from '/images/hero-new-arrivals.webp';
     supportedAspectTypes: [],
 })
 export class AboutUsPageMetadata {}
+
+type AboutUsPageData = {
+    pageUrl: string;
+    ogImageUrl: string;
+};
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function loader({ context, request }: LoaderFunctionArgs): AboutUsPageData {
+    const logger = getLogger(context);
+    logger.debug('AboutUs: loader starting');
+
+    const requestUrl = new URL(request.url);
+    return {
+        pageUrl: buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search),
+        ogImageUrl: new URL(visionImage, requestUrl.origin).href,
+    };
+}
 
 /**
  * About Us page component that displays company information
@@ -47,11 +68,18 @@ export class AboutUsPageMetadata {}
  * Header and Footer are automatically included from the root layout.
  * @returns JSX element representing the About Us page
  */
-export default function AboutUs(): ReactElement {
+export default function AboutUs({ loaderData }: { loaderData: AboutUsPageData }): ReactElement {
     const { t } = useTranslation('aboutUs');
 
     return (
         <div className="pb-8">
+            <SeoMeta
+                title={t('title', { defaultValue: 'About Us' })}
+                description={t('meta.description', {
+                    defaultValue: 'Learn more about our story, mission, and the team behind the store.',
+                })}
+                openGraph={{ type: 'article', url: loaderData.pageUrl, image: loaderData.ogImageUrl }}
+            />
             <div className="max-w-screen-2xl mx-auto px-4 pb-6">
                 {/* Breadcrumb */}
                 <Breadcrumb className="mb-2.5">

@@ -15,10 +15,11 @@
  */
 import { createRef } from 'react';
 import { describe, test, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
+import { cleanup, render, screen } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import ContentCard from './index';
 import { type Image } from '@/types';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 describe('ContentCard', () => {
     const defaultProps = {
@@ -31,7 +32,10 @@ describe('ContentCard', () => {
     };
 
     const renderWithRouter = (ui: React.ReactElement) => {
-        return render(<MemoryRouter>{ui}</MemoryRouter>);
+        const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{ui}</AllProvidersWrapper> }], {
+            initialEntries: ['/'],
+        });
+        return render(<RouterProvider router={router} />);
     };
 
     test('renders all content with correct attributes', () => {
@@ -45,7 +49,7 @@ describe('ContentCard', () => {
         expect(image).toHaveAttribute('loading', 'lazy');
 
         const link = screen.getByRole('link', { name: 'Click Me' });
-        expect(link).toHaveAttribute('href', '/test-link');
+        expect(link).toHaveAttribute('href', '/global/en-GB/test-link');
         expect(link.className).toContain('w-full');
     });
 
@@ -60,11 +64,8 @@ describe('ContentCard', () => {
         renderWithRouter(<ContentCard {...defaultProps} buttonText={undefined} />);
         expect(screen.queryByRole('link')).not.toBeInTheDocument();
 
-        render(
-            <MemoryRouter>
-                <ContentCard {...defaultProps} buttonLink={undefined} />
-            </MemoryRouter>
-        );
+        cleanup();
+        renderWithRouter(<ContentCard {...defaultProps} buttonLink={undefined} />);
         expect(screen.queryByRole('link')).not.toBeInTheDocument();
     });
 
@@ -79,24 +80,18 @@ describe('ContentCard', () => {
     });
 
     test('applies styling props correctly', () => {
-        const { container, rerender } = renderWithRouter(<ContentCard {...defaultProps} showBackground={true} />);
-        let card = container.querySelector('[data-slot="card"]');
+        let result = renderWithRouter(<ContentCard {...defaultProps} showBackground={true} />);
+        let card = result.container.querySelector('[data-slot="card"]');
         expect(card?.className).toContain('bg-muted/50');
 
-        rerender(
-            <MemoryRouter>
-                <ContentCard {...defaultProps} showBackground={false} />
-            </MemoryRouter>
-        );
-        card = container.querySelector('[data-slot="card"]');
+        cleanup();
+        result = renderWithRouter(<ContentCard {...defaultProps} showBackground={false} />);
+        card = result.container.querySelector('[data-slot="card"]');
         expect(card?.className).toContain('bg-transparent');
 
-        rerender(
-            <MemoryRouter>
-                <ContentCard {...defaultProps} showBorder={false} />
-            </MemoryRouter>
-        );
-        card = container.querySelector('[data-slot="card"]');
+        cleanup();
+        result = renderWithRouter(<ContentCard {...defaultProps} showBorder={false} />);
+        card = result.container.querySelector('[data-slot="card"]');
         expect(card?.className).toContain('border-0');
         expect(card?.className).toContain('shadow-none');
     });
@@ -151,23 +146,17 @@ describe('ContentCard', () => {
     });
 
     test('applies loading attribute correctly', () => {
-        const { rerender } = renderWithRouter(<ContentCard {...defaultProps} loading="eager" />);
+        renderWithRouter(<ContentCard {...defaultProps} loading="eager" />);
         let image = screen.getByAltText('Test image');
         expect(image).toHaveAttribute('loading', 'eager');
 
-        rerender(
-            <MemoryRouter>
-                <ContentCard {...defaultProps} loading="lazy" />
-            </MemoryRouter>
-        );
+        cleanup();
+        renderWithRouter(<ContentCard {...defaultProps} loading="lazy" />);
         image = screen.getByAltText('Test image');
         expect(image).toHaveAttribute('loading', 'lazy');
 
-        rerender(
-            <MemoryRouter>
-                <ContentCard {...defaultProps} />
-            </MemoryRouter>
-        );
+        cleanup();
+        renderWithRouter(<ContentCard {...defaultProps} />);
         image = screen.getByAltText('Test image');
         expect(image).toHaveAttribute('loading', 'lazy');
     });

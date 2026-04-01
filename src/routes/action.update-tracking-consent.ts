@@ -17,6 +17,7 @@ import { data, type ActionFunction } from 'react-router';
 import { refreshAccessToken, getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { TrackingConsent } from '@/types/tracking-consent';
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action to update tracking consent (DNT - Do Not Track) preference.
@@ -30,16 +31,24 @@ import { TrackingConsent } from '@/types/tracking-consent';
  * 2. We need to set Set-Cookie HTTP headers, which can only be done server-side
  */
 export const action: ActionFunction = async ({ request, context }) => {
-    // Verify tracking consent feature is enabled
-    if (!isTrackingConsentEnabled(context)) {
-        throw new Response('Tracking consent feature is not enabled', { status: 400 });
-    }
-
+    const logger = getLogger(context);
     const formData = await request.formData();
     const trackingConsentValue = formData.get('trackingConsent');
 
+    logger.debug('UpdateTrackingConsent: starting', { trackingConsentValue });
+
+    // Verify tracking consent feature is enabled
+    if (!isTrackingConsentEnabled(context)) {
+        logger.warn('UpdateTrackingConsent: feature not enabled');
+        throw new Response('Tracking consent feature is not enabled', { status: 400 });
+    }
+
     // Validate tracking consent value is a valid enum value
     if (!trackingConsentValue || !Object.values(TrackingConsent).includes(trackingConsentValue as TrackingConsent)) {
+        logger.warn('UpdateTrackingConsent: invalid consent value', {
+            providedValue: trackingConsentValue,
+            validValues: Object.values(TrackingConsent),
+        });
         throw new Response('Invalid tracking consent value. Must be "0" (accepted) or "1" (declined)', { status: 400 });
     }
 
@@ -52,7 +61,13 @@ export const action: ActionFunction = async ({ request, context }) => {
     const userType: 'guest' | 'registered' = currentAuth.userType || 'guest';
 
     if (refreshToken) {
-        // Standard flow: refresh the SLAS token with tracking consent embedded (DNT claim)
+        logger.debug('UpdateTrackingConsent: refreshing token with consent', {
+            trackingConsent,
+            userType,
+        });
+        // Standard flow: refresh the SLAS token with tracking consent embedded (DNT claim).
+        // The authMiddleware in api-clients.ts automatically injects the sfdc_dwsid header
+        // on SLAS requests, so SLAS reuses the existing ECOM session.
         const tokenResponse = await refreshAccessToken(context, refreshToken, {
             trackingConsent,
         });
@@ -60,13 +75,16 @@ export const action: ActionFunction = async ({ request, context }) => {
         // Update the auth context with the new token response
         updateAuth(context, tokenResponse);
 
-        // Restore userType and set the new tracking consent value
+        // Restore userType and set tracking consent.
         updateAuth(context, (session) => ({
             ...session,
             userType,
             trackingConsent,
         }));
     } else {
+        logger.debug('UpdateTrackingConsent: no refresh token, updating session only', {
+            trackingConsent,
+        });
         // No refresh token (e.g., environments using client_credentials grant without refresh).
         // Skip token refresh and just update tracking consent in the session cookies.
         // The auth middleware will persist the tracking consent cookie in the response.
@@ -76,5 +94,6 @@ export const action: ActionFunction = async ({ request, context }) => {
         }));
     }
 
+    logger.info('UpdateTrackingConsent: succeeded', { trackingConsent });
     return data({ success: true, trackingConsent });
 };

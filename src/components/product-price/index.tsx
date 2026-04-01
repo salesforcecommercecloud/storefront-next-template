@@ -81,7 +81,11 @@ export default function ProductPrice({
     currentPriceOnly = false,
 }: ProductPriceProps) {
     const priceData = getPriceData(product, { quantity });
-    const { listPrice, currentPrice, isASet, isMaster, isOnSale, isRange } = priceData;
+    const { listPrice, currentPrice, isASet, isMaster, isOnSale, isRange, maxPrice } = priceData;
+
+    // Show strikethrough (list price) only for single price, not when displaying price range (min – max)
+    const showPriceRange = isRange && maxPrice != null && maxPrice > currentPrice;
+    const showListPrice = isOnSale && listPrice && !showPriceRange;
 
     if (currentPriceOnly) {
         return (
@@ -105,6 +109,7 @@ export default function ProductPrice({
             as="span"
             currency={currency}
             isRange={flag}
+            maxPrice={flag && maxPrice != null ? (type === 'unit' ? maxPrice : maxPrice * quantity) : undefined}
             {...currentPriceProps}
         />
     );
@@ -122,7 +127,7 @@ export default function ProductPrice({
 
     const renderPriceSet = (flag: boolean) => (
         <>
-            {renderCurrentPrice(flag)} {isOnSale && renderListPrice(flag)}
+            {renderCurrentPrice(flag)} {showListPrice && renderListPrice(flag)}
         </>
     );
 

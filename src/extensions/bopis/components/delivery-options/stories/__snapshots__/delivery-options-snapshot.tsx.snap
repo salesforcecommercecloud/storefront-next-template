@@ -22,7 +22,7 @@ exports[`DeliveryOptions stories snapshot > Default story renders and matches sn
           <label
             class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
             data-slot="label"
-            for="delivery-option"
+            for="delivery-option-25686395M"
           >
             <button
               aria-checked="false"
@@ -32,7 +32,7 @@ exports[`DeliveryOptions stories snapshot > Default story renders and matches sn
               data-slot="radio-group-item"
               data-state="unchecked"
               disabled=""
-              id="delivery-option"
+              id="delivery-option-25686395M"
               role="radio"
               tabindex="-1"
               type="button"
@@ -42,7 +42,7 @@ exports[`DeliveryOptions stories snapshot > Default story renders and matches sn
               class="mt-0.5 shrink-0"
             >
               <div
-                class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
               />
             </div>
             <div
@@ -67,7 +67,7 @@ exports[`DeliveryOptions stories snapshot > Default story renders and matches sn
           <label
             class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
             data-slot="label"
-            for="pickup-option"
+            for="pickup-option-25686395M"
           >
             <button
               aria-checked="false"
@@ -75,7 +75,7 @@ exports[`DeliveryOptions stories snapshot > Default story renders and matches sn
               data-radix-collection-item=""
               data-slot="radio-group-item"
               data-state="unchecked"
-              id="pickup-option"
+              id="pickup-option-25686395M"
               role="radio"
               tabindex="-1"
               type="button"
@@ -85,7 +85,7 @@ exports[`DeliveryOptions stories snapshot > Default story renders and matches sn
               class="mt-0.5 shrink-0"
             >
               <div
-                class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
               />
             </div>
             <div
@@ -137,7 +137,7 @@ exports[`DeliveryOptions stories snapshot > DesktopLayout story renders and matc
           <label
             class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
             data-slot="label"
-            for="delivery-option"
+            for="delivery-option-25686395M"
           >
             <button
               aria-checked="false"
@@ -147,7 +147,7 @@ exports[`DeliveryOptions stories snapshot > DesktopLayout story renders and matc
               data-slot="radio-group-item"
               data-state="unchecked"
               disabled=""
-              id="delivery-option"
+              id="delivery-option-25686395M"
               role="radio"
               tabindex="-1"
               type="button"
@@ -157,7 +157,7 @@ exports[`DeliveryOptions stories snapshot > DesktopLayout story renders and matc
               class="mt-0.5 shrink-0"
             >
               <div
-                class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
               />
             </div>
             <div
@@ -182,7 +182,7 @@ exports[`DeliveryOptions stories snapshot > DesktopLayout story renders and matc
           <label
             class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
             data-slot="label"
-            for="pickup-option"
+            for="pickup-option-25686395M"
           >
             <button
               aria-checked="false"
@@ -190,7 +190,7 @@ exports[`DeliveryOptions stories snapshot > DesktopLayout story renders and matc
               data-radix-collection-item=""
               data-slot="radio-group-item"
               data-state="unchecked"
-              id="pickup-option"
+              id="pickup-option-25686395M"
               role="radio"
               tabindex="-1"
               type="button"
@@ -200,7 +200,7 @@ exports[`DeliveryOptions stories snapshot > DesktopLayout story renders and matc
               class="mt-0.5 shrink-0"
             >
               <div
-                class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
               />
             </div>
             <div
@@ -262,7 +262,7 @@ exports[`DeliveryOptions stories snapshot > MobileLayout story renders and match
           <label
             class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
             data-slot="label"
-            for="delivery-option"
+            for="delivery-option-25686395M"
           >
             <button
               aria-checked="false"
@@ -272,7 +272,7 @@ exports[`DeliveryOptions stories snapshot > MobileLayout story renders and match
               data-slot="radio-group-item"
               data-state="unchecked"
               disabled=""
-              id="delivery-option"
+              id="delivery-option-25686395M"
               role="radio"
               tabindex="-1"
               type="button"
@@ -282,7 +282,7 @@ exports[`DeliveryOptions stories snapshot > MobileLayout story renders and match
               class="mt-0.5 shrink-0"
             >
               <div
-                class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
               />
             </div>
             <div
@@ -307,7 +307,7 @@ exports[`DeliveryOptions stories snapshot > MobileLayout story renders and match
           <label
             class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
             data-slot="label"
-            for="pickup-option"
+            for="pickup-option-25686395M"
           >
             <button
               aria-checked="false"
@@ -315,7 +315,7 @@ exports[`DeliveryOptions stories snapshot > MobileLayout story renders and match
               data-radix-collection-item=""
               data-slot="radio-group-item"
               data-state="unchecked"
-              id="pickup-option"
+              id="pickup-option-25686395M"
               role="radio"
               tabindex="-1"
               type="button"
@@ -325,7 +325,7 @@ exports[`DeliveryOptions stories snapshot > MobileLayout story renders and match
               class="mt-0.5 shrink-0"
             >
               <div
-                class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
               />
             </div>
             <div
@@ -377,7 +377,7 @@ exports[`DeliveryOptions stories snapshot > WithStoreSelected story renders and 
           <label
             class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs border-muted-foreground/20 hover:border-primary/50 opacity-50 cursor-not-allowed"
             data-slot="label"
-            for="delivery-option"
+            for="delivery-option-25686395M"
           >
             <button
               aria-checked="false"
@@ -387,7 +387,7 @@ exports[`DeliveryOptions stories snapshot > WithStoreSelected story renders and 
               data-slot="radio-group-item"
               data-state="unchecked"
               disabled=""
-              id="delivery-option"
+              id="delivery-option-25686395M"
               role="radio"
               tabindex="-1"
               type="button"
@@ -397,7 +397,7 @@ exports[`DeliveryOptions stories snapshot > WithStoreSelected story renders and 
               class="mt-0.5 shrink-0"
             >
               <div
-                class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
               />
             </div>
             <div
@@ -422,7 +422,7 @@ exports[`DeliveryOptions stories snapshot > WithStoreSelected story renders and 
           <label
             class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
             data-slot="label"
-            for="pickup-option"
+            for="pickup-option-25686395M"
           >
             <button
               aria-checked="false"
@@ -430,7 +430,7 @@ exports[`DeliveryOptions stories snapshot > WithStoreSelected story renders and 
               data-radix-collection-item=""
               data-slot="radio-group-item"
               data-state="unchecked"
-              id="pickup-option"
+              id="pickup-option-25686395M"
               role="radio"
               tabindex="-1"
               type="button"
@@ -440,7 +440,7 @@ exports[`DeliveryOptions stories snapshot > WithStoreSelected story renders and 
               class="mt-0.5 shrink-0"
             >
               <div
-                class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
               />
             </div>
             <div

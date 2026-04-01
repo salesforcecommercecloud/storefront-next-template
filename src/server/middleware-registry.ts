@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 import type { RequestHandler } from 'express';
-/** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
-import { createHybridProxyMiddleware } from '@/extensions/hybrid-proxy/server/middleware';
-/** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
-import { cookieCaptureMiddleware } from '@/extensions/hybrid-proxy/server/cookie-capture';
-/** @sfdc-extension-line SFDC_EXT_HYBRID_PROXY */
-import config from '@/config/server';
 
 /**
  * Registry for custom **Express** server middlewares.
@@ -39,17 +33,4 @@ export interface CustomMiddlewareEntry {
     handler: RequestHandler;
 }
 
-export const customMiddlewares: CustomMiddlewareEntry[] = [
-    /** @sfdc-extension-block-start SFDC_EXT_HYBRID_PROXY */
-    // Cookie capture must run before other middlewares to wrap the request
-    { handler: cookieCaptureMiddleware },
-    {
-        // Express RequestHandler may be async; eslint expects void for object properties
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        handler: createHybridProxyMiddleware(
-            config.app.commerce.api.siteId,
-            config.app.commerce.sites[0].defaultLocale
-        ),
-    },
-    /** @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY */
-];
+export const customMiddlewares: CustomMiddlewareEntry[] = [];

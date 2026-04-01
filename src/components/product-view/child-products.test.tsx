@@ -66,24 +66,28 @@ vi.mock('./child-product-card', () => ({
     ),
 }));
 
+const setLineItems = [
+    { id: 'child-1', product: { id: 'child-1', name: 'Child 1', type: { item: true } }, quantity: 1 },
+    { id: 'child-2', product: { id: 'child-2', name: 'Child 2', type: { item: true } }, quantity: 1 },
+] as NonNullable<ShopperProducts.schemas['Product']['setProducts']>;
+
+const bundledLineItems = [
+    { id: 'child-1', product: { id: 'child-1', name: 'Child 1', type: { item: true } }, quantity: 1 },
+    { id: 'child-2', product: { id: 'child-2', name: 'Child 2', type: { item: true } }, quantity: 1 },
+] as NonNullable<ShopperProducts.schemas['Product']['bundledProducts']>;
+
 const createSetProduct = (): ShopperProducts.schemas['Product'] => ({
     id: 'set-123',
     name: 'Test Set',
     type: { set: true },
-    setProducts: [
-        { id: 'child-1', name: 'Child 1', type: { item: true } },
-        { id: 'child-2', name: 'Child 2', type: { item: true } },
-    ],
+    setProducts: setLineItems,
 });
 
 const createBundleProduct = (): ShopperProducts.schemas['Product'] => ({
     id: 'bundle-123',
     name: 'Test Bundle',
     type: { bundle: true },
-    bundledProducts: [
-        { id: 'child-1', name: 'Child 1', type: { item: true } },
-        { id: 'child-2', name: 'Child 2', type: { item: true } },
-    ],
+    bundledProducts: bundledLineItems,
 });
 
 const renderChildProducts = (props: any) => {
@@ -112,30 +116,31 @@ describe('ChildProducts', () => {
     const mockSetSelectedBundleQuantity = vi.fn();
 
     // Helper to create default mock return value
-    const createDefaultSetsBundlesMock = (overrides: any = {}) => ({
-        comboProduct: {
-            childProducts: [
-                { id: 'child-1', name: 'Child 1', type: { item: true } },
-                { id: 'child-2', name: 'Child 2', type: { item: true } },
-            ],
-        },
-        childProductSelection: {},
-        selectedBundleQuantity: 1,
-        areAllChildProductsSelected: false,
-        hasUnorderableChildProducts: false,
-        handleChildProductValidation: mockHandleChildProductValidation,
-        setChildProductSelection: mockSetChildProductSelection,
-        setChildProductOrderability: mockSetChildProductOrderability,
-        setSelectedBundleQuantity: mockSetSelectedBundleQuantity,
-        selectedChildProductCount: 0,
-        totalChildProducts: 2,
-        isCompletelyOutOfStock: false,
-        productWithCalculatedInventory: { id: 'set-123' },
-        effectiveQuantity: 1,
-        bundleStockLevel: 10,
-        bundleOutOfStock: false,
-        ...overrides,
-    });
+    const createDefaultSetsBundlesMock = (overrides: any = {}) => {
+        const childProducts = [
+            { id: 'child-1', name: 'Child 1', type: { item: true } },
+            { id: 'child-2', name: 'Child 2', type: { item: true } },
+        ];
+        return {
+            comboProduct: { childProducts },
+            childProductSelection: {},
+            selectedBundleQuantity: 1,
+            areAllChildProductsSelected: false,
+            hasUnorderableChildProducts: false,
+            handleChildProductValidation: mockHandleChildProductValidation,
+            setChildProductSelection: mockSetChildProductSelection,
+            setChildProductOrderability: mockSetChildProductOrderability,
+            setSelectedBundleQuantity: mockSetSelectedBundleQuantity,
+            selectedChildProductCount: 0,
+            totalChildProducts: 2,
+            isCompletelyOutOfStock: false,
+            productWithCalculatedInventory: { id: 'set-123' },
+            effectiveQuantity: 1,
+            bundleStockLevel: 10,
+            bundleOutOfStock: false,
+            ...overrides,
+        };
+    };
 
     beforeEach(async () => {
         vi.clearAllMocks();

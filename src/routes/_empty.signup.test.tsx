@@ -22,6 +22,7 @@ import { registerCustomer } from '@/lib/api/auth/register';
 import { isPasswordValid } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
 import { getTranslation } from '@/lib/i18next';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const { t } = getTranslation();
 
@@ -44,6 +45,15 @@ vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 // Mock PasswordRequirement component to avoid needing to deal with its complexity
 vi.mock('@/components/password-requirements', () => ({
     PasswordRequirement: () => null,
@@ -57,7 +67,11 @@ const renderWithRoutesStub = () => {
             Component: Signup,
         },
     ]);
-    return render(<Stub initialEntries={['/']} />);
+    return render(
+        <AllProvidersWrapper>
+            <Stub initialEntries={['/']} />
+        </AllProvidersWrapper>
+    );
 };
 
 const mockRegisterCustomer = vi.mocked(registerCustomer);
@@ -671,7 +685,7 @@ describe('signup route', () => {
             expect(screen.getByText(/Have an account?/i)).toBeInTheDocument();
             expect(screen.getByText(t('signup:signIn'))).toBeInTheDocument();
             const signInLink = screen.getByText(t('signup:signIn')).closest('a');
-            expect(signInLink).toHaveAttribute('href', '/login');
+            expect(signInLink).toHaveAttribute('href', '/global/en-GB/login');
         });
 
         it('should display error when form submission fails', async () => {
@@ -687,7 +701,11 @@ describe('signup route', () => {
                     action: async ({ request }) => action({ request, params: {}, context: mockContext } as any),
                 },
             ]);
-            render(<Stub initialEntries={['/']} />);
+            render(
+                <AllProvidersWrapper>
+                    <Stub initialEntries={['/']} />
+                </AllProvidersWrapper>
+            );
 
             // Fill out the form
             await user.type(screen.getByLabelText(t('signup:form.firstNameLabel')), 'John');
@@ -717,7 +735,11 @@ describe('signup route', () => {
                     action: async ({ request }) => action({ request, params: {}, context: mockContext } as any),
                 },
             ]);
-            render(<Stub initialEntries={['/']} />);
+            render(
+                <AllProvidersWrapper>
+                    <Stub initialEntries={['/']} />
+                </AllProvidersWrapper>
+            );
 
             // Fill out the form with mismatched passwords
             await user.type(screen.getByLabelText(t('signup:form.firstNameLabel')), 'John');

@@ -28,6 +28,9 @@ export type StateCode<T extends CountryCode> = T extends 'US' ? USStateCode : T 
 // List of supported country codes (names are retrieved from i18next at runtime)
 export const COUNTRY_CODES: readonly CountryCode[] = ['US', 'CA'] as const;
 
+/** Default country code for address forms */
+export const DEFAULT_COUNTRY_CODE: CountryCode = 'US';
+
 // US Postal Code validation (5 digits or 5+4 format)
 export const usPostalCodeRegex = /^\d{5}(-\d{4})?$/;
 

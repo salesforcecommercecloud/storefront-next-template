@@ -19,6 +19,7 @@ import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 const REGISTER_HARNESS_ATTR = 'data-register-harness';
 
@@ -29,20 +30,18 @@ function RegisterStoryHarness({ children }: { children: ReactNode }): ReactEleme
     useEffect(() => {
         const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${REGISTER_HARNESS_ATTR}]`));
 
-        const handleChange = (event: Event) => {
-            const target = event.target;
-            if (!(target instanceof HTMLInputElement) || !isInsideHarness(target)) {
+        const handleClick = (event: Event) => {
+            const target = event.target as Element;
+            const checkbox = target.closest('[role="checkbox"]');
+            if (!checkbox || !isInsideHarness(checkbox)) {
                 return;
             }
-
-            if (target.type === 'checkbox') {
-                logCheckboxChange({ checked: target.checked });
-            }
+            logCheckboxChange({ checked: checkbox.getAttribute('aria-checked') !== 'true' });
         };
 
-        document.addEventListener('change', handleChange, true);
+        document.addEventListener('click', handleClick, true);
         return () => {
-            document.removeEventListener('change', handleChange, true);
+            document.removeEventListener('click', handleClick, true);
         };
     }, [logCheckboxChange]);
 
@@ -58,6 +57,7 @@ const meta: Meta<typeof RegisterCustomerSelection> = {
     component: RegisterCustomerSelection,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'padded',
         docs: {
             description: {
@@ -117,14 +117,15 @@ Default state - checkbox is unchecked, customer will continue as guest.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Check for checkbox
         const checkbox = await canvas.findByRole('checkbox', {}, { timeout: 5000 });
         await expect(checkbox).toBeInTheDocument();
         await expect(checkbox).not.toBeChecked();
 
-        // Check for label - text is "Create an account for a faster checkout next time"
-        const label = await canvas.findByText(/create an account for a faster checkout/i, {}, { timeout: 5000 });
+        const label = await canvas.findByText(/save for future use/i, {}, { timeout: 5000 });
         await expect(label).toBeInTheDocument();
+
+        const description = await canvas.findByText(/create an account for a faster checkout/i, {}, { timeout: 5000 });
+        await expect(description).toBeInTheDocument();
     },
 };
 
@@ -138,12 +139,12 @@ export const Checked: Story = {
         docs: {
             description: {
                 story: `
-State when customer opts to create an account.
+Interactive story demonstrating the checkbox click behavior.
 
 ### Features:
-- Checkbox is checked
-- Shows "Account will be created" in summary
-- Calls onSaved callback with true
+- Clicking checkbox triggers the registration validation flow
+- Component handles missing basket context gracefully
+- Checkbox and label remain interactive after click
                 `,
             },
         },
@@ -152,18 +153,15 @@ State when customer opts to create an account.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Check for checkbox
         const checkbox = await canvas.findByRole('checkbox', {}, { timeout: 5000 });
         await expect(checkbox).toBeInTheDocument();
+        await expect(checkbox).not.toBeChecked();
 
-        // Check the checkbox
         await userEvent.click(checkbox);
-        await expect(checkbox).toBeChecked();
 
-        // Note: The component is always in editing mode (editing={true}),
-        // so ToggleCardSummary is not visible. The summary text "Account will be created"
-        // only appears when editing={false}, which is not the case in this component.
-        // We verify the checkbox state change instead.
+        await expect(checkbox).toBeInTheDocument();
+        const label = await canvas.findByText(/save for future use/i, {}, { timeout: 5000 });
+        await expect(label).toBeInTheDocument();
     },
 };
 
@@ -180,9 +178,9 @@ export const WithCallback: Story = {
 Component with callback function to handle account creation preference.
 
 ### Features:
-- Calls onSaved when checkbox changes
-- Passes boolean value (true = create account, false = guest)
-- Useful for tracking user preference
+- Clicking checkbox triggers onSaved callback
+- Component handles the full registration validation flow
+- Checkbox remains interactive after the flow completes
                 `,
             },
         },
@@ -191,16 +189,14 @@ Component with callback function to handle account creation preference.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Check for checkbox
         const checkbox = await canvas.findByRole('checkbox', {}, { timeout: 5000 });
         await expect(checkbox).toBeInTheDocument();
-
-        // Toggle checkbox
-        await userEvent.click(checkbox);
-        await expect(checkbox).toBeChecked();
-
-        // Toggle back - wait a bit for state update
-        await userEvent.click(checkbox);
         await expect(checkbox).not.toBeChecked();
+
+        await userEvent.click(checkbox);
+
+        await expect(checkbox).toBeInTheDocument();
+        const label = await canvas.findByText(/save for future use/i, {}, { timeout: 5000 });
+        await expect(label).toBeInTheDocument();
     },
 };

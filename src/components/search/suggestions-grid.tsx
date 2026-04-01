@@ -16,12 +16,16 @@
 'use client';
 
 import type React from 'react';
-import { Link } from 'react-router';
+import { ImageOff } from 'lucide-react';
+import { Link } from '@/components/link';
 import { DynamicImage } from '@/components/dynamic-image';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { toImageUrl } from '@/lib/dynamic-image';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { useTranslation } from 'react-i18next';
+import { formatCurrency } from '@/lib/currency';
+import { useCurrency } from '@/providers/currency';
 
 interface Suggestion {
     name: string;
@@ -42,8 +46,9 @@ const SearchSuggestionsPopup: React.FC<SearchSuggestionsPopupProps> = ({
     closeAndNavigate,
 }) => {
     const analytics = useAnalytics();
-    const config = useConfig();
-    const { t } = useTranslation('common');
+    const config = useConfig<AppConfig>();
+    const { t, i18n } = useTranslation('common');
+    const currency = useCurrency();
     if (!suggestions || suggestions.length === 0) {
         return null;
     }
@@ -75,29 +80,31 @@ const SearchSuggestionsPopup: React.FC<SearchSuggestionsPopupProps> = ({
                                     {suggestion.image ? (
                                         <DynamicImage
                                             src={`${toImageUrl({ src: suggestion.image, config })}[?sw={width}]`}
-                                            alt={suggestion.name || t('productImageAlt') || 'Product Image'}
+                                            alt={suggestion.name || t('productImageAlt')}
                                             imageProps={{
                                                 className: 'absolute inset-0 w-full h-full object-cover block',
                                             }}
                                             loading="eager"
                                         />
                                     ) : (
-                                        <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-muted text-foreground">
+                                        <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-muted text-header-foreground">
                                             <div className="text-center">
-                                                <div className="text-2xl mb-1">📷</div>
-                                                <div className="text-xs">
-                                                    {t('noImageAvailable') || 'No image available'}
-                                                </div>
+                                                <ImageOff className="w-8 h-8 mb-1 mx-auto" />
+                                                <div className="text-xs">{t('noImageAvailable')}</div>
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            <p className="text-sm font-medium text-foreground mb-1 line-clamp-2">{suggestion.name}</p>
+                            <p className="text-sm font-medium text-header-foreground mb-1 line-clamp-2">
+                                {suggestion.name}
+                            </p>
 
                             {suggestion.price && (
-                                <p className="text-sm font-semibold text-foreground">£{suggestion.price}</p>
+                                <p className="text-sm font-medium text-header-foreground">
+                                    {formatCurrency(suggestion.price, i18n.language, currency)}
+                                </p>
                             )}
                         </div>
                     </Link>

@@ -34,10 +34,6 @@ const PASSWORDLESS_FEATURE_UNAVAILABLE_ERRORS = [
 const TOO_MANY_REQUESTS_ERROR = /too many .* requests/i;
 
 const INVALID_TOKEN_ERROR = /invalid.*token/i;
-// Match messages where the token is expired regardless of word order, e.g.:
-// - "expired token"
-// - "token has expired"
-const EXPIRED_TOKEN_ERROR = /(expired.*token|token.*expired)/i;
 
 /**
  * Error message translation keys for different error scenarios
@@ -47,7 +43,6 @@ export const ERROR_MESSAGE_KEYS = {
     TOO_MANY_LOGIN_ATTEMPTS: 'errors:tooManyLoginAttempts',
     TOO_MANY_PASSWORD_RESET_ATTEMPTS: 'errors:tooManyPasswordResetAttempts',
     INVALID_TOKEN: 'errors:invalidToken',
-    EXPIRED_TOKEN: 'errors:expiredToken',
     GENERIC: 'errors:genericTryAgain',
 } as const;
 
@@ -67,8 +62,27 @@ export function getPasswordlessErrorMessageKey(
     if (TOO_MANY_REQUESTS_ERROR.test(errorMessage)) {
         return ERROR_MESSAGE_KEYS.TOO_MANY_LOGIN_ATTEMPTS;
     }
-    if (EXPIRED_TOKEN_ERROR.test(errorMessage)) {
-        return ERROR_MESSAGE_KEYS.EXPIRED_TOKEN;
+    if (INVALID_TOKEN_ERROR.test(errorMessage)) {
+        return ERROR_MESSAGE_KEYS.INVALID_TOKEN;
+    }
+    return ERROR_MESSAGE_KEYS.GENERIC;
+}
+
+/**
+ * Maps an error message to the appropriate user-friendly error message translation key
+ * for password reset feature errors.
+ *
+ * @param errorMessage - The error message from the API
+ * @returns The translation key that can be passed to t()
+ */
+export function getPasswordResetErrorMessageKey(
+    errorMessage: string
+): (typeof ERROR_MESSAGE_KEYS)[keyof typeof ERROR_MESSAGE_KEYS] {
+    if (TOKEN_BASED_AUTH_FEATURE_UNAVAILABLE_ERRORS.some((pattern) => pattern.test(errorMessage))) {
+        return ERROR_MESSAGE_KEYS.FEATURE_UNAVAILABLE;
+    }
+    if (TOO_MANY_REQUESTS_ERROR.test(errorMessage)) {
+        return ERROR_MESSAGE_KEYS.TOO_MANY_PASSWORD_RESET_ATTEMPTS;
     }
     if (INVALID_TOKEN_ERROR.test(errorMessage)) {
         return ERROR_MESSAGE_KEYS.INVALID_TOKEN;

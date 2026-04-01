@@ -17,7 +17,7 @@ import { cva } from 'class-variance-authority';
 
 // Individual swatch component variants
 const swatchVariants = cva(
-    'border-2 border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+    'border-[length:var(--swatch-border-width)] border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     {
         variants: {
             size: {
@@ -27,11 +27,15 @@ const swatchVariants = cva(
                 auto: 'min-w-8 min-h-8',
             },
             shape: {
-                circle: 'rounded-full w-7 h-7 p-1',
-                square: 'rounded-md px-3 py-1',
+                color: 'rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)]',
+                label: 'rounded-md px-3 py-1',
             },
             selected: {
                 true: 'border-black',
+                false: '',
+            },
+            labeled: {
+                true: '',
                 false: '',
             },
             disabled: {
@@ -40,68 +44,80 @@ const swatchVariants = cva(
             },
         },
         compoundVariants: [
+            // Labeled swatches (PDP) — override size constraints and padding
+            {
+                labeled: true,
+                class: '!w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)]',
+            },
+            // Color with label (PDP pill style with additional sizing)
+            {
+                shape: 'color',
+                labeled: true,
+                class: 'gap-[var(--swatch-color-gap,0px)]',
+            },
             // Circle default (not selected, not disabled)
             {
-                shape: 'circle',
+                shape: 'color',
                 selected: false,
                 disabled: false,
-                class: 'border-transparent',
+                class: 'border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]',
             },
             // Circle selected (not disabled)
             {
-                shape: 'circle',
+                shape: 'color',
                 selected: true,
                 disabled: false,
-                class: 'border-black',
+                class: 'border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]',
             },
             // Circle disabled (not selected)
             {
-                shape: 'circle',
+                shape: 'color',
                 selected: false,
                 disabled: true,
-                class: 'border-transparent',
+                class: 'border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] opacity-50',
             },
             // Circle selected and disabled
             {
-                shape: 'circle',
+                shape: 'color',
                 selected: true,
                 disabled: true,
-                class: 'border-black',
+                class: 'border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)] opacity-50',
             },
-            // Square default (not selected, not disabled) - matches gray container background
+            // Square default (not selected, not disabled)
             {
-                shape: 'square',
+                shape: 'label',
                 selected: false,
                 disabled: false,
-                class: 'bg-gray-100 dark:bg-muted border-0 shadow-none',
+                class: 'bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]',
             },
-            // Square selected (not disabled) - white background with shadow and faint border
+            // Square selected (not disabled)
             {
-                shape: 'square',
+                shape: 'label',
                 selected: true,
                 disabled: false,
-                class: 'bg-white dark:bg-muted border border-gray-300 dark:border-2 dark:border-input shadow-sm dark:shadow-none',
+                class: 'bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-sm',
             },
-            // Square disabled (not selected) - matches gray container background
+            // Square disabled (not selected)
             {
-                shape: 'square',
+                shape: 'label',
                 selected: false,
                 disabled: true,
-                class: 'bg-gray-100 dark:bg-muted border-0 shadow-none',
+                class: 'bg-swatch border border-swatch-border text-swatch-text opacity-50',
             },
-            // Square selected and disabled - white background with shadow and faint border
+            // Square selected and disabled
             {
-                shape: 'square',
+                shape: 'label',
                 selected: true,
                 disabled: true,
-                class: 'bg-white dark:bg-muted border border-gray-300 dark:border-2 dark:border-input shadow-sm dark:shadow-none',
+                class: 'bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-sm opacity-50',
             },
         ],
         defaultVariants: {
             size: 'lg',
             selected: false,
             disabled: false,
-            shape: 'circle',
+            shape: 'color',
+            labeled: false,
         },
     }
 );

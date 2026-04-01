@@ -38,7 +38,7 @@ export default function StaticPayPalButton({ onClick, disabled = false }: Static
             className="w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
             size="lg"
             aria-label={t('expressPayments.payPalLabel') || 'PayPal'}>
-            <PayPalLogo className="flex-shrink-0" />
+            <PayPalLogo className="flex-shrink-0" decorative />
         </Button>
     );
 }

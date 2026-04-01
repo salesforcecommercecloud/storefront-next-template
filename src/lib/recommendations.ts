@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getConfig } from '@/config';
-import type { AppConfig } from '@/config/context';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 /**
  * Get enabled recommendation types from config
  */
 export function getEnabledRecommendationTypes(configParam?: AppConfig): string[] {
     // Use provided config or fallback to getConfig()
-    const config = configParam || getConfig();
+    const config = configParam || getConfig<AppConfig>();
     const typesConfig = config.global.recommendations.types;
     return Object.entries(typesConfig)
         .filter(([, typeConfig]) => (typeConfig as { enabled: boolean }).enabled)

@@ -18,7 +18,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { MemoryRouter } from 'react-router';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { CurrencyProvider } from '@/providers/currency';
 import RecommendersProvider from '@/providers/recommenders';
@@ -64,7 +64,7 @@ The Account Overview Dashboard is the main landing page for the "My Account" sec
 ## Features
 - **Welcome Section**: Personalized greeting with customer's first name
 - **Curated for You**: Product recommendations powered by Einstein
-- **Quick Links**: Navigation cards to key account sections (Account Details, Orders, Wishlist, Addresses)
+- **Quick Links**: Navigation cards to key account sections (Account Details, Manage Addresses, Payment Methods, Order History)
 
 ## Usage
 This component is typically rendered as the default view when users navigate to their account.
@@ -109,9 +109,9 @@ export const Default: Story = {
 
         // Verify all quick link items are present by their headings
         await expect(canvas.getByRole('heading', { name: /Account Details/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('heading', { name: /Manage Addresses/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('heading', { name: /Payment Methods/i })).toBeInTheDocument();
         await expect(canvas.getByRole('heading', { name: /Order History/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('heading', { name: /Wishlist/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('heading', { name: /Addresses/i })).toBeInTheDocument();
     },
 };
 
@@ -193,9 +193,9 @@ export const QuickLinksSectionDefault: StoryObj<typeof QuickLinksSection> = {
 
         await expect(canvas.getByText(/Quick Links/i)).toBeInTheDocument();
         await expect(canvas.getByRole('heading', { name: /Account Details/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('heading', { name: /Manage Addresses/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('heading', { name: /Payment Methods/i })).toBeInTheDocument();
         await expect(canvas.getByRole('heading', { name: /Order History/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('heading', { name: /Wishlist/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('heading', { name: /Addresses/i })).toBeInTheDocument();
     },
 };
 
@@ -217,7 +217,7 @@ export const QuickLinksSectionLoading: StoryObj<typeof QuickLinksSectionSkeleton
 
         // Verify 4 quick link skeletons (items inside the grid)
         const grid = canvasElement.querySelector('.grid');
-        const linkSkeletons = grid?.querySelectorAll('.rounded-xl.border');
+        const linkSkeletons = grid?.querySelectorAll('.rounded-lg.border');
         await expect(linkSkeletons?.length).toBe(4);
     },
 };

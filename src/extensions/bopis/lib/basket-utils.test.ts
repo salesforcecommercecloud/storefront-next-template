@@ -34,7 +34,7 @@ vi.mock('@/lib/api-clients', () => ({
     createApiClients: vi.fn(),
 }));
 
-vi.mock('@/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     getConfig: vi.fn(),
 }));
 

@@ -30,12 +30,12 @@ const mockAddToast = vi.fn();
 
 const mockAddFetcher = {
     data: null as any,
-    state: 'idle' as const,
+    state: 'idle' as 'idle' | 'submitting' | 'loading',
     submit: vi.fn(),
 };
 const mockRemoveFetcher = {
     data: null as any,
-    state: 'idle' as const,
+    state: 'idle' as 'idle' | 'submitting' | 'loading',
     submit: vi.fn(),
 };
 
@@ -82,6 +82,28 @@ const wrapper = ({ children }: { children: React.ReactNode }) => {
     return <RouterProvider router={router} />;
 };
 
+/**
+ * Helper that configures mockAddFetcher.submit to synchronously set a response payload.
+ *
+ * Because useWishlist handles fetcher responses via useEffect (not via await-after-submit),
+ * the data must be present on mockAddFetcher.data before the re-render caused by the
+ * optimistic setWishlistItems call. Making the mock set data synchronously achieves this:
+ *   1. submit() is called → mock sets mockAddFetcher.data
+ *   2. setWishlistItems() triggers a re-render
+ *   3. useEffect sees the new addFetcher.data value and fires
+ */
+const setAddFetcherResponse = (response: { success: boolean; error?: string; alreadyInWishlist?: boolean }) => {
+    mockAddFetcher.submit.mockImplementation(() => {
+        mockAddFetcher.data = response;
+    });
+};
+
+const setRemoveFetcherResponse = (response: { success: boolean; error?: string }) => {
+    mockRemoveFetcher.submit.mockImplementation(() => {
+        mockRemoveFetcher.data = response;
+    });
+};
+
 describe('useWishlist', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -121,20 +143,17 @@ describe('useWishlist', () => {
     test('should check if item is in wishlist', () => {
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        // Initially not in wishlist
         expect(result.current.isItemInWishlist(mockProduct)).toBe(false);
     });
 
     test('should check if variant is in wishlist', () => {
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
-        // Initially not in wishlist
         expect(result.current.isItemInWishlist(mockProduct, mockVariant)).toBe(false);
     });
 
     test('should add item to wishlist optimistically', async () => {
-        // Set successful response
-        mockAddFetcher.data = { success: true };
+        setAddFetcherResponse({ success: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
@@ -142,7 +161,6 @@ describe('useWishlist', () => {
             await result.current.toggleWishlist(mockProduct);
         });
 
-        // Item should be added optimistically
         expect(result.current.isItemInWishlist(mockProduct)).toBe(true);
         expect(mockAddFetcher.submit).toHaveBeenCalledWith(
             { productId: 'product-1' },
@@ -154,9 +172,8 @@ describe('useWishlist', () => {
     });
 
     test('should remove item from wishlist optimistically', async () => {
-        // Set successful responses for both add and remove
-        mockAddFetcher.data = { success: true };
-        mockRemoveFetcher.data = { success: true };
+        setAddFetcherResponse({ success: true });
+        setRemoveFetcherResponse({ success: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
@@ -183,8 +200,7 @@ describe('useWishlist', () => {
     });
 
     test('should show success toast on successful add', async () => {
-        // Mock successful response
-        vi.mocked(mockAddFetcher).data = { success: true };
+        setAddFetcherResponse({ success: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
@@ -201,9 +217,8 @@ describe('useWishlist', () => {
     });
 
     test('should show success toast on successful remove', async () => {
-        // Set successful responses for both add and remove
-        mockAddFetcher.data = { success: true };
-        mockRemoveFetcher.data = { success: true };
+        setAddFetcherResponse({ success: true });
+        setRemoveFetcherResponse({ success: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
@@ -223,7 +238,7 @@ describe('useWishlist', () => {
     });
 
     test('should show info toast when product is already in wishlist', async () => {
-        vi.mocked(mockAddFetcher).data = { success: true, alreadyInWishlist: true };
+        setAddFetcherResponse({ success: true, alreadyInWishlist: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
@@ -239,8 +254,9 @@ describe('useWishlist', () => {
         });
     });
 
-    test('should revert optimistic update on error', async () => {
-        vi.mocked(mockAddFetcher).data = { success: false, error: 'Failed to add' };
+    test('should keep optimistic state when product is already in wishlist', async () => {
+        // alreadyInWishlist = true means the item IS in the wishlist — optimistic state should be kept
+        setAddFetcherResponse({ success: true, alreadyInWishlist: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
@@ -249,9 +265,47 @@ describe('useWishlist', () => {
         });
 
         await waitFor(() => {
-            // Should be reverted
+            expect(result.current.isItemInWishlist(mockProduct)).toBe(true);
+        });
+    });
+
+    test('should revert optimistic update on add error', async () => {
+        setAddFetcherResponse({ success: false, error: 'Failed to add' });
+
+        const { result } = renderHook(() => useWishlist(), { wrapper });
+
+        await act(async () => {
+            await result.current.toggleWishlist(mockProduct);
+        });
+
+        await waitFor(() => {
             expect(result.current.isItemInWishlist(mockProduct)).toBe(false);
             expect(mockAddToast).toHaveBeenCalledWith('Failed to add', 'error');
+        });
+    });
+
+    test('should revert optimistic update on remove error', async () => {
+        setAddFetcherResponse({ success: true });
+        setRemoveFetcherResponse({ success: false, error: 'Failed to remove' });
+
+        const { result } = renderHook(() => useWishlist(), { wrapper });
+
+        // Add item first
+        await act(async () => {
+            await result.current.toggleWishlist(mockProduct);
+        });
+
+        expect(result.current.isItemInWishlist(mockProduct)).toBe(true);
+
+        // Attempt remove — server returns error
+        await act(async () => {
+            await result.current.toggleWishlist(mockProduct);
+        });
+
+        await waitFor(() => {
+            // Reverted back to in-wishlist after server error
+            expect(result.current.isItemInWishlist(mockProduct)).toBe(true);
+            expect(mockAddToast).toHaveBeenCalledWith('Failed to remove', 'error');
         });
     });
 
@@ -273,6 +327,8 @@ describe('useWishlist', () => {
     });
 
     test('should use variant productId when provided', async () => {
+        setAddFetcherResponse({ success: true });
+
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
         await act(async () => {
@@ -288,24 +344,8 @@ describe('useWishlist', () => {
         );
     });
 
-    test('should handle catch block errors', async () => {
-        mockAddFetcher.submit.mockRejectedValueOnce(new Error('Network error'));
-
-        const { result } = renderHook(() => useWishlist(), { wrapper });
-
-        await act(async () => {
-            await result.current.toggleWishlist(mockProduct);
-        });
-
-        await waitFor(() => {
-            // Should revert optimistic update
-            expect(result.current.isItemInWishlist(mockProduct)).toBe(false);
-            expect(mockAddToast).toHaveBeenCalledWith(t('product:failedToAddToWishlist'), 'error');
-        });
-    });
-
     test('should indicate loading state when fetcher is not idle', () => {
-        vi.mocked(mockAddFetcher).state = 'submitting';
+        mockAddFetcher.state = 'submitting';
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
@@ -313,8 +353,7 @@ describe('useWishlist', () => {
     });
 
     test('should return wishlist as array', async () => {
-        // Set successful response
-        mockAddFetcher.data = { success: true };
+        setAddFetcherResponse({ success: true });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
@@ -324,5 +363,93 @@ describe('useWishlist', () => {
 
         expect(Array.isArray(result.current.wishlist)).toBe(true);
         expect(result.current.wishlist).toContain('product-1');
+    });
+
+    test('should use correct product data for sequential add operations', async () => {
+        // This test validates two things together:
+        //   1. pendingAddRef is cleared after a completed operation
+        //   2. hasHandledAddRef resets when addFetcher.state passes through 'submitting'
+        // Without both, the second operation could show the first product's name in the toast.
+
+        const anotherProduct: ShopperSearch.schemas['ProductSearchHit'] = {
+            productId: 'product-2',
+            productName: 'Another Product',
+            price: 49.99,
+            currency: 'USD',
+        };
+
+        const { result, rerender } = renderHook(() => useWishlist(), { wrapper });
+
+        // First add: simulate the submitting → idle state cycle so hasHandledAddRef resets correctly
+        mockAddFetcher.submit.mockImplementation(() => {
+            mockAddFetcher.state = 'submitting';
+            mockAddFetcher.data = null;
+        });
+
+        await act(async () => {
+            await result.current.toggleWishlist(mockProduct);
+        });
+
+        // Simulate server response completing for the first operation
+        act(() => {
+            mockAddFetcher.state = 'idle';
+            mockAddFetcher.data = { success: true };
+            rerender();
+        });
+
+        await waitFor(() => {
+            expect(mockAddToast).toHaveBeenCalledWith(
+                t('product:addedToWishlist', { productName: 'Test Product' }),
+                'success'
+            );
+        });
+
+        mockAddToast.mockClear();
+
+        // Second add for a different product
+        mockAddFetcher.submit.mockImplementation(() => {
+            mockAddFetcher.state = 'submitting';
+            mockAddFetcher.data = null;
+        });
+
+        await act(async () => {
+            await result.current.toggleWishlist(anotherProduct);
+        });
+
+        // Simulate server response completing for the second operation
+        act(() => {
+            mockAddFetcher.state = 'idle';
+            mockAddFetcher.data = { success: true };
+            rerender();
+        });
+
+        await waitFor(() => {
+            // Must use the second product's name — pendingRef was cleared after the first
+            // operation and then correctly set to anotherProduct before the second submit
+            expect(mockAddToast).toHaveBeenCalledWith(
+                t('product:addedToWishlist', { productName: 'Another Product' }),
+                'success'
+            );
+            expect(mockAddToast).not.toHaveBeenCalledWith(
+                t('product:addedToWishlist', { productName: 'Test Product' }),
+                'success'
+            );
+        });
+    });
+
+    test('should not fire effect before any submit (pendingRef is null)', async () => {
+        // If data is somehow set on the fetcher before any toggleWishlist call,
+        // the effect should not process it (pendingRef guards it).
+        mockAddFetcher.data = { success: true };
+
+        const { result } = renderHook(() => useWishlist(), { wrapper });
+
+        // No toggleWishlist called — no pending ref set
+        await act(async () => {
+            await Promise.resolve();
+        });
+
+        expect(result.current.isItemInWishlist(mockProduct)).toBe(false);
+        expect(mockAddToast).not.toHaveBeenCalled();
     });
 });

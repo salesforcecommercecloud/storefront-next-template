@@ -51,11 +51,17 @@ export function getFormattedMaskedCardNumber(
 }
 
 /**
- * Extracts the last 4 digits from a masked credit card number
- * @param maskedNumber - Masked card number string
+ * Extracts the last 4 digits for display. Prefer numberLastDigits when present and valid
+ * (e.g. from customer payment instruments); otherwise derive from maskedNumber.
+ *
+ * @param maskedNumber - Masked card number string (e.g. "************1234")
+ * @param numberLastDigits - Optional last 4 digits from API (e.g. "1234")
  * @returns Last 4 digits or '****' if not found
  */
-export function getLastFourDigits(maskedNumber: string | undefined): string {
+export function getLastFourDigits(maskedNumber: string | undefined, numberLastDigits?: string): string {
+    if (numberLastDigits && /^\d{4}$/.test(numberLastDigits)) {
+        return numberLastDigits;
+    }
     if (!maskedNumber) {
         return '****';
     }
@@ -106,12 +112,31 @@ export function getCardTypeDisplay(
         if (normalizedType.includes('discover')) return 'Discover';
         if (normalizedType.includes('diners')) return 'Diners Club';
         if (normalizedType.includes('jcb')) return 'JCB';
+        if (normalizedType.includes('unionpay')) return 'UnionPay';
 
         // Return the original if no normalization applied
         return cardType;
     }
 
     return fallback;
+}
+
+/**
+ * Normalizes a card type string to the SFCC-expected capitalization.
+ * SFCC Business Manager configures card types; capitalization must match exactly.
+ * Common BM values: Visa, MasterCard, Amex, Discover, DinersClub, JCB, UnionPay.
+ */
+export function normalizeCardType(cardType: string | undefined): string | undefined {
+    if (!cardType) return undefined;
+    const lower = cardType.toLowerCase().replace(/[_\s-]+/g, '');
+    if (lower === 'visa') return 'Visa';
+    if (lower === 'mastercard' || lower === 'master') return 'Master Card';
+    if (lower === 'amex' || lower === 'americanexpress') return 'Amex';
+    if (lower === 'discover') return 'Discover';
+    if (lower === 'dinersclub' || lower === 'diners') return 'DinersClub';
+    if (lower === 'jcb') return 'JCB';
+    if (lower === 'unionpay') return 'UnionPay';
+    return cardType;
 }
 
 /**
@@ -142,12 +167,7 @@ export function detectCardType(cardNumber: string): string {
         return 'American Express';
     }
 
-    // Discover: starts with 6, length 16
-    if (/^6/.test(cleanNumber) && cleanNumber.length === 16) {
-        return 'Discover';
-    }
-
-    // Diners Club: starts with 30[0-5], 36, or 38, length 14
+    // Diners Club: starts with 30[0-5], 36, or 38, length 14 (check before other 3x)
     if ((/^30[0-5]/.test(cleanNumber) || /^3[68]/.test(cleanNumber)) && cleanNumber.length === 14) {
         return 'Diners Club';
     }
@@ -155,6 +175,19 @@ export function detectCardType(cardNumber: string): string {
     // JCB: starts with 35, length 16
     if (/^35/.test(cleanNumber) && cleanNumber.length === 16) {
         return 'JCB';
+    }
+
+    // UnionPay: starts with 62, length 16–19
+    if (/^62/.test(cleanNumber) && cleanNumber.length >= 16 && cleanNumber.length <= 19) {
+        return 'UnionPay';
+    }
+
+    // Discover: 6011, 644–649, 65xx, length 16 (exclude 62 UnionPay)
+    if (
+        cleanNumber.length === 16 &&
+        (/^6011/.test(cleanNumber) || /^64[4-9]/.test(cleanNumber) || /^65/.test(cleanNumber))
+    ) {
+        return 'Discover';
     }
 
     // If no pattern matches, return generic
@@ -179,7 +212,9 @@ export function hasValidPaymentCard(
 
     if (isSavedPaymentMethod) {
         // For saved payment methods, verify we have basic card info
-        return !!(paymentInstrument.paymentMethodId === 'CREDIT_CARD' && paymentInstrument.paymentCard?.cardType);
+        return !!(
+            paymentInstrument.paymentMethodId?.startsWith('CREDIT_CARD') && paymentInstrument.paymentCard?.cardType
+        );
     }
 
     // For new payment methods, check if any form of masked card number exists

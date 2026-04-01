@@ -5,8 +5,54 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
   <div
     class="max-w-7xl mx-auto p-4"
   >
+    <nav
+      aria-label="Breadcrumb"
+      class="mb-6"
+    >
+      <ol
+        class="flex flex-wrap items-center text-sm"
+      >
+        <li
+          class="flex items-center"
+        >
+          <a
+            class="text-primary-600 hover:underline"
+            href="/category/mens"
+          >
+            Mens
+          </a>
+        </li>
+        <li
+          class="flex items-center"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-right mx-1 size-3"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m9 18 6-6-6-6"
+            />
+          </svg>
+          <a
+            class="text-primary-600 hover:underline"
+            href="/category/mens-clothing"
+          >
+            Clothing
+          </a>
+        </li>
+      </ol>
+    </nav>
     <div
-      class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 space-y-6"
+      class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-12"
     >
       <div
         class="order-1"
@@ -50,7 +96,11 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
           <summary
             class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
           >
-            Description:
+            <span
+              class="flex items-center gap-2"
+            >
+              Description:
+            </span>
             <svg
               aria-hidden="true"
               class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
@@ -70,20 +120,24 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
             </svg>
           </summary>
           <div
-            class="text-sm text-foreground [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1.5 [&_ul]:list-none [&_ul]:m-0 [&_ul]:p-0 [&_li]:flex [&_li]:items-center [&_li]:gap-2 [&_li]:before:content-[''] [&_li]:before:h-1.5 [&_li]:before:w-1.5 [&_li]:before:flex-shrink-0 [&_li]:before:rounded-full [&_li]:before:bg-foreground"
-            data-testid="html-fragment"
+            class="pb-4"
           >
-            <ul>
-              <li>
-                Grain deerskin leather
-              </li>
-              <li>
-                Water resistant and durable
-              </li>
-              <li>
-                Outseam machine sewn
-              </li>
-            </ul>
+            <div
+              class="text-sm text-foreground [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1.5 [&_ul]:list-none [&_ul]:m-0 [&_ul]:p-0 [&_li]:flex [&_li]:items-center [&_li]:gap-2 [&_li]:before:content-[''] [&_li]:before:h-1.5 [&_li]:before:w-1.5 [&_li]:before:flex-shrink-0 [&_li]:before:rounded-full [&_li]:before:bg-foreground"
+              data-testid="html-fragment"
+            >
+              <ul>
+                <li>
+                  Grain deerskin leather
+                </li>
+                <li>
+                  Water resistant and durable
+                </li>
+                <li>
+                  Outseam machine sewn
+                </li>
+              </ul>
+            </div>
           </div>
         </details>
       </div>
@@ -91,66 +145,76 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
         class="order-2"
       >
         <div
-          class="hidden md:block"
-        >
-          <nav
-            aria-label="Breadcrumb"
-            class="mb-6"
-          >
-            <ol
-              class="flex flex-wrap items-center text-sm"
-            >
-              <li
-                class="flex items-center"
-              >
-                <a
-                  class="text-primary-600 hover:underline"
-                  href="/category/mens"
-                >
-                  Mens
-                </a>
-              </li>
-              <li
-                class="flex items-center"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="lucide lucide-chevron-right mx-1 size-3"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="m9 18 6-6-6-6"
-                  />
-                </svg>
-                <a
-                  class="text-primary-600 hover:underline"
-                  href="/category/mens-clothing"
-                >
-                  Clothing
-                </a>
-              </li>
-            </ol>
-          </nav>
-        </div>
-        <div
-          class="grid gap-4"
+          class="relative grid gap-4"
         >
           <div
-            class="hidden md:block"
+            class="absolute top-0 right-0 flex items-center gap-2 z-10"
+          >
+            <button
+              aria-label="Add to Wishlist"
+              class="absolute top-2 right-2 z-10 w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed !static border border-border bg-background/90 shadow-none hover:border-muted-foreground/50 hover:bg-background"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 transition-all duration-200 ease-in-out text-muted-foreground scale-100"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+            </button>
+            <button
+              aria-label="Share"
+              class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 !static border border-border bg-background/90 shadow-none hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 text-muted-foreground transition-all duration-200 ease-in-out"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+                />
+                <polyline
+                  points="16 6 12 2 8 6"
+                />
+                <line
+                  x1="12"
+                  x2="12"
+                  y1="2"
+                  y2="15"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="pr-20"
           >
             <h1
-              class="text-3xl font-bold text-foreground"
+              class="text-2xl lg:text-3xl font-medium text-foreground tracking-tight"
+              data-testid="product-title"
             >
               Men's Classic Deer Gloves
             </h1>
+            <p
+              class="mt-2 text-xs text-muted-foreground"
+            >
+              SKU:
+               
+              061492183589M
+            </p>
             <p
               class="mt-2 text-lg text-muted-foreground"
             >
@@ -161,7 +225,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
             class="relative mt-2 inline-block"
           >
             <div
-              aria-controls="radix-_r_0_"
+              aria-controls="radix-_r_2_"
               aria-haspopup="dialog"
               class="relative inline-block"
               data-slot="popover-trigger"
@@ -181,63 +245,68 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   >
                     <svg
                       aria-hidden="true"
-                      class="text-muted-foreground/30 w-4 h-4"
-                      fill="currentColor"
-                      style="opacity: 1;"
+                      class="shrink-0 w-4 h-4"
                       viewBox="0 0 20 20"
                     >
                       <path
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        fill="white"
+                        stroke="var(--color-border-subtle)"
+                        stroke-width="1"
                       />
                     </svg>
                     <svg
                       aria-hidden="true"
-                      class="text-muted-foreground/30 w-4 h-4"
-                      fill="currentColor"
-                      style="opacity: 1;"
+                      class="shrink-0 w-4 h-4"
                       viewBox="0 0 20 20"
                     >
                       <path
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        fill="white"
+                        stroke="var(--color-border-subtle)"
+                        stroke-width="1"
                       />
                     </svg>
                     <svg
                       aria-hidden="true"
-                      class="text-muted-foreground/30 w-4 h-4"
-                      fill="currentColor"
-                      style="opacity: 1;"
+                      class="shrink-0 w-4 h-4"
                       viewBox="0 0 20 20"
                     >
                       <path
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        fill="white"
+                        stroke="var(--color-border-subtle)"
+                        stroke-width="1"
                       />
                     </svg>
                     <svg
                       aria-hidden="true"
-                      class="text-muted-foreground/30 w-4 h-4"
-                      fill="currentColor"
-                      style="opacity: 1;"
+                      class="shrink-0 w-4 h-4"
                       viewBox="0 0 20 20"
                     >
                       <path
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        fill="white"
+                        stroke="var(--color-border-subtle)"
+                        stroke-width="1"
                       />
                     </svg>
                     <svg
                       aria-hidden="true"
-                      class="text-muted-foreground/30 w-4 h-4"
-                      fill="currentColor"
-                      style="opacity: 1;"
+                      class="shrink-0 w-4 h-4"
                       viewBox="0 0 20 20"
                     >
                       <path
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        fill="white"
+                        stroke="var(--color-border-subtle)"
+                        stroke-width="1"
                       />
                     </svg>
                   </div>
                   <button
                     aria-label="View all reviews"
-                    class="cursor-pointer text-sm text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded"
+                    class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-sm text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground"
                     type="button"
                   >
                     0 (0)
@@ -246,7 +315,9 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
               </div>
             </div>
           </div>
-          <div>
+          <div
+            class="space-y-3"
+          >
             <div
               class="items-center gap-2"
             >
@@ -269,9 +340,17 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
             </div>
           </div>
           <div
-            class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-success bg-success/10 border-success/20"
+            class="flex items-center gap-2"
           >
-            In stock
+            <span
+              aria-hidden="true"
+              class="h-2 w-2 shrink-0 rounded-[var(--radius)] bg-current text-status-positive"
+            />
+            <p
+              class="text-sm font-medium text-status-positive"
+            >
+              In Stock (98 units) ready to be shipped
+            </p>
           </div>
           <div
             class="space-y-3"
@@ -295,12 +374,13 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  data-labeled="true"
                   href="/?accessorySize=050"
                   position="relative"
                   role="radio"
@@ -319,7 +399,8 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 <a
                   aria-checked="true"
                   aria-label="L"
-                  class="text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-white dark:bg-muted border border-gray-300 dark:border-2 dark:border-input shadow-sm dark:shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-sm"
+                  data-labeled="true"
                   href="/?accessorySize=060"
                   position="relative"
                   role="radio"
@@ -338,7 +419,8 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 <a
                   aria-checked="false"
                   aria-label="XL"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  data-labeled="true"
                   href="/?accessorySize=080"
                   position="relative"
                   role="radio"
@@ -379,7 +461,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="delivery-option"
+                    for="delivery-option-061492183589M"
                   >
                     <button
                       aria-checked="false"
@@ -387,7 +469,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="delivery-option"
+                      id="delivery-option-061492183589M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -397,7 +479,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -422,7 +504,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="pickup-option"
+                    for="pickup-option-061492183589M"
                   >
                     <button
                       aria-checked="false"
@@ -430,7 +512,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="pickup-option"
+                      id="pickup-option-061492183589M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -440,7 +522,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -485,27 +567,19 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
               Quantity:
             </label>
             <div
-              class="flex items-center space-x-1"
+              class="inline-flex items-center border border-input rounded-lg"
             >
               <button
                 aria-label="Decrement Quantity for Men's Classic Deer Gloves"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                data-size="icon"
-                data-slot="button"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
-                data-variant="outline"
                 disabled=""
               >
-                <span
-                  class="text-sm"
-                >
-                  −
-                </span>
+                −
               </button>
               <input
                 aria-label="Quantity:"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                data-slot="input"
+                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -513,17 +587,10 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
               />
               <button
                 aria-label="Increment Quantity for Men's Classic Deer Gloves"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                data-size="icon"
-                data-slot="button"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
-                data-variant="outline"
               >
-                <span
-                  class="text-sm"
-                >
-                  +
-                </span>
+                +
               </button>
             </div>
           </div>
@@ -538,6 +605,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
               class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
               data-size="lg"
               data-slot="button"
+              data-testid="add-to-cart"
               data-variant="default"
             >
               Add to Cart
@@ -566,33 +634,143 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 Learn more
               </button>
             </div>
-            <div
-              class="grid grid-cols-2 gap-3"
-            >
-              <button
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
-                data-size="lg"
-                data-slot="button"
-                data-variant="outline"
-              >
-                Add to Wishlist
-              </button>
-              <button
-                aria-expanded="false"
-                aria-haspopup="menu"
-                aria-label="Share"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
-                data-size="lg"
-                data-slot="dropdown-menu-trigger"
-                data-state="closed"
-                data-variant="outline"
-                id="radix-_r_3_"
-                type="button"
-              >
-                Share
-              </button>
-            </div>
           </div>
+        </div>
+        <div
+          class="mt-4"
+        >
+          <details
+            class="group border-b border-border"
+          >
+            <summary
+              class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+            >
+              <span
+                class="flex items-center gap-2"
+              >
+                Materials
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </summary>
+            <div
+              class="pb-4"
+            />
+          </details>
+          <details
+            class="group border-b border-border"
+          >
+            <summary
+              class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+            >
+              <span
+                class="flex items-center gap-2"
+              >
+                Usage Instructions
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </summary>
+            <div
+              class="pb-4"
+            />
+          </details>
+          <details
+            class="group border-b border-border"
+          >
+            <summary
+              class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+            >
+              <span
+                class="flex items-center gap-2"
+              >
+                Care Instructions
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </summary>
+            <div
+              class="pb-4"
+            />
+          </details>
+          <details
+            class="group border-b border-border"
+          >
+            <summary
+              class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+            >
+              <span
+                class="flex items-center gap-2"
+              >
+                Specifications
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </summary>
+            <div
+              class="pb-4"
+            />
+          </details>
         </div>
       </div>
     </div>
@@ -606,7 +784,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
     class="max-w-7xl mx-auto p-4"
   >
     <div
-      class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 space-y-6"
+      class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-12"
     >
       <div
         class="order-1"
@@ -650,7 +828,11 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
           <summary
             class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
           >
-            Description:
+            <span
+              class="flex items-center gap-2"
+            >
+              Description:
+            </span>
             <svg
               aria-hidden="true"
               class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
@@ -670,20 +852,24 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
             </svg>
           </summary>
           <div
-            class="text-sm text-foreground [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1.5 [&_ul]:list-none [&_ul]:m-0 [&_ul]:p-0 [&_li]:flex [&_li]:items-center [&_li]:gap-2 [&_li]:before:content-[''] [&_li]:before:h-1.5 [&_li]:before:w-1.5 [&_li]:before:flex-shrink-0 [&_li]:before:rounded-full [&_li]:before:bg-foreground"
-            data-testid="html-fragment"
+            class="pb-4"
           >
-            <ul>
-              <li>
-                Grain deerskin leather
-              </li>
-              <li>
-                Water resistant and durable
-              </li>
-              <li>
-                Outseam machine sewn
-              </li>
-            </ul>
+            <div
+              class="text-sm text-foreground [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1.5 [&_ul]:list-none [&_ul]:m-0 [&_ul]:p-0 [&_li]:flex [&_li]:items-center [&_li]:gap-2 [&_li]:before:content-[''] [&_li]:before:h-1.5 [&_li]:before:w-1.5 [&_li]:before:flex-shrink-0 [&_li]:before:rounded-full [&_li]:before:bg-foreground"
+              data-testid="html-fragment"
+            >
+              <ul>
+                <li>
+                  Grain deerskin leather
+                </li>
+                <li>
+                  Water resistant and durable
+                </li>
+                <li>
+                  Outseam machine sewn
+                </li>
+              </ul>
+            </div>
           </div>
         </details>
       </div>
@@ -691,16 +877,76 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
         class="order-2"
       >
         <div
-          class="grid gap-4"
+          class="relative grid gap-4"
         >
           <div
-            class="hidden md:block"
+            class="absolute top-0 right-0 flex items-center gap-2 z-10"
+          >
+            <button
+              aria-label="Add to Wishlist"
+              class="absolute top-2 right-2 z-10 w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed !static border border-border bg-background/90 shadow-none hover:border-muted-foreground/50 hover:bg-background"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 transition-all duration-200 ease-in-out text-muted-foreground scale-100"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+            </button>
+            <button
+              aria-label="Share"
+              class="w-9 h-9 p-2 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 !static border border-border bg-background/90 shadow-none hover:bg-background hover:border-muted-foreground/50 [&_svg]:stroke-[2]"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 text-muted-foreground transition-all duration-200 ease-in-out"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"
+                />
+                <polyline
+                  points="16 6 12 2 8 6"
+                />
+                <line
+                  x1="12"
+                  x2="12"
+                  y1="2"
+                  y2="15"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="pr-20"
           >
             <h1
-              class="text-3xl font-bold text-foreground"
+              class="text-2xl lg:text-3xl font-medium text-foreground tracking-tight"
+              data-testid="product-title"
             >
               Men's Classic Deer Gloves
             </h1>
+            <p
+              class="mt-2 text-xs text-muted-foreground"
+            >
+              SKU:
+               
+              061492183589M
+            </p>
             <p
               class="mt-2 text-lg text-muted-foreground"
             >
@@ -711,7 +957,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
             class="relative mt-2 inline-block"
           >
             <div
-              aria-controls="radix-_r_5_"
+              aria-controls="radix-_r_c_"
               aria-haspopup="dialog"
               class="relative inline-block"
               data-slot="popover-trigger"
@@ -731,63 +977,68 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                   >
                     <svg
                       aria-hidden="true"
-                      class="text-muted-foreground/30 w-4 h-4"
-                      fill="currentColor"
-                      style="opacity: 1;"
+                      class="shrink-0 w-4 h-4"
                       viewBox="0 0 20 20"
                     >
                       <path
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        fill="white"
+                        stroke="var(--color-border-subtle)"
+                        stroke-width="1"
                       />
                     </svg>
                     <svg
                       aria-hidden="true"
-                      class="text-muted-foreground/30 w-4 h-4"
-                      fill="currentColor"
-                      style="opacity: 1;"
+                      class="shrink-0 w-4 h-4"
                       viewBox="0 0 20 20"
                     >
                       <path
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        fill="white"
+                        stroke="var(--color-border-subtle)"
+                        stroke-width="1"
                       />
                     </svg>
                     <svg
                       aria-hidden="true"
-                      class="text-muted-foreground/30 w-4 h-4"
-                      fill="currentColor"
-                      style="opacity: 1;"
+                      class="shrink-0 w-4 h-4"
                       viewBox="0 0 20 20"
                     >
                       <path
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        fill="white"
+                        stroke="var(--color-border-subtle)"
+                        stroke-width="1"
                       />
                     </svg>
                     <svg
                       aria-hidden="true"
-                      class="text-muted-foreground/30 w-4 h-4"
-                      fill="currentColor"
-                      style="opacity: 1;"
+                      class="shrink-0 w-4 h-4"
                       viewBox="0 0 20 20"
                     >
                       <path
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        fill="white"
+                        stroke="var(--color-border-subtle)"
+                        stroke-width="1"
                       />
                     </svg>
                     <svg
                       aria-hidden="true"
-                      class="text-muted-foreground/30 w-4 h-4"
-                      fill="currentColor"
-                      style="opacity: 1;"
+                      class="shrink-0 w-4 h-4"
                       viewBox="0 0 20 20"
                     >
                       <path
                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        fill="white"
+                        stroke="var(--color-border-subtle)"
+                        stroke-width="1"
                       />
                     </svg>
                   </div>
                   <button
                     aria-label="View all reviews"
-                    class="cursor-pointer text-sm text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded"
+                    class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-sm text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground"
                     type="button"
                   >
                     0 (0)
@@ -796,7 +1047,9 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
               </div>
             </div>
           </div>
-          <div>
+          <div
+            class="space-y-3"
+          >
             <div
               class="items-center gap-2"
             >
@@ -819,9 +1072,17 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
             </div>
           </div>
           <div
-            class="inline-flex items-center px-3 py-1.5 rounded-md border text-sm font-medium text-success bg-success/10 border-success/20"
+            class="flex items-center gap-2"
           >
-            In stock
+            <span
+              aria-hidden="true"
+              class="h-2 w-2 shrink-0 rounded-[var(--radius)] bg-current text-status-positive"
+            />
+            <p
+              class="text-sm font-medium text-status-positive"
+            >
+              In Stock (98 units) ready to be shipped
+            </p>
           </div>
           <div
             class="space-y-3"
@@ -845,12 +1106,13 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-gray-100 dark:bg-muted rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  data-labeled="true"
                   href="/?accessorySize=050"
                   position="relative"
                   role="radio"
@@ -869,7 +1131,8 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                 <a
                   aria-checked="true"
                   aria-label="L"
-                  class="text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-white dark:bg-muted border border-gray-300 dark:border-2 dark:border-input shadow-sm dark:shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-sm"
+                  data-labeled="true"
                   href="/?accessorySize=060"
                   position="relative"
                   role="radio"
@@ -888,7 +1151,8 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                 <a
                   aria-checked="false"
                   aria-label="XL"
-                  class="border-black/50 text-foreground flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-gray-100 dark:bg-muted border-0 shadow-none"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  data-labeled="true"
                   href="/?accessorySize=080"
                   position="relative"
                   role="radio"
@@ -929,7 +1193,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="delivery-option"
+                    for="delivery-option-061492183589M"
                   >
                     <button
                       aria-checked="false"
@@ -937,7 +1201,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="delivery-option"
+                      id="delivery-option-061492183589M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -947,7 +1211,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -972,7 +1236,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                   <label
                     class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
-                    for="pickup-option"
+                    for="pickup-option-061492183589M"
                   >
                     <button
                       aria-checked="false"
@@ -980,7 +1244,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                       data-radix-collection-item=""
                       data-slot="radio-group-item"
                       data-state="unchecked"
-                      id="pickup-option"
+                      id="pickup-option-061492183589M"
                       role="radio"
                       tabindex="-1"
                       type="button"
@@ -990,7 +1254,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -1035,27 +1299,19 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
               Quantity:
             </label>
             <div
-              class="flex items-center space-x-1"
+              class="inline-flex items-center border border-input rounded-lg"
             >
               <button
                 aria-label="Decrement Quantity for Men's Classic Deer Gloves"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                data-size="icon"
-                data-slot="button"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
-                data-variant="outline"
                 disabled=""
               >
-                <span
-                  class="text-sm"
-                >
-                  −
-                </span>
+                −
               </button>
               <input
                 aria-label="Quantity:"
-                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                data-slot="input"
+                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -1063,17 +1319,10 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
               />
               <button
                 aria-label="Increment Quantity for Men's Classic Deer Gloves"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                data-size="icon"
-                data-slot="button"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
-                data-variant="outline"
               >
-                <span
-                  class="text-sm"
-                >
-                  +
-                </span>
+                +
               </button>
             </div>
           </div>
@@ -1088,6 +1337,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
               class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
               data-size="lg"
               data-slot="button"
+              data-testid="add-to-cart"
               data-variant="default"
             >
               Add to Cart
@@ -1116,33 +1366,143 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                 Learn more
               </button>
             </div>
-            <div
-              class="grid grid-cols-2 gap-3"
-            >
-              <button
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
-                data-size="lg"
-                data-slot="button"
-                data-variant="outline"
-              >
-                Add to Wishlist
-              </button>
-              <button
-                aria-expanded="false"
-                aria-haspopup="menu"
-                aria-label="Share"
-                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-10 rounded-md px-6 has-[>svg]:px-4 w-full"
-                data-size="lg"
-                data-slot="dropdown-menu-trigger"
-                data-state="closed"
-                data-variant="outline"
-                id="radix-_r_8_"
-                type="button"
-              >
-                Share
-              </button>
-            </div>
           </div>
+        </div>
+        <div
+          class="mt-4"
+        >
+          <details
+            class="group border-b border-border"
+          >
+            <summary
+              class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+            >
+              <span
+                class="flex items-center gap-2"
+              >
+                Materials
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </summary>
+            <div
+              class="pb-4"
+            />
+          </details>
+          <details
+            class="group border-b border-border"
+          >
+            <summary
+              class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+            >
+              <span
+                class="flex items-center gap-2"
+              >
+                Usage Instructions
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </summary>
+            <div
+              class="pb-4"
+            />
+          </details>
+          <details
+            class="group border-b border-border"
+          >
+            <summary
+              class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+            >
+              <span
+                class="flex items-center gap-2"
+              >
+                Care Instructions
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </summary>
+            <div
+              class="pb-4"
+            />
+          </details>
+          <details
+            class="group border-b border-border"
+          >
+            <summary
+              class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"
+            >
+              <span
+                class="flex items-center gap-2"
+              >
+                Specifications
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-5 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </summary>
+            <div
+              class="pb-4"
+            />
+          </details>
         </div>
       </div>
     </div>

@@ -149,6 +149,16 @@ export const DEFAULT_ORDERS_OFFSET = 0; // Used to retrieve the results based on
 export const DEFAULT_ORDERS_LIMIT = 10; // Maximum records to retrieve per request, not to exceed 50. Defaults to 10.
 
 /**
+ * Paginated result from fetchCustomerOrders.
+ */
+export type CustomerOrdersResult = {
+    orders: Order[];
+    total: number;
+    offset: number;
+    limit: number;
+};
+
+/**
  * Fetches the customer's order history from SCAPI, then enriches each order
  * with product thumbnail images via shopperProducts.getProducts.
  *
@@ -157,7 +167,7 @@ export const DEFAULT_ORDERS_LIMIT = 10; // Maximum records to retrieve per reque
  * @param context - React Router loader context (for API clients and currency)
  * @param customerId - Customer ID from auth session
  * @param options - Optional query parameters (offset, limit)
- * @returns Promise resolving to array of Order objects with product images
+ * @returns Promise resolving to { orders, total, offset, limit } for pagination
  */
 export async function fetchCustomerOrders(
     context: LoaderFunctionArgs['context'],
@@ -166,27 +176,30 @@ export async function fetchCustomerOrders(
         offset?: number;
         limit?: number;
     }
-): Promise<Order[]> {
+): Promise<CustomerOrdersResult> {
     const clients = createApiClients(context);
     const currency = context.get(currencyContext) as string;
+    const offset = options?.offset ?? DEFAULT_ORDERS_OFFSET;
+    const limit = options?.limit ?? DEFAULT_ORDERS_LIMIT;
 
     try {
         const { data } = await clients.shopperCustomers.getCustomerOrders({
             params: {
                 path: { customerId },
                 query: {
-                    offset: options?.offset ?? DEFAULT_ORDERS_OFFSET,
-                    limit: options?.limit ?? DEFAULT_ORDERS_LIMIT,
+                    offset,
+                    limit,
                 },
             },
         });
 
-        const orders = data?.data ?? [];
+        const rawOrders = data?.data ?? [];
+        const total = typeof data?.total === 'number' ? data.total : rawOrders.length;
 
         // Collect unique product IDs across all orders for a single batch fetch
         const productIds = Array.from(
             new Set(
-                orders
+                rawOrders
                     .flatMap((order) => order.productItems ?? [])
                     .map((item) => item.productId)
                     .filter((id): id is string => typeof id === 'string' && id.length > 0)
@@ -214,9 +227,11 @@ export async function fetchCustomerOrders(
             }
         }
 
-        return orders.map((order) => transformOrderForList(order, productsById));
+        const orders = rawOrders.map((order) => transformOrderForList(order, productsById));
+
+        return { orders, total, offset, limit };
     } catch {
-        // Return empty array on error - allows the page to render without orders
-        return [];
+        // Return empty result on error - allows the page to render without orders
+        return { orders: [], total: 0, offset, limit };
     }
 }

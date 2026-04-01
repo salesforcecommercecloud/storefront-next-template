@@ -155,7 +155,9 @@ const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchRe
 
 const mockSearchResultMinimal: ShopperSearch.schemas['ProductSearchResult'] = {
     ...mockSearchResult,
-    refinements: mockSearchResult.refinements?.slice(0, 1) ?? [],
+    refinements: (mockSearchResult.refinements ?? [])
+        .filter((refinement) => refinement.attributeId !== 'cgid')
+        .slice(0, 1),
 };
 
 const mockSearchResultEmpty: ShopperSearch.schemas['ProductSearchResult'] = {

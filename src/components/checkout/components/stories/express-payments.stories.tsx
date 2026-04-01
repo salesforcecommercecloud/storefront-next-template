@@ -19,6 +19,7 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -51,6 +52,7 @@ const meta: Meta<typeof ExpressPayments> = {
     title: 'CHECKOUT/ExpressPayments',
     component: ExpressPayments,
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'padded',
         docs: {
             description: {
@@ -100,9 +102,7 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Check for Apple Pay logo
-        const applePayLogo = await canvas.findByAltText('Apple Pay');
-        await expect(applePayLogo).toBeInTheDocument();
+        await expect(await canvas.findByRole('button', { name: /apple pay/i })).toBeInTheDocument();
 
         // Check for "Or" divider
         const orDivider = await canvas.findByText(/or/i);
@@ -166,9 +166,7 @@ export const VerticalLayout: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Check for Apple Pay logo
-        const applePayLogo = await canvas.findByAltText('Apple Pay');
-        await expect(applePayLogo).toBeInTheDocument();
+        await expect(await canvas.findByRole('button', { name: /apple pay/i })).toBeInTheDocument();
 
         // Check for "Or" divider
         const orDivider = await canvas.findByText(/or/i);
@@ -280,8 +278,6 @@ export const VerticalWithTopSeparator: Story = {
         const customDivider = await canvas.findByText('Express checkout');
         await expect(customDivider).toBeInTheDocument();
 
-        // Check for Apple Pay logo
-        const applePayLogo = await canvas.findByAltText('Apple Pay');
-        await expect(applePayLogo).toBeInTheDocument();
+        await expect(await canvas.findByRole('button', { name: /apple pay/i })).toBeInTheDocument();
     },
 };

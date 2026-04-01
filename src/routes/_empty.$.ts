@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type RouterContextProvider } from 'react-router';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/passwordless-login';
 import { handleSocialLoginLanding } from '@/lib/api/auth/social-login';
 import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password';
 import { isAbsoluteURL } from '@/lib/utils';
+import { getLogger } from '@/lib/logger.server';
 
 type LoaderHandler = (args: LoaderFunctionArgs) => Promise<Response> | Response;
 type ActionHandler = (args: ActionFunctionArgs) => Promise<Record<string, unknown>>;
@@ -50,7 +52,7 @@ function extractPathname(uri: string): string {
  * Get the loader handler for a given pathname
  */
 function getLoaderHandler(pathname: string, context: Readonly<RouterContextProvider>): LoaderHandler | null {
-    const config = getConfig(context);
+    const config = getConfig<AppConfig>(context);
 
     // Use extractPathname to support both relative paths and absolute URLs in config.
     // When comparing against the incoming request's pathname, we need to extract just
@@ -84,7 +86,7 @@ function getLoaderHandler(pathname: string, context: Readonly<RouterContextProvi
  * Get the action handler for a given pathname
  */
 function getActionHandler(pathname: string, context: Readonly<RouterContextProvider>): ActionHandler | null {
-    const config = getConfig(context);
+    const config = getConfig<AppConfig>(context);
     // Use extractPathname to support both relative paths and absolute URLs in config.
     // When comparing against the incoming request's pathname, we need to extract just
     // the pathname component from potentially absolute URLs (e.g., "https://example.com/callback" -> "/callback")
@@ -95,7 +97,10 @@ function getActionHandler(pathname: string, context: Readonly<RouterContextProvi
         return handlePasswordlessCallback;
     }
 
-    if (pathname === extractPathname(config.features.resetPassword.callbackUri)) {
+    if (
+        config.features.resetPassword.callbackUri &&
+        pathname === extractPathname(config.features.resetPassword.callbackUri)
+    ) {
         return handleResetPasswordCallback;
     }
 
@@ -103,25 +108,33 @@ function getActionHandler(pathname: string, context: Readonly<RouterContextProvi
 }
 
 export async function loader(args: LoaderFunctionArgs) {
+    const logger = getLogger(args.context);
     const url = new URL(args.request.url);
+    logger.debug('CatchAllRoute: loader starting', { pathname: url.pathname });
     const handler = getLoaderHandler(url.pathname, args.context);
 
     if (handler) {
+        logger.debug('CatchAllRoute: matched loader handler', { pathname: url.pathname });
         return handler(args);
     }
 
     // If no match, throw a 404
+    logger.warn('CatchAllRoute: no loader handler matched, returning 404', { pathname: url.pathname });
     throw new Response('Not Found', { status: 404 });
 }
 
 export async function action(args: ActionFunctionArgs) {
+    const logger = getLogger(args.context);
     const url = new URL(args.request.url);
+    logger.debug('CatchAllRoute: action starting', { pathname: url.pathname });
     const handler = getActionHandler(url.pathname, args.context);
 
     if (handler) {
+        logger.debug('CatchAllRoute: matched action handler', { pathname: url.pathname });
         return handler(args);
     }
 
     // If no match, throw a 405 Method Not Allowed
+    logger.warn('CatchAllRoute: no action handler matched, returning 405', { pathname: url.pathname });
     throw new Response('Method Not Allowed', { status: 405 });
 }

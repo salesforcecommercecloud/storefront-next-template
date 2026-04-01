@@ -18,10 +18,12 @@ import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { getAppOrigin, getErrorMessage, isAbsoluteURL } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
-import { getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { mergeBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
+import { getLogger } from '@/lib/logger.server';
 
 export interface AuthorizeIDPParams {
     hint: string;
@@ -44,8 +46,11 @@ export const authorizeIDP = async (
     error?: string;
     redirectUrl?: string;
 }> => {
+    const logger = getLogger(context);
+    logger.debug('SocialLogin: authorizing IDP');
+
     try {
-        const config = getConfig(context);
+        const config = getConfig<AppConfig>(context);
         const session = getAuth(context);
         const clients = createApiClients(context);
 
@@ -69,11 +74,13 @@ export const authorizeIDP = async (
             codeVerifier,
         }));
 
+        logger.info('SocialLogin: authorization URL generated', { hint: parameters.hint });
         return {
             success: true,
             redirectUrl: url,
         };
     } catch (error) {
+        logger.error('SocialLogin: authorization failed', { error });
         return {
             success: false,
             error: getErrorMessage(error),
@@ -89,6 +96,8 @@ export const loginIDPUser = async (
     error?: string;
 }> => {
     const { t } = getTranslation(context);
+    const logger = getLogger(context);
+    logger.debug('SocialLogin: IDP login starting');
 
     try {
         const session = getAuth(context);
@@ -98,6 +107,7 @@ export const loginIDPUser = async (
         const usid = parameters.usid || session.usid;
 
         if (!codeVerifier) {
+            logger.error('SocialLogin: code verifier missing from session');
             throw new Error(t('errors:codeVerifierMissing'));
         }
 
@@ -112,7 +122,8 @@ export const loginIDPUser = async (
                 if (authData.trackingConsent) {
                     dnt = trackingConsentToBoolean(authData.trackingConsent);
                 }
-            } catch {
+            } catch (error) {
+                logger.warn('SocialLogin: failed to get tracking consent from auth context', { error });
                 // If getAuth fails (e.g., middleware not initialized), dnt remains undefined
             }
         }
@@ -139,10 +150,12 @@ export const loginIDPUser = async (
             };
         });
 
+        logger.info('SocialLogin: IDP login succeeded');
         return {
             success: true,
         };
     } catch (error) {
+        logger.error('SocialLogin: code exchange failed', { error });
         return {
             success: false,
             error: getErrorMessage(error),
@@ -151,10 +164,11 @@ export const loginIDPUser = async (
 };
 
 export async function handleSocialLoginLanding({ request, context }: LoaderFunctionArgs): Promise<Response> {
+    const logger = getLogger(context);
     const { t } = getTranslation(context);
 
     try {
-        const config = getConfig(context);
+        const config = getConfig<AppConfig>(context);
         const url = new URL(request.url);
 
         // SLAS may send different parameter names than direct OAuth
@@ -165,8 +179,7 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
 
         // Handle error from social provider
         if (error) {
-            // eslint-disable-next-line no-console
-            console.error('[Social Login] Failed to login:', t('socialCallback:socialError'), error);
+            logger.error('SocialLogin: provider returned error', { error });
             const errorMessage = t('socialCallback:socialError');
             return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
         }
@@ -184,33 +197,29 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
             });
 
             if (result.success) {
+                logger.info('SocialLogin: login succeeded');
                 // Login successful - merge basket on server before redirecting
                 try {
                     await mergeBasket(context);
                 } catch (err) {
-                    // Log but don't block redirect - user can still access their registered basket
-                    // eslint-disable-next-line no-console
-                    console.error('[Social Login] Failed to merge basket:', err);
+                    logger.error('SocialLogin: basket merge failed', { error: err });
                 }
 
                 // Redirect to redirectURL if provided, otherwise redirect to home
                 const redirectTo = redirectUrl ? decodeURIComponent(redirectUrl) : '/';
                 return redirect(redirectTo);
             } else {
-                // eslint-disable-next-line no-console
-                console.error('[Social Login] Error during login:', result.error);
+                logger.error('SocialLogin: login failed', { error: result.error });
                 const errorMessage = t('errors:genericTryAgain');
                 return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
             }
         } else {
-            // eslint-disable-next-line no-console
-            console.error('[Social Login] Error during login:', 'Missing Auth code.');
+            logger.error('SocialLogin: missing authorization code');
             const errorMessage = t('errors:genericTryAgain');
             return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
         }
     } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('[Social Login] Error during login:', error);
+        logger.error('SocialLogin: landing handler failed', { error });
         const errorMessage = t('errors:genericTryAgain');
         return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
     }

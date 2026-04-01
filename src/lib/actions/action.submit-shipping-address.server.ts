@@ -15,22 +15,28 @@
  */
 import type { RouterContextProvider } from 'react-router';
 import { ensureBasketId, getBasket, updateBasketResource } from '@/middlewares/basket.server';
+import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { extractResponseError } from '@/lib/utils';
 import { createShippingAddressSchema, parseShippingAddressFromFormData } from '@/lib/checkout-schemas';
 import { getTranslation } from '@/lib/i18next';
 import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders';
+import { saveShippingAddressToCustomer, getCurrentCustomer } from '@/lib/api/customer';
+import { getAddressKey, isAddressEmpty, isAddressEqual, isOrderBillingAddressIncomplete } from '@/lib/address-utils';
 // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
 import { handleMultiShipShippingAddress } from '@/extensions/multiship/lib/actions/checkout-submit-multi-address';
 import { assignProductsToDefaultShipment } from '@/extensions/multiship/lib/api/basket';
 // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
+import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action for submitting checkout shipping address information.
  */
 export async function action(formData: FormData, context: RouterContextProvider) {
+    const logger = getLogger(context);
     const { t } = getTranslation();
+    logger.debug('SubmitShippingAddress: starting');
     // Update shipping address in Commerce Cloud (like PWA Kit)
     const basketId = await ensureBasketId(context);
 
@@ -81,6 +87,21 @@ export async function action(formData: FormData, context: RouterContextProvider)
         countryCode: formData.get('countryCode')?.toString() || 'US',
     };
 
+    const basketBeforeShippingUpdate = (await getBasket(context)).current;
+    const existingBilling = basketBeforeShippingUpdate?.billingAddress;
+    const previousShipmentShipping = basketBeforeShippingUpdate?.shipments?.[0]?.shippingAddress;
+
+    const billingComplete = Boolean(existingBilling && !isOrderBillingAddressIncomplete(existingBilling));
+    // If billing already differs from shipment shipping, the shopper set a separate billing address — do not replace it when they edit shipping.
+    const shopperHasDistinctBillingVersusShipmentShipping =
+        billingComplete &&
+        Boolean(
+            previousShipmentShipping &&
+                !isAddressEmpty(previousShipmentShipping) &&
+                !isAddressEqual(existingBilling, previousShipmentShipping)
+        );
+    const useAsBilling = !shopperHasDistinctBillingVersusShipmentShipping;
+
     let updatedBasket;
     try {
         const clients = createApiClients(context);
@@ -91,7 +112,8 @@ export async function action(formData: FormData, context: RouterContextProvider)
                     shipmentId: 'me',
                 },
                 query: {
-                    useAsBilling: false,
+                    // Copy shipping to billing when billing is missing, incomplete, or still aligned with shipment shipping.
+                    useAsBilling,
                 },
             },
             body: {
@@ -107,14 +129,8 @@ export async function action(formData: FormData, context: RouterContextProvider)
             },
         });
         updatedBasket = data;
-
-        // sfdc-extension-line SFDC_EXT_MULTISHIP
-        updatedBasket = await assignProductsToDefaultShipment(updatedBasket, context);
-
-        // Update local basket state with API response
-        // For shipping address updates, the API should preserve existing basket data
-        updateBasketResource(context, updatedBasket);
     } catch (error) {
+        logger.error('SubmitShippingAddress: failed', { error });
         let errorMessage = t('errors:checkout.addressValidationFailed');
         if (error instanceof ApiError) {
             try {
@@ -136,9 +152,80 @@ export async function action(formData: FormData, context: RouterContextProvider)
         );
     }
 
-    // Fetch shipping methods for the updated basket (now that we have an address)
-    // This prevents the "flash" of no shipping options when advancing to the shipping step
-    const shippingMethodsMap = await fetchShippingMethodsMapForBasket(context, updatedBasket);
+    // sfdc-extension-line SFDC_EXT_MULTISHIP
+    try {
+        updatedBasket = await assignProductsToDefaultShipment(updatedBasket, context);
+    } catch {
+        // Best-effort: keep basket with address update; multiship assignment can be retried on next load
+    }
+
+    // Update local basket state with API response
+    updateBasketResource(context, updatedBasket);
+
+    // Fallback: copy shipping to billing when still incomplete (e.g. API did not apply useAsBilling).
+    // Preserve the contact-info phone that was stored on the billing address during the contact step.
+    const existingBillingPhone = updatedBasket.billingAddress?.phone;
+    const shippingAddr = updatedBasket.shipments?.[0]?.shippingAddress;
+    if (
+        isOrderBillingAddressIncomplete(updatedBasket.billingAddress) &&
+        shippingAddr &&
+        !isAddressEmpty(shippingAddr)
+    ) {
+        try {
+            const syncClients = createApiClients(context);
+            const { data: billingSyncedBasket } = await syncClients.shopperBasketsV2.updateBillingAddressForBasket({
+                params: {
+                    path: {
+                        basketId,
+                    },
+                },
+                body: {
+                    firstName: shippingAddr.firstName,
+                    lastName: shippingAddr.lastName,
+                    address1: shippingAddr.address1,
+                    address2: shippingAddr.address2,
+                    city: shippingAddr.city,
+                    stateCode: shippingAddr.stateCode,
+                    postalCode: shippingAddr.postalCode,
+                    countryCode: shippingAddr.countryCode,
+                    phone: existingBillingPhone || shippingAddr.phone,
+                },
+            });
+            updatedBasket = billingSyncedBasket;
+            updateBasketResource(context, updatedBasket);
+        } catch {
+            // Non-blocking: payment step can still set billing
+        }
+    }
+
+    // Save address to customer profile for registered users (if address is new) — best-effort
+    try {
+        const auth = getAuth(context);
+        if (auth?.customerId) {
+            const customer = await getCurrentCustomer(context);
+            const existingAddresses = customer?.addresses ?? [];
+            const existingKeys = new Set(existingAddresses.map((addr) => getAddressKey(addr)));
+            if (!existingKeys.has(getAddressKey(addressDataWithExtras))) {
+                await saveShippingAddressToCustomer(context, auth.customerId, addressDataWithExtras);
+            }
+        }
+    } catch {
+        // Non-blocking: address was saved to basket; profile save can be retried later
+    }
+
+    // Fetch shipping methods for the updated basket (now that we have an address). This prevents a
+    // "flash" of no shipping options when advancing to the shipping step. Wrapped in try/catch so
+    // that a failure here (e.g. SCAPI error) does not fail the whole action: we still return 200
+    // with the updated basket and an empty map; the client can then get options from loader
+    // revalidation, and the user is not stuck on a 500.
+    let shippingMethodsMap: Awaited<ReturnType<typeof fetchShippingMethodsMapForBasket>> = {};
+    try {
+        shippingMethodsMap = await fetchShippingMethodsMapForBasket(context, updatedBasket);
+    } catch {
+        // Non-fatal: return success with empty map; revalidation may still provide shipping methods
+    }
+
+    logger.info('SubmitShippingAddress: succeeded', { basketId });
 
     // Return success data with updated basket and shipping methods for client-side state update
     return Response.json({

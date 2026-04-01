@@ -22,16 +22,24 @@ import { useTranslation } from 'react-i18next';
  * Official Google Pay logo matching SDK button appearance
  * Uses local Google Pay SVG file from public/images
  */
-export default function GooglePayLogo({ className }: { className?: string }) {
+export default function GooglePayLogo({
+    className,
+    decorative = false,
+}: {
+    className?: string;
+    /** When true, image is hidden from the accessibility tree (use inside a button that has aria-label). */
+    decorative?: boolean;
+}) {
     const { t } = useTranslation('checkout');
+    const label = t('expressPayments.googlePayLabel') || 'Google Pay';
     return (
         <img
             src={googlePayLogo}
-            alt={t('expressPayments.googlePayLabel') || 'Google Pay'}
+            alt={decorative ? '' : label}
             width="48"
             height="16"
-            className={`${className || ''} h-4 w-auto`}
-            style={{ objectFit: 'contain' }}
+            {...(decorative ? { 'aria-hidden': true } : {})}
+            className={`${className || ''} h-4 w-auto object-contain`}
         />
     );
 }

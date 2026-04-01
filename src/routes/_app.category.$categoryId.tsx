@@ -14,26 +14,40 @@
  * limitations under the License.
  */
 import { Fragment, Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { type LoaderFunctionArgs, useLocation } from 'react-router';
+import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
 import { ApiError, type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCategory } from '@/lib/api/categories';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
-import { getConfig, useConfig } from '@/config';
+import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
 import { currencyContext } from '@/lib/currency';
 import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import CategoryPagination from '@/components/category-pagination';
 import ActiveFilters from '@/components/category-refinements/active-filters';
+import FiltersButton from '@/components/category-refinements/filters-button';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
 import ProductGrid from '@/components/product-grid';
+import QuickFilters from '@/components/quick-filters';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
 import { JsonLd } from '@/components/json-ld';
+import { SeoMeta } from '@/components/seo-meta';
 import { generateCategorySchema } from '@/utils/category-schema';
+import { getPublicOrigin } from '@/utils/schema-url';
+import { buildCanonicalUrl } from '@/utils/canonical-url';
+import {
+    getInitialFiltersOpen,
+    getSearchWithoutClientOnlyParams,
+    getSearchWithoutFiltersParam,
+    useFiltersPanelState,
+} from '@/hooks/use-filters-panel-state';
+import { getLogger } from '@/lib/logger.server';
 
 @PageType({
     name: 'Product Listing Page',
@@ -66,11 +80,13 @@ type CategoryPageData = {
     category: ShopperProducts.schemas['Category'];
     searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    page: Promise<PageWithComponentData>;
+    page: Promise<PageWithComponentData | null>;
     categoryId: string;
+    pageUrl: string;
     refine: string[];
     currency: string;
     locale: string;
+    initialFiltersOpen?: boolean;
     categorySchema: Promise<ReturnType<typeof generateCategorySchema> | null>;
 };
 
@@ -86,22 +102,29 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
         request,
         params: { categoryId = '' },
     } = args;
-    const { searchParams } = new URL(request.url);
+    const requestUrl = new URL(request.url);
+    const { searchParams } = requestUrl;
+    const logger = getLogger(context);
+    logger.debug('Category: loader starting', {
+        categoryId,
+        offset: parseInt(searchParams.get('offset') || '0', 10),
+    });
     const offset = parseInt(getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.OFFSET) || '0', 10);
     const sort = getQueryParam(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.SORT);
     const refine = getAllQueryParams(searchParams, PRODUCT_SEARCH_QUERY_PARAMS.REFINE);
+    const initialFiltersOpen = getInitialFiltersOpen(searchParams);
 
     // Get currency and locale for cache-busting the page key
-    const config = getConfig(context);
+    const config = getConfig<AppConfig>(context);
     const currency = context.get(currencyContext) as string;
-    // TODO: replace this with locale detection when multi site implementation starts
-    const currentSite = config.commerce.sites[0];
-    const locale = currentSite.defaultLocale;
+    const locale = (context.get(multiSiteContext) as MultiSiteContext).locale.id;
     const limit = config.search.products.hits.limit;
 
     let categoryData: ShopperProducts.schemas['Category'] | undefined;
     try {
-        categoryData = await fetchCategory(context, categoryId, 0);
+        // Fetch one level of child categories so quick filters can render direct subcategories
+        // (e.g. suits/shorts/pants) from category.categories instead of falling back to refinements.
+        categoryData = await fetchCategory(context, categoryId, 1);
     } catch (e) {
         // Category data is considered critical, i.e., if the related SCAPI request fails, out-of-the-box we either
         // throw a `Response` with all the available information from the underlying `ApiError`, or we fall back to
@@ -117,9 +140,12 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
         throw new Response('Internal Server Error', { status: 500 });
     }
 
-    // Remove eventually existing category refinements (attribute ID = cgid)
+    // Keep non-category refinements and apply exactly one category refinement.
+    // If URL already contains a cgid refine (e.g. from quick filters), honor it.
+    // Otherwise default to the category id from the route path.
     const effectiveRefine = refine.filter((r) => !r.startsWith('cgid='));
-    effectiveRefine.push(`cgid=${categoryId}`);
+    const selectedCgidRefine = refine.find((r) => r.startsWith('cgid='));
+    effectiveRefine.push(selectedCgidRefine ?? `cgid=${categoryId}`);
 
     const criticalCount = config.search.products.hits.critical ?? 2;
     const searchResultCritical = await fetchSearchProducts(context, {
@@ -138,32 +164,42 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
         currency,
     });
 
+    const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
+
     // Generate category schema in loader (server-side) for SEO
     const categorySchemaPromise = searchResultNonCritical
         .then((searchResult: ShopperSearch.schemas['ProductSearchResult']) => {
             try {
+                // Use public origin from request headers instead of request.url
+                // to avoid exposing internal AWS Lambda URLs in schema
+                const publicOrigin = getPublicOrigin(request);
                 const url = new URL(request.url);
-                const pageUrl = `${url.origin}${url.pathname}${url.search}`;
+                const schemaPageUrl = `${publicOrigin}${url.pathname}${url.search}`;
                 // Validate inputs before generating schema
                 if (!categoryData || !searchResult) {
                     return null;
                 }
                 return generateCategorySchema({
                     category: categoryData,
-                    searchResult,
+                    searchResult: {
+                        ...searchResult,
+                        hits: [...(searchResultCritical.hits || []), ...(searchResult.hits || [])],
+                    },
                     config,
-                    pageUrl,
+                    pageUrl: schemaPageUrl,
                     defaultCurrency: currency,
                 });
             } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error('Error generating category schema in loader:', error);
+                logger.error('Error generating category schema in loader', {
+                    error,
+                });
                 return null;
             }
         })
         .catch((error) => {
-            // eslint-disable-next-line no-console
-            console.error('Error in category schema promise chain:', error);
+            logger.error('Error in category schema promise chain', {
+                error,
+            });
             return null;
         });
 
@@ -176,11 +212,27 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
             categoryId,
         }),
         categoryId,
+        pageUrl,
         refine: effectiveRefine,
         currency,
         locale,
+        initialFiltersOpen,
         categorySchema: categorySchemaPromise,
     };
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
+    const clientOnlyParamsChanged =
+        currentUrl.pathname === nextUrl.pathname &&
+        currentUrl.search !== nextUrl.search &&
+        getSearchWithoutClientOnlyParams(currentUrl.search) === getSearchWithoutClientOnlyParams(nextUrl.search);
+
+    if (clientOnlyParamsChanged) {
+        return false;
+    }
+
+    return defaultShouldRevalidate;
 }
 
 /**
@@ -208,15 +260,19 @@ export default function CategoryPage({
         searchResultNonCritical,
         page,
         categoryId,
+        pageUrl,
         refine,
         locale,
         currency,
+        initialFiltersOpen,
         categorySchema,
     },
 }: {
     loaderData: CategoryPageData;
 }) {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
+
+    const [filtersOpen, toggleFiltersOpen] = useFiltersPanelState(initialFiltersOpen);
     const limit = config.search.products.hits.limit;
 
     // Determine the maximum number of skeletons to display in the product grid
@@ -228,10 +284,27 @@ export default function CategoryPage({
     const analytics = useAnalytics();
     const lastTrackedDataRef = useRef<string | null>(null);
 
-    // Force remount when currency/locale/search params change to update Suspense boundaries with
-    // new data without manually refresh the page on new selected currency/locale/filters (incl. pagination, sort, refinements)
     const location = useLocation();
-    const pageKey = `${categoryId}-${currency}-${locale}-${location.search}-${location.hash}`;
+    const navigation = useNavigation();
+    const searchWithoutFiltersParam = useMemo(() => getSearchWithoutFiltersParam(location.search), [location.search]);
+    const pageIdentity = `${categoryId}-${currency}-${locale}`;
+    const analyticsKey = `${pageIdentity}-${searchWithoutFiltersParam}-${location.hash}`;
+    const productGridDataKey = `${pageIdentity}-${searchWithoutFiltersParam}`;
+    const selectedFiltersCount = useMemo(
+        () => new URLSearchParams(location.search).getAll('refine').length,
+        [location.search]
+    );
+    const isProductGridLoading = useMemo(() => {
+        if (navigation.state === 'idle' || !navigation.location) {
+            return false;
+        }
+        const currentRefines = new URLSearchParams(location.search).getAll('refine');
+        const nextRefines = new URLSearchParams(navigation.location.search).getAll('refine');
+        return (
+            currentRefines.length !== nextRefines.length ||
+            currentRefines.some((currentRefine, index) => currentRefine !== nextRefines[index])
+        );
+    }, [location.search, navigation.location, navigation.state]);
 
     const nonCriticalPromise = useMemo(
         () => searchResultNonCritical.then((r) => r.hits ?? []),
@@ -242,8 +315,8 @@ export default function CategoryPage({
 
     useEffect(() => {
         // Only track if we haven't already tracked this specific data combination
-        if (pageKey !== lastTrackedDataRef.current) {
-            lastTrackedDataRef.current = pageKey;
+        if (analyticsKey !== lastTrackedDataRef.current) {
+            lastTrackedDataRef.current = analyticsKey;
 
             startTransition(() => {
                 void nonCriticalPromise
@@ -266,7 +339,7 @@ export default function CategoryPage({
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [analytics, category, pageKey, nonCriticalPromise]);
+    }, [analytics, category, analyticsKey, nonCriticalPromise]);
 
     const handleProductClick = useCallback(
         (product: ShopperSearch.schemas['ProductSearchHit']) => {
@@ -281,7 +354,15 @@ export default function CategoryPage({
     );
 
     return (
-        <Fragment key={pageKey}>
+        <Fragment>
+            <SeoMeta
+                title={category.name || category.id}
+                description={category.pageDescription || category.description}
+                openGraph={{
+                    type: 'website',
+                    url: pageUrl,
+                }}
+            />
             <div className="pb-16">
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="mb-4">
@@ -302,22 +383,51 @@ export default function CategoryPage({
                     {/* plpTopFullWidth */}
                     <Region className="mb-8" page={page} regionId="plpTopFullWidth" />
 
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="hidden lg:block w-64 flex-shrink-0">
-                            <CategoryRefinements result={searchResultCritical} refine={refine} />
+                    <div className="flex flex-col lg:flex-row gap-2">
+                        {/* Filters toggle button + Quick Filters - mobile only (above panel) */}
+                        <div className="lg:hidden mb-4 flex flex-col items-start gap-2">
+                            <FiltersButton
+                                onClick={toggleFiltersOpen}
+                                isActive={filtersOpen}
+                                selectedFiltersCount={selectedFiltersCount}
+                            />
+                            <QuickFilters category={category} />
                         </div>
 
+                        {/* Category Refinements - toggles visibility on left side */}
+                        {filtersOpen && (
+                            <div className="w-full lg:w-64 lg:flex-shrink-0">
+                                <CategoryRefinements result={searchResultCritical} refine={refine} />
+                            </div>
+                        )}
+
                         <div className="flex-grow">
+                            {/* Filters toggle button + Quick Filters - desktop only (inside content area) */}
+                            <div className="mb-4 hidden lg:flex lg:items-center lg:gap-4">
+                                <FiltersButton
+                                    onClick={toggleFiltersOpen}
+                                    isActive={filtersOpen}
+                                    selectedFiltersCount={selectedFiltersCount}
+                                />
+                                <QuickFilters category={category} />
+                            </div>
+
                             <ActiveFilters result={searchResultCritical} />
 
                             {/* plpTopContent */}
                             <Region className="mb-8" page={page} regionId="plpTopContent" />
 
                             <ProductGrid
+                                key={productGridDataKey}
                                 critical={searchResultCritical.hits ?? []}
                                 nonCritical={nonCriticalPromise}
                                 nonCriticalCount={nonCriticalCount}
+                                hasRefinementsPanel={filtersOpen}
+                                isLoading={isProductGridLoading}
                                 handleProductClick={handleProductClick}
+                                topCategoryName={
+                                    category.parentCategoryTree?.find((p) => p.id !== 'root')?.name ?? category.name
+                                }
                             />
 
                             {searchResultCritical.total > 1 && (
@@ -336,7 +446,6 @@ export default function CategoryPage({
                     </div>
                 </div>
             </div>
-            {/* Category JSON-LD Schema for SEO - separate Suspense to ensure it appears at the very top of body */}
             <Suspense fallback={null}>
                 <CategoryJsonLd categorySchemaPromise={categorySchema} />
             </Suspense>

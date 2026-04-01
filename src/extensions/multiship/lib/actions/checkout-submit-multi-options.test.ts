@@ -28,6 +28,15 @@ vi.mock('@/extensions/multiship/lib/basket-utils', () => ({
     updateBasketWithCustomerInfoFallback: vi.fn(),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 import { createApiClients } from '@/lib/api-clients';
 import { updateBasketWithCustomerInfoFallback } from '@/extensions/multiship/lib/basket-utils';
 

@@ -58,7 +58,7 @@ const stableMockFetcher = {
     submit: mockFetcher.submit,
     state: 'idle',
     data: null,
-} as unknown as ReturnType<typeof useFetcher<ActionResponse<unknown>>>;
+} as unknown as ReturnType<typeof useFetcher<ActionResponse>>;
 
 vi.mock('react-router', async () => {
     const actual = await vi.importActual('react-router');
@@ -113,6 +113,21 @@ describe('useCartQuantityUpdate', () => {
             );
 
             expect(result.current.quantity).toBe(2);
+        });
+
+        test('should show stock limit message on load when initialValue is at stockLevel', () => {
+            const { result } = renderHook(
+                () =>
+                    useCartQuantityUpdate({
+                        ...defaultProps,
+                        initialValue: 10,
+                        stockLevel: 10,
+                    }),
+                { wrapper: ConfigWrapper }
+            );
+
+            expect(result.current.quantity).toBe(10);
+            expect(result.current.stockValidationError).toBe('Maximum stock reached');
         });
     });
 
@@ -174,7 +189,34 @@ describe('useCartQuantityUpdate', () => {
             });
 
             expect(result.current.quantity).toBe(15);
-            expect(result.current.stockValidationError).toBe('Only 10 left!');
+            expect(result.current.stockValidationError).toBe('Maximum stock reached');
+        });
+
+        test('should show stock limit message when quantity reaches max allowed', () => {
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
+
+            act(() => {
+                result.current.handleQuantityChange('10', 10); // stockLevel is 10
+            });
+
+            expect(result.current.quantity).toBe(10);
+            expect(result.current.stockValidationError).toBe('Maximum stock reached');
+        });
+
+        test('should clear stock limit message when quantity decreases below max', () => {
+            const { result } = renderHook(() => useCartQuantityUpdate(defaultProps), { wrapper: ConfigWrapper });
+
+            // First reach max
+            act(() => {
+                result.current.handleQuantityChange('10', 10);
+            });
+            expect(result.current.stockValidationError).toBe('Maximum stock reached');
+
+            // Then decrease below max
+            act(() => {
+                result.current.handleQuantityChange('9', 9);
+            });
+            expect(result.current.stockValidationError).toBeNull();
         });
 
         test('should not show stock validation error when stockLevel is undefined', () => {
@@ -531,7 +573,7 @@ describe('useCartQuantityUpdate', () => {
             // Verify the debounced function was NOT called
             expect(mockFetcher.submit).not.toHaveBeenCalled();
             expect(result.current.quantity).toBe(15);
-            expect(result.current.stockValidationError).toBe('Only 10 left!');
+            expect(result.current.stockValidationError).toBe('Maximum stock reached');
         });
 
         test('should call debounced cart update even for same quantity as initial', () => {

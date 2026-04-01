@@ -27,6 +27,14 @@ vi.mock('@/lib/shopper-context-utils', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@/lib/shopper-context-utils')>();
     return { ...actual, updateShopperContext: vi.fn() };
 });
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
 
 const mockGetAuth = vi.mocked(getAuth);
 const mockGetTranslation = vi.mocked(getTranslation);
@@ -163,7 +171,7 @@ describe('action.update-shopper-context', () => {
             ];
             mockUpdateShopperContext.mockResolvedValueOnce({ setCookieHeaders: mockSetCookieHeaders });
 
-            const res = await action(createArgs('{"src":"email","device":"mobile"}'));
+            const res = await action(createArgs('{"src":"email","deviceType":"mobile"}'));
             const data = await res.json();
 
             expect(res.status).toBe(200);
@@ -205,7 +213,7 @@ describe('action.update-shopper-context', () => {
             const res = await action(createArgs('{"src":"email"}'));
             const data = await res.json();
             expect(res.status).toBe(401);
-            expect(data.error).toContain('Usid is not available');
+            expect(data.error).toContain("Usid isn't available");
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 

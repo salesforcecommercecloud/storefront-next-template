@@ -15,7 +15,8 @@
  */
 import { type ReactElement, Suspense, useEffect } from 'react';
 import AddressDisplay from '@/components/address-display';
-import { Await, Link, type LoaderFunctionArgs } from 'react-router';
+import { Await, type LoaderFunctionArgs } from 'react-router';
+import { Link } from '@/components/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,7 +26,8 @@ import { formatCurrency } from '@/lib/currency';
 import { fetchOrderWithProducts } from '@/lib/api/order';
 import { useCurrency } from '@/providers/currency';
 import { useBasketReset } from '@/providers/basket';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import type {
     ShopperOrders,
     ShopperProducts,
@@ -35,8 +37,10 @@ import type {
 import { getCardTypeDisplay } from '@/lib/payment-utils';
 import { getDisplayVariationValues } from '@/lib/product-utils';
 import OrderSkeleton from '@/components/order-skeleton';
+import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import { toImageUrl } from '@/lib/dynamic-image';
+import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores';
 import { getOrderDeliveryShipments, getOrderPickupShipment } from '@/extensions/bopis/lib/order-utils';
@@ -98,6 +102,8 @@ const getPrimaryImageFromProduct = (product: ShopperProducts.schemas['Product'] 
 // eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
     const { orderNo } = params;
+    const logger = getLogger(context);
+    logger.debug('OrderConfirmation: loader starting', { orderNo });
     const { orderDataPromise, orderPromise } = fetchOrderWithProducts(context, orderNo as string);
 
     // @sfdc-extension-line SFDC_EXT_BOPIS
@@ -172,7 +178,7 @@ function OrderConfirmationContent({
     // @sfdc-extension-line SFDC_EXT_BOPIS
     storesByStoreId,
 }: OrderConfirmationData): ReactElement {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const { t, i18n } = useTranslation('checkout');
     const currency = useCurrency();
     const resetBasket = useBasketReset();
@@ -237,7 +243,7 @@ function OrderConfirmationContent({
     }, [resetBasket]);
 
     return (
-        <div className="min-h-screen bg-muted/30">
+        <div data-testid="order-confirmation-container" className="min-h-screen bg-muted/30">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
                 {/* Thank You and Order Confirmation section */}
                 <Card className="border border-border/70 shadow-sm">
@@ -257,7 +263,10 @@ function OrderConfirmationContent({
                             <div className="text-left md:text-right space-y-1">
                                 <p className="text-lg font-semibold text-foreground">
                                     {t('confirmation.orderNumber')}
-                                    <span className="text-primary"> {order.orderNo}</span>
+                                    <span data-testid="order-number" className="text-primary">
+                                        {' '}
+                                        {order.orderNo}
+                                    </span>
                                 </p>
                             </div>
                         </div>
@@ -534,9 +543,14 @@ export default function OrderConfirmationPage({
 }: {
     loaderData: CheckoutConfirmationLoaderData;
 }): ReactElement {
+    const { t } = useTranslation('checkout');
+
     return (
-        <Suspense fallback={<OrderSkeleton />}>
-            <Await resolve={loaderData.orderData}>{(data) => <OrderConfirmationContent {...data} />}</Await>
-        </Suspense>
+        <>
+            <SeoMeta title={t('meta.confirmationTitle', { defaultValue: 'Order Confirmation' })} noIndex />
+            <Suspense fallback={<OrderSkeleton />}>
+                <Await resolve={loaderData.orderData}>{(data) => <OrderConfirmationContent {...data} />}</Await>
+            </Suspense>
+        </>
     );
 }

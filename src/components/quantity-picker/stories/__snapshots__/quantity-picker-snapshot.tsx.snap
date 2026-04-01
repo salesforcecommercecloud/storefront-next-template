@@ -3,27 +3,19 @@
 exports[`QuantityPicker stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="inline-flex items-center border border-input rounded-lg"
   >
     <button
       aria-label="Decrement Quantity for the product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-decrement"
-      data-variant="outline"
       disabled=""
     >
-      <span
-        class="text-sm"
-      >
-        −
-      </span>
+      −
     </button>
     <input
       aria-label="Quantity:"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-      data-slot="input"
+      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
       step="1"
       type="number"
@@ -31,17 +23,10 @@ exports[`QuantityPicker stories snapshot > Default story renders and matches sna
     />
     <button
       aria-label="Increment Quantity for the product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-increment"
-      data-variant="outline"
     >
-      <span
-        class="text-sm"
-      >
-        +
-      </span>
+      +
     </button>
   </div>
 </div>
@@ -50,27 +35,19 @@ exports[`QuantityPicker stories snapshot > Default story renders and matches sna
 exports[`QuantityPicker stories snapshot > Disabled story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="inline-flex items-center border border-input rounded-lg"
   >
     <button
       aria-label="Decrement Quantity for the product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-decrement"
-      data-variant="outline"
       disabled=""
     >
-      <span
-        class="text-sm"
-      >
-        −
-      </span>
+      −
     </button>
     <input
       aria-label="Quantity:"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-      data-slot="input"
+      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       disabled=""
       min="0"
       step="1"
@@ -79,18 +56,11 @@ exports[`QuantityPicker stories snapshot > Disabled story renders and matches sn
     />
     <button
       aria-label="Increment Quantity for the product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-increment"
-      data-variant="outline"
       disabled=""
     >
-      <span
-        class="text-sm"
-      >
-        +
-      </span>
+      +
     </button>
   </div>
 </div>
@@ -99,26 +69,18 @@ exports[`QuantityPicker stories snapshot > Disabled story renders and matches sn
 exports[`QuantityPicker stories snapshot > HighQuantity story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="inline-flex items-center border border-input rounded-lg"
   >
     <button
       aria-label="Decrement Quantity for the product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-decrement"
-      data-variant="outline"
     >
-      <span
-        class="text-sm"
-      >
-        −
-      </span>
+      −
     </button>
     <input
       aria-label="Quantity:"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-      data-slot="input"
+      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
       step="1"
       type="number"
@@ -126,17 +88,10 @@ exports[`QuantityPicker stories snapshot > HighQuantity story renders and matche
     />
     <button
       aria-label="Increment Quantity for the product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-increment"
-      data-variant="outline"
     >
-      <span
-        class="text-sm"
-      >
-        +
-      </span>
+      +
     </button>
   </div>
 </div>
@@ -145,26 +100,18 @@ exports[`QuantityPicker stories snapshot > HighQuantity story renders and matche
 exports[`QuantityPicker stories snapshot > Interactive story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="inline-flex items-center border border-input rounded-lg"
   >
     <button
       aria-label="Decrement Quantity for Test Product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-decrement"
-      data-variant="outline"
     >
-      <span
-        class="text-sm"
-      >
-        −
-      </span>
+      −
     </button>
     <input
       aria-label="Quantity:"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-      data-slot="input"
+      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
       step="1"
       type="number"
@@ -172,17 +119,10 @@ exports[`QuantityPicker stories snapshot > Interactive story renders and matches
     />
     <button
       aria-label="Increment Quantity for Test Product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-increment"
-      data-variant="outline"
     >
-      <span
-        class="text-sm"
-      >
-        +
-      </span>
+      +
     </button>
   </div>
 </div>
@@ -191,26 +131,18 @@ exports[`QuantityPicker stories snapshot > Interactive story renders and matches
 exports[`QuantityPicker stories snapshot > MinimumValue story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="inline-flex items-center border border-input rounded-lg"
   >
     <button
       aria-label="Decrement Quantity for the product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-decrement"
-      data-variant="outline"
     >
-      <span
-        class="text-sm"
-      >
-        −
-      </span>
+      −
     </button>
     <input
       aria-label="Quantity:"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-      data-slot="input"
+      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
       step="1"
       type="number"
@@ -218,17 +150,10 @@ exports[`QuantityPicker stories snapshot > MinimumValue story renders and matche
     />
     <button
       aria-label="Increment Quantity for the product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-increment"
-      data-variant="outline"
     >
-      <span
-        class="text-sm"
-      >
-        +
-      </span>
+      +
     </button>
   </div>
 </div>
@@ -237,27 +162,19 @@ exports[`QuantityPicker stories snapshot > MinimumValue story renders and matche
 exports[`QuantityPicker stories snapshot > MinimumValueOne story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="inline-flex items-center border border-input rounded-lg"
   >
     <button
       aria-label="Decrement Quantity for the product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-decrement"
-      data-variant="outline"
       disabled=""
     >
-      <span
-        class="text-sm"
-      >
-        −
-      </span>
+      −
     </button>
     <input
       aria-label="Quantity:"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-      data-slot="input"
+      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="1"
       step="1"
       type="number"
@@ -265,17 +182,10 @@ exports[`QuantityPicker stories snapshot > MinimumValueOne story renders and mat
     />
     <button
       aria-label="Increment Quantity for the product"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-increment"
-      data-variant="outline"
     >
-      <span
-        class="text-sm"
-      >
-        +
-      </span>
+      +
     </button>
   </div>
 </div>
@@ -284,26 +194,18 @@ exports[`QuantityPicker stories snapshot > MinimumValueOne story renders and mat
 exports[`QuantityPicker stories snapshot > WithProductName story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="inline-flex items-center border border-input rounded-lg"
   >
     <button
       aria-label="Decrement Quantity for Blue T-Shirt"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-decrement"
-      data-variant="outline"
     >
-      <span
-        class="text-sm"
-      >
-        −
-      </span>
+      −
     </button>
     <input
       aria-label="Quantity:"
-      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-      data-slot="input"
+      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
       step="1"
       type="number"
@@ -311,17 +213,10 @@ exports[`QuantityPicker stories snapshot > WithProductName story renders and mat
     />
     <button
       aria-label="Increment Quantity for Blue T-Shirt"
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-      data-size="icon"
-      data-slot="button"
+      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
       data-testid="quantity-increment"
-      data-variant="outline"
     >
-      <span
-        class="text-sm"
-      >
-        +
-      </span>
+      +
     </button>
   </div>
 </div>

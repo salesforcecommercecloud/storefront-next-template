@@ -17,16 +17,35 @@
 import 'reflect-metadata';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { type LoaderFunctionArgs, MemoryRouter } from 'react-router';
 import type { ShopperExperience, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import SearchPage, { loader, type SearchPageData, SearchPageMetadata } from './_app.search';
-import { createTestContext } from '@/lib/test-utils';
+import SearchPage, { loader, shouldRevalidate, type SearchPageData, SearchPageMetadata } from './_app.search';
+import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
-import { type AppConfig, getConfig } from '@/config';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
 import { ConfigWrapper } from '@/test-utils/context-provider';
+
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    return {
+        ...actual,
+        useNavigation: () => ({ state: 'idle', location: undefined }),
+    };
+});
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
 
 // Mock data
 const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
@@ -106,15 +125,17 @@ vi.mock('@/components/region', async () => {
 
 // Mock ProductGrid component
 vi.mock('@/components/product-grid', () => ({
-    default: ({ products }: any) => (
-        <div data-testid="product-grid">
-            {products?.map((product: any) => (
-                <div key={product.productId} data-testid="product-item">
-                    {product.productName}
-                </div>
-            ))}
-        </div>
-    ),
+    default: function ProductGridMock({ products }: any) {
+        return (
+            <div data-testid="product-grid">
+                {products?.map((product: any) => (
+                    <div key={product.productId} data-testid="product-item">
+                        {product.productName}
+                    </div>
+                ))}
+            </div>
+        );
+    },
 }));
 
 // Mock other components
@@ -134,11 +155,17 @@ vi.mock('@/components/category-refinements/active-filters', () => ({
     default: () => <div data-testid="active-filters" />,
 }));
 
+vi.mock('@/components/category-refinements/filters-button', () => ({
+    default: ({ onClick }: any) => (
+        <button data-testid="filters-button" onClick={onClick}>
+            Filters
+        </button>
+    ),
+}));
+
 vi.mock('@/components/category-sorting', () => ({
     default: () => <div data-testid="category-sorting" />,
 }));
-
-// Mock API functions
 vi.mock('@/lib/api/search', () => ({
     fetchSearchProducts: vi.fn(),
 }));
@@ -156,7 +183,7 @@ vi.mock('@/hooks/use-analytics', () => ({
 }));
 
 // Mock config
-vi.mock('@/config', async (importOriginal) => {
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual = await importOriginal<object>();
     const mockConfigValue = {
         commerce: {
@@ -248,12 +275,9 @@ describe('SearchPage', () => {
 
     describe('loader', () => {
         test('should fetch search data and page with correct parameters', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/search?q=shoes&offset=0'),
-                context: mockContext,
-                params: {},
+            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes&offset=0'), mockContext, {
                 unstable_pattern: '/search',
-            };
+            });
 
             const result = await loader(args);
 
@@ -280,14 +304,13 @@ describe('SearchPage', () => {
         });
 
         test('should handle query parameters correctly', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request(
+            const args = createLoaderArgs(
+                new Request(
                     'https://example.com/search?q=boots&offset=20&sort=price-low-to-high&refine=color:red&refine=size:10'
                 ),
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/search',
-            };
+                mockContext,
+                { unstable_pattern: '/search' }
+            );
 
             await loader(args);
 
@@ -301,9 +324,110 @@ describe('SearchPage', () => {
                 })
             );
         });
+
+        test('should parse filters query param into initialFiltersOpen', async () => {
+            const openArgs: LoaderFunctionArgs = {
+                request: new Request('https://example.com/search?q=shoes&filters=open'),
+                context: mockContext,
+                params: {},
+                unstable_pattern: '/search',
+            };
+            const closedArgs: LoaderFunctionArgs = {
+                request: new Request('https://example.com/search?q=shoes&filters=closed'),
+                context: mockContext,
+                params: {},
+                unstable_pattern: '/search',
+            };
+
+            const openResult = await loader(openArgs);
+            const closedResult = await loader(closedArgs);
+
+            expect(openResult.initialFiltersOpen).toBe(true);
+            expect(closedResult.initialFiltersOpen).toBe(false);
+        });
     });
 
     describe('SearchPage Component', () => {
+        test('should apply initialFiltersOpen from loader data', async () => {
+            const openLoaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                initialFiltersOpen: true,
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            const closedLoaderData: SearchPageData = {
+                ...openLoaderData,
+                initialFiltersOpen: false,
+            };
+
+            const { unmount } = render(
+                <MemoryRouter initialEntries={['/search?q=shoes&filters=open']}>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={openLoaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
+            });
+
+            unmount();
+
+            render(
+                <MemoryRouter initialEntries={['/search?q=shoes&filters=closed']}>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={closedLoaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.queryByTestId('category-refinements')).not.toBeInTheDocument();
+            });
+        });
+
+        test('should not remount ProductGrid when only filters query param changes', async () => {
+            const user = userEvent.setup();
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                initialFiltersOpen: false,
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter initialEntries={['/search?q=shoes&filters=closed']}>
+                    <ConfigWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </ConfigWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('product-grid')).toBeInTheDocument();
+            });
+            const productGridBefore = screen.getByTestId('product-grid');
+
+            await user.click(screen.getAllByTestId('filters-button')[0]);
+
+            await waitFor(() => {
+                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
+            });
+            expect(screen.getByTestId('product-grid')).toBe(productGridBefore);
+        });
+
         test('should render search results', async () => {
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
@@ -312,6 +436,8 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -348,6 +474,8 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -373,6 +501,8 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage([]), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -396,6 +526,8 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -419,6 +551,8 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -450,6 +584,8 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -461,7 +597,8 @@ describe('SearchPage', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
+                const filterButtons = screen.getAllByTestId('filters-button');
+                expect(filterButtons).toHaveLength(2);
                 expect(screen.getByTestId('category-sorting')).toBeInTheDocument();
             });
         });
@@ -482,6 +619,8 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -518,6 +657,8 @@ describe('SearchPage', () => {
                 page: Promise.resolve({ ...createMockPage([mockRegion]), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
             };
 
             render(
@@ -532,5 +673,39 @@ describe('SearchPage', () => {
                 expect(screen.queryByTestId('region')).not.toBeInTheDocument();
             });
         });
+    });
+});
+
+describe('SearchPage shouldRevalidate', () => {
+    test('returns false when only filters query param changes', () => {
+        const result = shouldRevalidate({
+            currentUrl: new URL('http://localhost/search?q=shoes&filters=closed&refine=color:red'),
+            nextUrl: new URL('http://localhost/search?q=shoes&filters=open&refine=color:red'),
+            defaultShouldRevalidate: true,
+            actionStatus: 200,
+            formAction: undefined,
+            formData: undefined,
+            formEncType: 'application/x-www-form-urlencoded',
+            formMethod: 'GET',
+            actionResult: undefined,
+        } as any);
+
+        expect(result).toBe(false);
+    });
+
+    test('uses default behavior when non-filters query params change', () => {
+        const result = shouldRevalidate({
+            currentUrl: new URL('http://localhost/search?q=shoes&filters=closed'),
+            nextUrl: new URL('http://localhost/search?q=boots&filters=closed'),
+            defaultShouldRevalidate: true,
+            actionStatus: 200,
+            formAction: undefined,
+            formData: undefined,
+            formEncType: 'application/x-www-form-urlencoded',
+            formMethod: 'GET',
+            actionResult: undefined,
+        } as any);
+
+        expect(result).toBe(true);
     });
 });

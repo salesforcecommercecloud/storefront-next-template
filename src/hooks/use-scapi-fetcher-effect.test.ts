@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { renderHook } from '@testing-library/react';
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach, type MockedFunction } from 'vitest';
 import { useScapiFetcherEffect, type ScapiFetcherEffectConfig } from './use-scapi-fetcher-effect';
 import type { ScapiFetcher } from './use-scapi-fetcher';
 
@@ -56,12 +56,13 @@ function createMockFetcher<TData = unknown>(
 }
 
 describe('useScapiFetcherEffect', () => {
-    let mockOnSuccess: vi.MockedFunction<(data: TestData) => void>;
-    let mockOnError: vi.MockedFunction<(errors: string[]) => void>;
+    /** Wide signature: tests use many `ScapiFetcherEffectConfig<TData>` specializations with one mock */
+    let mockOnSuccess: MockedFunction<(data: unknown) => void>;
+    let mockOnError: MockedFunction<(errors: string[]) => void>;
 
     beforeEach(() => {
-        mockOnSuccess = vi.fn();
-        mockOnError = vi.fn();
+        mockOnSuccess = vi.fn() as MockedFunction<(data: unknown) => void>;
+        mockOnError = vi.fn() as MockedFunction<(errors: string[]) => void>;
     });
 
     afterEach(() => {

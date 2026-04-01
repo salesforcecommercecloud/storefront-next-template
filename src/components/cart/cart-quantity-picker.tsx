@@ -23,7 +23,8 @@ import { useTranslation } from 'react-i18next';
 // Hooks
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useCartQuantityUpdate } from '@/hooks/use-cart-quantity-update';
-import { useConfig } from '@/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 // Components
 import { ConfirmationDialog } from '@/components/confirmation-dialog';
@@ -69,7 +70,7 @@ export default function CartQuantityPicker({
     max,
     disabled = false,
 }: CartQuantityPickerProps): ReactElement {
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
     const { t: tQuantity } = useTranslation('quantitySelector');
     const { t: tRemove } = useTranslation('removeItem');
     const { t: tCart } = useTranslation('cart');
@@ -84,6 +85,7 @@ export default function CartQuantityPicker({
     const {
         quantity,
         stockValidationError,
+        stockMax,
         showRemoveConfirmation,
         handleQuantityChange,
         handleQuantityBlur,
@@ -99,8 +101,10 @@ export default function CartQuantityPicker({
     });
 
     return (
-        <div className={className}>
-            <Label htmlFor="quantity" className="text-foreground mb-2 block">
+        <div className={`${className ?? ''} relative`}>
+            <Label
+                htmlFor="quantity"
+                className="text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right">
                 {tQuantity('quantity')}
             </Label>
             <QuantityPicker
@@ -108,11 +112,15 @@ export default function CartQuantityPicker({
                 onBlur={handleQuantityBlur}
                 onChange={handleQuantityChange}
                 disabled={isLoading || disabled}
-                max={max}
+                max={max ?? stockMax}
             />
-            {/* Stock validation error message */}
+            {/* Stock validation message */}
             {!disabled && stockValidationError && (
-                <Typography variant="small" className="text-destructive mt-1" role="alert" aria-live="polite">
+                <Typography
+                    variant="small"
+                    className="absolute top-full mt-1 text-destructive w-max max-md:left-0 md:right-0"
+                    role="alert"
+                    aria-live="polite">
                     {stockValidationError}
                 </Typography>
             )}

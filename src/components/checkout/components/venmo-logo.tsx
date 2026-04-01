@@ -22,17 +22,25 @@ import { useTranslation } from 'react-i18next';
  * Official Venmo wordmark logo matching SDK button appearance
  * Uses local Venmo SVG file from public/images
  */
-export default function VenmoLogo({ className }: { className?: string }) {
+export default function VenmoLogo({
+    className,
+    decorative = false,
+}: {
+    className?: string;
+    /** When true, image is hidden from the accessibility tree (use inside a button that has aria-label). */
+    decorative?: boolean;
+}) {
     const { t } = useTranslation('checkout');
+    const label = t('expressPayments.venmoLabel') || 'Venmo';
     return (
         <img
             src={venmoLogo}
-            alt={t('expressPayments.venmoLabel') || 'Venmo'}
-            className={`${className || ''} h-3 w-auto`}
-            style={{
-                objectFit: 'contain',
-                filter: 'brightness(0) invert(1)', // Convert to white
-            }}
+            alt={decorative ? '' : label}
+            width="48"
+            height="12"
+            {...(decorative ? { 'aria-hidden': true } : {})}
+            className={`${className || ''} h-3 w-auto object-contain`}
+            style={{ filter: 'brightness(0) invert(1)' }}
         />
     );
 }

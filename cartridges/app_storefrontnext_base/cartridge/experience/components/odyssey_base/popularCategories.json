@@ -7,6 +7,11 @@
         {
             "id": "categories",
             "name": "Categories",
+            "component_type_inclusions": [
+                {
+                    "type_id": "odyssey_base.popularCategory"
+                }
+            ],
             "max_components": 4
         }
     ],
@@ -19,7 +24,7 @@
                 {
                     "id": "parentId",
                     "name": "Parent Category ID",
-                    "type": "string",
+                    "type": "category",
                     "required": false,
                     "description": "The parent category ID to fetch child categories from (e.g., root, mens, womens)"
                 },
@@ -28,7 +33,8 @@
                     "name": "Horizontal Padding",
                     "type": "string",
                     "required": false,
-                    "description": "Horizontal padding classes (e.g., px-4 sm:px-6 lg:px-8)"
+                    "description": "Horizontal padding classes (e.g., px-4 sm:px-6 lg:px-8)",
+                    "default_value": "px-4 sm:px-6 lg:px-8"
                 }
             ]
         }

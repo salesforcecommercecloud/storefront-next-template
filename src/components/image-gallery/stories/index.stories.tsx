@@ -20,7 +20,7 @@ import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, waitFor } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
-import { ConfigProvider } from '@/config/context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 
 function ImageGalleryStoryHarness({ children }: { children: ReactNode }): ReactElement {

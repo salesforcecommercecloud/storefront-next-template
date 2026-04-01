@@ -8,7 +8,9 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
     <div
       class="space-y-4"
     >
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -25,7 +27,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
               >
                 <div
-                  class="flex-shrink-0 flex items-center justify-center"
+                  class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
                     class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
@@ -41,16 +43,19 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                   class="flex-1 space-y-3 min-w-0"
                 >
                   <div
-                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0"
+                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0"
                   >
                     <div
                       class="min-w-0"
                     >
                       <div
-                        class="mb-4 flex items-start gap-2 min-w-0"
+                        class="md:hidden float-right ml-2"
+                      />
+                      <div
+                        class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                       >
                         <h2
-                          class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                          class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
@@ -64,7 +69,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                       </div>
                       <div>
                         <div
-                          class="text-sm text-muted-foreground space-y-1 mb-1"
+                          class="text-xs text-muted-foreground space-y-1 mb-1"
                         >
                           <div>
                             Size
@@ -74,114 +79,34 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                         </div>
                       </div>
                       <p
-                        class="text-sm text-muted-foreground leading-relaxed text-left break-words"
+                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
                       >
                         These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
                       </p>
+                    </div>
+                    <div
+                      class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
+                    >
                       <div
-                        class="min-w-0"
+                        class="hidden md:block"
                       />
-                    </div>
-                    <div
-                      class="text-right md:hidden"
-                      data-testid="mobile-product-price"
-                    >
                       <div
-                        class="font-semibold text-base"
+                        class="md:self-end"
                       >
                         <div
-                          class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                        >
-                          <span
-                            aria-label="Current price: £99.99"
-                            aria-live="polite"
-                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                          >
-                            £99.99
-                          </span>
-                          <span
-                            aria-atomic="true"
-                            aria-live="polite"
-                            class="sr-only"
-                          >
-                            Men's Classic Deer Gloves
-                            Current price: £99.99
-                          </span>
-                           
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="grid gap-4 justify-items-end flex-shrink-0"
-                    >
-                      <div>
-                        <label
-                          class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
-                          data-slot="label"
-                          for="quantity"
-                        >
-                          Quantity:
-                        </label>
-                        <div
-                          class="flex items-center space-x-1"
-                        >
-                          <button
-                            aria-label="Decrement Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-decrement"
-                            data-variant="outline"
-                            disabled=""
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              −
-                            </span>
-                          </button>
-                          <input
-                            aria-label="Quantity:"
-                            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            data-slot="input"
-                            min="0"
-                            step="1"
-                            type="number"
-                            value="1"
-                          />
-                          <button
-                            aria-label="Increment Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-increment"
-                            data-variant="outline"
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              +
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                      <div
-                        class="self-end"
-                      >
-                        <div
-                          class="text-right hidden md:block"
+                          class="md:text-right"
                           data-testid="desktop-product-price"
                         >
                           <div
                             class="font-semibold text-base"
                           >
                             <div
-                              class="items-center gap-2"
+                              class="flex flex-row md:flex-col items-baseline md:items-end gap-2 md:gap-0"
                             >
                               <span
                                 aria-label="Current price: £99.99"
                                 aria-live="polite"
-                                class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                class="[&:not(:first-child)]:mt-6 text-left text-card-foreground text-lg md:text-right font-semibold leading-none relative"
                               >
                                 £99.99
                               </span>
@@ -198,7 +123,49 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                           </div>
                         </div>
                       </div>
+                      <div
+                        class=" relative"
+                      >
+                        <label
+                          class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
+                          data-slot="label"
+                          for="quantity"
+                        >
+                          Quantity:
+                        </label>
+                        <div
+                          class="inline-flex items-center border border-input rounded-lg"
+                        >
+                          <button
+                            aria-label="Decrement Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-decrement"
+                            disabled=""
+                          >
+                            −
+                          </button>
+                          <input
+                            aria-label="Quantity:"
+                            class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            max="98"
+                            min="0"
+                            step="1"
+                            type="number"
+                            value="1"
+                          />
+                          <button
+                            aria-label="Increment Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-increment"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
                     </div>
+                    <div
+                      class="min-w-0 md:col-start-1 md:row-start-2"
+                    />
                   </div>
                 </div>
               </div>
@@ -206,7 +173,9 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
           </div>
         </div>
       </div>
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -223,7 +192,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
               >
                 <div
-                  class="flex-shrink-0 flex items-center justify-center"
+                  class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
                     class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
@@ -239,16 +208,19 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                   class="flex-1 space-y-3 min-w-0"
                 >
                   <div
-                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0"
+                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0"
                   >
                     <div
                       class="min-w-0"
                     >
                       <div
-                        class="mb-4 flex items-start gap-2 min-w-0"
+                        class="md:hidden float-right ml-2"
+                      />
+                      <div
+                        class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                       >
                         <h2
-                          class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                          class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
@@ -262,7 +234,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                       </div>
                       <div>
                         <div
-                          class="text-sm text-muted-foreground space-y-1 mb-1"
+                          class="text-xs text-muted-foreground space-y-1 mb-1"
                         >
                           <div>
                             Size
@@ -272,120 +244,34 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                         </div>
                       </div>
                       <p
-                        class="text-sm text-muted-foreground leading-relaxed text-left break-words"
+                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
                       >
                         These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
                       </p>
+                    </div>
+                    <div
+                      class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
+                    >
                       <div
-                        class="min-w-0"
+                        class="hidden md:block"
                       />
-                    </div>
-                    <div
-                      class="text-right md:hidden"
-                      data-testid="mobile-product-price"
-                    >
                       <div
-                        class="font-semibold text-base"
+                        class="md:self-end"
                       >
                         <div
-                          class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                        >
-                          <span
-                            aria-label="Current price: £199.98"
-                            aria-live="polite"
-                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                          >
-                            £199.98
-                          </span>
-                          <span
-                            aria-atomic="true"
-                            aria-live="polite"
-                            class="sr-only"
-                          >
-                            Men's Classic Deer Gloves
-                            Current price: £199.98
-                          </span>
-                           
-                        </div>
-                      </div>
-                      <div
-                        class="text-muted-foreground text-sm"
-                      >
-                        £50.00
-                         
-                        each
-                      </div>
-                    </div>
-                    <div
-                      class="grid gap-4 justify-items-end flex-shrink-0"
-                    >
-                      <div>
-                        <label
-                          class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
-                          data-slot="label"
-                          for="quantity"
-                        >
-                          Quantity:
-                        </label>
-                        <div
-                          class="flex items-center space-x-1"
-                        >
-                          <button
-                            aria-label="Decrement Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-decrement"
-                            data-variant="outline"
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              −
-                            </span>
-                          </button>
-                          <input
-                            aria-label="Quantity:"
-                            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            data-slot="input"
-                            min="0"
-                            step="1"
-                            type="number"
-                            value="2"
-                          />
-                          <button
-                            aria-label="Increment Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-increment"
-                            data-variant="outline"
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              +
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                      <div
-                        class="self-end"
-                      >
-                        <div
-                          class="text-right hidden md:block"
+                          class="md:text-right"
                           data-testid="desktop-product-price"
                         >
                           <div
                             class="font-semibold text-base"
                           >
                             <div
-                              class="items-center gap-2"
+                              class="flex flex-row md:flex-col items-baseline md:items-end gap-2 md:gap-0"
                             >
                               <span
                                 aria-label="Current price: £199.98"
                                 aria-live="polite"
-                                class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                class="[&:not(:first-child)]:mt-6 text-left text-card-foreground text-lg md:text-right font-semibold leading-none relative"
                               >
                                 £199.98
                               </span>
@@ -409,7 +295,48 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                           </div>
                         </div>
                       </div>
+                      <div
+                        class=" relative"
+                      >
+                        <label
+                          class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
+                          data-slot="label"
+                          for="quantity"
+                        >
+                          Quantity:
+                        </label>
+                        <div
+                          class="inline-flex items-center border border-input rounded-lg"
+                        >
+                          <button
+                            aria-label="Decrement Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-decrement"
+                          >
+                            −
+                          </button>
+                          <input
+                            aria-label="Quantity:"
+                            class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            max="98"
+                            min="0"
+                            step="1"
+                            type="number"
+                            value="2"
+                          />
+                          <button
+                            aria-label="Increment Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-increment"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
                     </div>
+                    <div
+                      class="min-w-0 md:col-start-1 md:row-start-2"
+                    />
                   </div>
                 </div>
               </div>
@@ -430,7 +357,9 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
     <div
       class="space-y-4"
     >
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -447,7 +376,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
               >
                 <div
-                  class="flex-shrink-0 flex items-center justify-center"
+                  class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
                     class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
@@ -463,16 +392,19 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                   class="flex-1 space-y-3 min-w-0"
                 >
                   <div
-                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0"
+                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0"
                   >
                     <div
                       class="min-w-0"
                     >
                       <div
-                        class="mb-4 flex items-start gap-2 min-w-0"
+                        class="md:hidden float-right ml-2"
+                      />
+                      <div
+                        class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                       >
                         <h2
-                          class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                          class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
@@ -486,7 +418,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                       </div>
                       <div>
                         <div
-                          class="text-sm text-muted-foreground space-y-1 mb-1"
+                          class="text-xs text-muted-foreground space-y-1 mb-1"
                         >
                           <div>
                             Size
@@ -496,132 +428,34 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                         </div>
                       </div>
                       <p
-                        class="text-sm text-muted-foreground leading-relaxed text-left break-words"
+                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
                       >
                         These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
                       </p>
-                      <div
-                        class="min-w-0"
-                      >
-                        <div
-                          data-testid="mobile-primary-action"
-                        >
-                          <button
-                            data-testid="remove-item-1"
-                            type="button"
-                          >
-                            Remove 
-                            item-1
-                          </button>
-                        </div>
-                        <button
-                          data-testid="edit-item"
-                          type="button"
-                        >
-                          Edit
-                        </button>
-                      </div>
                     </div>
                     <div
-                      class="text-right md:hidden"
-                      data-testid="mobile-product-price"
+                      class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
                     >
                       <div
-                        class="font-semibold text-base"
-                      >
-                        <div
-                          class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                        >
-                          <span
-                            aria-label="Current price: £99.99"
-                            aria-live="polite"
-                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                          >
-                            £99.99
-                          </span>
-                          <span
-                            aria-atomic="true"
-                            aria-live="polite"
-                            class="sr-only"
-                          >
-                            Men's Classic Deer Gloves
-                            Current price: £99.99
-                          </span>
-                           
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="grid gap-4 justify-items-end flex-shrink-0"
-                    >
-                      <div>
-                        <label
-                          class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
-                          data-slot="label"
-                          for="quantity"
-                        >
-                          Quantity:
-                        </label>
-                        <div
-                          class="flex items-center space-x-1"
-                        >
-                          <button
-                            aria-label="Decrement Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-decrement"
-                            data-variant="outline"
-                            disabled=""
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              −
-                            </span>
-                          </button>
-                          <input
-                            aria-label="Quantity:"
-                            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            data-slot="input"
-                            min="0"
-                            step="1"
-                            type="number"
-                            value="1"
-                          />
-                          <button
-                            aria-label="Increment Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-increment"
-                            data-variant="outline"
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              +
-                            </span>
-                          </button>
-                        </div>
-                      </div>
+                        class="hidden md:block"
+                      />
                       <div
-                        class="self-end"
+                        class="md:self-end"
                       >
                         <div
-                          class="text-right hidden md:block"
+                          class="md:text-right"
                           data-testid="desktop-product-price"
                         >
                           <div
                             class="font-semibold text-base"
                           >
                             <div
-                              class="items-center gap-2"
+                              class="flex flex-row md:flex-col items-baseline md:items-end gap-2 md:gap-0"
                             >
                               <span
                                 aria-label="Current price: £99.99"
                                 aria-live="polite"
-                                class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                class="[&:not(:first-child)]:mt-6 text-left text-card-foreground text-lg md:text-right font-semibold leading-none relative"
                               >
                                 £99.99
                               </span>
@@ -638,6 +472,66 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           </div>
                         </div>
                       </div>
+                      <div
+                        class=" relative"
+                      >
+                        <label
+                          class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
+                          data-slot="label"
+                          for="quantity"
+                        >
+                          Quantity:
+                        </label>
+                        <div
+                          class="inline-flex items-center border border-input rounded-lg"
+                        >
+                          <button
+                            aria-label="Decrement Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-decrement"
+                            disabled=""
+                          >
+                            −
+                          </button>
+                          <input
+                            aria-label="Quantity:"
+                            class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            max="98"
+                            min="0"
+                            step="1"
+                            type="number"
+                            value="1"
+                          />
+                          <button
+                            aria-label="Increment Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-increment"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="min-w-0 md:col-start-1 md:row-start-2"
+                    >
+                      <div
+                        data-testid="mobile-primary-action"
+                      >
+                        <button
+                          data-testid="remove-item-1"
+                          type="button"
+                        >
+                          Remove 
+                          item-1
+                        </button>
+                      </div>
+                      <button
+                        data-testid="edit-item"
+                        type="button"
+                      >
+                        Edit
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -646,7 +540,9 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
           </div>
         </div>
       </div>
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -663,7 +559,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
               >
                 <div
-                  class="flex-shrink-0 flex items-center justify-center"
+                  class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
                     class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
@@ -679,16 +575,19 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                   class="flex-1 space-y-3 min-w-0"
                 >
                   <div
-                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0"
+                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0"
                   >
                     <div
                       class="min-w-0"
                     >
                       <div
-                        class="mb-4 flex items-start gap-2 min-w-0"
+                        class="md:hidden float-right ml-2"
+                      />
+                      <div
+                        class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                       >
                         <h2
-                          class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                          class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
@@ -702,7 +601,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                       </div>
                       <div>
                         <div
-                          class="text-sm text-muted-foreground space-y-1 mb-1"
+                          class="text-xs text-muted-foreground space-y-1 mb-1"
                         >
                           <div>
                             Size
@@ -712,138 +611,34 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                         </div>
                       </div>
                       <p
-                        class="text-sm text-muted-foreground leading-relaxed text-left break-words"
+                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
                       >
                         These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
                       </p>
-                      <div
-                        class="min-w-0"
-                      >
-                        <div
-                          data-testid="mobile-primary-action"
-                        >
-                          <button
-                            data-testid="remove-item-2"
-                            type="button"
-                          >
-                            Remove 
-                            item-2
-                          </button>
-                        </div>
-                        <button
-                          data-testid="edit-item"
-                          type="button"
-                        >
-                          Edit
-                        </button>
-                      </div>
                     </div>
                     <div
-                      class="text-right md:hidden"
-                      data-testid="mobile-product-price"
+                      class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
                     >
                       <div
-                        class="font-semibold text-base"
-                      >
-                        <div
-                          class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                        >
-                          <span
-                            aria-label="Current price: £199.98"
-                            aria-live="polite"
-                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                          >
-                            £199.98
-                          </span>
-                          <span
-                            aria-atomic="true"
-                            aria-live="polite"
-                            class="sr-only"
-                          >
-                            Men's Classic Deer Gloves
-                            Current price: £199.98
-                          </span>
-                           
-                        </div>
-                      </div>
+                        class="hidden md:block"
+                      />
                       <div
-                        class="text-muted-foreground text-sm"
-                      >
-                        £50.00
-                         
-                        each
-                      </div>
-                    </div>
-                    <div
-                      class="grid gap-4 justify-items-end flex-shrink-0"
-                    >
-                      <div>
-                        <label
-                          class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
-                          data-slot="label"
-                          for="quantity"
-                        >
-                          Quantity:
-                        </label>
-                        <div
-                          class="flex items-center space-x-1"
-                        >
-                          <button
-                            aria-label="Decrement Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-decrement"
-                            data-variant="outline"
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              −
-                            </span>
-                          </button>
-                          <input
-                            aria-label="Quantity:"
-                            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            data-slot="input"
-                            min="0"
-                            step="1"
-                            type="number"
-                            value="2"
-                          />
-                          <button
-                            aria-label="Increment Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-increment"
-                            data-variant="outline"
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              +
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                      <div
-                        class="self-end"
+                        class="md:self-end"
                       >
                         <div
-                          class="text-right hidden md:block"
+                          class="md:text-right"
                           data-testid="desktop-product-price"
                         >
                           <div
                             class="font-semibold text-base"
                           >
                             <div
-                              class="items-center gap-2"
+                              class="flex flex-row md:flex-col items-baseline md:items-end gap-2 md:gap-0"
                             >
                               <span
                                 aria-label="Current price: £199.98"
                                 aria-live="polite"
-                                class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                class="[&:not(:first-child)]:mt-6 text-left text-card-foreground text-lg md:text-right font-semibold leading-none relative"
                               >
                                 £199.98
                               </span>
@@ -867,6 +662,65 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           </div>
                         </div>
                       </div>
+                      <div
+                        class=" relative"
+                      >
+                        <label
+                          class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
+                          data-slot="label"
+                          for="quantity"
+                        >
+                          Quantity:
+                        </label>
+                        <div
+                          class="inline-flex items-center border border-input rounded-lg"
+                        >
+                          <button
+                            aria-label="Decrement Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-decrement"
+                          >
+                            −
+                          </button>
+                          <input
+                            aria-label="Quantity:"
+                            class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            max="98"
+                            min="0"
+                            step="1"
+                            type="number"
+                            value="2"
+                          />
+                          <button
+                            aria-label="Increment Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-increment"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="min-w-0 md:col-start-1 md:row-start-2"
+                    >
+                      <div
+                        data-testid="mobile-primary-action"
+                      >
+                        <button
+                          data-testid="remove-item-2"
+                          type="button"
+                        >
+                          Remove 
+                          item-2
+                        </button>
+                      </div>
+                      <button
+                        data-testid="edit-item"
+                        type="button"
+                      >
+                        Edit
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -888,7 +742,9 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
     <div
       class="space-y-5"
     >
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="grid md:grid-cols-[112px_1fr] grid-cols-[72px_1fr] gap-4"
           data-testid="sf-product-item-summary-061492183589M"
@@ -910,10 +766,10 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
             class="flex-1 space-y-1 min-w-0"
           >
             <div
-              class="mb-4 flex items-start gap-2 min-w-0"
+              class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
             >
               <h2
-                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
               >
                 <a
                   class="text-foreground hover:text-primary block break-words"
@@ -927,14 +783,14 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
             </div>
             <div>
               <div
-                class="text-sm text-muted-foreground"
+                class="text-xs text-muted-foreground"
               >
                 Qty:
                  
                 1
               </div>
               <div
-                class="text-sm text-muted-foreground space-y-1 mb-1"
+                class="text-xs text-muted-foreground space-y-1 mb-1"
               >
                 <div>
                   Size
@@ -966,7 +822,9 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
           </div>
         </div>
       </div>
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="grid md:grid-cols-[112px_1fr] grid-cols-[72px_1fr] gap-4"
           data-testid="sf-product-item-summary-061492183589M"
@@ -988,10 +846,10 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
             class="flex-1 space-y-1 min-w-0"
           >
             <div
-              class="mb-4 flex items-start gap-2 min-w-0"
+              class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
             >
               <h2
-                class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
               >
                 <a
                   class="text-foreground hover:text-primary block break-words"
@@ -1005,14 +863,14 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
             </div>
             <div>
               <div
-                class="text-sm text-muted-foreground"
+                class="text-xs text-muted-foreground"
               >
                 Qty:
                  
                 2
               </div>
               <div
-                class="text-sm text-muted-foreground space-y-1 mb-1"
+                class="text-xs text-muted-foreground space-y-1 mb-1"
               >
                 <div>
                   Size
@@ -1057,7 +915,9 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
     <div
       class="space-y-4"
     >
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -1074,7 +934,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
               >
                 <div
-                  class="flex-shrink-0 flex items-center justify-center"
+                  class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
                     class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
@@ -1090,16 +950,19 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                   class="flex-1 space-y-3 min-w-0"
                 >
                   <div
-                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0"
+                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0"
                   >
                     <div
                       class="min-w-0"
                     >
                       <div
-                        class="mb-4 flex items-start gap-2 min-w-0"
+                        class="md:hidden float-right ml-2"
+                      />
+                      <div
+                        class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                       >
                         <h2
-                          class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                          class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
@@ -1113,7 +976,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                       </div>
                       <div>
                         <div
-                          class="text-sm text-muted-foreground space-y-1 mb-1"
+                          class="text-xs text-muted-foreground space-y-1 mb-1"
                         >
                           <div>
                             Size
@@ -1123,130 +986,34 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                         </div>
                       </div>
                       <p
-                        class="text-sm text-muted-foreground leading-relaxed text-left break-words"
+                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
                       >
                         These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
                       </p>
-                      <div
-                        class="min-w-0"
-                      >
-                        <div
-                          data-testid="mobile-primary-action"
-                        >
-                          <button
-                            class="text-destructive"
-                          >
-                            Remove 
-                            item-1
-                          </button>
-                        </div>
-                        <button
-                          class="text-primary"
-                        >
-                          Edit
-                        </button>
-                      </div>
                     </div>
                     <div
-                      class="text-right md:hidden"
-                      data-testid="mobile-product-price"
+                      class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
                     >
                       <div
-                        class="font-semibold text-base"
-                      >
-                        <div
-                          class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                        >
-                          <span
-                            aria-label="Current price: £99.99"
-                            aria-live="polite"
-                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                          >
-                            £99.99
-                          </span>
-                          <span
-                            aria-atomic="true"
-                            aria-live="polite"
-                            class="sr-only"
-                          >
-                            Men's Classic Deer Gloves
-                            Current price: £99.99
-                          </span>
-                           
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="grid gap-4 justify-items-end flex-shrink-0"
-                    >
-                      <div>
-                        <label
-                          class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
-                          data-slot="label"
-                          for="quantity"
-                        >
-                          Quantity:
-                        </label>
-                        <div
-                          class="flex items-center space-x-1"
-                        >
-                          <button
-                            aria-label="Decrement Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-decrement"
-                            data-variant="outline"
-                            disabled=""
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              −
-                            </span>
-                          </button>
-                          <input
-                            aria-label="Quantity:"
-                            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            data-slot="input"
-                            min="0"
-                            step="1"
-                            type="number"
-                            value="1"
-                          />
-                          <button
-                            aria-label="Increment Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-increment"
-                            data-variant="outline"
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              +
-                            </span>
-                          </button>
-                        </div>
-                      </div>
+                        class="hidden md:block"
+                      />
                       <div
-                        class="self-end"
+                        class="md:self-end"
                       >
                         <div
-                          class="text-right hidden md:block"
+                          class="md:text-right"
                           data-testid="desktop-product-price"
                         >
                           <div
                             class="font-semibold text-base"
                           >
                             <div
-                              class="items-center gap-2"
+                              class="flex flex-row md:flex-col items-baseline md:items-end gap-2 md:gap-0"
                             >
                               <span
                                 aria-label="Current price: £99.99"
                                 aria-live="polite"
-                                class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                class="[&:not(:first-child)]:mt-6 text-left text-card-foreground text-lg md:text-right font-semibold leading-none relative"
                               >
                                 £99.99
                               </span>
@@ -1263,6 +1030,64 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           </div>
                         </div>
                       </div>
+                      <div
+                        class=" relative"
+                      >
+                        <label
+                          class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
+                          data-slot="label"
+                          for="quantity"
+                        >
+                          Quantity:
+                        </label>
+                        <div
+                          class="inline-flex items-center border border-input rounded-lg"
+                        >
+                          <button
+                            aria-label="Decrement Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-decrement"
+                            disabled=""
+                          >
+                            −
+                          </button>
+                          <input
+                            aria-label="Quantity:"
+                            class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            max="98"
+                            min="0"
+                            step="1"
+                            type="number"
+                            value="1"
+                          />
+                          <button
+                            aria-label="Increment Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-increment"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="min-w-0 md:col-start-1 md:row-start-2"
+                    >
+                      <div
+                        data-testid="mobile-primary-action"
+                      >
+                        <button
+                          class="text-destructive"
+                        >
+                          Remove 
+                          item-1
+                        </button>
+                      </div>
+                      <button
+                        class="text-primary"
+                      >
+                        Edit
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1271,7 +1096,9 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
           </div>
         </div>
       </div>
-      <div>
+      <div
+        class="border-b border-muted-foreground/10 last:border-b-0"
+      >
         <div
           class="relative"
           data-testid="sf-product-item-061492183589M"
@@ -1288,7 +1115,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
               >
                 <div
-                  class="flex-shrink-0 flex items-center justify-center"
+                  class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
                     class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
@@ -1304,16 +1131,19 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                   class="flex-1 space-y-3 min-w-0"
                 >
                   <div
-                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0"
+                    class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0"
                   >
                     <div
                       class="min-w-0"
                     >
                       <div
-                        class="mb-4 flex items-start gap-2 min-w-0"
+                        class="md:hidden float-right ml-2"
+                      />
+                      <div
+                        class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                       >
                         <h2
-                          class="font-semibold tracking-tight text-left text-xl min-w-0 flex-1 leading-tight"
+                          class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
@@ -1327,7 +1157,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                       </div>
                       <div>
                         <div
-                          class="text-sm text-muted-foreground space-y-1 mb-1"
+                          class="text-xs text-muted-foreground space-y-1 mb-1"
                         >
                           <div>
                             Size
@@ -1337,136 +1167,34 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                         </div>
                       </div>
                       <p
-                        class="text-sm text-muted-foreground leading-relaxed text-left break-words"
+                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
                       >
                         These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
                       </p>
-                      <div
-                        class="min-w-0"
-                      >
-                        <div
-                          data-testid="mobile-primary-action"
-                        >
-                          <button
-                            class="text-destructive"
-                          >
-                            Remove 
-                            item-2
-                          </button>
-                        </div>
-                        <button
-                          class="text-primary"
-                        >
-                          Edit
-                        </button>
-                      </div>
                     </div>
                     <div
-                      class="text-right md:hidden"
-                      data-testid="mobile-product-price"
+                      class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
                     >
                       <div
-                        class="font-semibold text-base"
-                      >
-                        <div
-                          class="items-center gap-2 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                        >
-                          <span
-                            aria-label="Current price: £199.98"
-                            aria-live="polite"
-                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-right font-semibold text-sm leading-none relative"
-                          >
-                            £199.98
-                          </span>
-                          <span
-                            aria-atomic="true"
-                            aria-live="polite"
-                            class="sr-only"
-                          >
-                            Men's Classic Deer Gloves
-                            Current price: £199.98
-                          </span>
-                           
-                        </div>
-                      </div>
+                        class="hidden md:block"
+                      />
                       <div
-                        class="text-muted-foreground text-sm"
-                      >
-                        £50.00
-                         
-                        each
-                      </div>
-                    </div>
-                    <div
-                      class="grid gap-4 justify-items-end flex-shrink-0"
-                    >
-                      <div>
-                        <label
-                          class="items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground mb-2 block"
-                          data-slot="label"
-                          for="quantity"
-                        >
-                          Quantity:
-                        </label>
-                        <div
-                          class="flex items-center space-x-1"
-                        >
-                          <button
-                            aria-label="Decrement Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-decrement"
-                            data-variant="outline"
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              −
-                            </span>
-                          </button>
-                          <input
-                            aria-label="Quantity:"
-                            class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-8 w-11 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            data-slot="input"
-                            min="0"
-                            step="1"
-                            type="number"
-                            value="2"
-                          />
-                          <button
-                            aria-label="Increment Quantity for the product"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 h-8 w-8 p-0"
-                            data-size="icon"
-                            data-slot="button"
-                            data-testid="quantity-increment"
-                            data-variant="outline"
-                          >
-                            <span
-                              class="text-sm"
-                            >
-                              +
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                      <div
-                        class="self-end"
+                        class="md:self-end"
                       >
                         <div
-                          class="text-right hidden md:block"
+                          class="md:text-right"
                           data-testid="desktop-product-price"
                         >
                           <div
                             class="font-semibold text-base"
                           >
                             <div
-                              class="items-center gap-2"
+                              class="flex flex-row md:flex-col items-baseline md:items-end gap-2 md:gap-0"
                             >
                               <span
                                 aria-label="Current price: £199.98"
                                 aria-live="polite"
-                                class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                class="[&:not(:first-child)]:mt-6 text-left text-card-foreground text-lg md:text-right font-semibold leading-none relative"
                               >
                                 £199.98
                               </span>
@@ -1490,6 +1218,63 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           </div>
                         </div>
                       </div>
+                      <div
+                        class=" relative"
+                      >
+                        <label
+                          class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
+                          data-slot="label"
+                          for="quantity"
+                        >
+                          Quantity:
+                        </label>
+                        <div
+                          class="inline-flex items-center border border-input rounded-lg"
+                        >
+                          <button
+                            aria-label="Decrement Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-decrement"
+                          >
+                            −
+                          </button>
+                          <input
+                            aria-label="Quantity:"
+                            class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            max="98"
+                            min="0"
+                            step="1"
+                            type="number"
+                            value="2"
+                          />
+                          <button
+                            aria-label="Increment Quantity for the product"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="quantity-increment"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="min-w-0 md:col-start-1 md:row-start-2"
+                    >
+                      <div
+                        data-testid="mobile-primary-action"
+                      >
+                        <button
+                          class="text-destructive"
+                        >
+                          Remove 
+                          item-2
+                        </button>
+                      </div>
+                      <button
+                        class="text-primary"
+                      >
+                        Edit
+                      </button>
                     </div>
                   </div>
                 </div>
