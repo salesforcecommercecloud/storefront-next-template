@@ -16,7 +16,7 @@
 import type { RouterContextProvider } from 'react-router';
 import { COOKIE_TRACKING_CONSENT, COOKIE_DWSID } from '@/middlewares/auth.utils';
 import { modeDetectionContext } from '@/middlewares/mode-detection';
-import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 /**
  * List of cookie names that should NOT be namespaced.
@@ -56,7 +56,7 @@ export interface CookieConfig {
  * If the cookie name is in COOKIE_NAMESPACE_EXCLUSIONS, returns the name as-is.
  *
  * @param name - Base cookie name
- * @param context - Router context provider (required for multi-site resolution)
+ * @param context - Router context provider (required for site context resolution)
  * @returns Namespaced cookie name in format: `${name}_${siteId}`, or original name if excluded
  *
  * @example
@@ -72,12 +72,12 @@ export const getCookieNameWithSiteId = (name: string, context: Readonly<RouterCo
         return name;
     }
 
-    // Site ID is always resolved by multi-site middleware
-    const multiSite = context.get(multiSiteContext);
-    if (!multiSite?.site?.id) {
-        throw new Error('Multi-site context not initialized for cookie namespacing');
+    // Site ID is always resolved by site context middleware
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx?.site?.id) {
+        throw new Error('Site context not initialized for cookie namespacing');
     }
-    const { site } = multiSite;
+    const { site } = siteCtx;
 
     return `${name}_${site.id}`;
 };
@@ -163,7 +163,7 @@ export const getCookieConfig = <T extends object = CookieConfig>(
     // 1. Apply app config cookie overrides (highest priority)
     const cookieConfigOverrides: CookieConfig = {};
 
-    const currentSite = context.get(multiSiteContext)?.site;
+    const currentSite = context.get(siteContext)?.site;
     const cookieDomain = currentSite?.cookies?.domain;
     if (cookieDomain) {
         cookieConfigOverrides.domain = cookieDomain;

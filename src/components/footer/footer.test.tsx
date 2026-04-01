@@ -23,7 +23,7 @@ import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, SITE_PREFIX } from '@/test-utils/config';
 import { CurrencyProvider } from '@/providers/currency';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/multi-site';
+import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import Footer from './index';
 
 // Mock categories data

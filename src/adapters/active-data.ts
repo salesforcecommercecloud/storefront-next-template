@@ -472,7 +472,7 @@ export function createActiveDataAdapter(config: ActiveDataConfig): EngagementAda
                 // eslint-disable-next-line no-console
                 console.warn(
                     'ActiveData adapter: skipping event — siteInfo with siteId and localeId is required. ' +
-                        'Ensure multi-site middleware is configured.'
+                        'Ensure site context middleware is configured.'
                 );
                 return Promise.resolve({});
             }

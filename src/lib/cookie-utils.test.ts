@@ -81,12 +81,12 @@ describe('cookie-utils', () => {
             expect(getCookieNameWithSiteId('dwsid', mockContext)).toBe('dwsid');
         });
 
-        it('should namespace non-excluded cookies with siteId from multi-site context', () => {
+        it('should namespace non-excluded cookies with siteId from site context', () => {
             expect(getCookieNameWithSiteId('refresh-token', mockContext)).toBe('refresh-token_RefArch');
             expect(getCookieNameWithSiteId('access-token', mockContext)).toBe('access-token_RefArch');
         });
 
-        it('should use siteId from multi-site context', () => {
+        it('should use siteId from site context', () => {
             const context = createMockContextWithSite('ClientSite');
             expect(getCookieNameWithSiteId('refresh-token', context)).toBe('refresh-token_ClientSite');
         });

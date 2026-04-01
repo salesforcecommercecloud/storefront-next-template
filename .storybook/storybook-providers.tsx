@@ -19,7 +19,7 @@ import ProductViewProvider from '../src/providers/product-view';
 import StoreLocatorProvider from '../src/extensions/store-locator/providers/store-locator';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { CurrencyProvider } from '../src/providers/currency';
-import { SiteProvider } from '@salesforce/storefront-next-runtime/multi-site';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig } from '../src/test-utils/config';
 import type { SessionData } from '../src/lib/api/types';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';

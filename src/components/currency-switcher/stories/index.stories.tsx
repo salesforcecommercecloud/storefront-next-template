@@ -77,7 +77,7 @@ function CurrencySwitcherMock({ initialCurrency = 'GBP' }: { initialCurrency?: s
     const id = useId();
     const { t } = useTranslation('currencySwitcher');
     const config = useConfig<AppConfig>();
-    // this will change when multi site support is implemented. Use first site for now
+    // this will change when site context support is implemented. Use first site for now
     const currentSite = config.commerce.sites[0];
     const [currentCurrency, setCurrentCurrency] = useState(initialCurrency);
 

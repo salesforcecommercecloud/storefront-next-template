@@ -24,7 +24,7 @@ import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { currencyContext } from '@/lib/currency';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
@@ -63,7 +63,7 @@ export async function loader({
     try {
         const config = getConfig<AppConfig>(context);
         const clients = createApiClients(context);
-        const { site } = context.get(multiSiteContext) as MultiSiteContext;
+        const { site } = context.get(siteContext) as SiteContext;
         const currency = context.get(currencyContext) as string;
 
         // Fetch product details

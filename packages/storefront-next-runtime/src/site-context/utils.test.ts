@@ -22,7 +22,7 @@ import { describe, it, expect, vi } from 'vitest';
 import type { Cookie } from 'react-router';
 import { lookupFromPath, readCookieFromRequest } from './utils';
 
-describe('Multisite Utils', () => {
+describe('Site Context Utils', () => {
     describe('lookupFromPath', () => {
         it('returns segment at lookupFromPathIndex', () => {
             expect(lookupFromPath('/us/en-US/page', 0)).toBe('us');

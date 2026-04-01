@@ -15,7 +15,7 @@
  */
 
 import type { Cookie } from 'react-router';
-import type { DetectionMethod, Locale, MultiSiteSettings, Site } from './types';
+import type { DetectionMethod, Locale, SiteSettings, Site } from './types';
 import { readCookieFromRequest, lookupFromPath } from './utils';
 
 /**
@@ -45,7 +45,7 @@ function getLocaleFromIdOrAlias(localeIdentifier: string | undefined | null, loc
  * Resolve locale using the configured detection order.
  * Returns the first valid locale from the first source that yields a valid value.
  */
-export async function resolveLocale(request: Request, settings: MultiSiteSettings, site: Site): Promise<Locale> {
+export async function resolveLocale(request: Request, settings: SiteSettings, site: Site): Promise<Locale> {
     const { defaultLocale, localeDetectionConfig, localeCookie } = settings;
     const { supportedLocales } = site;
 

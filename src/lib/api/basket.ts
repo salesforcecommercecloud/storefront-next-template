@@ -16,7 +16,7 @@
 import { createApiClients } from '@/lib/api-clients';
 import type { RouterContextProvider } from 'react-router';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 /**
  * Get the appropriate currency for basket calculations
@@ -30,7 +30,7 @@ export function getBasketCurrency(
     if (basket?.currency) {
         return basket.currency;
     }
-    return (context.get(multiSiteContext) as MultiSiteContext).site.defaultCurrency;
+    return (context.get(siteContext) as SiteContext).site.defaultCurrency;
 }
 
 /**

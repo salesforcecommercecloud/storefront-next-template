@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { buildUrl, sanitizePrefix, type Locale, type Site } from '@salesforce/storefront-next-runtime/multi-site';
+import { buildUrl, sanitizePrefix, type Locale, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import type { MetaDescriptor } from 'react-router';
 import type { AppConfig } from '@/types/config';
 import { buildCanonicalUrl } from '@/utils/canonical-url';

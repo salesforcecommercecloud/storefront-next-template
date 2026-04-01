@@ -237,7 +237,7 @@ describe('createPrefixWrapper', () => {
 
         const result = createPrefixWrapper('/:siteId/:localeId', children, WRAPPER_FILE);
 
-        expect(result.id).toBe('multi-site-wrapper');
+        expect(result.id).toBe('site-context-wrapper');
         expect(result.file).toBe(WRAPPER_FILE);
         expect(result.path).toBe(':siteId/:localeId');
         expect(result.children).toBe(children);
@@ -307,7 +307,7 @@ describe('applyUrlConfig', () => {
         });
 
         expect(result).toHaveLength(1);
-        expect(result[0].id).toBe('multi-site-wrapper');
+        expect(result[0].id).toBe('site-context-wrapper');
         expect(result[0].children).toHaveLength(0);
     });
 
@@ -325,7 +325,7 @@ describe('applyUrlConfig', () => {
                 wrapperFile: WRAPPER_FILE,
             });
 
-            const wrapper = result.find((r) => r.id === 'multi-site-wrapper');
+            const wrapper = result.find((r) => r.id === 'site-context-wrapper');
             expect(wrapper).toBeDefined();
             expect(wrapper?.file).toBe(WRAPPER_FILE);
             expect(wrapper?.path).toBe(':siteId/:localeId');
@@ -338,7 +338,7 @@ describe('applyUrlConfig', () => {
 
             const result = applyUrlConfig({ routes, urlConfig: { prefix: '/:siteId' }, wrapperFile: WRAPPER_FILE });
 
-            const wrapper = result.find((r) => r.id === 'multi-site-wrapper');
+            const wrapper = result.find((r) => r.id === 'site-context-wrapper');
             expect(wrapper?.path).toBe(':siteId');
         });
 
@@ -347,7 +347,7 @@ describe('applyUrlConfig', () => {
 
             const result = applyUrlConfig({ routes, urlConfig: { prefix: '/:siteId' }, wrapperFile: WRAPPER_FILE });
 
-            const wrapper = result.find((r) => r.id === 'multi-site-wrapper');
+            const wrapper = result.find((r) => r.id === 'site-context-wrapper');
             expect(wrapper?.children?.[0].path).toBe('about');
         });
 
@@ -375,7 +375,7 @@ describe('applyUrlConfig', () => {
                 wrapperFile: WRAPPER_FILE,
             });
 
-            const wrapper = result.find((r) => r.id === 'multi-site-wrapper');
+            const wrapper = result.find((r) => r.id === 'site-context-wrapper');
             expect(wrapper?.children).toHaveLength(1);
             expect(wrapper?.children?.[0].id).toBe('routes/_app');
 
@@ -397,7 +397,7 @@ describe('applyUrlConfig', () => {
                 wrapperFile: WRAPPER_FILE,
             });
 
-            const wrapper = result.find((r) => r.id === 'multi-site-wrapper');
+            const wrapper = result.find((r) => r.id === 'site-context-wrapper');
             const wrappedIds = wrapper?.children?.map((r) => r.id);
 
             // action/cart is NOT excluded because custom patterns override defaults
@@ -421,7 +421,7 @@ describe('applyUrlConfig', () => {
                 wrapperFile: WRAPPER_FILE,
             });
 
-            const wrapper = result.find((r) => r.id === 'multi-site-wrapper');
+            const wrapper = result.find((r) => r.id === 'site-context-wrapper');
             expect(wrapper?.children).toHaveLength(1);
             expect(result.find((r) => r.id === 'routes/healthcheck')).toBeDefined();
         });
@@ -438,7 +438,7 @@ describe('applyUrlConfig', () => {
                 wrapperFile: WRAPPER_FILE,
             });
 
-            const wrapper = result.find((r) => r.id === 'multi-site-wrapper');
+            const wrapper = result.find((r) => r.id === 'site-context-wrapper');
             expect(wrapper?.children).toHaveLength(2);
             expect(result).toHaveLength(1); // only the wrapper, no excluded routes
         });
@@ -480,7 +480,7 @@ describe('applyUrlConfig', () => {
             });
 
             expect(result[0].id).toBe('routes/_app--root-duplicate');
-            expect(result[1].id).toBe('multi-site-wrapper');
+            expect(result[1].id).toBe('site-context-wrapper');
         });
 
         it('should only duplicate from non-excluded routes', () => {
@@ -537,7 +537,7 @@ describe('applyUrlConfig', () => {
             expect(result[0].children?.[0].id).toBe('routes/_app._index--root-duplicate');
 
             // Wrapper with all non-excluded routes
-            const wrapper = result.find((r) => r.id === 'multi-site-wrapper');
+            const wrapper = result.find((r) => r.id === 'site-context-wrapper');
             expect(wrapper?.path).toBe(':siteId/:localeId');
             expect(wrapper?.children).toHaveLength(2); // _app and _empty
 

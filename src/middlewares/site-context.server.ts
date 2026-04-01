@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 import { type MiddlewareFunction } from 'react-router';
-import { createMultiSiteMiddleware, type MultiSiteConfig } from '@salesforce/storefront-next-runtime/multi-site';
+import { createSiteContextMiddleware, type SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getLogger } from '@/lib/logger.server';
 
 /**
- * Creates and returns the multi-site middleware configured with the app's site and locale settings.
+ * Creates and returns the site context middleware configured with the app's site and locale settings.
  * This middleware resolves the current site and locale from the request and stores them in context.
  *
  * Must run BEFORE i18next and currency middlewares.
  */
-export const multiSiteMiddleware: MiddlewareFunction<Response> = async (args, next) => {
+export const siteContextMiddleware: MiddlewareFunction<Response> = async (args, next) => {
     const logger = getLogger(args.context);
     const config = getConfig<AppConfig>(args.context);
     const sites = config.commerce.sites;
 
-    logger.debug('MultiSite: middleware starting', {
+    logger.debug('SiteContext: middleware starting', {
         siteCount: sites.length,
         defaultSiteId: config.defaultSiteId,
     });
 
     if (!sites.length) {
-        logger.error('MultiSite: no sites configured');
+        logger.error('SiteContext: no sites configured');
         throw new Error('No sites found.');
     }
     const defaultSiteId = config.defaultSiteId;
@@ -44,12 +44,12 @@ export const multiSiteMiddleware: MiddlewareFunction<Response> = async (args, ne
     const localeAliasMap = config.localeAliasMap;
     const defaultSite = sites.find((site) => site.id === defaultSiteId);
     if (!defaultSite?.defaultLocale) {
-        logger.error('MultiSite: default site missing defaultLocale', { defaultSiteId });
+        logger.error('SiteContext: default site missing defaultLocale', { defaultSiteId });
         throw new Error(`Site "${config.defaultSiteId}" must have a defaultLocale configured. `);
     }
 
-    // Transform app config into multi-site config format
-    const multiSiteConfig: MultiSiteConfig = {
+    // Transform app config into site context config format
+    const siteContextConfig: SiteConfig = {
         sites: sites.map((site) => ({
             ...site,
             alias: siteAliasMap?.[site.id],
@@ -65,9 +65,9 @@ export const multiSiteMiddleware: MiddlewareFunction<Response> = async (args, ne
         localeDetectionConfig: config.localeDetectionConfig,
     };
 
-    // Create and invoke the multi-site middleware.
+    // Create and invoke the site context middleware.
     // Wrap next() so we can intercept after site/locale resolution but BEFORE downstream
     // loaders/rendering execute — this avoids wasted rendering when we redirect.
-    const middleware = createMultiSiteMiddleware(multiSiteConfig);
+    const middleware = createSiteContextMiddleware(siteContextConfig);
     return middleware(args, next);
 };

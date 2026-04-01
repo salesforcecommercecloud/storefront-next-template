@@ -21,7 +21,7 @@ import { useFetcher } from 'react-router';
 
 import { NativeSelect } from '@/components/ui/native-select';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import { useSite } from '@salesforce/storefront-next-runtime/multi-site';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
 
 export default function SiteSwitcher(): ReactElement {

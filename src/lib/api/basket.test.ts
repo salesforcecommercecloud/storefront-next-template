@@ -16,12 +16,12 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import { getBasketCurrency } from './basket';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 const createMockContext = (defaultCurrency = 'USD') =>
     ({
         get: (key: unknown) => {
-            if (key === multiSiteContext) {
+            if (key === siteContext) {
                 return { site: { defaultCurrency } };
             }
             return undefined;

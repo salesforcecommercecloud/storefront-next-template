@@ -32,14 +32,14 @@ export function loader({ context }: LoaderFunctionArgs) {
 
 ## Architecture Overview
 
-The multi-site system consists of:
+The site context system consists of:
 
-1. **Multi-site middleware** (`multi-site.server.ts`): Resolves site and locale from the request URL path or cookies, stores them in router context
+1. **Site context middleware (`site-context.server.ts`): Resolves site and locale from the request URL path or cookies, stores them in router context
 2. **URL config** (`config.server.ts`): Defines the URL pattern (`prefix`, `search`) and alias mappings
 3. **`buildUrl`** (runtime SDK): Applies the URL prefix and search params to bare paths
 4. **`buildUrlFromContext`** (`src/lib/url.server.ts`): Server-side helper that reads site/locale from router context and calls `buildUrl`
 5. **`useCurrentSiteAndLocaleRef`** hook: Client-side helper that resolves the current site/locale aliases for URL building
-6. **`Link`, `NavLink`, `useNavigate`**: Multi-site-aware navigation primitives that call `buildUrl` internally
+6. **`Link`, `NavLink`, `useNavigate`**: Site-context-aware navigation primitives that call `buildUrl` internally
 
 ### Homepage vs Subpages
 
@@ -53,7 +53,7 @@ The multi-site system consists of:
 ### Request Flow
 
 1. User requests `/global/en-GB/product/123` (or `/` for the homepage)
-2. Multi-site middleware resolves site and locale:
+2. Site context middleware resolves site and locale:
    - **Subpages**: from the URL path (`global` → `RefArchGlobal`, `en-GB` → locale)
    - **Homepage `/`**: from the `site_id` cookie (no path to parse)
 3. Site and locale objects are stored in router context for downstream consumers
@@ -65,7 +65,7 @@ The multi-site system consists of:
 
 ### URL Config
 
-The `url` config in `config.server.ts` controls how multi-site URLs are constructed. It has three properties:
+The `url` config in `config.server.ts` controls how site context URLs are constructed. It has three properties:
 
 ```typescript
 url: {
@@ -104,7 +104,7 @@ url: {
 | Product (RefArch, en-US) | `/us/en-US/product/123` |
 | Category (RefArchGlobal, it-IT) | `/global/it-IT/category/womens` |
 
-Best for: Most multi-site storefronts. Clean, fully deterministic URLs.
+Best for: Most site context storefronts. Clean, fully deterministic URLs.
 
 #### Use Case 2: Locale only in the path
 
@@ -227,7 +227,7 @@ buildUrl({ to: '/search?lng=old-value', ... })
 
 The URL config (`prefix`, `search`) controls how URLs are **built**. The detection config controls how site and locale are **read back** from incoming requests. These two must stay in sync.
 
-The SDK provides default detection config in [`createMultiSiteMiddleware`](../../storefront-next-runtime/src/multi-site/configs.ts):
+The SDK provides default detection config in [`createSiteContextMiddleware`](../../storefront-next-runtime/src/site-context/configs.ts):
 
 ```typescript
 // Default site detection
@@ -286,7 +286,7 @@ localeDetectionConfig: {
 
 **Rule of thumb**: The detection config tells the middleware *where to look* for site/locale values. The URL config tells `buildUrl` *where to put* them. If you change one, check whether the other still matches.
 
-To override detection config, pass `siteDetectionConfig` and/or `localeDetectionConfig` in the `MultiSiteConfig` object passed to `createMultiSiteMiddleware`. In this template, that's constructed in `src/middlewares/multi-site.server.ts`.
+To override detection config, pass `siteDetectionConfig` and/or `localeDetectionConfig` in the `SiteConfig` object passed to `createSiteContextMiddleware`. In this template, that's constructed in `src/middlewares/site-context.server.ts`.
 
 ### Site Alias Map
 
@@ -363,7 +363,7 @@ function MyComponent() {
 
 ### Link and NavLink
 
-Drop-in replacements for React Router's `Link` and `NavLink`. They automatically apply the multi-site URL prefix to subpages:
+Drop-in replacements for React Router's `Link` and `NavLink`. They automatically apply the site context URL prefix to subpages:
 
 ```typescript
 import { Link, NavLink } from '@/components/link';
@@ -383,7 +383,7 @@ Special cases:
 
 ### useNavigate
 
-Multi-site-aware replacement for React Router's `useNavigate`:
+Site-context-aware replacement for React Router's `useNavigate`:
 
 ```typescript
 import { useNavigate } from '@/hooks/use-navigate';
@@ -411,7 +411,7 @@ React Router's `<Form>` component does NOT go through `buildUrl`. If you use `<F
 
 ```typescript
 import { Form } from 'react-router';
-import { buildUrl } from '@salesforce/storefront-next-runtime/multi-site';
+import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 
@@ -435,7 +435,7 @@ function LogoutButton() {
 
 ## Server-Side Redirects
 
-All `redirect()` calls in loaders and actions must include the multi-site prefix for subpages. A bare `redirect('/login')` will produce a URL without the prefix, resulting in a 404.
+All `redirect()` calls in loaders and actions must include the site context prefix for subpages. A bare `redirect('/login')` will produce a URL without the prefix, resulting in a 404.
 
 Use `buildUrlFromContext` — a server-side helper that reads the resolved site and locale from router context and applies the URL prefix. It returns `/` bare (cookie-driven homepage):
 
@@ -472,9 +472,9 @@ The locale switcher (`src/components/locale-switcher`) changes the locale on the
 5. The server action sets the `lng` cookie and redirects to the new URL
 6. The page reloads with the new locale, triggering full revalidation of all loaders
 
-## Engagement Data & Multi-Site
+## Engagement Data & Site Context
 
-Engagement adapters (Einstein, Active Data, Data Cloud) are initialized once at application startup with static configuration from `config.server.ts`. However, the current site and locale are injected dynamically at **event-send time** via `EventSiteInfo`, which is resolved from the multi-site middleware context.
+Engagement adapters (Einstein, Active Data, Data Cloud) are initialized once at application startup with static configuration from `config.server.ts`. However, the current site and locale are injected dynamically at **event-send time** via `EventSiteInfo`, which is resolved from the site context middleware context.
 
 ### How Site Context Flows to Adapters
 
@@ -494,7 +494,7 @@ mediator.track(event, siteInfo);
 
 ### Adapter Behavior Per Site
 
-| Adapter | Multi-site aware? | How it uses site context |
+| Adapter | Site-context aware? | How it uses site context |
 |---------|-------------------|--------------------------|
 | **Active Data** | Yes | Uses `siteInfo.siteId` and `siteInfo.localeId` at event time to build the endpoint URL (`Sites-{siteId}-Site/{locale}`) |
 | **Einstein** | No (static) | Uses the `siteId` from config at initialization — ignores the `siteInfo` parameter at event time |

@@ -35,7 +35,7 @@ export { getConfig, useConfig } from './get-config';
 // Context primitives (isomorphic)
 export { appConfigContext, ConfigContext, ConfigProvider, createAppConfig } from './context';
 
-// Middleware factory (follows createMultiSiteMiddleware pattern)
+// Middleware factory (follows createSiteContextMiddleware pattern)
 export { createAppConfigMiddleware } from './middleware';
 
 // Utilities (for dev server and advanced use)

@@ -59,7 +59,7 @@ export function normalizeRoutePaths(routes: RouteConfigEntry[]): RouteConfigEntr
 }
 
 /**
- * Creates the `multi-site-wrapper` parent route entry with the given prefix.
+ * Creates the `site-context-wrapper` parent route entry with the given prefix.
  */
 export function createPrefixWrapper(
     prefix: string,
@@ -67,7 +67,7 @@ export function createPrefixWrapper(
     wrapperFile: string
 ): RouteConfigEntry {
     return {
-        id: 'multi-site-wrapper',
+        id: 'site-context-wrapper',
         file: wrapperFile,
         path: prefix.slice(1),
         children,
@@ -105,7 +105,7 @@ export function cloneRootIndexRoutes(routes: RouteConfigEntry[]): RouteConfigEnt
 }
 
 /**
- * Applies multi-site URL configuration to a set of route entries.
+ * Applies site context URL configuration to a set of route entries.
  *
  * Wraps non-excluded routes under a parent route with the configured URL prefix
  * (e.g. `/:siteId/:localeId`), while keeping excluded routes (action/resource by default)

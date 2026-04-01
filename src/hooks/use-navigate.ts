@@ -18,7 +18,7 @@ import { useCallback } from 'react';
 import { useNavigate as useRouterNavigate, type NavigateOptions, type To } from 'react-router';
 
 // Runtime SDK
-import { buildUrl, useSite } from '@salesforce/storefront-next-runtime/multi-site';
+import { buildUrl, useSite } from '@salesforce/storefront-next-runtime/site-context';
 
 // Hooks
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
@@ -26,7 +26,7 @@ import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-
 import type { AppConfig } from '@/types/config';
 
 /**
- * Multi-site-aware `useNavigate`. An enhanced version of React router useNavigate hook.
+ * Site-context-aware `useNavigate`. An enhanced version of React router useNavigate hook.
  * Automatically applies URL prefix and search params from the app's URL config
  * to string destinations. When no SiteProvider is mounted, behaves identically
  * to React Router's useNavigate.

@@ -108,7 +108,7 @@ export {};
 - Focus on commerce-specific flows
 - **CRITICAL**: Never call `I.*` methods directly inside a Scenario — all `I.*` usage (`I.click`, `I.amOnPage`, `I.seeElement`, etc.) must live in page objects or flows. Scenarios only call page object / flow methods and Chai assertions.
 - **CRITICAL**: Each scenario must be independent — create necessary test data within the scenario, never depend on other scenarios running first or in specific order
-- **CRITICAL**: Wrap all test-authored paths in `buildSitePath()` before passing to `I.amOnPage()` — import from `../utils/url-utils` (or `../../utils/url-utils` from specs). Do NOT apply `buildSitePath()` to URLs extracted from the page DOM (they already contain the multisite prefix).
+- **CRITICAL**: Wrap all test-authored paths in `buildSitePath()` before passing to `I.amOnPage()` — import from `../utils/url-utils` (or `../../utils/url-utils` from specs). Do NOT apply `buildSitePath()` to URLs extracted from the page DOM (they already contain the url prefix).
 
 ### 5. Generate Page Objects with AI
 
@@ -125,7 +125,7 @@ Scenario('Generate product page object', async () => {
 }).tag('@page-object-generation');
 ```
 
-> **Multisite note:** All `I.amOnPage()` calls with test-authored paths must use `buildSitePath()` to prepend the optional `/{siteAlias}/{locale}` prefix. See `CLAUDE.md` "Multisite URL Prefixing" for details.
+> **Multi-site note:** All `I.amOnPage()` calls with test-authored paths must use `buildSitePath()` to prepend the optional `/{siteAlias}/{locale}` prefix. See `CLAUDE.md` "Multi-site URL Prefixing" for details.
 
 **Locator Strategy**:
 

@@ -33,7 +33,7 @@ import CustomerPreferencesProvider from '@/providers/customer-preferences';
 import { useTranslation } from 'react-i18next';
 import { formatDateForLocale } from '@/lib/date-utils';
 import { FETCHER_STATES } from '@/lib/fetcher-states';
-import { buildUrl } from '@salesforce/storefront-next-runtime/multi-site';
+import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 import type { AppConfig } from '@/types/config';

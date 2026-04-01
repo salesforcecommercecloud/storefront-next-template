@@ -31,7 +31,7 @@ function createPatternMatcher(patterns) {
 }
 
 //#endregion
-//#region src/multi-site/apply-url-config.ts
+//#region src/site-context/apply-url-config.ts
 const DEFAULT_EXCLUDED_ROUTES = ["/resource/**", "/action/**"];
 /**
 * Separates routes into excluded (stay at root) and included (go under prefix).
@@ -61,11 +61,11 @@ function normalizeRoutePaths(routes) {
 	}));
 }
 /**
-* Creates the `multi-site-wrapper` parent route entry with the given prefix.
+* Creates the `site-context-wrapper` parent route entry with the given prefix.
 */
 function createPrefixWrapper(prefix, children, wrapperFile) {
 	return {
-		id: "multi-site-wrapper",
+		id: "site-context-wrapper",
 		file: wrapperFile,
 		path: prefix.slice(1),
 		children
@@ -97,7 +97,7 @@ function cloneRootIndexRoutes(routes) {
 	return duplicates;
 }
 /**
-* Applies multi-site URL configuration to a set of route entries.
+* Applies site context URL configuration to a set of route entries.
 *
 * Wraps non-excluded routes under a parent route with the configured URL prefix
 * (e.g. `/:siteId/:localeId`), while keeping excluded routes (action/resource by default)

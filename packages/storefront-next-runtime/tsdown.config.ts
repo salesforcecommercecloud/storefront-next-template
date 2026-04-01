@@ -20,7 +20,7 @@ export default defineConfig([
             config: 'src/config/index.ts',
             'config-load': 'src/config/load-config.ts',
             events: 'src/events/index.ts',
-            'multi-site': 'src/multi-site/index.ts',
+            'site-context': 'src/site-context/index.ts',
             routing: 'src/routing/index.ts',
             'routing-app-wrapper': 'src/routing/app-wrapper.tsx',
             workspace: 'src/workspace/index.ts',

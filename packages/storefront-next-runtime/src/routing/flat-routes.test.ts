@@ -135,7 +135,7 @@ describe('flatRoutes', () => {
 
         const result = await flatRoutes();
 
-        const wrapper = result.find((r) => r.id === 'multi-site-wrapper');
+        const wrapper = result.find((r) => r.id === 'site-context-wrapper');
         expect(wrapper).toBeDefined();
         expect(wrapper?.path).toBe(':siteId/:localeId');
         expect(wrapper?.file).toBe('app-wrapper.tsx');

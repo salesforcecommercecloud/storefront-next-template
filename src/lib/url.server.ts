@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { RouterContextProvider } from 'react-router';
-import { buildUrl, multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { buildUrl, siteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
@@ -22,13 +22,13 @@ import type { AppConfig } from '@/types/config';
 /**
  * Server-side counterpart of the client-side `useCurrentSiteAndLocaleRef` + `buildUrl` pattern.
  * Reads the resolved site and locale from router context, applies alias mappings,
- * and prefixes the given path with the multi-site URL prefix.
+ * and prefixes the given path with the site context URL prefix.
  *
  * Use this in loaders and actions where you need a prefixed URL (e.g., for `redirect()`).
  * For client-side code, use `useCurrentSiteAndLocaleRef` hook with `buildUrl` instead.
  *
  * This file is `.server.ts` to prevent accidental client-side imports, since it depends
- * on server-only APIs (`getConfig`, `multiSiteContext`).
+ * on server-only APIs (`getConfig`, `siteContext`).
  *
  * @example
  * ```typescript
@@ -45,8 +45,8 @@ import type { AppConfig } from '@/types/config';
  */
 export function buildUrlFromContext(to: string, context: Readonly<RouterContextProvider>): string {
     const config = getConfig<AppConfig>(context);
-    const multiSite = context.get(multiSiteContext);
-    if (!multiSite) return to;
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx) return to;
 
     // '/' is always cookie-driven (no prefix) regardless of site/locale.
     if (to === '/') return to;
@@ -55,8 +55,8 @@ export function buildUrlFromContext(to: string, context: Readonly<RouterContextP
         to,
         urlConfig: config.url,
         params: {
-            siteId: multiSite.site.alias ?? multiSite.site.id,
-            localeId: config.localeAliasMap?.[multiSite.locale.id] ?? multiSite.locale.id,
+            siteId: siteCtx.site.alias ?? siteCtx.site.id,
+            localeId: config.localeAliasMap?.[siteCtx.locale.id] ?? siteCtx.locale.id,
         },
     });
 }

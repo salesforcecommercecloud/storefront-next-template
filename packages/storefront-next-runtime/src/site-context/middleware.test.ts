@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach, beforeAll, afterEach } from 'vitest';
 import type { MiddlewareFunction, RouterContextProvider } from 'react-router';
-import type { DetectionConfig, MultiSiteConfig, MultiSiteContext } from './types';
+import type { DetectionConfig, SiteConfig, SiteContext } from './types';
 
 const cookieSerialize = vi.fn((value: string, name: string) => Promise.resolve(`${name}=${value}; Path=/`));
 
@@ -24,7 +24,7 @@ vi.mock('./cookies', async (importOriginal) => {
     const actual = await importOriginal<typeof import('./cookies')>();
     return {
         ...actual,
-        createMultiSiteCookie: vi.fn((name: string) => ({
+        createSiteContextCookie: vi.fn((name: string) => ({
             name,
             serialize: (value: string) => cookieSerialize(value, name),
             parse: vi.fn(),
@@ -35,11 +35,11 @@ vi.mock('./cookies', async (importOriginal) => {
 // This is here so the middleware module is loaded after the config and cookie mocks
 // thereby allowing the module to access the mock cookie serializers
 async function getMiddleware() {
-    const { createMultiSiteMiddleware, multiSiteContext, getMultiSiteCookies } = await import('./middleware');
-    return { createMultiSiteMiddleware, multiSiteContext, getMultiSiteCookies };
+    const { createSiteContextMiddleware, siteContext, getSiteContextCookies } = await import('./middleware');
+    return { createSiteContextMiddleware, siteContext, getSiteContextCookies };
 }
 
-const DEFAULT_CONFIG: MultiSiteConfig = {
+const DEFAULT_CONFIG: SiteConfig = {
     sites: [
         {
             id: 'site-us',
@@ -72,7 +72,7 @@ const DEFAULT_CONFIG: MultiSiteConfig = {
 
 type MiddlewareNext = Parameters<MiddlewareFunction<Response>>[1];
 
-describe('createMultiSiteMiddleware', () => {
+describe('createSiteContextMiddleware', () => {
     let context: RouterContextProvider;
     let next: ReturnType<typeof vi.fn>;
     let defaultSiteDetection: Required<DetectionConfig>;
@@ -97,20 +97,20 @@ describe('createMultiSiteMiddleware', () => {
         cookieSerialize.mockClear();
     });
 
-    async function run(config: MultiSiteConfig, request: Request) {
-        const { createMultiSiteMiddleware, multiSiteContext: ctx } = await getMiddleware();
-        const middleware = createMultiSiteMiddleware(config);
+    async function run(config: SiteConfig, request: Request) {
+        const { createSiteContextMiddleware, siteContext: ctx } = await getMiddleware();
+        const middleware = createSiteContextMiddleware(config);
         const response = (await middleware(
             { request, context, params: {}, unstable_pattern: '' } as Parameters<MiddlewareFunction<Response>>[0],
             next as MiddlewareNext
         )) as Response;
-        return { response, context: context.get(ctx) as MultiSiteContext };
+        return { response, context: context.get(ctx) as SiteContext };
     }
 
     function configWithCaches(
         siteCaches: Array<'cookie'> | readonly [],
         localeCaches: Array<'cookie'> | readonly []
-    ): MultiSiteConfig {
+    ): SiteConfig {
         return {
             ...DEFAULT_CONFIG,
             siteDetectionConfig: { ...defaultSiteDetection, caches: [...siteCaches] },
@@ -191,7 +191,7 @@ describe('createMultiSiteMiddleware', () => {
     });
 
     it('uses custom cookie names when configured', async () => {
-        const customConfig: MultiSiteConfig = {
+        const customConfig: SiteConfig = {
             ...DEFAULT_CONFIG,
             siteDetectionConfig: {
                 ...defaultSiteDetection,
@@ -211,9 +211,9 @@ describe('createMultiSiteMiddleware', () => {
         expect(cookieSerialize).toHaveBeenCalledWith('en-US', 'custom_locale');
     });
 
-    it('provides cookies through getMultiSiteCookies helper', async () => {
-        const { createMultiSiteMiddleware, getMultiSiteCookies } = await getMiddleware();
-        const middleware = createMultiSiteMiddleware(DEFAULT_CONFIG);
+    it('provides cookies through getSiteContextCookies helper', async () => {
+        const { createSiteContextMiddleware, getSiteContextCookies } = await getMiddleware();
+        const middleware = createSiteContextMiddleware(DEFAULT_CONFIG);
         const request = new Request('https://example.com/us/en-US/');
 
         await middleware(
@@ -221,15 +221,15 @@ describe('createMultiSiteMiddleware', () => {
             next as MiddlewareNext
         );
 
-        const cookies = getMultiSiteCookies(context);
+        const cookies = getSiteContextCookies(context);
         expect(cookies).toBeDefined();
         expect(cookies?.siteCookie).toBeDefined();
         expect(cookies?.localeCookie).toBeDefined();
     });
 
     it('throws when no valid site and does not call next', async () => {
-        const { createMultiSiteMiddleware } = await getMiddleware();
-        const middleware = createMultiSiteMiddleware({
+        const { createSiteContextMiddleware } = await getMiddleware();
+        const middleware = createSiteContextMiddleware({
             ...DEFAULT_CONFIG,
             defaultSiteId: 'nonexistent',
         });
@@ -245,8 +245,8 @@ describe('createMultiSiteMiddleware', () => {
     });
 
     it('throws when no valid locale and does not call next', async () => {
-        const { createMultiSiteMiddleware } = await getMiddleware();
-        const middleware = createMultiSiteMiddleware({
+        const { createSiteContextMiddleware } = await getMiddleware();
+        const middleware = createSiteContextMiddleware({
             ...DEFAULT_CONFIG,
             defaultLocale: 'fr-FR',
         });
@@ -266,7 +266,7 @@ describe('createMultiSiteMiddleware', () => {
 
         beforeAll(async () => {
             const cookies = await import('./cookies');
-            mockCreateCookie = cookies.createMultiSiteCookie as ReturnType<typeof vi.fn>;
+            mockCreateCookie = cookies.createSiteContextCookie as ReturnType<typeof vi.fn>;
         });
 
         afterEach(() => {

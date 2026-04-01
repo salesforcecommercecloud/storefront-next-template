@@ -19,7 +19,7 @@ import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 import { currencyContext } from '@/lib/currency';
 import { getLogger } from '@/lib/logger.server';
@@ -101,7 +101,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
     const currency = context.get(currencyContext) as string;
 
     const config = getConfig<AppConfig>(context);
-    const locale = (context.get(multiSiteContext) as MultiSiteContext).locale.id;
+    const locale = (context.get(siteContext) as SiteContext).locale.id;
 
     const limit = config.search.products.hits.limit;
 

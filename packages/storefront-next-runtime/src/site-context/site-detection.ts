@@ -15,7 +15,7 @@
  */
 
 import type { Cookie } from 'react-router';
-import type { Site, MultiSiteSettings, DetectionMethod } from './types';
+import type { Site, SiteSettings, DetectionMethod } from './types';
 import { readCookieFromRequest, lookupFromPath } from './utils';
 
 /**
@@ -40,7 +40,7 @@ function getSiteFromIdOrAlias(siteIdentifier: string | null, sites: Site[]): Sit
  * Resolve site using the configured detection order.
  * Returns the first valid site from the first source that yields a valid value.
  */
-export async function resolveSite(request: Request, settings: MultiSiteSettings): Promise<Site> {
+export async function resolveSite(request: Request, settings: SiteSettings): Promise<Site> {
     const { sites, defaultSiteId, siteDetectionConfig, siteCookie } = settings;
 
     const requestUrl = new URL(request.url);

@@ -25,7 +25,7 @@ import {
     type CheckoutStep,
 } from '@/components/checkout/utils/checkout-context-types';
 
-// Place order uses a dedicated action route (excluded from multi-site prefix via /action/**)
+// Place order uses a dedicated action route (excluded from site context prefix via /action/**)
 const placeOrderActionRoute = '/action/place-order';
 
 /**

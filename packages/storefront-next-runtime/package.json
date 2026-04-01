@@ -62,10 +62,10 @@
         "default": "./dist/events.js"
       }
     },
-    "./multi-site": {
+    "./site-context": {
       "import": {
-        "types": "./dist/multi-site.d.ts",
-        "default": "./dist/multi-site.js"
+        "types": "./dist/site-context.d.ts",
+        "default": "./dist/site-context.js"
       }
     },
     "./scapi": {

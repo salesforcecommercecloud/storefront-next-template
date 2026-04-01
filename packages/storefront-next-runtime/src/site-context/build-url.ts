@@ -107,9 +107,9 @@ export function sanitizePrefix(pathname: string, pathPrefix: string): string {
 }
 
 /**
- * Builds a fully-qualified URL with multi-site prefix and search params.
+ * Builds a fully-qualified URL with site context prefix and search params.
  *
- * Only keys defined in urlConfig.search are set by multi-site. Any other query params
+ * Only keys defined in urlConfig.search are set by site context. Any other query params
  * already present on the `to` URL (including duplicate keys) are preserved as-is.
  * e.g. to='/api/search?refine=color:blue&refine=size:M', search='?lng=:localeId'
  *   → '/api/search?refine=color:blue&refine=size:M&lng=en-GB'

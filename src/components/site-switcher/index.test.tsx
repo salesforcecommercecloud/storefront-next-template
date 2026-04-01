@@ -35,7 +35,7 @@ vi.mock('react-router', async (importOriginal) => {
 });
 
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { SiteProvider } from '@salesforce/storefront-next-runtime/multi-site';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig } from '@/test-utils/config';
 import SiteSwitcher from './index';
 

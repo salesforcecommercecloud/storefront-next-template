@@ -15,7 +15,7 @@
  */
 import { data, type ActionFunction } from 'react-router';
 import { updateCurrency } from '@/middlewares/currency.server';
-import { multiSiteContext, type MultiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -40,7 +40,7 @@ export const action: ActionFunction = async ({ request, context }) => {
         throw new Response('Currency is required', { status: 400 });
     }
 
-    const currentSite = (context.get(multiSiteContext) as MultiSiteContext).site;
+    const currentSite = (context.get(siteContext) as SiteContext).site;
     // Validate currency
     if (!currentSite.supportedCurrencies.includes(currency)) {
         logger.warn('SetCurrency: unsupported currency', {

@@ -16,17 +16,17 @@
 
 import { createContext, type MiddlewareFunction, type RouterContextProvider } from 'react-router';
 import { resolveSite } from './site-detection';
-import type { MultiSiteConfig, MultiSiteContext, MultiSiteSettings, Site, Locale } from './types';
+import type { SiteConfig, SiteContext, SiteSettings, Site, Locale } from './types';
 import { DEFAULT_SITE_DETECTION, DEFAULT_LOCALE_DETECTION } from './configs';
-import { createMultiSiteCookie, requestToLocaleMap } from './cookies';
+import { createSiteContextCookie, requestToLocaleMap } from './cookies';
 import { resolveLocale } from './locale-detection';
 
-export const multiSiteContext = createContext<MultiSiteContext | null>(null);
+export const siteContext = createContext<SiteContext | null>(null);
 
 type MiddlewareArgs = { request: Request; context: Readonly<RouterContextProvider> };
 
 /**
- * Helper function to get multi-site cookies from router context.
+ * Helper function to get site context cookies from router context.
  * Useful in server actions and loaders that need to read/set cookies.
  *
  * @param context - Router context provider
@@ -35,7 +35,7 @@ type MiddlewareArgs = { request: Request; context: Readonly<RouterContextProvide
  * @example
  * ```typescript
  * export const action: ActionFunction = async ({ request, context }) => {
- *     const cookies = getMultiSiteCookies(context);
+ *     const cookies = getSiteContextCookies(context);
  *     if (cookies) {
  *         const cookieHeader = await cookies.localeCookie.serialize(locale);
  *         // ... use cookieHeader
@@ -43,12 +43,12 @@ type MiddlewareArgs = { request: Request; context: Readonly<RouterContextProvide
  * };
  * ```
  */
-export function getMultiSiteCookies(context: Readonly<RouterContextProvider>) {
-    const multiSite = context.get(multiSiteContext);
-    if (!multiSite) return null;
+export function getSiteContextCookies(context: Readonly<RouterContextProvider>) {
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx) return null;
     return {
-        siteCookie: multiSite.siteCookie,
-        localeCookie: multiSite.localeCookie,
+        siteCookie: siteCtx.siteCookie,
+        localeCookie: siteCtx.localeCookie,
     };
 }
 
@@ -60,7 +60,7 @@ export function getMultiSiteCookies(context: Readonly<RouterContextProvider>) {
  *
  * @param request - Incoming request
  * @param response - Response from next()
- * @param settings - Multi-site settings with cookie instances and detection config
+ * @param settings - Site context settings with cookie instances and detection config
  * @param site - Resolved site for this request
  * @param locale - Resolved locale for this request
  * @returns Object with shouldSetSiteCookie and shouldSetLocaleCookie booleans
@@ -68,7 +68,7 @@ export function getMultiSiteCookies(context: Readonly<RouterContextProvider>) {
 async function shouldSetCookies(
     request: Request,
     response: Response,
-    settings: MultiSiteSettings,
+    settings: SiteSettings,
     site: Site,
     locale: Locale
 ): Promise<{ shouldSetSiteCookie: boolean; shouldSetLocaleCookie: boolean }> {
@@ -105,28 +105,28 @@ async function shouldSetCookies(
 }
 
 /**
- * Creates a multi-site middleware that resolves the current site from
+ * Creates a site context middleware that resolves the current site from
  * the request (path, cookie, header, query, or default) and stores the
  * result in the router context.
  *
  * Does not import or read from app config context; the consumer supplies config.
  */
-export function createMultiSiteMiddleware(config: MultiSiteConfig): MiddlewareFunction<Response> {
+export function createSiteContextMiddleware(config: SiteConfig): MiddlewareFunction<Response> {
     // Merge config with defaults so every detection option has a value
-    const siteDetectionConfig: MultiSiteSettings['siteDetectionConfig'] = {
+    const siteDetectionConfig: SiteSettings['siteDetectionConfig'] = {
         ...DEFAULT_SITE_DETECTION,
         ...config.siteDetectionConfig,
     };
-    const localeDetectionConfig: MultiSiteSettings['localeDetectionConfig'] = {
+    const localeDetectionConfig: SiteSettings['localeDetectionConfig'] = {
         ...DEFAULT_LOCALE_DETECTION,
         ...config.localeDetectionConfig,
     };
 
     // Create cookies based on configured names
-    const siteCookie = createMultiSiteCookie(siteDetectionConfig.lookupCookie);
-    const localeCookie = createMultiSiteCookie(localeDetectionConfig.lookupCookie);
+    const siteCookie = createSiteContextCookie(siteDetectionConfig.lookupCookie);
+    const localeCookie = createSiteContextCookie(localeDetectionConfig.lookupCookie);
 
-    const settings: MultiSiteSettings = {
+    const settings: SiteSettings = {
         ...config,
         siteDetectionConfig,
         localeDetectionConfig,
@@ -134,7 +134,7 @@ export function createMultiSiteMiddleware(config: MultiSiteConfig): MiddlewareFu
         localeCookie,
     };
 
-    const multiSiteMiddleware: MiddlewareFunction<Response> = async (
+    const siteContextMiddleware: MiddlewareFunction<Response> = async (
         { request, context }: MiddlewareArgs,
         next: () => Promise<Response>
     ): Promise<Response> => {
@@ -142,7 +142,7 @@ export function createMultiSiteMiddleware(config: MultiSiteConfig): MiddlewareFu
         const locale = await resolveLocale(request, settings, site);
 
         // Store full Site, Locale, and Cookie objects in context for downstream middlewares (currency, loaders, etc.)
-        context.set(multiSiteContext, {
+        context.set(siteContext, {
             site,
             locale,
             siteCookie: settings.siteCookie,
@@ -180,5 +180,5 @@ export function createMultiSiteMiddleware(config: MultiSiteConfig): MiddlewareFu
         return response;
     };
 
-    return multiSiteMiddleware;
+    return siteContextMiddleware;
 }

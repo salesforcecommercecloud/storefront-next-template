@@ -117,7 +117,7 @@ vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
     useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
 }));
 
-vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
+vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
     useSite: () => ({
         id: 'RefArchGlobal',
         supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }],

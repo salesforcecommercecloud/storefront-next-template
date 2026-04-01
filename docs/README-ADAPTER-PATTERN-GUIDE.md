@@ -1913,7 +1913,7 @@ Configuration is driven by `appConfig` object, typically loaded from environment
 
 #### Multi-Site Considerations
 
-Engagement adapters are initialized once at application startup with static configuration. In a multi-site storefront, the current site and locale are passed dynamically at **event-send time** via `EventSiteInfo` (resolved from the multi-site middleware context). See [Multi-Site: Engagement Data](./README-MULTI-SITE.md#engagement-data--multi-site) for how site context flows to adapters.
+Engagement adapters are initialized once at application startup with static configuration. In a site context storefront, the current site and locale are passed dynamically at **event-send time** via `EventSiteInfo` (resolved from the site context middleware context). See [Site Context: Engagement Data](./README-MULTI-SITE.md#engagement-data--site-context) for how site context flows to adapters.
 
 #### Environment Variable Overrides
 

@@ -66,7 +66,7 @@ vi.mock('@/hooks/use-tracking-consent', () => ({
     useTrackingConsent: () => mockUseTrackingConsent(),
 }));
 
-vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
+vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
     useSite: () => mockUseSite(),
 }));
 

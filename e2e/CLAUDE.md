@@ -25,7 +25,7 @@ This is E2E testing for **Salesforce Commerce Cloud storefront** built with Reac
 - **Environment**: All configuration is set in `.env` in the package root (copy from `.env.sample`). BASE_URL, SITE_ID, SITE_ALIAS, LOCALE, AI credentials, etc. are read from `.env`.
 - **Base URL**: Configurable via BASE_URL in `.env` (default: http://localhost:5173)
 - **Site ID**: Configurable via SITE_ID in `.env` (default: RefArchGlobal)
-- **Multisite**: SITE_ALIAS and LOCALE in `.env` control the URL prefix (`/{SITE_ALIAS}/{LOCALE}/{path}`). See the **Multisite URL Prefixing** section below.
+- **Url Prefix**: SITE_ALIAS and LOCALE in `.env` control the URL prefix (`/{SITE_ALIAS}/{LOCALE}/{path}`). See the **Multi-site URL Prefixing** section below.
 - **Test against actual storefront**, NOT demo workbench storefront
 - **Focus on commerce-specific flows**: product search, cart, checkout, user account
 - **Use Scenario-Mocha style** for test structure
@@ -165,9 +165,9 @@ AI_PROVIDER_LLM_MODEL=claude-sonnet-4-6       # optional
 
 ---
 
-## Multisite URL Prefixing
+## Multi-site URL Prefixing
 
-The storefront supports multisite routing where URLs are prefixed with an optional site alias and locale: `/{siteAlias}/{locale}/{path}`. The E2E tests handle this via the `buildSitePath()` utility from `src/utils/url-utils.ts`.
+The storefront supports multi-site routing where URLs are prefixed with an optional site alias and locale: `/{siteAlias}/{locale}/{path}`. The E2E tests handle this via the `buildSitePath()` utility from `src/utils/url-utils.ts`.
 
 **All `I.amOnPage()` calls that navigate to test-authored paths must wrap the path with `buildSitePath()`.**
 
@@ -183,7 +183,7 @@ I.amOnPage(buildSitePath(categoryUrl));
 I.amOnPage('/checkout');
 ```
 
-**Exception — DOM-extracted URLs:** URLs grabbed from the rendered page (e.g. via `I.grabAttributeFrom(locator, 'href')`) already contain the multisite prefix because the storefront renders them that way. Do **not** apply `buildSitePath()` to these or they will be double-prefixed.
+**Exception — DOM-extracted URLs:** URLs grabbed from the rendered page (e.g. via `I.grabAttributeFrom(locator, 'href')`) already contain the url prefix because the storefront renders them that way. Do **not** apply `buildSitePath()` to these or they will be double-prefixed.
 
 ```typescript
 // ✅ Correct — productUrl is from the DOM, already has the prefix

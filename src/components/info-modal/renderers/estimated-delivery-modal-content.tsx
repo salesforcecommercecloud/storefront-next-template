@@ -18,7 +18,7 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/lib/currency';
-import { useSite, type Site } from '@salesforce/storefront-next-runtime/multi-site';
+import { useSite, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import { Typography } from '@/components/typography';
 import type { EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
 

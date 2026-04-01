@@ -21,7 +21,7 @@ import type { BaseConfig } from './schema';
 /**
  * Create app config middleware for both server and client.
  *
- * Follows the same factory pattern as `createMultiSiteMiddleware`.
+ * Follows the same factory pattern as `createSiteContextMiddleware`.
  *
  * The server middleware:
  * - Validates required Commerce API fields on first request (one-time)

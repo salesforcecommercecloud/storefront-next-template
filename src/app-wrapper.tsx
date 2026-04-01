@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Note: DO NOT MOVE this file to anywhere but root. This file is used for multi-site feature
+// Note: DO NOT MOVE this file to anywhere but root. This file is used for site context feature
 export { default } from '@salesforce/storefront-next-runtime/routing/app-wrapper';

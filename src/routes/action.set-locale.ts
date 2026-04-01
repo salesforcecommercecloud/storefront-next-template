@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { redirect, type ActionFunction } from 'react-router';
-import { getMultiSiteCookies } from '@salesforce/storefront-next-runtime/multi-site';
+import { getSiteContextCookies } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -38,8 +38,8 @@ export const action: ActionFunction = async ({ request, context }) => {
         throw new Response('Locale is required', { status: 400 });
     }
 
-    // Get cookies from multi-site middleware context
-    const cookies = getMultiSiteCookies(context);
+    // Get cookies from site context middleware context
+    const cookies = getSiteContextCookies(context);
     if (!cookies) {
         logger.error('SetLocale: cookies not initialized');
         throw new Response('Site and locale cookies were not initialized', { status: 500 });

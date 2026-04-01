@@ -17,7 +17,7 @@
 import type { Cookie } from 'react-router';
 import type { Locale as BaseLocale, Site as BaseSite } from '../config/types';
 
-// extended Site/Locale to use for Multi Site feature.
+// extended Site/Locale to use for site context feature.
 export type Locale = BaseLocale & {
     alias?: string;
 };
@@ -28,7 +28,7 @@ export type Site = Omit<BaseSite, 'supportedLocales'> & {
     supportedLocales: Locale[];
 };
 
-export type MultiSiteContext = {
+export type SiteContext = {
     site: Site;
     locale: Locale;
     siteCookie: Cookie;
@@ -36,10 +36,10 @@ export type MultiSiteContext = {
 };
 
 /**
- * Configuration passed into the multi-site middleware
+ * Configuration passed into the site context middleware
  * Configured by the consumer
  */
-export type MultiSiteConfig = {
+export type SiteConfig = {
     sites: Site[];
     defaultSiteId: string;
     defaultLocale: string;
@@ -50,7 +50,7 @@ export type MultiSiteConfig = {
 /**
  * Resolved settings used by site/locale resolution (all detection options have values).
  */
-export type MultiSiteSettings = MultiSiteConfig & {
+export type SiteSettings = SiteConfig & {
     siteDetectionConfig: Required<DetectionConfig>;
     localeDetectionConfig: Required<DetectionConfig>;
     siteCookie: Cookie;

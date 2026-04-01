@@ -3,7 +3,7 @@ import { createContext, useContext } from "react";
 import { jsx } from "react/jsx-runtime";
 import { createContext as createContext$1, createCookie } from "react-router";
 
-//#region src/multi-site/site-context.tsx
+//#region src/site-context/site-context.tsx
 const SiteContext = createContext(void 0);
 /**
 * Provides the current site to the component tree.
@@ -27,7 +27,7 @@ function useSite() {
 }
 
 //#endregion
-//#region src/multi-site/build-url.ts
+//#region src/site-context/build-url.ts
 /**
 * Parses search config string into key-value pairs, preserving ':param' placeholders.
 * '?lng=:localeId&site=:siteId' → { lng: ':localeId', site: ':siteId' }
@@ -108,9 +108,9 @@ function sanitizePrefix(pathname, pathPrefix) {
 	return pathname;
 }
 /**
-* Builds a fully-qualified URL with multi-site prefix and search params.
+* Builds a fully-qualified URL with site context prefix and search params.
 *
-* Only keys defined in urlConfig.search are set by multi-site. Any other query params
+* Only keys defined in urlConfig.search are set by site context. Any other query params
 * already present on the `to` URL (including duplicate keys) are preserved as-is.
 * e.g. to='/api/search?refine=color:blue&refine=size:M', search='?lng=:localeId'
 *   → '/api/search?refine=color:blue&refine=size:M&lng=en-GB'
@@ -138,7 +138,7 @@ function buildUrl({ to, urlConfig, params }) {
 }
 
 //#endregion
-//#region src/multi-site/utils.ts
+//#region src/site-context/utils.ts
 /**
 * Extract a string value from the URL path segment at the given index.
 */
@@ -159,7 +159,7 @@ async function readCookieFromRequest(request, cookie) {
 }
 
 //#endregion
-//#region src/multi-site/site-detection.ts
+//#region src/site-context/site-detection.ts
 /**
 * Detect site reference from cookie.
 */
@@ -200,7 +200,7 @@ async function resolveSite(request, settings) {
 }
 
 //#endregion
-//#region src/multi-site/configs.ts
+//#region src/site-context/configs.ts
 /**
 * Default site detection configuration
 */
@@ -235,9 +235,9 @@ const DEFAULT_LOCALE_DETECTION = {
 };
 
 //#endregion
-//#region src/multi-site/cookies.ts
+//#region src/site-context/cookies.ts
 /**
-* Cookie options for multi-site cookies
+* Cookie options for site context cookies
 */
 const COOKIE_OPTIONS = {
 	path: "/",
@@ -249,20 +249,20 @@ const COOKIE_OPTIONS = {
 * Creates a cookie instance with the given name.
 *
 * @param name - Cookie name
-* @returns Cookie instance configured with multi-site options
+* @returns Cookie instance configured with site context options
 */
-function createMultiSiteCookie(name) {
+function createSiteContextCookie(name) {
 	return createCookie(name, COOKIE_OPTIONS);
 }
 /**
-* WeakMap to pass resolved locale from multi-site middleware to i18next's findLocale.
+* WeakMap to pass resolved locale from site context middleware to i18next's findLocale.
 * WeakMap allows garbage collection when requests are done.
 * This is necessary because findLocale() only receives the Request object, not the router context.
 */
 const requestToLocaleMap = /* @__PURE__ */ new WeakMap();
 
 //#endregion
-//#region src/multi-site/locale-detection.ts
+//#region src/site-context/locale-detection.ts
 /**
 * Read locale from cookie.
 */
@@ -310,10 +310,10 @@ async function resolveLocale(request, settings, site) {
 }
 
 //#endregion
-//#region src/multi-site/middleware.ts
-const multiSiteContext = createContext$1(null);
+//#region src/site-context/middleware.ts
+const siteContext = createContext$1(null);
 /**
-* Helper function to get multi-site cookies from router context.
+* Helper function to get site context cookies from router context.
 * Useful in server actions and loaders that need to read/set cookies.
 *
 * @param context - Router context provider
@@ -322,7 +322,7 @@ const multiSiteContext = createContext$1(null);
 * @example
 * ```typescript
 * export const action: ActionFunction = async ({ request, context }) => {
-*     const cookies = getMultiSiteCookies(context);
+*     const cookies = getSiteContextCookies(context);
 *     if (cookies) {
 *         const cookieHeader = await cookies.localeCookie.serialize(locale);
 *         // ... use cookieHeader
@@ -330,12 +330,12 @@ const multiSiteContext = createContext$1(null);
 * };
 * ```
 */
-function getMultiSiteCookies(context) {
-	const multiSite = context.get(multiSiteContext);
-	if (!multiSite) return null;
+function getSiteContextCookies(context) {
+	const siteCtx = context.get(siteContext);
+	if (!siteCtx) return null;
 	return {
-		siteCookie: multiSite.siteCookie,
-		localeCookie: multiSite.localeCookie
+		siteCookie: siteCtx.siteCookie,
+		localeCookie: siteCtx.localeCookie
 	};
 }
 /**
@@ -346,7 +346,7 @@ function getMultiSiteCookies(context) {
 *
 * @param request - Incoming request
 * @param response - Response from next()
-* @param settings - Multi-site settings with cookie instances and detection config
+* @param settings - Site context settings with cookie instances and detection config
 * @param site - Resolved site for this request
 * @param locale - Resolved locale for this request
 * @returns Object with shouldSetSiteCookie and shouldSetLocaleCookie booleans
@@ -369,13 +369,13 @@ async function shouldSetCookies(request, response, settings, site, locale) {
 	};
 }
 /**
-* Creates a multi-site middleware that resolves the current site from
+* Creates a site context middleware that resolves the current site from
 * the request (path, cookie, header, query, or default) and stores the
 * result in the router context.
 *
 * Does not import or read from app config context; the consumer supplies config.
 */
-function createMultiSiteMiddleware(config) {
+function createSiteContextMiddleware(config) {
 	const siteDetectionConfig = {
 		...DEFAULT_SITE_DETECTION,
 		...config.siteDetectionConfig
@@ -384,8 +384,8 @@ function createMultiSiteMiddleware(config) {
 		...DEFAULT_LOCALE_DETECTION,
 		...config.localeDetectionConfig
 	};
-	const siteCookie = createMultiSiteCookie(siteDetectionConfig.lookupCookie);
-	const localeCookie = createMultiSiteCookie(localeDetectionConfig.lookupCookie);
+	const siteCookie = createSiteContextCookie(siteDetectionConfig.lookupCookie);
+	const localeCookie = createSiteContextCookie(localeDetectionConfig.lookupCookie);
 	const settings = {
 		...config,
 		siteDetectionConfig,
@@ -393,10 +393,10 @@ function createMultiSiteMiddleware(config) {
 		siteCookie,
 		localeCookie
 	};
-	const multiSiteMiddleware = async ({ request, context }, next) => {
+	const siteContextMiddleware = async ({ request, context }, next) => {
 		const site = await resolveSite(request, settings);
 		const locale = await resolveLocale(request, settings, site);
-		context.set(multiSiteContext, {
+		context.set(siteContext, {
 			site,
 			locale,
 			siteCookie: settings.siteCookie,
@@ -411,9 +411,9 @@ function createMultiSiteMiddleware(config) {
 		if (localeSetCookie) response.headers.append("Set-Cookie", localeSetCookie);
 		return response;
 	};
-	return multiSiteMiddleware;
+	return siteContextMiddleware;
 }
 
 //#endregion
-export { SiteProvider, applyUrlConfig, buildUrl, createMultiSiteMiddleware, getMultiSiteCookies, multiSiteContext, requestToLocaleMap, resolvePrefix, sanitizePrefix, stripPathPrefix, useSite };
-//# sourceMappingURL=multi-site.js.map
+export { SiteProvider, applyUrlConfig, buildUrl, createSiteContextMiddleware, getSiteContextCookies, requestToLocaleMap, resolvePrefix, sanitizePrefix, siteContext, stripPathPrefix, useSite };
+//# sourceMappingURL=site-context.js.map

@@ -22,13 +22,13 @@
  */
 import { afterEach, describe, it, expect } from 'vitest';
 import { DEFAULT_SITE_DETECTION, DEFAULT_LOCALE_DETECTION } from './configs';
-import { createMultiSiteCookie } from './cookies';
+import { createSiteContextCookie } from './cookies';
 import { resolveSite } from './site-detection';
-import type { MultiSiteSettings, Site } from './types';
+import type { SiteSettings, Site } from './types';
 
 // Create cookies using default names for testing
-const siteCookie = createMultiSiteCookie(DEFAULT_SITE_DETECTION.lookupCookie);
-const localeCookie = createMultiSiteCookie(DEFAULT_LOCALE_DETECTION.lookupCookie);
+const siteCookie = createSiteContextCookie(DEFAULT_SITE_DETECTION.lookupCookie);
+const localeCookie = createSiteContextCookie(DEFAULT_LOCALE_DETECTION.lookupCookie);
 
 const SITES: Site[] = [
     {
@@ -57,7 +57,7 @@ const SITES: Site[] = [
     },
 ];
 
-function createSettings(overrides: Partial<MultiSiteSettings> = {}): MultiSiteSettings {
+function createSettings(overrides: Partial<SiteSettings> = {}): SiteSettings {
     return {
         sites: SITES,
         defaultSiteId: 'site-us',

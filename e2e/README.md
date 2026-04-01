@@ -41,13 +41,13 @@ cp e2e/.env.sample e2e/.env
 
 Key variables in `.env`:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `BASE_URL` | `http://localhost:5173` | Storefront URL |
-| `SITE_ID` | `RefArchGlobal` | Commerce Cloud site ID |
-| `SITE_ALIAS` | _(empty)_ | URL prefix for multisite routing |
-| `LOCALE` | _(empty)_ | Locale prefix for multisite routing |
-| `HEADLESS` | `false` | Run browser headless |
+| Variable | Default | Description                      |
+|----------|---------|----------------------------------|
+| `BASE_URL` | `http://localhost:5173` | Storefront URL                   |
+| `SITE_ID` | `RefArchGlobal` | Commerce Cloud site ID           |
+| `SITE_ALIAS` | _(empty)_ | URL prefix for site routing      |
+| `LOCALE` | _(empty)_ | Locale prefix for locale routing |
+| `HEADLESS` | `false` | Run browser headless             |
 
 ## Running Tests
 
@@ -128,7 +128,7 @@ The assistant will:
 
 - Scenarios never call `I.*` directly — all browser interactions live in page objects or flows
 - Chai `expect()` for value assertions, CodeceptJS methods for UI interactions
-- All hardcoded paths wrapped in `buildSitePath()` for multisite support
+- All hardcoded paths wrapped in `buildSitePath()` for multi-site support
 - Each scenario is independent and can run in any order
 - Page objects use semantic locators with `.as('Name')` descriptions
 

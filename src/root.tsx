@@ -40,7 +40,7 @@ import { type i18n } from 'i18next';
 import { I18nextProvider } from 'react-i18next';
 import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
-import { SiteProvider, multiSiteContext, type Site, type Locale } from '@salesforce/storefront-next-runtime/multi-site';
+import { SiteProvider, siteContext, type Site, type Locale } from '@salesforce/storefront-next-runtime/site-context';
 
 // Middlewares
 import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/auth.server';
@@ -56,7 +56,7 @@ import { appConfigMiddlewareServer } from '@/middlewares/app-config.server';
 import { appConfigMiddlewareClient } from '@/middlewares/app-config.client';
 import { ConfigProvider, getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { multiSiteMiddleware } from '@/middlewares/multi-site.server';
+import { siteContextMiddleware } from '@/middlewares/site-context.server';
 import { i18nextMiddleware } from '@/middlewares/i18next.server';
 import { currencyMiddleware } from '@/middlewares/currency.server';
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
@@ -138,7 +138,7 @@ export const middleware: MiddlewareFunction<Response>[] = [
     loggingMiddleware,
     modeDetectionMiddlewareServer,
     appConfigMiddlewareServer,
-    multiSiteMiddleware, // Must run after appConfig, before i18next and currency
+    siteContextMiddleware, // Must run after appConfig, before i18next and currency
     i18nextMiddleware,
     currencyMiddleware,
     selectedStoreMiddleware /** @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */,
@@ -209,13 +209,13 @@ export const loader = ({
     const selectedStoreInfo = context.get(selectedStoreContext) ?? null;
     // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 
-    // Get resolved site from multi-site middleware
-    const multiSite = context.get(multiSiteContext);
-    if (!multiSite) {
-        throw new Error('Multi-site context not found. Ensure multiSiteMiddleware runs before loaders.');
+    // Get resolved site from site context middleware
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx) {
+        throw new Error('Site context not found. Ensure siteContextMiddleware runs before loaders.');
     }
-    const locale = multiSite.locale;
-    const site = multiSite.site;
+    const locale = siteCtx.locale;
+    const site = siteCtx.site;
 
     // Load the application basket provider with the basket snapshot. We are actively not loading the basket, as
     // we want to lazy load the basket when the basket is needed. This prevents low-engagement users from causing

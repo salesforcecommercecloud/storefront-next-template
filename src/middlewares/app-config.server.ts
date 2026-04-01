@@ -68,12 +68,12 @@ function validateConfig(logger: ReturnType<typeof getLogger>): void {
         );
     }
 
-    // Validate multi-site configuration
+    // Validate site context configuration
     const { sites } = config.app.commerce;
 
     if (!Array.isArray(sites) || sites.length === 0) {
         throw new Error(
-            `Missing required multi-site configuration: commerce.sites\n\n` +
+            `Missing required site context configuration: commerce.sites\n\n` +
                 `Set sites in your MRT deployment, .env file, or config.server.ts.\n` +
                 `commerce.sites must be a non-empty array with at least one site definition.\n\n` +
                 `Example .env file:\n` +
@@ -90,7 +90,7 @@ function validateConfig(logger: ReturnType<typeof getLogger>): void {
                 `    },\n` +
                 `  ],\n` +
                 `}\n\n` +
-                `See docs/README-MULTI-SITE.md for multi-site configuration documentation.`
+                `See docs/README-MULTI-SITE.md for site context configuration documentation.`
         );
     }
 
@@ -101,7 +101,7 @@ function validateConfig(logger: ReturnType<typeof getLogger>): void {
                 `  PUBLIC__app__defaultSiteId=your-site-id\n\n` +
                 `Example config.server.ts:\n` +
                 `defaultSiteId: 'YourSiteId',\n\n` +
-                `See docs/README-MULTI-SITE.md for multi-site configuration documentation.`
+                `See docs/README-MULTI-SITE.md for site context configuration documentation.`
         );
     }
 
@@ -113,7 +113,7 @@ function validateConfig(logger: ReturnType<typeof getLogger>): void {
                 `Available site IDs: ${siteIds.join(', ')}\n\n` +
                 `Set defaultSiteId to one of the configured site IDs in your MRT deployment, .env file, or config.server.ts:\n` +
                 `  PUBLIC__app__defaultSiteId=${siteIds[0]}\n\n` +
-                `See docs/README-MULTI-SITE.md for multi-site configuration documentation.`
+                `See docs/README-MULTI-SITE.md for site context configuration documentation.`
         );
     }
 

@@ -36,7 +36,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: vi.fn(),
 }));
 
-vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
+vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
     useSite: vi.fn(),
 }));
 
@@ -67,7 +67,7 @@ vi.mock('@/lib/adapters/initialize-adapters', () => ({
 
 import { useAuth } from '@/providers/auth';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import { useSite } from '@salesforce/storefront-next-runtime/multi-site';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
 import { getAllAdapters } from '@/lib/adapters';
 import { initializeEngagementAdapters } from '@/adapters';

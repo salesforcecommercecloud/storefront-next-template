@@ -17,7 +17,7 @@
 import { createCookie, type Cookie } from 'react-router';
 
 /**
- * Cookie options for multi-site cookies
+ * Cookie options for site context cookies
  */
 export const COOKIE_OPTIONS = {
     path: '/',
@@ -30,14 +30,14 @@ export const COOKIE_OPTIONS = {
  * Creates a cookie instance with the given name.
  *
  * @param name - Cookie name
- * @returns Cookie instance configured with multi-site options
+ * @returns Cookie instance configured with site context options
  */
-export function createMultiSiteCookie(name: string): Cookie {
+export function createSiteContextCookie(name: string): Cookie {
     return createCookie(name, COOKIE_OPTIONS);
 }
 
 /**
- * WeakMap to pass resolved locale from multi-site middleware to i18next's findLocale.
+ * WeakMap to pass resolved locale from site context middleware to i18next's findLocale.
  * WeakMap allows garbage collection when requests are done.
  * This is necessary because findLocale() only receives the Request object, not the router context.
  */

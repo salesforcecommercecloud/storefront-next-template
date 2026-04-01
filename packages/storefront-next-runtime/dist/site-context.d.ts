@@ -1,11 +1,11 @@
 import { n as Site$1, r as Url, t as Locale$1 } from "./types.js";
 import { PropsWithChildren } from "react";
-import * as react_jsx_runtime2 from "react/jsx-runtime";
+import * as react_jsx_runtime0 from "react/jsx-runtime";
 import * as react_router0 from "react-router";
 import { Cookie, MiddlewareFunction, RouterContextProvider } from "react-router";
 import { RouteConfigEntry } from "@react-router/dev/routes";
 
-//#region src/multi-site/types.d.ts
+//#region src/site-context/types.d.ts
 
 type Locale = Locale$1 & {
   alias?: string;
@@ -15,17 +15,17 @@ type Site = Omit<Site$1, 'supportedLocales'> & {
   alias?: string;
   supportedLocales: Locale[];
 };
-type MultiSiteContext = {
+type SiteContext = {
   site: Site;
   locale: Locale;
   siteCookie: Cookie;
   localeCookie: Cookie;
 };
 /**
- * Configuration passed into the multi-site middleware
+ * Configuration passed into the site context middleware
  * Configured by the consumer
  */
-type MultiSiteConfig = {
+type SiteConfig = {
   sites: Site[];
   defaultSiteId: string;
   defaultLocale: string;
@@ -43,7 +43,7 @@ type DetectionConfig = {
   caches?: Array<'cookie'>;
 };
 //#endregion
-//#region src/multi-site/site-context.d.ts
+//#region src/site-context/site-context.d.ts
 /**
  * Provides the current site to the component tree.
  * Follows the same pattern as CurrencyProvider.
@@ -56,16 +56,16 @@ declare function SiteProvider({
   children
 }: PropsWithChildren<{
   value: Site;
-}>): react_jsx_runtime2.JSX.Element;
+}>): react_jsx_runtime0.JSX.Element;
 /**
  * React hook to get the current site.
  * Returns undefined when no SiteProvider is mounted.
  */
 declare function useSite(): Site | undefined;
 //#endregion
-//#region src/multi-site/apply-url-config.d.ts
+//#region src/site-context/apply-url-config.d.ts
 /**
- * Applies multi-site URL configuration to a set of route entries.
+ * Applies site context URL configuration to a set of route entries.
  *
  * Wraps non-excluded routes under a parent route with the configured URL prefix
  * (e.g. `/:siteId/:localeId`), while keeping excluded routes (action/resource by default)
@@ -84,7 +84,7 @@ declare function applyUrlConfig(options: {
   wrapperFile: string;
 }): RouteConfigEntry[];
 //#endregion
-//#region src/multi-site/build-url.d.ts
+//#region src/site-context/build-url.d.ts
 /**
  * Resolves a prefix template by replacing parameter placeholders with values.
  * ('/:siteId/:localeId', { siteId: 'global', localeId: 'en-GB' }) → '/global/en-GB'
@@ -113,9 +113,9 @@ declare function stripPathPrefix(pathname: string, prefixPattern: string): strin
  */
 declare function sanitizePrefix(pathname: string, pathPrefix: string): string;
 /**
- * Builds a fully-qualified URL with multi-site prefix and search params.
+ * Builds a fully-qualified URL with site context prefix and search params.
  *
- * Only keys defined in urlConfig.search are set by multi-site. Any other query params
+ * Only keys defined in urlConfig.search are set by site context. Any other query params
  * already present on the `to` URL (including duplicate keys) are preserved as-is.
  * e.g. to='/api/search?refine=color:blue&refine=size:M', search='?lng=:localeId'
  *   → '/api/search?refine=color:blue&refine=size:M&lng=en-GB'
@@ -134,10 +134,10 @@ declare function buildUrl({
   params: Record<string, string>;
 }): string;
 //#endregion
-//#region src/multi-site/middleware.d.ts
-declare const multiSiteContext: react_router0.RouterContext<MultiSiteContext | null>;
+//#region src/site-context/middleware.d.ts
+declare const siteContext: react_router0.RouterContext<SiteContext | null>;
 /**
- * Helper function to get multi-site cookies from router context.
+ * Helper function to get site context cookies from router context.
  * Useful in server actions and loaders that need to read/set cookies.
  *
  * @param context - Router context provider
@@ -146,7 +146,7 @@ declare const multiSiteContext: react_router0.RouterContext<MultiSiteContext | n
  * @example
  * ```typescript
  * export const action: ActionFunction = async ({ request, context }) => {
- *     const cookies = getMultiSiteCookies(context);
+ *     const cookies = getSiteContextCookies(context);
  *     if (cookies) {
  *         const cookieHeader = await cookies.localeCookie.serialize(locale);
  *         // ... use cookieHeader
@@ -154,26 +154,26 @@ declare const multiSiteContext: react_router0.RouterContext<MultiSiteContext | n
  * };
  * ```
  */
-declare function getMultiSiteCookies(context: Readonly<RouterContextProvider>): {
+declare function getSiteContextCookies(context: Readonly<RouterContextProvider>): {
   siteCookie: react_router0.Cookie;
   localeCookie: react_router0.Cookie;
 } | null;
 /**
- * Creates a multi-site middleware that resolves the current site from
+ * Creates a site context middleware that resolves the current site from
  * the request (path, cookie, header, query, or default) and stores the
  * result in the router context.
  *
  * Does not import or read from app config context; the consumer supplies config.
  */
-declare function createMultiSiteMiddleware(config: MultiSiteConfig): MiddlewareFunction<Response>;
+declare function createSiteContextMiddleware(config: SiteConfig): MiddlewareFunction<Response>;
 //#endregion
-//#region src/multi-site/cookies.d.ts
+//#region src/site-context/cookies.d.ts
 /**
- * WeakMap to pass resolved locale from multi-site middleware to i18next's findLocale.
+ * WeakMap to pass resolved locale from site context middleware to i18next's findLocale.
  * WeakMap allows garbage collection when requests are done.
  * This is necessary because findLocale() only receives the Request object, not the router context.
  */
 declare const requestToLocaleMap: WeakMap<Request, string>;
 //#endregion
-export { type DetectionConfig, type Locale, type MultiSiteConfig, type MultiSiteContext, type Site, SiteProvider, applyUrlConfig, buildUrl, createMultiSiteMiddleware, getMultiSiteCookies, multiSiteContext, requestToLocaleMap, resolvePrefix, sanitizePrefix, stripPathPrefix, useSite };
-//# sourceMappingURL=multi-site.d.ts.map
+export { type DetectionConfig, type Locale, type Site, type SiteConfig, type SiteContext, SiteProvider, applyUrlConfig, buildUrl, createSiteContextMiddleware, getSiteContextCookies, requestToLocaleMap, resolvePrefix, sanitizePrefix, siteContext, stripPathPrefix, useSite };
+//# sourceMappingURL=site-context.d.ts.map

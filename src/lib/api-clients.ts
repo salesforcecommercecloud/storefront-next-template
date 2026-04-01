@@ -19,7 +19,7 @@ import {
     SLAS_AUTH_ENDPOINTS,
     type Middleware,
 } from '@salesforce/storefront-next-runtime/scapi';
-import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { AUTH_TOKEN_INVALID_ERROR, authContext, authStorageContext } from '@/middlewares/auth.utils';
 import { correlationContext } from '@/lib/correlation';
 import { getLogger } from '@/lib/logger.server';
@@ -58,12 +58,12 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
     const config = getConfig<AppConfig>(context);
     const { shortCode, callback, organizationId, clientId } = config.commerce.api;
 
-    // Site ID is always resolved by multi-site middleware
-    const multiSite = context.get(multiSiteContext);
-    if (!multiSite?.site?.id) {
-        throw new Error('Multi-site context not initialized. Ensure multi-site middleware is configured.');
+    // Site ID is always resolved by site context middleware
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx?.site?.id) {
+        throw new Error('Site context not initialized. Ensure site context middleware is configured.');
     }
-    const siteId = multiSite.site.id;
+    const siteId = siteCtx.site.id;
     const scapiProxyHost = typeof window === 'undefined' ? process.env.SCAPI_PROXY_HOST : undefined;
 
     const baseUrl = scapiProxyHost || getScapiBaseUrl(shortCode);

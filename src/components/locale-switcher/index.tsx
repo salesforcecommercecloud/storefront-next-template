@@ -22,7 +22,7 @@ import { useFetcher, useLocation } from 'react-router';
 import { NativeSelect } from '@/components/ui/native-select';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { buildUrl, resolvePrefix, sanitizePrefix, useSite } from '@salesforce/storefront-next-runtime/multi-site';
+import { buildUrl, resolvePrefix, sanitizePrefix, useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 
 export default function LocaleSwitcher(): ReactElement {

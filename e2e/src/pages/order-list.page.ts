@@ -114,7 +114,7 @@ class OrderListPage {
      */
     clickViewDetails(orderNumber?: string): void {
         if (orderNumber) {
-            // Use $= (ends-with) so the selector works with and without a multisite prefix
+            // Use $= (ends-with) so the selector works with and without a url prefix
             I.click(`a[href$="/account/orders/${orderNumber}"]`);
         } else {
             I.click(this.locators.orderCardFirst);

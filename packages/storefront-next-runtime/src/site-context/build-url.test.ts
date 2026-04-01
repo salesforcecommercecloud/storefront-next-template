@@ -316,7 +316,7 @@ describe('buildUrl', () => {
             ).toBe('/product/123?lng=en-GB');
         });
 
-        it('preserves duplicate keys not related to multi-site config', () => {
+        it('preserves duplicate keys not related to site context config', () => {
             expect(
                 buildUrl({
                     to: '/api/search?refine=color:blue&refine=size:M',

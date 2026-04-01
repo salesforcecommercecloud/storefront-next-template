@@ -101,7 +101,7 @@ async function discoverExtensionRoutes(ignoredRouteFiles, routes) {
 	}
 }
 /**
-* Discovers all file-based routes, merges extension routes, and applies multi-site
+* Discovers all file-based routes, merges extension routes, and applies site context
 * URL configuration if defined in the project's `config.server.ts`.
 *
 * 1. Discover routes from the filesystem using React Router's `flatRoutes`.

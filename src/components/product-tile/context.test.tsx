@@ -175,7 +175,7 @@ describe('useProductTileContext', () => {
             wrapper: createProviderWrapper(),
         });
 
-        // Navigate is a multi-site wrapper around the mocked useNavigate
+        // Navigate is a site context wrapper around the mocked useNavigate
         expect(result.current.navigate).toBeTypeOf('function');
         expect(result.current.config).toBeDefined();
         expect(result.current.t).toBeTypeOf('function');
@@ -189,7 +189,7 @@ describe('useProductTileContext', () => {
             wrapper: createRouterWrapper(),
         });
 
-        // Navigate is a multi-site wrapper around the mocked useNavigate
+        // Navigate is a site context wrapper around the mocked useNavigate
         expect(result.current.navigate).toBeTypeOf('function');
         expect(result.current.config).toBeDefined();
         expect(result.current.t).toBeTypeOf('function');
