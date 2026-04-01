@@ -25,6 +25,7 @@ import {
     saveShippingAddressToCustomer,
     saveBillingAddressToCustomer,
     updateCustomerContactInfo,
+    getCustomerProfileForCheckout,
 } from '@/lib/api/customer';
 import { getBasketCurrency, calculateBasket } from '@/lib/api/basket';
 import { createApiClients } from '@/lib/api-clients';
@@ -367,6 +368,165 @@ describe('action.place-order action', () => {
         expect(vi.mocked(updateCustomerContactInfo)).toHaveBeenCalledWith(mockContext, 'new-cust-1', {
             phone: '+1 555-123-4567',
         });
+    });
+
+    test('saves shipping address and phone for newly registered shopper with empty profile (shouldCreateAccount=false)', async () => {
+        const shippingAddress = {
+            firstName: 'Alex',
+            lastName: 'Smith',
+            address1: '100 Pine St',
+            city: 'Houston',
+            postalCode: '77001',
+            countryCode: 'US',
+            stateCode: 'TX',
+        };
+        const billingAddress = {
+            firstName: 'Alex',
+            lastName: 'Smith',
+            address1: '100 Pine St',
+            city: 'Houston',
+            postalCode: '77001',
+            countryCode: 'US',
+            stateCode: 'TX',
+            phone: '+1 5559998888',
+        };
+        const basketWithPayment = {
+            basketId: 'b1',
+            customerInfo: { email: 'otp-user@example.com' },
+            productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 's1' }],
+            shipments: [
+                {
+                    shipmentId: 's1',
+                    shippingAddress,
+                    shippingMethod: { id: 'ground', name: 'Ground' },
+                },
+            ],
+            paymentInstruments: [{ paymentInstrumentId: 'pi1' }],
+            billingAddress,
+            orderTotal: 59.99,
+        };
+
+        vi.mocked(getBasket).mockResolvedValue({ current: basketWithPayment } as any);
+        vi.mocked(getAuth).mockReturnValue({ userType: 'registered', customerId: 'new-otp-cust' } as any);
+        vi.mocked(getBasketCurrency).mockReturnValue('USD');
+        vi.mocked(calculateBasket).mockResolvedValue({ ...basketWithPayment, basketId: 'b1' } as any);
+        vi.mocked(createApiClients).mockReturnValue({
+            shopperOrders: {
+                createOrder: vi.fn().mockResolvedValue({
+                    data: {
+                        orderNo: 'O-3',
+                        customerInfo: { email: 'otp-user@example.com' },
+                        shipments: [{ shippingAddress }],
+                        billingAddress,
+                        paymentInstruments: [
+                            {
+                                paymentInstrumentId: 'order-pi3',
+                                paymentMethodId: 'CREDIT_CARD',
+                                paymentCard: { cardType: 'Visa', holder: 'Alex Smith', numberLastDigits: '1111' },
+                            },
+                        ],
+                    },
+                }),
+            },
+        } as any);
+        // Empty profile: no addresses, no phoneHome
+        vi.mocked(getCustomerProfileForCheckout).mockResolvedValue({
+            customer: { customerId: 'new-otp-cust', login: 'otp-user@example.com' },
+            addresses: [],
+            paymentInstruments: [],
+        } as any);
+        vi.mocked(saveShippingAddressToCustomer).mockResolvedValue(true);
+        vi.mocked(saveBillingAddressToCustomer).mockResolvedValue(true);
+        vi.mocked(updateCustomerContactInfo).mockResolvedValue(true);
+
+        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            shouldCreateAccount: 'false',
+            savePaymentToProfile: 'false',
+        });
+        const response = await action({
+            request,
+            context: mockContext,
+            params: {},
+            unstable_pattern: '/action/place-order',
+        } as ActionFunctionArgs);
+
+        expect(response).toBeInstanceOf(Response);
+        expect(response.status).toBe(302);
+
+        // Payment should NOT be saved (shouldCreateAccount=false and savePaymentToProfile=false)
+        expect(vi.mocked(savePaymentMethodToCustomer)).not.toHaveBeenCalled();
+
+        // Shipping address, billing address, and phone SHOULD be saved (empty profile)
+        expect(vi.mocked(saveShippingAddressToCustomer)).toHaveBeenCalledWith(
+            mockContext,
+            'new-otp-cust',
+            shippingAddress
+        );
+        expect(vi.mocked(saveBillingAddressToCustomer)).toHaveBeenCalledWith(
+            mockContext,
+            'new-otp-cust',
+            billingAddress
+        );
+        expect(vi.mocked(updateCustomerContactInfo)).toHaveBeenCalledWith(mockContext, 'new-otp-cust', {
+            phone: '+1 5559998888',
+        });
+    });
+
+    test('does not save addresses for existing registered shopper with populated profile', async () => {
+        const basketWithPayment = {
+            basketId: 'b1',
+            customerInfo: { email: 'existing@example.com' },
+            productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 's1' }],
+            shipments: [
+                {
+                    shipmentId: 's1',
+                    shippingAddress: {
+                        address1: '123 Main St',
+                        city: 'Austin',
+                        postalCode: '78701',
+                        countryCode: 'US',
+                    },
+                    shippingMethod: { id: 'ground', name: 'Ground' },
+                },
+            ],
+            paymentInstruments: [{ paymentInstrumentId: 'pi1' }],
+            billingAddress: { address1: '123 Main St', city: 'Austin', postalCode: '78701', countryCode: 'US' },
+            orderTotal: 99.99,
+        };
+
+        vi.mocked(getBasket).mockResolvedValue({ current: basketWithPayment } as any);
+        vi.mocked(getAuth).mockReturnValue({ userType: 'registered', customerId: 'existing-cust' } as any);
+        vi.mocked(getBasketCurrency).mockReturnValue('USD');
+        vi.mocked(calculateBasket).mockResolvedValue({ ...basketWithPayment, basketId: 'b1' } as any);
+        vi.mocked(createApiClients).mockReturnValue({
+            shopperOrders: {
+                createOrder: vi.fn().mockResolvedValue({
+                    data: { orderNo: 'O-4', paymentInstruments: [{ paymentInstrumentId: 'order-pi4' }] },
+                }),
+            },
+        } as any);
+        // Populated profile: has addresses and phoneHome
+        vi.mocked(getCustomerProfileForCheckout).mockResolvedValue({
+            customer: { customerId: 'existing-cust', phoneHome: '+1 1111111111' },
+            addresses: [{ addressId: 'addr-1', address1: '999 Elm St' }],
+            paymentInstruments: [],
+        } as any);
+
+        const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
+            shouldCreateAccount: 'false',
+            savePaymentToProfile: 'false',
+        });
+        await action({
+            request,
+            context: mockContext,
+            params: {},
+            unstable_pattern: '/action/place-order',
+        } as ActionFunctionArgs);
+
+        // Should not save addresses or phone for an existing registered shopper
+        expect(vi.mocked(saveShippingAddressToCustomer)).not.toHaveBeenCalled();
+        expect(vi.mocked(saveBillingAddressToCustomer)).not.toHaveBeenCalled();
+        expect(vi.mocked(updateCustomerContactInfo)).not.toHaveBeenCalled();
     });
 
     test('does not call savePaymentMethodToCustomer when savePaymentToProfile is false', async () => {

@@ -268,11 +268,29 @@ export async function action({ request, context }: ActionFunctionArgs) {
         if (auth.customerId) {
             const savePromises: Promise<unknown>[] = [];
 
-            // For newly registered customers (via OTP), save all their checkout info
-            if (registeredViaCheckout) {
-                // Always save payment for checkout-registration: the "Save for future use"
-                // checkbox implies saving all checkout data to the new profile.
-                if (order.paymentInstruments?.[0]) {
+            // Detect newly registered shoppers whose profile is still empty (in case they exit checkout without saving)
+            let isNewlyRegisteredWithEmptyProfile = false;
+            if (auth.userType === 'registered' && !registeredViaCheckout) {
+                try {
+                    const profile = await getCustomerProfileForCheckout(context, auth.customerId);
+                    if (
+                        profile?.customer &&
+                        (!profile.addresses || profile.addresses.length === 0) &&
+                        !profile.customer.phoneHome
+                    ) {
+                        isNewlyRegisteredWithEmptyProfile = true;
+                    }
+                } catch (error) {
+                    logger.error('PlaceOrder: failed to check customer profile for empty-profile detection', { error });
+                }
+            }
+
+            const shouldSaveCheckoutDataToProfile = registeredViaCheckout || isNewlyRegisteredWithEmptyProfile;
+
+            // For newly registered customers, save all their checkout info to the customer profile.
+            if (shouldSaveCheckoutDataToProfile) {
+                if (registeredViaCheckout && order.paymentInstruments?.[0]) {
+                    // Save payment only for same-session registration
                     savePromises.push(
                         savePaymentMethodToCustomer(
                             context,
