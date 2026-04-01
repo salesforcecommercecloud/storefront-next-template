@@ -247,7 +247,7 @@ const MOCK_PRODUCT_DESCRIPTION_DATA: ProductDescriptionData = {
  * Mock ingredients & materials (Ingredients & Materials collapsible section).
  */
 const MOCK_INGREDIENTS_DATA: IngredientsData = {
-    html: '<ul><li>Premium full-grain leather upper</li><li>Cushioned leather insole</li><li>Durable rubber outsole</li><li>Metal hardware accents</li></ul>',
+    html: '<ul><li>High-density composite resin</li><li>UV-resistant matte coating</li><li>Weighted stabilizing core</li></ul>',
     contentType: 'bulleted-list',
 };
 
@@ -255,15 +255,15 @@ const MOCK_INGREDIENTS_DATA: IngredientsData = {
  * Mock usage instructions (Usage Instructions collapsible section).
  */
 const MOCK_USAGE_INSTRUCTIONS_DATA: UsageInstructionsData = {
-    html: '<p>For best results, condition leather regularly with a quality leather conditioner. Avoid prolonged exposure to water and direct sunlight.</p>',
-    contentType: 'plain-text',
+    html: '<ul><li>Place on any flat, stable surface</li><li>Position near natural light for best effect</li><li>Rotate periodically to appreciate all angles</li></ul>',
+    contentType: 'bulleted-list',
 };
 
 /**
  * Mock care instructions (Care Instructions collapsible section).
  */
 const MOCK_CARE_INSTRUCTIONS_DATA: CareInstructionsData = {
-    html: '<ul><li>Clean with a soft, dry cloth</li><li>Use leather conditioner monthly</li><li>Store in a cool, dry place</li><li>Use shoe trees to maintain shape</li></ul>',
+    html: '<ul><li>Hand wash cold</li><li>Do not wring or twist</li><li>Hang dry</li><li>Iron on low heat on reverse side</li></ul>',
     contentType: 'bulleted-list',
 };
 
@@ -271,7 +271,7 @@ const MOCK_CARE_INSTRUCTIONS_DATA: CareInstructionsData = {
  * Mock tech specs (Technical Specs collapsible section).
  */
 const MOCK_TECH_SPECS_DATA: TechSpecsData = {
-    html: '<table><tr><td>Heel Height</td><td>1.5 inches</td></tr><tr><td>Material</td><td>Full-grain leather</td></tr><tr><td>Sole</td><td>Rubber</td></tr><tr><td>Closure</td><td>Lace-up with side zip</td></tr></table>',
+    html: '<table style="border: none;"><tr style="border: none;"><td style="font-weight: normal">Material:</td><td>Premium composite</td></tr><tr style="border: none;"><td style="font-weight: normal">Finish:</td><td>Matte</td></tr><tr style="border: none;"><td style="font-weight: normal">Origin:</td><td>Made in Portugal</td></tr></table>',
     contentType: 'table-2-column',
 };
 

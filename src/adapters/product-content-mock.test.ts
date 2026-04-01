@@ -131,7 +131,7 @@ describe('ProductContentMockAdapter', () => {
             expect(data).toBeDefined();
             if (!data) return;
             expect(data.contentType).toBe('bulleted-list');
-            expect(data.html).toContain('leather');
+            expect(data.html).toContain('composite resin');
         });
     });
 
@@ -140,8 +140,8 @@ describe('ProductContentMockAdapter', () => {
             const data = await adapter.getUsageInstructions?.();
             expect(data).toBeDefined();
             if (!data) return;
-            expect(data.contentType).toBe('plain-text');
-            expect(data.html).toContain('leather');
+            expect(data.contentType).toBe('bulleted-list');
+            expect(data.html).toContain('flat, stable surface');
         });
     });
 
@@ -151,7 +151,7 @@ describe('ProductContentMockAdapter', () => {
             expect(data).toBeDefined();
             if (!data) return;
             expect(data.contentType).toBe('bulleted-list');
-            expect(data.html).toContain('leather');
+            expect(data.html).toContain('Hand wash cold');
         });
     });
 
@@ -161,7 +161,7 @@ describe('ProductContentMockAdapter', () => {
             expect(data).toBeDefined();
             if (!data) return;
             expect(data.contentType).toBe('table-2-column');
-            expect(data.html).toContain('Heel Height');
+            expect(data.html).toContain('Material:');
         });
     });
 

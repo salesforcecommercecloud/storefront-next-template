@@ -3097,8 +3097,8 @@ packages:
   '@sinonjs/fake-timers@10.3.0':
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
 
-  '@sinonjs/fake-timers@15.2.0':
-    resolution: {integrity: sha512-+SM3gQi95RWZLlD+Npy/UC5mHftlXwnVJMRpMyiqjrF4yNnbvi/Ubh3x9sLw6gxWSuibOn00uiLu1CKozehWlQ==}
+  '@sinonjs/fake-timers@15.2.1':
+    resolution: {integrity: sha512-QdfpQFIwYrTK8lFsII4bJ1AO1ZLbw7B+oxfP+/qSsiTrVerFp7aY2O+d2GNGrTxP58ezEbjbf7mTTLMsd7M7XQ==}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -4331,8 +4331,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  caniuse-lite@1.0.30001782:
-    resolution: {integrity: sha512-dZcaJLJeDMh4rELYFw1tvSn1bhZWYFOt468FcbHHxx/Z/dFidd1I6ciyFdi3iwfQCyOjqo9upF6lGQYtMiJWxw==}
+  caniuse-lite@1.0.30001784:
+    resolution: {integrity: sha512-WU346nBTklUV9YfUl60fqRbU5ZqyXlqvo1SgigE1OAXK5bFL8LL9q1K7aap3N739l4BvNqnkm3YrGHiY9sfUQw==}
 
   chai@5.3.3:
     resolution: {integrity: sha512-4zNhdJD/iOjSH0A05ea+Ke6MU5mmpQcbQsSOkgdaUMJ9zTlDTD/GYlwohmIE2u0gaxHYiVHEn1Fw9mZ/ktJWgw==}
@@ -6565,8 +6565,8 @@ packages:
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.17.23:
+    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
 
   loglevel@1.9.2:
     resolution: {integrity: sha512-HgMmCqIJSAKqo68l0rS2AanEWfkxaZ5wNiEFb5ggm08lDs9Xl2KxBlX3PTcaD2chBM1gXAYf491/M2Rv8Jwayg==}
@@ -9927,7 +9927,7 @@ snapshots:
   '@jest/fake-timers@30.3.0':
     dependencies:
       '@jest/types': 30.3.0
-      '@sinonjs/fake-timers': 15.2.0
+      '@sinonjs/fake-timers': 15.2.1
       '@types/node': 24.12.0
       jest-message-util: 30.3.0
       jest-mock: 30.3.0
@@ -11175,7 +11175,7 @@ snapshots:
       exit-hook: 2.2.1
       isbot: 5.1.31
       jsesc: 3.0.2
-      lodash: 4.17.21
+      lodash: 4.17.23
       p-map: 7.0.4
       pathe: 1.1.2
       picocolors: 1.1.1
@@ -11453,7 +11453,7 @@ snapshots:
   '@serverless/event-mocks@1.1.1':
     dependencies:
       '@types/lodash': 4.17.24
-      lodash: 4.17.21
+      lodash: 4.17.23
 
   '@sideway/address@4.1.5':
     dependencies:
@@ -11475,7 +11475,7 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
-  '@sinonjs/fake-timers@15.2.0':
+  '@sinonjs/fake-timers@15.2.1':
     dependencies:
       '@sinonjs/commons': 3.0.1
 
@@ -12461,7 +12461,7 @@ snapshots:
       graceful-fs: 4.2.11
       is-stream: 2.0.1
       lazystream: 1.0.1
-      lodash: 4.17.21
+      lodash: 4.17.23
       normalize-path: 3.0.0
       readable-stream: 4.7.0
 
@@ -12826,7 +12826,7 @@ snapshots:
   browserslist@4.28.2:
     dependencies:
       baseline-browser-mapping: 2.10.13
-      caniuse-lite: 1.0.30001782
+      caniuse-lite: 1.0.30001784
       electron-to-chromium: 1.5.330
       node-releases: 2.0.36
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
@@ -12888,7 +12888,7 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  caniuse-lite@1.0.30001782: {}
+  caniuse-lite@1.0.30001784: {}
 
   chai@5.3.3:
     dependencies:
@@ -14539,7 +14539,7 @@ snapshots:
       cli-width: 2.2.1
       external-editor: 3.1.0
       figures: 2.0.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       mute-stream: 0.0.7
       run-async: 2.4.1
       rxjs: 6.6.7
@@ -15771,7 +15771,7 @@ snapshots:
 
   lodash.merge@4.6.2: {}
 
-  lodash@4.17.21: {}
+  lodash@4.17.23: {}
 
   loglevel@1.9.2: {}
 
@@ -17949,7 +17949,7 @@ snapshots:
     dependencies:
       axios: 1.14.0
       joi: 17.13.3
-      lodash: 4.17.21
+      lodash: 4.17.23
       minimist: 1.2.8
       rxjs: 7.8.2
     transitivePeerDependencies:
@@ -17959,7 +17959,7 @@ snapshots:
     dependencies:
       axios: 1.14.0
       joi: 18.1.2
-      lodash: 4.17.21
+      lodash: 4.17.23
       minimist: 1.2.8
       rxjs: 7.8.2
     transitivePeerDependencies:
