@@ -15,23 +15,22 @@
  */
 'use client';
 
-import { type ComponentRef, forwardRef } from 'react';
+import { type ComponentPropsWithoutRef, type ComponentRef, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/spinner';
 
-interface HeartIconProps {
+interface HeartIconProps extends Omit<ComponentPropsWithoutRef<'button'>, 'children'> {
     isFilled?: boolean;
     isLoading?: boolean;
-    disabled?: boolean;
     size?: 'sm' | 'md' | 'lg';
-    className?: string;
-    onClick?: () => void;
-    tabIndex?: number;
 }
 
 const HeartIcon = forwardRef<ComponentRef<'button'>, HeartIconProps>(
-    ({ isFilled = false, isLoading = false, disabled = false, size = 'md', className, onClick, tabIndex }, ref) => {
+    (
+        { isFilled = false, isLoading = false, disabled = false, size = 'md', className, onClick, tabIndex, ...rest },
+        ref
+    ) => {
         const { t } = useTranslation('product');
         const sizeClasses = {
             sm: 'w-4 h-4',
@@ -54,6 +53,7 @@ const HeartIcon = forwardRef<ComponentRef<'button'>, HeartIconProps>(
                 disabled={disabled}
                 onClick={isLoading ? undefined : onClick}
                 tabIndex={tabIndex}
+                {...rest}
                 aria-busy={isLoading || undefined}
                 aria-label={
                     isLoading ? t('updatingWishlist') : isFilled ? t('removeFromWishlist') : t('addToWishlist')

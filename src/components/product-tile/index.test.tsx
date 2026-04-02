@@ -69,9 +69,9 @@ vi.mock('@/lib/product-badges', () => ({
     })),
 }));
 
-// Isolate WishlistButton to avoid auth/wishlist context dependencies
-vi.mock('@/components/buttons/wishlist-button', () => ({
-    WishlistButton: ({ product }: { product: { productName?: string } }) => (
+// Isolate DeferredWishlistButton to avoid auth/wishlist context dependencies
+vi.mock('./deferred-wishlist-button', () => ({
+    DeferredWishlistButton: ({ product }: { product: { productName?: string } }) => (
         <button aria-label={`Add ${product.productName ?? ''} to wishlist`}>Wishlist</button>
     ),
 }));

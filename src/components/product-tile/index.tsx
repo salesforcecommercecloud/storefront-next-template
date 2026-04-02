@@ -27,7 +27,7 @@ import {
 } from '@/lib/product-utils';
 import { getProductBrand, getProductShortDescription, getProductRating } from '@/lib/product-utils-plp';
 import { useProductTileContext } from './context';
-import { WishlistButton } from '@/components/buttons/wishlist-button';
+import { DeferredWishlistButton } from './deferred-wishlist-button';
 import { PickupIcon } from '@/components/icons';
 import { QuickAddButton } from './quick-add-button';
 import { ProductTileSwatchesSkeleton } from '@/components/category-skeleton';
@@ -409,7 +409,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             )}
 
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <WishlistButton
+                                <DeferredWishlistButton
                                     product={product}
                                     size="sm"
                                     tabIndex={-1}
