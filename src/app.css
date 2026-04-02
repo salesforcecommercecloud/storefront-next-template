@@ -172,7 +172,7 @@
     --secondary-foreground: #000000;
 
     --muted: #f5f5f5;
-    --muted-foreground: #737373;
+    --muted-foreground: #6B6B6B;
     --muted-hover: #ebebeb;
 
     --accent: #fafafa;
@@ -182,7 +182,7 @@
     --destructive-foreground: #ffffff;
 
     /* warning (e.g. caution messages, default-payment warning) */
-    --warning: #ea580c;
+    --warning: #C2410C;
     --warning-foreground: #9a3412;
     --warning-bg: #fff7ed;
     --warning-border: #fed7aa;
@@ -202,9 +202,9 @@
     --info-foreground: #1e40af;
 
     /* status colors (for inventory, availability indicators, etc.) */
-    --status-positive: #16a34a;
-    --status-warning: #ea580c;
-    --status-critical: #ef4444;
+    --status-positive: #2E844A;
+    --status-warning: #C2410C;
+    --status-critical: #DC2626;
     --status-critical-strong: #dc2626;
     --status-critical-bg: #fef2f2;
     --status-critical-foreground: #991b1b;
@@ -335,7 +335,7 @@
 
     /* cart & mini-cart tokens */
     --cart-summary-px: 1rem;
-    --cart-free-price: #16a34a;
+    --cart-free-price: #2E844A;
     --cart-free-price-size: 1.125rem;
 
     [role="radio"]:not([data-labeled]) {
@@ -810,6 +810,46 @@ html:not(.dark) [data-theme='inverse'] {
     body {
         @apply bg-background text-foreground;
         font-family: var(--font-sans);
+    }
+
+    /* Cursor pointer for all interactive elements */
+    button:not(:disabled),
+    [role="button"]:not([aria-disabled="true"]):not([data-disabled]),
+    [role="tab"]:not([aria-disabled="true"]):not([data-disabled]),
+    a[href],
+    select:not(:disabled),
+    input[type="button"]:not(:disabled),
+    input[type="submit"]:not(:disabled),
+    input[type="reset"]:not(:disabled),
+    input[type="date"]:not(:disabled),
+    input[type="datetime-local"]:not(:disabled),
+    input[type="month"]:not(:disabled),
+    input[type="time"]:not(:disabled),
+    input[type="week"]:not(:disabled),
+    input[type="color"]:not(:disabled),
+    input[type="file"]:not(:disabled),
+    summary {
+        cursor: pointer;
+    }
+
+    /* Cursor not-allowed for disabled interactive elements */
+    button:disabled,
+    [role="button"][aria-disabled="true"],
+    [role="button"][data-disabled],
+    [role="tab"][aria-disabled="true"],
+    [role="tab"][data-disabled],
+    select:disabled,
+    input[type="button"]:disabled,
+    input[type="submit"]:disabled,
+    input[type="reset"]:disabled,
+    input[type="date"]:disabled,
+    input[type="datetime-local"]:disabled,
+    input[type="month"]:disabled,
+    input[type="time"]:disabled,
+    input[type="week"]:disabled,
+    input[type="color"]:disabled,
+    input[type="file"]:disabled {
+        cursor: not-allowed;
     }
 }
 

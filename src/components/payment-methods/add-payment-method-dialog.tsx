@@ -234,7 +234,7 @@ export function AddPaymentMethodDialog({
                             <button
                                 type="button"
                                 onClick={handleToggleAddAddress}
-                                className="flex items-center gap-1 mt-2 text-sm text-primary hover:text-primary/80 font-medium cursor-pointer transition-colors">
+                                className="flex items-center gap-1 mt-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors">
                                 <Plus className="w-4 h-4" />
                                 {t('paymentMethods.addNewAddress')}
                             </button>
@@ -243,7 +243,7 @@ export function AddPaymentMethodDialog({
                                 <button
                                     type="button"
                                     onClick={handleToggleAddAddress}
-                                    className="flex items-center gap-1 mt-2 text-sm text-primary hover:text-primary/80 font-medium cursor-pointer transition-colors">
+                                    className="flex items-center gap-1 mt-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors">
                                     <X className="w-4 h-4" />
                                     {t('paymentMethods.cancel')}
                                 </button>

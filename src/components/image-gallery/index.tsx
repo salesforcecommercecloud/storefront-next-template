@@ -114,7 +114,7 @@ export default function ImageGallery({
                             onClick={() => setSelectedImageIndex(index)}
                             className={`
                                 aspect-square overflow-hidden rounded-lg bg-muted
-                                border-2 transition-colors
+                                border-2 transition-colors cursor-pointer
                                 ${
                                     selectedImageIndex === index
                                         ? 'border-primary'
@@ -142,7 +142,7 @@ export default function ImageGallery({
                                 thumbStripRef.current?.scrollBy({ left: -THUMBNAIL_SCROLL_OFFSET, behavior: 'smooth' });
                             }}
                             className={cn(
-                                'flex-shrink-0 rounded-full p-1',
+                                'flex-shrink-0 rounded-full p-1 cursor-pointer',
                                 'text-muted-foreground hover:text-foreground transition-colors',
                                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                             )}
@@ -159,7 +159,7 @@ export default function ImageGallery({
                                 onClick={() => setSelectedImageIndex(index)}
                                 className={cn(
                                     'flex-shrink-0 w-14 h-14 overflow-hidden rounded-md bg-muted',
-                                    'border-2 transition-colors',
+                                    'border-2 transition-colors cursor-pointer',
                                     selectedImageIndex === index
                                         ? 'border-primary'
                                         : 'border-transparent hover:border-border'
@@ -180,7 +180,7 @@ export default function ImageGallery({
                                 thumbStripRef.current?.scrollBy({ left: THUMBNAIL_SCROLL_OFFSET, behavior: 'smooth' });
                             }}
                             className={cn(
-                                'flex-shrink-0 rounded-full p-1',
+                                'flex-shrink-0 rounded-full p-1 cursor-pointer',
                                 'text-muted-foreground hover:text-foreground transition-colors',
                                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                             )}

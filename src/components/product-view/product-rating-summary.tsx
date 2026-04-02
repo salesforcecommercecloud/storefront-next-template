@@ -149,13 +149,18 @@ export function ProductRatingSummary(): ReactElement | null {
                         tabIndex={hasReviews ? 0 : undefined}
                         aria-label={hasReviews ? 'View customer reviews' : undefined}
                         aria-expanded={hasReviews ? popoverOpen : undefined}>
-                        <StarRating
-                            rating={aggregateRating.average}
-                            reviewCount={aggregateRating.count}
-                            showRatingLabel={false}
-                            showRatingLink={true}
-                            starSize="default"
-                        />
+                        <div className="flex items-center gap-2">
+                            <StarRating
+                                rating={aggregateRating.average}
+                                reviewCount={aggregateRating.count}
+                                showRatingLabel={false}
+                                showRatingLink={false}
+                                starSize="default"
+                            />
+                            {aggregateRating.count > 0 && (
+                                <span className="text-sm text-muted-foreground">({aggregateRating.count})</span>
+                            )}
+                        </div>
                     </div>
                 </PopoverTrigger>
                 <PopoverContent

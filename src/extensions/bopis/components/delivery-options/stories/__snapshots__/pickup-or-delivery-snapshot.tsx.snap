@@ -124,7 +124,7 @@ exports[`PickupOrDelivery stories snapshot > Default story renders and matches s
               Free pickup in
             </span>
             <button
-              class="text-xs text-primary mt-0.5 text-left hover:underline"
+              class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
               type="button"
             >
               Select Store
@@ -266,7 +266,7 @@ exports[`PickupOrDelivery stories snapshot > DeliveryDisabled story renders and 
               class="mt-0.5"
             >
               <button
-                class="text-xs text-primary hover:underline"
+                class="text-xs text-primary hover:underline cursor-pointer"
                 type="button"
               >
                 Downtown Store
@@ -412,7 +412,7 @@ exports[`PickupOrDelivery stories snapshot > DesktopLayout story renders and mat
               class="mt-0.5"
             >
               <button
-                class="text-xs text-primary hover:underline"
+                class="text-xs text-primary hover:underline cursor-pointer"
                 type="button"
               >
                 Downtown Store
@@ -555,7 +555,7 @@ exports[`PickupOrDelivery stories snapshot > MobileLayout story renders and matc
               Free pickup in
             </span>
             <button
-              class="text-xs text-primary mt-0.5 text-left hover:underline"
+              class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
               type="button"
             >
               Select Store
@@ -692,7 +692,7 @@ exports[`PickupOrDelivery stories snapshot > NoStoreSelected story renders and m
               Free pickup in
             </span>
             <button
-              class="text-xs text-primary mt-0.5 text-left hover:underline"
+              class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
               type="button"
             >
               Select Store
@@ -834,7 +834,7 @@ exports[`PickupOrDelivery stories snapshot > PickupDisabled story renders and ma
               class="mt-0.5"
             >
               <button
-                class="text-xs text-primary hover:underline"
+                class="text-xs text-primary hover:underline cursor-pointer"
                 type="button"
               >
                 Downtown Store
@@ -980,7 +980,7 @@ exports[`PickupOrDelivery stories snapshot > PickupSelected story renders and ma
               class="mt-0.5"
             >
               <button
-                class="text-xs text-primary hover:underline"
+                class="text-xs text-primary hover:underline cursor-pointer"
                 type="button"
               >
                 Downtown Store

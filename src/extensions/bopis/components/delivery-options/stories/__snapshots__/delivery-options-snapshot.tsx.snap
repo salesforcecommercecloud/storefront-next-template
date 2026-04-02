@@ -100,7 +100,7 @@ exports[`DeliveryOptions stories snapshot > Default story renders and matches sn
                   Free pickup in
                 </span>
                 <button
-                  class="text-xs text-primary mt-0.5 text-left hover:underline"
+                  class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
                   type="button"
                 >
                   Select Store
@@ -215,7 +215,7 @@ exports[`DeliveryOptions stories snapshot > DesktopLayout story renders and matc
                   Free pickup in
                 </span>
                 <button
-                  class="text-xs text-primary mt-0.5 text-left hover:underline"
+                  class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
                   type="button"
                 >
                   Select Store
@@ -340,7 +340,7 @@ exports[`DeliveryOptions stories snapshot > MobileLayout story renders and match
                   Free pickup in
                 </span>
                 <button
-                  class="text-xs text-primary mt-0.5 text-left hover:underline"
+                  class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
                   type="button"
                 >
                   Select Store
@@ -455,7 +455,7 @@ exports[`DeliveryOptions stories snapshot > WithStoreSelected story renders and 
                   Free pickup in
                 </span>
                 <button
-                  class="text-xs text-primary mt-0.5 text-left hover:underline"
+                  class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
                   type="button"
                 >
                   Select Store

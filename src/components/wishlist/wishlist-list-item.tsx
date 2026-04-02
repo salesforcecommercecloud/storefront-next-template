@@ -199,7 +199,7 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
                             type="button"
                             onClick={handleRemove}
                             disabled={isRemoving}
-                            className="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+                            className="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
                             aria-label={t('removeFromWishlist')}>
                             {t('remove')}
                         </button>

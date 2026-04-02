@@ -70,7 +70,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
         </div>
         <button
           aria-label="Remove from wishlist."
-          class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+          class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
           Remove
@@ -210,7 +210,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
         </div>
         <button
           aria-label="Remove from wishlist."
-          class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+          class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
           Remove
@@ -325,7 +325,7 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
         </div>
         <button
           aria-label="Remove from wishlist."
-          class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+          class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
           Remove
@@ -418,7 +418,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
         </div>
         <button
           aria-label="Remove from wishlist."
-          class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+          class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
           Remove
@@ -533,7 +533,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
         </div>
         <button
           aria-label="Remove from wishlist."
-          class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+          class="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
           type="button"
         >
           Remove

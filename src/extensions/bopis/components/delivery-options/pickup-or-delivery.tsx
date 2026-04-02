@@ -191,7 +191,7 @@ export default function PickupOrDelivery({
                                             e.stopPropagation();
                                             openStoreLocator();
                                         }}
-                                        className="text-xs text-primary hover:underline">
+                                        className="text-xs text-primary hover:underline cursor-pointer">
                                         {storeSelectionText}
                                     </button>
                                     {/* Stock message - Render only if a store is selected */}
@@ -213,7 +213,7 @@ export default function PickupOrDelivery({
                                         e.stopPropagation();
                                         openStoreLocator();
                                     }}
-                                    className="text-xs text-primary mt-0.5 text-left hover:underline">
+                                    className="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer">
                                     {storeSelectionText}
                                 </button>
                             )}
