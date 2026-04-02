@@ -942,7 +942,7 @@ describe('generateMetadata integration tests', () => {
         await generateMetadata(projectDir, metadataDir);
 
         // Should not read node_modules or build directories
-        expect(readdir).toHaveBeenCalledTimes(2); // Once for src, once for empty src
+        expect(readdir).toHaveBeenCalledTimes(3); // Once for src, once for empty src, once for config-metadata
     });
 
     test('should handle errors during directory deletion', async () => {
@@ -1041,6 +1041,42 @@ describe('generateMetadata integration tests', () => {
         );
     });
 
+    test('should extract aspect definitions from config-metadata directory', async () => {
+        const projectDir = '/test/project';
+        const metadataDir = '/test/metadata';
+
+        const aspectContent = JSON.stringify({
+            name: 'Product detail page',
+            description: 'A product detail page',
+            attribute_definitions: [{ id: 'productId', name: 'Product', type: 'product', required: false }],
+            supported_object_types: ['product'],
+        });
+
+        vi.mocked(readdir)
+            // src/ scan — empty, no components or page types
+            .mockResolvedValueOnce([])
+            // config-metadata/ scan — contains aspects dir
+            .mockResolvedValueOnce([{ name: 'aspects', isDirectory: () => true, isFile: () => false } as any])
+            // config-metadata/aspects/ — contains pdp.json
+            .mockResolvedValueOnce([{ name: 'pdp.json', isDirectory: () => false, isFile: () => true } as any]);
+
+        vi.mocked(readFile).mockResolvedValue(aspectContent);
+        vi.mocked(rm).mockResolvedValue(undefined);
+        vi.mocked(mkdir).mockResolvedValue(undefined);
+        vi.mocked(access).mockResolvedValue(undefined);
+        vi.mocked(writeFile).mockResolvedValue(undefined);
+
+        await generateMetadata(projectDir, metadataDir);
+
+        expect(writeFile).toHaveBeenCalled();
+        const writeCall = vi.mocked(writeFile).mock.calls[0];
+        const writtenData = JSON.parse(writeCall[1] as string);
+        expect(writtenData.name).toBe('Product detail page');
+        expect(writtenData.attribute_definitions).toHaveLength(1);
+        expect(writtenData.attribute_definitions[0].type).toBe('product');
+        expect(writtenData.supported_object_types).toEqual(['product']);
+    });
+
     test('should handle file read errors gracefully', async () => {
         const projectDir = '/test/project';
         const metadataDir = '/test/metadata';
@@ -1058,10 +1094,11 @@ describe('generateMetadata integration tests', () => {
 
         await generateMetadata(projectDir, metadataDir);
 
-        expect(consoleWarnSpy).toHaveBeenCalled();
-        // logger.warn now outputs two args: [sfnext:warn] prefix + message
-        // The message is in the second argument
-        expect(consoleWarnSpy.mock.calls[0][1]).toContain('Could not read file');
+        expect(consoleWarnSpy).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:warn]'),
+            expect.stringContaining('Could not read file'),
+            expect.anything()
+        );
     });
 
     test('should handle ts-morph processing errors gracefully', async () => {
@@ -1267,9 +1304,11 @@ describe('generateMetadata integration tests', () => {
 
         await generateMetadata(projectDir, metadataDir);
 
-        expect(consoleWarnSpy).toHaveBeenCalled();
-        // logger.warn now outputs two args: [sfnext:warn] prefix + message
-        expect(consoleWarnSpy.mock.calls[0][1]).toContain('Could not parse JSON');
+        expect(consoleWarnSpy).toHaveBeenCalledWith(
+            expect.stringContaining('[sfnext:warn]'),
+            expect.stringContaining('Could not parse JSON'),
+            expect.anything()
+        );
     });
 
     test('should handle aspect file missing required fields', async () => {

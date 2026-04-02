@@ -3415,6 +3415,14 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 				}
 			};
 			await scanDirectory(srcDir);
+			const configMetadataDir = join(projectRoot, "config-metadata");
+			try {
+				await access(configMetadataDir);
+				await scanDirectory(configMetadataDir);
+			} catch (error) {
+				if (error.code === "ENOENT") logger.debug(`   - Directory not found (skipping): ${configMetadataDir}`);
+				else logger.warn(`   - Unable to access ${configMetadataDir}:`, error.message);
+			}
 		}
 		const allComponents = [];
 		const allPageTypes = [];

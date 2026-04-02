@@ -940,6 +940,18 @@ export async function generateMetadata(
             };
 
             await scanDirectory(srcDir);
+
+            const configMetadataDir = join(projectRoot, 'config-metadata');
+            try {
+                await access(configMetadataDir);
+                await scanDirectory(configMetadataDir);
+            } catch (error) {
+                if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+                    logger.debug(`   - Directory not found (skipping): ${configMetadataDir}`);
+                } else {
+                    logger.warn(`   - Unable to access ${configMetadataDir}:`, (error as Error).message);
+                }
+            }
         }
 
         // Process each file for both components and page types
