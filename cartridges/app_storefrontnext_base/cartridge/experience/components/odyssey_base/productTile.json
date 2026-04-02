@@ -11,6 +11,13 @@
             "description": "Configurable product tile with customizable styling for images, typography, and hover effects",
             "attribute_definitions": [
                 {
+                    "id": "productId",
+                    "name": "Product",
+                    "type": "product",
+                    "required": false,
+                    "description": "Select a product to render in this tile."
+                },
+                {
                     "id": "objectFit",
                     "name": "Image Object Fit",
                     "type": "enum",

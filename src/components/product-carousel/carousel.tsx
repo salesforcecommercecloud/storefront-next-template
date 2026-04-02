@@ -100,7 +100,7 @@ export default function ProductCarousel({
     className,
     component,
 }: ProductCarouselProps): ReactNode {
-    const { t } = useTranslation('common');
+    const { t } = useTranslation('product');
     const productsRegion = component?.regions?.find((region) => region.id === 'products');
     const regionComponents = productsRegion?.components ?? [];
     const resolvedTitle = title || ''; // put empty string as the title since dont currently have i18n for these default values.

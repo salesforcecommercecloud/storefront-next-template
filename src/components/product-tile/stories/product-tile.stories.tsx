@@ -22,7 +22,7 @@ import {
 } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
-import { expect, within } from 'storybook/test';
+import { expect, waitFor, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { CurrencyWrapper } from '@/test-utils/context-provider';
 import DynamicImageProvider from '@/providers/dynamic-image';
@@ -103,7 +103,11 @@ export const WithSwatches: Story = {
         await expect(canvas.getByText(mockMasterProductHitWithMultipleVariants.productName)).toBeInTheDocument();
 
         // Swatches are decorative/visual-only (aria-hidden) — verify via DOM queries
-        const swatchContainer = canvasElement.querySelector('[aria-label="Available colors"]');
+        let swatchContainer: Element | null = null;
+        await waitFor(() => {
+            swatchContainer = canvasElement.querySelector('[aria-label="Available colors"]');
+            expect(swatchContainer).not.toBeNull();
+        });
         await expect(swatchContainer).not.toBeNull();
 
         // Both colour swatch links are present
@@ -127,7 +131,11 @@ export const WithSwatchOverflow: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
 
-        const swatchContainer = canvasElement.querySelector('[aria-label="Available colors"]');
+        let swatchContainer: Element | null = null;
+        await waitFor(() => {
+            swatchContainer = canvasElement.querySelector('[aria-label="Available colors"]');
+            expect(swatchContainer).not.toBeNull();
+        });
         await expect(swatchContainer).not.toBeNull();
 
         // Only 1 colour swatch link (exclude the overflow "+N more" link)

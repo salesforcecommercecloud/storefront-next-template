@@ -36,7 +36,7 @@ export function initializeRegistry(targetRegistry = registry): void {
     targetRegistry.registerImporter('odyssey_base.popularCategory', () => import('../components/home/popular-category/index'), { loader: 'loader' });
     targetRegistry.registerImporter('odyssey_base.productCarousel', () => import('../components/product-carousel/index'), { fallback: 'fallback' });
     targetRegistry.registerImporter('odyssey_base.productRecommendations', () => import('../components/product-recommendations/index'));
-    targetRegistry.registerImporter('odyssey_base.productTile', () => import('../components/product-tile/index'));
+    targetRegistry.registerImporter('odyssey_base.productTile', () => import('../components/product-tile/index'), { loader: 'loader' });
 }
 
 // STATIC_REGISTRY_END
