@@ -326,7 +326,10 @@ vi.mock('./components/checkout-error-banner', async () => {
 
     // @ts-expect-error - forwardRef type is inferred from React import
     const MockCheckoutErrorBanner = forwardRef<HTMLDivElement, { message: React.ReactNode; [key: string]: unknown }>(
-        ({ message, ...props }, ref) => (
+        (
+            { message, ...props }: { message: React.ReactNode; [key: string]: unknown },
+            ref: React.Ref<HTMLDivElement>
+        ) => (
             <div ref={ref} data-testid="checkout-error-banner" {...props}>
                 {message}
             </div>

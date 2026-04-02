@@ -65,3 +65,26 @@ export const TEST_PRODUCT_CATEGORIES = {
     MENS_JACKETS: 'category/mens-clothing-jackets',
     WOMENS_DRESSES: 'category/womens-clothing-dresses',
 } as const;
+
+/** RefArch variant IDs used by apiCartSetupFlow for direct SCAPI basket creation. */
+export const TEST_VARIANT_PRODUCTS = {
+    WOMENS_DRESS_VARIANT: '701642868279M',
+    MENS_JACKET_VARIANT: '883360520599M',
+} as const;
+
+export const TEST_LOCALE_CURRENCIES = [
+    {
+        label: 'USD',
+        siteAlias: 'us',
+        locale: 'en-US',
+        currencyPattern: /\$[\d,.]+/,
+        shippingAddress: TEST_SHIPPING_ADDRESS,
+    },
+    {
+        label: 'GBP',
+        siteAlias: 'global',
+        locale: 'en-GB',
+        currencyPattern: /£[\d,.]+/,
+        shippingAddress: TEST_SHIPPING_ADDRESS,
+    },
+] as const;

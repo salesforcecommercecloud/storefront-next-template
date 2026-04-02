@@ -16,19 +16,9 @@
 
 Feature('Storefront Checkout Analytics Tests').tag('@core').tag('@checkout').tag('@analytics');
 
-const { checkoutPage, addToCartFlow, storefrontPage } = inject();
+const { checkoutPage, apiCartSetupFlow, storefrontPage, beaconCaptureFlow } = inject();
 import { expect } from 'chai';
 import { TEST_PRODUCT_CATEGORIES, generateTestEmail } from '../../test-data/checkout.data';
-
-interface BeaconPayload {
-    checkoutType?: string;
-    [key: string]: unknown;
-}
-
-interface CapturedBeacon {
-    url: string;
-    payload: BeaconPayload;
-}
 
 /**
  * Checkout Analytics - checkout_start event with checkoutType
@@ -36,89 +26,16 @@ interface CapturedBeacon {
  * Validates that checkout_start events include the checkoutType attribute
  * with value 'one-click' when sent to Einstein.
  */
-Scenario('Checkout start event should include checkoutType attribute', async ({ I }) => {
-    const capturedBeacons: CapturedBeacon[] = [];
+Scenario('Checkout start event should include checkoutType attribute', async () => {
+    await beaconCaptureFlow.setupInterception('beginCheckout');
 
-    await (I.usePlaywrightTo('Setup route interception for Einstein beacons', async ({ page }) => {
-        await page.addInitScript(() => {
-            const originalSendBeacon = navigator.sendBeacon.bind(navigator);
-            (window as any).__beaconPromises = [];
-            (window as any).__capturedBeacons = [];
-            (window as any).__allBeaconUrls = [];
-
-            navigator.sendBeacon = (url: string | URL, data?: BodyInit | null): boolean => {
-                const urlString = typeof url === 'string' ? url : url.toString();
-                (window as any).__allBeaconUrls.push(urlString);
-
-                if (urlString.includes('activities') && urlString.includes('beginCheckout')) {
-                    if (data instanceof Blob) {
-                        const beaconPromise = new Promise<void>((resolve) => {
-                            const reader = new FileReader();
-                            reader.addEventListener('loadend', () => {
-                                try {
-                                    const payload = JSON.parse(reader.result as string);
-                                    (window as any).__capturedBeacons.push({
-                                        url: urlString,
-                                        payload,
-                                    });
-                                } catch {
-                                    // ignore malformed beacon payload
-                                } finally {
-                                    resolve();
-                                }
-                            });
-                            reader.readAsText(data);
-                        });
-                        (window as any).__beaconPromises.push(beaconPromise);
-                    }
-                }
-
-                return originalSendBeacon(url, data);
-            };
-        });
-    }) as unknown as Promise<void>);
-
-    // Analytics only fire when tracking consent is Accepted (see use-analytics trackEvent).
     storefrontPage.navigate();
     await storefrontPage.handleTrackingConsent(true);
 
-    await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
-    await (I.usePlaywrightTo('Wait for and retrieve captured beacons', async ({ page }) => {
-        try {
-            // Pass options as 3rd arg — a single object as 2nd arg is treated as the pageFunction argument, not timeout.
-            await page.waitForFunction(
-                () => {
-                    const promises = (window as any).__beaconPromises || [];
-                    return promises.length > 0;
-                },
-                undefined,
-                { timeout: 30000 }
-            );
-
-            await page.evaluate(async () => {
-                await Promise.all((window as any).__beaconPromises || []);
-            });
-        } catch (error) {
-            const debugInfo = await page.evaluate(() => {
-                return {
-                    beaconPromises: (window as any).__beaconPromises?.length || 0,
-                    capturedBeacons: (window as any).__capturedBeacons?.length || 0,
-                    allBeaconUrls: (window as any).__allBeaconUrls || [],
-                };
-            });
-            throw new Error(
-                `Beacon capture timeout. Debug: ${JSON.stringify(debugInfo)}`,
-                error instanceof Error ? { cause: error } : undefined
-            );
-        }
-
-        const beacons = await page.evaluate(() => {
-            return (window as any).__capturedBeacons || [];
-        });
-        capturedBeacons.push(...beacons);
-    }) as unknown as Promise<void>);
+    const capturedBeacons = await beaconCaptureFlow.retrieveBeacons(30000);
 
     expect(capturedBeacons.length, 'Should have captured at least one Einstein beacon').to.be.greaterThan(0);
 
@@ -135,89 +52,18 @@ Scenario('Checkout start event should include checkoutType attribute', async ({ 
  * Validates that checkout_step events include the checkoutType attribute
  * with value 'one-click' when sent to Einstein.
  */
-Scenario('Checkout step event should include checkoutType attribute', async ({ I }) => {
-    const capturedBeacons: CapturedBeacon[] = [];
-
-    await (I.usePlaywrightTo('Setup route interception for Einstein beacons', async ({ page }) => {
-        await page.addInitScript(() => {
-            const originalSendBeacon = navigator.sendBeacon.bind(navigator);
-            (window as any).__beaconPromises = [];
-            (window as any).__capturedBeacons = [];
-            (window as any).__allBeaconUrls = [];
-
-            navigator.sendBeacon = (url: string | URL, data?: BodyInit | null): boolean => {
-                const urlString = typeof url === 'string' ? url : url.toString();
-                (window as any).__allBeaconUrls.push(urlString);
-
-                if (urlString.includes('activities') && urlString.includes('checkoutStep')) {
-                    if (data instanceof Blob) {
-                        const beaconPromise = new Promise<void>((resolve) => {
-                            const reader = new FileReader();
-                            reader.addEventListener('loadend', () => {
-                                try {
-                                    const payload = JSON.parse(reader.result as string);
-                                    (window as any).__capturedBeacons.push({
-                                        url: urlString,
-                                        payload,
-                                    });
-                                } catch {
-                                    // ignore malformed beacon payload
-                                } finally {
-                                    resolve();
-                                }
-                            });
-                            reader.readAsText(data);
-                        });
-                        (window as any).__beaconPromises.push(beaconPromise);
-                    }
-                }
-
-                return originalSendBeacon(url, data);
-            };
-        });
-    }) as unknown as Promise<void>);
+Scenario('Checkout step event should include checkoutType attribute', async () => {
+    await beaconCaptureFlow.setupInterception('checkoutStep');
 
     storefrontPage.navigate();
     await storefrontPage.handleTrackingConsent(true);
 
-    await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
     await checkoutPage.fillContactInfo(generateTestEmail('analytics-step'));
 
-    await (I.usePlaywrightTo('Wait for and retrieve captured beacons', async ({ page }) => {
-        try {
-            await page.waitForFunction(
-                () => {
-                    const promises = (window as any).__beaconPromises || [];
-                    return promises.length > 0;
-                },
-                undefined,
-                { timeout: 30000 }
-            );
-
-            await page.evaluate(async () => {
-                await Promise.all((window as any).__beaconPromises || []);
-            });
-        } catch (error) {
-            const debugInfo = await page.evaluate(() => {
-                return {
-                    beaconPromises: (window as any).__beaconPromises?.length || 0,
-                    capturedBeacons: (window as any).__capturedBeacons?.length || 0,
-                    allBeaconUrls: (window as any).__allBeaconUrls || [],
-                };
-            });
-            throw new Error(
-                `Beacon capture timeout. Debug: ${JSON.stringify(debugInfo)}`,
-                error instanceof Error ? { cause: error } : undefined
-            );
-        }
-
-        const beacons = await page.evaluate(() => {
-            return (window as any).__capturedBeacons || [];
-        });
-        capturedBeacons.push(...beacons);
-    }) as unknown as Promise<void>);
+    const capturedBeacons = await beaconCaptureFlow.retrieveBeacons(30000);
 
     expect(capturedBeacons.length, 'Should have captured at least one Einstein beacon').to.be.greaterThan(0);
 

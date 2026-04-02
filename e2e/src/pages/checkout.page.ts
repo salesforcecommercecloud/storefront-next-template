@@ -63,9 +63,6 @@ class CheckoutPage {
         phoneInput: locate(
             '[data-testid="sf-toggle-card-shipping-address"] input[name="phone"], [data-testid="sf-toggle-card-shipping-address"] input[type="tel"]'
         ).as('Phone Input'),
-        shippingCountrySelect: locate('[data-testid="sf-toggle-card-shipping-address"] select[name="countryCode"]').as(
-            'Shipping Country Select'
-        ),
         shippingAddressSubmitButton: locate('[data-testid="sf-toggle-card-shipping-address"] button[type="submit"]').as(
             'Shipping Address Submit Button'
         ),
@@ -132,6 +129,10 @@ class CheckoutPage {
         myCartItems: locate('[data-testid^="my-cart-item-"]').as('My Cart Items'),
         // Promotion-related content within a My Cart item (label "Promotions" or "Saved" badge)
         myCartItemPromotionOrSaved: locate('text=/Promotions|Saved\\s/').as('My Cart Item Promotion or Saved'),
+
+        // Saved payment methods (checkout payment step for registered shoppers)
+        savedPaymentRadio: locate('[data-testid="sf-toggle-card-payment"] [role="radio"]').as('Saved Payment Radio'),
+        orderSummary: locate('[data-testid="sf-order-summary"]').as('Order Summary'),
 
         // Saved addresses list (checkout shipping step for registered shoppers)
         savedAddressRadioGroup: locate('[data-testid="sf-toggle-card-shipping-address"] [role="radiogroup"]').as(
@@ -206,6 +207,10 @@ class CheckoutPage {
 
     navigate(): void {
         I.amOnPage(buildSitePath('/checkout'));
+    }
+
+    navigateWithPrefix(prefixedPath: string): void {
+        I.amOnPage(prefixedPath);
     }
 
     /**
@@ -308,29 +313,26 @@ class CheckoutPage {
         city: string;
         stateCode: string;
         postalCode: string;
-        phone: string;
+        phone?: string;
     }): Promise<void> {
         // Registered users with saved address may have shipping in preview mode (Edit button, no form)
         const inPreview = (await I.grabNumberOfVisibleElements(this.locators.shippingAddressEditButton)) > 0;
         if (inPreview) {
-            // Wait for shipping options section (form or preview) to be ready
             I.waitForElement(locate('[data-testid="sf-toggle-card-shipping-options"]').find('button'), 30);
             return;
         }
         I.waitForElement(this.locators.firstNameInput, 30);
+
         I.fillField(this.locators.firstNameInput, address.firstName);
         I.fillField(this.locators.lastNameInput, address.lastName);
         I.fillField(this.locators.address1Input, address.address1);
         I.fillField(this.locators.cityInput, address.city);
         I.fillField(this.locators.postalCodeInput, address.postalCode);
         I.selectOption(this.locators.stateSelect, address.stateCode);
-        // Note: Phone is in Contact Info section, not Shipping Address
+
         I.click(this.locators.shippingAddressSubmitButton);
 
-        // Wait for shipping address to be saved (Edit button appears in summary view)
         I.waitForElement(this.locators.shippingAddressEditButton);
-
-        // Now wait for shipping methods to load
         I.waitForElement(this.locators.shippingMethodOption, 30);
     }
 
@@ -359,7 +361,7 @@ class CheckoutPage {
         if (index === 0) {
             // Click "Continue to Payment" button
             I.click(this.locators.submitButton);
-            I.waitForElement(this.locators.cardNumberInput, 10);
+            I.waitForElement('[data-testid="sf-toggle-card-payment-content"]', 10);
             return;
         }
 
@@ -369,7 +371,7 @@ class CheckoutPage {
 
         // Click "Continue to Payment" button
         I.click(this.locators.submitButton);
-        I.waitForElement(this.locators.cardNumberInput, 10);
+        I.waitForElement('[data-testid="sf-toggle-card-payment-content"]', 10);
     }
 
     /** Select first shipping method (radio); does not submit. Call continueFromShippingOptions to advance. */
@@ -390,7 +392,7 @@ class CheckoutPage {
         I.waitForElement(this.locators.submitButton, 10);
         I.scrollTo(this.locators.submitButton);
         I.click(this.locators.submitButton);
-        I.waitForElement(this.locators.cardNumberInput);
+        I.waitForElement('[data-testid="sf-toggle-card-payment-content"]', 10);
     }
 
     /** Alias for fillPaymentInfo for specs that use fillPayment. */
@@ -614,7 +616,7 @@ class CheckoutPage {
         return await this.getOrderNumber();
     }
 
-    async completeGuestCheckout(checkoutData: {
+    async completeCheckout(checkoutData: {
         email: string;
         phone?: string;
         shippingAddress: {
@@ -624,7 +626,7 @@ class CheckoutPage {
             city: string;
             stateCode: string;
             postalCode: string;
-            phone: string;
+            phone?: string;
         };
         payment: {
             cardNumber: string;
@@ -915,8 +917,30 @@ class CheckoutPage {
      * Check if the "Use a different billing address" checkbox is checked.
      */
     async isUsingDifferentBillingAddress(): Promise<boolean> {
+        I.waitForElement(this.locators.useDifferentBillingCheckbox, 15);
         const ariaChecked = await I.grabAttributeFrom(this.locators.useDifferentBillingCheckbox, 'aria-checked');
         return ariaChecked === 'true';
+    }
+
+    /**
+     * Check if the "Save payment for future use" checkbox is visible
+     * @returns Promise<boolean> - True if checkbox is visible
+     */
+    async isSavePaymentCheckboxVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(
+            '[data-testid="sf-toggle-card-payment"] input[name="savePaymentToProfile"]'
+        );
+        return count > 0;
+    }
+
+    /**
+     * Get visibility count of the "Save payment for future use" checkbox
+     * Used to verify the checkbox is hidden/shown
+     */
+    async getSavePaymentCheckboxVisibilityCount(): Promise<number> {
+        return await I.grabNumberOfVisibleElements(
+            '[data-testid="sf-toggle-card-payment"] input[name="savePaymentToProfile"]'
+        );
     }
 
     // Backward-compatible alias; prefer isUsingDifferentBillingAddress().
@@ -928,6 +952,7 @@ class CheckoutPage {
      * Toggle the "Use a different billing address" checkbox.
      */
     async toggleUseDifferentBillingAddress(): Promise<void> {
+        I.waitForElement(this.locators.useDifferentBillingLabel, 15);
         I.click(this.locators.useDifferentBillingLabel);
         await new Promise((resolve) => setTimeout(resolve, 300));
     }
@@ -953,11 +978,18 @@ class CheckoutPage {
     }
 
     /**
-     * Check if billing address fields are visible (i.e., "Same as shipping" is unchecked)
+     * Check if the billing address section is visible (form fields or saved-address dropdown).
      */
     async areBillingAddressFieldsVisible(): Promise<boolean> {
-        const count = await I.grabNumberOfVisibleElements(this.locators.billingFirstNameInput);
-        return count > 0;
+        const fieldsVisible = (await I.grabNumberOfVisibleElements(this.locators.billingFirstNameInput)) > 0;
+        if (fieldsVisible) return true;
+        const dropdownVisible = await (I.usePlaywrightTo('check billing dropdown', async ({ page }) => {
+            const dropdown = page.locator(
+                '[data-testid="sf-toggle-card-payment-content"] button:has-text("Select an address")'
+            );
+            return await dropdown.isVisible();
+        }) as unknown as Promise<boolean>);
+        return dropdownVisible;
     }
 
     /**
@@ -974,7 +1006,6 @@ class CheckoutPage {
         postalCode: string;
         countryCode: string;
     }> {
-        // Wait for fields to be visible
         I.waitForElement(this.locators.billingFirstNameInput, 5);
 
         return {
@@ -1013,10 +1044,11 @@ class CheckoutPage {
     }
 
     /**
-     * Fill billing address fields (when "Same as shipping" is unchecked)
-     * Note: phone field not included - billing form has showPhone={false}
+     * Fill billing address fields (when "Use a different billing address" is checked).
+     * For registered shoppers with saved addresses, opens the billing dropdown and
+     * selects "Add new address" to reveal blank form fields first.
      */
-    fillBillingAddress(address: {
+    async fillBillingAddress(address: {
         firstName: string;
         lastName: string;
         address1: string;
@@ -1024,8 +1056,13 @@ class CheckoutPage {
         city: string;
         stateCode: string;
         postalCode: string;
-    }): void {
-        I.waitForElement(this.locators.billingFirstNameInput, 5);
+    }): Promise<void> {
+        const fieldsVisible = (await I.grabNumberOfVisibleElements(this.locators.billingFirstNameInput)) > 0;
+        if (!fieldsVisible) {
+            await this.selectNewBillingAddressFromDropdown();
+        }
+
+        I.waitForElement(this.locators.billingFirstNameInput, 15);
         I.fillField(this.locators.billingFirstNameInput, address.firstName);
         I.fillField(this.locators.billingLastNameInput, address.lastName);
         I.fillField(this.locators.billingAddress1Input, address.address1);
@@ -1035,6 +1072,25 @@ class CheckoutPage {
         I.fillField(this.locators.billingCityInput, address.city);
         I.selectOption(this.locators.billingStateSelect, address.stateCode);
         I.fillField(this.locators.billingPostalCodeInput, address.postalCode);
+    }
+
+    /**
+     * Open the billing address dropdown and select "Add new address" to show blank form fields.
+     * Only applicable for registered shoppers with saved addresses.
+     */
+    private async selectNewBillingAddressFromDropdown(): Promise<void> {
+        await (I.usePlaywrightTo('select new billing address from dropdown', async ({ page }) => {
+            const paymentContent = page.locator('[data-testid="sf-toggle-card-payment-content"]');
+            const dropdownTrigger = paymentContent.locator(
+                'button:has-text("Select an address"), button:has-text("Add new address")'
+            );
+            await dropdownTrigger.first().waitFor({ state: 'visible', timeout: 10_000 });
+            await dropdownTrigger.first().click();
+
+            const addNewOption = page.locator('button:has-text("Add new address")').last();
+            await addNewOption.waitFor({ state: 'visible', timeout: 5_000 });
+            await addNewOption.click();
+        }) as unknown as Promise<void>);
     }
 
     async getFieldValidationErrors(stepTestId: string): Promise<string[]> {
@@ -1125,11 +1181,6 @@ class CheckoutPage {
         I.waitForElement('[data-testid="sf-toggle-card-payment"] [data-slot="form-message"]', timeoutSeconds);
     }
 
-    /**
-     * Wait for My Cart to show at least minCount items (basket context sync after navigation).
-     * Polls in the browser. Returns once condition is met or timeout.
-     * It is a test helper for waiting on basket sync in the E2E flow.
-     */
     /** Fill contact info fields without submitting. Use for validation tests with invalid data. */
     fillContactInfoFields(email: string, phone?: string): void {
         I.fillField(this.locators.emailInput, email);
@@ -1138,6 +1189,49 @@ class CheckoutPage {
             I.fillField(this.locators.phoneInputContactInfo, phone);
             I.pressKey('Tab');
         }
+    }
+
+    /**
+     * Select the "Enter a new card" payment option when saved payment methods are present.
+     * Handles three states: card form already visible (no-op), payment in summary/preview
+     * mode (clicks Edit first), or payment in edit mode with saved radios.
+     */
+    async selectNewCardPaymentMethod(): Promise<void> {
+        // If payment is in preview mode (registered shopper with saved card),
+        // click Edit to enter edit mode before looking for the new-card radio.
+        const inPreview = (await I.grabNumberOfVisibleElements(this.locators.paymentEditButton)) > 0;
+        if (inPreview) {
+            I.click(this.locators.paymentEditButton);
+        }
+
+        await (I.usePlaywrightTo('select new card payment method', async ({ page }) => {
+            const paymentContent = page.locator('[data-testid="sf-toggle-card-payment-content"]');
+            await paymentContent.waitFor({ state: 'visible', timeout: 15_000 });
+
+            const cardInput = page.locator('input[name="cardNumber"]');
+            const newCardLabel = paymentContent.locator('label[for="new-payment"]');
+
+            await Promise.race([
+                cardInput.waitFor({ state: 'visible', timeout: 15_000 }).then(() => 'card' as const),
+                newCardLabel.waitFor({ state: 'visible', timeout: 15_000 }).then(() => 'label' as const),
+            ]).catch(() => 'timeout' as const);
+
+            if (await cardInput.isVisible()) {
+                return;
+            }
+
+            const viewAll = paymentContent.locator('button:has-text("View all")');
+            if (await viewAll.isVisible()) {
+                await viewAll.click();
+                await newCardLabel.waitFor({ state: 'visible', timeout: 5_000 });
+            }
+
+            if (await newCardLabel.isVisible()) {
+                await newCardLabel.click();
+            }
+
+            await cardInput.waitFor({ state: 'visible', timeout: 15_000 });
+        }) as unknown as Promise<void>);
     }
 
     /** Wait for the payment step to be ready (card number input visible). */
@@ -1201,6 +1295,140 @@ class CheckoutPage {
             { min: minCount, timeout: timeoutSeconds * 1000 }
         )) as number;
         return count;
+    }
+
+    // =========================================================================
+    // Saved Payment Methods
+    // =========================================================================
+
+    async getSavedPaymentMethodCount(): Promise<number> {
+        return await I.grabNumberOfVisibleElements(this.locators.savedPaymentRadio);
+    }
+
+    // =========================================================================
+    // Order Summary
+    // =========================================================================
+
+    async isOrderSummaryVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.orderSummary);
+        return count > 0;
+    }
+
+    async getOrderSummaryText(): Promise<string> {
+        return await I.grabTextFrom(this.locators.orderSummary);
+    }
+
+    async getConfirmationPageText(): Promise<string> {
+        return await I.grabTextFrom(locate('main'));
+    }
+
+    async getCurrentUrl(): Promise<string> {
+        return await I.grabCurrentUrl();
+    }
+
+    async getPaymentSectionText(): Promise<string> {
+        return await I.grabTextFrom(locate('[data-testid="sf-toggle-card-payment"]'));
+    }
+
+    async isPaymentStepVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements('[data-testid="sf-toggle-card-payment-content"]');
+        return count > 0;
+    }
+
+    waitForShippingMethods(timeout: number = 30): void {
+        I.waitForElement(locate('input[type="radio"][name="shippingMethodId"]'), timeout);
+    }
+
+    async expandPaymentStep(): Promise<void> {
+        I.waitForElement(locate('[data-testid="sf-toggle-card-payment"]'), 15);
+        const contentCount = await I.grabNumberOfVisibleElements(
+            locate('[data-testid="sf-toggle-card-payment-content"]')
+        );
+        if (contentCount === 0) {
+            I.click(locate('[data-testid="sf-toggle-card-payment"]').find('button'));
+            I.waitForElement('[data-testid="sf-toggle-card-payment-content"]', 15);
+        }
+    }
+
+    waitForUseDifferentBillingCheckbox(timeout: number = 15): void {
+        I.waitForElement(this.locators.useDifferentBillingCheckbox, timeout);
+    }
+
+    async getEmailFieldValue(): Promise<string> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.emailInput);
+        if (count === 0) return '';
+        return await I.grabValueFrom(this.locators.emailInput);
+    }
+
+    waitForShippingOptionsStep(timeout: number = 15): void {
+        I.waitForElement(locate('[data-testid="sf-toggle-card-shipping-options"]').find('button'), timeout);
+    }
+
+    async isPaymentSectionVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(locate('[data-testid="sf-toggle-card-payment"]'));
+        return count > 0;
+    }
+
+    // =========================================================================
+    // OTP Modal Methods (Checkout Registration with Email Verification)
+    // =========================================================================
+
+    async getOtpModalText(): Promise<string> {
+        return await I.grabTextFrom('[data-testid="otp-modal"]');
+    }
+
+    clickOtpCheckoutAsGuest(): void {
+        I.click('[data-testid="otp-modal"] button:has-text("Checkout as Guest")');
+    }
+
+    waitForOtpModalClosed(timeout: number = 10): void {
+        I.waitForInvisible('[data-testid="otp-modal"]', timeout);
+    }
+
+    clickOtpResendCode(): void {
+        const resendButton = locate('[data-testid="otp-modal"]').find('button').withText('Resend Code');
+        I.click(resendButton);
+    }
+
+    waitForOtpResendCooldown(timeout: number = 5): void {
+        I.waitForText('Resend in', timeout, locate('[data-testid="otp-modal"]'));
+    }
+
+    async isCreateAccountCheckboxChecked(): Promise<string | null> {
+        return await I.grabAttributeFrom('#create-account-checkbox', 'checked');
+    }
+
+    waitForPlaceOrderButton(timeout: number = 20): void {
+        I.waitForElement(locate('button[type="submit"]').withText('Place Order'), timeout);
+    }
+
+    waitForOrderConfirmationElement(timeout: number = 30): void {
+        I.waitForElement('[data-testid="order-confirmation-container"]', timeout);
+    }
+
+    async getOrderNumberFromConfirmation(): Promise<string> {
+        return await I.grabTextFrom('[data-testid="order-number"]');
+    }
+
+    navigateToHomepage(): void {
+        I.amOnPage('/');
+        I.waitForElement(locate('main'), 10);
+    }
+
+    waitForUiSettle(seconds: number = 2): void {
+        I.wait(seconds);
+    }
+
+    // =========================================================================
+    // Shipping Method Helpers
+    // =========================================================================
+
+    async getShippingMethodCount(): Promise<number> {
+        return await I.grabNumberOfVisibleElements(this.locators.shippingMethodOption);
+    }
+
+    async getShippingOptionsText(): Promise<string> {
+        return await I.grabTextFrom(locate('[data-testid="sf-toggle-card-shipping-options"]'));
     }
 }
 

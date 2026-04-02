@@ -267,7 +267,6 @@ export default function ShippingAddress({
     return (
         <ToggleCard
             id="shipping-address"
-            // @ts-expect-error CardTitle accepts ReactNode; strict downstream type excludes null
             title={stepTitle as React.ReactNode}
             editing={isEditing}
             disableEdit={!isCompleted && !isEditing}

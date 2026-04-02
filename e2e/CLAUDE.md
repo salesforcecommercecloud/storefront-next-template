@@ -353,7 +353,7 @@ pnpm e2e --grep "@homepage|(@products.*@core)"  # @homepage OR (@products AND @c
 
 #### Common Tag Categories
 
-- **Feature**: `@homepage`, `@checkout`, `@search`, `@products`
+- **Feature**: `@homepage`, `@checkout`, `@search`, `@products`, `@multi-currency`
 - **Test Type**: `@smoke`, `@regression`, `@integration`, `@e2e`
 - **Priority**: `@critical`, `@high`, `@medium`, `@low`
 - **Device**: `@desktop`, `@mobile`, `@tablet`
@@ -567,6 +567,43 @@ Scenario('Add product to cart', async () => {
     .tag('@cart')
     .tag('@purchase-flow');
 ```
+
+### Multi-Currency Checkout
+
+Tests that validate checkout across different locales/currencies use `addToCartFlow.executeAndNavigateToCheckout()` with a `sitePrefix` option, because they intentionally switch between locale contexts within a single test run and `buildSitePath()` reads from fixed env vars.
+
+```typescript
+import { TEST_LOCALE_CURRENCIES, TEST_PAYMENT, TEST_PRODUCT_CATEGORIES, generateTestEmail } from '../../test-data/checkout.data';
+
+for (const localeCurrency of TEST_LOCALE_CURRENCIES) {
+    Scenario(`Checkout in ${localeCurrency.label}`, async () => {
+        const sitePrefix = `/${localeCurrency.siteAlias}/${localeCurrency.locale}`;
+
+        const productInfo = await addToCartFlow.executeAndNavigateToCheckout(
+            TEST_PRODUCT_CATEGORIES.MENS_JACKETS, 3, { sitePrefix }
+        );
+
+        checkoutPage.validatePageLoaded();
+        const summaryText = await checkoutPage.getOrderSummaryText();
+        expect(summaryText).to.match(localeCurrency.currencyPattern);
+
+        const orderNumber = await checkoutPage.completeCheckout({
+            email: generateTestEmail(`multi-currency-${localeCurrency.label.toLowerCase()}`),
+            shippingAddress: localeCurrency.shippingAddress,
+            payment: TEST_PAYMENT,
+        });
+        expect(orderNumber).to.match(/^\d+$/);
+    })
+        .tag(`@${localeCurrency.label.toLowerCase()}`)
+        .tag('@multi-currency');
+}
+```
+
+**Key rules for multi-currency tests:**
+- Pass `sitePrefix` to `addToCartFlow` — `buildSitePath()` reads from env vars which are fixed
+- Never hardcode a single currency symbol (like `$`) — use `currencyPattern` from `TEST_LOCALE_CURRENCIES`
+- Each locale entry includes a locale-appropriate shipping address
+- To add a new currency, add an entry to `TEST_LOCALE_CURRENCIES` in `checkout.data.ts`
 
 ---
 

@@ -16,7 +16,7 @@
 
 Feature('Checkout Validation Tests').tag('@core').tag('@checkout').tag('@checkout-validation');
 
-const { checkoutPage, addToCartFlow } = inject();
+const { checkoutPage, apiCartSetupFlow } = inject();
 import { expect } from 'chai';
 import {
     TEST_SHIPPING_ADDRESS,
@@ -26,8 +26,8 @@ import {
     generateTestEmail,
 } from '../../test-data/checkout.data';
 
-Scenario('Contact info rejects empty and invalid input', async () => {
-    await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+Scenario('Contact info rejects invalid input', async () => {
+    await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
     // Part A: empty form -> required field errors
@@ -48,11 +48,12 @@ Scenario('Contact info rejects empty and invalid input', async () => {
     const formatErrors = await checkoutPage.getFieldValidationErrors('sf-toggle-card-contact-info');
     expect(formatErrors.length).to.be.at.least(2);
 })
+    .config({ retries: 0 })
     .tag('@contact-info-validation')
     .tag('@guest-checkout');
 
 Scenario('Shipping address rejects empty fields', async () => {
-    await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
     await checkoutPage.fillContactInfo(generateTestEmail('addr-validation'), TEST_SHIPPING_ADDRESS.phone);
@@ -67,11 +68,12 @@ Scenario('Shipping address rejects empty fields', async () => {
     const shippingMethodVisible = await checkoutPage.isShippingMethodStepVisible();
     expect(shippingMethodVisible, 'Should stay on shipping address step').to.be.false;
 })
+    .config({ retries: 0 })
     .tag('@shipping-address-validation')
     .tag('@guest-checkout');
 
 Scenario('Payment rejects empty card fields', async () => {
-    await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
     await checkoutPage.fillContactInfo(generateTestEmail('pay-empty'), TEST_SHIPPING_ADDRESS.phone);
@@ -88,11 +90,12 @@ Scenario('Payment rejects empty card fields', async () => {
     const confirmed = await checkoutPage.isOrderConfirmationShown();
     expect(confirmed, 'Order must NOT be placed with empty payment').to.be.false;
 })
+    .config({ retries: 0 })
     .tag('@payment-validation')
     .tag('@guest-checkout');
 
 Scenario('Payment rejects expired card and invalid CVV', async () => {
-    await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
     await checkoutPage.fillContactInfo(generateTestEmail('pay-expired'), TEST_SHIPPING_ADDRESS.phone);
@@ -116,11 +119,12 @@ Scenario('Payment rejects expired card and invalid CVV', async () => {
     const confirmed = await checkoutPage.isOrderConfirmationShown();
     expect(confirmed, 'Order must NOT be placed with invalid expiry/CVV').to.be.false;
 })
+    .config({ retries: 0 })
     .tag('@payment-validation')
     .tag('@guest-checkout');
 
 Scenario('Payment rejects empty custom billing address', async () => {
-    await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
     await checkoutPage.fillContactInfo(generateTestEmail('pay-billing'), TEST_SHIPPING_ADDRESS.phone);
@@ -143,6 +147,7 @@ Scenario('Payment rejects empty custom billing address', async () => {
     const confirmed = await checkoutPage.isOrderConfirmationShown();
     expect(confirmed, 'Order must NOT be placed with empty billing address').to.be.false;
 })
+    .config({ retries: 0 })
     .tag('@payment-validation')
     .tag('@billing-validation')
     .tag('@guest-checkout');
@@ -156,10 +161,12 @@ Scenario('Empty cart shows informative message instead of checkout form', async 
 
     const contactInfoVisible = await checkoutPage.isContactInfoFormVisible();
     expect(contactInfoVisible, 'Checkout form should not render when cart is empty').to.be.false;
-}).tag('@empty-cart');
+})
+    .config({ retries: 0 })
+    .tag('@empty-cart');
 
 Scenario('Promo code rejects too-short and invalid codes', async () => {
-    await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
     checkoutPage.expandPromoCodeAccordion();
@@ -175,11 +182,12 @@ Scenario('Promo code rejects too-short and invalid codes', async () => {
     const fakeError = await checkoutPage.getPromoCodeError();
     expect(fakeError, 'Should show error for non-existent promo code').to.not.be.empty;
 })
+    .config({ retries: 0 })
     .tag('@promo-code-validation')
     .tag('@guest-checkout');
 
 Scenario('Payment rejects too-short card number', async () => {
-    await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
     await checkoutPage.fillContactInfo(generateTestEmail('pay-short-card'), TEST_SHIPPING_ADDRESS.phone);
@@ -203,5 +211,6 @@ Scenario('Payment rejects too-short card number', async () => {
     const confirmed = await checkoutPage.isOrderConfirmationShown();
     expect(confirmed, 'Order must NOT be placed with too-short card number').to.be.false;
 })
+    .config({ retries: 0 })
     .tag('@payment-validation')
     .tag('@guest-checkout');

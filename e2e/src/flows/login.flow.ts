@@ -107,8 +107,32 @@ class LoginFlow {
             loginPage.fillLoginForm(loginData);
             loginPage.clickSignIn();
 
+            // Fail fast if login returns an error instead of waiting for cookies that will never arrive.
+            await (I.usePlaywrightTo('wait for login result', async ({ page }) => {
+                const navigated = page.waitForURL((url: URL) => !url.pathname.includes('/login'), {
+                    timeout: 30_000,
+                });
+                const errorVisible = page
+                    .locator('div.bg-destructive\\/10, [role="alert"]')
+                    .first()
+                    .waitFor({ state: 'visible', timeout: 30_000 });
+
+                const result = await Promise.race([
+                    navigated.then(() => 'navigated' as const),
+                    errorVisible.then(() => 'error' as const),
+                ]);
+
+                if (result === 'error') {
+                    const errorText = await page
+                        .locator('div.bg-destructive\\/10, [role="alert"]')
+                        .first()
+                        .textContent();
+                    throw new Error(`Login failed: ${errorText?.trim()}`);
+                }
+            }) as unknown as Promise<void>);
+
             const siteId = process.env.SITE_ID || 'RefArchGlobal';
-            await storefrontPage.waitForSessionCookies('registered', siteId, 45);
+            await storefrontPage.waitForSessionCookies('registered', siteId, 30);
 
             // Return login data for test validation
             return loginData;

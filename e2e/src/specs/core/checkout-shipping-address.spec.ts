@@ -35,7 +35,7 @@
 
 Feature('Checkout Shipping Address Modal Tests').tag('@core').tag('@checkout').tag('@shipping-address');
 
-const { checkoutPage, addToCartFlow, registeredShopperSetupFlow, storefrontPage, accountAddressesPage } = inject();
+const { checkoutPage, apiCartSetupFlow, registeredShopperSetupFlow, storefrontPage, accountAddressesPage } = inject();
 import { expect } from 'chai';
 import { TEST_SHIPPING_ADDRESS_ALT, TEST_PRODUCT_CATEGORIES } from '../../test-data/checkout.data';
 
@@ -71,7 +71,7 @@ After(async (test: unknown) => {
 Scenario('Registered shopper sees saved addresses and can continue checkout', async () => {
     const setupResult = await registeredShopperSetupFlow.execute();
 
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
 
     await checkoutPage.expandShippingAddressForSavedAddresses();
@@ -120,7 +120,7 @@ Scenario('Registered shopper sees saved addresses and can continue checkout', as
 Scenario('Registered shopper can add new address via modal at checkout', async () => {
     await registeredShopperSetupFlow.execute();
 
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
 
     await checkoutPage.expandShippingAddressForSavedAddresses();
@@ -191,7 +191,7 @@ Scenario('Registered shopper can add new address via modal at checkout', async (
 Scenario('Registered shopper can edit saved address via modal at checkout', async () => {
     const setupResult = await registeredShopperSetupFlow.execute();
 
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
 
     await checkoutPage.expandShippingAddressForSavedAddresses();

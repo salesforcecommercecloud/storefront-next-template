@@ -25,8 +25,10 @@
  */
 export const flows = {
     addToCartFlow: './src/flows/add-to-cart.flow.ts',
+    apiCartSetupFlow: './src/flows/api-cart-setup.flow.ts',
     addToWishlistFlow: './src/flows/add-to-wishlist.flow.ts',
     signupFlow: './src/flows/signup.flow.ts',
     loginFlow: './src/flows/login.flow.ts',
     registeredShopperSetupFlow: './src/flows/registered-shopper-setup.flow.ts',
+    beaconCaptureFlow: './src/flows/beacon-capture.flow.ts',
 };

@@ -25,8 +25,8 @@ function hasValidPaymentCard(
         return false;
     }
 
-    // For saved payment methods, check if customerPaymentInstrumentId exists
-    if (paymentInstrument.customerPaymentInstrumentId) {
+    // For saved payment methods, check if paymentInstrumentId exists
+    if (paymentInstrument.paymentInstrumentId) {
         return true;
     }
 
