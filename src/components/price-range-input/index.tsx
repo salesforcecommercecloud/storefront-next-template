@@ -17,9 +17,10 @@
 
 import { type ReactElement, type KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DollarSign } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { usePriceRangeValidation } from '@/hooks/use-price-range-validation';
+import { useCurrency } from '@/providers/currency';
+import { getCurrencySymbol } from '@/lib/currency';
 
 interface PriceInputProps {
     placeholder: string;
@@ -27,12 +28,17 @@ interface PriceInputProps {
     onChange: (value: string) => void;
     onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
     hasError: boolean;
+    currencySymbol: string;
 }
 
-function PriceInput({ placeholder, value, onChange, onKeyDown, hasError }: PriceInputProps) {
+function PriceInput({ placeholder, value, onChange, onKeyDown, hasError, currencySymbol }: PriceInputProps) {
     return (
         <div className="bg-custom-bg-input-30 rounded-[var(--radius-2px)] border-solid border-[var(--input)] border py-2 px-3 flex flex-row gap-2 items-center justify-start flex-1 relative overflow-hidden shadow-xs">
-            <DollarSign className="shrink-0 w-4 h-4 relative overflow-visible text-muted-foreground" />
+            <span
+                className="shrink-0 flex items-center justify-center text-sm text-muted-foreground"
+                aria-hidden="true">
+                {currencySymbol}
+            </span>
             <div className="text-muted-foreground text-left font-text-sm-leading-normal-normal-font-family text-sm leading-normal font-normal relative overflow-hidden flex-1 truncate whitespace-nowrap">
                 <Input
                     type="number"
@@ -76,7 +82,10 @@ export default function PriceRangeInput({
     maxAllowed,
     showValidationErrors = true,
 }: PriceRangeInputProps): ReactElement {
-    const { t } = useTranslation('product');
+    const { t, i18n } = useTranslation('product');
+    const currency = useCurrency();
+    const locale = i18n.language;
+    const currencySymbol = getCurrencySymbol(locale, currency);
     const validation = usePriceRangeValidation(minPrice, maxPrice, minAllowed, maxAllowed);
     const minHasError = showValidationErrors && validation.minHasError;
     const maxHasError = showValidationErrors && validation.maxHasError;
@@ -103,6 +112,7 @@ export default function PriceRangeInput({
                 onChange={handleMinChange}
                 onKeyDown={handleKeyDown}
                 hasError={minHasError}
+                currencySymbol={currencySymbol}
             />
 
             <div className="text-foreground text-left font-text-sm-leading-none-normal-font-family text-sm leading-none font-normal relative">
@@ -115,6 +125,7 @@ export default function PriceRangeInput({
                 onChange={handleMaxChange}
                 onKeyDown={handleKeyDown}
                 hasError={maxHasError}
+                currencySymbol={currencySymbol}
             />
         </div>
     );

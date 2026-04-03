@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, expect, it, vi } from 'vitest';
-import { formatCurrency } from './currency';
+import { formatCurrency, getCurrencySymbol } from './currency';
 
 describe('formatCurrency', () => {
     describe('en-GB with GBP', () => {
@@ -119,6 +119,32 @@ describe('formatCurrency', () => {
         it('should handle negative Infinity', () => {
             const result = formatCurrency(-Infinity, 'en-GB', 'GBP');
             expect(result).toBe('-£∞');
+        });
+    });
+
+    describe('getCurrencySymbol', () => {
+        it('should return $ for USD', () => {
+            expect(getCurrencySymbol('en-US', 'USD')).toBe('$');
+        });
+
+        it('should return £ for GBP', () => {
+            expect(getCurrencySymbol('en-GB', 'GBP')).toBe('£');
+        });
+
+        it('should return € for EUR', () => {
+            expect(getCurrencySymbol('en-US', 'EUR')).toBe('€');
+        });
+
+        it('should return yen symbol for JPY', () => {
+            expect(getCurrencySymbol('ja-JP', 'JPY')).toMatch(/[¥￥]/);
+        });
+
+        it('should return $ for CAD with en-CA locale', () => {
+            expect(getCurrencySymbol('en-CA', 'CAD')).toBe('$');
+        });
+
+        it('should return CHF for Swiss francs', () => {
+            expect(getCurrencySymbol('de-CH', 'CHF')).toMatch(/CHF/);
         });
     });
 

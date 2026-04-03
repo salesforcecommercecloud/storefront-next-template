@@ -20,6 +20,7 @@ import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { CurrencyProvider } from '@/providers/currency';
 import CategoryRefinements from '../index';
 // @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
@@ -140,9 +141,11 @@ const meta: Meta<typeof CategoryRefinements> = {
     },
     decorators: [
         (Story: ComponentType) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
+            <CurrencyProvider value="USD">
+                <ActionLogger>
+                    <Story />
+                </ActionLogger>
+            </CurrencyProvider>
         ),
     ],
 };

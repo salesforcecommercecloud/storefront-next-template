@@ -19,6 +19,7 @@ import { action } from 'storybook/actions';
 import { useEffect, useRef, useState, type ReactNode, type ReactElement } from 'react';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { CurrencyProvider } from '@/providers/currency';
 
 function PriceRangeInputStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -76,9 +77,11 @@ A price range input component with min and max price fields, validation, and app
     },
     decorators: [
         (Story) => (
-            <PriceRangeInputStoryHarness>
-                <Story />
-            </PriceRangeInputStoryHarness>
+            <CurrencyProvider value="USD">
+                <PriceRangeInputStoryHarness>
+                    <Story />
+                </PriceRangeInputStoryHarness>
+            </CurrencyProvider>
         ),
     ],
 };
