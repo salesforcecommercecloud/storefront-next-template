@@ -21,6 +21,7 @@ import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scap
 import {
     PageDesignerPageMetadataProvider,
     useRegionContext,
+    usePageDesignerMode,
 } from '@salesforce/storefront-next-runtime/design/react/core';
 import type {
     ComponentDecoratorProps,
@@ -77,8 +78,16 @@ function renderRegionContent(
     regionId: string,
     metadata: RegionDesignMetadata | undefined,
     className: string | undefined,
-    rest: HTMLAttributes<HTMLDivElement>
+    rest: HTMLAttributes<HTMLDivElement>,
+    errorElement?: ReactNode,
+    isDesignMode?: boolean
 ) {
+    // In MRT (not design mode), return errorElement for empty regions
+    const hasComponents = (region.components?.length ?? 0) > 0;
+    if (!hasComponents && !isDesignMode) {
+        return errorElement ?? null;
+    }
+
     return (
         <RegionWrapper
             region={region}
@@ -131,6 +140,7 @@ export function Region(props: RegionProps) {
     const { regionId, className, errorElement = <></>, fallbackElement = <></>, ...rest } = props;
     const regionContext = useRegionContext();
     const existingComponentData = useComponentData();
+    const { isDesignMode } = usePageDesignerMode();
 
     // COMPONENT MODE: Rendering a component-level region (nested)
     if (props.component !== undefined) {
@@ -165,7 +175,15 @@ export function Region(props: RegionProps) {
                     const content = (
                         <>
                             {!regionContext && <PageDesignerPageMetadataProvider page={pageData} />}
-                            {renderRegionContent(region, regionId, metadata, className, rest)}
+                            {renderRegionContent(
+                                region,
+                                regionId,
+                                metadata,
+                                className,
+                                rest,
+                                errorElement,
+                                isDesignMode
+                            )}
                         </>
                     );
 

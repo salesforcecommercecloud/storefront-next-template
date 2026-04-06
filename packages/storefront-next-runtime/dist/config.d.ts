@@ -3,7 +3,7 @@ import { n as DefineConfigOptions, r as defineConfig, t as BaseConfig } from "./
 import * as react0 from "react";
 import { ReactNode } from "react";
 import * as react_jsx_runtime1 from "react/jsx-runtime";
-import * as react_router2 from "react-router";
+import * as react_router0 from "react-router";
 import { MiddlewareFunction, RouterContextProvider } from "react-router";
 
 //#region src/config/get-config.d.ts
@@ -39,7 +39,7 @@ declare function useConfig<T extends Record<string, unknown> = Record<string, un
  * Populated by `createAppConfigMiddleware` with the `app` section of config.
  * Accessible in loaders, actions, and middleware via `context.get(appConfigContext)`.
  */
-declare const appConfigContext: react_router2.RouterContext<Record<string, unknown>>;
+declare const appConfigContext: react_router0.RouterContext<Record<string, unknown>>;
 /**
  * React context for application configuration.
  *
