@@ -18,7 +18,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import { useSite } from '@salesforce/storefront-next-runtime/multi-site';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
 import { useAuth } from '@/providers/auth';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';

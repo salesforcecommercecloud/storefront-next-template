@@ -16,7 +16,7 @@
 
 import type { ReactNode } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { SiteProvider } from '@salesforce/storefront-next-runtime/multi-site';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
 import { mockConfig, mockBuildConfig } from './config';
 import { TargetProviders } from '@/targets/target-providers';

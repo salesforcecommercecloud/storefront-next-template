@@ -108,7 +108,7 @@ navigator.sendBeacon(proxyUrl);
 
 #### Multi-Site Detection
 
-When multi-site is configured with path-based site/locale detection, the SDK automatically adjusts the `lookupFromPathIndex` to skip the base path segment. No configuration change is needed.
+When site context is configured with path-based site/locale detection, the SDK automatically adjusts the `lookupFromPathIndex` to skip the base path segment. No configuration change is needed.
 
 For example, with base path `/shop` and a URL like `/shop/site-us/en-US/category/womens`:
 - Without base path: segment index 0 = `site-us`
@@ -231,7 +231,7 @@ React Router's `basename` property affects different parts of the framework diff
 | `redirect()` in middleware | **Not** prepended | Must manually prepend: `redirect(\`${basePath}/login\`)` |
 | `request.url` in middleware/loaders | **Not** stripped | Full URL including base path |
 
-The key takeaway: `request.url` in middleware and loaders always contains the full path including the base path. The SDK handles this for multi-site detection, but custom middleware that parses `request.url` paths may need to account for it.
+The key takeaway: `request.url` in middleware and loaders always contains the full path including the base path. The SDK handles this for site context detection, but custom middleware that parses `request.url` paths may need to account for it.
 
 ## Known Limitation: Express Routes Without Base Path
 

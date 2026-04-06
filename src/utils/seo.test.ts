@@ -190,7 +190,7 @@ describe('buildSeoMetaDescriptors', () => {
         ]);
     });
 
-    it('works without urlConfig prefix (no multi-site rewriting)', () => {
+    it('works without urlConfig prefix (no site context rewriting)', () => {
         const result = callBuild({
             site: {
                 ...baseSite,

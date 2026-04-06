@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useTranslation } from 'react-i18next';
-import { useSite } from '@salesforce/storefront-next-runtime/multi-site';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 

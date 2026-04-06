@@ -20,13 +20,13 @@ import {
     type LinkProps as RouterLinkProps,
     type NavLinkProps as RouterNavLinkProps,
 } from 'react-router';
-import { buildUrl, useSite } from '@salesforce/storefront-next-runtime/multi-site';
+import { buildUrl, useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 
 /**
- * Multi-site-aware <Link>. Drop-in replacement for React Router's <Link>.
+ * Site-context-aware <Link>. Drop-in replacement for React Router's <Link>.
  * Automatically prepends URL prefix and appends search params from Url config.
  * When no SiteProvider is mounted, behaves identically to React Router's Link.
  */
@@ -47,7 +47,7 @@ export const Link = forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link
 });
 
 /**
- * Multi-site-aware <NavLink>. Drop-in replacement for React Router's <NavLink>.
+ * Site-context-aware <NavLink>. Drop-in replacement for React Router's <NavLink>.
  * Inherits all NavLink functionality (active class, aria-current).
  */
 export const NavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps>(function NavLink({ to: _to, ...rest }, ref) {

@@ -36,8 +36,8 @@ describe('Extension Routes', () => {
         const { default: routes } = await import('@/routes');
         const resolvedRoutes = await routes;
 
-        // With multi-site URL prefix configured, routes are wrapped under a multi-site-wrapper
-        const wrapper = resolvedRoutes.find((r: any) => r.id === 'multi-site-wrapper');
+        // With site context URL prefix configured, routes are wrapped under a site-context-wrapper
+        const wrapper = resolvedRoutes.find((r: any) => r.id === 'site-context-wrapper');
         expect(wrapper).toBeDefined();
         expect(wrapper?.children).toBeDefined();
 

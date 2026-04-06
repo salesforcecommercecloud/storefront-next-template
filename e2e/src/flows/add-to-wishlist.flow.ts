@@ -44,7 +44,7 @@ class AddToWishlistFlow {
             I.amOnPage(buildSitePath(categoryUrl));
             const productUrl = await productListPage.getFirstProductUrl();
             // productUrl is extracted from the DOM and already contains the
-            // multisite prefix rendered by the storefront — do not apply
+            // url prefix rendered by the storefront — do not apply
             // buildSitePath() here or it would be double-prefixed.
             I.amOnPage(productUrl);
 

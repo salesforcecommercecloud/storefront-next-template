@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { House, Heart, ShoppingBag, User, MapPin, CreditCard, Building, LogOut } from 'lucide-react';
 
 // Runtime SDK
-import { buildUrl } from '@salesforce/storefront-next-runtime/multi-site';
+import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 
 // Components
 import { Link } from '@/components/link';

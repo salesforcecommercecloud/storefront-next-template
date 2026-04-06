@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { redirect, type ActionFunction } from 'react-router';
-import { getMultiSiteCookies } from '@salesforce/storefront-next-runtime/multi-site';
+import { getSiteContextCookies } from '@salesforce/storefront-next-runtime/site-context';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getLogger } from '@/lib/logger.server';
@@ -52,10 +52,10 @@ export const action: ActionFunction = async ({ request, context }) => {
         throw new Response(`Site "${siteId}" not found`, { status: 400 });
     }
 
-    const cookies = getMultiSiteCookies(context);
+    const cookies = getSiteContextCookies(context);
     if (!cookies) {
         logger.error('SetSite: cookies not initialized');
-        throw new Response('Multi-site cookies not initialized', { status: 500 });
+        throw new Response('Site context cookies not initialized', { status: 500 });
     }
 
     // Set both site and locale cookies

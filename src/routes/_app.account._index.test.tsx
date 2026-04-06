@@ -95,7 +95,7 @@ vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
     useCurrentSiteAndLocaleRef: () => ({ siteRef: 'global', localeRef: 'en-GB' }),
 }));
 
-vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
+vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
     buildUrl: ({ to }: { to: string }) => `/global/en-GB${to}`,
 }));
 

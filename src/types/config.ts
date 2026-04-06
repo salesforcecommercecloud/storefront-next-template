@@ -25,7 +25,7 @@ import type { BaseConfig, Site, Url } from '@salesforce/storefront-next-runtime/
 import type { EngagementAdapterConfig } from '@/lib/adapters';
 import type { TrackingConsent } from '@/types/tracking-consent';
 
-import type { DetectionConfig } from '@salesforce/storefront-next-runtime/multi-site';
+import type { DetectionConfig } from '@salesforce/storefront-next-runtime/site-context';
 
 export type BadgeDetail = {
     propertyName: string;

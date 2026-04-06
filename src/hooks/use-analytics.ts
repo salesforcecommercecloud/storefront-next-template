@@ -25,7 +25,7 @@ import {
     type EventSiteInfo,
 } from '@salesforce/storefront-next-runtime/events';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import { useSite } from '@salesforce/storefront-next-runtime/multi-site';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
 import type { AppConfig } from '@/types/config';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';

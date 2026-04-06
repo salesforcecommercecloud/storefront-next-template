@@ -119,7 +119,7 @@ export default defineConfig<Config>(
                     registeredRefreshTokenExpirySeconds: undefined,
                     guestRefreshTokenExpirySeconds: undefined,
                 },
-                // Multi-site configuration
+                // Site context configuration
                 // Each site can have its own locale, currency, and detection settings
                 sites: [
                     {

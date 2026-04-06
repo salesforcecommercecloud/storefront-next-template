@@ -30,7 +30,7 @@ export async function waitForStorybookReady(canvasElement: HTMLElement, timeout 
 }
 
 /**
- * The default URL prefix applied by the multi-site SiteProvider in Storybook.
+ * The default URL prefix applied by the site context SiteProvider in Storybook.
  * Derived from the mock config's first site and its default locale.
  *
  * Use this in play-function assertions to build expected prefixed URLs:

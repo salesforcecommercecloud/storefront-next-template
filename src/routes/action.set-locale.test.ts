@@ -20,8 +20,8 @@ import { createFormDataRequest } from '@/test-utils/request-helpers';
 
 const mockLocaleCookieSerialize = vi.fn((locale: string) => Promise.resolve(`lng=${locale}; Path=/`));
 
-vi.mock('@salesforce/storefront-next-runtime/multi-site', () => ({
-    getMultiSiteCookies: vi.fn(() => ({
+vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
+    getSiteContextCookies: vi.fn(() => ({
         siteCookie: {
             serialize: vi.fn(),
         },

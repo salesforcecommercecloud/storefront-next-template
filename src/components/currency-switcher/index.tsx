@@ -19,7 +19,7 @@ import { type ReactElement, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFetcher } from 'react-router';
 import { NativeSelect } from '@/components/ui/native-select';
-import { useSite, type Site } from '@salesforce/storefront-next-runtime/multi-site';
+import { useSite, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import { useCurrency } from '@/providers/currency';
 import { useToast } from '@/components/toast';
 

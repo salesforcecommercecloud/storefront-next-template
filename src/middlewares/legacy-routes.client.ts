@@ -15,7 +15,7 @@
  */
 import type { DataStrategyResult, MiddlewareFunction } from 'react-router';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
-import { stripPathPrefix } from '@salesforce/storefront-next-runtime/multi-site';
+import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
 
 /**
@@ -121,13 +121,13 @@ const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResu
         return next();
     }
 
-    // Normalize the pathname by stripping the multi-site prefix before matching.
+    // Normalize the pathname by stripping the site context prefix before matching.
     //
-    // With multisite enabled, the template's Link/useNavigate automatically prefix
-    // every subpage URL with the site and locale (e.g. '/checkout' → '/global/en-GB/checkout').
-    // Without stripping, the incoming pathname would never match the bare paths configured
-    // in legacyRoutes. Stripping early normalizes the URL so the matching logic always
-    // operates on functional paths rather than URL variations.
+    // When the url prefix is other than '/', every subpage URL is prefixed accordingly to the
+    // config (e.g. '/checkout' → '/global/en-GB/checkout'). Without stripping, the incoming
+    // pathname would never match the bare paths configured in legacyRoutes. Stripping early
+    // normalizes the URL so the matching logic always operates on functional paths rather than
+    // URL variations.
     //
     // Why this approach:
     // - No config bloat: '/cart' is defined once — you don't need a separate entry for every

@@ -309,7 +309,7 @@ export const mockBuildConfig: Config = {
 export const mockConfig = createAppConfig(mockBuildConfig);
 
 /**
- * The default URL prefix applied by multi-site routing in tests.
+ * The default URL prefix applied by site context routing in tests.
  * Derived from the first configured site and its default locale.
  *
  * Use in test assertions where links are expected to include the site/locale prefix:

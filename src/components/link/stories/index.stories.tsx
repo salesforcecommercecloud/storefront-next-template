@@ -20,7 +20,7 @@ import { action } from 'storybook/actions';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import { SiteProvider } from '@salesforce/storefront-next-runtime/multi-site';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { Link, NavLink } from '../index';
@@ -109,7 +109,7 @@ const meta: Meta<typeof Link> = {
         docs: {
             description: {
                 component: `
-Multi-site-aware Link and NavLink components. Drop-in replacements for React Router's Link/NavLink
+Site-context-aware Link and NavLink components. Drop-in replacements for React Router's Link/NavLink
 that automatically prepend URL prefix and append search params from Url config.
 
 When a SiteProvider is mounted, links are rewritten with the site prefix and locale search params.
@@ -132,7 +132,7 @@ export const Default: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'A Link with multi-site prefix applied. The href is rewritten from `/product/123` to include the site prefix.',
+                story: 'A Link with site context prefix applied. The href is rewritten from `/product/123` to include the site prefix.',
             },
         },
     },
@@ -153,7 +153,7 @@ export const CategoryLink: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'A category navigation link with multi-site prefix.',
+                story: 'A category navigation link with site context prefix.',
             },
         },
     },
@@ -198,7 +198,7 @@ export const ExternalUrl: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'External URLs (http/https) are passed through without multi-site prefix.',
+                story: 'External URLs (http/https) are passed through without site context prefix.',
             },
         },
     },

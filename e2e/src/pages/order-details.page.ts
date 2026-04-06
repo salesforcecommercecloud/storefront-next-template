@@ -62,7 +62,7 @@ class OrderDetailsPage {
         // Tracking number card
         trackingNumberCard: locate('[data-card="tracking-number"]').as('Tracking Number Card'),
 
-        // Navigation - use $= (ends-with) so the selector works with and without a multisite prefix
+        // Navigation - use $= (ends-with) so the selector works with and without a url prefix
         backToOrdersLink: locate('a[href$="/account/orders"]').as('Back to Orders Link'),
 
         // Loading state

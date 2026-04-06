@@ -18,7 +18,7 @@ import { Form } from 'react-router';
 import type { LucideIcon } from 'lucide-react';
 
 // Runtime SDK
-import { buildUrl } from '@salesforce/storefront-next-runtime/multi-site';
+import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 
 // Components
 import { NavLink } from '@/components/link';

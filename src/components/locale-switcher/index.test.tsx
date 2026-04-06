@@ -22,7 +22,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { getTranslation } from '@/lib/i18next';
 import i18next from 'i18next';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/multi-site';
+import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import LocaleSwitcher from './index';
 
 const { t } = getTranslation();

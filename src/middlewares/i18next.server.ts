@@ -19,7 +19,7 @@ import { type MiddlewareFunction } from 'react-router';
 import resources from '@/locales'; // Import translations from all of your locales - SERVER ONLY
 import 'i18next';
 import { i18nextContext } from '@/lib/i18next';
-import { requestToLocaleMap } from '@salesforce/storefront-next-runtime/multi-site';
+import { requestToLocaleMap } from '@salesforce/storefront-next-runtime/site-context';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getLogger } from '@/lib/logger.server';

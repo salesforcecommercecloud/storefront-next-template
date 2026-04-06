@@ -18,7 +18,7 @@ import type { RouterContextProvider } from 'react-router';
 import { createApiClients } from './api-clients';
 import { createTestContext } from '@/lib/test-utils';
 import { authContext } from '@/middlewares/auth.utils';
-import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { SessionData } from '@/lib/api/types';
 
 // Mock dependencies
@@ -161,10 +161,10 @@ describe('createApiClients', () => {
             );
         });
 
-        it('should use siteId from multi-site context when available', () => {
-            mockContextProvider.set(multiSiteContext, {
+        it('should use siteId from site context when available', () => {
+            mockContextProvider.set(siteContext, {
                 site: {
-                    id: 'multi-site-id',
+                    id: 'site-context-id',
                     defaultCurrency: 'USD',
                     defaultLocale: 'en-US',
                     supportedCurrencies: ['USD'],
@@ -177,16 +177,16 @@ describe('createApiClients', () => {
 
             expect(mockCreateCommerceApiClients).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    siteId: 'multi-site-id',
+                    siteId: 'site-context-id',
                 })
             );
         });
 
-        it('should throw when multi-site context is not set', () => {
-            // Explicitly clear multi-site context to simulate no multi-site middleware
-            mockContextProvider.set(multiSiteContext, null);
+        it('should throw when site context is not set', () => {
+            // Explicitly clear site context to simulate no site context middleware
+            mockContextProvider.set(siteContext, null);
 
-            expect(() => createApiClients(mockContextProvider)).toThrow('Multi-site context not initialized');
+            expect(() => createApiClients(mockContextProvider)).toThrow('Site context not initialized');
         });
     });
 

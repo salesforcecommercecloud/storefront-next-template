@@ -42,7 +42,7 @@ describe('Link', () => {
         await i18next.changeLanguage('en-GB');
     });
 
-    test('renders a multi-site prefixed URL', () => {
+    test('renders a site context prefixed URL', () => {
         const { getByRole } = renderWithRouter(<Link to="/product/123">Product</Link>);
 
         expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
@@ -106,7 +106,7 @@ describe('NavLink', () => {
         await i18next.changeLanguage('en-GB');
     });
 
-    test('renders a multi-site prefixed URL', () => {
+    test('renders a site context prefixed URL', () => {
         const { getByRole } = renderWithRouter(<NavLink to="/product/123">Product</NavLink>);
 
         expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');

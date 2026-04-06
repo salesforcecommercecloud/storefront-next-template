@@ -45,7 +45,7 @@ const RESULTS_DIR = join(process.cwd(), 'a11y-report', 'data');
 
 /**
  * Navigate to a page path using CodeceptJS I.amOnPage.
- * Accepts relative paths (e.g. '/category/tops') — applies the multisite
+ * Accepts relative paths (e.g. '/category/tops') — applies the url
  * prefix via buildSitePath() and lets the Playwright helper prepend BASE_URL.
  */
 export function navigateTo(pagePath: string): void {

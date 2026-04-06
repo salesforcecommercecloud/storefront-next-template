@@ -15,7 +15,7 @@
  */
 import { type MiddlewareFunction, createContext as createRouterContext } from 'react-router';
 import { currencyContext, COOKIE_CURRENCY } from '@/lib/currency';
-import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils';
 import { getLogger } from '@/lib/logger.server';
 
@@ -62,19 +62,19 @@ export const updateCurrency = (context: Parameters<MiddlewareFunction>[0]['conte
 /**
  * Middleware to resolve currency and store it in context
  * Priority: Cookie → Locale's preferred currency → First supported currency
- * This must run AFTER multi-site middleware to access locale and site
+ * This must run AFTER site context middleware to access locale and site
  */
 export const currencyMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
     const logger = getLogger(context);
 
     // Before calling the handler: Set currency from cookies or defaults
-    const multiSite = context.get(multiSiteContext);
-    if (!multiSite) {
-        logger.error('Currency: multi-site context missing');
-        throw new Error('Multi-site middleware must run before currency middleware');
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx) {
+        logger.error('Currency: site context missing');
+        throw new Error('Site context middleware must run before currency middleware');
     }
 
-    const { site, locale } = multiSite;
+    const { site, locale } = siteCtx;
 
     const currencyCookie = createCurrencyCookie(context);
 

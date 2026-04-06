@@ -10,7 +10,7 @@ import CheckoutOneClickProvider from '../src/components/checkout/utils/checkout-
 import BasketProvider from '../src/providers/basket';
 import AuthProvider from '../src/providers/auth';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { SiteProvider } from '@salesforce/storefront-next-runtime/multi-site';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { CurrencyProvider } from '../src/providers/currency';
 import { mockConfig } from '../src/test-utils/config';
 import { inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';

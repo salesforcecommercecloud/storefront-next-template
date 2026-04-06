@@ -15,7 +15,7 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ConfigProvider, createAppConfig } from '@salesforce/storefront-next-runtime/config';
-import { SiteProvider } from '@salesforce/storefront-next-runtime/multi-site';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig, mockBuildConfig } from '@/test-utils/config';
 import { CurrencyProvider } from '@/providers/currency';
 

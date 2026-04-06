@@ -23,7 +23,7 @@ import config from '@/config/server';
 import { i18nextContext } from '@/lib/i18next';
 import { currencyContext } from '@/lib/currency';
 import { createMaintenance, maintenanceContext } from '@/lib/maintenance';
-import { multiSiteContext } from '@salesforce/storefront-next-runtime/multi-site';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import i18next from 'i18next';
 
 /**
@@ -151,13 +151,13 @@ export function createTestContext(testConfig: TestContextConfig = {}): Readonly<
     // Set up currency context
     contextProvider.set(currencyContext, currency);
 
-    // Set up multi-site context
+    // Set up site context
     const site = config.app.commerce.sites[0];
     const localeObj = site.supportedLocales.find((l: { id: string }) => l.id === locale) ?? {
         id: locale,
         preferredCurrency: currency,
     };
-    contextProvider.set(multiSiteContext, {
+    contextProvider.set(siteContext, {
         site: { ...site, alias: 'global', name: site.id, supportedLocales: site.supportedLocales },
         locale: { ...localeObj },
         siteCookie: { name: 'site_id' } as unknown as Cookie,

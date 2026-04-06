@@ -15,7 +15,7 @@
  */
 
 /**
- * Prepend the multisite prefix to a URL path based on SITE_ALIAS and
+ * Prepend the url prefix to a URL path based on SITE_ALIAS and
  * LOCALE environment variables. Both are optional; whichever is present
  * is included, with SITE_ALIAS first when both exist.
  *
@@ -24,7 +24,7 @@
  * the storefront's rendered routing and would be double-prefixed.
  *
  * @param path - A root-relative URL path, e.g. `/checkout` or `/account/orders`
- * @returns The path with any applicable multisite prefix prepended
+ * @returns The path with any applicable url prefix prepended
  *
  * @example
  * // SITE_ALIAS=default, LOCALE=en-GB
