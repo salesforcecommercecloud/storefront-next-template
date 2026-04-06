@@ -159,6 +159,11 @@ export default defineConfig(({ mode }) => {
                 // Server-only config access (must be before '@' to take precedence)
                 '@/config/server': resolve(__dirname, './config.server.ts'),
                 '@': resolve(__dirname, './src'),
+                // Fonts alias — uses root-absolute path (not a filesystem resolve) because fonts
+                // live in public/. Vite serves public assets at the root, so '/fonts' maps to
+                // public/fonts/. Using resolve(__dirname, './public/fonts') would trigger Vite
+                // warnings about importing from the public directory.
+                '@fonts': '/fonts',
             },
             // Prevent duplicate React instances in the monorepo. hooks break if multiple copies are loaded
             dedupe: ['react', 'react-dom', 'react-router'],
