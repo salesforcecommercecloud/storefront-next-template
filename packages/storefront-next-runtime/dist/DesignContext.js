@@ -765,5 +765,5 @@ DesignProvider.defaultProps = {
 const useDesignContext = () => React.useContext(DesignContext);
 
 //#endregion
-export { isComponentTypeAllowedInRegion as a, useDesignState as i, DesignProvider as n, useComponentDiscovery as o, useDesignContext as r, DesignContext as t };
+export { useDesignState as a, useThrottledCallback as i, DesignProvider as n, isComponentTypeAllowedInRegion as o, useDesignContext as r, useComponentDiscovery as s, DesignContext as t };
 //# sourceMappingURL=DesignContext.js.map

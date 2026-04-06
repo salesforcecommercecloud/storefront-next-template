@@ -109,21 +109,26 @@ describe('design/react/ComponentDecorator', () => {
             });
         });
 
-        describe('when the component is hovered', () => {
+        describe('when the component is hovered via mouseMove', () => {
             let hostSpy: Mock;
 
             beforeEach(() => {
                 hostSpy = vi.fn();
-                testBed.afterRender(({ host, element }) => {
+                testBed.afterRender(async ({ host, element, root }) => {
                     host.on('ComponentHoveredIn', hostSpy);
-                    fireEvent.mouseEnter(element);
+                    // discoverComponents uses document.elementsFromPoint — point it at the hovered element
+                    const region = await testBed.findBySelector(root, '.pd-design__region');
+                    testBed.state.elementsOnPoint = [element, region];
+                    fireEvent.mouseMove(element, { clientX: 100, clientY: 100 });
                 });
             });
             it('should show the frame', async () => {
                 const { element } = await testBed.render(TestComponent);
 
-                expect(element.classList.contains('pd-design__frame--visible')).toBe(true);
-                expect(element.classList.contains('pd-design__decorator--hovered')).toBe(true);
+                await waitFor(() => {
+                    expect(element.classList.contains('pd-design__frame--visible')).toBe(true);
+                    expect(element.classList.contains('pd-design__decorator--hovered')).toBe(true);
+                });
             });
 
             it('should notify the host of the hover', async () => {
@@ -139,13 +144,19 @@ describe('design/react/ComponentDecorator', () => {
 
                 beforeEach(() => {
                     hoverOutSpy = vi.fn();
-                    testBed.afterRender(async ({ host, element }) => {
+                    testBed.afterRender(async ({ host, element, root, findByTestId }) => {
                         await waitFor(() => {
                             expect(element.classList.contains('pd-design__decorator--hovered')).toBe(true);
                         });
 
+                        // On mouse leave, discoverComponents checks what's at the cursor —
+                        // simulate the cursor now being over a sibling component, not test-1
+                        const region = await testBed.findBySelector(root, '.pd-design__region');
+                        const sibling = await findByTestId('design-component-test-3');
+                        testBed.state.elementsOnPoint = [sibling, region];
+
                         host.on('ComponentHoveredOut', hoverOutSpy);
-                        fireEvent.mouseLeave(element);
+                        fireEvent.mouseLeave(element, { clientX: 200, clientY: 200 });
                     });
                 });
 
@@ -160,8 +171,35 @@ describe('design/react/ComponentDecorator', () => {
                 it('should not show the frame', async () => {
                     const { element } = await testBed.render(TestComponent);
 
-                    expect(element.classList.contains('pd-design__frame--visible')).toBe(false);
-                    expect(element.classList.contains('pd-design__decorator--hovered')).toBe(false);
+                    await waitFor(() => {
+                        expect(element.classList.contains('pd-design__frame--visible')).toBe(false);
+                        expect(element.classList.contains('pd-design__decorator--hovered')).toBe(false);
+                    });
+                });
+            });
+        });
+
+        describe('when mouseMove discovers a parent component at cursor position', () => {
+            it('should hover the component found by discoverComponents, not the event target', async () => {
+                const hostSpy = vi.fn();
+
+                testBed.afterRender(async ({ host, root, findByTestId }) => {
+                    host.on('ComponentHoveredIn', hostSpy);
+
+                    // Simulate cursor leaving a child and landing on a parent —
+                    // elementsFromPoint returns test-3 (a sibling) at those coordinates
+                    const region = await testBed.findBySelector(root, '.pd-design__region');
+                    const sibling = await findByTestId('design-component-test-3');
+                    testBed.state.elementsOnPoint = [sibling, region];
+                });
+
+                const { element } = await testBed.render(TestComponent);
+
+                // mouseMove on test-1's element, but elementsFromPoint says test-3 is at cursor
+                fireEvent.mouseMove(element, { clientX: 300, clientY: 300 });
+
+                await waitFor(() => {
+                    expect(hostSpy).toHaveBeenCalledWith(expect.objectContaining({ componentId: 'test-3' }));
                 });
             });
         });

@@ -24,6 +24,7 @@ import { useRegionContext } from '../core/RegionContext';
 import { ComponentContext, useComponentContext, type ComponentContextType } from '../core/ComponentContext';
 import { useComponentDiscovery } from '../hooks/useComponentDiscovery';
 import { useComponentType } from '../hooks/useComponentType';
+import { useThrottledCallback } from '../hooks/useThrottledCallback';
 
 export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.JSX.Element {
     const { designMetadata, children } = props;
@@ -60,33 +61,39 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
     });
 
     const isPendingDrag = pendingComponentDragId === componentId;
-
-    const handleMouseEnter = useCallback(
-        (event: React.MouseEvent) => {
-            event.stopPropagation();
-            setHoveredComponent(componentId);
-        },
-        [setHoveredComponent, componentId]
-    );
-
-    const handleMouseLeave = useCallback(
-        (event: React.MouseEvent) => {
-            event.stopPropagation();
-
+    const findAndSetHoveredComponent = useCallback(
+        (x: number, y: number) => {
             // If we hover off a component, we could still be hovering over a parent component
             // that contains that child. In this instance, the mouse enter doesn't fire and that parent
             // would not be highlighted. Everytime we leave a component, we check
             // if we are hovering over a component at those coordinates. If we are,
             // we set the hovered component to that component.
             const components = discoverComponents({
-                x: event.clientX,
-                y: event.clientY,
+                x,
+                y,
                 filter: (entry) => entry.type === 'component',
             });
 
             setHoveredComponent(components[0]?.componentId ?? null);
         },
         [setHoveredComponent, discoverComponents]
+    );
+
+    const handleMouseMove = useThrottledCallback(
+        (event: React.MouseEvent) => {
+            event.stopPropagation();
+            findAndSetHoveredComponent(event.clientX, event.clientY);
+        },
+        1000 / 60, // 60 FPS
+        [findAndSetHoveredComponent]
+    );
+
+    const handleMouseLeave = useCallback(
+        (event: React.MouseEvent) => {
+            event.stopPropagation();
+            findAndSetHoveredComponent(event.clientX, event.clientY);
+        },
+        [findAndSetHoveredComponent]
     );
 
     const handleClick = useCallback(
@@ -164,7 +171,7 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
             onClick={handleClick}
             onDragOver={handleDragOver}
             onDragStart={handleDragStart}
-            onMouseEnter={handleMouseEnter}
+            onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             onMouseDown={handleMouseDown}
             data-component-type={componentType?.id}

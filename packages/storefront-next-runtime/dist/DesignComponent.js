@@ -1,5 +1,5 @@
 import "./messaging-api.js";
-import { i as useDesignState, o as useComponentDiscovery } from "./DesignContext.js";
+import { a as useDesignState, i as useThrottledCallback, s as useComponentDiscovery } from "./DesignContext.js";
 import "./modeDetection.js";
 import "./PageDesignerProvider.js";
 import { i as useRegionContext, n as useComponentContext, t as ComponentContext } from "./ComponentContext.js";
@@ -71,18 +71,21 @@ function DesignComponent(props) {
 	});
 	const discoverComponents = useComponentDiscovery({ nodeToTargetMap });
 	const isPendingDrag = pendingComponentDragId === componentId;
-	const handleMouseEnter = useCallback((event) => {
-		event.stopPropagation();
-		setHoveredComponent(componentId);
-	}, [setHoveredComponent, componentId]);
-	const handleMouseLeave = useCallback((event) => {
-		event.stopPropagation();
+	const findAndSetHoveredComponent = useCallback((x, y) => {
 		setHoveredComponent(discoverComponents({
-			x: event.clientX,
-			y: event.clientY,
+			x,
+			y,
 			filter: (entry) => entry.type === "component"
 		})[0]?.componentId ?? null);
 	}, [setHoveredComponent, discoverComponents]);
+	const handleMouseMove = useThrottledCallback((event) => {
+		event.stopPropagation();
+		findAndSetHoveredComponent(event.clientX, event.clientY);
+	}, 1e3 / 60, [findAndSetHoveredComponent]);
+	const handleMouseLeave = useCallback((event) => {
+		event.stopPropagation();
+		findAndSetHoveredComponent(event.clientX, event.clientY);
+	}, [findAndSetHoveredComponent]);
 	const handleClick = useCallback((e) => {
 		e.stopPropagation();
 		setSelectedComponent(componentId);
@@ -124,7 +127,7 @@ function DesignComponent(props) {
 		onClick: handleClick,
 		onDragOver: handleDragOver,
 		onDragStart: handleDragStart,
-		onMouseEnter: handleMouseEnter,
+		onMouseMove: handleMouseMove,
 		onMouseLeave: handleMouseLeave,
 		onMouseDown: handleMouseDown,
 		"data-component-type": componentType?.id,

@@ -1,5 +1,5 @@
 import "./messaging-api.js";
-import { a as isComponentTypeAllowedInRegion, i as useDesignState } from "./DesignContext.js";
+import { a as useDesignState, o as isComponentTypeAllowedInRegion } from "./DesignContext.js";
 import "./modeDetection.js";
 import "./PageDesignerProvider.js";
 import { n as useComponentContext, r as RegionContext } from "./ComponentContext.js";
