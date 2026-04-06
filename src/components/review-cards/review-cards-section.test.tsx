@@ -43,6 +43,9 @@ vi.mock('@/hooks/product-reviews/use-product-reviews', () => ({
 vi.mock('./review-card-images', () => ({
     REVIEW_CARD_IMAGES: {},
 }));
+vi.mock('@/hooks/use-require-auth', () => ({
+    useRequireAuth: (fn: (...args: unknown[]) => Promise<unknown>) => fn,
+}));
 
 const defaultReviewsContext = {
     reviewsSummary: null,

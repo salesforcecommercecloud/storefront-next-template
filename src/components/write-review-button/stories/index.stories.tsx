@@ -21,6 +21,7 @@ import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { ProductProvider } from '@/providers/product-context';
 import ProductContentProvider from '@/providers/product-content';
 import { ProductReviewsProvider } from '@/providers/product-reviews-context';
+import AuthProvider from '@/providers/auth';
 import { mockConfig } from '@/test-utils/config';
 import WriteReviewButton from '../index';
 import type { ReactElement } from 'react';
@@ -31,15 +32,17 @@ function WriteReviewButtonWrapper(): ReactElement {
     const inRouter = useInRouterContext();
     const content = (
         <ConfigProvider config={mockConfig}>
-            <ProductProvider product={mockProduct}>
-                <ProductContentProvider>
-                    <ProductReviewsProvider>
-                        <div className="max-w-md p-6">
-                            <WriteReviewButton />
-                        </div>
-                    </ProductReviewsProvider>
-                </ProductContentProvider>
-            </ProductProvider>
+            <AuthProvider value={{ userType: 'registered', customerId: 'cust-123' }}>
+                <ProductProvider product={mockProduct}>
+                    <ProductContentProvider>
+                        <ProductReviewsProvider>
+                            <div className="max-w-md p-6">
+                                <WriteReviewButton />
+                            </div>
+                        </ProductReviewsProvider>
+                    </ProductContentProvider>
+                </ProductProvider>
+            </AuthProvider>
         </ConfigProvider>
     );
 
