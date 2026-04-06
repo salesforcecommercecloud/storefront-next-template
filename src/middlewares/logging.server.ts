@@ -33,13 +33,18 @@ const isProduction = process.env.NODE_ENV === 'production';
  */
 export const pinoLogger = pino({
     level: resolveLevel(),
+    // Remove pino's default `pid` and `hostname` fields — they add noise in our environment.
+    base: undefined,
+    // Convert the numeric `level` (e.g. 30) to a human-readable label (e.g. "info").
+    formatters: {
+        level: (label) => ({ level: label }),
+    },
     ...(!isProduction && {
         transport: {
             target: 'pino-pretty',
             options: {
                 colorize: true,
                 translateTime: 'SYS:HH:MM:ss.l',
-                ignore: 'pid,hostname',
             },
         },
     }),

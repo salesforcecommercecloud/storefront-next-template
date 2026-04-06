@@ -1110,7 +1110,6 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     }
 
     logger.debug('Auth middleware: complete', {
-        status: response.status,
         userType: (authStorage.get('userType') as string) ?? 'unknown',
         authAction,
         authRecoveryTriggered,
