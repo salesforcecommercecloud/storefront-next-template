@@ -245,7 +245,8 @@ jobs:
 
           echo "✅ $NEW_VERSION > $CURRENT_LATEST_VERSION - Updating latest branch..."
 
-          # Use app token to authenticate the push to the protected default branch
+          # Use app token to push to the protected default branch
+          git config --unset-all http.https://github.com/.extraheader
           git remote set-url origin "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository }}.git"
           git push origin "HEAD:latest" --force
 
