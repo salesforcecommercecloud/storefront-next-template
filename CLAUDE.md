@@ -327,6 +327,7 @@ See `src/extensions/README.md` for details.
 **Architecture & Patterns:**
 - [docs/README-DATA.md](./docs/README-DATA.md) — Data fetching with adapters
 - [docs/README-ADAPTER-PATTERN-GUIDE.md](./docs/README-ADAPTER-PATTERN-GUIDE.md) — Adapter implementation guide
+- [docs/README-CUSTOM-APIS.md](./docs/README-CUSTOM-APIS.md) — Custom SCAPI clients
 - [docs/README-CONFIG.md](./docs/README-CONFIG.md) — Configuration system
 - [docs/README-CONFIG-OPTIONS.md](./docs/README-CONFIG-OPTIONS.md) — Configuration options reference
 - [docs/README-AUTH.md](./docs/README-AUTH.md) — Authentication patterns

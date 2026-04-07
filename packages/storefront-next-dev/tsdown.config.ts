@@ -162,6 +162,10 @@ export default defineConfig([
             'commands/extensions/install': 'src/commands/extensions/install.ts',
             'commands/extensions/remove': 'src/commands/extensions/remove.ts',
             'commands/extensions/create': 'src/commands/extensions/create.ts',
+            // SCAPI custom client commands
+            'commands/scapi/add': 'src/commands/scapi/add.ts',
+            'commands/scapi/list': 'src/commands/scapi/list.ts',
+            'commands/scapi/remove': 'src/commands/scapi/remove.ts',
             // oclif hooks
             'hooks/init': 'src/hooks/init.ts',
         },

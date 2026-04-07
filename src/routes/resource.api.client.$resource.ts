@@ -17,7 +17,8 @@
 import { decodeBase64Url } from '@/lib/url';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
-import { ApiError, type Clients, type OperationMethodsOnly } from '@salesforce/storefront-next-runtime/scapi';
+import type { AppClients } from '@/scapi/custom-clients';
+import { ApiError, type OperationMethodsOnly } from '@salesforce/storefront-next-runtime/scapi';
 
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { getLogger } from '@/lib/logger.server';
@@ -46,18 +47,18 @@ export type HelperNamespaceKeyMap = keyof typeof HELPER_NAMESPACE_MAP;
  * Unlike SCAPI proxy clients (e.g. `shopperProducts`, `shopperCustomers`), helper namespaces
  * expose domain-specific utility methods that aren't direct 1:1 SCAPI endpoint proxies.
  */
-export type HelperNamespaces = Pick<Clients, HelperNamespaceKeyMap>;
+export type HelperNamespaces = Pick<AppClients, HelperNamespaceKeyMap>;
 
 /**
- * Type representing Commerce SDK client names (camelCase).
- * These are the keys from the Clients object, excluding 'use' and helper namespaces.
+ * Type representing Commerce SDK client names (camelCase)
+ * These are the keys from the app's merged client map, including custom clients.
  */
-export type CommerceSdkKeyMap = Exclude<keyof Clients, 'use' | HelperNamespaceKeyMap>;
+export type CommerceSdkKeyMap = Exclude<keyof AppClients, 'use' | HelperNamespaceKeyMap>;
 
 /**
  * Type helper to get the client type from a client name
  */
-export type CommerceSdkCtorFromKey<C extends CommerceSdkKeyMap> = Clients[C];
+export type CommerceSdkCtorFromKey<C extends CommerceSdkKeyMap> = AppClients[C];
 
 /**
  * Type representing valid operation method names for a Commerce SDK client.
@@ -96,8 +97,8 @@ export type CommerceSdkMethodParameters<C extends CommerceSdkKeyMap, M extends C
  * @template H - The helper namespace key
  */
 export type HelperMethodName<H extends HelperNamespaceKeyMap> = {
-    [K in keyof Clients[H]]: Clients[H][K] extends (...args: any[]) => any ? K : never; // eslint-disable-line @typescript-eslint/no-explicit-any
-}[keyof Clients[H]] &
+    [K in keyof AppClients[H]]: AppClients[H][K] extends (...args: any[]) => any ? K : never; // eslint-disable-line @typescript-eslint/no-explicit-any
+}[keyof AppClients[H]] &
     string;
 
 /**
@@ -108,7 +109,7 @@ export type HelperMethodName<H extends HelperNamespaceKeyMap> = {
 export type HelperMethodReturnType<
     H extends HelperNamespaceKeyMap,
     M extends HelperMethodName<H>,
-> = M extends keyof Clients[H] ? (Clients[H][M] extends (...args: any[]) => infer R ? R : never) : never; // eslint-disable-line @typescript-eslint/no-explicit-any
+> = M extends keyof AppClients[H] ? (AppClients[H][M] extends (...args: any[]) => infer R ? R : never) : never; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /**
  * Type helper to extract the parameters of a helper method.
@@ -118,7 +119,7 @@ export type HelperMethodReturnType<
 export type HelperMethodParameters<
     H extends HelperNamespaceKeyMap,
     M extends HelperMethodName<H>,
-> = M extends keyof Clients[H] ? (Clients[H][M] extends (...args: infer P) => any ? P : never) : never; // eslint-disable-line @typescript-eslint/no-explicit-any
+> = M extends keyof AppClients[H] ? (AppClients[H][M] extends (...args: infer P) => any ? P : never) : never; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /**
  * Structured response type for API operations
@@ -221,7 +222,7 @@ export async function loader<
             return { success: true, data };
         }
 
-        const clientKey = resource[0] as keyof Clients;
+        const clientKey = resource[0] as keyof AppClients;
         const client = clients[clientKey] as Record<string, unknown>;
         const methodName = resource[1] as string;
 
@@ -365,7 +366,7 @@ export async function action<
             },
         };
 
-        const clientKey = resource[0] as keyof Clients;
+        const clientKey = resource[0] as keyof AppClients;
         const client = clients[clientKey] as Record<string, unknown>;
         const methodName = resource[1] as string;
 

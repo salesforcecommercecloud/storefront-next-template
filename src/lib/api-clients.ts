@@ -16,7 +16,11 @@
 import type { RouterContextProvider } from 'react-router';
 import {
     createCommerceApiClients,
+    createClient,
+    createOpenApiFetchClient,
+    defaultQuerySerializer,
     SLAS_AUTH_ENDPOINTS,
+    type OperationMap,
     type Middleware,
 } from '@salesforce/storefront-next-runtime/scapi';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
@@ -28,6 +32,15 @@ import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getAppOrigin, getScapiBaseUrl, isAbsoluteURL } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
+import { customClients, type AppClients } from '@/scapi/custom-clients';
+
+type CustomClientConfigEntry = {
+    key: string;
+    basePath: string;
+    ops: OperationMap;
+    locale: boolean;
+    orgPrefix: boolean;
+};
 
 /**
  * Header name for SFCC Session ID.
@@ -53,7 +66,7 @@ const getSlasClientSecret = (): string | undefined => {
  * @param context - React Router context provider
  * @returns Configured commerce API clients
  */
-export function createApiClients(context: RouterContextProvider | Readonly<RouterContextProvider>) {
+export function createApiClients(context: RouterContextProvider | Readonly<RouterContextProvider>): AppClients {
     const appOrigin = getAppOrigin();
     const config = getConfig<AppConfig>(context);
     const { shortCode, callback, organizationId, clientId } = config.commerce.api;
@@ -74,6 +87,17 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
     const { i18next } = getTranslation(context);
     const locale = i18next.language ?? config.i18n.fallbackLng;
 
+    const onAuthTokenInvalid = () => {
+        try {
+            const authStorage = context.get(authStorageContext);
+            if (authStorage && !authStorage.has('error')) {
+                authStorage.set('error', AUTH_TOKEN_INVALID_ERROR);
+            }
+        } catch {
+            // Intentionally ignore if auth storage is unavailable (client-side)
+        }
+    };
+
     // Note: Currency is NOT passed as a global parameter because not all Shopper* APIs support it.
     // Each caller should read currency from context and pass it in their specific API calls.
     const clients = createCommerceApiClients({
@@ -84,16 +108,7 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         clientId,
         clientSecret: getSlasClientSecret(),
         redirectUri,
-        onAuthTokenInvalid: () => {
-            try {
-                const authStorage = context.get(authStorageContext);
-                if (authStorage && !authStorage.has('error')) {
-                    authStorage.set('error', AUTH_TOKEN_INVALID_ERROR);
-                }
-            } catch {
-                // Intentionally ignore if auth storage is unavailable (client-side)
-            }
-        },
+        onAuthTokenInvalid,
         proxyHost: scapiProxyHost, // SDK handles org ID rewriting and auth flow selection internally
     } as Parameters<typeof createCommerceApiClients>[0]);
 
@@ -236,20 +251,54 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         },
     };
 
+    // Create custom clients from the declarative registry (see src/scapi/custom-clients.ts)
+    const globalParams = { organizationId, siteId, locale };
+    const globalParamsWithoutLocale = { organizationId, siteId };
+    const clientOptions = { querySerializer: defaultQuerySerializer };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const customClientEntries: Record<string, any> = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const customClientList: any[] = [];
+    for (const {
+        key,
+        basePath,
+        ops,
+        locale: supportsLocale,
+        orgPrefix,
+    } of customClients as CustomClientConfigEntry[]) {
+        const orgPath = orgPrefix ? `/organizations/${organizationId}` : '';
+        const c = createClient(
+            createOpenApiFetchClient({ baseUrl: `${baseUrl}${basePath}${orgPath}`, ...clientOptions }),
+            ops,
+            supportsLocale ? globalParams : globalParamsWithoutLocale,
+            { onAuthTokenInvalid }
+        );
+        customClientEntries[key] = c;
+        customClientList.push(c);
+    }
+
+    // Apply middleware to all clients (base SDK clients + custom clients)
+    const applyToAllClients = (mw: Middleware) => {
+        clients.use(mw);
+        customClientList.forEach((c) => c.use(mw));
+    };
+
     // Middleware registration order matters: openapi-fetch runs onRequest in registration
     // order, but onResponse in reverse order. Logging is registered first so its onResponse
     // runs last, after all other middleware have processed the request/response.
     if (typeof window === 'undefined') {
-        clients.use(loggingMiddleware);
+        applyToAllClients(loggingMiddleware);
     }
-    clients.use(correlationMiddleware);
-    clients.use(authMiddleware);
-    clients.use(identifyingHeadersMiddleware);
+    applyToAllClients(correlationMiddleware);
+    applyToAllClients(authMiddleware);
+    applyToAllClients(identifyingHeadersMiddleware);
     // We only detect the maintenance mode from the server, where we actually get data
     // We currently don't do it from client data access, which will require a client router middleware
     // Client calls to SCAPI should be rare (basket?), and often shadowed by server calls regarding maintenance
     if (typeof window === 'undefined') {
-        clients.use(maintenanceMiddleware);
+        applyToAllClients(maintenanceMiddleware);
     }
-    return clients;
+
+    return { ...clients, ...customClientEntries, use: applyToAllClients } as AppClients;
 }

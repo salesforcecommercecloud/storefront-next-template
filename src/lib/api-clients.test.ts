@@ -16,10 +16,44 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
 import { createApiClients } from './api-clients';
-import { createTestContext } from '@/lib/test-utils';
 import { authContext } from '@/middlewares/auth.utils';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { SessionData } from '@/lib/api/types';
+
+const scapiMocks = vi.hoisted(() => {
+    const mockUse = vi.fn();
+    const mockCustomUse = vi.fn();
+    const mockCreateClient = vi.fn(() => ({
+        use: mockCustomUse,
+        getLoyaltyPoints: vi.fn(),
+    }));
+    const mockCreateOpenApiFetchClient = vi.fn(() => ({}));
+    const mockClients = {
+        use: mockUse,
+        shopperBasketsV2: {},
+        shopperProducts: {},
+    };
+
+    return {
+        mockUse,
+        mockCustomUse,
+        mockCreateClient,
+        mockCreateOpenApiFetchClient,
+        mockClients,
+    };
+});
+
+vi.mock('@/scapi/custom-clients', () => ({
+    customClients: [
+        {
+            key: 'loyalty',
+            basePath: '/custom/loyalty/v1',
+            ops: { getLoyaltyPoints: { m: 'GET', b: '/customers/{customerId}', s: '/loyalty' } },
+            locale: false,
+            orgPrefix: true,
+        },
+    ],
+}));
 
 // Mock dependencies
 vi.mock('@/lib/utils', async (importOriginal) => {
@@ -58,16 +92,33 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
     };
 });
 
-// Mock the createCommerceApiClients function
-const mockUse = vi.fn();
-const mockClients = {
-    use: mockUse,
-    ShopperBaskets: {},
-    ShopperProducts: {},
+vi.mock('@/lib/i18next', () => ({
+    getTranslation: vi.fn(() => ({
+        i18next: {
+            language: 'en-US',
+        },
+    })),
+}));
+
+const createMockContextProvider = (): RouterContextProvider => {
+    const store = new Map<unknown, unknown>();
+    return {
+        get(key: unknown) {
+            return store.get(key);
+        },
+        set(key: unknown, value: unknown) {
+            store.set(key, value);
+            return value;
+        },
+    } as unknown as RouterContextProvider;
 };
 
+// Mock the createCommerceApiClients function
 vi.mock('@salesforce/storefront-next-runtime/scapi', () => ({
-    createCommerceApiClients: vi.fn(() => mockClients),
+    createCommerceApiClients: vi.fn(() => scapiMocks.mockClients),
+    createClient: scapiMocks.mockCreateClient,
+    createOpenApiFetchClient: scapiMocks.mockCreateOpenApiFetchClient,
+    defaultQuerySerializer: vi.fn(),
     SLAS_AUTH_ENDPOINTS: [
         '/oauth2/token',
         '/oauth2/authorize',
@@ -90,7 +141,20 @@ describe('createApiClients', () => {
 
     beforeEach(async () => {
         vi.clearAllMocks();
-        mockContextProvider = createTestContext() as unknown as RouterContextProvider;
+        mockContextProvider = createMockContextProvider();
+        mockContextProvider.set(siteContext, {
+            site: {
+                id: 'test-site-id',
+                defaultCurrency: 'USD',
+                defaultLocale: 'en-US',
+                supportedCurrencies: ['USD', 'MXN'],
+                supportedLocales: [
+                    { id: 'en-US', preferredCurrency: 'USD' },
+                    { id: 'es-MX', preferredCurrency: 'MXN' },
+                ],
+            },
+            locale: { id: 'en-US', preferredCurrency: 'USD' },
+        } as never);
 
         // Get mocked functions
         const configModule = await import('@salesforce/storefront-next-runtime/config');
@@ -121,8 +185,11 @@ describe('createApiClients', () => {
                 ],
             },
         });
-        mockCreateCommerceApiClients.mockReturnValue(mockClients);
-        mockUse.mockClear();
+        mockCreateCommerceApiClients.mockReturnValue(scapiMocks.mockClients);
+        scapiMocks.mockUse.mockClear();
+        scapiMocks.mockCustomUse.mockClear();
+        scapiMocks.mockCreateClient.mockClear();
+        scapiMocks.mockCreateOpenApiFetchClient.mockClear();
     });
 
     afterEach(() => {
@@ -135,7 +202,9 @@ describe('createApiClients', () => {
         it('should create commerce API clients', () => {
             const clients = createApiClients(mockContextProvider);
             expect(clients).toBeDefined();
-            expect(clients).toBe(mockClients);
+            // The returned object spreads the base SDK clients and adds custom clients + use
+            expect(clients.shopperBasketsV2).toBe(scapiMocks.mockClients.shopperBasketsV2);
+            expect(clients.shopperProducts).toBe(scapiMocks.mockClients.shopperProducts);
             expect(mockCreateCommerceApiClients).toHaveBeenCalledTimes(1);
             expect(mockGetConfig).toHaveBeenCalledWith(mockContextProvider);
         });
@@ -153,8 +222,9 @@ describe('createApiClients', () => {
             createApiClients(mockContextProvider);
 
             // Three middlewares on client-side: correlation, auth, identifying headers
-            expect(mockUse).toHaveBeenCalledTimes(3);
-            expect(mockUse).toHaveBeenCalledWith(
+            expect(scapiMocks.mockUse).toHaveBeenCalledTimes(3);
+            expect(scapiMocks.mockCustomUse).toHaveBeenCalledTimes(3);
+            expect(scapiMocks.mockUse).toHaveBeenCalledWith(
                 expect.objectContaining({
                     onRequest: expect.any(Function),
                 })
@@ -187,6 +257,29 @@ describe('createApiClients', () => {
             mockContextProvider.set(siteContext, null);
 
             expect(() => createApiClients(mockContextProvider)).toThrow('Site context not initialized');
+        });
+
+        it('should create custom clients from the generated registry', () => {
+            const clients = createApiClients(mockContextProvider);
+
+            expect(clients).toHaveProperty('loyalty');
+            expect(scapiMocks.mockCreateOpenApiFetchClient).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    baseUrl:
+                        'https://kv7kzm78.api.commercecloud.salesforce.com/custom/loyalty/v1/organizations/test-org-id',
+                })
+            );
+            expect(scapiMocks.mockCreateClient).toHaveBeenCalledWith(
+                expect.any(Object),
+                { getLoyaltyPoints: { m: 'GET', b: '/customers/{customerId}', s: '/loyalty' } },
+                expect.objectContaining({
+                    organizationId: 'test-org-id',
+                    siteId: expect.any(String),
+                }),
+                expect.objectContaining({
+                    onAuthTokenInvalid: expect.any(Function),
+                })
+            );
         });
     });
 
@@ -244,7 +337,7 @@ describe('createApiClients', () => {
         beforeEach(() => {
             createApiClients(mockContextProvider);
             // authMiddleware is at index 1 (correlation at 0)
-            authMiddleware = mockUse.mock.calls[1][0];
+            authMiddleware = scapiMocks.mockUse.mock.calls[1][0];
         });
 
         it('should have onRequest method', () => {

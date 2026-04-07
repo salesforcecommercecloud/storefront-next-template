@@ -1,4 +1,4 @@
-import { Client, ClientOptions, FetchOptions, FetchResponse, Middleware } from "openapi-fetch";
+import createOpenApiFetchClient, { Client, ClientOptions, FetchOptions, FetchResponse, Middleware } from "openapi-fetch";
 export * from "openapi-fetch";
 
 //#region src/scapi-client/generated/shopper-baskets-v1.d.ts
@@ -27648,6 +27648,24 @@ type ProxyClient<TClient extends Client<any, any>, TOperations extends Operation
  * // OperationsOnly has getCategories, createBasket, etc., but NOT use or eject
  */
 type OperationMethodsOnly<T> = T extends ProxyClient<any, any> ? Omit<T, 'use' | 'eject'> : never;
+/**
+ * Utility type for extending the base client types with custom API clients.
+ *
+ * Used by template projects to extend the base `Clients` type with
+ * custom API clients, adding new client entries to the type.
+ *
+ * @typeParam TBase - The base Clients type from the SDK
+ * @typeParam TCustom - Object type with custom client entries
+ *
+ * @example
+ * ```typescript
+ * type AppClients = MergeClients<Clients, {
+ *     loyalty: ProxyClient<Client<LoyaltyPaths>, typeof loyaltyOps>;
+ *     storeInventory: ProxyClient<Client<InventoryPaths>, typeof inventoryOps>;
+ * }>;
+ * ```
+ */
+type MergeClients<TBase, TCustom extends Record<string, unknown>> = Omit<TBase, keyof TCustom> & TCustom;
 //#endregion
 //#region src/scapi-client/generated/shopper-login-v1.operations.d.ts
 declare const operations$8: {
@@ -29346,5 +29364,17 @@ declare class AuthTokenInvalidError extends Error {
  */
 declare const SLAS_AUTH_ENDPOINTS: readonly ["/oauth2/token", "/oauth2/authorize", "/oauth2/logout", "/oauth2/login", "/oauth2/passwordless", "/oauth2/password", "/oauth2/session-bridge", "/oauth2/trusted-agent", "/oauth2/trusted-system", "/oauth2/revoke", "/oauth2/introspect"];
 //#endregion
-export { ApiError, type AuthConfig, type AuthNamespace, type AuthResponse, AuthTokenInvalidError, type Basket, type BasketHelpersConfig, type BasketHelpersNamespace, Clients, CommerceApiClientConfig, CreateClientOptions, type ErrorDetail, type GetOrCreateBasketOptions, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperBasketsV1, ShopperBasketsV2, type ShopperBasketsV2Client, ShopperConfigurations, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperPayments, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createBasketHelpers, createClient, createCommerceApiClients };
+//#region src/scapi-client/defaultQuerySerializer.d.ts
+/**
+ * Default query serializer for Commerce Cloud APIs
+ * - Most arrays use comma-separated format (explode: false)
+ *   e.g., expand=promotions,variations,prices
+ * - Certain parameters use repeated format (explode: true)
+ *   e.g., refine=price=(0..10)&refine=c_refinementColor=green
+ * - Some parameters are automatically grouped by attribute ID before serialization
+ *   e.g., ['c_color=Black', 'c_color=Green'] => 'c_color=Black|Green'
+ */
+declare function defaultQuerySerializer(queryParams: Record<string, unknown>): string;
+//#endregion
+export { ApiError, type AuthConfig, type AuthNamespace, type AuthResponse, AuthTokenInvalidError, type Basket, type BasketHelpersConfig, type BasketHelpersNamespace, Clients, CommerceApiClientConfig, CreateClientOptions, type ErrorDetail, type GetOrCreateBasketOptions, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type MergeClients, type OperationInfo, type OperationMap, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type ProxyClient, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperBasketsV1, ShopperBasketsV2, type ShopperBasketsV2Client, ShopperConfigurations, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperPayments, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createBasketHelpers, createClient, createCommerceApiClients, createOpenApiFetchClient, defaultQuerySerializer };
 //# sourceMappingURL=scapi.d.ts.map

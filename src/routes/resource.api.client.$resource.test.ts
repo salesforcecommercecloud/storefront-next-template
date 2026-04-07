@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { type ActionFunctionArgs, type LoaderFunctionArgs } from 'react-router';
+import { type ActionFunctionArgs, type LoaderFunctionArgs, type RouterContextProvider } from 'react-router';
 import { encodeBase64Url } from '@/lib/url';
 import { action, loader, type ApiResponse } from './resource.api.client.$resource';
-import { createTestContext } from '@/lib/test-utils';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+
+const apiClientMocks = vi.hoisted(() => ({
+    mockShopperCustomersGetCustomer: vi.fn(),
+    mockShopperCustomersUpdateCustomer: vi.fn(),
+    mockShopperBasketsAddItemToBasket: vi.fn(),
+    mockBasketGetOrCreateBasket: vi.fn(),
+    mockAuthLoginAsGuest: vi.fn(),
+    mockLoyaltyGetLoyaltyPoints: vi.fn(),
+}));
 
 // Mock dependencies
 vi.mock('@/middlewares/auth.server');
@@ -30,11 +38,14 @@ vi.mock('@/lib/utils', () => ({
 }));
 
 // Type the mocked functions
-const mockShopperCustomersGetCustomer = vi.fn();
-const mockShopperCustomersUpdateCustomer = vi.fn();
-const mockShopperBasketsAddItemToBasket = vi.fn();
-const mockBasketGetOrCreateBasket = vi.fn();
-const mockAuthLoginAsGuest = vi.fn();
+const {
+    mockShopperCustomersGetCustomer,
+    mockShopperCustomersUpdateCustomer,
+    mockShopperBasketsAddItemToBasket,
+    mockBasketGetOrCreateBasket,
+    mockAuthLoginAsGuest,
+    mockLoyaltyGetLoyaltyPoints,
+} = apiClientMocks;
 const mockExtractResponseError = vi.mocked(extractResponseError);
 const mockGetErrorMessage = vi.mocked(getErrorMessage);
 
@@ -54,6 +65,9 @@ vi.mock('@/lib/api-clients', () => ({
         auth: {
             loginAsGuest: mockAuthLoginAsGuest,
         },
+        loyalty: {
+            getLoyaltyPoints: mockLoyaltyGetLoyaltyPoints,
+        },
     })),
 }));
 
@@ -65,6 +79,19 @@ vi.mock('@/lib/logger.server', () => ({
         debug: vi.fn(),
     })),
 }));
+
+const createMockContextProvider = (): RouterContextProvider => {
+    const store = new Map<unknown, unknown>();
+    return {
+        get(key: unknown) {
+            return store.get(key);
+        },
+        set(key: unknown, value: unknown) {
+            store.set(key, value);
+            return value;
+        },
+    } as unknown as RouterContextProvider;
+};
 
 describe('Commerce SDK resource', () => {
     const validResource = [
@@ -78,7 +105,7 @@ describe('Commerce SDK resource', () => {
     ];
     const encodedValidResource = encodeBase64Url(JSON.stringify(validResource));
     const mockResponseData = { customerId: 'customer-123', email: 'test@example.com' };
-    let mockContextProvider: ReturnType<typeof createTestContext>;
+    let mockContextProvider: RouterContextProvider;
 
     beforeEach(() => {
         mockShopperCustomersGetCustomer.mockClear();
@@ -86,10 +113,11 @@ describe('Commerce SDK resource', () => {
         mockShopperBasketsAddItemToBasket.mockClear();
         mockBasketGetOrCreateBasket.mockClear();
         mockAuthLoginAsGuest.mockClear();
+        mockLoyaltyGetLoyaltyPoints.mockClear();
         mockExtractResponseError.mockClear();
         mockGetErrorMessage.mockClear();
 
-        mockContextProvider = createTestContext();
+        mockContextProvider = createMockContextProvider();
 
         // New API returns { data, response } format
         mockShopperCustomersGetCustomer.mockResolvedValue({ data: mockResponseData });
@@ -113,6 +141,34 @@ describe('Commerce SDK resource', () => {
                 expect(result).toEqual({
                     success: true,
                     data: mockResponseData,
+                });
+            });
+
+            it('should handle successful custom client loader calls', async () => {
+                const loyaltyData = { customerId: 'customer-123', points: 420 };
+                const encodedLoyaltyResource = encodeBase64Url(
+                    JSON.stringify([
+                        'loyalty',
+                        'getLoyaltyPoints',
+                        {
+                            params: {
+                                path: { customerId: 'customer-123' },
+                            },
+                        },
+                    ])
+                );
+                mockLoyaltyGetLoyaltyPoints.mockResolvedValue({ data: loyaltyData });
+
+                const result = await loader(createLoaderArgs(encodedLoyaltyResource));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: loyaltyData,
+                });
+                expect(mockLoyaltyGetLoyaltyPoints).toHaveBeenCalledWith({
+                    params: {
+                        path: { customerId: 'customer-123' },
+                    },
                 });
             });
         });
@@ -400,6 +456,50 @@ describe('Commerce SDK resource', () => {
                     body: formData,
                 });
             });
+
+            it('should coerce known form fields to booleans and nullable numbers', async () => {
+                const formData = {
+                    preferred: '1',
+                    gender: 'not-a-number',
+                };
+
+                const result = await action(createActionArgs(encodedValidActionResource, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({
+                    params: {
+                        path: { customerId: 'customer-123' },
+                    },
+                    body: {
+                        preferred: true,
+                        gender: null,
+                    },
+                });
+            });
+
+            it('should convert an empty gender field to null', async () => {
+                const formData = {
+                    gender: '',
+                };
+
+                const result = await action(createActionArgs(encodedValidActionResource, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({
+                    params: {
+                        path: { customerId: 'customer-123' },
+                    },
+                    body: {
+                        gender: null,
+                    },
+                });
+            });
         });
 
         describe('error handling', () => {
@@ -548,6 +648,19 @@ describe('Commerce SDK resource', () => {
                 expect(result).toEqual({
                     success: false,
                     errors: ['Unknown error'],
+                });
+            });
+
+            it('should handle missing client methods in action calls', async () => {
+                const invalidResource = encodeBase64Url(
+                    JSON.stringify(['loyalty', 'missingMethod', { params: { path: { customerId: 'customer-123' } } }])
+                );
+
+                const result = await action(createActionArgs(invalidResource));
+
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Method not found: "loyalty.missingMethod"'],
                 });
             });
         });

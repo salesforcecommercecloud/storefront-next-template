@@ -84,7 +84,7 @@ const baseConfig = defineConfig([
     jsonc.configs['flat/recommended-with-json'],
     {
         // Ignore generated SCAPI client files, ejected shadcn/ui components, and Claude settings
-        ignores: ['**/src/scapi-client/generated/**', '**/src/components/ui/**', '.claude/**', '**/lighthouserc.cjs'],
+        ignores: ['**/src/scapi-client/generated/**', '**/src/scapi/generated/**', '**/src/scapi/custom-clients.ts', '**/src/components/ui/**', '.claude/**', '**/lighthouserc.cjs'],
     },
     {
         files: ['**/*.js'],

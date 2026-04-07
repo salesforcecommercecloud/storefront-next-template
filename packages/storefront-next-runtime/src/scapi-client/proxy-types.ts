@@ -477,3 +477,22 @@ export type ClientPaths<TClient extends Client<any, any>> = TClient extends Clie
 export function isOperationMethod<T extends OperationMap>(operations: T, prop: string | symbol): boolean {
     return typeof prop === 'string' && prop in operations;
 }
+
+/**
+ * Utility type for extending the base client types with custom API clients.
+ *
+ * Used by template projects to extend the base `Clients` type with
+ * custom API clients, adding new client entries to the type.
+ *
+ * @typeParam TBase - The base Clients type from the SDK
+ * @typeParam TCustom - Object type with custom client entries
+ *
+ * @example
+ * ```typescript
+ * type AppClients = MergeClients<Clients, {
+ *     loyalty: ProxyClient<Client<LoyaltyPaths>, typeof loyaltyOps>;
+ *     storeInventory: ProxyClient<Client<InventoryPaths>, typeof inventoryOps>;
+ * }>;
+ * ```
+ */
+export type MergeClients<TBase, TCustom extends Record<string, unknown>> = Omit<TBase, keyof TCustom> & TCustom;

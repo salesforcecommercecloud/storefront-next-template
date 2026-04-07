@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 export * from 'openapi-fetch';
+export { default as createOpenApiFetchClient } from 'openapi-fetch';
 export type * from './types';
 export * from './createClients';
 export * from './createClient';
@@ -45,4 +46,5 @@ export type {
     SocialAuthorizationUrlResult,
     SocialExchangeCodeOptions,
 } from './auth';
-export type { OperationMethodsOnly } from './proxy-types';
+export type { OperationMethodsOnly, ProxyClient, OperationMap, OperationInfo, MergeClients } from './proxy-types';
+export { defaultQuerySerializer } from './defaultQuerySerializer';
