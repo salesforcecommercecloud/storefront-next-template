@@ -44,6 +44,10 @@ export const mockBuildConfig: Config = {
     },
     app: {
         pages: {
+            navigation: {
+                rootCategoryId: 'root',
+                maxDepth: 2,
+            },
             home: { featuredProductsCount: 12 },
             cart: {
                 quantityUpdateDebounce: 750,

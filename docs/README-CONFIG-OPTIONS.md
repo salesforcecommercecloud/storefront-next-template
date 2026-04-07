@@ -124,6 +124,66 @@ PUBLIC__app__defaultSiteId="RefArch"
 
 Page-specific configuration options that control the behavior and appearance of different pages in the storefront.
 
+### pages.navigation.rootCategoryId
+
+Type: `string` | Default: `'root'`
+
+The category ID to use as the root of the navigation menu tree. This determines which category's children are displayed in the main site navigation.
+
+This setting is particularly useful for:
+- **Multi-brand sites**: Different storefronts can use different category hierarchies
+- **Custom category structures**: Use a specific category as the navigation root instead of the Commerce Cloud default 'root' category
+- **A/B testing**: Test different navigation structures by changing the root category
+
+Example:
+```bash
+# Use a custom root category (e.g., for ASICS brand)
+PUBLIC__app__pages__navigation__rootCategoryId=asics-root
+
+# Use a specific season's collection as the root
+PUBLIC__app__pages__navigation__rootCategoryId=spring-2026-collection
+```
+
+**Industry Context**: This mirrors Adobe Commerce (Magento)'s multi-store root category capability, where each store view can have its own category tree root.
+
+**Troubleshooting**:
+- If navigation fails to load, verify the category ID exists in Business Manager and is marked as "online"
+- Ensure the root category has online subcategories
+- Check browser console for API errors related to category fetching
+
+---
+
+### pages.navigation.maxDepth
+
+Type: `number` | Default: `2`
+
+The maximum number of category levels to fetch and display in the navigation menu. This controls how deep the category tree goes.
+
+- `1` = Top-level categories only (no subcategories)
+- `2` = Top-level categories with one level of subcategories (default)
+
+**Important**: The current implementation is limited to `maxDepth` of 2. Setting values higher than 2 will not fetch additional levels. The SFCC API returns a maximum of 2 levels per request, and the template implementation fetches up to this limit. If you need deeper navigation (3+ levels), you must customize the loader in `src/routes/_app.tsx` to implement recursive category fetching.
+
+Example:
+```bash
+# Show only top-level categories (flat navigation)
+PUBLIC__app__pages__navigation__maxDepth=1
+
+# Show two levels (default)
+PUBLIC__app__pages__navigation__maxDepth=2
+```
+
+**Industry Context**: Adobe Commerce (Magento) provides a similar "Maximal Depth" setting. Shopify has a hard limit of 3 levels.
+
+**Use Cases**:
+- **Simple navigation**: Set to `1` for a minimal, flat navigation menu
+- **Standard navigation**: Keep at `2` (default) for most e-commerce sites
+- **Performance optimization**: Reduce depth if you have a very large category tree
+
+**Note**: The SCAPI automatically filters out offline categories server-side. Only categories with online status will be returned. To control which categories appear in navigation, set their online/offline status in Business Manager under **Merchant Tools > Products and Catalogs > Categories**.
+
+---
+
 ### pages.home.featuredProductsCount
 
 Type: `number` | Default: `12`

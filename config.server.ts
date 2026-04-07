@@ -77,6 +77,10 @@ export default defineConfig<Config>(
             // Page-specific configuration
             // See CONFIG-OPTIONS.md#pages for detailed documentation
             pages: {
+                navigation: {
+                    rootCategoryId: 'root',
+                    maxDepth: 2,
+                },
                 home: {
                     featuredProductsCount: 12,
                 },

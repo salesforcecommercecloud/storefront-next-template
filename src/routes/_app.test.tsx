@@ -50,6 +50,32 @@ vi.mock('@/lib/logger.server', () => ({
     })),
 }));
 
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>();
+    const mockNavigationConfig = {
+        rootCategoryId: 'root',
+        maxDepth: 2,
+        filter: {
+            enabled: true,
+            attribute: 'c_showInMenu',
+            requireOnline: true,
+        },
+    };
+    return {
+        ...actual,
+        getConfig: vi.fn(() => ({
+            pages: {
+                navigation: mockNavigationConfig,
+            },
+        })),
+        useConfig: vi.fn(() => ({
+            pages: {
+                navigation: mockNavigationConfig,
+            },
+        })),
+    };
+});
+
 describe('_app.tsx - Default Layout Route', () => {
     const mockCategory: ShopperProducts.schemas['Category'] = {
         id: 'root',

@@ -188,6 +188,10 @@ export type AppConfig = {
     localeAliasMap?: Record<string, string>;
     localeDetectionConfig?: DetectionConfig;
     pages: {
+        navigation: {
+            rootCategoryId: string;
+            maxDepth: number;
+        };
         home: {
             featuredProductsCount: number;
         };
