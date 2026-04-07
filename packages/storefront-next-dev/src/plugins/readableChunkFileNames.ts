@@ -132,7 +132,7 @@ export const readableChunkFileNames = (chunkInfo: Rollup.PreRenderedChunk) => {
  */
 export const readableChunkFileNamesPlugin = (): Plugin => {
     return {
-        name: 'odyssey:readable-chunk-file-names',
+        name: 'storefront-next:readable-chunk-file-names',
         apply: 'build',
         config() {
             return {

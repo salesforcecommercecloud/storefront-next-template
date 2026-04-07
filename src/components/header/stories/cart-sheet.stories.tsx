@@ -123,7 +123,7 @@ Cart Sheet component that displays a mini cart flyout with cart contents.
 - Continue Shopping button (secondary with light gray background)
 - Optional View Cart button (ghost variant)
 - Opens automatically when loaded
-- Matches Odyssey Design System specifications
+- Matches Storefront Next Design System specifications
 
 **Note**: This component uses \`useBasketWithProducts\` which loads product details via \`/resource/basket-products\`.
 In Storybook, this route returns mock product data for demonstration purposes.

@@ -490,7 +490,7 @@ export default function App({
                 <AuthActionExecutor />
                 {hybridEnabled && <BackNavigationRevalidator />}
                 <PageDesignerProvider
-                    clientId="odyssey"
+                    clientId="storefront-next"
                     targetOrigin="*"
                     usid={clientAuth?.usid}
                     mode={pageDesignerMode}>

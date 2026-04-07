@@ -139,7 +139,7 @@ export function ProductRecommendationSkeleton({
  *
  * Use this for standard product pages where you want:
  * - Automatic synchronization with recommendation configuration
- * - Correct item counts matching API limits (from odyssey.config.ts)
+ * - Correct item counts matching API limits (from storefront config)
  * - Proper titles from the configuration
  * - Zero maintenance when recommendation config changes
  *

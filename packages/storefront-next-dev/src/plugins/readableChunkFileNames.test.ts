@@ -304,7 +304,7 @@ describe('readableChunkFileNames', () => {
 describe('readableChunkFileNamesPlugin', () => {
     it('should return a plugin with correct name', () => {
         const plugin = readableChunkFileNamesPlugin();
-        expect(plugin.name).toBe('odyssey:readable-chunk-file-names');
+        expect(plugin.name).toBe('storefront-next:readable-chunk-file-names');
     });
 
     it('should apply only to build', () => {

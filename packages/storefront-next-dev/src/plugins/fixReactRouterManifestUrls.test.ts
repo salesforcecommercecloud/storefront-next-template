@@ -61,7 +61,7 @@ describe('fixReactRouterManifestUrlsPlugin', () => {
 
     it('should return a plugin with correct name', () => {
         const plugin = fixReactRouterManifestUrlsPlugin();
-        expect(plugin.name).toBe('odyssey:fix-react-router-manifest-urls');
+        expect(plugin.name).toBe('storefront-next:fix-react-router-manifest-urls');
     });
 
     it('should have enforce set to post', () => {

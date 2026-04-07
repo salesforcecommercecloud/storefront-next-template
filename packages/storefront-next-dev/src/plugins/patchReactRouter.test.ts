@@ -29,7 +29,7 @@ function callHook(hook: any, ...args: any[]) {
 describe('patchReactRouterPlugin', () => {
     it('should return a plugin with correct name', () => {
         const plugin = patchReactRouterPlugin();
-        expect(plugin.name).toBe('odyssey:patch-react-router');
+        expect(plugin.name).toBe('storefront-next:patch-react-router');
     });
 
     it('should have enforce set to pre', () => {

@@ -20,7 +20,7 @@ import { logger } from '../logger';
 export const watchConfigFilesPlugin = () => {
     let viteConfig: ResolvedConfig;
     return {
-        name: 'odyssey:watch-config-files',
+        name: 'storefront-next:watch-config-files',
         configResolved(config: ResolvedConfig) {
             viteConfig = config;
         },

@@ -90,7 +90,7 @@ describe('platformEntryPlugin', () => {
 
     it('should return a plugin with correct name', () => {
         const plugin = platformEntryPlugin();
-        expect(plugin.name).toBe('odyssey:platform-entry');
+        expect(plugin.name).toBe('storefront-next:platform-entry');
     });
 
     it('should have enforce set to pre', () => {

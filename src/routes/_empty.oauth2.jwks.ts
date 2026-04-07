@@ -67,7 +67,7 @@ async function fetchUpstreamJWKS(context: LoaderFunctionArgs['context']): Promis
         method: 'GET',
         headers: {
             Accept: 'application/json',
-            'User-Agent': 'Odyssey-JWKS-Proxy',
+            'User-Agent': 'Storefront-Next-JWKS-Proxy',
         },
         // Add timeout to prevent hanging
         signal: AbortSignal.timeout(10000), // 10 second timeout

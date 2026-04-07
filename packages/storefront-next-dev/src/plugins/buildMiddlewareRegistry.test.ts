@@ -58,7 +58,7 @@ describe('buildMiddlewareRegistryPlugin', () => {
     it('should create a plugin with correct metadata', () => {
         const plugin: any = buildMiddlewareRegistryPlugin();
 
-        expect(plugin.name).toBe('odyssey:build-middleware-registry');
+        expect(plugin.name).toBe('storefront-next:build-middleware-registry');
         expect(plugin.apply).toBe('build');
         expect(plugin.buildApp).toBeDefined();
         expect(plugin.buildApp.order).toBe('post');

@@ -86,7 +86,7 @@ export const getCookieNameWithSiteId = (name: string, context: Readonly<RouterCo
  * Get cookie configuration with proper precedence order.
  *
  * Precedence (highest to lowest):
- * 1. Environment variables (from .env via Odyssey config) - highest priority
+ * 1. Environment variables (from .env via storefront config) - highest priority
  * 2. Provided cookie options (passed to this function)
  * 3. Default values (path, sameSite, secure)
  *

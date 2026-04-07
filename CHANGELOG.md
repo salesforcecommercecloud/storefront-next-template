@@ -1,5 +1,6 @@
 ## v0.3.0-dev (Apr 01, 2026)
 
+- Remove internal "odyssey" codename references from codebase
 - Add template support for registering and calling custom APIs through generated SCAPI clients (@W-21549425)
 - Add configurable navigation menu options `rootCategoryId`, `maxDepth`([#1292](https://github.com/commerce-emu/storefront-next/pull/1292))
 - Fix Vite dev server warnings for font loading from public directory ([#1286](https://github.com/commerce-emu/storefront-next/pull/1286))

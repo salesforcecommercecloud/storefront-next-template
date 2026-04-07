@@ -121,7 +121,7 @@ export function BonusProductModal({
     });
 
     // === TOAST NOTIFICATIONS ===
-    // Pattern from Odyssey: Check isAddingToCart flag first to prevent toast fatigue
+    // Check isAddingToCart flag first to prevent toast fatigue
     useEffect(() => {
         if (!isAddingToCart) {
             // Prevent toast fatigue - only show toast when we're actively adding to cart

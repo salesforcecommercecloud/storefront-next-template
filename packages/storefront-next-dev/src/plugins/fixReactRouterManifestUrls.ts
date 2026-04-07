@@ -46,7 +46,7 @@ export function fixReactRouterManifestUrlsPlugin(): Plugin {
     let resolvedConfig: ResolvedConfig;
 
     return {
-        name: 'odyssey:fix-react-router-manifest-urls',
+        name: 'storefront-next:fix-react-router-manifest-urls',
         enforce: 'post', // Run after React Router plugin
 
         configResolved(config: ResolvedConfig) {

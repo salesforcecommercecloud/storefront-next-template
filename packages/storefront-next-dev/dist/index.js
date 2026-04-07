@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from "url";
 import { parse } from "@babel/parser";
 import { isArrayPattern, isClassDeclaration, isExportSpecifier, isFunctionDeclaration, isIdentifier, isJSXAttribute, isJSXElement, isJSXFragment, isJSXIdentifier, isMemberExpression, isObjectPattern, isObjectProperty, isRestElement, isVariableDeclaration, jsxClosingElement, jsxClosingFragment, jsxElement, jsxFragment, jsxIdentifier, jsxOpeningElement, jsxOpeningFragment, jsxText } from "@babel/types";
 import { generate } from "@babel/generator";
-import _traverse from "@babel/traverse";
+import traverseModule from "@babel/traverse";
 import fs$1, { existsSync, readFileSync, writeFileSync } from "fs";
 import { glob } from "glob";
 import { Node, Project, ts } from "ts-morph";
@@ -122,7 +122,7 @@ function patchAssetsPaths(dir) {
 function fixReactRouterManifestUrlsPlugin() {
 	let resolvedConfig;
 	return {
-		name: "odyssey:fix-react-router-manifest-urls",
+		name: "storefront-next:fix-react-router-manifest-urls",
 		enforce: "post",
 		configResolved(config) {
 			resolvedConfig = config;
@@ -284,7 +284,7 @@ const readableChunkFileNames = (chunkInfo) => {
 */
 const readableChunkFileNamesPlugin = () => {
 	return {
-		name: "odyssey:readable-chunk-file-names",
+		name: "storefront-next:readable-chunk-file-names",
 		apply: "build",
 		config() {
 			return { environments: { client: { build: { rollupOptions: { output: {
@@ -355,7 +355,7 @@ const managedRuntimeBundlePlugin = () => {
 		await fs.writeJson(buildPackageJsonPath, packageJson, { spaces: 2 });
 	};
 	return {
-		name: "odyssey:managed-runtime-bundle",
+		name: "storefront-next:managed-runtime-bundle",
 		apply: "build",
 		config({ mode }) {
 			return {
@@ -396,7 +396,7 @@ const patchReactRouterPlugin = () => {
 	let isTestMode = false;
 	let isDevMode = false;
 	return {
-		name: "odyssey:patch-react-router",
+		name: "storefront-next:patch-react-router",
 		enforce: "pre",
 		config(_config, { mode }) {
 			isTestMode = mode === "test";
@@ -428,7 +428,7 @@ const patchReactRouterPlugin = () => {
 
 //#endregion
 //#region src/extensibility/target-utils.ts
-const traverse$1 = _traverse.default || _traverse;
+const traverse$1 = traverseModule.default || traverseModule;
 const TARGET_COMPONENT_TAG = "UITarget";
 const TARGET_PROVIDERS_TAG = "TargetProviders";
 const TARGET_ID_ATTRIBUTE = "targetId";
@@ -627,7 +627,7 @@ function transformTargetPlaceholderPlugin() {
 	let contextProviders;
 	let sourceDir;
 	return {
-		name: "odyssey:transform-target-placeholder",
+		name: "storefront-next:transform-target-placeholder",
 		enforce: "pre",
 		configResolved(config) {
 			sourceDir = config.resolve.alias.find((alias) => alias.find === "@")?.replacement || path$1.resolve(__dirname, "./src");
@@ -656,7 +656,7 @@ function transformTargetPlaceholderPlugin() {
 const watchConfigFilesPlugin = () => {
 	let viteConfig;
 	return {
-		name: "odyssey:watch-config-files",
+		name: "storefront-next:watch-config-files",
 		configResolved(config) {
 			viteConfig = config;
 		},
@@ -1124,7 +1124,7 @@ const buildMiddlewareRegistryPlugin = () => {
 	/** App source directory (e.g. 'src' or './src') from React Router config. */
 	let appDirectory;
 	return {
-		name: "odyssey:build-middleware-registry",
+		name: "storefront-next:build-middleware-registry",
 		apply: "build",
 		configResolved(config) {
 			resolvedConfig = config;
@@ -1263,7 +1263,7 @@ function platformEntryPlugin() {
 	let userServerEntryPath;
 	let userClientEntryPath;
 	return {
-		name: "odyssey:platform-entry",
+		name: "storefront-next:platform-entry",
 		enforce: "pre",
 		config(_config, { mode }) {
 			isTestMode = mode === "test";
@@ -1364,7 +1364,7 @@ const workspacePlugin = () => {
 
 //#endregion
 //#region src/plugins/componentLoaders.ts
-const traverse = _traverse.default || _traverse;
+const traverse = traverseModule.default || traverseModule;
 const generate$1 = generate.default || generate;
 /**
 * Names of exports to strip per environment.

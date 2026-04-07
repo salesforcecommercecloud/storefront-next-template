@@ -87,7 +87,7 @@ describe('oauth2.jwks loader', () => {
                     method: 'GET',
                     headers: {
                         Accept: 'application/json',
-                        'User-Agent': 'Odyssey-JWKS-Proxy',
+                        'User-Agent': 'Storefront-Next-JWKS-Proxy',
                     },
                     signal: expect.any(AbortSignal),
                 }

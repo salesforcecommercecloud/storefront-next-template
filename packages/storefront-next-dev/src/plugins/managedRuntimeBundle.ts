@@ -94,7 +94,7 @@ export const managedRuntimeBundlePlugin = (): Plugin => {
     };
 
     return {
-        name: 'odyssey:managed-runtime-bundle',
+        name: 'storefront-next:managed-runtime-bundle',
         apply: 'build',
         config({ mode }) {
             return {

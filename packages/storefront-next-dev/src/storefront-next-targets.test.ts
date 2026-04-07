@@ -62,14 +62,14 @@ describe('storefrontNextTargets', () => {
         const targets = storefrontNextTargets({ readableChunkNames: false });
         expect(targets.length).toBe(BASE_PLUGIN_COUNT);
         const targetNames = targets.map((t) => t.name);
-        expect(targetNames).not.toContain('odyssey:readable-chunk-file-names');
+        expect(targetNames).not.toContain('storefront-next:readable-chunk-file-names');
     });
 
     it('should include readableChunkFileNames when readableChunkNames is true', () => {
         const targets = storefrontNextTargets({ readableChunkNames: true });
         expect(targets.length).toBe(BASE_PLUGIN_COUNT + 1);
         const targetNames = targets.map((t) => t.name);
-        expect(targetNames).toContain('odyssey:readable-chunk-file-names');
+        expect(targetNames).toContain('storefront-next:readable-chunk-file-names');
     });
 
     it('should have all required targets in correct order', () => {
@@ -77,15 +77,15 @@ describe('storefrontNextTargets', () => {
         const targetNames = targets.map((t) => t.name);
 
         // Check order and presence (workspace plugin excluded without SCAPI_PROXY_HOST)
-        expect(targetNames[0]).toBe('odyssey:managed-runtime-bundle');
-        expect(targetNames[1]).toBe('odyssey:fix-react-router-manifest-urls');
-        expect(targetNames[2]).toBe('odyssey:patch-react-router');
-        expect(targetNames[3]).toBe('odyssey:platform-entry');
-        expect(targetNames[4]).toBe('odyssey:transform-target-placeholder');
-        expect(targetNames[5]).toBe('odyssey:watch-config-files');
-        expect(targetNames[6]).toBe('odyssey:build-middleware-registry');
+        expect(targetNames[0]).toBe('storefront-next:managed-runtime-bundle');
+        expect(targetNames[1]).toBe('storefront-next:fix-react-router-manifest-urls');
+        expect(targetNames[2]).toBe('storefront-next:patch-react-router');
+        expect(targetNames[3]).toBe('storefront-next:platform-entry');
+        expect(targetNames[4]).toBe('storefront-next:transform-target-placeholder');
+        expect(targetNames[5]).toBe('storefront-next:watch-config-files');
+        expect(targetNames[6]).toBe('storefront-next:build-middleware-registry');
         expect(targetNames[7]).toBe('storefrontnext:event-instrumentation-validator');
-        expect(targetNames[8]).toBe('odyssey:readable-chunk-file-names');
+        expect(targetNames[8]).toBe('storefront-next:readable-chunk-file-names');
     });
 
     it('should accept StorefrontNextTargetsConfig type with readableChunkNames', () => {

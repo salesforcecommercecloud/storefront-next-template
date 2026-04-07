@@ -32,7 +32,7 @@ export function transformTargetPlaceholderPlugin() {
     let sourceDir: string;
 
     return {
-        name: 'odyssey:transform-target-placeholder',
+        name: 'storefront-next:transform-target-placeholder',
         enforce: 'pre' as const, // run before Vite's default TS/JS transforms
         configResolved(config: ResolvedConfig) {
             // extract source directory from vite config

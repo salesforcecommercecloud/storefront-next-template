@@ -54,7 +54,7 @@ export const buildMiddlewareRegistryPlugin = (): Plugin => {
     let appDirectory: string;
 
     return {
-        name: 'odyssey:build-middleware-registry',
+        name: 'storefront-next:build-middleware-registry',
         apply: 'build',
 
         configResolved(config) {

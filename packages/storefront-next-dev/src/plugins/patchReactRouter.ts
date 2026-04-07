@@ -29,7 +29,7 @@ export const patchReactRouterPlugin = (): Plugin => {
     let isDevMode = false;
 
     return {
-        name: 'odyssey:patch-react-router',
+        name: 'storefront-next:patch-react-router',
         // must be enforce: 'pre'
         // otherwise the react-router plugin will resolve the module first
         // and we will not be able to enhance the module with our custom logic

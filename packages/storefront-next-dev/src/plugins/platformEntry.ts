@@ -130,7 +130,7 @@ export function platformEntryPlugin(): Plugin {
     let userClientEntryPath: string | undefined;
 
     return {
-        name: 'odyssey:platform-entry',
+        name: 'storefront-next:platform-entry',
         enforce: 'pre',
 
         config(_config, { mode }) {

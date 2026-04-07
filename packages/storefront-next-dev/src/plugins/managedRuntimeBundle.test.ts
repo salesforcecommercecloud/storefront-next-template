@@ -112,7 +112,7 @@ describe('managedRuntimeBundlePlugin', () => {
 
     it('should return a plugin with correct name', () => {
         const plugin = managedRuntimeBundlePlugin();
-        expect(plugin.name).toBe('odyssey:managed-runtime-bundle');
+        expect(plugin.name).toBe('storefront-next:managed-runtime-bundle');
     });
 
     it('should have apply set to build', () => {
