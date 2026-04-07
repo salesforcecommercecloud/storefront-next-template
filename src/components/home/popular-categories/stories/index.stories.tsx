@@ -309,6 +309,40 @@ export const CustomPadding: Story = {
 };
 
 /**
+ * Custom title and subtitle
+ */
+export const CustomTitle: Story = {
+    args: {
+        data: mockPopularCategories,
+        title: 'Shop by Category',
+        subtitle: 'Discover our curated collections designed for your lifestyle',
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Popular categories with custom title and subtitle configured via Page Designer attributes.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Verify custom title is rendered
+        await expect(canvas.getByText('Shop by Category')).toBeInTheDocument();
+
+        // Verify custom subtitle is rendered
+        await expect(
+            canvas.getByText('Discover our curated collections designed for your lifestyle')
+        ).toBeInTheDocument();
+
+        // Verify categories still render correctly
+        const shopNowButtons = await canvas.findAllByText(/shop now/i, {}, { timeout: 5000 });
+        await expect(shopNowButtons.length).toBe(4);
+    },
+};
+
+/**
  * Empty categories array
  */
 export const Empty: Story = {

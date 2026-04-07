@@ -214,4 +214,164 @@ describe('PopularCategories', () => {
         const shopNowButtons = screen.getAllByText('Shop Now');
         expect(shopNowButtons).toHaveLength(4);
     });
+
+    // Fallback logic tests - verify all code paths work
+    test('renders data prop when provided (no component)', async () => {
+        renderComponent(<PopularCategories data={mockCategories} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.getByText('Clothing')).toBeInTheDocument();
+        expect(screen.getByText('Books')).toBeInTheDocument();
+        expect(screen.getByText('Sports')).toBeInTheDocument();
+    });
+
+    test('falls back to data when component has no regions', async () => {
+        const component = {
+            id: 'test-component',
+            typeId: 'popularCategories',
+            regions: [],
+        };
+
+        renderComponent(<PopularCategories component={component} data={mockCategories} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.getByText('Clothing')).toBeInTheDocument();
+    });
+
+    test('falls back to categoriesPromise when component has empty categories region', async () => {
+        const component = {
+            id: 'test-component',
+            typeId: 'popularCategories',
+            regions: [
+                {
+                    id: 'categories',
+                    components: [],
+                },
+            ],
+        };
+        const categoriesPromise = Promise.resolve(mockCategories);
+
+        renderComponent(<PopularCategories component={component} categoriesPromise={categoriesPromise} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.getByText('Clothing')).toBeInTheDocument();
+    });
+
+    test('renders nothing when no data sources provided', () => {
+        const { container } = renderComponent(<PopularCategories />);
+
+        const section = container.querySelector('section');
+        expect(section).toBeInTheDocument();
+
+        expect(screen.queryByText('Electronics')).not.toBeInTheDocument();
+        expect(screen.queryByText('Style for Real Life')).not.toBeInTheDocument();
+    });
+
+    test('prioritizes data over categoriesPromise when both provided', async () => {
+        const categoriesPromise = Promise.resolve([
+            {
+                id: 'wrong-cat',
+                name: 'This should not render',
+            },
+        ]);
+
+        renderComponent(<PopularCategories data={mockCategories} categoriesPromise={categoriesPromise} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.queryByText('This should not render')).not.toBeInTheDocument();
+    });
+
+    // Tests for title/subtitle functionality
+    test('renders with custom title and subtitle', async () => {
+        const customTitle = 'Shop by Category';
+        const customSubtitle = 'Discover our curated collections';
+
+        renderComponent(<PopularCategories data={mockCategories} title={customTitle} subtitle={customSubtitle} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText(customTitle)).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.getByText(customSubtitle)).toBeInTheDocument();
+    });
+
+    test('falls back to i18n translations when title and subtitle are undefined', async () => {
+        renderComponent(<PopularCategories data={mockCategories} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Style for Real Life')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        // Default subtitle from i18n
+        expect(
+            screen.getByText(
+                'At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.'
+            )
+        ).toBeInTheDocument();
+    });
+
+    test('renders custom title with default subtitle', async () => {
+        const customTitle = 'Browse Our Collections';
+
+        renderComponent(<PopularCategories data={mockCategories} title={customTitle} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText(customTitle)).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        // Should still show default subtitle from i18n
+        expect(
+            screen.getByText(
+                'At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.'
+            )
+        ).toBeInTheDocument();
+    });
+
+    test('renders custom subtitle with default title', async () => {
+        const customSubtitle = 'Find your perfect style';
+
+        renderComponent(<PopularCategories data={mockCategories} subtitle={customSubtitle} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Style for Real Life')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.getByText(customSubtitle)).toBeInTheDocument();
+    });
 });

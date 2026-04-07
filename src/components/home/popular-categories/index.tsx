@@ -31,6 +31,8 @@ interface PopularCategoriesProps {
     categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>;
     parentId?: string;
     paddingX?: string;
+    title?: string;
+    subtitle?: string;
     // Data prop provided by the Page Designer component loader
     data?: ShopperProducts.schemas['Category'][];
     // Page Designer props
@@ -61,6 +63,18 @@ export class PopularCategoriesMetadata {
     parentId?: string;
 
     @AttributeDefinition({
+        name: 'Title',
+        description: 'Optional title text for the category section',
+    })
+    title?: string;
+
+    @AttributeDefinition({
+        name: 'Subtitle',
+        description: 'Optional subtitle text for the category section',
+    })
+    subtitle?: string;
+
+    @AttributeDefinition({
         name: 'Horizontal Padding',
         description: 'Horizontal padding classes (e.g., px-4 sm:px-6 lg:px-8)',
         defaultValue: 'px-4 sm:px-6 lg:px-8',
@@ -87,15 +101,15 @@ function CategoryCardsSkeleton() {
 /**
  * Title and description header for the category section
  */
-function CategorySectionHeader() {
+function CategorySectionHeader({ title, subtitle }: { title?: string; subtitle?: string }) {
     const { t } = useTranslation('home');
     return (
         <div className="text-center mb-10 md:mb-12">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight">
-                {t('categoryGrid.title')}
+                {title || t('categoryGrid.title')}
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                {t('categoryGrid.description')}
+                {subtitle || t('categoryGrid.description')}
             </p>
         </div>
     );
@@ -123,120 +137,68 @@ function CategoryGridContent({
     categoriesPromise,
     component,
     horizontalPadding,
+    title,
+    subtitle,
 }: {
     data?: ShopperProducts.schemas['Category'][];
     categoriesPromise?: Promise<ShopperProducts.schemas['Category'][]>;
     component?: ComponentType;
     horizontalPadding?: string;
+    title?: string;
+    subtitle?: string;
 }) {
-    // If component is not provided, show fallback categories
-    if (!component) {
-        if (data && Array.isArray(data) && data.length > 0) {
-            return (
-                <>
-                    <CategorySectionHeader />
-                    <CategoryScrollContainer ariaLabel="Step into Elegance">
-                        <CategoryCards categories={data} />
-                    </CategoryScrollContainer>
-                </>
-            );
-        }
+    const { t } = useTranslation('home');
 
-        if (categoriesPromise) {
-            return (
-                <>
-                    <CategorySectionHeader />
-                    <Suspense fallback={<CategoryCardsSkeleton />}>
-                        <Await resolve={categoriesPromise} errorElement={null}>
-                            {(categories) => (
-                                <CategoryScrollContainer ariaLabel="Step into Elegance">
-                                    <CategoryCards categories={categories} />
-                                </CategoryScrollContainer>
-                            )}
-                        </Await>
-                    </Suspense>
-                </>
-            );
-        }
+    // Extract common elements
+    const sectionHeader = <CategorySectionHeader title={title} subtitle={subtitle} />;
+    const ariaLabel = title || t('categoryGrid.title');
 
-        return null;
-    }
-
-    const hasRegions = component.regions && component.regions.length > 0;
-
-    // Show fallback categories if no regions (page exists but is empty)
-    if (!hasRegions) {
-        if (data && Array.isArray(data) && data.length > 0) {
-            return (
-                <>
-                    <CategorySectionHeader />
-                    <CategoryScrollContainer ariaLabel="Step into Elegance">
-                        <CategoryCards categories={data} />
-                    </CategoryScrollContainer>
-                </>
-            );
-        }
-        if (categoriesPromise) {
-            return (
-                <>
-                    <CategorySectionHeader />
-                    <Suspense fallback={<CategoryCardsSkeleton />}>
-                        <Await resolve={categoriesPromise} errorElement={null}>
-                            {(categories) => (
-                                <CategoryScrollContainer ariaLabel="Step into Elegance">
-                                    <CategoryCards categories={categories} />
-                                </CategoryScrollContainer>
-                            )}
-                        </Await>
-                    </Suspense>
-                </>
-            );
-        }
-        return null;
-    }
-
-    // Regions exist - check if categories region has components
-    const categoriesRegion = component.regions?.find((r) => r.id === 'categories');
+    // Determine if we should use Page Designer components or fallback categories
+    const hasRegions = component?.regions && component.regions.length > 0;
+    const categoriesRegion = component?.regions?.find((r) => r.id === 'categories');
     const hasComponents = (categoriesRegion?.components?.length ?? 0) > 0;
+    const shouldUseFallback = !component || !hasRegions || !hasComponents;
 
-    // Show fallback categories if no components in categories region
-    if (!hasComponents) {
-        if (data && Array.isArray(data) && data.length > 0) {
-            return (
-                <>
-                    <CategorySectionHeader />
-                    <CategoryScrollContainer ariaLabel="Step into Elegance">
-                        <CategoryCards categories={data} />
-                    </CategoryScrollContainer>
-                </>
-            );
-        }
-        if (categoriesPromise) {
-            return (
-                <>
-                    <CategorySectionHeader />
-                    <Suspense fallback={<CategoryCardsSkeleton />}>
-                        <Await resolve={categoriesPromise} errorElement={null}>
-                            {(categories) => (
-                                <CategoryScrollContainer ariaLabel="Step into Elegance">
-                                    <CategoryCards categories={categories} />
-                                </CategoryScrollContainer>
-                            )}
-                        </Await>
-                    </Suspense>
-                </>
-            );
-        }
-        return null;
-    }
+    // Render content based on prioritization
+    let content: React.ReactNode = null;
 
-    // Region has components - render them in scroll container
-    return (
-        <>
-            <CategorySectionHeader />
-            <CategoryScrollContainer ariaLabel="Step into Elegance">
+    if (!shouldUseFallback) {
+        // Region has components - render them in scroll container
+        content = (
+            <CategoryScrollContainer ariaLabel={ariaLabel}>
                 <Region regionId="categories" component={component} className={cn('flex', horizontalPadding)} />
             </CategoryScrollContainer>
+        );
+    } else if (data && Array.isArray(data) && data.length > 0) {
+        // Fallback: use data prop
+        content = (
+            <CategoryScrollContainer ariaLabel={ariaLabel}>
+                <CategoryCards categories={data} />
+            </CategoryScrollContainer>
+        );
+    } else if (categoriesPromise) {
+        // Fallback: use categoriesPromise
+        content = (
+            <Suspense fallback={<CategoryCardsSkeleton />}>
+                <Await resolve={categoriesPromise} errorElement={null}>
+                    {(categories) => (
+                        <CategoryScrollContainer ariaLabel={ariaLabel}>
+                            <CategoryCards categories={categories} />
+                        </CategoryScrollContainer>
+                    )}
+                </Await>
+            </Suspense>
+        );
+    }
+
+    if (!content) {
+        return null;
+    }
+
+    return (
+        <>
+            {sectionHeader}
+            {content}
         </>
     );
 }
@@ -253,7 +215,14 @@ export const loader = loaders.server;
  * 2. With data prop - receives categories from Page Designer component loader
  * 3. With parentId - triggers component loader to fetch categories (used in Page Designer)
  */
-export default function PopularCategories({ categoriesPromise, data, component, paddingX }: PopularCategoriesProps) {
+export default function PopularCategories({
+    categoriesPromise,
+    data,
+    component,
+    paddingX,
+    title,
+    subtitle,
+}: PopularCategoriesProps) {
     // Default to React default padding when not specified
     const horizontalPadding = paddingX || 'px-4 sm:px-6 lg:px-8';
 
@@ -265,6 +234,8 @@ export default function PopularCategories({ categoriesPromise, data, component, 
                     categoriesPromise={categoriesPromise}
                     component={component}
                     horizontalPadding={horizontalPadding}
+                    title={title}
+                    subtitle={subtitle}
                 />
             </div>
         </section>

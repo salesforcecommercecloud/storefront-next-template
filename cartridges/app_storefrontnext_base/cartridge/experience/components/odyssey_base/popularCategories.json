@@ -29,6 +29,20 @@
                     "description": "The parent category ID to fetch child categories from (e.g., root, mens, womens)"
                 },
                 {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "string",
+                    "required": false,
+                    "description": "Optional title text for the category section"
+                },
+                {
+                    "id": "subtitle",
+                    "name": "Subtitle",
+                    "type": "string",
+                    "required": false,
+                    "description": "Optional subtitle text for the category section"
+                },
+                {
                     "id": "paddingX",
                     "name": "Horizontal Padding",
                     "type": "string",
