@@ -1,6 +1,6 @@
-# Template Retail RSC App
+# Template Retail App
 
-This is a React Server Component (RSC) template application for Salesforce Commerce Cloud built with React Router v7, providing a modern, performant storefront experience.
+This is a template application for Salesforce Commerce Cloud built with React Router v7 and React 19, providing a modern, performant storefront experience.
 
 > **Architecture & Patterns:** See [CLAUDE.md](./CLAUDE.md) for comprehensive architecture documentation, key patterns (Adapter Pattern, Page Designer, Configuration), and common workflows.
 

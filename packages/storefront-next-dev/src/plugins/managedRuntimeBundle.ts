@@ -108,7 +108,7 @@ export const managedRuntimeBundlePlugin = (): Plugin => {
                         // actual sourcemaps in the build output are unaffected.
                         //
                         // This is the same approach used by @vitejs/plugin-react (PR #369)
-                        // and @react-router/dev's RSC plugin.
+                        // and @react-router/dev's plugin.
                         // See: https://github.com/vitejs/vite-plugin-react/pull/369
                         // See: https://github.com/vitejs/vite/issues/15012
                         onLog(level, log, defaultHandler) {

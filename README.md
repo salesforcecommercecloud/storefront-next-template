@@ -1,6 +1,6 @@
 # Storefront Next Template
 
-A production-ready React storefront template for Salesforce Commerce Cloud, built with React Server Components and React Router 7.
+A production-ready React storefront template for Salesforce Commerce Cloud, built with React Router 7 and React 19.
 
 > [!IMPORTANT]
 > Storefront Next is a pilot or beta service that is subject to the Beta Services Terms at [Agreements - Salesforce.com](https://www.salesforce.com/company/legal/agreements/) or a written Unified Pilot Agreement if executed by Customer, and applicable terms in the [Product Terms Directory](https://ptd.salesforce.com/). Use of this pilot or beta service is at the Customer's sole discretion.
@@ -129,7 +129,7 @@ src/
 
 ## Features
 
-- ⚡ **React Server Components** — Server-side rendering with React 19
+- ⚡ **SSR** — Server-side rendering with React 19
 - 🛤️ **React Router 7** — File-based routing
 - 🛒 **Commerce Cloud** — Full SCAPI integration
 - 🎨 **Tailwind CSS 4** — Utility-first styling

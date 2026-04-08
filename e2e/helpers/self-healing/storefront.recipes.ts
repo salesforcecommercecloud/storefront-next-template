@@ -190,7 +190,7 @@ export const footerLinksRecipe: HealingRecipe = {
  * Loading Spinner - Loading state indicator
  * Primary: [data-testid*="loading"]
  * Note: Matches various loading states (Suspense fallbacks, form loading, button loading states)
- * Not specifically for RSC Loading component (which doesn't have data-testid)
+ * Not specifically for the Loading component (which doesn't have data-testid)
  */
 export const loadingSpinnerRecipe: HealingRecipe = {
     name: 'loadingSpinner',

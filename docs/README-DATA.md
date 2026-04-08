@@ -14,7 +14,7 @@ This project is built on **[React Router v7](https://reactrouter.com/)**, levera
 A solid understanding of this architectural decision is essential, as it directly impacts both the structure and the bundling of the application code as well as cross-cutting concerns such as performance, security, and authentication.
 
 > [!NOTE]
-> This approach requires trade-offs for subsequent navigations (additional hop through the server, potential Lambda cold starts), but offers a pragmatic balance of various performance characteristics (initial load time, bundle size, network efficiency on weak connections). Additionally, a consistent server-loading approach anticipates the stabilization of [React Server Components](https://react.dev/reference/rsc/server-components) support in [React Router](https://reactrouter.com/how-to/react-server-components) and associated patterns like full server-side rendering of subsequent navigations.
+> This approach requires trade-offs for subsequent navigations (additional hop through the server, potential Lambda cold starts), but offers a pragmatic balance of various performance characteristics (initial load time, bundle size, network efficiency on weak connections). Additionally, a consistent server-loading approach aligns with React Router's server-side rendering patterns and enables full server-side rendering of subsequent navigations.
 
 ## Framework Patterns
 

@@ -915,7 +915,7 @@ export function createExpressResponse(
         return this;
     };
 
-    // Add flush method for streaming responses (important for RSC)
+    // Add flush method for streaming responses (important for streaming SSR)
     res.flush = function () {
         if (!isStreamOpen()) {
             console.error(`Cannot flush - stream is closed`);

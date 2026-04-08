@@ -23,8 +23,8 @@ type SchemaTFunction = TFunction | ((key: string) => string);
  * Checkout validation schemas using factory functions to prevent i18next race conditions.
  *
  * Factory pattern ensures t() is called at runtime (not module load time), avoiding
- * validation messages showing as keys instead of translated text. Critical for RSC where
- * client-side i18next initializes separately from server-side.
+ * validation messages showing as keys instead of translated text. Critical for server rendering
+ * where client-side i18next initializes separately from server-side.
  *
  * @example
  * const { t } = useTranslation(); // or getTranslation() or getTranslation(context)

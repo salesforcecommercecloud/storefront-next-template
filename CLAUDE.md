@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a React Server Component (RSC) storefront template for Salesforce Commerce Cloud built with React Router v7, React 19, Tailwind CSS v4, and Commerce Cloud SCAPI integration.
+This is a storefront template for Salesforce Commerce Cloud built with React Router v7, React 19, Tailwind CSS v4, and Commerce Cloud SCAPI integration.
 
 ## Essential Commands
 
@@ -35,7 +35,7 @@ pnpm storybook                  # Start Storybook dev server at :6006
 ## Architecture
 
 ### Core Technologies
-- **React 19.2.3** with Server Components
+- **React 19.2.3**
 - **React Router 7.12.0** with file-based routing
 - **Tailwind CSS 4.1.13** with design tokens
 - **Node.js 24+** (managed via Volta)
@@ -192,20 +192,6 @@ All TypeScript/JavaScript files must include:
 Enforced by ESLint via `eslint-plugin-header`.
 
 ### Component Patterns
-
-**Server vs Client Components:**
-```typescript
-// Server Component (default) - no directive needed
-export default function ServerComponent() {
-    // Can be async, no hooks, no event handlers
-}
-
-// Client Component - requires directive
-"use client"
-export default function ClientComponent() {
-    // Can use hooks and event handlers, cannot be async
-}
-```
 
 **Lazy Loading for Overlays (Modals, Drawers, Dialogs):**
 

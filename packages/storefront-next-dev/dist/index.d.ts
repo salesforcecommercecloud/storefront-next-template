@@ -106,7 +106,7 @@ interface StorefrontNextTargetsConfig {
   eventInstrumentationValidator?: EventInstrumentationValidatorConfig | false;
 }
 /**
- * Storefront Next Vite plugin that powers the React Router RSC app.
+ * Storefront Next Vite plugin that powers the React Router app.
  * Supports building and optimizing for the managed runtime environment.
  *
  * @param config - Configuration options for the plugin

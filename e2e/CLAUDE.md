@@ -7,7 +7,7 @@ This file provides AI-specific guidance for Claude Code when working with E2E te
 
 ## Project Overview
 
-**storefront-next-e2e** is the E2E testing package for Salesforce Commerce Cloud storefront built with React Server Components. It uses CodeceptJS with Playwright engine and AI-powered features for test development and maintenance.
+**storefront-next-e2e** is the E2E testing package for Salesforce Commerce Cloud storefront built with React Router v7. It uses CodeceptJS with Playwright engine and AI-powered features for test development and maintenance.
 
 **Stack:** CodeceptJS 3.7.5 + Playwright 1.58.0 + TypeScript 5.6.0  
 **Test Runner:** Mocha  
@@ -18,7 +18,7 @@ This file provides AI-specific guidance for Claude Code when working with E2E te
 
 ## Storefront Context
 
-This is E2E testing for **Salesforce Commerce Cloud storefront** built with React Server Components.
+This is E2E testing for **Salesforce Commerce Cloud storefront** built with React Router v7.
 
 **Key Context:**
 

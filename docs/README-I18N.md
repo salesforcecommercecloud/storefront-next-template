@@ -713,7 +713,7 @@ During the migration to i18next translations in PR [#447](https://github.com/Sal
 
 **Symptom**: Validation messages show as keys (e.g., `checkout:contactInfo.emailRequired`) instead of translated text.
 
-**Root Cause**: Zod schemas created at module load time execute before i18next initializes in RSC apps, where client-side i18next initialization is separate from server-side.
+**Root Cause**: Zod schemas created at module load time execute before i18next initializes in server-rendered apps, where client-side i18next initialization is separate from server-side.
 
 ### Solution: Factory Pattern
 

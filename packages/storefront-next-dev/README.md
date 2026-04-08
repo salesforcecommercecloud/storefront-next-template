@@ -1,6 +1,6 @@
 # @salesforce/storefront-next-dev
 
-Vite plugin and deployment tools for Storefront Next integration with React Router v7 and React Server Components.
+Vite plugin and deployment tools for Storefront Next integration with React Router v7.
 
 > [!IMPORTANT]
 > Storefront Next is a pilot or beta service that is subject to the Beta Services Terms at [Agreements - Salesforce.com](https://www.salesforce.com/company/legal/agreements/) or a written Unified Pilot Agreement if executed by Customer, and applicable terms in the [Product Terms Directory](https://ptd.salesforce.com/). Use of this pilot or beta service is at the Customer's sole discretion.
@@ -9,10 +9,10 @@ Vite plugin and deployment tools for Storefront Next integration with React Rout
 
 ### Vite Plugin
 
-- 🚀 **React Server Components (RSC)** support with Vite v7
+- 🚀 **SSR** support with Vite v7
 - 🛣️ **React Router v7** integration with React Router as the framework
 - 🛒 **Commerce Cloud API** proxying for development
-- 📦 **Built-in entry files** for RSC, SSR, and browser environments
+- 📦 **Built-in entry files** for SSR and browser environments
 - ☁️ **Managed Runtime Optimization** for Salesforce Commerce Cloud deployment environment
 
 ### CLI & Deployment Tools

@@ -1,5 +1,6 @@
 ## v0.3.0-dev (Apr 01, 2026)
 
+- Clean up RSC/React Server Components references from documentation, comments, and config ([#1363](https://github.com/commerce-emu/storefront-next/pull/1363))
 - Remove internal "odyssey" codename references from codebase
 - Add template support for registering and calling custom APIs through generated SCAPI clients (@W-21549425)
 - Add configurable navigation menu options `rootCategoryId`, `maxDepth`([#1292](https://github.com/commerce-emu/storefront-next/pull/1292))
