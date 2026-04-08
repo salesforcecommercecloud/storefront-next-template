@@ -212,7 +212,7 @@ export default function Hero({
         alignment === 'left' ? 'justify-start' : alignment === 'right' ? 'justify-end' : 'justify-center';
 
     return (
-        <div className="relative w-full h-[100vh] md:h-[85vh] overflow-hidden">
+        <div className="relative w-full h-[var(--hero-banner-height)] md:h-[var(--hero-banner-height-md)] lg:h-[var(--hero-banner-height-lg)] overflow-hidden">
             {renderImage()}
 
             <div className={cn('absolute inset-0 z-10 flex', overlayRowClass, overlayEdgePaddingClass)}>

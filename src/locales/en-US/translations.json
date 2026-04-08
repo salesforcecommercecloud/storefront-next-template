@@ -1459,5 +1459,12 @@
             "RefArchGlobal": "Global (UK)",
             "RefArch": "United States"
         }
+    },
+    "category": {
+        "banner": {
+            "counting": "Counting products...",
+            "productsAvailable_one": "1 product available",
+            "productsAvailable_other": "{{count}} products available"
+        }
     }
 }

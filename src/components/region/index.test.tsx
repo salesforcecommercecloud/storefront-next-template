@@ -198,6 +198,58 @@ describe('Region', () => {
         expect(screen.queryByTestId(/component-/)).not.toBeInTheDocument();
     });
 
+    it('renders errorElement for empty page region when fallbackOnEmpty is set', async () => {
+        const emptyRegion = { id: 'empty-region', components: [] };
+        const emptyPage = { id: 'page', typeId: 'page', regions: [emptyRegion] };
+        render(
+            <Region
+                page={emptyPage}
+                regionId="empty-region"
+                fallbackOnEmpty
+                errorElement={<div data-testid="fallback-banner">Fallback</div>}
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('fallback-banner')).toBeInTheDocument();
+        });
+    });
+
+    it('renders errorElement for empty component region when fallbackOnEmpty is set', () => {
+        const emptyRegion = { id: 'empty-region', components: [] };
+        const mockComponent = {
+            id: 'test-component',
+            typeId: 'grid',
+            regions: [emptyRegion],
+        } as ComponentType;
+        render(
+            <Region
+                component={mockComponent}
+                regionId="empty-region"
+                fallbackOnEmpty
+                errorElement={<div data-testid="fallback-banner">Fallback</div>}
+            />
+        );
+
+        expect(screen.getByTestId('fallback-banner')).toBeInTheDocument();
+    });
+
+    it('does NOT render errorElement for empty page region without fallbackOnEmpty', async () => {
+        const emptyRegion = { id: 'empty-region', components: [] };
+        const emptyPage = { id: 'page', typeId: 'page', regions: [emptyRegion] };
+        render(
+            <Region
+                page={emptyPage}
+                regionId="empty-region"
+                errorElement={<div data-testid="fallback-banner">Fallback</div>}
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.queryByTestId('fallback-banner')).not.toBeInTheDocument();
+        });
+    });
+
     it('handles undefined components in page region', async () => {
         const regionWithoutComponents = { id: 'no-components', components: [] };
         const pageWithRegion = { id: 'page', typeId: 'page', regions: [regionWithoutComponents] };

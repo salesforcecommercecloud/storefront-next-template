@@ -247,7 +247,7 @@ export function HeroCarouselPlain({
 
     const emptyState = useMemo(
         () => (
-            <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] flex items-center justify-center bg-muted">
+            <div className="relative w-full h-[var(--hero-banner-height)] md:h-[var(--hero-banner-height-md)] lg:h-[var(--hero-banner-height-lg)] flex items-center justify-center bg-muted">
                 <p className="text-muted-foreground text-lg">No slides available</p>
             </div>
         ),
@@ -260,7 +260,7 @@ export function HeroCarouselPlain({
 
     return (
         <div
-            className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden"
+            className="relative w-full h-[var(--hero-banner-height)] md:h-[var(--hero-banner-height-md)] lg:h-[var(--hero-banner-height-lg)] overflow-hidden"
             role="region"
             aria-label={`Hero carousel with ${slides.length} slides`}
             onFocus={handleFocus}

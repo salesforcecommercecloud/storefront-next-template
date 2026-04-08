@@ -153,6 +153,12 @@
 }
 /*---break---*/
 :root {
+    /* hero banner heights — consumed by HeroCarousel, CategoryBanner, and their skeletons.
+       Override per page by setting these properties on an ancestor element. */
+    --hero-banner-height: 400px;
+    --hero-banner-height-md: 500px;
+    --hero-banner-height-lg: 600px;
+
     /* core */
     --radius: 0rem;
     --pill-radius: 0px;

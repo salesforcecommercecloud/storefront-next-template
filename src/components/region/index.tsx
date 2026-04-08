@@ -44,6 +44,7 @@ interface PageRegionProps extends HTMLAttributes<HTMLDivElement> {
     regionId: string;
     fallbackElement?: ReactNode;
     errorElement?: ReactNode;
+    fallbackOnEmpty?: boolean;
 }
 
 export type ComponentType = ComponentDecoratorProps<ShopperExperience.schemas['Component']> & {
@@ -58,6 +59,7 @@ interface ComponentRegionProps extends HTMLAttributes<HTMLDivElement> {
     regionId: string;
     fallbackElement?: ReactNode;
     errorElement?: ReactNode;
+    fallbackOnEmpty?: boolean;
 }
 
 // Discriminated union
@@ -137,7 +139,7 @@ function renderRegionContent(
  * regions that can contain multiple components managed through the Page Designer interface.
  */
 export function Region(props: RegionProps) {
-    const { regionId, className, errorElement = <></>, fallbackElement = <></>, ...rest } = props;
+    const { regionId, className, errorElement = <></>, fallbackElement = <></>, fallbackOnEmpty, ...rest } = props;
     const regionContext = useRegionContext();
     const existingComponentData = useComponentData();
     const { isDesignMode } = usePageDesignerMode();
@@ -145,7 +147,7 @@ export function Region(props: RegionProps) {
     // COMPONENT MODE: Rendering a component-level region (nested)
     if (props.component !== undefined) {
         const region = props.component.regions?.find((r) => r.id === regionId);
-        if (!region) {
+        if (!region || (fallbackOnEmpty && !region.components?.length)) {
             return errorElement ?? null;
         }
 
@@ -165,7 +167,7 @@ export function Region(props: RegionProps) {
                     }
 
                     const region = resolvedPage.regions?.find((r) => r.id === regionId);
-                    if (!region) {
+                    if (!region || (fallbackOnEmpty && !region.components?.length)) {
                         return errorElement ?? null;
                     }
 

@@ -35,6 +35,8 @@ import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import CategoryBanner from '@/components/category-banner';
+import CategoryBannerSkeleton from '@/components/category-banner/skeleton';
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
 import { generateCategorySchema } from '@/utils/category-schema';
@@ -367,8 +369,19 @@ export default function CategoryPage({
                     url: pageUrl,
                 }}
             />
-            <div className="pb-16">
-                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="pb-16 -mt-8">
+                {/* plpTopFullWidth — full-width banner region, flush to the header (mirrors homepage pattern) */}
+                <div className="[--hero-banner-height:250px] md:[--hero-banner-height-md:300px] lg:[--hero-banner-height-lg:350px]">
+                    <Region
+                        page={page}
+                        regionId="plpTopFullWidth"
+                        fallbackElement={<CategoryBannerSkeleton />}
+                        errorElement={<CategoryBanner />}
+                        fallbackOnEmpty
+                    />
+                </div>
+
+                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
                     <div className="mb-4">
                         <CategoryBreadcrumbs category={category} />
                     </div>
@@ -383,9 +396,6 @@ export default function CategoryPage({
                             </div>
                         )}
                     </div>
-
-                    {/* plpTopFullWidth */}
-                    <Region className="mb-8" page={page} regionId="plpTopFullWidth" />
 
                     <div className="flex flex-col lg:flex-row gap-2">
                         {/* Filters toggle button + Quick Filters - mobile only (above panel) */}

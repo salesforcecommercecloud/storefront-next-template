@@ -1323,5 +1323,12 @@
             "RefArchGlobal": "Globale (UK)",
             "RefArch": "Stati Uniti"
         }
+    },
+    "category": {
+        "banner": {
+            "counting": "Conteggio prodotti in corso...",
+            "productsAvailable_one": "1 prodotto disponibile",
+            "productsAvailable_other": "{{count}} prodotti disponibili"
+        }
     }
 }
