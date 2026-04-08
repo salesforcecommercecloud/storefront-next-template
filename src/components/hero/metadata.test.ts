@@ -33,6 +33,10 @@ describe('HeroMetadata - PD default alignment', () => {
         expect(metadata.fields.imageAlt?.defaultValue).toBeUndefined();
     });
 
+    test('imageTitle has no defaultValue (matches empty JSON metadata)', () => {
+        expect(metadata.fields.imageTitle?.defaultValue).toBeUndefined();
+    });
+
     test('ctaText has no defaultValue (matches empty JSON metadata)', () => {
         expect(metadata.fields.ctaText?.defaultValue).toBeUndefined();
     });

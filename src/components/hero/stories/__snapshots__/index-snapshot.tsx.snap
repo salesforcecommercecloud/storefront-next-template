@@ -11,6 +11,7 @@ exports[`Hero stories snapshot > Default story renders and matches snapshot 1`] 
       fetchpriority="high"
       src="https://via.placeholder.com/1920x1080"
       style="object-position: 50% 50%;"
+      title="Welcome banner"
     />
     <div
       class="absolute inset-0 z-10 flex items-center"
@@ -93,6 +94,58 @@ exports[`Hero stories snapshot > RightBlockCenteredText story renders and matche
               href="/category/all"
             >
               Shop Now
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Hero stories snapshot > WithImageTitle story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="relative w-full h-[100vh] md:h-[85vh] overflow-hidden"
+  >
+    <img
+      alt="Featured collection background"
+      class="absolute inset-0 w-full h-full object-cover"
+      fetchpriority="high"
+      src="https://via.placeholder.com/1920x1080"
+      style="object-position: 50% 50%;"
+      title="Spring 2026 Collection"
+    />
+    <div
+      class="absolute inset-0 z-10 flex items-center"
+    >
+      <div
+        class="container mx-auto w-full px-4 sm:px-6 lg:px-8"
+      >
+        <div
+          class="max-w-2xl mx-auto text-center"
+        >
+          <h1
+            class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-none tracking-tight"
+          >
+            Featured Collection
+          </h1>
+          <p
+            class="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground mb-4 sm:mb-6 md:mb-8 leading-none tracking-wide"
+          >
+            Hover over the image to see the tooltip
+          </p>
+          <div
+            class="flex justify-center"
+          >
+            <a
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+              data-size="default"
+              data-slot="button"
+              data-variant="default"
+              href="/category/featured"
+            >
+              View Collection
             </a>
           </div>
         </div>

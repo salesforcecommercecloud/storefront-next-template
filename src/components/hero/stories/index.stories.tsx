@@ -98,6 +98,7 @@ export const Default: Story = {
             subtitle="Discover amazing products for your everyday needs"
             imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
             imageAlt="Hero background"
+            imageTitle="Welcome banner"
             ctaText="Shop Now"
             ctaLink="/category/all"
         />
@@ -121,6 +122,35 @@ export const Default: Story = {
         // Check for CTA button
         const cta = await canvas.findByRole('link', { name: /shop now/i }, { timeout: 5000 });
         await expect(cta).toBeInTheDocument();
+    },
+};
+
+export const WithImageTitle: Story = {
+    render: () => (
+        <Hero
+            title="Featured Collection"
+            subtitle="Hover over the image to see the tooltip"
+            imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
+            imageAlt="Featured collection background"
+            imageTitle="Spring 2026 Collection"
+            ctaText="View Collection"
+            ctaLink="/category/featured"
+        />
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'Hero section with an image title attribute that shows as a tooltip on hover.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        const image = await canvas.findByRole('img', {}, { timeout: 5000 });
+        await expect(image).toHaveAttribute('title', 'Spring 2026 Collection');
     },
 };
 

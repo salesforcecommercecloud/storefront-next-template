@@ -100,6 +100,38 @@ describe('Hero Component', () => {
             expect(image).toHaveAttribute('alt', '');
         });
 
+        test('renders image with title attribute when imageTitle is provided', () => {
+            renderHero({
+                imageUrl: { url: '/test.jpg' },
+                imageAlt: 'Test image',
+                imageTitle: 'Hover tooltip text',
+            });
+
+            const image = screen.getByRole('img', { name: 'Test image' });
+            expect(image).toHaveAttribute('title', 'Hover tooltip text');
+        });
+
+        test('does not render title attribute when imageTitle is not provided', () => {
+            renderHero({
+                imageUrl: { url: '/test.jpg' },
+                imageAlt: 'Test image',
+            });
+
+            const image = screen.getByRole('img', { name: 'Test image' });
+            expect(image).not.toHaveAttribute('title');
+        });
+
+        test('does not render title attribute when imageTitle is an empty string', () => {
+            renderHero({
+                imageUrl: { url: '/test.jpg' },
+                imageAlt: 'Test image',
+                imageTitle: '',
+            });
+
+            const image = screen.getByRole('img', { name: 'Test image' });
+            expect(image).not.toHaveAttribute('title');
+        });
+
         test('does not render CTA when only ctaText is provided without ctaLink', () => {
             renderHero({ ctaText: 'Click Me' });
             expect(screen.queryByRole('link')).not.toBeInTheDocument();

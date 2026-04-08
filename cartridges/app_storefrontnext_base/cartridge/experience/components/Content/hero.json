@@ -32,6 +32,13 @@
                     "description": "Field: imageAlt"
                 },
                 {
+                    "id": "imageTitle",
+                    "name": "Image Title",
+                    "type": "string",
+                    "required": false,
+                    "description": "Field: imageTitle"
+                },
+                {
                     "id": "subtitle",
                     "name": "Subtitle",
                     "type": "string",

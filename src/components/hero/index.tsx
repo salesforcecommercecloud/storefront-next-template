@@ -98,6 +98,9 @@ export class HeroMetadata {
     imageAlt?: string;
 
     @AttributeDefinition()
+    imageTitle?: string;
+
+    @AttributeDefinition()
     subtitle?: string;
 
     @AttributeDefinition()
@@ -148,6 +151,7 @@ export default function Hero({
     subtitle,
     imageUrl,
     imageAlt,
+    imageTitle,
     ctaText,
     ctaLink,
     overlayPosition,
@@ -157,6 +161,7 @@ export default function Hero({
     subtitle?: string;
     imageUrl?: Image;
     imageAlt?: string;
+    imageTitle?: string;
     ctaText?: string;
     ctaLink?: string;
     overlayPosition?: string;
@@ -172,6 +177,7 @@ export default function Hero({
             <img
                 src={imageUrl.url}
                 alt={imageAlt || ''}
+                {...(imageTitle && { title: imageTitle })}
                 fetchPriority="high"
                 className="absolute inset-0 w-full h-full object-cover"
                 style={{ objectPosition: `${focalX} ${focalY}` }}
