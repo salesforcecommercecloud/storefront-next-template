@@ -55,6 +55,7 @@ vi.mock('@salesforce/storefront-next-runtime/events', () => ({
 
 vi.mock('@/lib/adapters', () => ({
     getAllAdapters: vi.fn(),
+    buildConsentPreferences: vi.fn(),
 }));
 
 vi.mock('@/adapters', () => ({
@@ -69,7 +70,7 @@ import { useAuth } from '@/providers/auth';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
-import { getAllAdapters } from '@/lib/adapters';
+import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
 import { initializeEngagementAdapters } from '@/adapters';
 import { createEvent, getEventMediator, type EventMediator } from '@salesforce/storefront-next-runtime/events';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
@@ -129,10 +130,17 @@ const mockCategory: ShopperProducts.schemas['Category'] = {
 } as ShopperProducts.schemas['Category'];
 
 describe('useAnalytics', () => {
+    const mockConsentCategories = ['necessary', 'analytics', 'marketing', 'personalization'];
+    const mockConsentPreferences = [...mockConsentCategories];
     const mockConfig = {
         engagement: {
             adapters: {
                 einstein: { enabled: true },
+            },
+            analytics: {
+                trackingConsent: {
+                    consentCategories: mockConsentCategories,
+                },
             },
         },
     };
@@ -165,6 +173,9 @@ describe('useAnalytics', () => {
             defaultTrackingConsent: TrackingConsent.Declined,
         });
 
+        // Default: accepted consent returns all categories
+        vi.mocked(buildConsentPreferences).mockReturnValue(mockConsentPreferences);
+
         // Mock window.__APP_CONFIG__
         if (typeof window !== 'undefined') {
             (window as { __APP_CONFIG__?: unknown }).__APP_CONFIG__ = {
@@ -194,7 +205,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
 
@@ -239,7 +251,8 @@ describe('useAnalytics', () => {
                         usid: undefined,
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -261,7 +274,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -283,7 +297,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -305,7 +320,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -333,7 +349,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -361,7 +378,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -389,7 +407,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -415,7 +434,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -441,7 +461,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -466,7 +487,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
 
@@ -489,7 +511,8 @@ describe('useAnalytics', () => {
                         usid: undefined,
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -507,6 +530,7 @@ describe('useAnalytics', () => {
                 setTrackingConsent: vi.fn(),
                 defaultTrackingConsent: TrackingConsent.Declined,
             });
+            vi.mocked(buildConsentPreferences).mockReturnValue([]);
 
             const { result } = renderHook(() => useAnalytics());
 
@@ -523,6 +547,7 @@ describe('useAnalytics', () => {
                 setTrackingConsent: vi.fn(),
                 defaultTrackingConsent: TrackingConsent.Declined,
             });
+            vi.mocked(buildConsentPreferences).mockReturnValue(undefined);
 
             const { result } = renderHook(() => useAnalytics());
 
@@ -549,7 +574,25 @@ describe('useAnalytics', () => {
                     eventType: 'view_page',
                     path: '/test-page',
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
+            );
+        });
+
+        it('should pass consentPreferences to mediator.track', async () => {
+            const customPreferences = ['necessary', 'analytics'];
+            vi.mocked(buildConsentPreferences).mockReturnValue(customPreferences);
+
+            const { result } = renderHook(() => useAnalytics());
+
+            await result.current.trackViewProduct({ product: mockProduct });
+
+            expect(mockAnalytics.track).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    eventType: 'view_product',
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                customPreferences
             );
         });
     });

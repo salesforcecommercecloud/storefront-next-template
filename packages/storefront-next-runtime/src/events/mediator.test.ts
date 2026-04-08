@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { getEventMediator, resetEventMediator } from './mediator';
-import type { EventAdapter, AnalyticsEvent, EventSiteInfo } from './types';
+import type { EventAdapter, AnalyticsEvent, EventSiteInfo, ConsentPreferences } from './types';
 
 const createMockViewPageEvent = (path: string): AnalyticsEvent => ({
     eventType: 'view_page',
@@ -87,7 +87,7 @@ describe('Analytics Mediator', () => {
             await new Promise((resolve) => setTimeout(resolve, 10));
 
             expect(getAdapters2).toHaveBeenCalled();
-            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, undefined);
+            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, undefined, undefined);
         });
     });
 
@@ -101,7 +101,7 @@ describe('Analytics Mediator', () => {
 
             await new Promise((resolve) => setTimeout(resolve, 10));
 
-            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, undefined);
+            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, undefined, undefined);
             expect(mockAdapter.sendEvent).toHaveBeenCalledTimes(1);
         });
 
@@ -118,8 +118,8 @@ describe('Analytics Mediator', () => {
 
             await new Promise((resolve) => setTimeout(resolve, 10));
 
-            expect(adapter1.sendEvent).toHaveBeenCalledWith(event, undefined);
-            expect(adapter2.sendEvent).toHaveBeenCalledWith(event, undefined);
+            expect(adapter1.sendEvent).toHaveBeenCalledWith(event, undefined, undefined);
+            expect(adapter2.sendEvent).toHaveBeenCalledWith(event, undefined, undefined);
         });
 
         it('should handle adapters without sendEvent method', async () => {
@@ -157,7 +157,7 @@ describe('Analytics Mediator', () => {
 
             await new Promise((resolve) => setTimeout(resolve, 10));
 
-            expect(failingAdapter.sendEvent).toHaveBeenCalledWith(event, undefined);
+            expect(failingAdapter.sendEvent).toHaveBeenCalledWith(event, undefined, undefined);
         });
 
         it('should handle events when no adapters are registered', async () => {
@@ -190,7 +190,7 @@ describe('Analytics Mediator', () => {
             // Second track - should use new adapter
             mediator?.track(event);
             await new Promise((resolve) => setTimeout(resolve, 10));
-            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, undefined);
+            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, undefined, undefined);
             expect(mockAdapter.sendEvent).toHaveBeenCalledTimes(1);
         });
     });
@@ -206,7 +206,7 @@ describe('Analytics Mediator', () => {
 
             await new Promise((resolve) => setTimeout(resolve, 10));
 
-            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, siteInfo);
+            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, siteInfo, undefined);
         });
 
         it('should forward undefined siteInfo without breaking adapters', async () => {
@@ -218,7 +218,23 @@ describe('Analytics Mediator', () => {
 
             await new Promise((resolve) => setTimeout(resolve, 10));
 
-            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, undefined);
+            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, undefined, undefined);
+        });
+    });
+
+    describe('consentPreferences forwarding', () => {
+        it('should forward consentPreferences to adapter sendEvent', async () => {
+            getAdapters = vi.fn(() => [mockAdapter]);
+            const mediator = getEventMediator(getAdapters);
+            const event = createMockViewPageEvent('/test');
+            const siteInfo: EventSiteInfo = { siteId: 'RefArchGlobal', localeId: 'en-GB' };
+            const consentPreferences: ConsentPreferences = ['necessary', 'analytics'];
+
+            mediator?.track(event, siteInfo, consentPreferences);
+
+            await new Promise((resolve) => setTimeout(resolve, 10));
+
+            expect(mockAdapter.sendEvent).toHaveBeenCalledWith(event, siteInfo, consentPreferences);
         });
     });
 });

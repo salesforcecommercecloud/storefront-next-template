@@ -399,6 +399,7 @@ export default defineConfig<Config>(
                     trackingConsent: {
                         enabled: true,
                         defaultTrackingConsent: TrackingConsent.Declined,
+                        consentCategories: ['necessary', 'analytics', 'marketing', 'personalization'],
                         position: 'bottom-right',
                     },
                     // Do not send viewPage events for the following paths

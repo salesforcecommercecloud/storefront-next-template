@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { AnalyticsEvent, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
-import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
+import type { AnalyticsEvent, ConsentPreferences, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
+import { hasConsent, type EngagementAdapter, type EngagementAdapterConfig } from '@/lib/adapters';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import Cookies from 'js-cookie';
 import { getBasePath } from '@/lib/utils';
@@ -467,7 +467,16 @@ export function createActiveDataAdapter(config: ActiveDataConfig): EngagementAda
 
     return {
         name: 'active-data',
-        sendEvent: async (event: AnalyticsEvent, siteInfo?: EventSiteInfo): Promise<unknown> => {
+        sendEvent: async (
+            event: AnalyticsEvent,
+            siteInfo?: EventSiteInfo,
+            consentPreferences?: ConsentPreferences
+        ): Promise<unknown> => {
+            // Don't send events if adapter lacks required consent
+            if (!hasConsent(config.consentCategory, consentPreferences)) {
+                return Promise.resolve({});
+            }
+
             if (!siteInfo?.siteId || !siteInfo?.localeId) {
                 // eslint-disable-next-line no-console
                 console.warn(

@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { AnalyticsEvent, AnalyticsUser, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
-import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
+import type {
+    AnalyticsEvent,
+    AnalyticsUser,
+    ConsentPreferences,
+    EventSiteInfo,
+} from '@salesforce/storefront-next-runtime/events';
+import { hasConsent, type EngagementAdapter, type EngagementAdapterConfig } from '@/lib/adapters';
 import type { ShopperProducts, ShopperBasketsV2, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import type { Recommendation, RecommendersAdapter, Product } from '@/hooks/recommenders/use-recommenders';
 
@@ -506,7 +511,16 @@ export function createEinsteinAdapter(config: EinsteinConfig): EinsteinUnifiedAd
         name: EINSTEIN_ADAPTER_NAME,
 
         // EngagementAdapter methods
-        sendEvent: async (event: AnalyticsEvent, _siteInfo?: EventSiteInfo): Promise<unknown> => {
+        sendEvent: async (
+            event: AnalyticsEvent,
+            _siteInfo?: EventSiteInfo,
+            consentPreferences?: ConsentPreferences
+        ): Promise<unknown> => {
+            // Don't send events if adapter lacks required consent
+            if (!hasConsent(config.consentCategory, consentPreferences)) {
+                return Promise.resolve({});
+            }
+
             // Don't send events that are not enabled for this adapter
             if (!config.eventToggles[event.eventType]) {
                 return Promise.resolve({});

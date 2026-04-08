@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { EventMediator, AnalyticsEvent, EventAdapter, EventSiteInfo } from './types';
+import type { EventMediator, AnalyticsEvent, EventAdapter, EventSiteInfo, ConsentPreferences } from './types';
 
 // Module-level storage for the event mediator singleton
 // This ensures a single mediator instance across all usages
@@ -34,8 +34,8 @@ let mediatorInstance: EventMediator | undefined;
  */
 function createEventMediator(getAdapters: () => EventAdapter[]): EventMediator {
     return {
-        track: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => {
-            processEventWithAdapters(event, getAdapters, siteInfo).catch((error) => {
+        track: (event: AnalyticsEvent, siteInfo?: EventSiteInfo, consentPreferences?: ConsentPreferences) => {
+            processEventWithAdapters(event, getAdapters, siteInfo, consentPreferences).catch((error) => {
                 // eslint-disable-next-line no-console
                 console.error('Analytics tracking failed:', error);
             });
@@ -85,7 +85,8 @@ export function resetEventMediator(): void {
 async function processEventWithAdapters(
     event: AnalyticsEvent,
     getAdapters: () => EventAdapter[],
-    siteInfo?: EventSiteInfo
+    siteInfo?: EventSiteInfo,
+    consentPreferences?: ConsentPreferences
 ): Promise<void> {
     // Get the current array of event adapters
     const eventAdapters = getAdapters();
@@ -99,7 +100,7 @@ async function processEventWithAdapters(
     const promises = eventAdapters.map(async (adapter) => {
         try {
             if (typeof adapter.sendEvent === 'function') {
-                await adapter.sendEvent(event, siteInfo);
+                await adapter.sendEvent(event, siteInfo, consentPreferences);
             } else {
                 // eslint-disable-next-line no-console
                 console.warn(`Adapter ${adapter.name} does not implement sendEvent`);

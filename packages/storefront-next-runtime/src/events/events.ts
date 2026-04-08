@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import type { AnalyticsEvent, EventMediator, EventPayload, EventSiteInfo, EventTypeMap, ViewPageEvent } from './types';
+import type {
+    AnalyticsEvent,
+    ConsentPreferences,
+    EventMediator,
+    EventPayload,
+    EventSiteInfo,
+    EventTypeMap,
+    ViewPageEvent,
+} from './types';
 
 /**
  * Type-safe event creation function
@@ -49,6 +57,11 @@ export function createEvent<T extends AnalyticsEvent['eventType']>(
  * @param event - The view page event to send
  * @param eventMediator - The event mediator to send the event to
  */
-export function sendViewPageEvent(event: ViewPageEvent, eventMediator: EventMediator, siteInfo?: EventSiteInfo): void {
-    eventMediator.track(event, siteInfo);
+export function sendViewPageEvent(
+    event: ViewPageEvent,
+    eventMediator: EventMediator,
+    siteInfo?: EventSiteInfo,
+    consentPreferences?: ConsentPreferences
+): void {
+    eventMediator.track(event, siteInfo, consentPreferences);
 }

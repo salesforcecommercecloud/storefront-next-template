@@ -221,12 +221,41 @@ export type EventSiteInfo = {
 };
 
 /**
+ * Consent categories for granular tracking control.
+ *
+ * Adapters declare which consent category they require via configuration.
+ * The event system passes the shopper's granted categories (consentPreferences) to each adapter,
+ * allowing per-adapter consent decisions.
+ *
+ * This is typed as `string` so projects can define categories that match their
+ * consent management platform. Common conventions:
+ *
+ * - `'necessary'` — Essential cookies/tracking required for site functionality
+ * - `'analytics'` — Usage analytics and performance measurement
+ * - `'marketing'` — Marketing, advertising, and retargeting
+ * - `'personalization'` — Product recommendations and personalized experiences
+ */
+export type ConsentCategory = string;
+
+/**
+ * The set of consent categories a shopper has granted.
+ *
+ * Each adapter checks whether its required `consentCategory` is included
+ * in the preferences before sending events.
+ */
+export type ConsentPreferences = ConsentCategory[];
+
+/**
  * Minimal interface for engagement adapters that can send analytics events.
- * Engagemet Adapters must implement this interface to work with the event mediator.
+ * Engagement Adapters must implement this interface to work with the event mediator.
  */
 export interface EventAdapter {
     name: string;
-    sendEvent?: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => Promise<unknown>;
+    sendEvent?: (
+        event: AnalyticsEvent,
+        siteInfo?: EventSiteInfo,
+        consentPreferences?: ConsentPreferences
+    ) => Promise<unknown>;
 }
 
 /**
@@ -234,5 +263,5 @@ export interface EventAdapter {
  * This can be used for analytics, telemetry, or any other event tracking system.
  */
 export type EventMediator = {
-    track: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => void;
+    track: (event: AnalyticsEvent, siteInfo?: EventSiteInfo, consentPreferences?: ConsentPreferences) => void;
 };

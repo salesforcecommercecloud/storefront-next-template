@@ -28,8 +28,8 @@ function createEvent(eventType, data) {
 * @param event - The view page event to send
 * @param eventMediator - The event mediator to send the event to
 */
-function sendViewPageEvent(event, eventMediator, siteInfo) {
-	eventMediator.track(event, siteInfo);
+function sendViewPageEvent(event, eventMediator, siteInfo, consentPreferences) {
+	eventMediator.track(event, siteInfo, consentPreferences);
 }
 
 //#endregion
@@ -48,8 +48,8 @@ let mediatorInstance;
 * @returns EventMediator instance
 */
 function createEventMediator(getAdapters) {
-	return { track: (event, siteInfo) => {
-		processEventWithAdapters(event, getAdapters, siteInfo).catch((error) => {
+	return { track: (event, siteInfo, consentPreferences) => {
+		processEventWithAdapters(event, getAdapters, siteInfo, consentPreferences).catch((error) => {
 			console.error("Analytics tracking failed:", error);
 		});
 	} };
@@ -82,7 +82,7 @@ function resetEventMediator() {
 * @param event - The analytics event to process
 * @param getAdapters - Function that returns the current array of event adapters
 */
-async function processEventWithAdapters(event, getAdapters, siteInfo) {
+async function processEventWithAdapters(event, getAdapters, siteInfo, consentPreferences) {
 	const eventAdapters = getAdapters();
 	if (eventAdapters.length === 0) {
 		console.warn(`There are no active adapters to send the event to`);
@@ -90,7 +90,7 @@ async function processEventWithAdapters(event, getAdapters, siteInfo) {
 	}
 	const promises = eventAdapters.map(async (adapter) => {
 		try {
-			if (typeof adapter.sendEvent === "function") await adapter.sendEvent(event, siteInfo);
+			if (typeof adapter.sendEvent === "function") await adapter.sendEvent(event, siteInfo, consentPreferences);
 			else console.warn(`Adapter ${adapter.name} does not implement sendEvent`);
 		} catch (error) {
 			console.error(`Failed to send event to ${adapter.name}:`, error);

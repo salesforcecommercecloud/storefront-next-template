@@ -22,6 +22,7 @@
  * which adds `metadata` and `runtime` sections.
  */
 import type { BaseConfig, Site, Url } from '@salesforce/storefront-next-runtime/config';
+import type { ConsentCategory } from '@salesforce/storefront-next-runtime/events';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
 import type { TrackingConsent } from '@/types/tracking-consent';
 
@@ -74,6 +75,7 @@ export type AppConfig = {
             trackingConsent?: {
                 enabled: boolean;
                 defaultTrackingConsent: TrackingConsent;
+                consentCategories?: ConsentCategory[];
                 position?: 'bottom-left' | 'bottom-right' | 'bottom-center';
             };
             pageViewsBlocklist: string[];
