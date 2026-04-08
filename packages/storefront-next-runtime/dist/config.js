@@ -216,7 +216,10 @@ const mergeEnvConfig = (env = typeof process !== "undefined" ? process.env : {},
 		const normalizedPath = path.toLowerCase();
 		if (protectedPaths.some((protectedPath) => normalizedPath === protectedPath || normalizedPath.startsWith(`${protectedPath}__`))) throw new Error(`Environment variable "${varName}" attempts to override protected config path "${path}".\n\nThe engagement configuration cannot be overridden via environment variables. Update config.server.ts directly to change engagement settings.`);
 		if (baseConfig && validPaths.length > 0) {
-			if (!validPaths.includes(normalizedPath)) throw new Error(`Invalid environment variable "${varName}": Config path "${path}" does not exist in config.server.ts.\n\nCheck your config.server.ts for available configuration paths, or add this path to your base configuration.`);
+			if (!validPaths.includes(normalizedPath)) {
+				console.warn(`[Config Warning] Ignoring environment variable "${varName}": Config path "${path}" does not exist in config.server.ts.`);
+				continue;
+			}
 		}
 		totalValueSize += varValue.length;
 		envVars.push({

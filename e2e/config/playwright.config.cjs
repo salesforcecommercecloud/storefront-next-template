@@ -19,7 +19,7 @@ function getPlaywrightConfig() {
   const isMobile = process.env.PLAYWRIGHT_MOBILE === 'true';
 
   const config = {
-    url: process.env.BASE_URL || 'http://localhost:5173',
+    url: (process.env.BASE_URL || 'http://localhost:5173').replace(/\/$/, ''),
     show: process.env.HEADLESS !== 'true',
     browser: 'chromium',
     waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '30000'),

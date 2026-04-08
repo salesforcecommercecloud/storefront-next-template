@@ -377,10 +377,33 @@ export const getBasket = async (
 
     try {
         const clients = createApiClients(context);
-        const basket = await clients.basket.getOrCreateBasket({
+        let basket = await clients.basket.getOrCreateBasket({
             params: { path: { basketId } },
             body: { currency },
         });
+
+        // If the basket's currency doesn't match the requested currency,
+        // update the basket to trigger price recalculation
+        if (currency && basket.basketId && basket.currency !== currency) {
+            logger.debug('Basket: currency mismatch, recalculating', {
+                basketCurrency: basket.currency,
+                requestedCurrency: currency,
+            });
+            try {
+                const { data: updatedBasket } = await clients.shopperBasketsV2.updateBasket({
+                    params: { path: { basketId: basket.basketId } },
+                    body: { currency },
+                });
+                basket = updatedBasket;
+            } catch (updateError) {
+                logger.error('Basket: currency update failed, using original basket', {
+                    error: updateError,
+                    basketId: basket.basketId,
+                });
+                // Continue with original basket rather than failing completely
+            }
+        }
+
         const nextSnapshot = createSnapshot(basket, { calculateSnapshot: calculateBasketSnapshot });
         context.set(basketResourceContext, createBasketResource(nextSnapshot, basket, true, null));
         logger.debug('Basket: hydration succeeded');

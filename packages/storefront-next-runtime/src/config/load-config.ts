@@ -58,8 +58,12 @@ export async function loadConfig<T extends BaseConfig = BaseConfig>(): Promise<T
         const config = (mod as Record<string, unknown>).default ?? mod;
         return config as T;
     } catch (error) {
-        throw new Error(`[storefront-next-runtime] Found config.server.ts at ${configPath} but failed to import it.`, {
-            cause: error,
-        });
+        const reason = error instanceof Error ? error.message : String(error);
+        throw new Error(
+            `[storefront-next-runtime] Found config.server.ts at ${configPath} but failed to import it.\n${reason}`,
+            {
+                cause: error,
+            }
+        );
     }
 }

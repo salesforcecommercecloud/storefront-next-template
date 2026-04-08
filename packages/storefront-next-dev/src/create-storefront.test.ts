@@ -15,11 +15,25 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'fs-extra';
-import { join, resolve } from 'path';
+import { join, resolve, dirname } from 'path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import Handlebars from 'handlebars';
 import { execFileSync, execSync } from 'child_process';
 import prompts from 'prompts';
 import trimExtensions from './extensibility/trim-extensions';
 import { prepareForLocalDev } from './utils/local-dev-setup';
+
+// The real template file — read once at import time using real node:fs (not the mocked fs-extra).
+// Tests that verify pnpm-workspace.yaml output use this to build expected content.
+const WORKSPACE_HBS_PATH = join(dirname(fileURLToPath(import.meta.url)), 'templates/pnpm-workspace.yaml.hbs');
+const WORKSPACE_HBS_RAW = readFileSync(WORKSPACE_HBS_PATH, 'utf8');
+const WORKSPACE_HBS_TEMPLATE = Handlebars.compile(WORKSPACE_HBS_RAW);
+
+function expectedWorkspaceContent(packages: string[]): string {
+    const packagesBlock = packages.length > 0 ? `packages:\n${packages.map((p) => `  - ${p}`).join('\n')}\n` : '';
+    return WORKSPACE_HBS_TEMPLATE({ packages: packagesBlock });
+}
 
 // Mock external modules before importing the SUT
 vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -38,6 +52,8 @@ vi.mock('fs-extra', () => ({
         readFileSync: vi.fn(),
         writeFileSync: vi.fn(),
         copySync: vi.fn(),
+        readdirSync: vi.fn(),
+        statSync: vi.fn(),
     },
 }));
 vi.mock('./extensibility/trim-extensions', () => ({
@@ -101,6 +117,9 @@ describe('create-storefront', () => {
         originalEnv = { ...process.env };
         vi.clearAllMocks();
         vi.resetAllMocks();
+        // Safe defaults for fs scan — no sub-packages, no pnpm-workspace.yaml generated
+        vi.mocked(fs.readdirSync as any).mockReturnValue([]);
+        vi.mocked(fs.statSync as any).mockReturnValue({ isDirectory: () => false });
         // Reset injected values
         promptsInjectedValues = [];
         promptsCallCount = 0;
@@ -799,6 +818,190 @@ describe('create-storefront', () => {
         });
     });
 
+    describe('standalone project setup (pnpm-workspace.yaml)', () => {
+        it('should generate pnpm-workspace.yaml for any subdirectory with a package.json', async () => {
+            vi.mocked(fs.readdirSync as any).mockReturnValue(['e2e', 'src']);
+            vi.mocked(fs.statSync as any).mockReturnValue({ isDirectory: () => true });
+            vi.mocked(fs.existsSync as any).mockImplementation((p: string) => {
+                const s = String(p);
+                if (s.endsWith('.git')) return false;
+                if (s.includes(join('src', 'extensions', 'config.json'))) return false;
+                if (s.endsWith('.env.default')) return false;
+                if (s === join('my-storefront', 'e2e', 'package.json')) return true;
+                if (s === join('my-storefront', 'src', 'package.json')) return false;
+                return true;
+            });
+            vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('.hbs')) return WORKSPACE_HBS_RAW;
+                if (String(p).endsWith('config-meta.json')) return JSON.stringify({ configs: [] });
+                return '';
+            });
+
+            await createStorefront({
+                name: 'my-storefront',
+                template: 'https://example.com/template.git',
+                defaults: true,
+            });
+
+            expect(fs.writeFileSync).toHaveBeenCalledWith(
+                join('my-storefront', 'pnpm-workspace.yaml'),
+                expectedWorkspaceContent(['e2e'])
+            );
+        });
+
+        it('should list multiple sub-packages in pnpm-workspace.yaml', async () => {
+            vi.mocked(fs.readdirSync as any).mockReturnValue(['e2e', 'backend']);
+            vi.mocked(fs.statSync as any).mockReturnValue({ isDirectory: () => true });
+            vi.mocked(fs.existsSync as any).mockImplementation((p: string) => {
+                const s = String(p);
+                if (s.endsWith('.git')) return false;
+                if (s.includes(join('src', 'extensions', 'config.json'))) return false;
+                if (s.endsWith('.env.default')) return false;
+                if (s.endsWith('package.json')) return true;
+                return true;
+            });
+            vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('.hbs')) return WORKSPACE_HBS_RAW;
+                if (String(p).endsWith('config-meta.json')) return JSON.stringify({ configs: [] });
+                return '';
+            });
+
+            await createStorefront({
+                name: 'my-storefront',
+                template: 'https://example.com/template.git',
+                defaults: true,
+            });
+
+            expect(fs.writeFileSync).toHaveBeenCalledWith(
+                join('my-storefront', 'pnpm-workspace.yaml'),
+                expectedWorkspaceContent(['e2e', 'backend'])
+            );
+        });
+
+        it('should generate pnpm-workspace.yaml with security settings even when no subdirectory has a package.json', async () => {
+            // readdirSync returns [] by default from beforeEach
+            vi.mocked(fs.existsSync as any).mockImplementation((p: string) => {
+                const s = String(p);
+                if (s.endsWith('.git')) return false;
+                if (s.includes(join('src', 'extensions', 'config.json'))) return false;
+                if (s.endsWith('.env.default')) return false;
+                return true;
+            });
+            vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('.hbs')) return WORKSPACE_HBS_RAW;
+                if (String(p).endsWith('config-meta.json')) return JSON.stringify({ configs: [] });
+                return '';
+            });
+
+            await createStorefront({
+                name: 'my-storefront',
+                template: 'https://example.com/template.git',
+                defaults: true,
+            });
+
+            expect(fs.writeFileSync).toHaveBeenCalledWith(
+                join('my-storefront', 'pnpm-workspace.yaml'),
+                expectedWorkspaceContent([])
+            );
+        });
+
+        it('should exclude gitignored directories from pnpm-workspace.yaml', async () => {
+            vi.mocked(fs.readdirSync as any).mockReturnValue(['e2e', 'build']);
+            vi.mocked(fs.statSync as any).mockReturnValue({ isDirectory: () => true });
+            vi.mocked(fs.existsSync as any).mockImplementation((p: string) => {
+                const s = String(p);
+                if (s.endsWith('.git')) return false;
+                if (s.includes(join('src', 'extensions', 'config.json'))) return false;
+                if (s.endsWith('.env.default')) return false;
+                if (s.endsWith('package.json')) return true;
+                return true; // includes .gitignore and config-meta.json
+            });
+            vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('.hbs')) return WORKSPACE_HBS_RAW;
+                if (String(p).endsWith('.gitignore')) return 'build\n.env\n# comment\n';
+                if (String(p).endsWith('config-meta.json')) return JSON.stringify({ configs: [] });
+                return '';
+            });
+
+            await createStorefront({
+                name: 'my-storefront',
+                template: 'https://example.com/template.git',
+                defaults: true,
+            });
+
+            expect(fs.writeFileSync).toHaveBeenCalledWith(
+                join('my-storefront', 'pnpm-workspace.yaml'),
+                expectedWorkspaceContent(['e2e'])
+            );
+        });
+
+        it('should skip node_modules and dotfiles when scanning for sub-packages', async () => {
+            vi.mocked(fs.readdirSync as any).mockReturnValue(['node_modules', '.git', 'e2e']);
+            vi.mocked(fs.statSync as any).mockReturnValue({ isDirectory: () => true });
+            vi.mocked(fs.existsSync as any).mockImplementation((p: string) => {
+                const s = String(p);
+                if (s.endsWith('.git')) return false;
+                if (s.includes(join('src', 'extensions', 'config.json'))) return false;
+                if (s.endsWith('.env.default')) return false;
+                if (s.endsWith('package.json')) return true;
+                return true;
+            });
+            vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('.hbs')) return WORKSPACE_HBS_RAW;
+                if (String(p).endsWith('config-meta.json')) return JSON.stringify({ configs: [] });
+                return '';
+            });
+
+            await createStorefront({
+                name: 'my-storefront',
+                template: 'https://example.com/template.git',
+                defaults: true,
+            });
+
+            const writeCall = vi
+                .mocked(fs.writeFileSync)
+                .mock.calls.find((call) => String(call[0]).endsWith('pnpm-workspace.yaml'));
+            expect(writeCall).toBeDefined();
+            const content = String(writeCall?.[1]);
+            expect(content).toContain('e2e');
+            expect(content).not.toContain('node_modules');
+            expect(content).not.toContain('.git');
+        });
+
+        it('should include supply chain security settings in generated pnpm-workspace.yaml', async () => {
+            vi.mocked(fs.readdirSync as any).mockReturnValue(['e2e']);
+            vi.mocked(fs.statSync as any).mockReturnValue({ isDirectory: () => true });
+            vi.mocked(fs.existsSync as any).mockImplementation((p: string) => {
+                const s = String(p);
+                if (s.endsWith('.git')) return false;
+                if (s.includes(join('src', 'extensions', 'config.json'))) return false;
+                if (s.endsWith('.env.default')) return false;
+                if (s.endsWith('package.json')) return true;
+                return true;
+            });
+            vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
+                if (String(p).endsWith('.hbs')) return WORKSPACE_HBS_RAW;
+                if (String(p).endsWith('config-meta.json')) return JSON.stringify({ configs: [] });
+                return '';
+            });
+
+            await createStorefront({
+                name: 'my-storefront',
+                template: 'https://example.com/template.git',
+                defaults: true,
+            });
+
+            const writeCall = vi
+                .mocked(fs.writeFileSync)
+                .mock.calls.find((call) => String(call[0]).endsWith('pnpm-workspace.yaml'));
+            expect(writeCall).toBeDefined();
+            const content = String(writeCall?.[1]);
+            expect(content).toContain('onlyBuiltDependencies');
+            expect(content).toContain('minimumReleaseAge: 2880');
+            expect(content).toContain('trustPolicy: no-downgrade');
+        });
+    });
+
     describe('--defaults flag', () => {
         it('should skip extension and config prompts when defaults is true', async () => {
             vi.mocked(fs.existsSync).mockImplementation((p: any) => {
@@ -907,5 +1110,65 @@ describe('create-storefront', () => {
                 'PUBLIC__app__commerce__api__clientId=default-value'
             );
         });
+    });
+});
+
+// --- Sync test: monorepo pnpm-workspace.yaml ↔ template pnpm-workspace.yaml.hbs ---
+// This test uses real file I/O (node:fs, not the mocked fs-extra) and must be kept
+// outside the mocked describe block.
+
+/** Extract a scalar value from a YAML file: `key: value` → value (string or number) */
+function extractScalar(content: string, key: string): string | undefined {
+    const match = content.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
+    return match?.[1]?.trim();
+}
+
+/** Extract a YAML list under a key: the `- item` lines immediately following `key:` */
+function extractList(content: string, key: string): string[] {
+    const keyIndex = content.indexOf(`${key}:`);
+    if (keyIndex === -1) return [];
+    const afterKey = content.slice(keyIndex + key.length + 1);
+    const items: string[] = [];
+    for (const line of afterKey.split('\n')) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('- ')) {
+            // Strip inline comments and quotes from list items
+            const raw = trimmed
+                .slice(2)
+                .split('#')[0]
+                .trim()
+                .replace(/^['"]|['"]$/g, '');
+            items.push(raw);
+        } else if (trimmed === '' || trimmed.startsWith('#')) {
+            continue; // skip blank lines and comments between items
+        } else if (!line.startsWith(' ') && !line.startsWith('\t') && trimmed !== '') {
+            break; // hit the next top-level key
+        }
+    }
+    return items;
+}
+
+describe('pnpm-workspace.yaml supply chain settings parity', () => {
+    it('monorepo pnpm-workspace.yaml and template .hbs have matching security settings', () => {
+        const monorepoYamlPath = resolve(dirname(fileURLToPath(import.meta.url)), '../../../pnpm-workspace.yaml');
+        const monorepoContent = readFileSync(monorepoYamlPath, 'utf8');
+
+        const syncMessage = [
+            'Update both files to keep them in sync:',
+            `  monorepo: ${monorepoYamlPath}`,
+            `  template: ${WORKSPACE_HBS_PATH}`,
+        ].join('\n');
+
+        const monorepoList = extractList(monorepoContent, 'onlyBuiltDependencies').sort();
+        const templateList = extractList(WORKSPACE_HBS_RAW, 'onlyBuiltDependencies').sort();
+        expect(monorepoList, `onlyBuiltDependencies mismatch.\n${syncMessage}`).toEqual(templateList);
+
+        const monorepoAge = extractScalar(monorepoContent, 'minimumReleaseAge');
+        const templateAge = extractScalar(WORKSPACE_HBS_RAW, 'minimumReleaseAge');
+        expect(monorepoAge, `minimumReleaseAge mismatch.\n${syncMessage}`).toEqual(templateAge);
+
+        const monorepoPolicy = extractScalar(monorepoContent, 'trustPolicy');
+        const templatePolicy = extractScalar(WORKSPACE_HBS_RAW, 'trustPolicy');
+        expect(monorepoPolicy, `trustPolicy mismatch.\n${syncMessage}`).toEqual(templatePolicy);
     });
 });

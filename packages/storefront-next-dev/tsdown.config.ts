@@ -180,6 +180,10 @@ export default defineConfig([
                 from: 'src/extensibility/templates',
                 to: 'dist/extensibility/templates',
             },
+            {
+                from: 'src/templates',
+                to: 'dist/templates',
+            },
         ],
         clean: false,
         external: [/node_modules/],

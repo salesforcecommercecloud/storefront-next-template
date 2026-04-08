@@ -314,10 +314,11 @@ export const mergeEnvConfig = (
 
         if (baseConfig && validPaths.length > 0) {
             if (!validPaths.includes(normalizedPath)) {
-                throw new Error(
-                    `Invalid environment variable "${varName}": Config path "${path}" does not exist in config.server.ts.\n\n` +
-                        `Check your config.server.ts for available configuration paths, or add this path to your base configuration.`
+                // eslint-disable-next-line no-console
+                console.warn(
+                    `[Config Warning] Ignoring environment variable "${varName}": Config path "${path}" does not exist in config.server.ts.`
                 );
+                continue;
             }
         }
 

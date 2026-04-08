@@ -141,11 +141,13 @@ describe('mergeEnvConfig', () => {
         );
     });
 
-    it('should validate paths against baseConfig when provided', () => {
+    it('should warn and ignore env vars with paths not in baseConfig', () => {
         const baseConfig = { app: { site: { locale: 'en-US' } } };
-        expect(() => mergeEnvConfig({ PUBLIC__app__invalid__path: 'value' }, baseConfig)).toThrow(
-            'does not exist in config.server.ts'
-        );
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const result = mergeEnvConfig({ PUBLIC__app__invalid__path: 'value' }, baseConfig);
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('does not exist in config.server.ts'));
+        expect(result).toEqual({});
+        warnSpy.mockRestore();
     });
 });
 

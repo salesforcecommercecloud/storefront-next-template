@@ -64,7 +64,8 @@ async function loadRuntimeConfig(projectDirectory) {
 		}).import(configPath);
 		return (mod.default ?? mod).runtime;
 	} catch (error) {
-		throw new Error(`[storefront-next-dev] Found config.server.ts at ${configPath} but failed to import it.`, { cause: error });
+		const reason = error instanceof Error ? error.message : String(error);
+		throw new Error(`[storefront-next-dev] Found config.server.ts at ${configPath} but failed to import it.\n${reason}`, { cause: error });
 	}
 }
 const buildMrtConfig = async (_buildDirectory, projectDirectory) => {

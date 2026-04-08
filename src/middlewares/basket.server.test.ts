@@ -83,7 +83,7 @@ describe('basket.server middleware', () => {
     test('eager mode loads basket and sets cookie', async () => {
         const basket = {
             basketId: 'basket-1',
-            currency: 'USD',
+            currency: 'GBP',
             productItems: [{ productId: 'sku-1', quantity: 2 }],
         };
         vi.mocked(createApiClients).mockReturnValue({
@@ -103,7 +103,7 @@ describe('basket.server middleware', () => {
     });
 
     test('custom cookie name is used in Set-Cookie header', async () => {
-        const basket = { basketId: 'basket-2', currency: 'USD', productItems: [] };
+        const basket = { basketId: 'basket-2', currency: 'GBP', productItems: [] };
         vi.mocked(createApiClients).mockReturnValue({
             basket: {
                 getOrCreateBasket: vi.fn().mockResolvedValue(basket),
@@ -163,7 +163,7 @@ describe('basket.server middleware', () => {
     test('merges custom snapshot fields while preserving defaults', async () => {
         const basket = {
             basketId: 'basket-merge',
-            currency: 'USD',
+            currency: 'GBP',
             productItems: [{ productId: 'sku-1', quantity: 2 }],
         };
         vi.mocked(createApiClients).mockReturnValue({
@@ -201,6 +201,37 @@ describe('basket.server middleware', () => {
             uniqueProductCount: 1,
             hasPickupItems: true,
         });
+    });
+
+    test('recalculates basket when currency does not match', async () => {
+        const basket = {
+            basketId: 'basket-currency',
+            currency: 'USD',
+            productItems: [{ productId: 'sku-1', quantity: 1 }],
+        };
+        const recalculatedBasket = {
+            ...basket,
+            currency: 'GBP',
+        };
+        const updateBasketMock = vi.fn().mockResolvedValue({ data: recalculatedBasket });
+        vi.mocked(createApiClients).mockReturnValue({
+            basket: {
+                getOrCreateBasket: vi.fn().mockResolvedValue(basket),
+            },
+            shopperBasketsV2: {
+                updateBasket: updateBasketMock,
+            },
+        } as any);
+
+        const middleware = createBasketMiddleware({ mode: 'eager' });
+        await middleware(createArgs(mockRequest, mockContext), mockNext);
+
+        expect(updateBasketMock).toHaveBeenCalledWith({
+            params: { path: { basketId: 'basket-currency' } },
+            body: { currency: 'GBP' },
+        });
+        const basketResource = await getBasket(mockContext);
+        expect(basketResource.current?.currency).toBe('GBP');
     });
 
     test('load rethrows and stores error when hydration fails', async () => {

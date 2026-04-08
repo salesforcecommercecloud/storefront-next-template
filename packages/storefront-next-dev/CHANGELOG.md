@@ -1,4 +1,4 @@
-## v0.3.0-dev (Apr 01, 2026)
+## v0.4.0-dev (Apr 07, 2026)
 
 - Clean up RSC/React Server Components references from documentation and comments ([#1363](https://github.com/commerce-emu/storefront-next/pull/1363))
 - Remove internal "odyssey" codename references from codebase

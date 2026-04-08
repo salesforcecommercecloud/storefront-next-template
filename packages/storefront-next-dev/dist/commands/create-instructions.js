@@ -2,9 +2,9 @@ import { t as logger } from "../logger.js";
 import "../logger2.js";
 import { Command, Flags } from "@oclif/core";
 import path from "path";
+import Handlebars from "handlebars";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import Handlebars from "handlebars";
 
 //#region src/extensibility/create-instructions.ts
 const SKIP_DIRS = [
