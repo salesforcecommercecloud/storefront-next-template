@@ -149,7 +149,7 @@ function AboutUsRegionContent({
     fallback,
 }: {
     page: PageWithComponentData | null;
-    regionId: 'precontact' | 'postcontact';
+    regionId: 'headline' | 'additionalinformation';
     fallback: ReactElement;
 }) {
     // If no page, show static content
@@ -167,14 +167,20 @@ function AboutUsRegionContent({
  * Headline Region content - shows Page Designer components or static fallback
  */
 function PreContactRegionContent({ page, t }: { page: PageWithComponentData | null; t: TFunction<'aboutUs'> }) {
-    return <AboutUsRegionContent page={page} regionId="precontact" fallback={<PreContactStaticContent t={t} />} />;
+    return <AboutUsRegionContent page={page} regionId="headline" fallback={<PreContactStaticContent t={t} />} />;
 }
 
 /**
  * Additional Information Region content - shows Page Designer components or static fallback
  */
 function PostContactRegionContent({ page, t }: { page: PageWithComponentData | null; t: TFunction<'aboutUs'> }) {
-    return <AboutUsRegionContent page={page} regionId="postcontact" fallback={<PostContactStaticContent t={t} />} />;
+    return (
+        <AboutUsRegionContent
+            page={page}
+            regionId="additionalinformation"
+            fallback={<PostContactStaticContent t={t} />}
+        />
+    );
 }
 
 /**

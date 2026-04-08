@@ -241,7 +241,7 @@ describe('AboutUs', () => {
     });
 
     describe('Region Rendering', () => {
-        test('renders static content when precontact region does not exist', async () => {
+        test('renders static content when headline region does not exist', async () => {
             const page = {
                 ...createMockPage([]),
                 componentData: {},
@@ -260,9 +260,9 @@ describe('AboutUs', () => {
             });
         });
 
-        test('renders Page Designer region when precontact region has components', async () => {
-            const precontactRegion = {
-                id: 'precontact',
+        test('renders Page Designer region when headline region has components', async () => {
+            const headlineRegion = {
+                id: 'headline',
                 components: [
                     { id: 'component-1', typeId: 'hero' },
                     { id: 'component-2', typeId: 'banner' },
@@ -270,7 +270,7 @@ describe('AboutUs', () => {
             };
 
             const page = {
-                ...createMockPage([precontactRegion]),
+                ...createMockPage([headlineRegion]),
                 componentData: {},
             };
 
@@ -282,21 +282,21 @@ describe('AboutUs', () => {
                 // Contact should still render
                 expect(screen.getByTestId('contact')).toBeInTheDocument();
                 // Page Designer region should render
-                expect(screen.getByTestId('region-precontact')).toBeInTheDocument();
-                expect(screen.getByText('Page Designer Region: precontact')).toBeInTheDocument();
+                expect(screen.getByTestId('region-headline')).toBeInTheDocument();
+                expect(screen.getByText('Page Designer Region: headline')).toBeInTheDocument();
                 // Static content should NOT render when region has components
                 expect(screen.queryByText(t('aboutUs:section.ourGoal.title'))).not.toBeInTheDocument();
             });
         });
 
-        test('renders static content when precontact region has no components', async () => {
-            const precontactRegion = {
-                id: 'precontact',
+        test('renders static content when headline region has no components', async () => {
+            const headlineRegion = {
+                id: 'headline',
                 components: [],
             };
 
             const page = {
-                ...createMockPage([precontactRegion]),
+                ...createMockPage([headlineRegion]),
                 componentData: {},
             };
 
@@ -310,13 +310,13 @@ describe('AboutUs', () => {
                 // Static fallback content should render
                 expect(screen.getByText(t('aboutUs:section.ourGoal.title'))).toBeInTheDocument();
                 // Page Designer region should NOT render
-                expect(screen.queryByTestId('region-precontact')).not.toBeInTheDocument();
+                expect(screen.queryByTestId('region-headline')).not.toBeInTheDocument();
             });
         });
 
-        test('renders Page Designer region when postcontact region has components', async () => {
-            const postcontactRegion = {
-                id: 'postcontact',
+        test('renders Page Designer region when additionalinformation region has components', async () => {
+            const additionalinformationRegion = {
+                id: 'additionalinformation',
                 components: [
                     { id: 'component-1', typeId: 'contentcard' },
                     { id: 'component-2', typeId: 'grid' },
@@ -324,7 +324,7 @@ describe('AboutUs', () => {
             };
 
             const page = {
-                ...createMockPage([postcontactRegion]),
+                ...createMockPage([additionalinformationRegion]),
                 componentData: {},
             };
 
@@ -336,21 +336,21 @@ describe('AboutUs', () => {
                 // Contact should still render
                 expect(screen.getByTestId('contact')).toBeInTheDocument();
                 // Page Designer region should render
-                expect(screen.getByTestId('region-postcontact')).toBeInTheDocument();
-                expect(screen.getByText('Page Designer Region: postcontact')).toBeInTheDocument();
+                expect(screen.getByTestId('region-additionalinformation')).toBeInTheDocument();
+                expect(screen.getByText('Page Designer Region: additionalinformation')).toBeInTheDocument();
                 // Static content should NOT render when region has components
                 expect(screen.queryByText(t('aboutUs:section.ourMission.title'))).not.toBeInTheDocument();
             });
         });
 
-        test('renders static content when postcontact region has no components', async () => {
-            const postcontactRegion = {
-                id: 'postcontact',
+        test('renders static content when additionalinformation region has no components', async () => {
+            const additionalinformationRegion = {
+                id: 'additionalinformation',
                 components: [],
             };
 
             const page = {
-                ...createMockPage([postcontactRegion]),
+                ...createMockPage([additionalinformationRegion]),
                 componentData: {},
             };
 
@@ -364,22 +364,22 @@ describe('AboutUs', () => {
                 // Static fallback content should render
                 expect(screen.getByText(t('aboutUs:section.ourMission.title'))).toBeInTheDocument();
                 // Page Designer region should NOT render
-                expect(screen.queryByTestId('region-postcontact')).not.toBeInTheDocument();
+                expect(screen.queryByTestId('region-additionalinformation')).not.toBeInTheDocument();
             });
         });
 
         test('renders both Page Designer regions when both have components', async () => {
-            const precontactRegion = {
-                id: 'precontact',
+            const headlineRegion = {
+                id: 'headline',
                 components: [{ id: 'component-1', typeId: 'hero' }],
             };
-            const postcontactRegion = {
-                id: 'postcontact',
+            const additionalinformationRegion = {
+                id: 'additionalinformation',
                 components: [{ id: 'component-2', typeId: 'contentcard' }],
             };
 
             const page = {
-                ...createMockPage([precontactRegion, postcontactRegion]),
+                ...createMockPage([headlineRegion, additionalinformationRegion]),
                 componentData: {},
             };
 
@@ -391,8 +391,8 @@ describe('AboutUs', () => {
                 // Contact should always render
                 expect(screen.getByTestId('contact')).toBeInTheDocument();
                 // Both Page Designer regions should render
-                expect(screen.getByTestId('region-precontact')).toBeInTheDocument();
-                expect(screen.getByTestId('region-postcontact')).toBeInTheDocument();
+                expect(screen.getByTestId('region-headline')).toBeInTheDocument();
+                expect(screen.getByTestId('region-additionalinformation')).toBeInTheDocument();
                 // Static content should NOT render when regions have components
                 expect(screen.queryByText(t('aboutUs:section.ourGoal.title'))).not.toBeInTheDocument();
                 expect(screen.queryByText(t('aboutUs:section.ourMission.title'))).not.toBeInTheDocument();
@@ -569,8 +569,8 @@ describe('AboutUs', () => {
             // Test with regions
             const page = {
                 ...createMockPage([
-                    { id: 'precontact', components: [] },
-                    { id: 'postcontact', components: [] },
+                    { id: 'headline', components: [] },
+                    { id: 'additionalinformation', components: [] },
                 ]),
                 componentData: {},
             };
