@@ -238,13 +238,13 @@ describe('ProductCarousel', () => {
         test('renders component region items when products are empty', () => {
             const component = {
                 id: 'carousel-comp-1',
-                typeId: 'odyssey_base.productCarousel',
+                typeId: 'Layout.productCarousel',
                 regions: [
                     {
                         id: 'products',
                         components: [
-                            { id: 'product-tile-a', typeId: 'odyssey_base.productTile' },
-                            { id: 'product-tile-b', typeId: 'odyssey_base.productTile' },
+                            { id: 'product-tile-a', typeId: 'Content.productTile' },
+                            { id: 'product-tile-b', typeId: 'Content.productTile' },
                         ],
                     },
                 ],

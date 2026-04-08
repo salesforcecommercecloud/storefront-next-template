@@ -15,7 +15,7 @@
  */
 import { describe, test, expect } from 'vitest';
 import 'reflect-metadata';
-import { COMPONENT_PACKAGE } from './component';
+import { DEFAULT_COMPONENT_GROUP } from './component';
 import {
     RegionDefinition,
     getRegionDefinitions,
@@ -75,7 +75,7 @@ describe('RegionDefinition Decorator', () => {
             expect(definitions[2].id).toBe('footer');
         });
 
-        test('transforms component type exclusions with package prefix', () => {
+        test('stores raw component type exclusions on class metadata', () => {
             @RegionDefinition([
                 {
                     id: 'main',
@@ -86,13 +86,10 @@ describe('RegionDefinition Decorator', () => {
             class TestComponent {}
 
             const definitions = Reflect.getMetadata(REGION_DEFINITIONS_KEY, TestComponent);
-            expect(definitions[0].componentTypeExclusions).toEqual([
-                `${COMPONENT_PACKAGE}.header`,
-                `${COMPONENT_PACKAGE}.footer`,
-            ]);
+            expect(definitions[0].componentTypeExclusions).toEqual(['header', 'footer']);
         });
 
-        test('transforms component type inclusions with package prefix', () => {
+        test('stores raw component type inclusions on class metadata', () => {
             @RegionDefinition([
                 {
                     id: 'sidebar',
@@ -103,13 +100,10 @@ describe('RegionDefinition Decorator', () => {
             class TestComponent {}
 
             const definitions = Reflect.getMetadata(REGION_DEFINITIONS_KEY, TestComponent);
-            expect(definitions[0].componentTypeInclusions).toEqual([
-                `${COMPONENT_PACKAGE}.banner`,
-                `${COMPONENT_PACKAGE}.promo`,
-            ]);
+            expect(definitions[0].componentTypeInclusions).toEqual(['banner', 'promo']);
         });
 
-        test('transforms default component constructors typeId with package prefix', () => {
+        test('stores raw default component constructor typeIds on class metadata', () => {
             @RegionDefinition([
                 {
                     id: 'main',
@@ -126,7 +120,7 @@ describe('RegionDefinition Decorator', () => {
             class TestComponent {}
 
             const definitions = Reflect.getMetadata(REGION_DEFINITIONS_KEY, TestComponent);
-            expect(definitions[0].defaultComponentConstructors[0].typeId).toBe(`${COMPONENT_PACKAGE}.hero`);
+            expect(definitions[0].defaultComponentConstructors[0].typeId).toBe('hero');
         });
 
         test('sets maxComponents property', () => {
@@ -143,7 +137,7 @@ describe('RegionDefinition Decorator', () => {
             expect(definitions[0].maxComponents).toBe(5);
         });
 
-        test('stores individual metadata properties', () => {
+        test('exposes aggregated region metadata via getters with resolved type prefixes', () => {
             @RegionDefinition([
                 {
                     id: 'region1',
@@ -161,17 +155,11 @@ describe('RegionDefinition Decorator', () => {
             ])
             class TestComponent {}
 
-            const regionIds = Reflect.getMetadata('region:ids', TestComponent);
-            const regionNames = Reflect.getMetadata('region:names', TestComponent);
-            const exclusions = Reflect.getMetadata('region:exclusions', TestComponent);
-            const inclusions = Reflect.getMetadata('region:inclusions', TestComponent);
-            const defaultConstructors = Reflect.getMetadata('region:default-constructors', TestComponent);
-
-            expect(regionIds).toEqual(['region1']);
-            expect(regionNames).toEqual(['Region 1']);
-            expect(exclusions).toEqual([`${COMPONENT_PACKAGE}.excluded1`]);
-            expect(inclusions).toEqual([`${COMPONENT_PACKAGE}.included1`]);
-            expect(defaultConstructors).toHaveLength(1);
+            expect(getRegionIds(TestComponent)).toEqual(['region1']);
+            expect(getRegionNames(TestComponent)).toEqual(['Region 1']);
+            expect(getRegionExclusions(TestComponent)).toEqual([`${DEFAULT_COMPONENT_GROUP}.excluded1`]);
+            expect(getRegionInclusions(TestComponent)).toEqual([`${DEFAULT_COMPONENT_GROUP}.included1`]);
+            expect(getRegionDefaultConstructors(TestComponent)).toHaveLength(1);
         });
     });
 
@@ -287,9 +275,9 @@ describe('RegionDefinition Decorator', () => {
 
             const exclusions = getRegionExclusions(TestComponent);
             expect(exclusions).toEqual([
-                `${COMPONENT_PACKAGE}.header`,
-                `${COMPONENT_PACKAGE}.footer`,
-                `${COMPONENT_PACKAGE}.sidebar`,
+                `${DEFAULT_COMPONENT_GROUP}.header`,
+                `${DEFAULT_COMPONENT_GROUP}.footer`,
+                `${DEFAULT_COMPONENT_GROUP}.sidebar`,
             ]);
         });
 
@@ -319,7 +307,7 @@ describe('RegionDefinition Decorator', () => {
             class TestComponent {}
 
             const exclusions = getRegionExclusionsForRegion(TestComponent, 'main');
-            expect(exclusions).toEqual([`${COMPONENT_PACKAGE}.header`, `${COMPONENT_PACKAGE}.footer`]);
+            expect(exclusions).toEqual([`${DEFAULT_COMPONENT_GROUP}.header`, `${DEFAULT_COMPONENT_GROUP}.footer`]);
         });
 
         test('returns empty array for region without exclusions', () => {
@@ -357,9 +345,9 @@ describe('RegionDefinition Decorator', () => {
 
             const inclusions = getRegionInclusions(TestComponent);
             expect(inclusions).toEqual([
-                `${COMPONENT_PACKAGE}.hero`,
-                `${COMPONENT_PACKAGE}.banner`,
-                `${COMPONENT_PACKAGE}.promo`,
+                `${DEFAULT_COMPONENT_GROUP}.hero`,
+                `${DEFAULT_COMPONENT_GROUP}.banner`,
+                `${DEFAULT_COMPONENT_GROUP}.promo`,
             ]);
         });
 
@@ -389,7 +377,7 @@ describe('RegionDefinition Decorator', () => {
             class TestComponent {}
 
             const inclusions = getRegionInclusionsForRegion(TestComponent, 'main');
-            expect(inclusions).toEqual([`${COMPONENT_PACKAGE}.hero`, `${COMPONENT_PACKAGE}.product-grid`]);
+            expect(inclusions).toEqual([`${DEFAULT_COMPONENT_GROUP}.hero`, `${DEFAULT_COMPONENT_GROUP}.product-grid`]);
         });
 
         test('returns empty array for region without inclusions', () => {
@@ -592,7 +580,7 @@ describe('RegionDefinition Decorator', () => {
             expect(mainContent?.defaultComponentConstructors).toHaveLength(1);
 
             const headerInclusions = getRegionInclusionsForRegion(PageLayout, 'header');
-            expect(headerInclusions).toContain(`${COMPONENT_PACKAGE}.navigation`);
+            expect(headerInclusions).toContain(`${DEFAULT_COMPONENT_GROUP}.navigation`);
         });
 
         test('container component with nested regions', () => {

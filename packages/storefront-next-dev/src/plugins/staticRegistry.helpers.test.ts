@@ -57,7 +57,7 @@ describe('extractComponentInfo', () => {
         {
             description: 'extracts basic component ID with default group',
             source: "@Component('hero')\nexport default class Hero {}",
-            expected: { id: 'odyssey_base.hero', group: 'odyssey_base' },
+            expected: { id: 'storefrontnext_base.hero', group: 'storefrontnext_base' },
         },
         {
             description: 'extracts custom group from metadata object',
@@ -67,17 +67,17 @@ describe('extractComponentInfo', () => {
         {
             description: 'handles single quotes in component ID',
             source: "@Component('product-carousel')\nexport default class ProductCarousel {}",
-            expected: { id: 'odyssey_base.product-carousel', group: 'odyssey_base' },
+            expected: { id: 'storefrontnext_base.product-carousel', group: 'storefrontnext_base' },
         },
         {
             description: 'handles double quotes in component ID',
             source: '@Component("hero")\nexport default class Hero {}',
-            expected: { id: 'odyssey_base.hero', group: 'odyssey_base' },
+            expected: { id: 'storefrontnext_base.hero', group: 'storefrontnext_base' },
         },
         {
             description: 'handles template literals in component ID',
             source: '@Component(`hero`)\nexport default class Hero {}',
-            expected: { id: 'odyssey_base.hero', group: 'odyssey_base' },
+            expected: { id: 'storefrontnext_base.hero', group: 'storefrontnext_base' },
         },
         {
             description: 'handles nested group properties',
@@ -222,7 +222,7 @@ describe('generateRegistryCode', () => {
     it('generates registrations in stable sorted order', () => {
         const components: ComponentInfo[] = [
             {
-                id: 'odyssey_base.productCarousel',
+                id: 'storefrontnext_base.productCarousel',
                 filePath: '/test/project/src/components/product-carousel/index.tsx',
                 relativePath: '../components/product-carousel/index',
                 hasLoader: false,
@@ -230,7 +230,7 @@ describe('generateRegistryCode', () => {
                 hasFallback: false,
             },
             {
-                id: 'odyssey_base.hero',
+                id: 'storefrontnext_base.hero',
                 filePath: '/test/project/src/components/hero/index.tsx',
                 relativePath: '../components/hero/index',
                 hasLoader: false,
@@ -238,7 +238,7 @@ describe('generateRegistryCode', () => {
                 hasFallback: false,
             },
             {
-                id: 'odyssey_base.heroAlt',
+                id: 'storefrontnext_base.heroAlt',
                 filePath: '/test/project/src/components/hero-alt/index.tsx',
                 relativePath: '../components/hero-alt/index',
                 hasLoader: false,
@@ -251,7 +251,7 @@ describe('generateRegistryCode', () => {
 
         // Check header comment includes sorted component list (all components, including duplicates)
         expect(result).toContain(
-            'Components registered: odyssey_base.hero, odyssey_base.heroAlt, odyssey_base.productCarousel'
+            'Components registered: storefrontnext_base.hero, storefrontnext_base.heroAlt, storefrontnext_base.productCarousel'
         );
 
         const heroIndex = result.indexOf("() => import('../components/hero/index')");
@@ -273,7 +273,7 @@ describe('generateRegistryCode', () => {
     it('includes loader names when components have loaders', () => {
         const components: ComponentInfo[] = [
             {
-                id: 'odyssey_base.hero',
+                id: 'storefrontnext_base.hero',
                 filePath: '/test/project/src/components/hero/index.tsx',
                 relativePath: '../components/hero/index',
                 hasLoader: true,
@@ -284,14 +284,14 @@ describe('generateRegistryCode', () => {
 
         const result = generateRegistryCode(components, 'registry');
 
-        expect(result).toContain("targetRegistry.registerImporter('odyssey_base.hero'");
+        expect(result).toContain("targetRegistry.registerImporter('storefrontnext_base.hero'");
         expect(result).toContain("{ loader: 'loader' }");
     });
 
     it('includes client loader names when components have client loaders', () => {
         const components: ComponentInfo[] = [
             {
-                id: 'odyssey_base.hero',
+                id: 'storefrontnext_base.hero',
                 filePath: '/test/project/src/components/hero/index.tsx',
                 relativePath: '../components/hero/index',
                 hasLoader: false,
@@ -302,14 +302,14 @@ describe('generateRegistryCode', () => {
 
         const result = generateRegistryCode(components, 'registry');
 
-        expect(result).toContain("targetRegistry.registerImporter('odyssey_base.hero'");
+        expect(result).toContain("targetRegistry.registerImporter('storefrontnext_base.hero'");
         expect(result).toContain("{ clientLoader: 'clientLoader' }");
     });
 
     it('includes both loader types when component has both', () => {
         const components: ComponentInfo[] = [
             {
-                id: 'odyssey_base.hero',
+                id: 'storefrontnext_base.hero',
                 filePath: '/test/project/src/components/hero/index.tsx',
                 relativePath: '../components/hero/index',
                 hasLoader: true,
@@ -320,14 +320,14 @@ describe('generateRegistryCode', () => {
 
         const result = generateRegistryCode(components, 'registry');
 
-        expect(result).toContain("targetRegistry.registerImporter('odyssey_base.hero'");
+        expect(result).toContain("targetRegistry.registerImporter('storefrontnext_base.hero'");
         expect(result).toContain("{ loader: 'loader', clientLoader: 'clientLoader' }");
     });
 
     it('uses custom registry identifier', () => {
         const components: ComponentInfo[] = [
             {
-                id: 'odyssey_base.hero',
+                id: 'storefrontnext_base.hero',
                 filePath: '/test/project/src/components/hero/index.tsx',
                 relativePath: '../components/hero/index',
                 hasLoader: false,

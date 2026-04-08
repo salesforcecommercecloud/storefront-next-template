@@ -1,7 +1,7 @@
 {
     "name": "Product Recommendations",
     "description": "Displays product recommendations. Automatically reads product from context when available on product pages.",
-    "group": "odyssey_base",
+    "group": "Content",
     "arch_type": "headless",
     "region_definitions": [],
     "attribute_definition_groups": [

@@ -461,7 +461,7 @@ describe('SearchPage', () => {
                 components: [
                     {
                         id: 'hero-1',
-                        typeId: 'odyssey_base.hero',
+                        typeId: 'Content.hero',
                         data: {},
                     },
                 ],

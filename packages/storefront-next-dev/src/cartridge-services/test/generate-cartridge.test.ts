@@ -436,7 +436,7 @@ describe('region definitions inclusion', () => {
             typeId: (componentConfig as any).id || 'testcomponent',
             name: (componentConfig as any).name || 'Test Component',
             description: 'Custom component: TestComponent',
-            group: 'odyssey_base',
+            group: 'storefrontnext_base',
             regionDefinitions: [], // This should be included in output
             attributes: [
                 {
@@ -1627,8 +1627,8 @@ describe('generateMetadata integration tests', () => {
         const writeCall = vi.mocked(writeFile).mock.calls[0];
         const writtenData = JSON.parse(writeCall[1] as string);
         expect(writtenData.region_definitions?.[0]?.component_type_inclusions).toEqual([
-            { type_id: 'odyssey_base.HeaderComponent' },
-            { type_id: 'odyssey_base.NavComponent' },
+            { type_id: 'storefrontnext_base.HeaderComponent' },
+            { type_id: 'storefrontnext_base.NavComponent' },
         ]);
     });
 
@@ -1669,7 +1669,7 @@ describe('generateMetadata integration tests', () => {
         const writeCall = vi.mocked(writeFile).mock.calls[0];
         const writtenData = JSON.parse(writeCall[1] as string);
         expect(writtenData.region_definitions?.[0]?.component_type_exclusions).toEqual([
-            { type_id: 'odyssey_base.FooterComponent' },
+            { type_id: 'storefrontnext_base.FooterComponent' },
         ]);
     });
 
@@ -2773,7 +2773,7 @@ describe('generateMetadata integration tests', () => {
             }
             // 4th call is for the group directory in generateComponentCartridge
             // This error should be caught and ignored
-            if (mkdirCallCount === 4 && path.includes('odyssey_base')) {
+            if (mkdirCallCount === 4 && path.includes('storefrontnext_base')) {
                 throw new Error('Directory already exists');
             }
             return Promise.resolve(undefined);

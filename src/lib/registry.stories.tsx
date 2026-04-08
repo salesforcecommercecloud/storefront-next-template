@@ -334,7 +334,7 @@ ${registry
             description: 'Select a component from the registry to render',
             table: {
                 category: 'Component Selection',
-                defaultValue: { summary: 'odyssey_base.hero' },
+                defaultValue: { summary: 'Content.hero' },
             },
         },
         showInfoBanner: {
@@ -391,7 +391,7 @@ export const Overview: Story = {
  */
 export const ComponentSelector: Story = {
     args: {
-        componentId: 'odyssey_base.hero',
+        componentId: 'Content.hero',
         showInfoBanner: true,
         componentProps: {
             title: 'Welcome to Our Store',
@@ -402,7 +402,7 @@ export const ComponentSelector: Story = {
     },
     render: (args: StoryArgs) => (
         <RegistryComponentStory
-            componentId={args.componentId || 'odyssey_base.hero'}
+            componentId={args.componentId || 'Content.hero'}
             showInfoBanner={args.showInfoBanner ?? true}
             componentProps={args.componentProps ?? {}}
         />
@@ -421,11 +421,11 @@ export const ComponentSelector: Story = {
  */
 export const FallbackSelector: Story = {
     args: {
-        componentId: 'odyssey_base.productCarousel',
+        componentId: 'Layout.productCarousel',
         showInfoBanner: true,
     },
     render: (args: StoryArgs) => {
-        const componentId = args.componentId || 'odyssey_base.productCarousel';
+        const componentId = args.componentId || 'Layout.productCarousel';
         if (!registry.getFallback(componentId)) {
             return (
                 <div className="p-8">
@@ -438,7 +438,7 @@ export const FallbackSelector: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Select from components that have registered fallback/skeleton components. Currently only `odyssey_base.productCarousel` has a fallback.',
+                story: 'Select from components that have registered fallback/skeleton components. Currently only `Layout.productCarousel` has a fallback.',
             },
         },
     },

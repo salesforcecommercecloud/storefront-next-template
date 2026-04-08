@@ -55,6 +55,7 @@ interface ContentCardProps extends ComponentProps<'div'> {
 @Component('contentCard', {
     name: 'Content Card',
     description: 'Flexible card component with optional image, title, description, and call-to-action button',
+    group: 'Content',
 })
 export class ContentCardMetadata {
     @AttributeDefinition()

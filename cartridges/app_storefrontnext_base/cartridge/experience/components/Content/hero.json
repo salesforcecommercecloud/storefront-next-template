@@ -1,7 +1,7 @@
 {
     "name": "Hero Banner",
     "description": "Prominent banner section with title, subtitle, image, and call-to-action",
-    "group": "odyssey_base",
+    "group": "Content",
     "arch_type": "headless",
     "region_definitions": [],
     "attribute_definition_groups": [

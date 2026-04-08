@@ -680,7 +680,7 @@ const watchConfigFilesPlugin = () => {
 
 //#endregion
 //#region src/plugins/staticRegistry.ts
-const DEFAULT_COMPONENT_GROUP$1 = "odyssey_base";
+const DEFAULT_COMPONENT_GROUP$1 = "storefrontnext_base";
 /**
 * Extracts component ID and group from @Component decorator using ts-morph AST parsing
 */
@@ -2918,7 +2918,7 @@ const SKIP_DIRECTORIES = [
 	".next",
 	"coverage"
 ];
-const DEFAULT_COMPONENT_GROUP = "odyssey_base";
+const DEFAULT_COMPONENT_GROUP = "storefrontnext_base";
 const ARCH_TYPE_HEADLESS = "headless";
 const VALID_ATTRIBUTE_TYPES = [
 	"string",

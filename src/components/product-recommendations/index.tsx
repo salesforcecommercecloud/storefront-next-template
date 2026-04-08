@@ -40,6 +40,7 @@ export interface RecommenderConfig {
     name: 'Product Recommendations',
     description:
         'Displays product recommendations. Automatically reads product from context when available on product pages.',
+    group: 'Content',
 })
 export class ProductRecommendationsMetadata {
     @AttributeDefinition({

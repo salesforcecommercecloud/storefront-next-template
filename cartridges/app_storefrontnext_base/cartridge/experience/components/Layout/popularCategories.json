@@ -1,7 +1,7 @@
 {
     "name": "Popular Categories",
     "description": "Displays a scrollable row of popular category cards with images, titles, descriptions, and shop now buttons",
-    "group": "odyssey_base",
+    "group": "Layout",
     "arch_type": "headless",
     "region_definitions": [
         {
@@ -9,7 +9,7 @@
             "name": "Categories",
             "component_type_inclusions": [
                 {
-                    "type_id": "odyssey_base.popularCategory"
+                    "type_id": "Content.popularCategory"
                 }
             ],
             "max_components": 4

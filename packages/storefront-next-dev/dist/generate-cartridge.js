@@ -120,7 +120,7 @@ const SKIP_DIRECTORIES = [
 	".next",
 	"coverage"
 ];
-const DEFAULT_COMPONENT_GROUP = "odyssey_base";
+const DEFAULT_COMPONENT_GROUP = "storefrontnext_base";
 const ARCH_TYPE_HEADLESS = "headless";
 const VALID_ATTRIBUTE_TYPES = [
 	"string",

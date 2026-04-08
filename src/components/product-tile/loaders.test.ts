@@ -73,7 +73,7 @@ describe('product-tile loader', () => {
         const result = await loader.server({
             componentData: {
                 id: 'component-1',
-                typeId: 'odyssey_base.productTile',
+                typeId: 'Content.productTile',
                 data: { productId: 'sku-123' },
             },
             context: mockContext,

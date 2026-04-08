@@ -45,6 +45,7 @@ interface PopularCategoryProps extends ComponentProps<'div'> {
 @Component('popularCategory', {
     name: 'Popular Category',
     description: 'Displays a single category card with image, title, description, and shop now button',
+    group: 'Content',
 })
 export class PopularCategoryMetadata {
     @AttributeDefinition({

@@ -43,6 +43,7 @@ export default ProductCarouselWithSuspense;
     name: 'Product Carousel',
     description:
         'A responsive, interactive carousel that displays a collection of product cards in a horizontally scrollable layout.',
+    group: 'Layout',
 })
 @RegionDefinition([
     {
@@ -50,7 +51,7 @@ export default ProductCarouselWithSuspense;
         name: 'Products',
         description: 'Add Product Tile components to populate this carousel.',
         maxComponents: 12,
-        componentTypeInclusions: ['productTile'],
+        componentTypeInclusions: ['Content.productTile'],
     },
 ])
 export class ProductCarouselWithSuspenseMetadata {

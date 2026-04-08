@@ -50,6 +50,7 @@ const PRODUCT_TILE_MAX_SWATCHES = 3;
 @Component('productTile', {
     name: 'Product Tile',
     description: 'Configurable product tile with customizable styling for images, typography, and hover effects',
+    group: 'Content',
 })
 @RegionDefinition([])
 export class ProductTileMetadata {

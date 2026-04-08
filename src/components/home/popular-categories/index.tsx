@@ -44,6 +44,7 @@ interface PopularCategoriesProps {
     name: 'Popular Categories',
     description:
         'Displays a scrollable row of popular category cards with images, titles, descriptions, and shop now buttons',
+    group: 'Layout',
 })
 @RegionDefinition([
     {
@@ -51,7 +52,7 @@ interface PopularCategoriesProps {
         name: 'Categories',
         description: 'Add Popular Category components to display in the scrollable row',
         maxComponents: 4,
-        componentTypeInclusions: ['popularCategory'],
+        componentTypeInclusions: ['Content.popularCategory'],
     },
 ])
 export class PopularCategoriesMetadata {

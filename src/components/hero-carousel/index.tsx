@@ -37,6 +37,7 @@ const heroCarouselDefaults = {
     name: 'Hero Carousel',
     description:
         'Interactive carousel component with multiple hero slides, autoplay, navigation controls, and dot indicators',
+    group: 'Layout',
 })
 @RegionDefinition([
     {
@@ -45,6 +46,7 @@ const heroCarouselDefaults = {
         description:
             'Add hero components to display as carousel slides. Each hero will be shown as a full-width slide.',
         maxComponents: 10,
+        componentTypeInclusions: ['Content.hero'],
     },
 ])
 export class HeroCarouselMetadata {

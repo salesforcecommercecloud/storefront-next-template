@@ -147,8 +147,8 @@ describe('staticRegistryPlugin Integration', () => {
             await callPluginHooks(plugin, mockProjectRoot);
 
             const [, content] = mockWriteFileSync.mock.calls[0];
-            expect(content).toContain("targetRegistry.registerImporter('odyssey_base.carousel'");
-            expect(content).toContain("targetRegistry.registerImporter('odyssey_base.hero'");
+            expect(content).toContain("targetRegistry.registerImporter('storefrontnext_base.carousel'");
+            expect(content).toContain("targetRegistry.registerImporter('storefrontnext_base.hero'");
         });
     });
 
@@ -278,7 +278,7 @@ describe('staticRegistryPlugin Integration', () => {
             const [, newContent] = mockWriteFileSync.mock.calls[0];
             expect(newContent).toContain('// Custom code before');
             expect(newContent).toContain('// Custom code after');
-            expect(newContent).toContain("targetRegistry.registerImporter('odyssey_base.hero'");
+            expect(newContent).toContain("targetRegistry.registerImporter('storefrontnext_base.hero'");
             expect(newContent).not.toContain('// Old generated content');
         });
     });

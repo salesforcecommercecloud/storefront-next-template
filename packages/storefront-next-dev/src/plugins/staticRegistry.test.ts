@@ -133,7 +133,7 @@ describe('staticRegistryPlugin', { timeout: 15_000 }, () => {
                     '/test/project/src/components/hero/index.tsx': `@Component('hero', {})
 export default class Hero {}`,
                 },
-                expectedRegistrations: ["targetRegistry.registerImporter('odyssey_base.hero'"],
+                expectedRegistrations: ["targetRegistry.registerImporter('storefrontnext_base.hero'"],
             },
             {
                 description: 'component with double quotes',
@@ -141,7 +141,7 @@ export default class Hero {}`,
                     '/test/project/src/components/test/index.tsx': `@Component("doubleQuote", {})
 export default class Test {}`,
                 },
-                expectedRegistrations: ["targetRegistry.registerImporter('odyssey_base.doubleQuote'"],
+                expectedRegistrations: ["targetRegistry.registerImporter('storefrontnext_base.doubleQuote'"],
             },
             {
                 description: 'component with backticks',
@@ -149,7 +149,7 @@ export default class Test {}`,
                     '/test/project/src/components/test/index.tsx':
                         '@Component(`backtick`, {})\nexport default class Test {}',
                 },
-                expectedRegistrations: ["targetRegistry.registerImporter('odyssey_base.backtick'"],
+                expectedRegistrations: ["targetRegistry.registerImporter('storefrontnext_base.backtick'"],
             },
             {
                 description: 'component with spaces around quotes',
@@ -157,7 +157,7 @@ export default class Test {}`,
                     '/test/project/src/components/test/index.tsx': `@Component( 'withSpaces' , {})
 export default class Test {}`,
                 },
-                expectedRegistrations: ["targetRegistry.registerImporter('odyssey_base.withSpaces'"],
+                expectedRegistrations: ["targetRegistry.registerImporter('storefrontnext_base.withSpaces'"],
             },
             {
                 description: 'multiple components',
@@ -168,8 +168,8 @@ export default class Hero {}`,
 export default class Carousel {}`,
                 },
                 expectedRegistrations: [
-                    "targetRegistry.registerImporter('odyssey_base.hero'",
-                    "targetRegistry.registerImporter('odyssey_base.carousel'",
+                    "targetRegistry.registerImporter('storefrontnext_base.hero'",
+                    "targetRegistry.registerImporter('storefrontnext_base.carousel'",
                 ],
             },
             {
@@ -180,7 +180,7 @@ export default class ServerOnly {}
 export function loader() { return {}; }`,
                 },
                 expectedRegistrations: [
-                    "targetRegistry.registerImporter('odyssey_base.serverOnly', () => import('../components/server-only/index'), { loader: 'loader' });",
+                    "targetRegistry.registerImporter('storefrontnext_base.serverOnly', () => import('../components/server-only/index'), { loader: 'loader' });",
                 ],
             },
             {
@@ -192,7 +192,7 @@ export function loader() { return {}; }
 export const clientLoader = () => {};`,
                 },
                 expectedRegistrations: [
-                    "targetRegistry.registerImporter('odyssey_base.withLoaders', () => import('../components/with-loaders/index'), { loader: 'loader', clientLoader: 'clientLoader' });",
+                    "targetRegistry.registerImporter('storefrontnext_base.withLoaders', () => import('../components/with-loaders/index'), { loader: 'loader', clientLoader: 'clientLoader' });",
                 ],
             },
             {
@@ -323,16 +323,16 @@ export const registry = new ComponentRegistry();
 
             // Assert header list is sorted by id
             const expectedHeader =
-                'Components registered: odyssey_base.grid, odyssey_base.hero, odyssey_base.heroCarousel, odyssey_base.popularCategories, odyssey_base.productCarousel';
+                'Components registered: storefrontnext_base.grid, storefrontnext_base.hero, storefrontnext_base.heroCarousel, storefrontnext_base.popularCategories, storefrontnext_base.productCarousel';
             expect(generatedCode).toContain(expectedHeader);
 
             // Assert registration calls appear in sorted order
             const order = [
-                "targetRegistry.registerImporter('odyssey_base.grid'",
-                "targetRegistry.registerImporter('odyssey_base.hero'",
-                "targetRegistry.registerImporter('odyssey_base.heroCarousel'",
-                "targetRegistry.registerImporter('odyssey_base.popularCategories'",
-                "targetRegistry.registerImporter('odyssey_base.productCarousel'",
+                "targetRegistry.registerImporter('storefrontnext_base.grid'",
+                "targetRegistry.registerImporter('storefrontnext_base.hero'",
+                "targetRegistry.registerImporter('storefrontnext_base.heroCarousel'",
+                "targetRegistry.registerImporter('storefrontnext_base.popularCategories'",
+                "targetRegistry.registerImporter('storefrontnext_base.productCarousel'",
             ];
             const positions = order.map((snippet) => generatedCode.indexOf(snippet));
             // All snippets should exist and be in ascending order
@@ -532,7 +532,7 @@ export default class Hero {}`,
                 },
                 expectedLogs: [
                     'Starting static registry generation...',
-                    'Found component: odyssey_base.hero',
+                    'Found component: storefrontnext_base.hero',
                     'Static registry generation complete',
                 ],
                 shouldLog: true,
@@ -552,7 +552,7 @@ export default class Hero {}`,
 export default class Hero {}
 export const clientLoader = () => {};`,
                 },
-                expectedLogs: ['Found component: odyssey_base.hero', '(with clientLoader)'],
+                expectedLogs: ['Found component: storefrontnext_base.hero', '(with clientLoader)'],
                 shouldLog: true,
             },
             {
@@ -563,7 +563,7 @@ export const clientLoader = () => {};`,
 export default class Hero {}
 export const fallback = () => <div>Loading...</div>;`,
                 },
-                expectedLogs: ['Found component: odyssey_base.hero', '(with fallback)'],
+                expectedLogs: ['Found component: storefrontnext_base.hero', '(with fallback)'],
                 shouldLog: true,
             },
             {
@@ -576,7 +576,7 @@ export function loader() { return {}; }
 export const clientLoader = () => {};
 export const fallback = () => <div>Loading...</div>;`,
                 },
-                expectedLogs: ['Found component: odyssey_base.hero', '(with loader, clientLoader, fallback)'],
+                expectedLogs: ['Found component: storefrontnext_base.hero', '(with loader, clientLoader, fallback)'],
                 shouldLog: true,
             },
         ])('$description', async ({ logLevel, files, expectedLogs, shouldLog }) => {
@@ -645,19 +645,19 @@ export default class Hero {}`,
                     description: 'uses default group when no group specified',
                     componentContent: `@Component('hero', {})
 export default class Hero {}`,
-                    expectedId: 'odyssey_base.hero',
+                    expectedId: 'storefrontnext_base.hero',
                 },
                 {
                     description: 'uses default group when metadata is not an object',
                     componentContent: `@Component('hero', 'not-an-object')
 export default class Hero {}`,
-                    expectedId: 'odyssey_base.hero',
+                    expectedId: 'storefrontnext_base.hero',
                 },
                 {
                     description: 'uses default group when group property is not a string',
                     componentContent: `@Component('hero', { group: 123 })
 export default class Hero {}`,
-                    expectedId: 'odyssey_base.hero',
+                    expectedId: 'storefrontnext_base.hero',
                 },
             ])('$description', async ({ componentContent, expectedId }) => {
                 const componentFiles = ['/test/project/src/components/hero/index.tsx'];
@@ -745,7 +745,7 @@ export const registry = new ComponentRegistry();
                 const writeCall = mockWriteFileSync.mock.calls[0];
                 const generatedCode = writeCall[1] as string;
 
-                expect(generatedCode).toContain("targetRegistry.registerImporter('odyssey_base.hero'");
+                expect(generatedCode).toContain("targetRegistry.registerImporter('storefrontnext_base.hero'");
             });
         });
 
@@ -811,7 +811,7 @@ export const registry = new ComponentRegistry();
                     }
                     if (!shouldHaveFallback && !shouldHaveLoader && !shouldHaveClientLoader) {
                         expect(generatedCode).toContain(
-                            "targetRegistry.registerImporter('odyssey_base.hero', () => import('../components/hero/index'));"
+                            "targetRegistry.registerImporter('storefrontnext_base.hero', () => import('../components/hero/index'));"
                         );
                     }
                 }

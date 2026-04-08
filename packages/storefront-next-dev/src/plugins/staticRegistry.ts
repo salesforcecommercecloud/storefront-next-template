@@ -30,7 +30,7 @@ import {
 import { logger } from '../logger';
 
 // Default component group when none is specified in the decorator
-const DEFAULT_COMPONENT_GROUP = 'odyssey_base';
+const DEFAULT_COMPONENT_GROUP = 'storefrontnext_base';
 
 /**
  * Information about a discovered component

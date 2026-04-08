@@ -47,7 +47,7 @@ describe('PopularCategory loader', () => {
 
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
-            typeId: 'odyssey_base.popularCategory',
+            typeId: 'Content.popularCategory',
             data: {
                 category: 'newarrivals' as never,
             },
@@ -66,7 +66,7 @@ describe('PopularCategory loader', () => {
     test('throws error when categoryId is missing', () => {
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
-            typeId: 'odyssey_base.popularCategory',
+            typeId: 'Content.popularCategory',
             data: {},
             regions: [],
         };
@@ -82,7 +82,7 @@ describe('PopularCategory loader', () => {
     test('throws error when categoryId is not a string', () => {
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
-            typeId: 'odyssey_base.popularCategory',
+            typeId: 'Content.popularCategory',
             data: {
                 category: 123 as never,
             },
@@ -100,7 +100,7 @@ describe('PopularCategory loader', () => {
     test('throws error when categoryId is empty string', () => {
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
-            typeId: 'odyssey_base.popularCategory',
+            typeId: 'Content.popularCategory',
             data: {
                 category: '' as never,
             },

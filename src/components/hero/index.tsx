@@ -25,6 +25,7 @@ import { type Image } from '@/types';
 @Component('hero', {
     name: 'Hero Banner',
     description: 'Prominent banner section with title, subtitle, image, and call-to-action',
+    group: 'Content',
 })
 @RegionDefinition([])
 export class HeroMetadata {

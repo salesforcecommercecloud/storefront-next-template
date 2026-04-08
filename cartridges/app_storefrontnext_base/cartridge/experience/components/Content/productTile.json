@@ -1,7 +1,7 @@
 {
     "name": "Product Tile",
     "description": "Configurable product tile with customizable styling for images, typography, and hover effects",
-    "group": "odyssey_base",
+    "group": "Content",
     "arch_type": "headless",
     "region_definitions": [],
     "attribute_definition_groups": [

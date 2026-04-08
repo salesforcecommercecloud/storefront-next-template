@@ -68,6 +68,7 @@ interface DynamicImageProps {
 @Component('pdImage', {
     name: 'Image',
     description: 'Responsive image component with Dynamic Imaging Service support and customizable styling',
+    group: 'Content',
 })
 @RegionDefinition([])
 export class DynamicImageMetadata {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import 'reflect-metadata';
-import { COMPONENT_PACKAGE } from '@/lib/decorators/component';
+import { DEFAULT_COMPONENT_GROUP, META_KEY, type ComponentTypeMetadata } from '@/lib/decorators/component';
 
 export const REGION_DEFINITIONS_KEY = 'region:definitions';
 
@@ -37,6 +37,48 @@ export interface RegionDefinitionConfig {
     componentTypeExclusions?: string[]; // Excluded component types
     componentTypeInclusions?: string[]; // Included component types
     defaultComponentConstructors?: DefaultComponentConstructor[]; // Default components to instantiate
+}
+
+function getConstructor(target: unknown): new (...args: unknown[]) => unknown {
+    return (typeof target === 'function' ? target : (target as { constructor: typeof target }).constructor) as new (
+        ...args: unknown[]
+    ) => unknown;
+}
+
+function getHostResolvedGroup(constructor: new (...args: unknown[]) => unknown): string {
+    const meta = Reflect.getMetadata(META_KEY, constructor) as ComponentTypeMetadata | undefined;
+    return meta?.group ?? DEFAULT_COMPONENT_GROUP;
+}
+
+/**
+ * Resolve a region type reference: fully-qualified ids (contain '.') are unchanged;
+ * otherwise prefix with the host component's resolved group.
+ */
+export function resolveRegionComponentTypeRef(ref: string, hostGroup: string): string {
+    return ref.includes('.') ? ref : `${hostGroup}.${ref}`;
+}
+
+function transformRegionConfigs(configs: RegionDefinitionConfig[], hostGroup: string): RegionDefinitionConfig[] {
+    return configs.map((config) => ({
+        ...config,
+        componentTypeExclusions: config.componentTypeExclusions?.map((excl) =>
+            resolveRegionComponentTypeRef(excl, hostGroup)
+        ),
+        componentTypeInclusions: config.componentTypeInclusions?.map((incl) =>
+            resolveRegionComponentTypeRef(incl, hostGroup)
+        ),
+        defaultComponentConstructors: config.defaultComponentConstructors?.map((c) => ({
+            ...c,
+            typeId: resolveRegionComponentTypeRef(c.typeId, hostGroup),
+        })),
+    }));
+}
+
+/** Raw configs as authored (stored on the class by @RegionDefinition). */
+function getRawRegionDefinitions(target: unknown): RegionDefinitionConfig[] {
+    const ctor = getConstructor(target);
+    const raw = Reflect.getMetadata(REGION_DEFINITIONS_KEY, ctor);
+    return Array.isArray(raw) ? raw : [];
 }
 
 /**
@@ -81,35 +123,7 @@ export interface RegionDefinitionConfig {
 export function RegionDefinition(configs: RegionDefinitionConfig[]) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return function <T extends new (...args: any[]) => any>(constructor: T) {
-        // Transform configs to include COMPONENT_PACKAGE prefix for all component type references
-        const transformedConfigs = configs.map((config) => ({
-            ...config,
-            componentTypeExclusions: config.componentTypeExclusions?.map((excl) => `${COMPONENT_PACKAGE}.${excl}`),
-            componentTypeInclusions: config.componentTypeInclusions?.map((incl) => `${COMPONENT_PACKAGE}.${incl}`),
-            defaultComponentConstructors: config.defaultComponentConstructors?.map((c) => ({
-                ...c,
-                typeId: `${COMPONENT_PACKAGE}.${c.typeId}`,
-            })),
-        }));
-
-        // Store transformed region definition metadata on the constructor
-        Reflect.defineMetadata(REGION_DEFINITIONS_KEY, transformedConfigs, constructor);
-
-        // Store individual region properties for easy access
-        const regionIds = transformedConfigs.map((config) => config.id);
-        const regionNames = transformedConfigs.map((config) => config.name);
-        const allExclusions = transformedConfigs.flatMap((config) => config.componentTypeExclusions || []);
-        const allInclusions = transformedConfigs.flatMap((config) => config.componentTypeInclusions || []);
-        const allDefaultConstructors = transformedConfigs.flatMap(
-            (config) => config.defaultComponentConstructors || []
-        );
-
-        Reflect.defineMetadata('region:ids', regionIds, constructor);
-        Reflect.defineMetadata('region:names', regionNames, constructor);
-        Reflect.defineMetadata('region:exclusions', allExclusions, constructor);
-        Reflect.defineMetadata('region:inclusions', allInclusions, constructor);
-        Reflect.defineMetadata('region:default-constructors', allDefaultConstructors, constructor);
-
+        Reflect.defineMetadata(REGION_DEFINITIONS_KEY, configs, constructor);
         return constructor;
     };
 }
@@ -122,7 +136,10 @@ export function RegionDefinition(configs: RegionDefinitionConfig[]) {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getRegionDefinitions(target: any): RegionDefinitionConfig[] {
-    return Reflect.getMetadata('region:definitions', target) || [];
+    const ctor = getConstructor(target);
+    const raw = getRawRegionDefinitions(target);
+    const hostGroup = getHostResolvedGroup(ctor);
+    return transformRegionConfigs(raw, hostGroup);
 }
 
 /**
@@ -146,7 +163,7 @@ export function getRegionDefinition(target: any, regionId: string): RegionDefini
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getRegionIds(target: any): string[] {
-    return Reflect.getMetadata('region:ids', target) || [];
+    return getRawRegionDefinitions(target).map((config) => config.id);
 }
 
 /**
@@ -157,7 +174,7 @@ export function getRegionIds(target: any): string[] {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getRegionNames(target: any): string[] {
-    return Reflect.getMetadata('region:names', target) || [];
+    return getRawRegionDefinitions(target).map((config) => config.name);
 }
 
 /**
@@ -167,8 +184,8 @@ export function getRegionNames(target: any): string[] {
  * @returns Array of component type exclusions
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getRegionExclusions(target: any): string {
-    return Reflect.getMetadata('region:exclusions', target) || [];
+export function getRegionExclusions(target: any): string[] {
+    return getRegionDefinitions(target).flatMap((config) => config.componentTypeExclusions || []);
 }
 
 /**
@@ -192,7 +209,7 @@ export function getRegionExclusionsForRegion(target: any, regionId: string): str
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getRegionInclusions(target: any): string[] {
-    return Reflect.getMetadata('region:inclusions', target) || [];
+    return getRegionDefinitions(target).flatMap((config) => config.componentTypeInclusions || []);
 }
 
 /**
@@ -216,7 +233,7 @@ export function getRegionInclusionsForRegion(target: any, regionId: string): str
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getRegionDefaultConstructors(target: any): DefaultComponentConstructor[] {
-    return Reflect.getMetadata('region:default-constructors', target) || [];
+    return getRegionDefinitions(target).flatMap((config) => config.defaultComponentConstructors || []);
 }
 
 /**

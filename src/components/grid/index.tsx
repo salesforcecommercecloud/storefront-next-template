@@ -28,6 +28,7 @@ import { type ComponentType, Region } from '@/components/region';
 @Component('grid', {
     name: 'Grid',
     description: 'A flexible grid layout component for organizing content in columns',
+    group: 'Layout',
 })
 @RegionDefinition([
     {

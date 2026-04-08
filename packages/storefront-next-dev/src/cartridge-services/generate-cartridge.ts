@@ -26,7 +26,7 @@ export { filePathToRoute };
 
 const SKIP_DIRECTORIES = ['build', 'dist', 'node_modules', '.git', '.next', 'coverage'];
 
-const DEFAULT_COMPONENT_GROUP = 'odyssey_base';
+const DEFAULT_COMPONENT_GROUP = 'storefrontnext_base';
 const ARCH_TYPE_HEADLESS = 'headless';
 
 type AttributeType =

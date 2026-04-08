@@ -24,7 +24,7 @@ import {
     TYPE_ID_KEY,
     META_KEY,
     LOADER_KEY,
-    COMPONENT_PACKAGE,
+    DEFAULT_COMPONENT_GROUP,
     type ComponentTypeMetadata,
 } from './component';
 
@@ -44,11 +44,11 @@ describe('Component Decorators', () => {
             const typeId = Reflect.getMetadata(TYPE_ID_KEY, HeroComponent);
             const metadata = Reflect.getMetadata(META_KEY, HeroComponent);
 
-            expect(typeId).toBe(`${COMPONENT_PACKAGE}.hero`);
+            expect(typeId).toBe(`${DEFAULT_COMPONENT_GROUP}.hero`);
             expect(metadata).toEqual({
                 name: 'Hero Banner',
                 description: 'Prominent banner section',
-                group: COMPONENT_PACKAGE,
+                group: DEFAULT_COMPONENT_GROUP,
             });
         });
 
@@ -97,9 +97,9 @@ describe('Component Decorators', () => {
             const typeId = Reflect.getMetadata(TYPE_ID_KEY, MinimalComponent);
             const metadata = Reflect.getMetadata(META_KEY, MinimalComponent);
 
-            expect(typeId).toBe(`${COMPONENT_PACKAGE}.minimal`);
+            expect(typeId).toBe(`${DEFAULT_COMPONENT_GROUP}.minimal`);
             expect(metadata.name).toBe('Minimal');
-            expect(metadata.group).toBe(COMPONENT_PACKAGE);
+            expect(metadata.group).toBe(DEFAULT_COMPONENT_GROUP);
         });
     });
 
@@ -117,11 +117,11 @@ describe('Component Decorators', () => {
             const typeId = Reflect.getMetadata(TYPE_ID_KEY, DecoratedBanner);
             const metadata = Reflect.getMetadata(META_KEY, DecoratedBanner);
 
-            expect(typeId).toBe(`${COMPONENT_PACKAGE}.banner`);
+            expect(typeId).toBe(`${DEFAULT_COMPONENT_GROUP}.banner`);
             expect(metadata).toEqual({
                 name: 'Banner',
                 description: 'Banner component',
-                group: COMPONENT_PACKAGE,
+                group: DEFAULT_COMPONENT_GROUP,
             });
         });
 
@@ -131,7 +131,7 @@ describe('Component Decorators', () => {
             })(() => null);
 
             const typeId = Reflect.getMetadata(TYPE_ID_KEY, CardComponent);
-            expect(typeId).toBe(`${COMPONENT_PACKAGE}.card`);
+            expect(typeId).toBe(`${DEFAULT_COMPONENT_GROUP}.card`);
         });
 
         test('uses custom group when provided', () => {
@@ -164,7 +164,7 @@ describe('Component Decorators', () => {
             const typeId = Reflect.getMetadata(TYPE_ID_KEY, WrappedComponent);
             const metadata = Reflect.getMetadata(META_KEY, WrappedComponent);
 
-            expect(typeId).toBe(`${COMPONENT_PACKAGE}.wrapped`);
+            expect(typeId).toBe(`${DEFAULT_COMPONENT_GROUP}.wrapped`);
             expect(metadata.name).toBe('Wrapped Component');
         });
 
@@ -288,7 +288,7 @@ describe('Component Decorators', () => {
             const required = Reflect.getMetadata('component:required', FullComponent.prototype);
             const optional = Reflect.getMetadata('component:optional', FullComponent.prototype);
 
-            expect(typeId).toBe(`${COMPONENT_PACKAGE}.full-component`);
+            expect(typeId).toBe(`${DEFAULT_COMPONENT_GROUP}.full-component`);
             expect(metadata.name).toBe('Full Component');
             expect(required).toEqual(['title', 'imageUrl']);
             expect(optional).toEqual(['subtitle', 'description']);
@@ -307,7 +307,7 @@ describe('Component Decorators', () => {
             const typeId = Reflect.getMetadata(TYPE_ID_KEY, CompleteComponent);
             const required = Reflect.getMetadata('component:required', CompleteComponent.prototype);
 
-            expect(typeId).toBe(`${COMPONENT_PACKAGE}.complete-component`);
+            expect(typeId).toBe(`${DEFAULT_COMPONENT_GROUP}.complete-component`);
             expect(required).toEqual(['id']);
         });
     });
@@ -319,8 +319,8 @@ describe('Component Decorators', () => {
             expect(LOADER_KEY).toBe('component:loader');
         });
 
-        test('exports correct component package', () => {
-            expect(COMPONENT_PACKAGE).toBe('odyssey_base');
+        test('exports correct default component group', () => {
+            expect(DEFAULT_COMPONENT_GROUP).toBe('storefrontnext_base');
         });
     });
 });

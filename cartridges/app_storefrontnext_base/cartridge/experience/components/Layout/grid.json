@@ -1,7 +1,7 @@
 {
     "name": "Grid",
     "description": "A flexible grid layout component for organizing content in columns",
-    "group": "odyssey_base",
+    "group": "Layout",
     "arch_type": "headless",
     "region_definitions": [
         {
