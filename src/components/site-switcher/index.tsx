@@ -36,14 +36,15 @@ export default function SiteSwitcher(): ReactElement {
         const siteId = e.target.value;
 
         const formData = new FormData();
-        formData.append('siteId', siteId);
+        formData.append('type', 'site');
+        formData.append('payload', JSON.stringify({ siteId }));
 
         // Set the cookie server-side, then do a full page reload so all
         // server-rendered content (loaders, Suspense boundaries, i18n) re-runs
         // with the new site.
         await fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/set-site',
+            action: '/action/set-site-context',
         });
         // go back to home page bc not all pages are guaranteed the same for all sites.
         window.location.href = '/';

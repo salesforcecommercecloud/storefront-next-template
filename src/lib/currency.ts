@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createContext } from 'react-router';
 
 const formatterCache = new Map<string, Intl.NumberFormat>();
 
@@ -58,13 +57,3 @@ export function getCurrencySymbol(locale: string, currency: string): string {
             .find((part) => part.type === 'currency')?.value ?? currency
     );
 }
-
-/**
- * Base currency cookie name
- */
-export const COOKIE_CURRENCY = 'currency';
-
-/**
- * Context key for currency data (shared between server middleware and client code)
- */
-export const currencyContext = createContext<string | null>(null);

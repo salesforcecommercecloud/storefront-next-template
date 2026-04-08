@@ -183,10 +183,12 @@ describe('LocaleSwitcher', () => {
         const formData = submitCall[0] as FormData;
         const options = submitCall[1];
 
-        expect(formData.get('locale')).toBe('it-IT');
+        expect(formData.get('type')).toBe('locale');
+        const payload = JSON.parse(formData.get('payload') as string);
+        expect(payload.locale).toBe('it-IT');
         expect(options).toEqual({
             method: 'POST',
-            action: '/action/set-locale',
+            action: '/action/set-site-context',
         });
     });
 

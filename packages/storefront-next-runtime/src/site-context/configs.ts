@@ -16,6 +16,8 @@
 
 import type { DetectionConfig } from './types';
 
+export const DEFAULT_CURRENCY_COOKIE_NAME = 'currency';
+
 /**
  * Default site detection configuration
  */

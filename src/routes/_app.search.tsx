@@ -19,9 +19,7 @@ import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
-
-import { currencyContext } from '@/lib/currency';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
 import CategoryPagination from '@/components/category-pagination';
 import ActiveFilters from '@/components/category-refinements/active-filters';
@@ -98,16 +96,21 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
     const sort = searchParams.get('sort') ?? '';
     const refine = searchParams.getAll('refine');
     const initialFiltersOpen = getInitialFiltersOpen(searchParams);
-    const currency = context.get(currencyContext) as string;
-
     const config = getConfig<AppConfig>(context);
-    const locale = (context.get(siteContext) as SiteContext).locale.id;
+    const logger = getLogger(context);
+
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx) {
+        logger.error('Search: site context is not available');
+        throw new Response('Site context is not available', { status: 500 });
+    }
+    const { currency } = siteCtx;
+    const locale = siteCtx.locale.id;
 
     const limit = config.search.products.hits.limit;
 
     const criticalCount = config.search.products.hits.critical ?? 2;
 
-    const logger = getLogger(context);
     logger.debug('Search: loader starting', { q, offset, sort, refineCount: refine.length });
 
     const searchResultCritical = await fetchSearchProducts(context, {

@@ -22,13 +22,15 @@ const cookieSerialize = vi.fn((value: string, name: string) => Promise.resolve(`
 
 vi.mock('./cookies', async (importOriginal) => {
     const actual = await importOriginal<typeof import('./cookies')>();
+    const mockCookie = (name: string) => ({
+        name,
+        serialize: (value: string) => cookieSerialize(value, name),
+        parse: vi.fn(),
+    });
     return {
         ...actual,
-        createSiteContextCookie: vi.fn((name: string) => ({
-            name,
-            serialize: (value: string) => cookieSerialize(value, name),
-            parse: vi.fn(),
-        })),
+        createSiteContextCookie: vi.fn(mockCookie),
+        createCurrencyCookie: vi.fn(mockCookie),
     };
 });
 
@@ -128,8 +130,10 @@ describe('createSiteContextMiddleware', () => {
         expect(next).toHaveBeenCalledOnce();
         expect(ctx.site.id).toBe('site-mx');
         expect(ctx.locale.id).toBe('es-MX');
+        expect(ctx.currency).toBe('MXN');
         expect(ctx.siteCookie).toBeDefined();
         expect(ctx.localeCookie).toBeDefined();
+        expect(ctx.currencyCookie).toBeDefined();
         expect(requestToLocaleMap.get(request)).toBe('es-MX');
         expect(response).toBe(nextResponse);
         expect(response.status).toBe(201);
@@ -160,34 +164,38 @@ describe('createSiteContextMiddleware', () => {
         expect(requestToLocaleMap.get(request)).toBe('en-US');
     });
 
-    it('does not serialize or set cookies when caches is empty for both', async () => {
+    it('does not serialize site/locale cookies when caches is empty, but still sets currency cookie', async () => {
         const request = new Request('https://example.com/us/en-US/');
-        const { response, context: ctx } = await run(configWithCaches([], []), request);
+        const { context: ctx } = await run(configWithCaches([], []), request);
         expect(ctx.site.id).toBe('site-us');
         expect(ctx.locale.id).toBe('en-US');
+        expect(ctx.currency).toBe('USD');
         expect(requestToLocaleMap.get(request)).toBe('en-US');
-        expect(cookieSerialize).not.toHaveBeenCalled();
-        expect(response.headers.getSetCookie?.() ?? []).toHaveLength(0);
+        // Currency cookie is always set (no caches config for currency)
+        expect(cookieSerialize).toHaveBeenCalledWith('USD', 'currency');
+        expect(cookieSerialize).toHaveBeenCalledTimes(1);
     });
 
-    it('serializes only site cookie when only site caches include cookie', async () => {
+    it('serializes site and currency cookies when only site caches include cookie', async () => {
         const request = new Request('https://example.com/us/en-US/');
         const { context: ctx } = await run(configWithCaches(['cookie'], []), request);
         expect(ctx.site.id).toBe('site-us');
         expect(ctx.locale.id).toBe('en-US');
         expect(requestToLocaleMap.get(request)).toBe('en-US');
         expect(cookieSerialize).toHaveBeenCalledWith('site-us', 'site_id');
-        expect(cookieSerialize).toHaveBeenCalledTimes(1);
+        expect(cookieSerialize).toHaveBeenCalledWith('USD', 'currency');
+        expect(cookieSerialize).toHaveBeenCalledTimes(2);
     });
 
-    it('serializes only locale cookie when only locale caches include cookie', async () => {
+    it('serializes locale and currency cookies when only locale caches include cookie', async () => {
         const request = new Request('https://example.com/us/en-US/');
         const { context: ctx } = await run(configWithCaches([], ['cookie']), request);
         expect(ctx.site.id).toBe('site-us');
         expect(ctx.locale.id).toBe('en-US');
         expect(requestToLocaleMap.get(request)).toBe('en-US');
         expect(cookieSerialize).toHaveBeenCalledWith('en-US', 'lng');
-        expect(cookieSerialize).toHaveBeenCalledTimes(1);
+        expect(cookieSerialize).toHaveBeenCalledWith('USD', 'currency');
+        expect(cookieSerialize).toHaveBeenCalledTimes(2);
     });
 
     it('uses custom cookie names when configured', async () => {
@@ -225,6 +233,7 @@ describe('createSiteContextMiddleware', () => {
         expect(cookies).toBeDefined();
         expect(cookies?.siteCookie).toBeDefined();
         expect(cookies?.localeCookie).toBeDefined();
+        expect(cookies?.currencyCookie).toBeDefined();
     });
 
     it('throws when no valid site and does not call next', async () => {
@@ -262,28 +271,38 @@ describe('createSiteContextMiddleware', () => {
     });
 
     describe('cookie sync (stale cookie handling)', () => {
-        let mockCreateCookie: ReturnType<typeof vi.fn>;
+        let mockCreateSiteContextCookie: ReturnType<typeof vi.fn>;
+        let mockCreateCurrencyCookie: ReturnType<typeof vi.fn>;
 
         beforeAll(async () => {
             const cookies = await import('./cookies');
-            mockCreateCookie = cookies.createSiteContextCookie as ReturnType<typeof vi.fn>;
+            mockCreateSiteContextCookie = cookies.createSiteContextCookie as ReturnType<typeof vi.fn>;
+            mockCreateCurrencyCookie = cookies.createCurrencyCookie as ReturnType<typeof vi.fn>;
         });
 
         afterEach(() => {
-            // Restore the default mock where parse returns undefined (no existing cookie)
-            mockCreateCookie.mockImplementation((name: string) => ({
+            const defaultMock = (name: string) => ({
                 name,
                 serialize: (value: string) => cookieSerialize(value, name),
                 parse: vi.fn(),
-            }));
+            });
+            mockCreateSiteContextCookie.mockImplementation(defaultMock);
+            mockCreateCurrencyCookie.mockImplementation(defaultMock);
         });
 
-        function withExistingCookies(siteId: string, localeId: string) {
-            mockCreateCookie.mockImplementation((name: string) => ({
+        function withExistingCookies(siteId: string, localeId: string, currency?: string) {
+            mockCreateSiteContextCookie.mockImplementation((name: string) => ({
                 name,
                 serialize: (value: string) => cookieSerialize(value, name),
                 parse: vi.fn().mockResolvedValue(name === defaultSiteDetection.lookupCookie ? siteId : localeId),
             }));
+            if (currency) {
+                mockCreateCurrencyCookie.mockImplementation((name: string) => ({
+                    name,
+                    serialize: (value: string) => cookieSerialize(value, name),
+                    parse: vi.fn().mockResolvedValue(currency),
+                }));
+            }
         }
 
         it('updates cookies when resolved site/locale differ from existing cookie values', async () => {
@@ -297,12 +316,13 @@ describe('createSiteContextMiddleware', () => {
             expect(ctx.locale.id).toBe('en-US');
             expect(cookieSerialize).toHaveBeenCalledWith('site-us', 'site_id');
             expect(cookieSerialize).toHaveBeenCalledWith('en-US', 'lng');
-            expect(response.headers.getSetCookie()).toHaveLength(2);
+            expect(cookieSerialize).toHaveBeenCalledWith('USD', 'currency');
+            expect(response.headers.getSetCookie()).toHaveLength(3);
         });
 
         it('does not set cookies when resolved values match existing cookies', async () => {
             // Cookie already matches what the URL resolves to
-            withExistingCookies('site-us', 'en-US');
+            withExistingCookies('site-us', 'en-US', 'USD');
 
             const request = new Request('https://example.com/us/en-US/page');
             const { response, context: ctx } = await run(configWithCaches(['cookie'], ['cookie']), request);

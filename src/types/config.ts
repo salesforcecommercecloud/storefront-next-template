@@ -25,7 +25,7 @@ import type { BaseConfig, Site, Url } from '@salesforce/storefront-next-runtime/
 import type { EngagementAdapterConfig } from '@/lib/adapters';
 import type { TrackingConsent } from '@/types/tracking-consent';
 
-import type { DetectionConfig } from '@salesforce/storefront-next-runtime/site-context';
+import type { DetectionConfig, SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
 
 export type BadgeDetail = {
     propertyName: string;
@@ -243,6 +243,13 @@ export type AppConfig = {
         };
     };
     siteAliasMap?: Record<string, string>;
+    /** Configuration for site-context cookies (site, locale, currency). */
+    siteContext?: {
+        /** Cookie name for persisting the selected currency. Defaults to 'currency'. */
+        currencyCookieName?: string;
+        /** Cookie attributes (httpOnly, maxAge, secure, sameSite, etc.) applied to all site-context cookies. */
+        cookieOptions?: SiteConfig['cookieOptions'];
+    };
     siteDetectionConfig?: DetectionConfig;
     url?: Url;
 };

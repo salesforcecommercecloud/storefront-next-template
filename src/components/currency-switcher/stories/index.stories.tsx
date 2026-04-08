@@ -93,12 +93,13 @@ function CurrencySwitcherMock({ initialCurrency = 'GBP' }: { initialCurrency?: s
         setCurrentCurrency(newCurrency);
 
         const formData = new FormData();
-        formData.append('currency', newCurrency);
+        formData.append('type', 'currency');
+        formData.append('payload', JSON.stringify({ currency: newCurrency }));
 
         // Mock the server-side submission
         mockFetcherSubmit(formData, {
             method: 'POST',
-            action: '/action/set-currency',
+            action: '/action/set-site-context',
         });
     };
 

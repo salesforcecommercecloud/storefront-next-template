@@ -17,7 +17,7 @@ import { use, useEffect, useRef, useMemo, Suspense, Fragment, lazy } from 'react
 import { type LoaderFunctionArgs } from 'react-router';
 import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
-import { currencyContext } from '@/lib/currency';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import ProductSkeleton from '@/components/product-skeleton';
 import ProductView from '@/components/product-view';
 import ChildProducts from '@/components/product-view/child-products';
@@ -99,10 +99,12 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     // Get currency from context for product pricing
-    const currency = context.get(currencyContext) as string;
-    if (!currency) {
-        throw new Error('Currency not found in context');
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx) {
+        logger.error('Product: site context is not available');
+        throw new Response('Site context is not available', { status: 500 });
     }
+    const { currency } = siteCtx;
 
     const clients = createApiClients(context);
     const productPromise = clients.shopperProducts

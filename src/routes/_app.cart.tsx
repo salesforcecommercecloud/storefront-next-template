@@ -37,7 +37,7 @@ import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares
 
 // API
 import { createApiClients } from '@/lib/api-clients';
-import { currencyContext } from '@/lib/currency';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 // Logging
 import { getLogger } from '@/lib/logger.server';
@@ -192,7 +192,7 @@ async function fetchProductsInBasket(
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     const clients = createApiClients(context);
-    const currency = context.get(currencyContext) as string;
+    const currency = (context.get(siteContext) as SiteContext).currency;
 
     const { data: productsData } = await clients.shopperProducts.getProducts({
         params: {

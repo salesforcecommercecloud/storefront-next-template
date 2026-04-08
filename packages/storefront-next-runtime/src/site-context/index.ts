@@ -17,6 +17,7 @@ export { SiteProvider, useSite } from './site-context';
 export { applyUrlConfig } from './apply-url-config';
 export { buildUrl, resolvePrefix, sanitizePrefix, stripPathPrefix } from './build-url';
 
-export { createSiteContextMiddleware, siteContext, getSiteContextCookies } from './middleware';
+export { createSiteContextMiddleware, resolveSiteContext, siteContext, getSiteContextCookies } from './middleware';
+export type { ResolvedSiteContext } from './middleware';
 export { requestToLocaleMap } from './cookies';
-export type { SiteConfig, SiteContext, Site, Locale, DetectionConfig } from './types';
+export type { SiteConfig, SiteContext, SiteSettings, Site, Locale, DetectionConfig } from './types';

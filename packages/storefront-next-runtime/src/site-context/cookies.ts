@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { createCookie, type Cookie } from 'react-router';
+import { createCookie, type Cookie, type CookieOptions } from 'react-router';
 
 /**
- * Cookie options for site context cookies
+ * Cookie options for site context cookies (site and locale)
  */
 export const COOKIE_OPTIONS = {
     path: '/',
@@ -32,8 +32,18 @@ export const COOKIE_OPTIONS = {
  * @param name - Cookie name
  * @returns Cookie instance configured with site context options
  */
-export function createSiteContextCookie(name: string): Cookie {
-    return createCookie(name, COOKIE_OPTIONS);
+export function createSiteContextCookie(name: string, options?: CookieOptions): Cookie {
+    return createCookie(name, { ...COOKIE_OPTIONS, ...options });
+}
+
+/**
+ * Creates a currency cookie instance with the given name.
+ *
+ * @param name - Cookie name
+ * @returns Cookie instance configured with site context cookie options
+ */
+export function createCurrencyCookie(name: string, options?: CookieOptions): Cookie {
+    return createCookie(name, { ...COOKIE_OPTIONS, ...options });
 }
 
 /**

@@ -15,7 +15,7 @@
  */
 import type { LoaderFunctionArgs } from 'react-router';
 import { ApiError, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
-import { currencyContext } from '@/lib/currency';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 import { fetchProductById } from '@/lib/api/products';
 import { getLogger } from '@/lib/logger.server';
@@ -28,7 +28,7 @@ const dataLoader = async (args: { componentData: unknown; context: LoaderFunctio
         return null;
     }
 
-    const currency = routeContext.get(currencyContext) as string;
+    const currency = (routeContext.get(siteContext) as SiteContext).currency;
     const logger = getLogger(routeContext);
 
     try {

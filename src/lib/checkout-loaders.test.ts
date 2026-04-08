@@ -53,10 +53,6 @@ vi.mock('@/lib/api-clients', () => ({
     })),
 }));
 
-vi.mock('@/lib/currency', () => ({
-    currencyContext: { key: 'currency' },
-}));
-
 import {
     loader,
     getServerCustomerProfileData,

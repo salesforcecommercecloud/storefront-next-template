@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Cookie } from 'react-router';
+import type { Cookie, CookieOptions } from 'react-router';
 import type { Locale as BaseLocale, Site as BaseSite } from '../config/types';
 
 // extended Site/Locale to use for site context feature.
@@ -31,8 +31,10 @@ export type Site = Omit<BaseSite, 'supportedLocales'> & {
 export type SiteContext = {
     site: Site;
     locale: Locale;
+    currency: string;
     siteCookie: Cookie;
     localeCookie: Cookie;
+    currencyCookie: Cookie;
 };
 
 /**
@@ -45,16 +47,19 @@ export type SiteConfig = {
     defaultLocale: string;
     siteDetectionConfig?: DetectionConfig;
     localeDetectionConfig?: DetectionConfig;
+    currencyCookieName?: string;
+    cookieOptions?: CookieOptions;
 };
 
 /**
- * Resolved settings used by site/locale resolution (all detection options have values).
+ * Resolved settings used by site/locale/currency resolution (all detection options have values).
  */
 export type SiteSettings = SiteConfig & {
     siteDetectionConfig: Required<DetectionConfig>;
     localeDetectionConfig: Required<DetectionConfig>;
     siteCookie: Cookie;
     localeCookie: Cookie;
+    currencyCookie: Cookie;
 };
 
 /** Detection method identifier (used for both site and locale detection) */

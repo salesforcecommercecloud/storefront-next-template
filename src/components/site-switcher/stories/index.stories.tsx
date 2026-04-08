@@ -32,7 +32,7 @@ const meta: Meta<typeof SiteSwitcher> = {
         docs: {
             description: {
                 component:
-                    'A dropdown that allows users to switch between configured commerce sites. Posts to `/action/set-site` to persist the selection via cookie.',
+                    'A dropdown that allows users to switch between configured commerce sites. Posts to `/action/set-site-context` to persist the selection via cookie.',
             },
         },
     },

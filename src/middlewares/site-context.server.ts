@@ -20,10 +20,10 @@ import type { AppConfig } from '@/types/config';
 import { getLogger } from '@/lib/logger.server';
 
 /**
- * Creates and returns the site context middleware configured with the app's site and locale settings.
- * This middleware resolves the current site and locale from the request and stores them in context.
+ * Creates and returns the site context middleware configured with the app's site, locale, and currency settings.
+ * This middleware resolves the current site, locale, and currency from the request and stores them in context.
  *
- * Must run BEFORE i18next and currency middlewares.
+ * Must run BEFORE i18next middleware.
  */
 export const siteContextMiddleware: MiddlewareFunction<Response> = async (args, next) => {
     const logger = getLogger(args.context);
@@ -63,6 +63,8 @@ export const siteContextMiddleware: MiddlewareFunction<Response> = async (args, 
         defaultLocale: defaultSite.defaultLocale,
         siteDetectionConfig: config.siteDetectionConfig,
         localeDetectionConfig: config.localeDetectionConfig,
+        currencyCookieName: config.siteContext?.currencyCookieName,
+        cookieOptions: config.siteContext?.cookieOptions,
     };
 
     // Create and invoke the site context middleware.

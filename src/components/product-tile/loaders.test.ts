@@ -66,7 +66,7 @@ describe('product-tile loader', () => {
     });
 
     test('fetches product and converts it to ProductSearchHit', async () => {
-        mockContext.get.mockReturnValue('USD');
+        mockContext.get.mockReturnValue({ currency: 'USD' });
         vi.mocked(fetchProductById).mockResolvedValue({ id: 'sku-123', name: 'Test Product' } as any);
         vi.mocked(convertProductToProductSearchHit).mockReturnValue({ productId: 'sku-123' } as any);
 
@@ -89,7 +89,7 @@ describe('product-tile loader', () => {
     });
 
     test('omits currency from query when not in context', async () => {
-        mockContext.get.mockReturnValue(undefined);
+        mockContext.get.mockReturnValue({ currency: undefined });
         vi.mocked(fetchProductById).mockResolvedValue({ id: 'sku-321' } as any);
         vi.mocked(convertProductToProductSearchHit).mockReturnValue({ productId: 'sku-321' } as any);
 
@@ -107,7 +107,7 @@ describe('product-tile loader', () => {
     });
 
     test('returns null and logs info for 404 errors (missing products)', async () => {
-        mockContext.get.mockReturnValue('USD');
+        mockContext.get.mockReturnValue({ currency: 'USD' });
         const error404 = new ApiError({
             status: 404,
             statusText: 'Not Found',
@@ -130,7 +130,7 @@ describe('product-tile loader', () => {
     });
 
     test('throws non-404 errors (auth, network failures)', async () => {
-        mockContext.get.mockReturnValue('USD');
+        mockContext.get.mockReturnValue({ currency: 'USD' });
         const error500 = new ApiError({
             status: 500,
             statusText: 'Server Error',
@@ -153,7 +153,7 @@ describe('product-tile loader', () => {
     });
 
     test('handles productId with whitespace (fetchProductById trims internally)', async () => {
-        mockContext.get.mockReturnValue('USD');
+        mockContext.get.mockReturnValue({ currency: 'USD' });
         vi.mocked(fetchProductById).mockResolvedValue({ id: 'sku-trimmed' } as any);
         vi.mocked(convertProductToProductSearchHit).mockReturnValue({ productId: 'sku-trimmed' } as any);
 

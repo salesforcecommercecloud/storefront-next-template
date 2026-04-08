@@ -21,8 +21,7 @@ import { fetchSearchProducts } from '@/lib/api/search';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
-import { currencyContext } from '@/lib/currency';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import CategoryPagination from '@/components/category-pagination';
 import ActiveFilters from '@/components/category-refinements/active-filters';
@@ -116,8 +115,13 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
 
     // Get currency and locale for cache-busting the page key
     const config = getConfig<AppConfig>(context);
-    const currency = context.get(currencyContext) as string;
-    const locale = (context.get(siteContext) as SiteContext).locale.id;
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx) {
+        logger.error('Category: site context is not available');
+        throw new Response('Site context is not available', { status: 500 });
+    }
+    const { currency } = siteCtx;
+    const locale = siteCtx.locale.id;
     const limit = config.search.products.hits.limit;
 
     let categoryData: ShopperProducts.schemas['Category'] | undefined;

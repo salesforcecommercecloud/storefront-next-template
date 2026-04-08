@@ -58,7 +58,6 @@ import { ConfigProvider, getConfig } from '@salesforce/storefront-next-runtime/c
 import type { AppConfig } from '@/types/config';
 import { siteContextMiddleware } from '@/middlewares/site-context.server';
 import { i18nextMiddleware } from '@/middlewares/i18next.server';
-import { currencyMiddleware } from '@/middlewares/currency.server';
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 import {
     selectedStoreMiddleware,
@@ -94,7 +93,6 @@ import { i18nextContext } from '@/lib/i18next';
 import { initI18next } from '@/lib/i18next.client';
 import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
 import { initializeRegistry } from '@/lib/static-registry';
-import { currencyContext } from '@/lib/currency';
 import { buildSeoMetaDescriptors } from '@/utils/seo';
 
 // Adapters
@@ -138,9 +136,8 @@ export const middleware: MiddlewareFunction<Response>[] = [
     loggingMiddleware,
     modeDetectionMiddlewareServer,
     appConfigMiddlewareServer,
-    siteContextMiddleware, // Must run after appConfig, before i18next and currency
+    siteContextMiddleware, // Must run after appConfig, before i18next. Resolves site + locale + currency.
     i18nextMiddleware,
-    currencyMiddleware,
     selectedStoreMiddleware /** @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */,
     performanceMetricsMiddlewareServer,
     maintenanceMiddleware,
@@ -202,20 +199,16 @@ export const loader = ({
     // so we'll need to be careful not to accidentally serialize this object (to avoid bloating the html).
     const i18next = i18nextData.getI18nextInstance();
 
-    // Currency is already resolved by middleware
-    const currency = context.get(currencyContext) as string;
-
     // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
     const selectedStoreInfo = context.get(selectedStoreContext) ?? null;
     // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 
-    // Get resolved site from site context middleware
+    // Get resolved site, locale, and currency from site context middleware
     const siteCtx = context.get(siteContext);
     if (!siteCtx) {
         throw new Error('Site context not found. Ensure siteContextMiddleware runs before loaders.');
     }
-    const locale = siteCtx.locale;
-    const site = siteCtx.site;
+    const { locale, site, currency } = siteCtx;
 
     // Load the application basket provider with the basket snapshot. We are actively not loading the basket, as
     // we want to lazy load the basket when the basket is needed. This prevents low-engagement users from causing

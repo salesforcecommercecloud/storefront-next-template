@@ -17,7 +17,7 @@ import { type LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchSearchProducts } from '@/lib/api/search';
 import { fetchCategories } from '@/lib/api/categories';
-import { currencyContext } from '@/lib/currency';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { Region } from '@/components/region';
 import PopularCategories from '@/components/home/popular-categories';
 import ContentCard from '@/components/content-card';
@@ -78,7 +78,7 @@ export function loader(args: LoaderFunctionArgs): HomePageData {
     const logger = getLogger(args.context);
     logger.debug('HomePage: loader starting');
 
-    const currency = args.context.get(currencyContext) as string;
+    const currency = (args.context.get(siteContext) as SiteContext).currency;
     const requestUrl = new URL(args.request.url);
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
 

@@ -16,7 +16,7 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperCustomers, ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
-import { currencyContext } from '@/lib/currency';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
 import type { Order } from '@/components/account/order-list';
 
@@ -51,7 +51,7 @@ export function fetchOrderWithProducts(
     orderNo: string
 ): FetchOrderWithProductsResult {
     const clients = createApiClients(context);
-    const currency = context.get(currencyContext) as string;
+    const currency = (context.get(siteContext) as SiteContext).currency;
 
     const orderPromise = clients.shopperOrders
         .getOrder({
@@ -178,7 +178,7 @@ export async function fetchCustomerOrders(
     }
 ): Promise<CustomerOrdersResult> {
     const clients = createApiClients(context);
-    const currency = context.get(currencyContext) as string;
+    const currency = (context.get(siteContext) as SiteContext).currency;
     const offset = options?.offset ?? DEFAULT_ORDERS_OFFSET;
     const limit = options?.limit ?? DEFAULT_ORDERS_LIMIT;
 

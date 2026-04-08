@@ -1,8 +1,8 @@
 import { n as Site$1, r as Url, t as Locale$1 } from "./types.js";
 import { PropsWithChildren } from "react";
-import * as react_jsx_runtime2 from "react/jsx-runtime";
+import * as react_jsx_runtime0 from "react/jsx-runtime";
 import * as react_router0 from "react-router";
-import { Cookie, MiddlewareFunction, RouterContextProvider } from "react-router";
+import { Cookie, CookieOptions, MiddlewareFunction, RouterContextProvider } from "react-router";
 import { RouteConfigEntry } from "@react-router/dev/routes";
 
 //#region src/site-context/types.d.ts
@@ -18,8 +18,10 @@ type Site = Omit<Site$1, 'supportedLocales'> & {
 type SiteContext = {
   site: Site;
   locale: Locale;
+  currency: string;
   siteCookie: Cookie;
   localeCookie: Cookie;
+  currencyCookie: Cookie;
 };
 /**
  * Configuration passed into the site context middleware
@@ -31,6 +33,18 @@ type SiteConfig = {
   defaultLocale: string;
   siteDetectionConfig?: DetectionConfig;
   localeDetectionConfig?: DetectionConfig;
+  currencyCookieName?: string;
+  cookieOptions?: CookieOptions;
+};
+/**
+ * Resolved settings used by site/locale/currency resolution (all detection options have values).
+ */
+type SiteSettings = SiteConfig & {
+  siteDetectionConfig: Required<DetectionConfig>;
+  localeDetectionConfig: Required<DetectionConfig>;
+  siteCookie: Cookie;
+  localeCookie: Cookie;
+  currencyCookie: Cookie;
 };
 /** Detection method identifier (used for both site and locale detection) */
 type DetectionMethod = 'path' | 'querystring' | 'cookie' | 'header';
@@ -56,7 +70,7 @@ declare function SiteProvider({
   children
 }: PropsWithChildren<{
   value: Site;
-}>): react_jsx_runtime2.JSX.Element;
+}>): react_jsx_runtime0.JSX.Element;
 /**
  * React hook to get the current site.
  * Returns undefined when no SiteProvider is mounted.
@@ -137,6 +151,34 @@ declare function buildUrl({
 //#region src/site-context/middleware.d.ts
 declare const siteContext: react_router0.RouterContext<SiteContext | null>;
 /**
+ * Resolved site context result from {@link resolveSiteContext}.
+ */
+type ResolvedSiteContext = {
+  site: Site;
+  locale: Locale;
+  currency: string;
+};
+/**
+ * Resolve site, locale, and currency from a request in one call.
+ *
+ * This is the recommended public entry point for site-context resolution.
+ * It encapsulates the required resolution order (site → locale → currency)
+ * so consumers don't need to manage the dependency chain manually.
+ *
+ * The individual resolvers (`resolveSite`, `resolveLocale`, `resolveCurrency`)
+ * are available as advanced utilities for cases that need fine-grained control.
+ *
+ * @param request - Incoming HTTP request
+ * @param settings - Fully resolved site settings (with detection config and cookies)
+ * @returns Resolved site, locale, and currency
+ *
+ * @example
+ * ```typescript
+ * const { site, locale, currency } = await resolveSiteContext(request, settings);
+ * ```
+ */
+declare function resolveSiteContext(request: Request, settings: SiteSettings): Promise<ResolvedSiteContext>;
+/**
  * Helper function to get site context cookies from router context.
  * Useful in server actions and loaders that need to read/set cookies.
  *
@@ -157,6 +199,7 @@ declare const siteContext: react_router0.RouterContext<SiteContext | null>;
 declare function getSiteContextCookies(context: Readonly<RouterContextProvider>): {
   siteCookie: react_router0.Cookie;
   localeCookie: react_router0.Cookie;
+  currencyCookie: react_router0.Cookie;
 } | null;
 /**
  * Creates a site context middleware that resolves the current site from
@@ -175,5 +218,5 @@ declare function createSiteContextMiddleware(config: SiteConfig): MiddlewareFunc
  */
 declare const requestToLocaleMap: WeakMap<Request, string>;
 //#endregion
-export { type DetectionConfig, type Locale, type Site, type SiteConfig, type SiteContext, SiteProvider, applyUrlConfig, buildUrl, createSiteContextMiddleware, getSiteContextCookies, requestToLocaleMap, resolvePrefix, sanitizePrefix, siteContext, stripPathPrefix, useSite };
+export { type DetectionConfig, type Locale, type ResolvedSiteContext, type Site, type SiteConfig, type SiteContext, SiteProvider, type SiteSettings, applyUrlConfig, buildUrl, createSiteContextMiddleware, getSiteContextCookies, requestToLocaleMap, resolvePrefix, resolveSiteContext, sanitizePrefix, siteContext, stripPathPrefix, useSite };
 //# sourceMappingURL=site-context.d.ts.map

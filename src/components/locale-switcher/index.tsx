@@ -60,8 +60,8 @@ export default function LocaleSwitcher(): ReactElement {
         });
 
         const formData = new FormData();
-        formData.append('locale', newLocale);
-        formData.append('pathname', pathname);
+        formData.append('type', 'locale');
+        formData.append('payload', JSON.stringify({ locale: newLocale, pathname }));
 
         // Update i18next client-side so the selector reflects the new value immediately
         await i18n.changeLanguage(newLocale);
@@ -71,7 +71,7 @@ export default function LocaleSwitcher(): ReactElement {
         // with the new locale.
         await fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/set-locale',
+            action: '/action/set-site-context',
         });
         window.location.href = pathname;
     };

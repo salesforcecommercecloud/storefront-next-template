@@ -20,7 +20,7 @@ import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi'
 import { loader } from './_app.product.$productId';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import { authContext } from '@/middlewares/auth.utils';
-import { currencyContext } from '@/lib/currency';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 // Mock the API client creation - use vi.hoisted to avoid hoisting issues
 const mockGetProduct = vi.hoisted(() => vi.fn());
@@ -111,8 +111,8 @@ describe('Product Route Loaders', () => {
             if (context === authContext) {
                 return mockAuthSession;
             }
-            if (context === currencyContext) {
-                return 'USD';
+            if (context === siteContext) {
+                return { currency: 'USD', site: { id: 'test-site' }, locale: { id: 'en-US' } };
             }
             // @sfdc-extension-block-start SFDC_EXT_BOPIS
             if (context === selectedStoreContext) {

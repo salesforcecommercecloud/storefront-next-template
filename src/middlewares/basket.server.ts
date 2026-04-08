@@ -17,7 +17,7 @@ import { createContext, createCookie, type MiddlewareFunction, type RouterContex
 import { type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients';
 import { getCookieConfig } from '@/lib/cookie-utils';
-import { currencyContext } from '@/lib/currency';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
 
 // Types
@@ -249,7 +249,6 @@ const getBasketExpiryDate = (
  * export const middleware = [
  *   appConfigMiddlewareServer,
  *   i18nextMiddleware,
- *   currencyMiddleware,
  *   authMiddlewareServer,
  *   createBasketMiddleware({ mode: 'eager' }),
  * ];
@@ -265,8 +264,8 @@ export const createBasketMiddleware = (config: BasketMiddlewareConfig = {}): Mid
     return async ({ request, context }, next) => {
         const logger = getLogger(context);
 
-        // Resolve currency: explicit config override → currencyContext (set by currency middleware)
-        const currency = configCurrency ?? context.get(currencyContext) ?? '';
+        // Resolve currency: explicit config override → siteContext (set by site-context middleware)
+        const currency = configCurrency ?? context.get(siteContext)?.currency ?? '';
         let basket: Basket | undefined = undefined;
         let snapshot: BasketSnapshot | null = null;
 
@@ -372,7 +371,7 @@ export const getBasket = async (
 
     const basketId = basketResource.snapshot?.basketId;
     const metadata = context.get(basketMetadataContext);
-    const currency = metadata?.currency ?? context.get(currencyContext) ?? '';
+    const currency = metadata?.currency ?? context.get(siteContext)?.currency ?? '';
     const calculateBasketSnapshot = metadata?.calculateSnapshot;
     logger.debug('Basket: hydration starting', { hasExistingBasketId: Boolean(basketId) });
 
@@ -477,7 +476,7 @@ export const destroyBasket = (context: Readonly<RouterContextProvider>): void =>
     const metadata = context.get(basketMetadataContext);
     context.set(basketMetadataContext, {
         calculateSnapshot: metadata?.calculateSnapshot,
-        currency: metadata?.currency ?? context.get(currencyContext) ?? '',
+        currency: metadata?.currency ?? context.get(siteContext)?.currency ?? '',
         basketMarkedForDeletion: true,
     });
 };

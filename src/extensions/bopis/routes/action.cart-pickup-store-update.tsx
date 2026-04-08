@@ -28,7 +28,7 @@ import {
     createBasketErrorResponse,
 } from '@/routes/types/action-responses';
 import { getTranslation } from '@/lib/i18next';
-import { currencyContext } from '@/lib/currency';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
@@ -126,7 +126,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 .map((item) => item.productId)
                 .filter((id): id is string => Boolean(id));
 
-            const currency = context.get(currencyContext) as string;
+            const currency = (context.get(siteContext) as SiteContext).currency;
 
             // Fetch products with the new store's inventory ID to validate availability
             const productsResponse = await clients.shopperProducts.getProducts({

@@ -22,13 +22,14 @@
  */
 import { afterEach, describe, it, expect } from 'vitest';
 import { DEFAULT_LOCALE_DETECTION, DEFAULT_SITE_DETECTION } from './configs';
-import { createSiteContextCookie } from './cookies';
+import { createSiteContextCookie, createCurrencyCookie } from './cookies';
 import { resolveLocale } from './locale-detection';
 import type { Locale, SiteSettings, Site } from './types';
 
 // Create cookies using default names for testing
 const siteCookie = createSiteContextCookie(DEFAULT_SITE_DETECTION.lookupCookie);
 const localeCookie = createSiteContextCookie(DEFAULT_LOCALE_DETECTION.lookupCookie);
+const currencyCookie = createCurrencyCookie('currency');
 
 const SITE: Site = {
     id: 'site-us',
@@ -52,6 +53,7 @@ function createSettings(overrides: Partial<SiteSettings> = {}): SiteSettings {
         localeDetectionConfig: DEFAULT_LOCALE_DETECTION,
         siteCookie,
         localeCookie,
+        currencyCookie,
         ...overrides,
     };
 }

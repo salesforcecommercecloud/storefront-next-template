@@ -18,7 +18,7 @@ import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-n
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { currencyContext } from '@/lib/currency';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
@@ -56,7 +56,7 @@ export async function fetchProductsForWishlist(
     const maxIdsPerRequest = config.search.products.hits.limit;
     const productsByProductId: Record<string, Product> = {};
 
-    const currency = context.get(currencyContext) as string;
+    const currency = (context.get(siteContext) as SiteContext).currency;
 
     // Initialize map with empty placeholder objects for ALL wishlist items if provided
     // This ensures the map has entries for all products, even unfetched ones

@@ -48,12 +48,13 @@ export default function CurrencySwitcher(): ReactElement {
         }
 
         const formData = new FormData();
-        formData.append('currency', newCurrency);
+        formData.append('type', 'currency');
+        formData.append('payload', JSON.stringify({ currency: newCurrency }));
 
         // Submit to server action - React Router will automatically revalidate loaders
         void fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/set-currency',
+            action: '/action/set-site-context',
         });
     };
 

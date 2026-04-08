@@ -24,7 +24,7 @@ import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { extractResponseError } from '@/lib/utils';
 import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { createApiClients } from '@/lib/api-clients';
-import { currencyContext } from '@/lib/currency';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 vi.mock('@/middlewares/basket.server');
@@ -142,8 +142,8 @@ describe('action.cart-pickup-store-update', () => {
 
     const mockContext = {
         get: vi.fn((context) => {
-            if (context === currencyContext || context?.key === 'currency') {
-                return 'USD';
+            if (context === siteContext) {
+                return { currency: 'USD', site: { id: 'test-site' }, locale: { id: 'en-US' } };
             }
             // Return undefined for any other context - tests can mock specific contexts as needed
             return undefined;

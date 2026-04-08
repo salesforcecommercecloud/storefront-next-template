@@ -69,7 +69,7 @@ export const updateSelectedStore = (
 
 /**
  * Middleware to resolve selected store info from cookie and persist updates via Set-Cookie.
- * Follows the same before/after pattern as currencyMiddleware.
+ * Follows the same before/after pattern as authMiddleware.
  */
 export const selectedStoreMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
     const storeCookie = createSelectedStoreCookie(context);
