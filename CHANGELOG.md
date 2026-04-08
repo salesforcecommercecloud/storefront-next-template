@@ -9,3 +9,4 @@
 - Restored Page Designer aspect definitions for PDP and PLP (@W-21888616)
 - Added fallback functionality for Core Region component and added two regions on AboutUs page region(`headline` and `additionalinformation`) (@W-21527572)
 - Page Designer: `storefrontnext_base` default `@Component` group, Layout/Content groups, resolved region type refs for inclusions/exclusions; updated cartridge metadata and static registry (@W-21816874)
+- Hero Banner: Page Designer **Overlay Position** (nine placements: top/middle/bottom × left/center/right) and **Overlay Alignment** (text/CTA left, center, right); updated cartridge metadata (@W-21816944)

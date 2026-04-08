@@ -151,3 +151,30 @@ export const WithoutSubtitle: Story = {
         await expect(title).toBeInTheDocument();
     },
 };
+
+export const RightBlockCenteredText: Story = {
+    render: () => (
+        <Hero
+            title="Right-aligned column"
+            subtitle="Text stays centered inside the content block"
+            imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
+            imageAlt="Hero background"
+            ctaText="Shop Now"
+            ctaLink="/category/all"
+            overlayPosition="Middle Right"
+            overlayAlignment="center"
+        />
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'Content block sits in the middle row on the right; title, subtitle, and CTA remain center-aligned within that block (Page Designer overlay controls).',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await waitForStorybookReady(canvasElement);
+        await expect(await canvas.findByText(/right-aligned column/i, {}, { timeout: 5000 })).toBeInTheDocument();
+    },
+};

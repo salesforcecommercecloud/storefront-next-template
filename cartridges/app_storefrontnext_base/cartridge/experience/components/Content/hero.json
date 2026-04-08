@@ -1,6 +1,6 @@
 {
     "name": "Hero Banner",
-    "description": "Prominent banner section with title, subtitle, image, and call-to-action",
+    "description": "Prominent banner with image, title, subtitle, and call-to-action. Overlay Position places the content block (top, middle, or bottom; left, center, or right). Overlay Alignment sets text alignment for the title, subtitle, and CTA.",
     "group": "Content",
     "arch_type": "headless",
     "region_definitions": [],
@@ -8,7 +8,7 @@
         {
             "id": "hero",
             "name": "Hero Banner",
-            "description": "Prominent banner section with title, subtitle, image, and call-to-action",
+            "description": "Prominent banner with image, title, subtitle, and call-to-action. Overlay Position places the content block (top, middle, or bottom; left, center, or right). Overlay Alignment sets text alignment for the title, subtitle, and CTA.",
             "attribute_definitions": [
                 {
                     "id": "title",
@@ -51,6 +51,34 @@
                     "type": "url",
                     "required": false,
                     "description": "Field: ctaLink"
+                },
+                {
+                    "id": "overlayPosition",
+                    "name": "Overlay Position",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Placement of the content block within the hero",
+                    "values": [
+                        "Top Left",
+                        "Top Center",
+                        "Top Right",
+                        "Middle Left",
+                        "Middle Center",
+                        "Middle Right",
+                        "Bottom Left",
+                        "Bottom Center",
+                        "Bottom Right"
+                    ],
+                    "default_value": "Middle Center"
+                },
+                {
+                    "id": "overlayAlignment",
+                    "name": "Overlay Alignment",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Text alignment for title, subtitle, and call-to-action",
+                    "values": ["left", "center", "right"],
+                    "default_value": "center"
                 }
             ]
         }

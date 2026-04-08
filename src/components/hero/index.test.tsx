@@ -111,6 +111,69 @@ describe('Hero Component', () => {
         });
     });
 
+    describe('Overlay position and alignment', () => {
+        test('defaults to centered block and centered text when overlay props are omitted', () => {
+            const { container } = renderHero({ title: 'T' });
+            const overlay = container.querySelector('.absolute.inset-0.z-10.flex');
+            expect(overlay).toHaveClass('items-center');
+            expect(overlay).not.toHaveClass('pt-6', 'pb-6');
+            const block = container.querySelector('.max-w-2xl');
+            expect(block).toBeInTheDocument();
+            expect(block).toHaveClass('mx-auto', 'text-center');
+        });
+
+        test('applies middle-right block position with centered text and CTA row', () => {
+            const { container } = renderHero({
+                title: 'T',
+                ctaText: 'Go',
+                ctaLink: '/go',
+                overlayPosition: 'Middle Right',
+                overlayAlignment: 'center',
+            });
+            const overlay = container.querySelector('.absolute.inset-0.z-10.flex');
+            expect(overlay).toHaveClass('items-center');
+            const block = container.querySelector('.max-w-2xl');
+            expect(block).toHaveClass('ml-auto', 'text-center');
+            expect(block).not.toHaveClass('mx-auto');
+
+            const ctaRow = container.querySelector('.max-w-2xl .flex.justify-center');
+            expect(ctaRow).toBeInTheDocument();
+        });
+
+        test('maps legacy horizontal overlayPosition values to middle row', () => {
+            const { container } = renderHero({ title: 'T', overlayPosition: 'right' });
+            expect(container.querySelector('.max-w-2xl')).toHaveClass('ml-auto');
+        });
+
+        test('applies top-left overlay row, top padding, and block placement', () => {
+            const { container } = renderHero({ title: 'T', overlayPosition: 'Top Left' });
+            const overlay = container.querySelector('.absolute.inset-0.z-10.flex');
+            expect(overlay).toHaveClass('items-start', 'pt-6', 'sm:pt-8', 'md:pt-10');
+            expect(overlay).not.toHaveClass('pb-6');
+            const block = container.querySelector('.max-w-2xl');
+            expect(block).not.toHaveClass('mx-auto', 'ml-auto');
+        });
+
+        test('applies bottom padding for bottom overlay positions', () => {
+            const { container } = renderHero({ title: 'T', overlayPosition: 'Bottom Center' });
+            const overlay = container.querySelector('.absolute.inset-0.z-10.flex');
+            expect(overlay).toHaveClass('items-end', 'pb-6', 'sm:pb-8', 'md:pb-10');
+            expect(overlay).not.toHaveClass('pt-6');
+        });
+
+        test('normalizes invalid overlay values to middle center', () => {
+            const { container } = renderHero({
+                title: 'T',
+                overlayPosition: 'invalid',
+                overlayAlignment: 'also-bad',
+            });
+            const overlay = container.querySelector('.absolute.inset-0.z-10.flex');
+            expect(overlay).toHaveClass('items-center');
+            const block = container.querySelector('.max-w-2xl');
+            expect(block).toHaveClass('mx-auto', 'text-center');
+        });
+    });
+
     describe('Focal Point Behavior', () => {
         const focalPointTestCases = [
             {
