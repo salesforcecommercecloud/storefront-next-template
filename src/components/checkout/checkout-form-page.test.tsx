@@ -1122,6 +1122,90 @@ describe('CheckoutFormPage', () => {
         });
     });
 
+    describe('Session cleanup for returning shoppers', () => {
+        test('clears stale registeredViaCheckout and shouldCreateAccount flags for returning shoppers with saved payment methods', async () => {
+            const mockRemoveItem = vi.fn();
+            const mockGetItem = vi.fn(() => null);
+            Object.defineProperty(window, 'sessionStorage', {
+                value: {
+                    getItem: mockGetItem,
+                    setItem: vi.fn(),
+                    removeItem: mockRemoveItem,
+                    clear: vi.fn(),
+                },
+                writable: true,
+                configurable: true,
+            });
+
+            mockUseCustomerProfile.mockReturnValue({
+                customer: { customerId: 'returning-cust', email: 'returning@example.com' },
+                addresses: [{ addressId: 'addr-1' }],
+                paymentInstruments: [{ paymentInstrumentId: 'pi-1' }],
+            });
+            mockUseAuth.mockReturnValue({ userType: 'registered' });
+
+            const { rerender } = await renderCheckoutPage();
+
+            expect(mockRemoveItem).toHaveBeenCalledWith('registeredViaCheckout');
+            expect(mockRemoveItem).toHaveBeenCalledWith('shouldCreateAccount');
+            expect(mockHandleCreateAccountPreferenceChange).toHaveBeenCalledWith(false);
+
+            // Cleanup should only run once even when deps change (ref guard)
+            mockRemoveItem.mockClear();
+            mockHandleCreateAccountPreferenceChange.mockClear();
+
+            // Simulate profile update with more payment instruments
+            mockUseCustomerProfile.mockReturnValue({
+                customer: { customerId: 'returning-cust', email: 'returning@example.com' },
+                addresses: [{ addressId: 'addr-1' }],
+                paymentInstruments: [{ paymentInstrumentId: 'pi-1' }, { paymentInstrumentId: 'pi-2' }],
+            });
+
+            act(() => {
+                rerender(<CheckoutFormPage {...defaultProps} />);
+            });
+
+            // Should NOT fire again due to ref guard
+            expect(mockRemoveItem).not.toHaveBeenCalledWith('registeredViaCheckout');
+            expect(mockHandleCreateAccountPreferenceChange).not.toHaveBeenCalledWith(false);
+
+            mockUseAuth.mockReturnValue({ userType: 'guest' });
+        });
+
+        test('does not clear session flags for newly registered user without saved payment methods', async () => {
+            const mockRemoveItem = vi.fn();
+            const mockGetItem = vi.fn((key: string) => {
+                if (key === 'registeredViaCheckout') return 'true';
+                return null;
+            });
+            Object.defineProperty(window, 'sessionStorage', {
+                value: {
+                    getItem: mockGetItem,
+                    setItem: vi.fn(),
+                    removeItem: mockRemoveItem,
+                    clear: vi.fn(),
+                },
+                writable: true,
+                configurable: true,
+            });
+
+            mockUseCustomerProfile.mockReturnValue({
+                customer: { customerId: 'new-cust', email: 'new@example.com' },
+                addresses: [],
+                paymentInstruments: [],
+            });
+            mockUseAuth.mockReturnValue({ userType: 'registered' });
+
+            await renderCheckoutPage();
+
+            // Should NOT clear because no saved payment methods
+            expect(mockRemoveItem).not.toHaveBeenCalledWith('registeredViaCheckout');
+            expect(mockRemoveItem).not.toHaveBeenCalledWith('shouldCreateAccount');
+
+            mockUseAuth.mockReturnValue({ userType: 'guest' });
+        });
+    });
+
     describe('Form submission handlers', () => {
         test('handlers are properly assigned to form components', async () => {
             await renderCheckoutPage();

@@ -232,6 +232,26 @@ export default function CheckoutFormPage({
         shouldCreateAccount,
     } = useCheckoutActions({ paymentSubmissionRef, otpFlowActiveRef });
 
+    // Stale `registeredViaCheckout` / `shouldCreateAccount` session from a prior visit can leave
+    // `shouldCreateAccount` true and hide the "Save payment" checkbox (see hidePaymentSaveCheckbox).
+    // Established returning shoppers already have wallet data — clear those flags so the checkbox shows.
+    // Uses a ref guard so the cleanup runs at most once per mount, avoiding mid-checkout resets when
+    // customerProfile loads asynchronously or paymentInstruments array changes during basket updates.
+    const sessionCleanupDoneRef = useRef(false);
+    useEffect(() => {
+        if (typeof sessionStorage === 'undefined' || sessionCleanupDoneRef.current) {
+            return;
+        }
+        const hasSavedPaymentMethods = (customerProfile?.paymentInstruments?.length ?? 0) > 0;
+        if (!isRegisteredUser || !hasSavedPaymentMethods) {
+            return;
+        }
+        sessionStorage.removeItem('registeredViaCheckout');
+        sessionStorage.removeItem('shouldCreateAccount');
+        handleCreateAccountPreferenceChange(false);
+        sessionCleanupDoneRef.current = true;
+    }, [isRegisteredUser, customerProfile?.paymentInstruments?.length, handleCreateAccountPreferenceChange]);
+
     /**
      * Shopper closed passwordless OTP via "Checkout as guest" — do not verify OTP / sign in.
      * Unblock contact step and hide place-order create-account checkbox for this checkout session.
