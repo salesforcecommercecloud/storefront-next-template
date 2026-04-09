@@ -410,7 +410,7 @@ importers:
         version: 7.12.0(express@5.2.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)
       '@salesforce/b2c-tooling-sdk':
         specifier: ^1.0.0
-        version: 1.1.0(@oclif/core@4.10.5)(typescript@5.9.3)
+        version: 1.2.0(@oclif/core@4.10.5)(typescript@5.9.3)
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
@@ -3049,8 +3049,8 @@ packages:
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
 
-  '@salesforce/b2c-tooling-sdk@1.1.0':
-    resolution: {integrity: sha512-w3/pQcHoTfr3W57oR/ZtLrsokAEuTj/twtMGajZ7yIoAz7R1sI1/2j5P0C4uwanbAH1OjNxFjcFRwcneUNT69w==}
+  '@salesforce/b2c-tooling-sdk@1.2.0':
+    resolution: {integrity: sha512-RzDFeYR+D+jytKhwNNbzZJnglxGuyXCQZ8pcbqPR7t1aFnwuHGTOCAndrwkfmekW8r0C5H+sZZTI+A+h9yQiJw==}
     engines: {node: '>=22.16.0'}
     peerDependencies:
       '@oclif/core': ^4
@@ -3890,6 +3890,13 @@ packages:
 
   '@vitest/utils@4.0.18':
     resolution: {integrity: sha512-msMRKLMVLWygpK3u2Hybgi4MNjcYJvwTb0Ru09+fOyCXIgT5raYP041DRRdiJiI3k/2U6SEbAETB3YtBrUkCFA==}
+
+  '@vscode/debugadapter@1.68.0':
+    resolution: {integrity: sha512-D6gk5Fw2y4FV8oYmltoXpj+VAZexxJFopN/mcZ6YcgzQE9dgq2L45Aj3GLxScJOD6GeLILcxJIaA8l3v11esGg==}
+    engines: {node: '>=14'}
+
+  '@vscode/debugprotocol@1.68.0':
+    resolution: {integrity: sha512-2J27dysaXmvnfuhFGhfeuxfHRXunqNPxtBoR3koiTOA9rdxWNDTa1zIFLCFMSHJ9MPTPKFcBeblsyaCJCIlQxg==}
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -11402,8 +11409,9 @@ snapshots:
 
   '@rtsao/scc@1.1.0': {}
 
-  '@salesforce/b2c-tooling-sdk@1.1.0(@oclif/core@4.10.5)(typescript@5.9.3)':
+  '@salesforce/b2c-tooling-sdk@1.2.0(@oclif/core@4.10.5)(typescript@5.9.3)':
     dependencies:
+      '@vscode/debugadapter': 1.68.0
       applicationinsights: 2.9.8
       chokidar: 5.0.0
       cliui: 9.0.1
@@ -12368,6 +12376,12 @@ snapshots:
     dependencies:
       '@vitest/pretty-format': 4.0.18
       tinyrainbow: 3.1.0
+
+  '@vscode/debugadapter@1.68.0':
+    dependencies:
+      '@vscode/debugprotocol': 1.68.0
+
+  '@vscode/debugprotocol@1.68.0': {}
 
   abort-controller@3.0.0:
     dependencies:

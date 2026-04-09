@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 07, 2026)
 
+- Save phone number to `phoneMobile` in addition to `phoneHome` on customer profile update ([#1373](https://github.com/commerce-emu/storefront-next/pull/1373))
 - Calculate basket after OTP verificatiion (@W-21918545)
 - Update accessibility baseline and fix accessibility violations on order list page (@W-21685164)
 - Consolidate `action.set-site`, `action.set-locale`, and `action.set-currency` into a single `action.set-site-context` route (@W-21787262) ([#1342](https://github.com/commerce-emu/storefront-next/pull/1342))

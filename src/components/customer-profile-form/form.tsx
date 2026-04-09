@@ -162,6 +162,7 @@ export const CustomerProfileForm = ({
         // Phone is editable and optional - include if provided
         if (data.phone) {
             customerUpdateData.phoneHome = data.phone;
+            customerUpdateData.phoneMobile = data.phone;
         }
 
         // Bugfix: Birthday is supposed to be optional field, but submitting the form with empty birthday resulted in an error.
