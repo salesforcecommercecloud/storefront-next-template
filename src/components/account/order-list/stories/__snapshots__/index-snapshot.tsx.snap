@@ -114,7 +114,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -128,7 +128,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -142,7 +142,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -156,7 +156,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -257,7 +257,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 >
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Location
                     </p>
@@ -269,7 +269,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   </div>
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Address
                     </p>
@@ -333,7 +333,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -347,7 +347,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -361,7 +361,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -375,7 +375,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -469,7 +469,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -483,7 +483,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -497,7 +497,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -511,7 +511,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -680,7 +680,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -694,7 +694,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -708,7 +708,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -722,7 +722,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -857,7 +857,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -871,7 +871,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -885,7 +885,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -899,7 +899,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -1237,7 +1237,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -1251,7 +1251,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -1265,7 +1265,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -1279,7 +1279,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -1380,7 +1380,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 >
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Location
                     </p>
@@ -1392,7 +1392,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   </div>
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Address
                     </p>
@@ -1456,7 +1456,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -1470,7 +1470,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -1484,7 +1484,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -1498,7 +1498,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -1592,7 +1592,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -1606,7 +1606,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -1620,7 +1620,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -1634,7 +1634,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -1803,7 +1803,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -1817,7 +1817,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -1831,7 +1831,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -1845,7 +1845,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -1980,7 +1980,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -1994,7 +1994,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -2008,7 +2008,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -2022,7 +2022,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -2475,7 +2475,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -2489,7 +2489,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -2503,7 +2503,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -2517,7 +2517,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -2855,7 +2855,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -2869,7 +2869,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -2883,7 +2883,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -2897,7 +2897,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -2998,7 +2998,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                 >
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Location
                     </p>
@@ -3010,7 +3010,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                   </div>
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Address
                     </p>
@@ -3118,7 +3118,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -3132,7 +3132,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -3146,7 +3146,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -3160,7 +3160,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -3324,7 +3324,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -3338,7 +3338,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -3352,7 +3352,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -3366,7 +3366,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>

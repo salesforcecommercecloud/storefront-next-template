@@ -27,6 +27,8 @@ import { cn } from '@/lib/utils';
 import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order-status';
 
 const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-md w-fit';
+const ON_MUTED_CAPTION_CLASS = 'text-xs font-normal text-muted-foreground';
+const ORDER_HEADER_LABEL_CLASS = 'text-xs font-medium text-muted-foreground';
 
 /**
  * Product item in an order for thumbnail display.
@@ -176,7 +178,7 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
         <Card className="bg-muted border-border p-0">
             <CardContent className="p-4 space-y-2">
                 <div className="flex items-center gap-2">
-                    <MapPin className="size-4 text-muted-foreground" />
+                    <MapPin className="size-4 text-muted-foreground" aria-hidden />
                     <Typography variant="small" as="span" className="font-semibold text-foreground">
                         {t('orders.pickupLocation')}
                     </Typography>
@@ -184,7 +186,7 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
 
                 <div className="space-y-1 pl-6">
                     <div>
-                        <Typography variant="muted" as="p" className="text-xs">
+                        <Typography variant="small" as="p" className={ON_MUTED_CAPTION_CLASS}>
                             {t('orders.location')}
                         </Typography>
                         <Typography variant="small" as="p" className="text-foreground">
@@ -193,7 +195,7 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
                     </div>
 
                     <div>
-                        <Typography variant="muted" as="p" className="text-xs">
+                        <Typography variant="small" as="p" className={ON_MUTED_CAPTION_CLASS}>
                             {t('orders.address')}
                         </Typography>
                         <Typography variant="small" as="p" className="text-foreground font-normal">
@@ -268,7 +270,7 @@ export function OrderListItem({
                     <div className="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted">
                         <div className="flex flex-wrap gap-x-8 gap-y-2">
                             <div className="space-y-2">
-                                <Typography variant="muted" as="p" className="text-xs">
+                                <Typography variant="small" as="p" className={ORDER_HEADER_LABEL_CLASS}>
                                     {t('orders.tableHeaders.orderNumber')}
                                 </Typography>
                                 <Typography variant="small" as="p" className="text-foreground font-medium">
@@ -276,7 +278,7 @@ export function OrderListItem({
                                 </Typography>
                             </div>
                             <div className="space-y-2">
-                                <Typography variant="muted" as="p" className="text-xs">
+                                <Typography variant="small" as="p" className={ORDER_HEADER_LABEL_CLASS}>
                                     {t('orders.orderDate')}
                                 </Typography>
                                 <Typography variant="small" as="p" className="text-foreground">
@@ -284,7 +286,7 @@ export function OrderListItem({
                                 </Typography>
                             </div>
                             <div className="space-y-2">
-                                <Typography variant="muted" as="p" className="text-xs">
+                                <Typography variant="small" as="p" className={ORDER_HEADER_LABEL_CLASS}>
                                     {t('orders.total')}
                                 </Typography>
                                 <Typography variant="small" as="p" className="text-foreground">
@@ -292,7 +294,7 @@ export function OrderListItem({
                                 </Typography>
                             </div>
                             <div className="space-y-2">
-                                <Typography variant="muted" as="p" className="text-xs">
+                                <Typography variant="small" as="p" className={ORDER_HEADER_LABEL_CLASS}>
                                     {t('orders.items')}
                                 </Typography>
                                 <Typography variant="small" as="p" className="text-foreground font-semibold">
