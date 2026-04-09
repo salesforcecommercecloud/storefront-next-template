@@ -665,66 +665,70 @@ export default function CheckoutFormPage({
                         </Suspense>
 
                         {/* Place Order Section */}
-                        {step >= STEPS.PAYMENT && (
-                            <div className="flex flex-col items-end gap-4 w-full lg:-mt-4">
-                                {/* Create Account Option - Show for guest users when Place Order is visible (step >= PAYMENT) */}
-                                {step >= STEPS.PAYMENT && (
-                                    <div className="w-full">
-                                        <UITarget targetId="checkout.createAccount.before" />
-                                        <UITarget targetId="checkout.createAccount">
-                                            <GuestAccountCreation
-                                                cart={cart}
-                                                customerProfile={customerProfile}
-                                                onSaved={handleCreateAccountPreferenceChange}
-                                                savePaymentToProfile={
-                                                    paymentSubmissionRef.current.options?.savePaymentToProfile
-                                                }
-                                                showToast={showToast}
-                                                hideCreateAccountOption={hideCreateAccountAfterSkippedPasswordlessOtp}
-                                            />
-                                        </UITarget>
-                                        <UITarget targetId="checkout.createAccount.after" />
-                                    </div>
-                                )}
-                                {placeOrderFetcher.data &&
-                                    !placeOrderFetcher.data.success &&
-                                    placeOrderFetcher.data.error && (
-                                        <CheckoutErrorBanner
-                                            message={placeOrderFetcher.data.error}
-                                            className="w-full"
-                                        />
+                        {step >= STEPS.PAYMENT &&
+                            editingStep !== STEPS.SHIPPING_ADDRESS &&
+                            editingStep !== STEPS.SHIPPING_OPTIONS && (
+                                <div className="flex flex-col items-end gap-4 w-full lg:-mt-4">
+                                    {/* Create Account Option - Show for guest users when Place Order is visible (step >= PAYMENT) */}
+                                    {step >= STEPS.PAYMENT && (
+                                        <div className="w-full">
+                                            <UITarget targetId="checkout.createAccount.before" />
+                                            <UITarget targetId="checkout.createAccount">
+                                                <GuestAccountCreation
+                                                    cart={cart}
+                                                    customerProfile={customerProfile}
+                                                    onSaved={handleCreateAccountPreferenceChange}
+                                                    savePaymentToProfile={
+                                                        paymentSubmissionRef.current.options?.savePaymentToProfile
+                                                    }
+                                                    showToast={showToast}
+                                                    hideCreateAccountOption={
+                                                        hideCreateAccountAfterSkippedPasswordlessOtp
+                                                    }
+                                                />
+                                            </UITarget>
+                                            <UITarget targetId="checkout.createAccount.after" />
+                                        </div>
                                     )}
-                                <UITarget targetId="checkout.placeOrder.before" />
-                                <UITarget targetId="checkout.placeOrder">
-                                    <form
-                                        onSubmit={handlePlaceOrderSubmit}
-                                        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
-                                        <Button
-                                            type="submit"
-                                            disabled={
-                                                isPlacingOrder ||
-                                                isPlaceOrderPending ||
-                                                isSubmitting('payment') ||
-                                                paymentFetcher.state === 'submitting'
-                                            }
-                                            className="w-full shadow-2xs"
-                                            size="lg">
-                                            <Lock className="size-4" />
-                                            {isPlacingOrder || isPlaceOrderPending || isSubmitting('payment')
-                                                ? t('placeOrder.processing')
-                                                : t('placeOrder.button', {
-                                                      total: formatCurrency(
-                                                          cart?.orderTotal ?? cart?.productTotal ?? 0,
-                                                          i18n.language,
-                                                          currency
-                                                      ),
-                                                  })}
-                                        </Button>
-                                    </form>
-                                </UITarget>
-                                <UITarget targetId="checkout.placeOrder.after" />
-                            </div>
-                        )}
+                                    {placeOrderFetcher.data &&
+                                        !placeOrderFetcher.data.success &&
+                                        placeOrderFetcher.data.error && (
+                                            <CheckoutErrorBanner
+                                                message={placeOrderFetcher.data.error}
+                                                className="w-full"
+                                            />
+                                        )}
+                                    <UITarget targetId="checkout.placeOrder.before" />
+                                    <UITarget targetId="checkout.placeOrder">
+                                        <form
+                                            onSubmit={handlePlaceOrderSubmit}
+                                            className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
+                                            <Button
+                                                type="submit"
+                                                disabled={
+                                                    isPlacingOrder ||
+                                                    isPlaceOrderPending ||
+                                                    isSubmitting('payment') ||
+                                                    paymentFetcher.state === 'submitting'
+                                                }
+                                                className="w-full shadow-2xs"
+                                                size="lg">
+                                                <Lock className="size-4" />
+                                                {isPlacingOrder || isPlaceOrderPending || isSubmitting('payment')
+                                                    ? t('placeOrder.processing')
+                                                    : t('placeOrder.button', {
+                                                          total: formatCurrency(
+                                                              cart?.orderTotal ?? cart?.productTotal ?? 0,
+                                                              i18n.language,
+                                                              currency
+                                                          ),
+                                                      })}
+                                            </Button>
+                                        </form>
+                                    </UITarget>
+                                    <UITarget targetId="checkout.placeOrder.after" />
+                                </div>
+                            )}
                         <UITarget targetId="checkout.mainContent.after" />
                     </div>
 

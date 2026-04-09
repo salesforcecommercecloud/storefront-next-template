@@ -18,6 +18,7 @@ import { fetchPage, type PageDesignerPageParams } from '@/lib/api/page';
 import { ApiError, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { registry } from '@/lib/registry';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
+import { getLogger } from '@/lib/logger.server';
 
 export type Page = ShopperExperience.schemas['Page'];
 
@@ -112,7 +113,11 @@ export async function fetchPageWithComponentData(
     try {
         page = await fetchPageFromLoader(args, params);
     } catch (e) {
-        if (e instanceof ApiError && e.status === 404) {
+        if (e instanceof ApiError) {
+            if (e.status !== 404) {
+                const logger = getLogger(args.context);
+                logger.warn('Page Designer fetch failed', { status: e.status, pageId: params.pageId });
+            }
             return null;
         }
         throw e;

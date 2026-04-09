@@ -12,5 +12,8 @@
 - Fix Vite dev server warnings for font loading from public directory ([#1286](https://github.com/commerce-emu/storefront-next/pull/1286))
 - Restored Page Designer aspect definitions for PDP and PLP (@W-21888616)
 - Added fallback functionality for Core Region component and added two regions on AboutUs page region(`headline` and `additionalinformation`) (@W-21527572)
+- Handle all Page Designer API errors gracefully in `pageLoader.ts` to prevent dev server crashes (@W-21582487)
+- Add comprehensive checkout E2E tests for registered shopper flows: saved/new payment methods, View All/View Less pagination, save card to profile, shipping address modal (add/edit), non-default address selection, shipping method change, billing address selection, basket persistence across sessions, and Place Order button visibility (@W-21582487)
+- Add SCAPI helper utilities for API-based registered shopper setup (register, login via PKCE, create address, update profile, add payment instrument) to speed up E2E test setup (@W-21582487)
 - Page Designer: `storefrontnext_base` default `@Component` group, Layout/Content groups, resolved region type refs for inclusions/exclusions; updated cartridge metadata and static registry (@W-21816874)
 - Hero Banner: Page Designer **Overlay Position** (nine placements: top/middle/bottom × left/center/right) and **Overlay Alignment** (text/CTA left, center, right); updated cartridge metadata (@W-21816944)

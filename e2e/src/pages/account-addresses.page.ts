@@ -56,7 +56,7 @@ class AccountAddressesPage {
         setDefaultButton: locate('button').withText('Set Default').as('Set Default Button'),
 
         // Add/Edit Address Dialog
-        addDialog: locate('[role="dialog"]').as('Add/Edit Address Dialog'),
+        addDialog: locate('[role="dialog"]:has([data-slot="dialog-title"])').as('Add/Edit Address Dialog'),
         dialogTitle: locate('[data-slot="dialog-title"]').as('Dialog Title'),
         addDialogTitle: locate('[data-slot="dialog-title"]').withText('Add new address').as('Add Dialog Title'),
         editDialogTitle: locate('[data-slot="dialog-title"]').withText('Edit Address').as('Edit Dialog Title'),

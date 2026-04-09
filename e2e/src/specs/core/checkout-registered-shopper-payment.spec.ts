@@ -28,7 +28,8 @@
 
 Feature('Checkout Registered Shopper Payment & Step Navigation Tests').tag('@core').tag('@checkout');
 
-const { checkoutPage, apiCartSetupFlow, registeredShopperSetupFlow, storefrontPage } = inject();
+const { checkoutPage, apiCartSetupFlow, registeredShopperSetupFlow, storefrontPage, accountPaymentMethodsPage } =
+    inject();
 import { expect } from 'chai';
 import { TEST_PRODUCT_CATEGORIES } from '../../test-data/checkout.data';
 
@@ -39,17 +40,6 @@ After(async (test: unknown) => {
     }
 });
 
-/**
- * Registered shopper places order with saved payment method
- *
- * Test Flow:
- * 1. Register shopper with full profile (saved address + saved payment)
- * 2. Add product to cart and navigate to checkout
- * 3. Verify all checkout sections are prefilled (including payment in preview mode)
- * 4. Verify payment preview shows saved card details (card type + masked number)
- * 5. Place order without entering card fields
- * 6. Verify order confirmation with valid order number
- */
 Scenario('Registered shopper can place order with saved payment method', async () => {
     await registeredShopperSetupFlow.execute();
 
@@ -78,19 +68,40 @@ Scenario('Registered shopper can place order with saved payment method', async (
     .tag('@saved-payment')
     .tag('@place-order');
 
-/**
- * Registered shopper can edit shipping address and continue checkout
- *
- * Test Flow:
- * 1. Register shopper with full profile (saved address)
- * 2. Add product to cart and navigate to checkout
- * 3. Verify shipping address is in preview mode (auto-applied)
- * 4. Click Edit on shipping address to expand saved addresses list
- * 5. Verify saved addresses list is visible
- * 6. Click "Continue to Shipping Method" to re-submit
- * 7. Verify shipping options step advances (Edit button appears)
- * 8. Verify payment section is reachable
- */
+Scenario('Registered shopper can edit payment, verify default at top, and place order without changes', async () => {
+    await registeredShopperSetupFlow.execute();
+
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+
+    checkoutPage.validatePageLoaded();
+    await checkoutPage.validateAllCheckoutSectionsPrefilled();
+
+    const paymentInPreview = await checkoutPage.isPaymentInPreviewMode();
+    expect(paymentInPreview, 'Payment section should be in preview mode with saved payment').to.be.true;
+
+    const paymentPreviewText = await checkoutPage.getPaymentSectionText();
+    expect(paymentPreviewText, 'Payment preview should show card info').to.have.length.greaterThan(0);
+
+    await checkoutPage.expandPaymentStep();
+    checkoutPage.waitForUiSettle(2);
+
+    const savedPaymentCount = await checkoutPage.getSavedPaymentMethodsCount();
+    expect(savedPaymentCount, 'Should have at least 1 saved payment method').to.be.at.least(1);
+
+    checkoutPage.clickPlaceOrder();
+    checkoutPage.waitForOrderConfirmation();
+    checkoutPage.validateOrderConfirmation();
+    const orderNumber = await checkoutPage.getOrderNumber();
+
+    expect(orderNumber, 'Order number should be returned').to.not.be.empty;
+    expect(orderNumber, 'Order number should be numeric').to.match(/^\d+$/);
+})
+    .tag('@registered-shopper')
+    .tag('@saved-payment')
+    .tag('@edit-payment')
+    .tag('@place-order');
+
 Scenario('Registered shopper can edit shipping address and continue checkout', async () => {
     await registeredShopperSetupFlow.execute();
 
@@ -118,3 +129,286 @@ Scenario('Registered shopper can edit shipping address and continue checkout', a
 })
     .tag('@registered-shopper')
     .tag('@step-navigation');
+
+Scenario('Registered shopper can change shipping method and place order', async () => {
+    await registeredShopperSetupFlow.execute();
+
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+
+    checkoutPage.validatePageLoaded();
+    await checkoutPage.validateAllCheckoutSectionsPrefilled();
+
+    const shippingOptionsInPreview = await checkoutPage.isShippingOptionsInPreviewMode();
+    expect(shippingOptionsInPreview, 'Shipping options should be in preview mode initially').to.be.true;
+
+    checkoutPage.expandShippingOptionsStep();
+    checkoutPage.waitForUiSettle(1);
+
+    const shippingMethodCount = await checkoutPage.getShippingMethodCount();
+    expect(shippingMethodCount, 'Should have multiple shipping methods to test selection').to.be.at.least(2);
+
+    await checkoutPage.selectShippingMethod(1);
+    checkoutPage.waitForUiSettle(2);
+
+    const paymentInPreview = await checkoutPage.isPaymentInPreviewMode();
+    expect(paymentInPreview, 'Payment should advance to preview mode').to.be.true;
+
+    checkoutPage.clickPlaceOrder();
+    checkoutPage.waitForOrderConfirmation();
+    checkoutPage.validateOrderConfirmation();
+    const orderNumber = await checkoutPage.getOrderNumber();
+
+    expect(orderNumber, 'Order number should be returned').to.not.be.empty;
+    expect(orderNumber, 'Order number should be numeric').to.match(/^\d+$/);
+})
+    .tag('@registered-shopper')
+    .tag('@change-shipping-method')
+    .tag('@place-order');
+
+Scenario('Registered shopper with 4+ saved payments can use View All/View Less and add new card', async () => {
+    await registeredShopperSetupFlow.execute();
+
+    await checkoutPage.addMultiplePaymentMethodsToProfile([
+        {
+            cardNumber: '5555555555554444',
+            cardholderName: 'Payment Two',
+            expiryMonth: 12,
+            expiryYear: 2028,
+            cardType: 'Mastercard',
+        },
+        {
+            cardNumber: '378282246310005',
+            cardholderName: 'Payment Three',
+            expiryMonth: 6,
+            expiryYear: 2029,
+            cardType: 'Amex',
+        },
+        {
+            cardNumber: '6011111111111117',
+            cardholderName: 'Payment Four',
+            expiryMonth: 3,
+            expiryYear: 2030,
+            cardType: 'Discover',
+        },
+    ]);
+
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+
+    checkoutPage.validatePageLoaded();
+    await checkoutPage.validateAllCheckoutSectionsPrefilled();
+
+    const paymentInPreview = await checkoutPage.isPaymentInPreviewMode();
+    expect(paymentInPreview, 'Payment should be in preview mode initially').to.be.true;
+
+    await checkoutPage.expandPaymentStep();
+    checkoutPage.waitForUiSettle(1);
+
+    const initialVisibleCount = await checkoutPage.getSavedPaymentMethodsCount();
+    expect(initialVisibleCount, 'Should display exactly 3 saved payment methods initially').to.equal(3);
+
+    const viewAllVisible = await checkoutPage.isPaymentViewAllButtonVisible();
+    expect(viewAllVisible, 'View All button should be visible with 4+ payment methods').to.be.true;
+
+    await checkoutPage.clickPaymentViewAll();
+    checkoutPage.waitForUiSettle(1);
+
+    const expandedCount = await checkoutPage.getSavedPaymentMethodsCount();
+    expect(expandedCount, 'Should display all 4 payment methods after View All').to.equal(4);
+
+    const viewLessVisible = await checkoutPage.isPaymentViewLessButtonVisible();
+    expect(viewLessVisible, 'View Less button should be visible after expanding').to.be.true;
+
+    await checkoutPage.clickPaymentViewLess();
+    checkoutPage.waitForUiSettle(1);
+
+    const collapsedCount = await checkoutPage.getSavedPaymentMethodsCount();
+    expect(collapsedCount, 'Should display 3 payment methods again after View Less').to.equal(3);
+
+    await checkoutPage.selectNewCardPaymentMethod();
+    checkoutPage.waitForUiSettle(1);
+
+    checkoutPage.fillPaymentFieldsOnly({
+        cardNumber: '4111111111111111',
+        cardholderName: 'New Test Card',
+        expiryDate: '12/29',
+        cvv: '123',
+    });
+
+    checkoutPage.clickPlaceOrder();
+    checkoutPage.waitForOrderConfirmation();
+    checkoutPage.validateOrderConfirmation();
+    const orderNumber = await checkoutPage.getOrderNumber();
+
+    expect(orderNumber, 'Order number should be returned').to.not.be.empty;
+    expect(orderNumber, 'Order number should be numeric').to.match(/^\d+$/);
+})
+    .tag('@registered-shopper')
+    .tag('@view-all-payments')
+    .tag('@multiple-payments')
+    .tag('@add-new-card')
+    .tag('@place-order');
+
+Scenario('Registered shopper can save new card during checkout and card is saved to profile', async () => {
+    await registeredShopperSetupFlow.execute();
+
+    accountPaymentMethodsPage.navigate();
+    accountPaymentMethodsPage.validatePageLoaded();
+    const initialPaymentCount = await accountPaymentMethodsPage.getPaymentMethodCount();
+
+    await checkoutPage.addMultiplePaymentMethodsToProfile([
+        {
+            cardNumber: '5555555555554444',
+            cardholderName: 'Payment Two',
+            expiryMonth: 12,
+            expiryYear: 2028,
+            cardType: 'Mastercard',
+        },
+        {
+            cardNumber: '378282246310005',
+            cardholderName: 'Payment Three',
+            expiryMonth: 6,
+            expiryYear: 2029,
+            cardType: 'Amex',
+        },
+        {
+            cardNumber: '6011111111111117',
+            cardholderName: 'Payment Four',
+            expiryMonth: 3,
+            expiryYear: 2030,
+            cardType: 'Discover',
+        },
+    ]);
+
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+
+    checkoutPage.validatePageLoaded();
+    await checkoutPage.validateAllCheckoutSectionsPrefilled();
+
+    await checkoutPage.expandPaymentStep();
+    checkoutPage.waitForUiSettle(1);
+
+    const initialVisibleCount = await checkoutPage.getSavedPaymentMethodsCount();
+    expect(initialVisibleCount, 'Should display exactly 3 saved payment methods initially').to.equal(3);
+
+    const viewAllVisible = await checkoutPage.isPaymentViewAllButtonVisible();
+    expect(viewAllVisible, 'View All button should be visible').to.be.true;
+
+    await checkoutPage.clickPaymentViewAll();
+    checkoutPage.waitForUiSettle(1);
+
+    const expandedCount = await checkoutPage.getSavedPaymentMethodsCount();
+    expect(expandedCount, 'Should display all 4 payment methods after View All').to.equal(4);
+
+    await checkoutPage.clickPaymentViewLess();
+    checkoutPage.waitForUiSettle(1);
+
+    const collapsedCount = await checkoutPage.getSavedPaymentMethodsCount();
+    expect(collapsedCount, 'Should display 3 payment methods after View Less').to.equal(3);
+
+    await checkoutPage.selectNewCardPaymentMethod();
+    checkoutPage.waitForUiSettle(1);
+
+    checkoutPage.fillPaymentFieldsOnly({
+        cardNumber: '4012888888881881',
+        cardholderName: 'SavedCard Test',
+        expiryDate: '09/31',
+        cvv: '789',
+    });
+
+    const saveCheckboxVisible = await checkoutPage.isSavePaymentCheckboxVisible();
+    expect(saveCheckboxVisible, 'Save payment checkbox should be visible for registered shoppers').to.be.true;
+
+    await checkoutPage.checkSavePaymentCheckbox();
+
+    checkoutPage.clickPlaceOrder();
+    checkoutPage.waitForOrderConfirmation();
+    checkoutPage.validateOrderConfirmation();
+    const orderNumber = await checkoutPage.getOrderNumber();
+
+    expect(orderNumber, 'Order number should be returned').to.not.be.empty;
+    expect(orderNumber, 'Order number should be numeric').to.match(/^\d+$/);
+
+    accountPaymentMethodsPage.navigate();
+    accountPaymentMethodsPage.validatePageLoaded();
+
+    const finalPaymentCount = await accountPaymentMethodsPage.getPaymentMethodCount();
+    expect(finalPaymentCount, 'Profile should have one more payment method (4 initial + 1 new)').to.equal(
+        initialPaymentCount + 4
+    );
+})
+    .tag('@registered-shopper')
+    .tag('@save-new-card')
+    .tag('@payment-persistence')
+    .tag('@place-order');
+
+Scenario('Registered shopper can select different saved payment method and place order', async () => {
+    await registeredShopperSetupFlow.execute();
+
+    await checkoutPage.addMultiplePaymentMethodsToProfile([
+        {
+            cardNumber: '5555555555554444',
+            cardholderName: 'Payment Two',
+            expiryMonth: 12,
+            expiryYear: 2028,
+            cardType: 'Mastercard',
+        },
+        {
+            cardNumber: '378282246310005',
+            cardholderName: 'Payment Three',
+            expiryMonth: 6,
+            expiryYear: 2029,
+            cardType: 'Amex',
+        },
+        {
+            cardNumber: '6011111111111117',
+            cardholderName: 'Payment Four',
+            expiryMonth: 3,
+            expiryYear: 2030,
+            cardType: 'Discover',
+        },
+    ]);
+
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+
+    checkoutPage.validatePageLoaded();
+    await checkoutPage.validateAllCheckoutSectionsPrefilled();
+
+    const paymentInPreview = await checkoutPage.isPaymentInPreviewMode();
+    expect(paymentInPreview, 'Payment should be in preview mode with default payment').to.be.true;
+
+    await checkoutPage.expandPaymentStep();
+    checkoutPage.waitForUiSettle(1);
+
+    const initialVisibleCount = await checkoutPage.getSavedPaymentMethodsCount();
+    expect(initialVisibleCount, 'Should display exactly 3 saved payment methods initially').to.equal(3);
+
+    const viewAllVisible = await checkoutPage.isPaymentViewAllButtonVisible();
+    expect(viewAllVisible, 'View All button should be visible').to.be.true;
+
+    await checkoutPage.clickPaymentViewAll();
+    checkoutPage.waitForUiSettle(1);
+
+    const expandedCount = await checkoutPage.getSavedPaymentMethodsCount();
+    expect(expandedCount, 'Should display all 4 payment methods after View All').to.equal(4);
+
+    await checkoutPage.clickPaymentViewLess();
+    checkoutPage.waitForUiSettle(1);
+
+    await checkoutPage.selectSavedPaymentMethod(1);
+    checkoutPage.waitForUiSettle(1);
+
+    checkoutPage.clickPlaceOrder();
+    checkoutPage.waitForOrderConfirmation();
+    checkoutPage.validateOrderConfirmation();
+    const orderNumber = await checkoutPage.getOrderNumber();
+
+    expect(orderNumber, 'Order number should be returned').to.not.be.empty;
+    expect(orderNumber, 'Order number should be numeric').to.match(/^\d+$/);
+})
+    .tag('@registered-shopper')
+    .tag('@change-saved-payment')
+    .tag('@place-order');

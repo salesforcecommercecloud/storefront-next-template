@@ -37,6 +37,11 @@ vi.mock('@/lib/registry', () => ({
     },
 }));
 
+const mockLogger = { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() };
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => mockLogger),
+}));
+
 const mockedFetchPage = vi.mocked(fetchPage);
 const mockedRegistry = vi.mocked(registry);
 const mockedIsDesignModeActive = vi.mocked(isDesignModeActive);
@@ -326,7 +331,7 @@ describe('pageLoader', () => {
             ).rejects.toThrow('API Error');
         });
 
-        test('returns null when fetchPage throws a 404 ApiError', async () => {
+        test('returns null without logging when fetchPage throws a 404 ApiError', async () => {
             const notFoundError = new ApiError({
                 status: 404,
                 statusText: 'Not Found',
@@ -341,9 +346,10 @@ describe('pageLoader', () => {
             const result = await fetchPageWithComponentData(createLoaderArgs(BASE_URL), { pageId: MOCK_PAGE_ID });
 
             expect(result).toBeNull();
+            expect(mockLogger.warn).not.toHaveBeenCalled();
         });
 
-        test('re-throws non-404 ApiErrors', async () => {
+        test('returns null and logs warning for non-404 ApiErrors', async () => {
             const serverError = new ApiError({
                 status: 500,
                 statusText: 'Internal Server Error',
@@ -355,9 +361,12 @@ describe('pageLoader', () => {
             });
             mockedFetchPage.mockRejectedValueOnce(serverError);
 
-            await expect(
-                fetchPageWithComponentData(createLoaderArgs(BASE_URL), { pageId: MOCK_PAGE_ID })
-            ).rejects.toThrow('500');
+            const result = await fetchPageWithComponentData(createLoaderArgs(BASE_URL), { pageId: MOCK_PAGE_ID });
+            expect(result).toBeNull();
+            expect(mockLogger.warn).toHaveBeenCalledWith('Page Designer fetch failed', {
+                status: 500,
+                pageId: MOCK_PAGE_ID,
+            });
         });
 
         test('re-throws non-ApiError errors even when they have a status-like property', async () => {

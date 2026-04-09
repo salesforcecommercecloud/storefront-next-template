@@ -271,3 +271,79 @@ Scenario('Registered shopper reusing shipping as billing does not save new addre
     .tag('@registered-shopper')
     .tag('@billing-address-persistence')
     .tag('@place-order');
+
+Scenario('Registered shopper can select saved billing address from dropdown', async () => {
+    await registeredShopperSetupFlow.execute();
+
+    await checkoutPage.addMultipleAddressesToProfile([
+        {
+            addressId: 'TestAddr_2',
+            firstName: 'Billing',
+            lastName: 'Address1',
+            address1: '111 Billing Street',
+            city: 'Chicago',
+            stateCode: 'IL',
+            postalCode: '60601',
+            countryCode: 'US',
+            phone: '3125551111',
+            preferred: false,
+        },
+        {
+            addressId: 'TestAddr_3',
+            firstName: 'Billing',
+            lastName: 'Address2',
+            address1: '222 Billing Avenue',
+            city: 'Houston',
+            stateCode: 'TX',
+            postalCode: '77001',
+            countryCode: 'US',
+            phone: '7135552222',
+            preferred: false,
+        },
+        {
+            addressId: 'TestAddr_4',
+            firstName: 'Billing',
+            lastName: 'Address3',
+            address1: '333 Billing Boulevard',
+            city: 'Phoenix',
+            stateCode: 'AZ',
+            postalCode: '85001',
+            countryCode: 'US',
+            phone: '6025553333',
+            preferred: false,
+        },
+    ]);
+
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+
+    checkoutPage.validatePageLoaded();
+
+    await checkoutPage.expandShippingAddressForSavedAddresses();
+    checkoutPage.clickContinueToShippingOptions();
+    await checkoutPage.selectShippingMethod(0);
+
+    await checkoutPage.expandPaymentStep();
+    await checkoutPage.selectNewCardPaymentMethod();
+    checkoutPage.waitForUseDifferentBillingCheckbox();
+
+    await checkoutPage.checkUseDifferentBillingAddress();
+    await checkoutPage.selectSavedBillingAddress(1);
+
+    const billingFieldsVisible = await checkoutPage.areBillingAddressFieldsVisible();
+    expect(billingFieldsVisible, 'Billing address form fields should be hidden after selecting saved address').to.be
+        .false;
+
+    checkoutPage.fillPaymentFieldsOnly(TEST_PAYMENT);
+    checkoutPage.clickPlaceOrder();
+    checkoutPage.waitForOrderConfirmation();
+    checkoutPage.validateOrderConfirmation();
+    const orderNumber = await checkoutPage.getOrderNumber();
+
+    expect(orderNumber, 'Order number should be returned').to.not.be.empty;
+    expect(orderNumber, 'Order number should be numeric').to.match(/^\d+$/);
+})
+    .tag('@registered-shopper')
+    .tag('@saved-billing-address')
+    .tag('@billing-dropdown')
+    .tag('@place-order');

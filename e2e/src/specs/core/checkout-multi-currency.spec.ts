@@ -33,13 +33,14 @@ import {
     generateTestEmail,
 } from '../../test-data/checkout.data';
 
-// When SITE_ALIAS is a raw site ID (e.g. "RefArch") rather than a URL alias
-// (e.g. "us", "global"), only the entry matching the env LOCALE is available.
 const siteAliases: readonly string[] = TEST_LOCALE_CURRENCIES.map((e) => e.siteAlias);
-const allSitesAvailable = !process.env.SITE_ALIAS || siteAliases.includes(process.env.SITE_ALIAS);
 
 for (const localeCurrency of TEST_LOCALE_CURRENCIES) {
-    const canRun = allSitesAvailable || localeCurrency.locale === process.env.LOCALE;
+    const envAlias = process.env.SITE_ALIAS;
+    const canRun =
+        !envAlias ||
+        localeCurrency.siteAlias === envAlias ||
+        (!siteAliases.includes(envAlias) && localeCurrency.locale === process.env.LOCALE);
     const scenarioFn = canRun ? Scenario : Scenario.skip;
 
     scenarioFn(`Guest shopper completes checkout in ${localeCurrency.label}`, async () => {

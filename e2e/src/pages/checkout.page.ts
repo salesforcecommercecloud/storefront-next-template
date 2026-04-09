@@ -158,6 +158,9 @@ class CheckoutPage {
         continueToShippingOptionsButton: locate('[data-testid="sf-toggle-card-shipping-address"] button')
             .withText('Continue to Shipping Method')
             .as('Continue to Shipping Options Button'),
+        continueToPaymentButton: locate('[data-testid="sf-toggle-card-shipping-options"] button')
+            .withText('Continue to Payment')
+            .as('Continue to Payment Button'),
 
         // Address modal (add/edit during checkout)
         addressModal: locate('[role="dialog"][aria-labelledby="address-modal-title"]').as('Address Modal'),
@@ -853,6 +856,10 @@ class CheckoutPage {
         I.click(this.locators.continueToShippingOptionsButton);
     }
 
+    clickContinueToPayment(): void {
+        I.click(this.locators.continueToPaymentButton);
+    }
+
     /**
      * Expand shipping address step into edit mode (click Edit button)
      */
@@ -871,6 +878,10 @@ class CheckoutPage {
         if (shippingInPreview) {
             this.expandShippingAddressStep();
         }
+    }
+
+    expandShippingOptionsStep(): void {
+        I.click(this.locators.shippingOptionsEditButton);
     }
 
     /**
@@ -927,10 +938,18 @@ class CheckoutPage {
      * @returns Promise<boolean> - True if checkbox is visible
      */
     async isSavePaymentCheckboxVisible(): Promise<boolean> {
-        const count = await I.grabNumberOfVisibleElements(
-            '[data-testid="sf-toggle-card-payment"] input[name="savePaymentToProfile"]'
-        );
-        return count > 0;
+        let visible = false;
+        await (I.usePlaywrightTo('check save payment checkbox visibility', async ({ page }) => {
+            const paymentSection = page.locator('[data-testid="sf-toggle-card-payment-content"]');
+            const checkbox = paymentSection.locator('[role="checkbox"]').filter({
+                has: page.locator('[aria-label*="Save payment"]'),
+            });
+            const labelFallback = paymentSection.locator('text=Save payment method for future use');
+            visible =
+                ((await checkbox.count()) > 0 && (await checkbox.first().isVisible())) ||
+                ((await labelFallback.count()) > 0 && (await labelFallback.first().isVisible()));
+        }) as unknown as Promise<void>);
+        return visible;
     }
 
     /**
@@ -938,9 +957,27 @@ class CheckoutPage {
      * Used to verify the checkbox is hidden/shown
      */
     async getSavePaymentCheckboxVisibilityCount(): Promise<number> {
-        return await I.grabNumberOfVisibleElements(
-            '[data-testid="sf-toggle-card-payment"] input[name="savePaymentToProfile"]'
-        );
+        let count = 0;
+        await (I.usePlaywrightTo('count save payment checkboxes', async ({ page }) => {
+            const paymentSection = page.locator('[data-testid="sf-toggle-card-payment-content"]');
+            const checkboxes = paymentSection.locator('[role="checkbox"]').filter({
+                has: page.locator('[aria-label*="Save payment"]'),
+            });
+            count = await checkboxes.count();
+        }) as unknown as Promise<void>);
+        return count;
+    }
+
+    /**
+     * Check the "Save payment for future use" checkbox
+     */
+    async checkSavePaymentCheckbox(): Promise<void> {
+        await (I.usePlaywrightTo('check save payment checkbox', async ({ page }) => {
+            const paymentSection = page.locator('[data-testid="sf-toggle-card-payment-content"]');
+            const label = paymentSection.locator('label:has-text("Save payment method for future use")');
+            await label.waitFor({ state: 'visible', timeout: 10_000 });
+            await label.click();
+        }) as unknown as Promise<void>);
     }
 
     // Backward-compatible alias; prefer isUsingDifferentBillingAddress().
@@ -1093,6 +1130,38 @@ class CheckoutPage {
         }) as unknown as Promise<void>);
     }
 
+    /**
+     * Select a saved billing address from the dropdown by index (0-based)
+     * @param index - Index of the saved billing address to select (0 = default address)
+     */
+    async selectSavedBillingAddress(index: number): Promise<void> {
+        await (I.usePlaywrightTo('select saved billing address from dropdown', async ({ page }) => {
+            const paymentContent = page.locator('[data-testid="sf-toggle-card-payment-content"]');
+
+            const dropdownTrigger = paymentContent.locator(
+                'button:has-text("Select an address"), button:has-text("Add new address")'
+            );
+            await dropdownTrigger.first().waitFor({ state: 'visible', timeout: 10_000 });
+            await dropdownTrigger.first().click();
+
+            const popoverContent = page.locator('[data-slot="popover-content"]').last();
+            await popoverContent.waitFor({ state: 'visible', timeout: 5_000 });
+
+            const addressOptions = await popoverContent
+                .locator('button')
+                .filter({ hasNotText: 'Add new address' })
+                .all();
+
+            if (index >= addressOptions.length) {
+                throw new Error(
+                    `Cannot select billing address at index ${index}, only ${addressOptions.length} saved addresses available`
+                );
+            }
+
+            await addressOptions[index].click();
+        }) as unknown as Promise<void>);
+    }
+
     async getFieldValidationErrors(stepTestId: string): Promise<string[]> {
         const selector = `[data-testid="${stepTestId}"] [data-slot="form-message"]`;
         const count = await I.grabNumberOfVisibleElements(selector);
@@ -1234,6 +1303,35 @@ class CheckoutPage {
         }) as unknown as Promise<void>);
     }
 
+    /**
+     * Select a saved payment method by index (0-based)
+     * @param index - Index of the saved payment method to select
+     */
+    async selectSavedPaymentMethod(index: number): Promise<void> {
+        await (I.usePlaywrightTo('select saved payment method', async ({ page }) => {
+            const paymentContent = page.locator('[data-testid="sf-toggle-card-payment-content"]');
+            await paymentContent.waitFor({ state: 'visible', timeout: 15_000 });
+
+            const paymentRadios = await paymentContent.locator('[role="radio"]:not([id="new-payment"])').all();
+
+            if (index >= paymentRadios.length) {
+                throw new Error(
+                    `Cannot select payment at index ${index}, only ${paymentRadios.length} saved payment methods available`
+                );
+            }
+
+            const targetRadio = paymentRadios[index];
+            const radioId = await targetRadio.getAttribute('id');
+
+            if (!radioId) {
+                throw new Error('Payment radio button does not have an id attribute');
+            }
+
+            const label = paymentContent.locator(`label[for="${radioId}"]`);
+            await label.click();
+        }) as unknown as Promise<void>);
+    }
+
     /** Wait for the payment step to be ready (card number input visible). */
     waitForPaymentStep(timeout: number = 10): void {
         I.waitForElement(this.locators.cardNumberInput, timeout);
@@ -1341,11 +1439,9 @@ class CheckoutPage {
 
     async expandPaymentStep(): Promise<void> {
         I.waitForElement(locate('[data-testid="sf-toggle-card-payment"]'), 15);
-        const contentCount = await I.grabNumberOfVisibleElements(
-            locate('[data-testid="sf-toggle-card-payment-content"]')
-        );
-        if (contentCount === 0) {
-            I.click(locate('[data-testid="sf-toggle-card-payment"]').find('button'));
+        const editButtonCount = await I.grabNumberOfVisibleElements(this.locators.paymentEditButton);
+        if (editButtonCount > 0) {
+            I.click(this.locators.paymentEditButton);
             I.waitForElement('[data-testid="sf-toggle-card-payment-content"]', 15);
         }
     }
@@ -1402,6 +1498,12 @@ class CheckoutPage {
         I.waitForElement(locate('button[type="submit"]').withText('Place Order'), timeout);
     }
 
+    async isPlaceOrderButtonVisible(): Promise<boolean> {
+        const placeOrderLocator = locate('button[type="submit"]').withText('Place Order');
+        const count = await I.grabNumberOfVisibleElements(placeOrderLocator);
+        return count > 0;
+    }
+
     waitForOrderConfirmationElement(timeout: number = 30): void {
         I.waitForElement('[data-testid="order-confirmation-container"]', timeout);
     }
@@ -1419,6 +1521,108 @@ class CheckoutPage {
         I.wait(seconds);
     }
 
+    async getSavedAddressText(index: number): Promise<string> {
+        const addressLocator = locate(
+            '[data-testid="sf-toggle-card-shipping-address"] label[for^="saved-address-"]'
+        ).at(index + 1);
+        return await I.grabTextFrom(addressLocator);
+    }
+
+    /**
+     * Select a saved shipping address by index (0-based)
+     * @param index - Index of the saved address to select (0 = default/preferred address)
+     */
+    async selectSavedAddress(index: number): Promise<void> {
+        await (I.usePlaywrightTo('select saved shipping address', async ({ page }) => {
+            const shippingAddressContent = page.locator('[data-testid="sf-toggle-card-shipping-address-content"]');
+            await shippingAddressContent.waitFor({ state: 'visible', timeout: 10_000 });
+
+            const addressLabels = await shippingAddressContent.locator('label[for^="saved-address-"]').all();
+
+            if (index >= addressLabels.length) {
+                throw new Error(
+                    `Cannot select address at index ${index}, only ${addressLabels.length} saved addresses available`
+                );
+            }
+
+            await addressLabels[index].click();
+        }) as unknown as Promise<void>);
+    }
+
+    /**
+     * Add multiple addresses to the current customer profile via SCAPI
+     * Note: Requires an active authenticated session
+     */
+    async addMultipleAddressesToProfile(
+        addresses: Array<{
+            addressId: string;
+            firstName: string;
+            lastName: string;
+            address1: string;
+            city: string;
+            stateCode: string;
+            postalCode: string;
+            countryCode: string;
+            phone: string;
+            preferred: boolean;
+        }>
+    ): Promise<void> {
+        const { getScapiConfig, createCustomerAddress } = await import('../utils/scapi-helper');
+        const config = getScapiConfig();
+
+        if (config) {
+            await (I.usePlaywrightTo('add addresses via SCAPI', async ({ browserContext }) => {
+                const cookies = await browserContext.cookies();
+                const siteId = config.siteId;
+
+                const accessTokenCookie = cookies.find((c: { name: string }) => c.name === `cc-at_${siteId}`);
+                const refreshTokenCookie = cookies.find((c: { name: string }) => c.name === `cc-nx_${siteId}`);
+                const usidCookie = cookies.find((c: { name: string }) => c.name === `usid_${siteId}`);
+                const customerIdCookie = cookies.find((c: { name: string }) => c.name === `customerId_${siteId}`);
+
+                if (!accessTokenCookie || !customerIdCookie) {
+                    throw new Error('Customer session cookies not found - user may not be logged in');
+                }
+
+                const tokens = {
+                    accessToken: accessTokenCookie.value,
+                    refreshToken: refreshTokenCookie?.value ?? '',
+                    usid: usidCookie?.value ?? '',
+                    customerId: customerIdCookie.value,
+                    expiresIn: 1800,
+                };
+
+                for (const address of addresses) {
+                    await createCustomerAddress(config, tokens, address);
+                }
+            }) as unknown as Promise<void>);
+            return;
+        }
+
+        // UI fallback when SCAPI config is unavailable (e.g. CI)
+        I.amOnPage(buildSitePath('/account/addresses'));
+        I.waitForElement(locate('h1').withText('Addresses'), 15);
+        I.waitForElement(locate('button').withText('Add new address'), 10);
+
+        for (const address of addresses) {
+            I.click(locate('button').withText('Add new address'));
+            I.waitForElement(locate('[data-slot="dialog-title"]').withText('Add new address'), 10);
+
+            I.fillField('input[name="addressId"]', address.addressId);
+            I.fillField('input[name="firstName"]', address.firstName);
+            I.fillField('input[name="lastName"]', address.lastName);
+            I.fillField('input[name="phone"]', address.phone);
+            I.fillField('input[name="address1"]', address.address1);
+            I.fillField('input[name="city"]', address.city);
+            I.selectOption('select[name="stateCode"]', address.stateCode);
+            I.fillField('input[name="postalCode"]', address.postalCode);
+
+            I.click(locate('button[type="submit"]').withText('Save'));
+            I.waitForElement(locate('[data-sonner-toast][data-type="success"]'), 10);
+            I.waitForInvisible(locate('[role="dialog"]:has([data-slot="dialog-title"])'), 5);
+        }
+    }
+
     // =========================================================================
     // Shipping Method Helpers
     // =========================================================================
@@ -1429,6 +1633,242 @@ class CheckoutPage {
 
     async getShippingOptionsText(): Promise<string> {
         return await I.grabTextFrom(locate('[data-testid="sf-toggle-card-shipping-options"]'));
+    }
+
+    /**
+     * Add multiple payment methods to the current customer profile via SCAPI
+     * Note: Requires an active authenticated session
+     */
+    async addMultiplePaymentMethodsToProfile(
+        payments: Array<{
+            cardNumber: string;
+            cardholderName: string;
+            expiryMonth: number;
+            expiryYear: number;
+            cardType: string;
+        }>
+    ): Promise<void> {
+        const { getScapiConfig, createCustomerPaymentInstrument } = await import('../utils/scapi-helper');
+        const config = getScapiConfig();
+
+        if (config) {
+            await (I.usePlaywrightTo('add payment methods via SCAPI', async ({ browserContext }) => {
+                const cookies = await browserContext.cookies();
+                const siteId = config.siteId;
+
+                const accessTokenCookie = cookies.find((c: { name: string }) => c.name === `cc-at_${siteId}`);
+                const refreshTokenCookie = cookies.find((c: { name: string }) => c.name === `cc-nx_${siteId}`);
+                const usidCookie = cookies.find((c: { name: string }) => c.name === `usid_${siteId}`);
+                const customerIdCookie = cookies.find((c: { name: string }) => c.name === `customerId_${siteId}`);
+
+                if (!accessTokenCookie || !customerIdCookie) {
+                    throw new Error('Customer session cookies not found - user may not be logged in');
+                }
+
+                const tokens = {
+                    accessToken: accessTokenCookie.value,
+                    refreshToken: refreshTokenCookie?.value ?? '',
+                    usid: usidCookie?.value ?? '',
+                    customerId: customerIdCookie.value,
+                    expiresIn: 1800,
+                };
+
+                for (const payment of payments) {
+                    await createCustomerPaymentInstrument(config, tokens, payment);
+                }
+            }) as unknown as Promise<void>);
+            return;
+        }
+
+        // UI fallback when SCAPI config is unavailable (e.g. CI)
+        I.amOnPage(buildSitePath('/account/payment-methods'));
+        I.waitForElement(locate('h1').withText('Payment Methods'), 15);
+        I.waitForElement(locate('button').withText('Add payment method'), 10);
+
+        for (const payment of payments) {
+            I.click(locate('button').withText('Add payment method'));
+            I.waitForElement(locate('[role="dialog"]'), 5);
+
+            I.fillField(locate('[role="dialog"] input[name="cardholderName"]'), payment.cardholderName);
+            I.fillField(locate('[role="dialog"] input[name="cardNumber"]'), payment.cardNumber);
+
+            const expiryDate = `${String(payment.expiryMonth).padStart(2, '0')}/${String(payment.expiryYear).slice(-2)}`;
+            I.fillField(locate('[role="dialog"] input[name="expiryDate"]'), expiryDate);
+            I.fillField(
+                locate(
+                    '[role="dialog"] input[name="cvv"], [role="dialog"] input[name="securityCode"], [role="dialog"] input[name="cvn"]'
+                ),
+                '123'
+            );
+
+            // Select the first available billing address
+            await (I.usePlaywrightTo('select first billing address', async ({ page }) => {
+                const select = page.locator('[role="dialog"] select#billing-address');
+                const options = select.locator('option');
+                const count = await options.count();
+                for (let i = 0; i < count; i++) {
+                    const value = await options.nth(i).getAttribute('value');
+                    if (value && value !== '') {
+                        await select.selectOption(value);
+                        break;
+                    }
+                }
+            }) as unknown as Promise<void>);
+
+            I.click(locate('[role="dialog"] button').withText('Save'));
+            I.waitForElement(locate('[data-sonner-toast][data-type="success"]'), 10);
+            I.waitForInvisible(locate('[role="dialog"]'), 10);
+        }
+    }
+
+    /**
+     * Get the number of visible saved payment method radio buttons
+     */
+    async getSavedPaymentMethodsCount(): Promise<number> {
+        let count = 0;
+        await (I.usePlaywrightTo('count saved payment methods', async ({ page }) => {
+            const paymentContent = page.locator('[data-testid="sf-toggle-card-payment-content"]');
+            await paymentContent.waitFor({ state: 'visible', timeout: 10_000 });
+            const radios = paymentContent.locator('[role="radio"]:not([id="new-payment"])');
+            try {
+                await radios.first().waitFor({ state: 'attached', timeout: 5_000 });
+            } catch {
+                count = 0;
+                return;
+            }
+            count = await radios.count();
+        }) as unknown as Promise<void>);
+        return count;
+    }
+
+    /**
+     * Check if payment "View All" button is visible
+     */
+    async isPaymentViewAllButtonVisible(): Promise<boolean> {
+        const viewAllButton = locate('[data-testid="sf-toggle-card-payment"] button').withText('View all');
+        return (await I.grabNumberOfVisibleElements(viewAllButton)) > 0;
+    }
+
+    /**
+     * Check if payment "View Less" button is visible
+     */
+    async isPaymentViewLessButtonVisible(): Promise<boolean> {
+        const viewLessButton = locate('[data-testid="sf-toggle-card-payment"] button').withText('View less');
+        return (await I.grabNumberOfVisibleElements(viewLessButton)) > 0;
+    }
+
+    /**
+     * Click "View All" button in payment section
+     */
+    async clickPaymentViewAll(): Promise<void> {
+        await (I.usePlaywrightTo('click payment View All', async ({ page }) => {
+            const paymentSection = await page.locator('[data-testid="sf-toggle-card-payment"]');
+            const viewAllButton = paymentSection.locator('button:has-text("View all")');
+            await viewAllButton.click();
+        }) as unknown as Promise<void>);
+    }
+
+    /**
+     * Click "View Less" button in payment section
+     */
+    async clickPaymentViewLess(): Promise<void> {
+        await (I.usePlaywrightTo('click payment View Less', async ({ page }) => {
+            const paymentSection = await page.locator('[data-testid="sf-toggle-card-payment"]');
+            const viewLessButton = paymentSection.locator('button:has-text("View less")');
+            await viewLessButton.click();
+        }) as unknown as Promise<void>);
+    }
+
+    // =========================================================================
+    // Passwordless OTP Modal Helpers (Checkout Context)
+    // =========================================================================
+
+    /**
+     * Mock the passwordless authorization API to return success
+     * This simulates the backend detecting a registered email
+     */
+    async mockPasswordlessAuthorizationSuccess(email: string): Promise<void> {
+        await (I.usePlaywrightTo('mock passwordless API', async ({ browserContext }) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await browserContext.route('**/action/authorize-passwordless-email**', async (route: any) => {
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({
+                        success: true,
+                        email,
+                    }),
+                });
+            });
+        }) as unknown as Promise<void>);
+    }
+
+    /**
+     * Fill contact info email field only (without phone)
+     */
+    fillContactInfoEmail(email: string): void {
+        I.waitForElement(this.locators.emailInput, 10);
+        I.fillField(this.locators.emailInput, email);
+    }
+
+    /**
+     * Fill contact info phone field only (without email)
+     */
+    fillContactInfoPhone(phone: string): void {
+        I.waitForElement(this.locators.phoneInputContactInfo, 10);
+        I.fillField(this.locators.phoneInputContactInfo, phone);
+    }
+
+    /**
+     * Blur the email field to trigger passwordless detection
+     */
+    async blurEmailField(): Promise<void> {
+        await (I.usePlaywrightTo('blur email field', async ({ page }) => {
+            const emailInput = await page.locator('input[type="email"]').first();
+            await emailInput.blur();
+        }) as unknown as Promise<void>);
+    }
+
+    /**
+     * Wait for passwordless OTP modal to appear
+     */
+    waitForPasswordlessOtpModal(timeoutSeconds: number = 10): boolean {
+        try {
+            I.waitForElement('[data-testid="otp-modal"]', timeoutSeconds);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * Check if passwordless OTP modal is visible
+     */
+    async isPasswordlessOtpModalVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements('[data-testid="otp-modal"]');
+        return count > 0;
+    }
+
+    /**
+     * Click "Checkout as Guest" button in the passwordless OTP modal
+     */
+    clickPasswordlessOtpCheckoutAsGuest(): void {
+        const checkoutAsGuestButton = locate('[data-testid="otp-modal"]').find('button').withText('Checkout as Guest');
+        I.waitForElement(checkoutAsGuestButton, 5);
+        I.click(checkoutAsGuestButton);
+    }
+
+    /**
+     * Wait for passwordless OTP modal to close
+     */
+    async waitForPasswordlessOtpModalClosed(timeoutSeconds: number = 10): Promise<void> {
+        const deadline = Date.now() + timeoutSeconds * 1000;
+        while (Date.now() < deadline) {
+            const count = await I.grabNumberOfVisibleElements('[data-testid="otp-modal"]');
+            if (count === 0) return;
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+        throw new Error('Passwordless OTP modal did not close within timeout');
     }
 }
 
