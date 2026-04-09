@@ -20,13 +20,15 @@ import type { ActionFunctionArgs } from 'react-router';
 import { action } from './action.verify-otp';
 import { createApiClients } from '@/lib/api-clients';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
-import { mergeBasket } from '@/lib/api/basket';
+import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getTranslation } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 
 vi.mock('@/lib/api-clients');
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/api/basket');
+vi.mock('@/middlewares/basket.server');
 vi.mock('@/lib/i18next');
 vi.mock('@/middlewares/auth.utils');
 vi.mock('@/lib/logger.server', () => ({
@@ -37,6 +39,10 @@ const mockCreateApiClients = vi.mocked(createApiClients);
 const mockGetAuth = vi.mocked(getAuth);
 const mockUpdateAuth = vi.mocked(updateAuth);
 const mockMergeBasket = vi.mocked(mergeBasket);
+const mockCalculateBasket = vi.mocked(calculateBasket);
+const mockGetBasketCurrency = vi.mocked(getBasketCurrency);
+const mockGetBasket = vi.mocked(getBasket);
+const mockUpdateBasketResource = vi.mocked(updateBasketResource);
 const mockGetTranslation = vi.mocked(getTranslation);
 const mockIsTrackingConsentEnabled = vi.mocked(isTrackingConsentEnabled);
 
@@ -88,6 +94,11 @@ describe('action.verify-otp', () => {
 
         mockGetAuth.mockReturnValue({ usid: 'test-usid' } as any);
         mockMergeBasket.mockResolvedValue(undefined as any);
+        mockGetBasket.mockResolvedValue({
+            current: { basketId: 'basket-1', currency: 'USD' },
+        } as any);
+        mockGetBasketCurrency.mockReturnValue('USD');
+        mockCalculateBasket.mockResolvedValue({ basketId: 'basket-1', currency: 'USD' } as any);
     });
 
     afterEach(() => {
@@ -147,11 +158,47 @@ describe('action.verify-otp', () => {
 
         expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
 
+        expect(mockGetBasket).toHaveBeenCalledWith(mockContext);
+        expect(mockGetBasketCurrency).toHaveBeenCalledWith(mockContext, { basketId: 'basket-1', currency: 'USD' });
+        expect(mockCalculateBasket).toHaveBeenCalledWith(mockContext, 'basket-1', 'USD');
+        expect(mockUpdateBasketResource).toHaveBeenCalledWith(mockContext, { basketId: 'basket-1', currency: 'USD' });
+
         expect(result).toEqual({
             success: true,
             message: 'checkout:passwordlessLogin.loginSuccess',
             tokenResponse: mockTokenResponse,
         });
+    });
+
+    it('updates basket from merge then recalculates when merge returns a basket', async () => {
+        const mockTokenResponse = {
+            access_token: 'access-token',
+            id_token: 'id-token',
+            refresh_token: 'refresh-token',
+            expires_in: 3600,
+            refresh_token_expires_in: 7200,
+            token_type: 'Bearer' as const,
+            usid: 'test-usid',
+            customer_id: 'customer-id',
+            enc_user_id: 'enc-user-id',
+            idp_access_token: 'idp-token',
+            dwsid: 'dwsid',
+        } as any;
+
+        const merged = { basketId: 'merged-basket', currency: 'USD' } as any;
+        const recalculated = { basketId: 'merged-basket', currency: 'USD', orderTotal: 99 } as any;
+
+        mockExchangeToken.mockResolvedValue(mockTokenResponse);
+        mockMergeBasket.mockResolvedValue(merged);
+        mockGetBasket.mockResolvedValue({
+            current: merged,
+        } as any);
+        mockCalculateBasket.mockResolvedValue(recalculated);
+
+        await action(createActionArgs('12345678', 'test@example.com'));
+
+        expect(mockUpdateBasketResource).toHaveBeenNthCalledWith(1, mockContext, merged);
+        expect(mockUpdateBasketResource).toHaveBeenNthCalledWith(2, mockContext, recalculated);
     });
 
     it('extracts error message from ApiError.rawBody JSON', async () => {

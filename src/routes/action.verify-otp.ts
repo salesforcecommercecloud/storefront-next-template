@@ -16,7 +16,8 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { createApiClients } from '@/lib/api-clients';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
-import { mergeBasket } from '@/lib/api/basket';
+import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getTranslation } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
@@ -82,13 +83,29 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             userType: 'registered',
         }));
 
-        // Merge basket after authentication
-        // Note: mergeBasket already updates the basket on the server via API
-        // The client-side basket will be refreshed when the page reloads
+        // Merge basket after authentication, then recalculate so registered-only promotions
+        // and totals match the authenticated shopper (avoids checkout vs order mismatch).
+        let mergedBasket: Awaited<ReturnType<typeof mergeBasket>> | undefined;
         try {
-            await mergeBasket(context);
+            mergedBasket = await mergeBasket(context);
         } catch (error) {
+            mergedBasket = undefined;
             logger.error('VerifyOtp: basket merge failed', { error });
+        }
+
+        if (mergedBasket) {
+            updateBasketResource(context, mergedBasket);
+        }
+
+        try {
+            const { current } = await getBasket(context);
+            if (current?.basketId) {
+                const currency = getBasketCurrency(context, current);
+                const recalculatedBasket = await calculateBasket(context, current.basketId, currency);
+                updateBasketResource(context, recalculatedBasket);
+            }
+        } catch (error) {
+            logger.error('VerifyOtp: basket recalculation after authentication failed', { error });
         }
 
         logger.info('VerifyOtp: succeeded');
