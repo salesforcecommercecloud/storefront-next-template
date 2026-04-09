@@ -19,8 +19,8 @@ import { Button } from '@/components/ui/button';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { RegionDefinition } from '@/lib/decorators';
-import { cn } from '@/lib/utils';
 import { type Image } from '@/types';
+import { cn } from '@/lib/utils';
 
 const OVERLAY_POSITION_VALUES = [
     'Top Left',
@@ -212,7 +212,7 @@ export default function Hero({
         alignment === 'left' ? 'justify-start' : alignment === 'right' ? 'justify-end' : 'justify-center';
 
     return (
-        <div className="relative w-full h-[var(--hero-banner-height)] md:h-[var(--hero-banner-height-md)] lg:h-[var(--hero-banner-height-lg)] overflow-hidden">
+        <div className="relative w-full overflow-hidden h-[100vh] md:h-[85vh]">
             {renderImage()}
 
             <div className={cn('absolute inset-0 z-10 flex', overlayRowClass, overlayEdgePaddingClass)}>

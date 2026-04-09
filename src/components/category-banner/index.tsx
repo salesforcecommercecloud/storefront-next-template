@@ -71,7 +71,7 @@ export default function CategoryBanner() {
     const hasImage = !!imageSrc && !imageFailed;
 
     return (
-        <div className="relative h-[var(--hero-banner-height)] md:h-[var(--hero-banner-height-md)] lg:h-[var(--hero-banner-height-lg)] overflow-hidden">
+        <div className="relative w-full overflow-hidden h-[250px] md:h-[300px] lg:h-[350px]">
             <div className="absolute inset-0">
                 {hasImage ? (
                     <img

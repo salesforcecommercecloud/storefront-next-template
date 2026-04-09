@@ -30,7 +30,7 @@ const meta: Meta<typeof CategoryBannerSkeleton> = {
 Loading placeholder for the Category Banner. Shown via the Page Designer \`Region\`
 \`fallbackElement\` prop while Page Designer data and route loader data are pending.
 
-Mirrors the banner's responsive heights via CSS custom properties (\`--hero-banner-height\`) and the
+Mirrors the banner's responsive heights (250px/300px/350px) and the
 bottom-anchored text layout with three skeleton blocks for the root label, category name,
 and product count.
                 `,

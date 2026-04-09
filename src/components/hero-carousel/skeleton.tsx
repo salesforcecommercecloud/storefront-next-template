@@ -59,7 +59,7 @@ export default function HeroCarouselSkeleton({
     showNavigation?: boolean;
 }) {
     return (
-        <div className="relative w-full h-[var(--hero-banner-height)] md:h-[var(--hero-banner-height-md)] lg:h-[var(--hero-banner-height-lg)] overflow-hidden animate-pulse">
+        <div className="relative w-full overflow-hidden animate-pulse h-[400px] md:h-[500px] lg:h-[600px]">
             {/* Hero image skeleton */}
             <div className="relative w-full h-full overflow-hidden">
                 <Skeleton className="absolute inset-0 w-full h-full" />

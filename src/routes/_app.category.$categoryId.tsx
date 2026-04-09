@@ -371,15 +371,13 @@ export default function CategoryPage({
             />
             <div className="pb-16 -mt-8">
                 {/* plpTopFullWidth — full-width banner region, flush to the header (mirrors homepage pattern) */}
-                <div className="[--hero-banner-height:250px] md:[--hero-banner-height-md:300px] lg:[--hero-banner-height-lg:350px]">
-                    <Region
-                        page={page}
-                        regionId="plpTopFullWidth"
-                        fallbackElement={<CategoryBannerSkeleton />}
-                        errorElement={<CategoryBanner />}
-                        fallbackOnEmpty
-                    />
-                </div>
+                <Region
+                    page={page}
+                    regionId="plpTopFullWidth"
+                    fallbackElement={<CategoryBannerSkeleton />}
+                    errorElement={<CategoryBanner />}
+                    fallbackOnEmpty
+                />
 
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
                     <div className="mb-4">

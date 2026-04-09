@@ -28,7 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton';
  */
 export default function CategoryBannerSkeleton() {
     return (
-        <div className="relative h-[var(--hero-banner-height)] md:h-[var(--hero-banner-height-md)] lg:h-[var(--hero-banner-height-lg)] overflow-hidden animate-pulse">
+        <div className="relative w-full overflow-hidden animate-pulse h-[250px] md:h-[300px] lg:h-[350px]">
             {/* Image skeleton */}
             <Skeleton className="absolute inset-0 w-full h-full" />
 
