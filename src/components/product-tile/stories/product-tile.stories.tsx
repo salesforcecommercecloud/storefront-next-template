@@ -213,43 +213,6 @@ export const WithTopCategory: Story = {
     },
 };
 
-export const WithShortDescription: Story = {
-    args: {
-        product: {
-            ...mockProductSearchItem,
-            representedProduct: {
-                ...mockProductSearchItem.representedProduct,
-                c_shortDescription: 'Lightweight running shoe with cushioned sole.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByTestId('product-tile-description')).toBeInTheDocument();
-        await expect(canvas.getByText('Lightweight running shoe with cushioned sole.')).toBeInTheDocument();
-    },
-};
-
-export const WithLongDescription: Story = {
-    args: {
-        product: {
-            ...mockProductSearchItem,
-            representedProduct: {
-                ...mockProductSearchItem.representedProduct,
-                c_shortDescription:
-                    'This premium athletic shoe features advanced cushioning technology, breathable mesh upper, reinforced toe cap, and a durable outsole designed for all-terrain performance in any weather condition.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const descEl = canvas.getByTestId('product-tile-description');
-        await expect(descEl).toBeInTheDocument();
-    },
-};
-
 export const FullFeatured: Story = {
     args: {
         product: {
@@ -257,7 +220,6 @@ export const FullFeatured: Story = {
             representedProduct: {
                 ...mockMasterProductHitWithMultipleVariants?.representedProduct,
                 c_isNew: true,
-                c_shortDescription: 'Premium master product with multiple color variants and full tile features.',
             },
         },
         showPickupAvailable: true,
@@ -271,7 +233,6 @@ export const FullFeatured: Story = {
         // Pickup indicator is inside aria-hidden="true" — query via testid
         const pickupIndicator = canvasElement.querySelector('[data-testid="pickup-available-indicator"]');
         await expect(pickupIndicator).not.toBeNull();
-        await expect(canvas.getByTestId('product-tile-description')).toBeInTheDocument();
         await expect(canvas.getByText('Test Store')).toBeInTheDocument();
         await expect(canvas.getByText('Men')).toBeInTheDocument();
     },

@@ -25,7 +25,7 @@ import {
     getDecoratedVariationAttributes,
     type DecoratedVariationAttributeValue,
 } from '@/lib/product-utils';
-import { getProductBrand, getProductShortDescription, getProductRating } from '@/lib/product-utils-plp';
+import { getProductRating } from '@/lib/product-utils-plp';
 import { useProductTileContext } from './context';
 import { DeferredWishlistButton } from './deferred-wishlist-button';
 import { PickupIcon } from '@/components/icons';
@@ -311,8 +311,6 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             if (!product) return null;
             return {
                 badges: getBadges(product),
-                brand: getProductBrand(product),
-                description: getProductShortDescription(product),
                 rating: getProductRating(product),
             };
         }, [product, getBadges]);
@@ -499,9 +497,6 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                         <p className="text-xs text-muted-foreground mb-1 uppercase">{topCategoryName}</p>
                     )}
 
-                    {/* Brand */}
-                    {productData?.brand && <p className="text-xs text-muted-foreground mb-1">{productData.brand}</p>}
-
                     {/* Product name — the single keyboard/SR tab stop for this tile */}
                     <h3 className="text-sm font-medium text-card-foreground mb-2">
                         <Link
@@ -516,13 +511,6 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                     {product.productId && (
                         <p className="text-xs text-muted-foreground mb-1" data-testid="product-tile-sku">
                             {t('sku')} {product.productId}
-                        </p>
-                    )}
-
-                    {/* Short description */}
-                    {productData?.description && (
-                        <p className="text-xs text-muted-foreground mb-2" data-testid="product-tile-description">
-                            {productData.description}
                         </p>
                     )}
 

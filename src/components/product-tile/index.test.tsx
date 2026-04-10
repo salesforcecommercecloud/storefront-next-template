@@ -53,8 +53,6 @@ vi.mock('@/lib/product-utils', async (importOriginal) => {
 });
 
 vi.mock('@/lib/product-utils-plp', () => ({
-    getProductBrand: vi.fn(() => 'Test Brand'),
-    getProductShortDescription: vi.fn(() => 'A great product description.'),
     getProductRating: vi.fn(() => ({ rating: 4.2, reviewCount: 218 })),
 }));
 
@@ -162,35 +160,11 @@ describe('ProductTile — rendering', () => {
         expect(screen.getByText('$99.99')).toBeInTheDocument();
     });
 
-    test('renders brand when getProductBrand returns a value', () => {
-        renderTile();
-        expect(screen.getByText('Test Brand')).toBeInTheDocument();
-    });
-
-    test('does not render brand element when getProductBrand returns undefined', async () => {
-        const { getProductBrand } = await import('@/lib/product-utils-plp');
-        vi.mocked(getProductBrand).mockReturnValueOnce(undefined);
-        renderTile();
-        expect(screen.queryByText('Test Brand')).not.toBeInTheDocument();
-    });
-
     test('renders SKU via data-testid', () => {
         renderTile();
         const skuEl = screen.getByTestId('product-tile-sku');
         expect(skuEl).toBeInTheDocument();
         expect(skuEl.textContent).toContain('test-product');
-    });
-
-    test('renders short description via data-testid', () => {
-        renderTile();
-        expect(screen.getByTestId('product-tile-description')).toHaveTextContent('A great product description.');
-    });
-
-    test('does not render description element when getProductShortDescription returns undefined', async () => {
-        const { getProductShortDescription } = await import('@/lib/product-utils-plp');
-        vi.mocked(getProductShortDescription).mockReturnValueOnce(undefined);
-        renderTile();
-        expect(screen.queryByTestId('product-tile-description')).not.toBeInTheDocument();
     });
 
     test('renders badges when hasBadges is true', async () => {

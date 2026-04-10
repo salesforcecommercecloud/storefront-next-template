@@ -54,7 +54,7 @@ export function ToasterTheme() {
             closeButton
             className="toaster"
             theme={theme}
-            offset="var(--header-height)"
+            offset="calc(var(--header-height, 0px) + 0.75rem)"
             icons={{ success: <Check size={20} strokeWidth={2.5} /> }}
             toastOptions={{ unstyled: true }}
         />

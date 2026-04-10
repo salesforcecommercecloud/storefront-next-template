@@ -15,8 +15,10 @@
  */
 
 /**
- * PLP-only product helpers (brand, description, rating).
+ * PLP-only product helpers (rating).
  * Kept in a separate module so cart and other routes don't pull this code.
+ * Brand and short description are not derived from search hits here — search API
+ * does not expose those fields in a reliable way for tiles.
  */
 
 export type ProductSearchHitLike = {
@@ -25,47 +27,6 @@ export type ProductSearchHitLike = {
     representedProduct?: Record<string, unknown>;
     [key: string]: unknown;
 };
-
-function getCustomPropertyValue(
-    customProperties: Array<{ id?: string; value?: unknown }> | undefined,
-    id: string
-): string | undefined {
-    if (!customProperties?.length) return undefined;
-    const prop = customProperties.find((p) => p.id === id || p.id?.toLowerCase() === id.toLowerCase());
-    const val = prop?.value;
-    return typeof val === 'string' && val.trim() ? val : undefined;
-}
-
-export function getProductBrand(product: ProductSearchHitLike): string | undefined {
-    const rep = product?.representedProduct;
-    const customProps = product?.customProperties as Array<{ id?: string; value?: unknown }> | undefined;
-    const brand =
-        (rep?.brand as string) ??
-        (rep?.c_brand as string) ??
-        (product?.brand as string) ??
-        (product?.c_brand as string) ??
-        getCustomPropertyValue(customProps, 'c_brand') ??
-        getCustomPropertyValue(customProps, 'brand');
-    return typeof brand === 'string' && brand.trim() ? brand : undefined;
-}
-
-export function getProductShortDescription(product: ProductSearchHitLike, maxLength?: number): string | undefined {
-    const rep = product?.representedProduct;
-    const customProps = product?.customProperties as Array<{ id?: string; value?: unknown }> | undefined;
-    const raw =
-        (rep?.c_shortDescription as string) ??
-        (rep?.shortDescription as string) ??
-        (product?.c_shortDescription as string) ??
-        (product?.shortDescription as string) ??
-        getCustomPropertyValue(customProps, 'c_shortDescription') ??
-        getCustomPropertyValue(customProps, 'shortDescription');
-    if (typeof raw !== 'string' || !raw.trim()) return undefined;
-    const text = raw.trim();
-    if (maxLength != null && text.length > maxLength) {
-        return `${text.slice(0, maxLength).trim()}…`;
-    }
-    return text;
-}
 
 const MOCK_RATING = { rating: 4, reviewCount: 218 };
 
