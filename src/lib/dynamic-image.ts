@@ -248,6 +248,48 @@ export function toImageUrl({ src, options = {}, config, image }: ImageUrlParams)
 }
 
 /**
+ * Transforms all image URLs in HTML content to use Dynamic Imaging Service (DIS).
+ *
+ * This function parses HTML content, finds all `<img>` tags, and transforms their
+ * `src` attributes to use DIS URLs with WebP format optimization.
+ *
+ * @param html - HTML string containing image tags
+ * @param config - Application configuration for DIS settings
+ * @returns HTML string with transformed image URLs
+ *
+ * @example
+ * const html = '<img src="/on/demandware.static/.../image.jpg" alt="Banner">';
+ * const transformed = transformHtmlImageUrls(html, config);
+ * // Returns: '<img src="https://edge.disstg.../image.webp?sfrm=jpg&q=70" alt="Banner">'
+ */
+export function transformHtmlImageUrls(html: string, config: AppConfig): string {
+    // Return empty string for null/undefined to maintain type safety
+    if (!html) {
+        return '';
+    }
+
+    // Short-circuit if no image tags present (performance optimization)
+    if (!html.includes('<img')) return html;
+
+    // Regular expression to match <img> tags with src attributes
+    const imgTagRegex = /<img\s+[^>]*src=["']([^"']+)["'][^>]*>/gi;
+
+    return html.replace(imgTagRegex, (match, srcValue: string) => {
+        // Transform the src URL using toImageUrl
+        const transformedSrc = toImageUrl({ src: srcValue, config });
+
+        // If transformation succeeded, replace only the src attribute value
+        if (transformedSrc && transformedSrc !== srcValue) {
+            // Use targeted regex to replace only src attribute, preserving quotes
+            return match.replace(/src=(["'])([^"']+)\1/i, (_, quote) => `src=${quote}${transformedSrc}${quote}`);
+        }
+
+        // If transformation failed or URL unchanged, return original match
+        return match;
+    });
+}
+
+/**
  * Supported target formats of Salesforce's Dynamic Imaging Service are: avif, gif, jp2, jpg, jpeg, jxr, png, and webp.
  * @see {@link https://help.salesforce.com/s/articleView?id=cc.b2c_image_transformation_service.htm&type=5}
  * @see {@link https://help.salesforce.com/s/articleView?id=cc.b2c_creating_image_transformation_urls.htm&type=5}

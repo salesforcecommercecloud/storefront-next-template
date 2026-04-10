@@ -22,7 +22,7 @@ import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '@/components
 import { Button } from '@/components/ui/button';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl, transformHtmlImageUrls } from '@/lib/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { NavigationMenuLink } from '@/components/ui/navigation-menu';
@@ -62,6 +62,9 @@ function CategoryBanner({
     const config = useConfig<AppConfig>();
     const imageSrc = toImageUrl({ src: (category?.c_slotBannerImage as string) ?? '', config });
 
+    // Transform any image URLs in the HTML banner to use DIS with WebP optimization
+    const transformedBannerHtml = transformHtmlImageUrls(category.c_headerMenuBanner || '', config);
+
     return (
         <NavigationMenuLink asChild>
             <NavLink {...props} to={`/category/${category.id}`}>
@@ -73,7 +76,7 @@ function CategoryBanner({
                     />
                 ) : (
                     // eslint-disable-next-line react/no-danger
-                    <div className="ml-auto" dangerouslySetInnerHTML={{ __html: category.c_headerMenuBanner || '' }} />
+                    <div className="ml-auto" dangerouslySetInnerHTML={{ __html: transformedBannerHtml }} />
                 )}
             </NavLink>
         </NavigationMenuLink>

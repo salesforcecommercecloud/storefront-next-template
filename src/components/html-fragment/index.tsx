@@ -17,6 +17,9 @@
 import type { ReactElement } from 'react';
 import type { HtmlContentType } from '@/lib/adapters/product-content-data-types';
 import { HTML_CONTENT_STYLES } from './styles';
+import { transformHtmlImageUrls } from '@/lib/dynamic-image';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 interface HtmlFragmentProps {
     /** The HTML or plain text content to render */
@@ -31,18 +34,24 @@ interface HtmlFragmentProps {
  * Renders HTML or plain text content via dangerouslySetInnerHTML.
  * SSR-safe — no browser-only APIs are used.
  * Resolves default styling from HTML_CONTENT_STYLES based on contentType.
+ * Automatically transforms image URLs to use DIS with WebP optimization.
  */
 export default function HtmlFragment({
     content,
     contentType = 'plain-text',
     className,
 }: HtmlFragmentProps): ReactElement {
+    const config = useConfig<AppConfig>();
+
+    // Transform any image URLs in the HTML content to use DIS with WebP optimization
+    const transformedContent = transformHtmlImageUrls(content, config);
+
     return (
         <div
             data-testid="html-fragment"
             className={className ?? HTML_CONTENT_STYLES[contentType]}
             // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: content }}
+            dangerouslySetInnerHTML={{ __html: transformedContent }}
         />
     );
 }
