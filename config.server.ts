@@ -190,7 +190,7 @@ export default defineConfig<Config>(
             // See CONFIG-OPTIONS.md#features for detailed documentation
             features: {
                 passwordlessLogin: {
-                    enabled: false,
+                    enabled: true, // Enabled for Turnstile testing
                     mode: 'email',
                     callbackUri: '/passwordless-login-callback',
                     landingUri: '/login',
@@ -442,6 +442,17 @@ export default defineConfig<Config>(
             url: {
                 prefix: '/:siteId/:localeId',
                 excludeRoutes: ['/resource/**', '/action/**'],
+            },
+            security: {
+                turnstile: {
+                    siteKeys: process.env.PUBLIC__security__turnstile__siteKeys
+                        ? JSON.parse(process.env.PUBLIC__security__turnstile__siteKeys)
+                        : {
+                              'http://localhost:5173': '1x00000000000000000000BB',
+                          },
+                    enabled: process.env.PUBLIC__security__turnstile__enabled !== 'false',
+                    mode: (process.env.PUBLIC__security__turnstile__mode as 'invisible' | 'visible') || 'invisible',
+                },
             },
         },
     },

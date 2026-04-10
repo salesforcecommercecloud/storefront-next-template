@@ -235,7 +235,8 @@ async function fetchPromotionsForBasket(
     });
     if (basket?.shipments?.length) {
         basket.shipments.forEach((shipment) => {
-            shipment.productItems?.forEach((productItem) => {
+            const shipmentItems = shipment.productItems as ShopperBasketsV2.schemas['ProductItem'][] | undefined;
+            shipmentItems?.forEach((productItem) => {
                 if (productItem.priceAdjustments?.length) {
                     productItem.priceAdjustments.forEach((adjustment) => {
                         if (adjustment.promotionId) {

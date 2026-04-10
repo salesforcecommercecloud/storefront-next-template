@@ -18,6 +18,17 @@ import { buildSitePath } from '../utils/url-utils';
 
 const { I } = inject();
 
+// Type declarations for Turnstile API
+declare global {
+    interface Window {
+        turnstile?: {
+            render: (container: HTMLElement, options: Record<string, unknown>) => string;
+            reset: (widgetId: string) => void;
+            remove: (widgetId: string) => void;
+        };
+    }
+}
+
 /**
  * Passwordless Login Page Object
  */
@@ -29,6 +40,11 @@ class PasswordlessLoginPage {
         cookieAcceptButton: locate('button:has-text("Accept"), button:has-text("Accept All"), button[id*="accept"]').as(
             'Cookie Accept Button'
         ),
+        // Turnstile bot protection
+        turnstileWidget: locate('[data-testid="turnstile-widget"]').as('Turnstile Widget'),
+        turnstileError: locate('[data-testid="turnstile-error"]').as('Turnstile Error Message'),
+        turnstileLoading: locate('[data-testid="turnstile-loading"]').as('Turnstile Loading Indicator'),
+        turnstileRetryButton: locate('[data-testid="turnstile-retry"]').as('Turnstile Retry Button'),
     };
 
     navigate(baseUrl?: string, mode: 'passwordless' | 'password' = 'passwordless'): void {
@@ -71,6 +87,58 @@ class PasswordlessLoginPage {
         if (cookieButtonCount > 0) {
             I.click(this.locators.cookieAcceptButton);
         }
+    }
+
+    // Turnstile bot protection methods
+
+    async isTurnstileWidgetVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.turnstileWidget);
+        return count > 0;
+    }
+
+    async isTurnstileErrorVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.turnstileError);
+        return count > 0;
+    }
+
+    async isTurnstileLoadingVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.turnstileLoading);
+        return count > 0;
+    }
+
+    async getTurnstileErrorText(): Promise<string> {
+        return await I.grabTextFrom(this.locators.turnstileError);
+    }
+
+    clickTurnstileRetry(): void {
+        I.click(this.locators.turnstileRetryButton);
+    }
+
+    async isSendButtonDisabled(): Promise<boolean> {
+        const disabled = await I.grabAttributeFrom(this.locators.sendLoginLinkButton, 'disabled');
+        return disabled !== null;
+    }
+
+    /**
+     * Verify Turnstile script loaded from Cloudflare CDN
+     * Feature Spec: e2e/feature-specs/checkout/turnstile-protection.spec.md
+     */
+    async validateTurnstileScriptLoaded(): Promise<boolean> {
+        return await I.executeScript(() => {
+            const scripts = Array.from(document.querySelectorAll('script[src]'));
+            return scripts.some((script) =>
+                (script as HTMLScriptElement).src.includes('challenges.cloudflare.com/turnstile')
+            );
+        });
+    }
+
+    /**
+     * Check if window.turnstile object exists (Turnstile API loaded)
+     */
+    async isTurnstileApiLoaded(): Promise<boolean> {
+        return await I.executeScript(() => {
+            return typeof window.turnstile !== 'undefined';
+        });
     }
 }
 

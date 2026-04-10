@@ -103,7 +103,7 @@ describe('getFormattedMaskedCardNumber', () => {
     });
 
     test('returns existing masked value as-is', () => {
-        expect(getFormattedMaskedCardNumber({ maskedCreditCardNumber: '**** **** **** 4242' } as any)).toBe(
+        expect(getFormattedMaskedCardNumber({ paymentCard: { maskedNumber: '**** **** **** 4242' } } as any)).toBe(
             '**** **** **** 4242'
         );
     });

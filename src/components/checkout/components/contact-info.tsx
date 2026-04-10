@@ -45,6 +45,9 @@ import {
 import type { OtpFlowActiveRef } from '@/hooks/use-checkout-actions';
 import { Spinner } from '@/components/spinner';
 import { ConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { TurnstileWidget } from '@/components/security/turnstile-widget';
+import type { AppConfig } from '@/types/config';
+import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
 
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
 
@@ -99,6 +102,30 @@ export default function ContactInfo({
     const [isOtpOpen, setIsOtpOpen] = useState(false);
     const [otpModalEmail, setOtpModalEmail] = useState('');
 
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+    const turnstileEnabled = appConfig ? isTurnstileEnabled(appConfig as AppConfig) : false;
+    const turnstileSiteKey = useMemo(() => {
+        if (!appConfig || !turnstileEnabled) return null;
+        if (typeof window !== 'undefined') {
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            return getTurnstileSiteKey(appConfig as AppConfig, baseUrl);
+        }
+        return null;
+    }, [appConfig, turnstileEnabled]);
+
+    const handleTurnstileSuccess = useCallback((token: string) => {
+        setTurnstileToken(token);
+    }, []);
+
+    const handleTurnstileError = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
+
+    const handleTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
+
     const form = useForm<ContactInfoData, void, ContactInfoData>({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -151,6 +178,9 @@ export default function ContactInfo({
             lastEmailSentRef.current = normalized;
             const formData = new FormData();
             formData.append('email', raw);
+            if (turnstileToken) {
+                formData.append('turnstileToken', turnstileToken);
+            }
             void passwordlessEmailFetcher.submit(formData, {
                 method: 'POST',
                 action: authorizePasswordlessEmailPath,
@@ -160,7 +190,7 @@ export default function ContactInfo({
         },
         // Ref is stable; .current is mutated intentionally — omit from deps
         // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
-        [form, passwordlessEmailFetcher, authorizePasswordlessEmailPath]
+        [form, passwordlessEmailFetcher, authorizePasswordlessEmailPath, turnstileToken]
     );
 
     // When authorize (blur) succeeds, open OTP modal so user can enter the code
@@ -202,9 +232,12 @@ export default function ContactInfo({
         lastEmailSentRef.current = null;
         const fd = new FormData();
         fd.append('email', email);
+        if (turnstileToken) {
+            fd.append('turnstileToken', turnstileToken);
+        }
         void passwordlessEmailFetcher.submit(fd, { method: 'POST', action: authorizePasswordlessEmailPath });
         return Promise.resolve();
-    }, [form, otpModalEmail, passwordlessEmailFetcher, authorizePasswordlessEmailPath]);
+    }, [form, otpModalEmail, passwordlessEmailFetcher, authorizePasswordlessEmailPath, turnstileToken]);
 
     /**
      * Checkout only: close OTP without calling verify-otp — shopper stays a guest (no SLAS session from OTP).
@@ -297,6 +330,16 @@ export default function ContactInfo({
                                     </FormItem>
                                 )}
                             />
+
+                            {turnstileEnabled && turnstileSiteKey && (
+                                <TurnstileWidget
+                                    siteKey={turnstileSiteKey}
+                                    onSuccess={handleTurnstileSuccess}
+                                    onError={handleTurnstileError}
+                                    onExpire={handleTurnstileExpire}
+                                    enabled={turnstileEnabled}
+                                />
+                            )}
 
                             <div className="flex items-start gap-2">
                                 <FormField

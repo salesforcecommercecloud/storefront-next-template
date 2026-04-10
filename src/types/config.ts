@@ -254,6 +254,13 @@ export type AppConfig = {
     };
     siteDetectionConfig?: DetectionConfig;
     url?: Url;
+    security?: {
+        turnstile?: {
+            siteKeys: Record<string, string>;
+            enabled?: boolean;
+            mode?: 'invisible' | 'visible';
+        };
+    };
 };
 
 export type Config = BaseConfig<AppConfig>;

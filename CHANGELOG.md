@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 07, 2026)
 
+- Add Cloudflare Turnstile bot protection integration for passwordless login with graceful degradation
 - Remove `'use client'` directives from template app source files ([#1375](https://github.com/commerce-emu/storefront-next/pull/1375))
 - Save checkout user info for new user consistently (@W-21918823)
 - Save phone number to `phoneMobile` in addition to `phoneHome` on customer profile update ([#1373](https://github.com/commerce-emu/storefront-next/pull/1373))

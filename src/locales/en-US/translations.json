@@ -1460,6 +1460,14 @@
             "RefArch": "United States"
         }
     },
+    "security": {
+        "turnstile": {
+            "error": "Unable to verify your request. Please try again.",
+            "expired": "Verification expired. Please try again.",
+            "loading": "Verifying...",
+            "retry": "Retry Verification"
+        }
+    },
     "category": {
         "banner": {
             "counting": "Counting products...",

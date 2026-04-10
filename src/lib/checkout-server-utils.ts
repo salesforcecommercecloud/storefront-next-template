@@ -61,13 +61,16 @@ export function getServerCustomerProfile(
                     },
                 },
             })
-            .then(({ data: customer }) => ({
-                customer,
-                addresses: customer.addresses || [],
-                paymentInstruments: customer.paymentInstruments || [],
-                preferredShippingAddress: customer.preferredShippingAddress,
-                preferredBillingAddress: customer.preferredBillingAddress,
-            }));
+            .then(({ data: customer }) => {
+                const addresses = customer.addresses || [];
+                return {
+                    customer,
+                    addresses,
+                    paymentInstruments: customer.paymentInstruments || [],
+                    preferredShippingAddress: addresses.find((addr) => addr.preferred) || addresses[0],
+                    preferredBillingAddress: addresses.find((addr) => addr.preferred) || addresses[0],
+                };
+            });
     } catch {
         // Failed to fetch customer profile
         return Promise.resolve(null);

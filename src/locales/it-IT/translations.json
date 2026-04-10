@@ -1324,6 +1324,14 @@
             "RefArch": "Stati Uniti"
         }
     },
+    "security": {
+        "turnstile": {
+            "error": "Impossibile verificare la richiesta. Riprova.",
+            "expired": "Verifica scaduta. Riprova.",
+            "loading": "Verifica in corso...",
+            "retry": "Riprova verifica"
+        }
+    },
     "category": {
         "banner": {
             "counting": "Conteggio prodotti in corso...",
