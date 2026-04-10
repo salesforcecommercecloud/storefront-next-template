@@ -137,9 +137,49 @@ describe('Hero Component', () => {
             expect(screen.queryByRole('link')).not.toBeInTheDocument();
         });
 
-        test('does not render CTA when only ctaLink is provided without ctaText', () => {
-            renderHero({ ctaLink: '/somewhere' });
+        test('renders CTA when ctaLink is set without ctaText using a label derived from the path', () => {
+            renderHero({ ctaLink: '/sale-items' });
+            const link = screen.getByRole('link');
+            expect(link).toHaveAttribute('href', '/global/en-GB/sale-items');
+            expect(link).toHaveTextContent('sale items');
+        });
+
+        test('does not render CTA when ctaLink is empty or whitespace only', () => {
+            renderHero({ ctaText: 'Go', ctaLink: '' });
             expect(screen.queryByRole('link')).not.toBeInTheDocument();
+
+            renderHero({ ctaText: 'Go', ctaLink: '   \t  ' });
+            expect(screen.queryByRole('link')).not.toBeInTheDocument();
+        });
+
+        test('applies titleColor when hex is valid', () => {
+            renderHero({ title: 'T', titleColor: '#aabbcc' });
+            expect(screen.getByRole('heading', { level: 1 })).toHaveStyle({ color: '#aabbcc' });
+        });
+
+        test('ignores invalid titleColor and keeps theme foreground class', () => {
+            renderHero({ title: 'T', titleColor: 'not-a-color' });
+            const heading = screen.getByRole('heading', { level: 1 });
+            expect(heading).not.toHaveStyle({ color: 'not-a-color' });
+            expect(heading).toHaveClass('text-foreground');
+        });
+
+        test('maps buttonStyle Secondary to data-variant secondary', () => {
+            const { container } = renderHero({
+                ctaLink: '/go',
+                ctaText: 'Go',
+                buttonStyle: 'Secondary',
+            });
+            expect(container.querySelector('[data-slot="button"]')).toHaveAttribute('data-variant', 'secondary');
+        });
+
+        test('maps buttonStyle Tertiary to data-variant outline', () => {
+            const { container } = renderHero({
+                ctaLink: '/go',
+                ctaText: 'Go',
+                buttonStyle: 'Tertiary',
+            });
+            expect(container.querySelector('[data-slot="button"]')).toHaveAttribute('data-variant', 'outline');
         });
     });
 

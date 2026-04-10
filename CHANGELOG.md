@@ -18,3 +18,4 @@
 - Add SCAPI helper utilities for API-based registered shopper setup (register, login via PKCE, create address, update profile, add payment instrument) to speed up E2E test setup (@W-21582487)
 - Page Designer: `storefrontnext_base` default `@Component` group, Layout/Content groups, resolved region type refs for inclusions/exclusions; updated cartridge metadata and static registry (@W-21816874)
 - Hero Banner: Page Designer **Overlay Position** (nine placements: top/middle/bottom × left/center/right) and **Overlay Alignment** (text/CTA left, center, right); updated cartridge metadata (@W-21816944)
+- Hero Banner: Page Designer **Title Typography**, **Subtitle Typography**, optional **Title/Subtitle Color** (hex), and **Button Style** (Primary/Secondary/Tertiary) for the CTA; hide CTA when link is empty; derive default CTA label from URL; legacy horizontal overlay values map to the nine-position grid; updated cartridge metadata (@W-21816953)

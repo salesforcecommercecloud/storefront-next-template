@@ -182,6 +182,38 @@ export const WithoutSubtitle: Story = {
     },
 };
 
+export const PageDesignerStyling: Story = {
+    render: () => (
+        <Hero
+            title="Styled headline"
+            titleTypography="Heading 2"
+            titleColor="#F8FAFC"
+            subtitle="Subtitle with custom color and paragraph scale"
+            subtitleTypography="Paragraph"
+            subtitleColor="#E2E8F0"
+            imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
+            imageAlt="Hero background"
+            ctaText="Shop"
+            ctaLink="/category/all"
+            buttonStyle="Tertiary"
+        />
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'Demonstrates Page Designer controls: title/subtitle typography and hex colors, tertiary (outline) button style.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await waitForStorybookReady(canvasElement);
+        await expect(await canvas.findByText(/styled headline/i, {}, { timeout: 5000 })).toBeInTheDocument();
+        const link = await canvas.findByRole('link', { name: /shop/i }, { timeout: 5000 });
+        await expect(link).toHaveAttribute('data-variant', 'outline');
+    },
+};
+
 export const RightBlockCenteredText: Story = {
     render: () => (
         <Hero

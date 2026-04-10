@@ -1,6 +1,6 @@
 {
     "name": "Hero Banner",
-    "description": "Prominent banner with image, title, subtitle, and call-to-action. Overlay Position places the content block (top, middle, or bottom; left, center, or right). Overlay Alignment sets text alignment for the title, subtitle, and CTA.",
+    "description": "Prominent banner with image, title, subtitle, and call-to-action. Title and subtitle support typography presets, optional hex colors, and overlay placement. Button Style sets the CTA appearance. If CTA Link is empty, the button is not shown. Overlay Position places the content block; Overlay Alignment sets text alignment.",
     "group": "Content",
     "arch_type": "headless",
     "region_definitions": [],
@@ -8,7 +8,7 @@
         {
             "id": "hero",
             "name": "Hero Banner",
-            "description": "Prominent banner with image, title, subtitle, and call-to-action. Overlay Position places the content block (top, middle, or bottom; left, center, or right). Overlay Alignment sets text alignment for the title, subtitle, and CTA.",
+            "description": "Prominent banner with image, title, subtitle, and call-to-action. Title and subtitle support typography presets, optional hex colors, and overlay placement. Button Style sets the CTA appearance. If CTA Link is empty, the button is not shown. Overlay Position places the content block; Overlay Alignment sets text alignment.",
             "attribute_definitions": [
                 {
                     "id": "title",
@@ -16,6 +16,31 @@
                     "type": "string",
                     "required": false,
                     "description": "Field: title"
+                },
+                {
+                    "id": "titleTypography",
+                    "name": "Title Typography",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Visual typography for the title",
+                    "values": [
+                        "Default",
+                        "Paragraph",
+                        "Heading 1",
+                        "Heading 2",
+                        "Heading 3",
+                        "Heading 4",
+                        "Heading 5",
+                        "Heading 6"
+                    ],
+                    "default_value": "Default"
+                },
+                {
+                    "id": "titleColor",
+                    "name": "Title Color",
+                    "type": "string",
+                    "required": false,
+                    "description": "Hex color for the title (e.g. #FFFFFF or #fff)"
                 },
                 {
                     "id": "imageUrl",
@@ -46,6 +71,31 @@
                     "description": "Field: subtitle"
                 },
                 {
+                    "id": "subtitleTypography",
+                    "name": "Subtitle Typography",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Visual typography for the subtitle",
+                    "values": [
+                        "Default",
+                        "Paragraph",
+                        "Heading 1",
+                        "Heading 2",
+                        "Heading 3",
+                        "Heading 4",
+                        "Heading 5",
+                        "Heading 6"
+                    ],
+                    "default_value": "Default"
+                },
+                {
+                    "id": "subtitleColor",
+                    "name": "Subtitle Color",
+                    "type": "string",
+                    "required": false,
+                    "description": "Hex color for the subtitle (e.g. #FFFFFF or #fff)"
+                },
+                {
                     "id": "ctaText",
                     "name": "Cta Text",
                     "type": "string",
@@ -58,6 +108,15 @@
                     "type": "url",
                     "required": false,
                     "description": "Field: ctaLink"
+                },
+                {
+                    "id": "buttonStyle",
+                    "name": "Button Style",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Field: buttonStyle",
+                    "values": ["Primary", "Secondary", "Tertiary"],
+                    "default_value": "Primary"
                 },
                 {
                     "id": "overlayPosition",
