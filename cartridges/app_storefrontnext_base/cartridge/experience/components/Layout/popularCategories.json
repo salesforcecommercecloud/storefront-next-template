@@ -1,5 +1,5 @@
 {
-    "name": "Popular Categories",
+    "name": "Categories Carousel",
     "description": "Displays a scrollable row of popular category cards with images, titles, descriptions, and shop now buttons",
     "group": "Layout",
     "arch_type": "headless",
@@ -18,7 +18,7 @@
     "attribute_definition_groups": [
         {
             "id": "popularCategories",
-            "name": "Popular Categories",
+            "name": "Categories Carousel",
             "description": "Displays a scrollable row of popular category cards with images, titles, descriptions, and shop now buttons",
             "attribute_definitions": [
                 {

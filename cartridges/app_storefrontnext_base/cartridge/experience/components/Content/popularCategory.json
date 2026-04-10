@@ -1,5 +1,5 @@
 {
-    "name": "Popular Category",
+    "name": "Category Card",
     "description": "Displays a single category card with image, title, description, and shop now button",
     "group": "Content",
     "arch_type": "headless",
@@ -7,7 +7,7 @@
     "attribute_definition_groups": [
         {
             "id": "popularCategory",
-            "name": "Popular Category",
+            "name": "Category Card",
             "description": "Displays a single category card with image, title, description, and shop now button",
             "attribute_definitions": [
                 {

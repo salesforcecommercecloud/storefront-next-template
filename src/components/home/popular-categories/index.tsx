@@ -41,7 +41,7 @@ interface PopularCategoriesProps {
 
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
 @Component('popularCategories', {
-    name: 'Popular Categories',
+    name: 'Categories Carousel',
     description:
         'Displays a scrollable row of popular category cards with images, titles, descriptions, and shop now buttons',
     group: 'Layout',
@@ -50,7 +50,7 @@ interface PopularCategoriesProps {
     {
         id: 'categories',
         name: 'Categories',
-        description: 'Add Popular Category components to display in the scrollable row',
+        description: 'Add Category Card components to display in the scrollable row',
         maxComponents: 4,
         componentTypeInclusions: ['Content.popularCategory'],
     },

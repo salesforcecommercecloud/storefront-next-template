@@ -43,7 +43,7 @@ interface PopularCategoryProps extends ComponentProps<'div'> {
 
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
 @Component('popularCategory', {
-    name: 'Popular Category',
+    name: 'Category Card',
     description: 'Displays a single category card with image, title, description, and shop now button',
     group: 'Content',
 })
