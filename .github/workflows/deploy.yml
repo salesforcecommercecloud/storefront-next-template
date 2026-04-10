@@ -120,6 +120,7 @@ jobs:
       SFCC_SERVER: ${{ vars.SFCC_SERVER }}
       SFCC_CLIENT_ID: ${{ vars.SFCC_CLIENT_ID }}
       SFCC_CLIENT_SECRET: ${{ secrets.SFCC_CLIENT_SECRET }}
+      SFCC_ACCOUNT_MANAGER_HOST: ${{ vars.SFCC_ACCOUNT_MANAGER_HOST }}
 
     steps:
       - name: Check required configuration
