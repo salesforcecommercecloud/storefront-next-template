@@ -36,6 +36,9 @@ const mockSite = {
     ],
 };
 
+const mockLocale =
+    mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
+
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -72,7 +75,7 @@ function withProviders(Story: ComponentType, context: { args: Record<string, unk
         const inRouter = useInRouterContext();
         const content = (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider value={mockSite}>
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <ActionLogger>
                         <Story {...context.args} />
                     </ActionLogger>

@@ -24,8 +24,8 @@ import { Typography } from '@/components/typography';
 import ProductImage from '@/components/product-image/product-image';
 import { formatCurrency } from '@/lib/currency';
 import { fetchOrderWithProducts } from '@/lib/api/order';
-import { useCurrency } from '@/providers/currency';
 import { useBasketReset } from '@/providers/basket';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import type {
@@ -180,7 +180,7 @@ function OrderConfirmationContent({
 }: OrderConfirmationData): ReactElement {
     const config = useConfig<AppConfig>();
     const { t, i18n } = useTranslation('checkout');
-    const currency = useCurrency();
+    const { currency } = useSite();
     const resetBasket = useBasketReset();
     let deliveryShipments = order.shipments;
 

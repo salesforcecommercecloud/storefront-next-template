@@ -18,7 +18,7 @@ import { cleanup, render } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { afterEach, describe, expect, test } from 'vitest';
 import i18next from 'i18next';
-import { AllProvidersWrapper, ConfigWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { Link, NavLink } from './index';
 
 function renderWithRouter(ui: React.ReactElement) {
@@ -28,9 +28,9 @@ function renderWithRouter(ui: React.ReactElement) {
     return render(<RouterProvider router={router} />);
 }
 
-// Without SiteProvider — Link falls back to plain URLs
+// With SiteProvider — Link always gets site context from AllProvidersWrapper
 function renderWithoutSite(ui: React.ReactElement) {
-    const router = createMemoryRouter([{ path: '*', element: <ConfigWrapper>{ui}</ConfigWrapper> }], {
+    const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{ui}</AllProvidersWrapper> }], {
         initialEntries: ['/'],
     });
     return render(<RouterProvider router={router} />);
@@ -48,10 +48,10 @@ describe('Link', () => {
         expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
     });
 
-    test('renders a plain href when site context is not available', () => {
+    test('renders a site context prefixed URL with renderWithoutSite helper', () => {
         const { getByRole } = renderWithoutSite(<Link to="/product/123">Product</Link>);
 
-        expect(getByRole('link')).toHaveAttribute('href', '/product/123');
+        expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
     });
 
     test('passes through an object `to` prop without transformation', () => {
@@ -112,10 +112,10 @@ describe('NavLink', () => {
         expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
     });
 
-    test('renders a plain href when site context is not available', () => {
+    test('renders a site context prefixed URL with renderWithoutSite helper', () => {
         const { getByRole } = renderWithoutSite(<NavLink to="/product/123">Product</NavLink>);
 
-        expect(getByRole('link')).toHaveAttribute('href', '/product/123');
+        expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
     });
 
     test('forwards a ref to the anchor element', () => {

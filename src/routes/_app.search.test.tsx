@@ -28,7 +28,7 @@ import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
-import { ConfigWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 vi.mock('react-router', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router')>();
@@ -368,9 +368,9 @@ describe('SearchPage', () => {
 
             const { unmount } = render(
                 <MemoryRouter initialEntries={['/search?q=shoes&filters=open']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={openLoaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -382,9 +382,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter initialEntries={['/search?q=shoes&filters=closed']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={closedLoaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -409,9 +409,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter initialEntries={['/search?q=shoes&filters=closed']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -442,9 +442,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -480,9 +480,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -507,9 +507,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -532,9 +532,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -557,9 +557,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -590,9 +590,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -625,9 +625,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -663,9 +663,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 

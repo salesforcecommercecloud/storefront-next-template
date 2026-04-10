@@ -29,7 +29,7 @@ import ProductPrice from '@/components/product-price';
 import { useTranslation } from 'react-i18next';
 
 // Hooks
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 
 // Utils
@@ -76,7 +76,7 @@ export default function MyCart({
     const { t } = useTranslation('checkout');
     const { t: tCart } = useTranslation('cart');
     const { i18n } = useTranslation();
-    const currency = useCurrency();
+    const { currency } = useSite();
     const config = useConfig();
     const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
 

@@ -19,8 +19,8 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { MemoryRouter } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
-import { CurrencyProvider } from '@/providers/currency';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import RecommendersProvider from '@/providers/recommenders';
 import {
     AccountOverview,
@@ -75,13 +75,13 @@ This component is typically rendered as the default view when users navigate to 
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <CurrencyProvider value="GBP">
+                <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency="GBP">
                     <RecommendersProvider>
                         <MemoryRouter>
                             <Story />
                         </MemoryRouter>
                     </RecommendersProvider>
-                </CurrencyProvider>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],

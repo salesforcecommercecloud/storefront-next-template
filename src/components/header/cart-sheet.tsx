@@ -34,7 +34,7 @@ import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
 import { useToast } from '@/components/toast';
 import type { ActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 /**
  * Container component for MiniCartItem that handles remove functionality
  * Uses useFetcher to submit remove requests to the cart API
@@ -95,7 +95,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
     const basket = useBasket();
     const config = useConfig<AppConfig>();
     const navigate = useNavigate();
-    const currency = useCurrency();
+    const { currency } = useSite();
 
     // Fetch full product details (images, variations, etc.) for basket items
     const { productItems: enrichedProductItems, isLoading } = useBasketWithProducts(basket);

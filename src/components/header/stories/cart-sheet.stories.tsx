@@ -26,8 +26,10 @@ import emptyBasketSnapshot from '@/components/__mocks__/empty-basket-snapshot';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
 import basketWithOneItemSnapshot from '@/components/__mocks__/basket-with-dress-snapshot';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 function CartSheetStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -134,13 +136,13 @@ In Storybook, this route returns mock product data for demonstration purposes.
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <CartSheetStoryHarness>
                         <div className="p-8">
                             <Story />
                         </div>
                     </CartSheetStoryHarness>
-                </CurrencyWrapper>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],

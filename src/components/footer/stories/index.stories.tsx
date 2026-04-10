@@ -18,8 +18,10 @@ import { expect, userEvent, within } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 import Footer from '../index';
 
@@ -119,14 +121,14 @@ Site footer with support, account, company links, newsletter signup, social icon
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <ActionLogger>
                         <div className="min-h-[60vh] flex flex-col">
                             <div className="flex-1" />
                             <Story />
                         </div>
                     </ActionLogger>
-                </CurrencyWrapper>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],

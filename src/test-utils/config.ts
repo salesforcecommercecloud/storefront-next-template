@@ -326,6 +326,13 @@ const defaultSite = mockBuildConfig.app.commerce.sites[0];
 export const SITE_PREFIX = `/${defaultSite.id}/${defaultSite.defaultLocale}`;
 
 /**
+ * The default mock locale derived from the first configured site's default locale.
+ * Use when providing `locale` to `SiteProvider` in tests.
+ */
+export const mockLocale =
+    defaultSite.supportedLocales.find((l) => l.id === defaultSite.defaultLocale) ?? defaultSite.supportedLocales[0];
+
+/**
  * React Testing Library wrapper component that provides ConfigProvider context
  *
  * @example

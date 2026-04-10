@@ -22,7 +22,10 @@ import emptyBasket from '@/components/__mocks__/empty-basket';
 import { basketWithMultipleItems, inBasketProductDetails } from '@/components/__mocks__/basket-with-multiple-items';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -160,9 +163,9 @@ const meta: Meta<typeof OrderSummary> = {
     decorators: [
         (Story: React.ComponentType) => (
             <ActionLogger>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <Story />
-                </CurrencyWrapper>
+                </SiteProvider>
             </ActionLogger>
         ),
     ],

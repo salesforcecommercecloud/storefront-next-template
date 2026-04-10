@@ -37,7 +37,11 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
-    useSite: vi.fn(),
+    useSite: vi.fn(() => ({
+        site: { id: 'RefArchGlobal' },
+        language: 'en-GB',
+        currency: 'USD',
+    })),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -150,7 +154,11 @@ describe('useAnalytics', () => {
 
         // Setup default mocks
         vi.mocked(useConfig).mockReturnValue(mockConfig as any);
-        vi.mocked(useSite).mockReturnValue({ id: 'RefArchGlobal' } as any);
+        vi.mocked(useSite).mockReturnValue({
+            site: { id: 'RefArchGlobal' },
+            language: 'en-GB',
+            currency: 'USD',
+        } as any);
         vi.mocked(useTranslation).mockReturnValue({ i18n: { language: 'en-GB' } } as any);
         vi.mocked(getAllAdapters).mockReturnValue([]);
         vi.mocked(initializeEngagementAdapters).mockResolvedValue(undefined);

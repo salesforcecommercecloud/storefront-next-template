@@ -1,28 +1,42 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { jsx } from "react/jsx-runtime";
 import { createContext as createContext$1, createCookie } from "react-router";
 
 //#region src/site-context/site-context.tsx
 const SiteContext = createContext(void 0);
 /**
-* Provides the current site to the component tree.
-* Follows the same pattern as CurrencyProvider.
+* Provides the current site context (site, locale, language, currency) to the component tree.
 *
-* Mounted in the template (e.g., app-wrapper.tsx or root.tsx) with the resolved
-* site value from the loader/middleware.
+* Mounted in the template's root.tsx with the resolved values from the
+* loader/middleware. The SDK has no react-i18next dependency, so `language`
+* is passed as a prop from the template.
 */
-function SiteProvider({ value, children }) {
+function SiteProvider({ site, locale, language, currency, children }) {
+	const value = useMemo(() => ({
+		site,
+		locale,
+		language,
+		currency
+	}), [
+		site,
+		locale,
+		language,
+		currency
+	]);
 	return /* @__PURE__ */ jsx(SiteContext.Provider, {
 		value,
 		children
 	});
 }
 /**
-* React hook to get the current site.
-* Returns undefined when no SiteProvider is mounted.
+* React hook to get the current site context.
+* Returns `{ site, locale, language, currency }`.
+* @throws If called outside of a SiteProvider
 */
 function useSite() {
-	return useContext(SiteContext);
+	const value = useContext(SiteContext);
+	if (!value) throw new Error("useSite must be used within a SiteProvider");
+	return value;
 }
 
 //#endregion

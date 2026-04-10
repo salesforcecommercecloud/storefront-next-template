@@ -20,10 +20,26 @@ import type { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import CheckoutPickup from './checkout-pickup';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig } from '@/test-utils/config';
 
+const defaultMockSite = {
+    id: 'RefArch',
+    defaultLocale: 'en-US',
+    defaultCurrency: 'USD',
+    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
+    supportedCurrencies: ['USD'],
+};
+const defaultMockLocale =
+    defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
+    defaultMockSite.supportedLocales[0];
+
 const wrapper = ({ children }: { children: ReactNode }) => (
-    <ConfigProvider config={mockConfig}>{children}</ConfigProvider>
+    <ConfigProvider config={mockConfig}>
+        <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+            {children}
+        </SiteProvider>
+    </ConfigProvider>
 );
 
 vi.mock('@/components/address-display', () => ({
@@ -45,10 +61,6 @@ vi.mock('react-i18next', () => ({
         };
     },
 }));
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
-}));
-
 const defaultStore = {
     id: 'store-123',
     name: 'Test Store',
@@ -244,14 +256,16 @@ describe('CheckoutPickup', () => {
 
         rerender(
             <ConfigProvider config={mockConfig}>
-                <CheckoutPickup
-                    cart={cartWithNewStore}
-                    productsByItemId={productsByItemId}
-                    isEditing={true}
-                    onEdit={() => {}}
-                    onContinue={() => {}}
-                    continueButtonLabel="Continue"
-                />
+                <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+                    <CheckoutPickup
+                        cart={cartWithNewStore}
+                        productsByItemId={productsByItemId}
+                        isEditing={true}
+                        onEdit={() => {}}
+                        onContinue={() => {}}
+                        continueButtonLabel="Continue"
+                    />
+                </SiteProvider>
             </ConfigProvider>
         );
         expect(screen.getByTestId('address-display')).toHaveTextContent(otherStore.name);

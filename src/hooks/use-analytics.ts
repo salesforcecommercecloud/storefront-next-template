@@ -27,7 +27,6 @@ import {
 } from '@salesforce/storefront-next-runtime/events';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import { useTranslation } from 'react-i18next';
 import type { AppConfig } from '@/types/config';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
@@ -99,9 +98,8 @@ export const useAnalytics = () => {
     const auth = useAuth();
     const appConfig = useConfig<AppConfig>();
     const { trackingConsent, isTrackingConsentEnabled } = useTrackingConsent();
-    const site = useSite();
-    const { i18n } = useTranslation();
-    const siteInfo = site ? { siteId: site.id, localeId: i18n.language } : undefined;
+    const { site, language } = useSite();
+    const siteInfo = { siteId: site.id, localeId: language };
     const consentCategories = appConfig.engagement.analytics.trackingConsent?.consentCategories ?? [];
     const consentPreferences = buildConsentPreferences(trackingConsent, consentCategories, isTrackingConsentEnabled);
 

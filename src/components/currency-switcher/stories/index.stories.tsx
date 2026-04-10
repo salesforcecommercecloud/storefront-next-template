@@ -21,8 +21,8 @@ import { action } from 'storybook/actions';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { CurrencyProvider } from '@/providers/currency';
-import { mockConfig } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 import { NativeSelect } from '@/components/ui/native-select';
 import { useTranslation } from 'react-i18next';
 
@@ -153,11 +153,15 @@ This component is typically used in the header or footer area to allow users to 
                 const inRouter = useInRouterContext();
                 const content = (
                     <ConfigProvider config={mockConfig}>
-                        <CurrencyProvider value={initialCurrency}>
+                        <SiteProvider
+                            site={mockConfig.commerce.sites[0]}
+                            locale={mockLocale}
+                            language="en-GB"
+                            currency={initialCurrency}>
                             <ActionLogger>
                                 <CurrencySwitcherMock initialCurrency={initialCurrency} />
                             </ActionLogger>
-                        </CurrencyProvider>
+                        </SiteProvider>
                     </ConfigProvider>
                 );
 

@@ -47,6 +47,9 @@ const mockSite: Site = {
     supportedCurrencies: ['GBP', 'EUR'],
 };
 
+const mockLocale =
+    mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
+
 const mockFetcherSubmit = vi.fn();
 const mockFetcher = {
     submit: mockFetcherSubmit,
@@ -73,7 +76,7 @@ const renderWithRouter = ({ initialLanguage = 'en-GB' }: { initialLanguage?: str
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider value={mockSite}>
+                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                             <LocaleSwitcher />
                         </SiteProvider>
                     </ConfigProvider>
@@ -272,7 +275,7 @@ describe('LocaleSwitcher', () => {
                         path: '/',
                         element: (
                             <ConfigProvider config={mockConfig}>
-                                <SiteProvider value={mockSite}>
+                                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                                     <LocaleSwitcher />
                                 </SiteProvider>
                             </ConfigProvider>

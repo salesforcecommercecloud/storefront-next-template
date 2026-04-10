@@ -18,7 +18,7 @@ import { useRecommenders, type Product } from '@/hooks/recommenders/use-recommen
 import ProductCarousel from '@/components/product-carousel/carousel';
 import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
 import { useProduct } from '@/providers/product-context';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 
@@ -129,7 +129,7 @@ export default function ProductRecommendations({
     className,
 }: ProductRecommendationsProps): ReactElement | null {
     const { getRecommendations, getZoneRecommendations, recommendations, isLoading, error } = useRecommenders(true);
-    const currency = useCurrency();
+    const { currency } = useSite();
 
     // Construct recommender config from props (supports both object and individual props for Page Designer)
     const recommender = useMemo(() => {

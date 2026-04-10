@@ -20,14 +20,21 @@ import { useRecommenders, type RecommendersAdapter, type Recommendation, type Pr
 // Mock fetch globally
 global.fetch = vi.fn();
 
+vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return {
+        ...actual,
+        useSite: vi.fn(() => ({
+            site: { id: 'RefArch', defaultLocale: 'en-US' },
+            language: 'en-US',
+            currency: 'USD',
+        })),
+    };
+});
+
 // Mock the useRecommendersAdapter hook
 vi.mock('@/providers/recommenders', () => ({
     useRecommendersAdapter: vi.fn(),
-}));
-
-// Mock the currency provider
-vi.mock('@/providers/currency', () => ({
-    useCurrency: vi.fn().mockReturnValue('USD'),
 }));
 
 // Mock the auth provider

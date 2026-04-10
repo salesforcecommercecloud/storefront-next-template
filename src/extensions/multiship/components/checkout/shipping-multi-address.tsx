@@ -50,7 +50,7 @@ import CurrentPrice from '@/components/product-price/current-price';
 import { getPriceData } from '@/components/product-price/utils';
 import { ProductItemVariantImage } from '@/components/product-item';
 import { useTranslation } from 'react-i18next';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import {
     consolidateAddresses,
@@ -182,7 +182,7 @@ export default function ShippingMultiAddress({
 }: ShippingMultiAddressProps) {
     const cart = useBasket();
     // Get currency from context (automatically derived from locale)
-    const currency = useCurrency();
+    const { currency } = useSite();
     const { t: tMultiship } = useTranslation('extMultiship');
     const customerProfile = useCustomerProfile();
     const { savedAddresses, setSavedAddresses, productItemAddresses, setProductItemAddresses } = useCheckoutContext();

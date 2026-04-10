@@ -23,8 +23,8 @@ import WishlistListItem from '../wishlist-list-item';
 import { masterProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { CurrencyProvider } from '@/providers/currency';
-import { mockConfig } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 import BasketProvider from '@/providers/basket';
 
 // -- Shared mock data --
@@ -128,11 +128,11 @@ Horizontal card row for a single wishlist product.
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <BasketProvider>
-                    <CurrencyProvider value="USD">
+                <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency="USD">
+                    <BasketProvider>
                         <Story />
-                    </CurrencyProvider>
-                </BasketProvider>
+                    </BasketProvider>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],

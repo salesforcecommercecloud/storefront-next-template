@@ -23,7 +23,7 @@ import {
     ProductItemVariantAttributes,
 } from '@/components/product-item';
 import ProductPrice from '@/components/product-price';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
 import type { EnrichedProductItem } from '@/lib/product-utils';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
@@ -43,7 +43,7 @@ export type OrderItemsListProps = {
  */
 export function OrderItemsList({ items, productsById }: OrderItemsListProps): ReactElement {
     const { t } = useTranslation('account');
-    const currency = useCurrency();
+    const { currency } = useSite();
 
     if (items.length === 0) {
         return (

@@ -138,7 +138,7 @@ describe('PageViewTracker', () => {
         // Setup default mocks - auth must be defined for tracking to occur
         mockUseAuth.mockReturnValue(defaultGuestAuth);
         mockUseConfig.mockReturnValue(defaultConfig);
-        mockUseSite.mockReturnValue({ id: 'RefArchGlobal' });
+        mockUseSite.mockReturnValue({ site: { id: 'RefArchGlobal' }, language: 'en-GB', currency: 'USD' });
         mockUseTranslation.mockReturnValue({ i18n: { language: 'en-GB' } });
 
         // Default to tracking consent accepted for all existing tests
@@ -583,7 +583,7 @@ describe('PageViewTracker', () => {
 
     describe('Dynamic site/locale', () => {
         it('should pass correct siteInfo for a different site and locale', async () => {
-            mockUseSite.mockReturnValue({ id: 'SiteGenesis' });
+            mockUseSite.mockReturnValue({ site: { id: 'SiteGenesis' }, language: 'fr-FR', currency: 'USD' });
             mockUseTranslation.mockReturnValue({ i18n: { language: 'fr-FR' } });
 
             renderPageViewTracker('/test-page');
@@ -601,19 +601,13 @@ describe('PageViewTracker', () => {
             });
         });
 
-        it('should pass undefined siteInfo when useSite returns undefined', async () => {
-            mockUseSite.mockReturnValue(undefined);
+        it('should not track when useSite returns undefined site', async () => {
+            mockUseSite.mockReturnValue({ site: undefined, language: 'en-GB', currency: 'USD' });
 
             renderPageViewTracker('/test-page');
 
-            await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(
-                    mockEvent,
-                    mockEventMediator,
-                    undefined,
-                    mockConsentPreferences
-                );
-            });
+            await waitForAsyncTracking();
+            expect(sendViewPageEvent).not.toHaveBeenCalled();
         });
     });
 });

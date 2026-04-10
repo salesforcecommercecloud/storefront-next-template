@@ -68,6 +68,9 @@ const mockSite: Site = {
     supportedCurrencies: ['EUR', 'GBP'],
 };
 
+const mockLocale =
+    mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
+
 const renderComponent = (component: React.ReactElement) => {
     const router = createMemoryRouter(
         [
@@ -75,7 +78,9 @@ const renderComponent = (component: React.ReactElement) => {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider value={mockSite}>{component}</SiteProvider>
+                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                            {component}
+                        </SiteProvider>
                     </ConfigProvider>
                 ),
             },

@@ -17,16 +17,23 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { CurrencyProvider } from '@/providers/currency';
 import MiniCartItem from './mini-cart-item';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 
-// Helper function to render with Router and Currency context
-const renderWithRouter = (ui: React.ReactElement, currency: string = 'USD') => {
+const mockSite = mockConfig.commerce.sites[0];
+
+// Helper function to render with Router context
+const renderWithRouter = (ui: React.ReactElement) => {
     const router = createMemoryRouter(
         [
             {
                 path: '/',
-                element: <CurrencyProvider value={currency}>{ui}</CurrencyProvider>,
+                element: (
+                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                        {ui}
+                    </SiteProvider>
+                ),
             },
         ],
         {

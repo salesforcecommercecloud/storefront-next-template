@@ -25,7 +25,10 @@ import {
     inBasketProductDetails as dressProductDetails,
 } from '@/components/__mocks__/basket-with-dress';
 import { getTranslation } from '@/lib/i18next';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -376,9 +379,9 @@ The CartSummarySection component renders the order summary and checkout actions 
     decorators: [
         (Story: React.ComponentType) => (
             <ActionLogger>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <Story />
-                </CurrencyWrapper>
+                </SiteProvider>
             </ActionLogger>
         ),
     ],

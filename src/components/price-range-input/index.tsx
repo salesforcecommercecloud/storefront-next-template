@@ -17,7 +17,7 @@ import { type ReactElement, type KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { usePriceRangeValidation } from '@/hooks/use-price-range-validation';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { getCurrencySymbol } from '@/lib/currency';
 
 interface PriceInputProps {
@@ -81,7 +81,7 @@ export default function PriceRangeInput({
     showValidationErrors = true,
 }: PriceRangeInputProps): ReactElement {
     const { t, i18n } = useTranslation('product');
-    const currency = useCurrency();
+    const { currency } = useSite();
     const locale = i18n.language;
     const currencySymbol = getCurrencySymbol(locale, currency);
     const validation = usePriceRangeValidation(minPrice, maxPrice, minAllowed, maxAllowed);

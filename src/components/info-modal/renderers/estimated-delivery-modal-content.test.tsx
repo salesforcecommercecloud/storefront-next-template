@@ -34,6 +34,9 @@ const mockSite: Site = {
     supportedCurrencies: ['EUR', 'GBP'],
 };
 
+const mockLocale =
+    mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
+
 const mockData: EstimatedDeliveryData = {
     title: 'Fulfillment & Shipping',
     estimatedDelivery: {
@@ -61,7 +64,9 @@ const mockData: EstimatedDeliveryData = {
 const renderWithConfig = (ui: React.ReactElement) =>
     render(
         <ConfigProvider config={mockConfig}>
-            <SiteProvider value={mockSite}>{ui}</SiteProvider>
+            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                {ui}
+            </SiteProvider>
         </ConfigProvider>
     );
 

@@ -18,8 +18,10 @@ import { describe, test, expect } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { OrderItemsList } from './order-items-list';
 import { getTranslation } from '@/lib/i18next';
-import { ConfigWrapper } from '@/test-utils/config';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 const { t } = getTranslation();
 
@@ -31,9 +33,9 @@ describe('OrderItemsList', () => {
                     path: '/',
                     element: (
                         <ConfigWrapper>
-                            <CurrencyWrapper>
+                            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
                                 <OrderItemsList items={items} productsById={productsById} />
-                            </CurrencyWrapper>
+                            </SiteProvider>
                         </ConfigWrapper>
                     ),
                 },
@@ -79,7 +81,7 @@ describe('OrderItemsList', () => {
         expect(screen.getByText('$61.99')).toBeInTheDocument();
 
         const buyAgainLink = screen.getByRole('link', { name: t('account:orders.buyAgain') });
-        expect(buyAgainLink).toHaveAttribute('href', '/product/701643108633M');
+        expect(buyAgainLink).toHaveAttribute('href', '/RefArchGlobal/en-GB/product/701643108633M');
 
         expect(screen.getByText(/Size: M/)).toBeInTheDocument();
         expect(screen.getByText(/Color: Navy/)).toBeInTheDocument();

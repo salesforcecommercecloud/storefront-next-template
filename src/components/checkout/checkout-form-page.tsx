@@ -27,7 +27,7 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 import { useTranslation } from 'react-i18next';
 import { Lock } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
@@ -195,7 +195,7 @@ export default function CheckoutFormPage({
     showToast,
 }: CheckoutFormPageProps) {
     const { t, i18n } = useTranslation('checkout');
-    const currency = useCurrency();
+    const { currency } = useSite();
 
     const cart = useBasket();
     const basketHydrated = useBasketHydrated();

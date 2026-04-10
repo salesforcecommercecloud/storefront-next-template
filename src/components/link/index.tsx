@@ -31,7 +31,7 @@ import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-
  * When no SiteProvider is mounted, behaves identically to React Router's Link.
  */
 export const Link = forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link({ to: _to, ...rest }, ref) {
-    const site = useSite();
+    const { site } = useSite();
     const config = useConfig<AppConfig>();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
 
@@ -51,7 +51,7 @@ export const Link = forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link
  * Inherits all NavLink functionality (active class, aria-current).
  */
 export const NavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps>(function NavLink({ to: _to, ...rest }, ref) {
-    const site = useSite();
+    const { site } = useSite();
     const config = useConfig<AppConfig>();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const to =

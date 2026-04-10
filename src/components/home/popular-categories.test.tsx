@@ -18,8 +18,21 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import PopularCategories from './popular-categories';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig } from '@/test-utils/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+
+const defaultMockSite = {
+    id: 'RefArch',
+    defaultLocale: 'en-US',
+    defaultCurrency: 'USD',
+    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
+    supportedCurrencies: ['USD'],
+};
+
+const mockLocale =
+    defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
+    defaultMockSite.supportedLocales[0];
 
 // Mock decorators (minimal mocking to avoid testing them)
 vi.mock('@/lib/decorators/component', async (importOriginal) => {
@@ -44,7 +57,13 @@ const renderWithRouter = (component: React.ReactElement) => {
         [
             {
                 path: '/',
-                element: <ConfigProvider config={mockConfig}>{component}</ConfigProvider>,
+                element: (
+                    <ConfigProvider config={mockConfig}>
+                        <SiteProvider site={defaultMockSite} locale={mockLocale} language="en-US" currency="USD">
+                            {component}
+                        </SiteProvider>
+                    </ConfigProvider>
+                ),
             },
         ],
         { initialEntries: ['/'] }

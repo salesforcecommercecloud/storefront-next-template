@@ -18,12 +18,14 @@ import ProductView from '../product-view';
 // @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -93,13 +95,13 @@ const meta: Meta<typeof ProductView> = {
             }
             return (
                 <ConfigProvider config={mockConfig}>
-                    <CurrencyWrapper currency="GBP">
+                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                         <ActionLogger>
                             <div className="max-w-7xl mx-auto p-4">
                                 <Story />
                             </div>
                         </ActionLogger>
-                    </CurrencyWrapper>
+                    </SiteProvider>
                 </ConfigProvider>
             );
         },

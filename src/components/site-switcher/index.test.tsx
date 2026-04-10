@@ -36,7 +36,7 @@ vi.mock('react-router', async (importOriginal) => {
 
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 import SiteSwitcher from './index';
 
 const site = mockConfig.commerce.sites[0];
@@ -46,7 +46,7 @@ function renderSiteSwitcher(configOverride?: typeof mockConfig) {
     const config = configOverride ?? mockConfig;
     return render(
         <ConfigProvider config={config}>
-            <SiteProvider value={siteWithAlias}>
+            <SiteProvider site={siteWithAlias} locale={mockLocale} language="en-GB" currency="GBP">
                 <SiteSwitcher />
             </SiteProvider>
         </ConfigProvider>

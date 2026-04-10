@@ -21,6 +21,11 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import type React from 'react';
 import BuyNowPayLater from './index';
 import type { InfoModalData } from '@/components/info-modal/types';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 // Mock the InfoModal component for BuyNowPayLater tests
 vi.mock('@/components/info-modal', () => ({
@@ -47,19 +52,17 @@ vi.mock('@/components/info-modal', () => ({
     },
 }));
 
-const { mockUseCurrency } = vi.hoisted(() => ({
-    mockUseCurrency: vi.fn(() => 'USD'),
-}));
-
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => mockUseCurrency(),
-}));
-
 const renderWithRouter = (component: React.ReactElement) => {
     const router = createMemoryRouter([
         {
             path: '/',
-            element: component,
+            element: (
+                <ConfigProvider config={mockConfig}>
+                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                        {component}
+                    </SiteProvider>
+                </ConfigProvider>
+            ),
         },
     ]);
     return render(<RouterProvider router={router} />);
@@ -68,19 +71,17 @@ const renderWithRouter = (component: React.ReactElement) => {
 describe('BuyNowPayLater', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        mockUseCurrency.mockReturnValue('USD');
     });
 
     it('should render the installment message', () => {
         renderWithRouter(<BuyNowPayLater />);
 
         expect(screen.getByText(/Pay in 4 interest-free payments of/i)).toBeInTheDocument();
-        expect(screen.getByText('$12.25')).toBeInTheDocument();
+        expect(screen.getByText('£12.25')).toBeInTheDocument();
         expect(screen.getByText('Learn more')).toBeInTheDocument();
     });
 
     it('formats installment amount using currency from context', () => {
-        mockUseCurrency.mockReturnValue('GBP');
         renderWithRouter(<BuyNowPayLater />);
 
         expect(screen.getByText('£12.25')).toBeInTheDocument();
@@ -121,6 +122,8 @@ describe('InfoModal - Payment Schedule Type', () => {
         // Import the real InfoModal component after resetting modules
         const InfoModalModule = await import('@/components/info-modal');
         const InfoModal = InfoModalModule.default;
+        // SiteProvider must be re-imported after resetModules so it shares the same context
+        const { SiteProvider: DynSiteProvider } = await import('@salesforce/storefront-next-runtime/site-context');
 
         const mockPaymentScheduleData: InfoModalData = {
             type: 'payment-schedule',
@@ -149,7 +152,11 @@ describe('InfoModal - Payment Schedule Type', () => {
         const router = createMemoryRouter([
             {
                 path: '/',
-                element: <InfoModal open={true} onOpenChange={mockOnOpenChange} data={mockPaymentScheduleData} />,
+                element: (
+                    <DynSiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                        <InfoModal open={true} onOpenChange={mockOnOpenChange} data={mockPaymentScheduleData} />
+                    </DynSiteProvider>
+                ),
             },
         ]);
         render(<RouterProvider router={router} />);

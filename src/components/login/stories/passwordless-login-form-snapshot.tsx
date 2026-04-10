@@ -130,10 +130,6 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
     SiteProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'GBP',
-    CurrencyProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
 import { composeStories } from '@storybook/react-vite';
 
 import * as PasswordlessLoginFormStories from './passwordless-login-form.stories';

@@ -28,14 +28,12 @@ export default function LocaleSwitcher(): ReactElement {
     const { t, i18n } = useTranslation('localeSwitcher');
     const fetcher = useFetcher();
     const config = useConfig<AppConfig>();
-    const site = useSite();
+    const { site } = useSite();
 
     // Show only languages the app has translations for AND the current site supports.
     // This ensures each site's locale-switcher only shows relevant options.
-    const siteLocaleIds = site ? new Set(site.supportedLocales.map((l) => l.id)) : null;
-    const supportedLngs = siteLocaleIds
-        ? config.i18n.supportedLngs.filter((lng) => siteLocaleIds.has(lng))
-        : config.i18n.supportedLngs;
+    const siteLocaleIds = new Set(site.supportedLocales.map((l) => l.id));
+    const supportedLngs = config.i18n.supportedLngs.filter((lng) => siteLocaleIds.has(lng));
 
     const location = useLocation();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();

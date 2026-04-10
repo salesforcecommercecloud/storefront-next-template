@@ -20,8 +20,8 @@ import { useEffect, useRef, useState, type ReactElement, type ReactNode } from '
 import { action } from 'storybook/actions';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { CurrencyProvider } from '@/providers/currency';
-import { mockConfig } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 import InfoModal, { type InfoModalData } from '../index';
 import { Button } from '@/components/ui/button';
 
@@ -60,14 +60,14 @@ function InfoModalWrapper({ data, currency = 'USD' }: { data?: InfoModalData; cu
 
     return (
         <ConfigProvider config={mockConfig}>
-            <CurrencyProvider value={currency}>
+            <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency={currency}>
                 <ActionLogger>
                     <div className="p-6">
                         <Button onClick={() => setOpen(true)}>Open Modal</Button>
                         <InfoModal open={open} onOpenChange={setOpen} data={data} />
                     </div>
                 </ActionLogger>
-            </CurrencyProvider>
+            </SiteProvider>
         </ConfigProvider>
     );
 }

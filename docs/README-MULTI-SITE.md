@@ -34,7 +34,7 @@ export function loader({ context }: LoaderFunctionArgs) {
 
 The site context system consists of:
 
-1. **Site context middleware (`site-context.server.ts`): Resolves site and locale from the request URL path or cookies, stores them in router context
+1. **Site context middleware (`site-context.server.ts`): Resolves site, locale, and currency from the request (URL path, cookies, locale config), stores them in router context
 2. **URL config** (`config.server.ts`): Defines the URL pattern (`prefix`, `search`) and alias mappings
 3. **`buildUrl`** (runtime SDK): Applies the URL prefix and search params to bare paths
 4. **`buildUrlFromContext`** (`src/lib/url.server.ts`): Server-side helper that reads site/locale from router context and calls `buildUrl`
@@ -343,7 +343,7 @@ The homepage (`/`) is always cookie-driven:
 
 - **First visit (no `site_id` cookie)**: The homepage renders using the default site. The SiteSwitcher in the header allows the user to switch sites.
 - **Returning visit (cookie exists)**: The homepage renders the site stored in the cookie.
-- **Site switching**: The header SiteSwitcher posts to `/action/set-site`, which sets the `site_id` cookie and redirects to `/`.
+- **Site switching**: The header SiteSwitcher posts to `/action/set-site-context` with `type: 'site'`, which sets the `site_id` cookie and redirects to `/`.
 
 ## Client-Side Navigation
 
@@ -457,8 +457,8 @@ The site switcher (`src/components/site-switcher`) in the footer allows switchin
 
 1. User selects a new site from the dropdown
 2. Client-side `i18n.changeLanguage()` fires for immediate UX update
-3. Posts `siteId` to `/action/set-site`
-4. The server action sets `site_id` and `lng` cookies, then redirects to `/`
+3. Posts `type: 'site'` and `siteId` to `/action/set-site-context`
+4. The server action sets `site_id` and `lng` cookies, redirects to `/`
 5. Homepage renders with the new site's content (cookie-driven)
 
 ## Locale Switcher
@@ -468,9 +468,41 @@ The locale switcher (`src/components/locale-switcher`) changes the locale on the
 1. Strips the current site/locale prefix from the URL using `sanitizePrefix`
 2. Rebuilds the URL with the new locale
 3. Calls `i18n.changeLanguage()` for immediate client-side update
-4. Submits `locale` and `pathname` to `/action/set-locale`
+4. Submits `type: 'locale'`, `locale`, and `pathname` to `/action/set-site-context`
 5. The server action sets the `lng` cookie and redirects to the new URL
 6. The page reloads with the new locale, triggering full revalidation of all loaders
+
+## Currency Switcher
+
+The currency switcher (`src/components/currency-switcher`) changes the active currency:
+
+1. User selects a new currency from the dropdown
+2. Client-side validation checks against `site.supportedCurrencies`
+3. Submits `type: 'currency'` and `currency` to `/action/set-site-context`
+4. The server action validates, sets the currency cookie, and returns `{ success: true }`
+5. React Router automatically revalidates loaders, updating prices across the page
+
+Currency resolution priority (handled by SDK middleware):
+1. **Cookie** — explicit user selection
+2. **Locale's `preferredCurrency`** — from site config
+3. **Site's `defaultCurrency`** — fallback
+
+## Accessing Site Context in React
+
+Use `useSite()` to access the current site, language, and currency in components:
+
+```typescript
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
+
+function MyComponent() {
+    const { site, language, currency } = useSite();
+    // site: Site object (id, supportedLocales, supportedCurrencies, etc.)
+    // language: current locale ID (e.g., 'en-GB')
+    // currency: current currency code (e.g., 'GBP')
+}
+```
+
+`useSite()` throws if called outside a `SiteProvider`. In the template, `SiteProvider` is mounted in `root.tsx` and wraps the entire app.
 
 ## Engagement Data & Site Context
 
@@ -478,15 +510,15 @@ Engagement adapters (Einstein, Active Data, Data Cloud) are initialized once at 
 
 ### How Site Context Flows to Adapters
 
-1. The `useAnalytics` hook calls `useSite()` to get the current site from router context
-2. It constructs an `EventSiteInfo` object: `{ siteId: site.id, localeId: i18n.language }`
+1. The `useAnalytics` hook calls `useSite()` to get the current site context (`{ site, language, currency }`)
+2. It constructs an `EventSiteInfo` object: `{ siteId: site.id, localeId: language }`
 3. Every tracking call (e.g., `trackViewProduct`, `trackAddToCart`) passes `siteInfo` to the event mediator
 4. The mediator forwards `siteInfo` to each registered adapter's `sendEvent` method
 
 ```typescript
 // In use-analytics.ts
-const site = useSite();
-const siteInfo = site ? { siteId: site.id, localeId: i18n.language } : undefined;
+const { site, language } = useSite();
+const siteInfo = { siteId: site.id, localeId: language };
 
 // Passed to every tracking call
 mediator.track(event, siteInfo);

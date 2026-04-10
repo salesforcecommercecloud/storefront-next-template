@@ -21,7 +21,6 @@ import { describe, expect, test } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, SITE_PREFIX } from '@/test-utils/config';
-import { CurrencyProvider } from '@/providers/currency';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import Footer from './index';
@@ -48,16 +47,19 @@ const mockSite: Site = {
     supportedCurrencies: ['EUR', 'GBP'],
 };
 
+const mockLocale =
+    mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
+
 // Helper function to render component with router context
-const renderWithRouter = (component: React.ReactElement, currency: string = 'USD') => {
+const renderWithRouter = (component: React.ReactElement) => {
     const router = createMemoryRouter(
         [
             {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider value={mockSite}>
-                            <CurrencyProvider value={currency}>{component}</CurrencyProvider>
+                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                            {component}
                         </SiteProvider>
                     </ConfigProvider>
                 ),
@@ -184,7 +186,7 @@ describe('Footer', () => {
     });
 
     test('renders footer element with theme-aware classes', () => {
-        const { container } = renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />, 'USD');
+        const { container } = renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
         const footer = container.querySelector('footer');
         expect(footer).toBeInTheDocument();

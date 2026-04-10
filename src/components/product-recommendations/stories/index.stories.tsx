@@ -18,8 +18,10 @@ import ProductRecommendations from '..';
 // @ts-expect-error mock file is JS
 import { mockStandardProductHit } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+
+const mockSite = mockConfig.commerce.sites[0];
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
@@ -90,7 +92,7 @@ In Storybook, the component may not display recommendations without a real adapt
     decorators: [
         (Story: React.ComponentType) => (
             <ConfigProvider config={mockConfig}>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <RecommendersProvider>
                         <ActionLogger>
                             <div className="p-8">
@@ -98,7 +100,7 @@ In Storybook, the component may not display recommendations without a real adapt
                             </div>
                         </ActionLogger>
                     </RecommendersProvider>
-                </CurrencyWrapper>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],

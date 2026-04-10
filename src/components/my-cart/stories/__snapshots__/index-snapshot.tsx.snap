@@ -170,7 +170,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                 >
                   <a
                     class="text-sm md:text-base font-semibold text-foreground hover:text-primary block mb-1 md:mb-2"
-                    href="/product/701642868279M"
+                    href="/RefArchGlobal/en-GB/product/701642868279M"
                   >
                     Button Front Jacket
                   </a>
@@ -228,7 +228,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                 >
                   <a
                     class="text-sm md:text-base font-semibold text-foreground hover:text-primary block mb-1 md:mb-2"
-                    href="/product/883360520599M"
+                    href="/RefArchGlobal/en-GB/product/883360520599M"
                   >
                     Casual To Dressy Trousers
                   </a>

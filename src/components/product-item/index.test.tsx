@@ -27,8 +27,10 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 // Components
 import ProductItem from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
-import { CurrencyProvider } from '@/providers/currency';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 // Mock data
 import { bundleProd as mockedBundleProduct } from '../__mocks__/bundle-product';
@@ -54,7 +56,9 @@ const renderWithRouter = (component: React.ReactElement) => {
                 path: '/cart',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <CurrencyProvider value="USD">{component}</CurrencyProvider>
+                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                            {component}
+                        </SiteProvider>
                     </ConfigProvider>
                 ),
             },
@@ -135,7 +139,7 @@ describe('ProductItem', () => {
             // product title as link
             const link = screen.getByRole('link', { name: 'Test Product' });
             expect(link).toBeInTheDocument();
-            expect(link).toHaveAttribute('href', `/product/${mockProduct.productId}`);
+            expect(link).toHaveAttribute('href', `/RefArchGlobal/en-GB/product/${mockProduct.productId}`);
             expect(link).toHaveTextContent('Test Product');
 
             // image
@@ -486,7 +490,7 @@ describe('ProductItem', () => {
             renderWithRouter(<ProductItem productItem={productWithMaster} />);
 
             const link = screen.getByRole('link', { name: 'Test Product' });
-            expect(link).toHaveAttribute('href', '/product/master-product-id');
+            expect(link).toHaveAttribute('href', '/RefArchGlobal/en-GB/product/master-product-id');
         });
     });
 

@@ -20,7 +20,7 @@ import ProductQuantityPicker from '@/components/product-quantity-picker';
 import { SwatchGroup, Swatch } from '@/components/swatch-group';
 import { useVariationAttributes } from '@/hooks/product/use-variation-attributes';
 import { useProductView } from '@/providers/product-view';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
@@ -89,7 +89,7 @@ export default function ProductInfo({
     // Get current variant for UI display
     const currentVariant = useCurrentVariant({ product });
     // Get currency from context (automatically derived from locale)
-    const currency = useCurrency();
+    const { currency } = useSite();
     // Get shared state from context
     const {
         quantity,

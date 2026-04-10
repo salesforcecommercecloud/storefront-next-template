@@ -27,7 +27,7 @@ export default function SiteSwitcher(): ReactElement {
     const { t } = useTranslation('sitePicker');
     const fetcher = useFetcher();
     const config = useConfig<AppConfig>();
-    const site = useSite();
+    const { site } = useSite();
     const sites = config.commerce.sites;
 
     const handleSiteChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {

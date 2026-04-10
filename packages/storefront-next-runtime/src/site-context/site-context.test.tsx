@@ -29,26 +29,32 @@ const mockSite: Site = {
     ],
 };
 
+const mockLocale =
+    mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
+
 function TestConsumer() {
-    const site = useSite();
-    return <div data-testid="result">{JSON.stringify(site)}</div>;
+    const value = useSite();
+    return <div data-testid="result">{JSON.stringify(value)}</div>;
 }
 
 describe('SiteProvider / useSite', () => {
     afterEach(cleanup);
 
-    it('returns undefined when no provider is mounted', () => {
-        const { getByTestId } = render(<TestConsumer />);
-        expect(getByTestId('result').textContent).toBe('');
+    it('throws when no provider is mounted', () => {
+        expect(() => render(<TestConsumer />)).toThrow('useSite must be used within a SiteProvider');
     });
 
-    it('provides site to consumers', () => {
+    it('provides site, locale, language, and currency to consumers', () => {
         const { getByTestId } = render(
-            <SiteProvider value={mockSite}>
+            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                 <TestConsumer />
             </SiteProvider>
         );
 
-        expect(JSON.parse(getByTestId('result').textContent)).toEqual(mockSite);
+        const result = JSON.parse(getByTestId('result').textContent ?? '');
+        expect(result.site).toEqual(mockSite);
+        expect(result.locale).toEqual(mockLocale);
+        expect(result.language).toBe('en-GB');
+        expect(result.currency).toBe('GBP');
     });
 });

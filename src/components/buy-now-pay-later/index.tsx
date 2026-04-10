@@ -17,7 +17,7 @@ import { type ReactElement, useState, useEffect, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { InfoModalData } from '@/components/info-modal/types';
 import { useProductContent } from '@/hooks/product-content/use-product-content';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { formatCurrency } from '@/lib/currency';
 import type { BuyNowPayLaterMessageData, BuyNowPayLaterLearnMoreData } from '@/lib/adapters/product-content-data-types';
 
@@ -69,7 +69,7 @@ export default function BuyNowPayLater({ productId }: BuyNowPayLaterProps = {}):
     const [modalData, setModalData] = useState<InfoModalData | undefined>(undefined);
 
     const { adapter, isEnabled } = useProductContent();
-    const currency = useCurrency();
+    const { currency } = useSite();
     const { i18n } = useTranslation();
 
     useEffect(() => {

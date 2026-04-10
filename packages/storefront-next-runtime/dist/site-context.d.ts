@@ -59,23 +59,56 @@ type DetectionConfig = {
 //#endregion
 //#region src/site-context/site-context.d.ts
 /**
- * Provides the current site to the component tree.
- * Follows the same pattern as CurrencyProvider.
+ * The value provided by {@link SiteProvider} and returned by {@link useSite}.
+ */
+type SiteContextValue = {
+  /**
+   * The resolved site configuration object for the current request.
+   * Contains the site's supported locales, supported currencies, and default values.
+   */
+  site: Site;
+  /**
+   * The full locale object from the site's `supportedLocales` list for the current request.
+   * Contains structured locale metadata: `id` (e.g. `"en-GB"`), optional `alias` (e.g. `"en"`),
+   * and optional `preferredCurrency`.
+   *
+   */
+  locale: Locale;
+  /**
+   * The current i18next language string (e.g. `"en-GB"`, `"fr-FR"`).
+   * This is the value returned by `i18next.language` and drives which translation
+   * namespace is active. Passed as a prop because the SDK has no react-i18next dependency.
+   *
+   * @see {@link SiteContextValue.locale} for the full locale object from site config.
+   */
+  language: string;
+  /**
+   * The active currency code for the current session (e.g. `"USD"`, `"GBP"`).
+   * Resolved from the locale's `preferredCurrency`, a currency cookie, or the site's
+   * `defaultCurrency`.
+   */
+  currency: string;
+};
+/**
+ * Provides the current site context (site, locale, language, currency) to the component tree.
  *
- * Mounted in the template (e.g., app-wrapper.tsx or root.tsx) with the resolved
- * site value from the loader/middleware.
+ * Mounted in the template's root.tsx with the resolved values from the
+ * loader/middleware. The SDK has no react-i18next dependency, so `language`
+ * is passed as a prop from the template.
  */
 declare function SiteProvider({
-  value,
+  site,
+  locale,
+  language,
+  currency,
   children
-}: PropsWithChildren<{
-  value: Site;
-}>): react_jsx_runtime1.JSX.Element;
+}: PropsWithChildren<SiteContextValue>): react_jsx_runtime1.JSX.Element;
 /**
- * React hook to get the current site.
- * Returns undefined when no SiteProvider is mounted.
+ * React hook to get the current site context.
+ * Returns `{ site, locale, language, currency }`.
+ * @throws If called outside of a SiteProvider
  */
-declare function useSite(): Site | undefined;
+declare function useSite(): SiteContextValue;
 //#endregion
 //#region src/site-context/apply-url-config.d.ts
 /**
@@ -218,5 +251,5 @@ declare function createSiteContextMiddleware(config: SiteConfig): MiddlewareFunc
  */
 declare const requestToLocaleMap: WeakMap<Request, string>;
 //#endregion
-export { type DetectionConfig, type Locale, type ResolvedSiteContext, type Site, type SiteConfig, type SiteContext, SiteProvider, type SiteSettings, applyUrlConfig, buildUrl, createSiteContextMiddleware, getSiteContextCookies, requestToLocaleMap, resolvePrefix, resolveSiteContext, sanitizePrefix, siteContext, stripPathPrefix, useSite };
+export { type DetectionConfig, type Locale, type ResolvedSiteContext, type Site, type SiteConfig, type SiteContext, type SiteContextValue, SiteProvider, type SiteSettings, applyUrlConfig, buildUrl, createSiteContextMiddleware, getSiteContextCookies, requestToLocaleMap, resolvePrefix, resolveSiteContext, sanitizePrefix, siteContext, stripPathPrefix, useSite };
 //# sourceMappingURL=site-context.d.ts.map

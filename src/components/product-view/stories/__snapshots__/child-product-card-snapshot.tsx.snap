@@ -251,7 +251,7 @@ exports[`ChildProductCard stories snapshot > Default story renders and matches s
                 aria-checked="true"
                 aria-label="Gold"
                 class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
-                href="/?013742002836M=color%3DJJ887XX"
+                href="/RefArchGlobal/en-GB/?013742002836M=color%3DJJ887XX"
                 position="relative"
                 role="radio"
                 tabindex="0"

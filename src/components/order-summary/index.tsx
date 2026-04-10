@@ -38,7 +38,7 @@ import { VisaIcon, MastercardIcon, AmexIcon, DiscoverIcon } from '@/components/i
 import { formatCurrency } from '@/lib/currency';
 import { useTranslation } from 'react-i18next';
 import PromoPopover from '@/components/promo-popover';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { UITarget } from '@/targets/ui-target';
 
 /**
@@ -177,7 +177,7 @@ export default function OrderSummary({
     onSelectBonusProducts,
 }: OrderSummaryProps): ReactElement {
     const { t, i18n } = useTranslation('cart');
-    const currency = useCurrency();
+    const { currency } = useSite();
 
     const hasBasketId = 'basketId' in basket && basket.basketId;
     const hasOrderNo = 'orderNo' in basket && basket.orderNo;

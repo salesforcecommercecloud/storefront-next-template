@@ -38,7 +38,7 @@ import { getPriceData } from '../product-price/utils';
 
 // Hooks
 import { useItemFetcherLoading } from '@/hooks/use-item-fetcher';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
@@ -204,7 +204,7 @@ export function ProductItemVariantAttributes({
  */
 export function ProductItemPromotions({ productItem }: { productItem: EnrichedProductItem }): ReactElement | null {
     const { t: tMiniCart, i18n } = useTranslation('miniCart');
-    const currency = useCurrency();
+    const { currency } = useSite();
 
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
     if (isBonusProduct) return null;
@@ -279,7 +279,7 @@ function ProductItem({
     // Track loading state for all fetchers related to this item
     const isItemFetcherLoading = useItemFetcherLoading(productItem?.itemId);
     // Get currency from context (automatically derived from locale)
-    const currency = useCurrency();
+    const { currency } = useSite();
     const { t, i18n } = useTranslation();
 
     // Check if this is a bonus product

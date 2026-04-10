@@ -337,7 +337,7 @@ exports[`Suggestions stories snapshot > Default story renders and matches snapsh
               <a
                 class="block hover:underline flex-1 max-w-[20%]"
                 data-testid="product-tile"
-                href="/products/running-shoes"
+                href="/RefArchGlobal/en-GB/products/running-shoes"
               >
                 <div
                   class="w-full"
@@ -384,7 +384,7 @@ exports[`Suggestions stories snapshot > Default story renders and matches snapsh
           >
             <a
               class="text-header-foreground hover:text-header-foreground/80 font-medium text-sm"
-              href="/search?q="
+              href="/RefArchGlobal/en-GB/search?q="
             >
               View All
             </a>
@@ -485,7 +485,7 @@ exports[`Suggestions stories snapshot > ProductsOnly story renders and matches s
               <a
                 class="block hover:underline flex-1 max-w-[20%]"
                 data-testid="product-tile"
-                href="/products/running-shoes"
+                href="/RefArchGlobal/en-GB/products/running-shoes"
               >
                 <div
                   class="w-full"
@@ -532,7 +532,7 @@ exports[`Suggestions stories snapshot > ProductsOnly story renders and matches s
           >
             <a
               class="text-header-foreground hover:text-header-foreground/80 font-medium text-sm"
-              href="/search?q="
+              href="/RefArchGlobal/en-GB/search?q="
             >
               View All
             </a>

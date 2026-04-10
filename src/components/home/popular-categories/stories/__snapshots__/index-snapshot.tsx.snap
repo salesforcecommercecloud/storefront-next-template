@@ -59,7 +59,7 @@ exports[`PopularCategories stories snapshot > CustomPadding story renders and ma
           >
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/womens-jewelry"
+              href="/RefArchGlobal/en-GB/category/womens-jewelry"
               role="listitem"
             >
               <div
@@ -142,7 +142,7 @@ exports[`PopularCategories stories snapshot > CustomPadding story renders and ma
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/mens-clothing"
+              href="/RefArchGlobal/en-GB/category/mens-clothing"
               role="listitem"
             >
               <div
@@ -225,7 +225,7 @@ exports[`PopularCategories stories snapshot > CustomPadding story renders and ma
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/electronics"
+              href="/RefArchGlobal/en-GB/category/electronics"
               role="listitem"
             >
               <div
@@ -308,7 +308,7 @@ exports[`PopularCategories stories snapshot > CustomPadding story renders and ma
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/home-living"
+              href="/RefArchGlobal/en-GB/category/home-living"
               role="listitem"
             >
               <div
@@ -481,7 +481,7 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
           >
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/womens-jewelry"
+              href="/RefArchGlobal/en-GB/category/womens-jewelry"
               role="listitem"
             >
               <div
@@ -564,7 +564,7 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/mens-clothing"
+              href="/RefArchGlobal/en-GB/category/mens-clothing"
               role="listitem"
             >
               <div
@@ -647,7 +647,7 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/electronics"
+              href="/RefArchGlobal/en-GB/category/electronics"
               role="listitem"
             >
               <div
@@ -730,7 +730,7 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/home-living"
+              href="/RefArchGlobal/en-GB/category/home-living"
               role="listitem"
             >
               <div
@@ -1097,7 +1097,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
           >
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/womens-jewelry"
+              href="/RefArchGlobal/en-GB/category/womens-jewelry"
               role="listitem"
             >
               <div
@@ -1180,7 +1180,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/mens-clothing"
+              href="/RefArchGlobal/en-GB/category/mens-clothing"
               role="listitem"
             >
               <div
@@ -1263,7 +1263,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/electronics"
+              href="/RefArchGlobal/en-GB/category/electronics"
               role="listitem"
             >
               <div
@@ -1346,7 +1346,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/home-living"
+              href="/RefArchGlobal/en-GB/category/home-living"
               role="listitem"
             >
               <div
@@ -1429,7 +1429,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/sports-outdoors"
+              href="/RefArchGlobal/en-GB/category/sports-outdoors"
               role="listitem"
             >
               <div
@@ -1512,7 +1512,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/beauty-health"
+              href="/RefArchGlobal/en-GB/category/beauty-health"
               role="listitem"
             >
               <div
@@ -1701,7 +1701,7 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
           >
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/womens-jewelry"
+              href="/RefArchGlobal/en-GB/category/womens-jewelry"
               role="listitem"
             >
               <div
@@ -1784,7 +1784,7 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/mens-clothing"
+              href="/RefArchGlobal/en-GB/category/mens-clothing"
               role="listitem"
             >
               <div
@@ -1867,7 +1867,7 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/electronics"
+              href="/RefArchGlobal/en-GB/category/electronics"
               role="listitem"
             >
               <div
@@ -1950,7 +1950,7 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/home-living"
+              href="/RefArchGlobal/en-GB/category/home-living"
               role="listitem"
             >
               <div
@@ -2123,7 +2123,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
           >
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/category-1"
+              href="/RefArchGlobal/en-GB/category/category-1"
               role="listitem"
             >
               <div
@@ -2206,7 +2206,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/category-2"
+              href="/RefArchGlobal/en-GB/category/category-2"
               role="listitem"
             >
               <div
@@ -2289,7 +2289,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/category-3"
+              href="/RefArchGlobal/en-GB/category/category-3"
               role="listitem"
             >
               <div
@@ -2372,7 +2372,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
             </a>
             <a
               class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-              href="/category/category-4"
+              href="/RefArchGlobal/en-GB/category/category-4"
               role="listitem"
             >
               <div

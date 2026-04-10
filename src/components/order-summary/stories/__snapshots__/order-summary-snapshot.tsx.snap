@@ -721,7 +721,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                               >
                                 <a
                                   class="text-foreground hover:text-primary block break-words"
-                                  href="/product/25752218M"
+                                  href="/RefArchGlobal/en-GB/product/25752218M"
                                   title="Solid Silk Tie"
                                 >
                                   Solid Silk Tie
@@ -820,7 +820,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                               >
                                 <a
                                   class="text-foreground hover:text-primary block break-words"
-                                  href="/product/25591227M"
+                                  href="/RefArchGlobal/en-GB/product/25591227M"
                                   title="Floral Ruffle Top"
                                 >
                                   Floral Ruffle Top
@@ -905,7 +905,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                     </div>
                     <a
                       class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-9 px-4 py-2 has-[>svg]:px-3 w-full justify-center"
-                      href="/cart"
+                      href="/RefArchGlobal/en-GB/cart"
                     >
                       Edit cart
                     </a>

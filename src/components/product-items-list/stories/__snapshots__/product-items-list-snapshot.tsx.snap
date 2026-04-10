@@ -59,9 +59,9 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -224,9 +224,9 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -408,9 +408,9 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -591,9 +591,9 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -773,9 +773,9 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
               >
                 <a
                   class="text-foreground hover:text-primary block break-words"
-                  href="/product/TG508M"
+                  href="/RefArchGlobal/en-GB/product/TG508M"
                   title="Men's Classic Deer Gloves"
-                  to="/product/TG508M"
+                  to="/RefArchGlobal/en-GB/product/TG508M"
                 >
                   Men's Classic Deer Gloves
                 </a>
@@ -853,9 +853,9 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
               >
                 <a
                   class="text-foreground hover:text-primary block break-words"
-                  href="/product/TG508M"
+                  href="/RefArchGlobal/en-GB/product/TG508M"
                   title="Men's Classic Deer Gloves"
-                  to="/product/TG508M"
+                  to="/RefArchGlobal/en-GB/product/TG508M"
                 >
                   Men's Classic Deer Gloves
                 </a>
@@ -966,9 +966,9 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -1147,9 +1147,9 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>

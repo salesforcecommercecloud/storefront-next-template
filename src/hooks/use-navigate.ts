@@ -18,7 +18,7 @@ import { useCallback } from 'react';
 import { useNavigate as useRouterNavigate, type NavigateOptions, type To } from 'react-router';
 
 // Runtime SDK
-import { buildUrl, useSite } from '@salesforce/storefront-next-runtime/site-context';
+import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 
 // Hooks
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
@@ -26,10 +26,9 @@ import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-
 import type { AppConfig } from '@/types/config';
 
 /**
- * Site-context-aware `useNavigate`. An enhanced version of React router useNavigate hook.
+ * Site-context-aware `useNavigate`. An enhanced version of React Router's useNavigate hook.
  * Automatically applies URL prefix and search params from the app's URL config
- * to string destinations. When no SiteProvider is mounted, behaves identically
- * to React Router's useNavigate.
+ * to string destinations. Requires a SiteProvider to be mounted.
  *
  * - String `to` values are transformed via `buildUrl`
  * - Object `to` values with a `pathname` have the pathname transformed.
@@ -38,7 +37,6 @@ import type { AppConfig } from '@/types/config';
  */
 export function useNavigate() {
     const routerNavigate = useRouterNavigate();
-    const site = useSite();
     const config = useConfig<AppConfig>();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
 
@@ -46,10 +44,6 @@ export function useNavigate() {
         (to: To | number, options?: NavigateOptions) => {
             if (typeof to === 'number') {
                 return routerNavigate(to);
-            }
-
-            if (!site) {
-                return routerNavigate(to, options);
             }
 
             const params = { siteId: siteRef, localeId: localeRef };
@@ -71,6 +65,6 @@ export function useNavigate() {
 
             return routerNavigate(to, options);
         },
-        [routerNavigate, site, siteRef, localeRef, config.url]
+        [routerNavigate, siteRef, localeRef, config.url]
     );
 }

@@ -61,9 +61,9 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                     >
                       <a
                         class="text-foreground hover:text-primary block break-words"
-                        href="/product/TG508M"
+                        href="/RefArchGlobal/en-GB/product/TG508M"
                         title="Men's Classic Deer Gloves"
-                        to="/product/TG508M"
+                        to="/RefArchGlobal/en-GB/product/TG508M"
                       >
                         Men's Classic Deer Gloves
                       </a>
@@ -226,9 +226,9 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                     >
                       <a
                         class="text-foreground hover:text-primary block break-words"
-                        href="/product/TG508M"
+                        href="/RefArchGlobal/en-GB/product/TG508M"
                         title="Choice Bonus Gift"
-                        to="/product/TG508M"
+                        to="/RefArchGlobal/en-GB/product/TG508M"
                       >
                         Choice Bonus Gift
                       </a>
@@ -396,9 +396,9 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                     >
                       <a
                         class="text-foreground hover:text-primary block break-words"
-                        href="/product/TG508M"
+                        href="/RefArchGlobal/en-GB/product/TG508M"
                         title="Men's Classic Deer Gloves"
-                        to="/product/TG508M"
+                        to="/RefArchGlobal/en-GB/product/TG508M"
                       >
                         Men's Classic Deer Gloves
                       </a>
@@ -546,9 +546,9 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
           >
             <a
               class="text-foreground hover:text-primary block break-words"
-              href="/product/TG508M"
+              href="/RefArchGlobal/en-GB/product/TG508M"
               title="Men's Classic Deer Gloves"
-              to="/product/TG508M"
+              to="/RefArchGlobal/en-GB/product/TG508M"
             >
               Men's Classic Deer Gloves
             </a>
@@ -651,9 +651,9 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                     >
                       <a
                         class="text-foreground hover:text-primary block break-words"
-                        href="/product/TG508M"
+                        href="/RefArchGlobal/en-GB/product/TG508M"
                         title="Men's Classic Deer Gloves"
-                        to="/product/TG508M"
+                        to="/RefArchGlobal/en-GB/product/TG508M"
                       >
                         Men's Classic Deer Gloves
                       </a>

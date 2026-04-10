@@ -130,7 +130,7 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/account/overview"
+              href="/RefArchGlobal/en-GB/account/overview"
               type="button"
             >
               <svg
@@ -384,7 +384,7 @@ exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] 
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/login"
+              href="/RefArchGlobal/en-GB/login"
               type="button"
             >
               <svg
@@ -639,7 +639,7 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/login"
+              href="/RefArchGlobal/en-GB/login"
               type="button"
             >
               <svg
@@ -921,7 +921,7 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
                 data-slot="popover-trigger"
                 data-state="closed"
                 data-variant="ghost"
-                href="/login"
+                href="/RefArchGlobal/en-GB/login"
                 type="button"
               >
                 <svg
@@ -1389,7 +1389,7 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/login"
+              href="/RefArchGlobal/en-GB/login"
               type="button"
             >
               <svg
@@ -1692,7 +1692,7 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/account/overview"
+              href="/RefArchGlobal/en-GB/account/overview"
               type="button"
             >
               <svg

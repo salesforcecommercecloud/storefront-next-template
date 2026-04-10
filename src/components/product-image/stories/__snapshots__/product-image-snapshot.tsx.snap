@@ -12,8 +12,8 @@ exports[`ProductImage stories snapshot > CustomAspectRatio story renders and mat
       <a
         aria-label="View Laptop Briefcase with wheels (37L)"
         class="block w-full h-full flex-1"
-        href="/product/P0048M"
-        to="/product/P0048M"
+        href="/RefArchGlobal/en-GB/product/P0048M"
+        to="/RefArchGlobal/en-GB/product/P0048M"
       >
         <div
           class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -74,8 +74,8 @@ exports[`ProductImage stories snapshot > Default story renders and matches snaps
       <a
         aria-label="View Laptop Briefcase with wheels (37L)"
         class="block w-full h-full flex-1"
-        href="/product/P0048M"
-        to="/product/P0048M"
+        href="/RefArchGlobal/en-GB/product/P0048M"
+        to="/RefArchGlobal/en-GB/product/P0048M"
       >
         <div
           class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -136,8 +136,8 @@ exports[`ProductImage stories snapshot > WithColorVariant story renders and matc
       <a
         aria-label="View Long Sleeve Embellished Boat Neck Top"
         class="block w-full h-full flex-1"
-        href="/product/25518101M?color=JJ5QZXX"
-        to="/product/25518101M?color=JJ5QZXX"
+        href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
+        to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
       >
         <div
           class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"

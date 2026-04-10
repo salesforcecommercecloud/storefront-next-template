@@ -24,6 +24,10 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 
 import BonusProductSelection from './bonus-product-selection';
 import { getTranslation } from '@/lib/i18next';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 // ============================================================================
 // Mocks
@@ -35,11 +39,6 @@ vi.mock('react-i18next', () => ({
         const { t } = getTranslation();
         return { t, i18n: { language: 'en-US' } };
     },
-}));
-
-// Mock currency provider
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
 }));
 
 // Mock useFetcher from react-router - will be spied on in beforeEach
@@ -187,7 +186,11 @@ function renderWithRouter(ui: React.ReactElement) {
         [
             {
                 path: '/',
-                element: ui,
+                element: (
+                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                        {ui}
+                    </SiteProvider>
+                ),
             },
         ],
         {

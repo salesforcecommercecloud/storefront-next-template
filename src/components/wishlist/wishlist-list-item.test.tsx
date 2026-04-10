@@ -25,6 +25,10 @@ import { getTranslation } from '@/lib/i18next';
 import { masterProduct, variantProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { useProductActions } from '@/hooks/product/use-product-actions';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 const { t } = getTranslation();
 
@@ -54,11 +58,6 @@ vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: mockAddToast,
     }),
-}));
-
-// Mock currency provider
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
 }));
 
 // Mock config
@@ -138,7 +137,16 @@ const masterWishlistItem: ShopperCustomers.schemas['CustomerProductListItem'] = 
 };
 
 function renderWithRouter(component: React.ReactElement) {
-    const router = createMemoryRouter([{ path: '/', element: component }]);
+    const router = createMemoryRouter([
+        {
+            path: '/',
+            element: (
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                    {component}
+                </SiteProvider>
+            ),
+        },
+    ]);
     return render(<RouterProvider router={router} />);
 }
 

@@ -22,7 +22,7 @@ import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 import { Check, ChevronRight, MapPin, X } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { cn } from '@/lib/utils';
 import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order-status';
 
@@ -251,7 +251,7 @@ export function OrderListItem({
 }: OrderListItemProps): ReactElement {
     const { t, i18n } = useTranslation('account');
     const invalidDateLabel = t('orders.invalidDate');
-    const siteCurrency = useCurrency();
+    const { currency: siteCurrency } = useSite();
 
     const productItems = order.productItems ?? [];
     const visibleProducts = productItems.slice(0, maxThumbnails);

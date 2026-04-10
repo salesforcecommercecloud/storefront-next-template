@@ -10,8 +10,8 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
     <a
       aria-label="Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit"
       class="flex-shrink-0 self-start"
-      href="/product/25686395M?color=CHARCWL&size=040&width=S"
-      to="/product/25686395M?color=CHARCWL&size=040&width=S"
+      href="/RefArchGlobal/en-GB/product/25686395M?color=CHARCWL&size=040&width=S"
+      to="/RefArchGlobal/en-GB/product/25686395M?color=CHARCWL&size=040&width=S"
     >
       <div
         class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
@@ -31,8 +31,8 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
       >
         <a
           class="text-base font-medium text-foreground hover:text-primary line-clamp-2 block"
-          href="/product/25686395M?color=CHARCWL&size=040&width=S"
-          to="/product/25686395M?color=CHARCWL&size=040&width=S"
+          href="/RefArchGlobal/en-GB/product/25686395M?color=CHARCWL&size=040&width=S"
+          to="/RefArchGlobal/en-GB/product/25686395M?color=CHARCWL&size=040&width=S"
         >
           Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit
         </a>
@@ -144,8 +144,8 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
     <a
       aria-label="Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit"
       class="flex-shrink-0 self-start"
-      href="/product/25686395M"
-      to="/product/25686395M"
+      href="/RefArchGlobal/en-GB/product/25686395M"
+      to="/RefArchGlobal/en-GB/product/25686395M"
     >
       <div
         class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
@@ -165,8 +165,8 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
       >
         <a
           class="text-base font-medium text-foreground hover:text-primary line-clamp-2 block"
-          href="/product/25686395M"
-          to="/product/25686395M"
+          href="/RefArchGlobal/en-GB/product/25686395M"
+          to="/RefArchGlobal/en-GB/product/25686395M"
         >
           Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit
         </a>
@@ -265,8 +265,8 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
           data-size="sm"
           data-slot="button"
           data-variant="outline"
-          href="/product/25686395M"
-          to="/product/25686395M"
+          href="/RefArchGlobal/en-GB/product/25686395M"
+          to="/RefArchGlobal/en-GB/product/25686395M"
         >
           Select Options
         </a>
@@ -286,8 +286,8 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
     <a
       aria-label="Simple Product"
       class="flex-shrink-0 self-start"
-      href="/product/minimal-product-1"
-      to="/product/minimal-product-1"
+      href="/RefArchGlobal/en-GB/product/minimal-product-1"
+      to="/RefArchGlobal/en-GB/product/minimal-product-1"
     >
       <div
         class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
@@ -305,8 +305,8 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
       >
         <a
           class="text-base font-medium text-foreground hover:text-primary line-clamp-2 block"
-          href="/product/minimal-product-1"
-          to="/product/minimal-product-1"
+          href="/RefArchGlobal/en-GB/product/minimal-product-1"
+          to="/RefArchGlobal/en-GB/product/minimal-product-1"
         >
           Simple Product
         </a>
@@ -377,8 +377,8 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
     <a
       aria-label="Laptop Briefcase with wheels (37L)"
       class="flex-shrink-0 self-start"
-      href="/product/P0048M"
-      to="/product/P0048M"
+      href="/RefArchGlobal/en-GB/product/P0048M"
+      to="/RefArchGlobal/en-GB/product/P0048M"
     >
       <div
         class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
@@ -398,8 +398,8 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
       >
         <a
           class="text-base font-medium text-foreground hover:text-primary line-clamp-2 block"
-          href="/product/P0048M"
-          to="/product/P0048M"
+          href="/RefArchGlobal/en-GB/product/P0048M"
+          to="/RefArchGlobal/en-GB/product/P0048M"
         >
           Laptop Briefcase with wheels (37L)
         </a>
@@ -492,8 +492,8 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
     <a
       aria-label="Laptop Briefcase with wheels (37L)"
       class="flex-shrink-0 self-start"
-      href="/product/P0048M"
-      to="/product/P0048M"
+      href="/RefArchGlobal/en-GB/product/P0048M"
+      to="/RefArchGlobal/en-GB/product/P0048M"
     >
       <div
         class="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center"
@@ -513,8 +513,8 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
       >
         <a
           class="text-base font-medium text-foreground hover:text-primary line-clamp-2 block"
-          href="/product/P0048M"
-          to="/product/P0048M"
+          href="/RefArchGlobal/en-GB/product/P0048M"
+          to="/RefArchGlobal/en-GB/product/P0048M"
         >
           Laptop Briefcase with wheels (37L)
         </a>

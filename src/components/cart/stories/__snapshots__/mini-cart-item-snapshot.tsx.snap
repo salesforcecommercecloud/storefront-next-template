@@ -202,7 +202,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                 >
                   <a
                     class="block w-full h-full"
-                    href="/product/prod-1"
+                    href="/RefArchGlobal/en-GB/product/prod-1"
                   >
                     <img
                       alt="Product image"
@@ -222,7 +222,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                     >
                       <a
                         class="hover:underline"
-                        href="/product/prod-1"
+                        href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
                           class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -265,11 +265,11 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                       class="items-center gap-2"
                     >
                       <span
-                        aria-label="Current price: $3.75"
+                        aria-label="Current price: £3.75"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                       >
-                        $3.75
+                        £3.75
                       </span>
                       <span
                         aria-atomic="true"
@@ -277,14 +277,14 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         class="sr-only"
                       >
                         Product Name
-                        Current price: $3.75
+                        Current price: £3.75
                       </span>
                        
                       <span
-                        aria-label="List price: $20.00"
+                        aria-label="List price: £20.00"
                         class="font-medium text-left text-muted-foreground line-through text-sm"
                       >
-                        $20.00
+                        £20.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -292,14 +292,14 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         class="sr-only"
                       >
                         Product Name
-                        List price: $20.00
+                        List price: £20.00
                       </span>
                     </div>
                     <span
                       class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                       data-slot="badge"
                     >
-                      Saved $65.00
+                      Saved £65.00
                     </span>
                   </div>
                   <div
@@ -812,7 +812,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                 >
                   <a
                     class="block w-full h-full"
-                    href="/product/prod-1"
+                    href="/RefArchGlobal/en-GB/product/prod-1"
                   >
                     <img
                       alt="Product image"
@@ -832,7 +832,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                     >
                       <a
                         class="hover:underline"
-                        href="/product/prod-1"
+                        href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
                           class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -875,11 +875,11 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                       class="items-center gap-2"
                     >
                       <span
-                        aria-label="Current price: $1.00"
+                        aria-label="Current price: £1.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                       >
-                        $1.00
+                        £1.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -887,14 +887,14 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         class="sr-only"
                       >
                         Product Name
-                        Current price: $1.00
+                        Current price: £1.00
                       </span>
                        
                       <span
-                        aria-label="List price: $20.00"
+                        aria-label="List price: £20.00"
                         class="font-medium text-left text-muted-foreground line-through text-sm"
                       >
-                        $20.00
+                        £20.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -902,14 +902,14 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         class="sr-only"
                       >
                         Product Name
-                        List price: $20.00
+                        List price: £20.00
                       </span>
                     </div>
                     <span
                       class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                       data-slot="badge"
                     >
-                      Saved $285.00
+                      Saved £285.00
                     </span>
                   </div>
                   <div
@@ -1651,7 +1651,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                 >
                   <a
                     class="block w-full h-full"
-                    href="/product/prod-1"
+                    href="/RefArchGlobal/en-GB/product/prod-1"
                   >
                     <img
                       alt="Product image"
@@ -1671,7 +1671,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                     >
                       <a
                         class="hover:underline"
-                        href="/product/prod-1"
+                        href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
                           class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -1714,11 +1714,11 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                       class="items-center gap-2"
                     >
                       <span
-                        aria-label="Current price: $3.00"
+                        aria-label="Current price: £3.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                       >
-                        $3.00
+                        £3.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -1726,14 +1726,14 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         class="sr-only"
                       >
                         Product Name
-                        Current price: $3.00
+                        Current price: £3.00
                       </span>
                        
                       <span
-                        aria-label="List price: $20.00"
+                        aria-label="List price: £20.00"
                         class="font-medium text-left text-muted-foreground line-through text-sm"
                       >
-                        $20.00
+                        £20.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -1741,14 +1741,14 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         class="sr-only"
                       >
                         Product Name
-                        List price: $20.00
+                        List price: £20.00
                       </span>
                     </div>
                     <span
                       class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                       data-slot="badge"
                     >
-                      Saved $85.00
+                      Saved £85.00
                     </span>
                   </div>
                   <div
@@ -2252,7 +2252,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                 >
                   <a
                     class="block w-full h-full"
-                    href="/product/prod-1"
+                    href="/RefArchGlobal/en-GB/product/prod-1"
                   >
                     <img
                       alt="Product image"
@@ -2272,7 +2272,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                     >
                       <a
                         class="hover:underline"
-                        href="/product/prod-1"
+                        href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
                           class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -2315,11 +2315,11 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                       class="items-center gap-2"
                     >
                       <span
-                        aria-label="Current price: $15.00"
+                        aria-label="Current price: £15.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                       >
-                        $15.00
+                        £15.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -2327,14 +2327,14 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         class="sr-only"
                       >
                         Product Name
-                        Current price: $15.00
+                        Current price: £15.00
                       </span>
                        
                       <span
-                        aria-label="List price: $20.00"
+                        aria-label="List price: £20.00"
                         class="font-medium text-left text-muted-foreground line-through text-sm"
                       >
-                        $20.00
+                        £20.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -2342,14 +2342,14 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         class="sr-only"
                       >
                         Product Name
-                        List price: $20.00
+                        List price: £20.00
                       </span>
                     </div>
                     <span
                       class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                       data-slot="badge"
                     >
-                      Saved $5.00
+                      Saved £5.00
                     </span>
                   </div>
                   <div
@@ -2854,7 +2854,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                 >
                   <a
                     class="block w-full h-full"
-                    href="/product/prod-1"
+                    href="/RefArchGlobal/en-GB/product/prod-1"
                   >
                     <img
                       alt="Product image"
@@ -2874,7 +2874,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                     >
                       <a
                         class="hover:underline"
-                        href="/product/prod-1"
+                        href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
                           class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -2917,11 +2917,11 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                       class="items-center gap-2"
                     >
                       <span
-                        aria-label="Current price: $15.00"
+                        aria-label="Current price: £15.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                       >
-                        $15.00
+                        £15.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -2929,14 +2929,14 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         class="sr-only"
                       >
                         This is a very long product name that should be truncated to prevent layout issues
-                        Current price: $15.00
+                        Current price: £15.00
                       </span>
                        
                       <span
-                        aria-label="List price: $20.00"
+                        aria-label="List price: £20.00"
                         class="font-medium text-left text-muted-foreground line-through text-sm"
                       >
-                        $20.00
+                        £20.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -2944,14 +2944,14 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         class="sr-only"
                       >
                         This is a very long product name that should be truncated to prevent layout issues
-                        List price: $20.00
+                        List price: £20.00
                       </span>
                     </div>
                     <span
                       class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                       data-slot="badge"
                     >
-                      Saved $5.00
+                      Saved £5.00
                     </span>
                   </div>
                   <div
@@ -3456,7 +3456,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                 >
                   <a
                     class="block w-full h-full"
-                    href="/product/prod-1"
+                    href="/RefArchGlobal/en-GB/product/prod-1"
                   >
                     <img
                       alt="Product image"
@@ -3476,7 +3476,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                     >
                       <a
                         class="hover:underline"
-                        href="/product/prod-1"
+                        href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
                           class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -3508,11 +3508,11 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                       class="items-center gap-2"
                     >
                       <span
-                        aria-label="Current price: $15.00"
+                        aria-label="Current price: £15.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                       >
-                        $15.00
+                        £15.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -3520,14 +3520,14 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         class="sr-only"
                       >
                         Product Name
-                        Current price: $15.00
+                        Current price: £15.00
                       </span>
                        
                       <span
-                        aria-label="List price: $20.00"
+                        aria-label="List price: £20.00"
                         class="font-medium text-left text-muted-foreground line-through text-sm"
                       >
-                        $20.00
+                        £20.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -3535,14 +3535,14 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         class="sr-only"
                       >
                         Product Name
-                        List price: $20.00
+                        List price: £20.00
                       </span>
                     </div>
                     <span
                       class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                       data-slot="badge"
                     >
-                      Saved $5.00
+                      Saved £5.00
                     </span>
                   </div>
                   <div
@@ -4047,7 +4047,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                 >
                   <a
                     class="block w-full h-full"
-                    href="/product/prod-1"
+                    href="/RefArchGlobal/en-GB/product/prod-1"
                   >
                     <img
                       alt="Product image"
@@ -4067,7 +4067,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                     >
                       <a
                         class="hover:underline"
-                        href="/product/prod-1"
+                        href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
                           class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -4099,11 +4099,11 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                       class="items-center gap-2"
                     >
                       <span
-                        aria-label="Current price: $15.00"
+                        aria-label="Current price: £15.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                       >
-                        $15.00
+                        £15.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -4111,14 +4111,14 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         class="sr-only"
                       >
                         Product Name
-                        Current price: $15.00
+                        Current price: £15.00
                       </span>
                        
                       <span
-                        aria-label="List price: $20.00"
+                        aria-label="List price: £20.00"
                         class="font-medium text-left text-muted-foreground line-through text-sm"
                       >
-                        $20.00
+                        £20.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -4126,14 +4126,14 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         class="sr-only"
                       >
                         Product Name
-                        List price: $20.00
+                        List price: £20.00
                       </span>
                     </div>
                     <span
                       class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                       data-slot="badge"
                     >
-                      Saved $5.00
+                      Saved £5.00
                     </span>
                   </div>
                   <div
@@ -4678,7 +4678,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                   >
                     <a
                       class="block w-full h-full"
-                      href="/product/prod-1"
+                      href="/RefArchGlobal/en-GB/product/prod-1"
                     >
                       <img
                         alt="Product image"
@@ -4698,7 +4698,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                       >
                         <a
                           class="hover:underline"
-                          href="/product/prod-1"
+                          href="/RefArchGlobal/en-GB/product/prod-1"
                         >
                           <h3
                             class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -4741,11 +4741,11 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                         class="items-center gap-2"
                       >
                         <span
-                          aria-label="Current price: $15.00"
+                          aria-label="Current price: £15.00"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                         >
-                          $15.00
+                          £15.00
                         </span>
                         <span
                           aria-atomic="true"
@@ -4753,14 +4753,14 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           class="sr-only"
                         >
                           Product Name
-                          Current price: $15.00
+                          Current price: £15.00
                         </span>
                          
                         <span
-                          aria-label="List price: $20.00"
+                          aria-label="List price: £20.00"
                           class="font-medium text-left text-muted-foreground line-through text-sm"
                         >
-                          $20.00
+                          £20.00
                         </span>
                         <span
                           aria-atomic="true"
@@ -4768,14 +4768,14 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           class="sr-only"
                         >
                           Product Name
-                          List price: $20.00
+                          List price: £20.00
                         </span>
                       </div>
                       <span
                         class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                         data-slot="badge"
                       >
-                        Saved $5.00
+                        Saved £5.00
                       </span>
                     </div>
                     <div
@@ -5317,7 +5317,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                   >
                     <a
                       class="block w-full h-full"
-                      href="/product/prod-1"
+                      href="/RefArchGlobal/en-GB/product/prod-1"
                     >
                       <img
                         alt="Product image"
@@ -5337,7 +5337,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                       >
                         <a
                           class="hover:underline"
-                          href="/product/prod-1"
+                          href="/RefArchGlobal/en-GB/product/prod-1"
                         >
                           <h3
                             class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -5380,11 +5380,11 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                         class="items-center gap-2"
                       >
                         <span
-                          aria-label="Current price: $15.00"
+                          aria-label="Current price: £15.00"
                           aria-live="polite"
                           class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                         >
-                          $15.00
+                          £15.00
                         </span>
                         <span
                           aria-atomic="true"
@@ -5392,14 +5392,14 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           class="sr-only"
                         >
                           Product Name
-                          Current price: $15.00
+                          Current price: £15.00
                         </span>
                          
                         <span
-                          aria-label="List price: $20.00"
+                          aria-label="List price: £20.00"
                           class="font-medium text-left text-muted-foreground line-through text-sm"
                         >
-                          $20.00
+                          £20.00
                         </span>
                         <span
                           aria-atomic="true"
@@ -5407,14 +5407,14 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           class="sr-only"
                         >
                           Product Name
-                          List price: $20.00
+                          List price: £20.00
                         </span>
                       </div>
                       <span
                         class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                         data-slot="badge"
                       >
-                        Saved $5.00
+                        Saved £5.00
                       </span>
                     </div>
                     <div
@@ -5920,7 +5920,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                 >
                   <a
                     class="block w-full h-full"
-                    href="/product/prod-1"
+                    href="/RefArchGlobal/en-GB/product/prod-1"
                   >
                     <img
                       alt="Product image"
@@ -5940,7 +5940,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                     >
                       <a
                         class="hover:underline"
-                        href="/product/prod-1"
+                        href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
                           class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -5983,11 +5983,11 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                       class="items-center gap-2"
                     >
                       <span
-                        aria-label="Current price: $15.00"
+                        aria-label="Current price: £15.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                       >
-                        $15.00
+                        £15.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -5995,14 +5995,14 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         class="sr-only"
                       >
                         Product Name
-                        Current price: $15.00
+                        Current price: £15.00
                       </span>
                        
                       <span
-                        aria-label="List price: $20.00"
+                        aria-label="List price: £20.00"
                         class="font-medium text-left text-muted-foreground line-through text-sm"
                       >
-                        $20.00
+                        £20.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -6010,14 +6010,14 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         class="sr-only"
                       >
                         Product Name
-                        List price: $20.00
+                        List price: £20.00
                       </span>
                     </div>
                     <span
                       class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                       data-slot="badge"
                     >
-                      Saved $5.00
+                      Saved £5.00
                     </span>
                   </div>
                   <div
@@ -6537,7 +6537,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                     >
                       <a
                         class="hover:underline"
-                        href="/product/prod-1"
+                        href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
                           class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -6580,11 +6580,11 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                       class="items-center gap-2"
                     >
                       <span
-                        aria-label="Current price: $15.00"
+                        aria-label="Current price: £15.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                       >
-                        $15.00
+                        £15.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -6592,14 +6592,14 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         class="sr-only"
                       >
                         Product Name
-                        Current price: $15.00
+                        Current price: £15.00
                       </span>
                        
                       <span
-                        aria-label="List price: $20.00"
+                        aria-label="List price: £20.00"
                         class="font-medium text-left text-muted-foreground line-through text-sm"
                       >
-                        $20.00
+                        £20.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -6607,14 +6607,14 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         class="sr-only"
                       >
                         Product Name
-                        List price: $20.00
+                        List price: £20.00
                       </span>
                     </div>
                     <span
                       class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
                       data-slot="badge"
                     >
-                      Saved $5.00
+                      Saved £5.00
                     </span>
                   </div>
                   <div
@@ -7065,7 +7065,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                 >
                   <a
                     class="block w-full h-full"
-                    href="/product/prod-1"
+                    href="/RefArchGlobal/en-GB/product/prod-1"
                   >
                     <img
                       alt="Product image"
@@ -7085,7 +7085,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                     >
                       <a
                         class="hover:underline"
-                        href="/product/prod-1"
+                        href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
                           class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
@@ -7128,11 +7128,11 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                       class="items-center gap-2"
                     >
                       <span
-                        aria-label="Current price: $15.00"
+                        aria-label="Current price: £15.00"
                         aria-live="polite"
                         class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
                       >
-                        $15.00
+                        £15.00
                       </span>
                       <span
                         aria-atomic="true"
@@ -7140,7 +7140,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                         class="sr-only"
                       >
                         Product Name
-                        Current price: $15.00
+                        Current price: £15.00
                       </span>
                        
                     </div>

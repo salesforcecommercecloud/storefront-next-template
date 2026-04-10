@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 import { describe, expect, it, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render as rtlRender, screen, type RenderOptions } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import MyCart from './index';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
+
+const render = (ui: React.ReactElement, options?: RenderOptions) =>
+    rtlRender(ui, {
+        wrapper: ({ children }: { children: ReactNode }) => (
+            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                {children}
+            </SiteProvider>
+        ),
+        ...options,
+    });
 
 vi.mock('react-i18next', () => ({
     useTranslation: (ns?: string) => {
@@ -32,10 +46,6 @@ vi.mock('react-i18next', () => ({
             tCart,
         };
     },
-}));
-
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({

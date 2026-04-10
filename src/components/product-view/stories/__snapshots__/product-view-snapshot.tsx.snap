@@ -17,7 +17,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
         >
           <a
             class="text-primary-600 hover:underline"
-            href="/category/mens"
+            href="/RefArchGlobal/en-GB/category/mens"
           >
             Mens
           </a>
@@ -44,7 +44,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
           </svg>
           <a
             class="text-primary-600 hover:underline"
-            href="/category/mens-clothing"
+            href="/RefArchGlobal/en-GB/category/mens-clothing"
           >
             Clothing
           </a>
@@ -378,7 +378,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   aria-label="M"
                   class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   data-labeled="true"
-                  href="/?accessorySize=050"
+                  href="/RefArchGlobal/en-GB/?accessorySize=050"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -398,7 +398,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   aria-label="L"
                   class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-sm"
                   data-labeled="true"
-                  href="/?accessorySize=060"
+                  href="/RefArchGlobal/en-GB/?accessorySize=060"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -418,7 +418,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   aria-label="XL"
                   class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   data-labeled="true"
-                  href="/?accessorySize=080"
+                  href="/RefArchGlobal/en-GB/?accessorySize=080"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1106,7 +1106,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                   aria-label="M"
                   class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   data-labeled="true"
-                  href="/?accessorySize=050"
+                  href="/RefArchGlobal/en-GB/?accessorySize=050"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1126,7 +1126,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                   aria-label="L"
                   class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-sm"
                   data-labeled="true"
-                  href="/?accessorySize=060"
+                  href="/RefArchGlobal/en-GB/?accessorySize=060"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -1146,7 +1146,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                   aria-label="XL"
                   class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   data-labeled="true"
-                  href="/?accessorySize=080"
+                  href="/RefArchGlobal/en-GB/?accessorySize=080"
                   position="relative"
                   role="radio"
                   tabindex="-1"

@@ -334,10 +334,6 @@ vi.mock('@/hooks/checkout/use-completed-steps', () => ({
     useCompletedSteps: () => [],
 }));
 
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
-}));
-
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: vi.fn(() => ({
         engagement: {
@@ -347,6 +343,18 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
         },
     })),
 }));
+
+vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return {
+        ...actual,
+        useSite: vi.fn(() => ({
+            site: { id: 'RefArch', defaultLocale: 'en-US' },
+            language: 'en-US',
+            currency: 'USD',
+        })),
+    };
+});
 
 // Mock functions from useAnalytics to avoid tracking consent dependency chain
 vi.mock('@/hooks/use-analytics', () => ({

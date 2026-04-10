@@ -32,6 +32,17 @@ vi.mock('react-router', async (importOriginal) => {
         NavLink: (props: any) => <a href={props.to} {...props}>{props.children}</a>,
     };
 });
+vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return {
+        ...actual,
+        useSite: vi.fn(() => ({
+            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
+            language: 'en-GB',
+            currency: 'GBP',
+        })),
+    };
+});
 
 const composed = composeStories(SwatchesStories);
 

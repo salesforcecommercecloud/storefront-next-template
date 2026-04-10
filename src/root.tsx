@@ -78,7 +78,6 @@ import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 import AuthProvider from '@/providers/auth';
 import BasketProvider from '@/providers/basket';
 import { ComposeProviders } from '@/providers/compose-providers';
-import { CurrencyProvider } from '@/providers/currency';
 import { CorrelationProvider } from '@/providers/correlation';
 import { correlationContext } from '@/lib/correlation';
 import RecommendersProvider from '@/providers/recommenders';
@@ -416,6 +415,7 @@ export default function App({
         correlationId,
         pageDesignerMode,
         site,
+        locale,
         // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
         selectedStoreInfo,
         // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
@@ -457,8 +457,10 @@ export default function App({
             [
                 [I18nextProvider, { i18n: i18next }],
                 [ConfigProvider, { config: appConfig }],
-                [SiteProvider, { value: site }],
-                [CurrencyProvider, { value: currency }],
+                // Site provider will contain info about site/locale/currency on single request.
+                // include i18next.language since these infos tend to go together.
+                // site will drive the language/locale and currency
+                [SiteProvider, { site, locale, language: i18next.language, currency }],
                 [AuthProvider, { value: clientAuth }],
                 [BasketProvider, { snapshot: basketSnapshot }],
                 [RecommendersProvider, { adapterName: EINSTEIN_ADAPTER_NAME }],
@@ -475,6 +477,7 @@ export default function App({
             clientAuth,
             basketSnapshot,
             site,
+            locale,
             // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
             selectedStoreInfo,
             // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR

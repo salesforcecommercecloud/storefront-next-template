@@ -33,7 +33,7 @@ import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
-import { ConfigWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { generateCategorySchema } from '@/utils/category-schema';
 import { useAnalytics } from '@/hooks/use-analytics';
 
@@ -778,9 +778,9 @@ describe('CategoryPage', () => {
 
             const { unmount } = render(
                 <MemoryRouter initialEntries={['/category/electronics?filters=open']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={openLoaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -792,9 +792,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter initialEntries={['/category/electronics?filters=closed']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={closedLoaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -821,9 +821,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter initialEntries={['/category/electronics?filters=closed']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -860,9 +860,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -904,9 +904,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -932,9 +932,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -960,9 +960,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -987,9 +987,9 @@ describe('CategoryPage', () => {
 
             const { rerender } = render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData1} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1000,9 +1000,9 @@ describe('CategoryPage', () => {
 
             rerender(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData2} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1028,9 +1028,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1062,9 +1062,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1095,9 +1095,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1129,9 +1129,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1169,9 +1169,9 @@ describe('CategoryPage', () => {
             // Should render without errors even when analytics is null
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 

@@ -19,7 +19,6 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { ConfigWrapper } from '@/test-utils/config';
-import { CurrencyProvider } from '@/providers/currency';
 import ProductGrid from './index';
 
 // Render ProductTile as a minimal element that exposes all props under test as data attributes.
@@ -100,19 +99,17 @@ const renderGrid = ({
                 path: '/test',
                 element: (
                     <ConfigWrapper>
-                        <CurrencyProvider value="USD">
-                            <ProductGrid
-                                critical={critical}
-                                nonCritical={nonCritical}
-                                nonCriticalCount={nonCriticalCount}
-                                hasRefinementsPanel={hasRefinementsPanel}
-                                handleProductClick={handleProductClick}
-                                topCategoryName={topCategoryName}
-                                isLoading={isLoading}
-                                // @sfdc-extension-line SFDC_EXT_BOPIS
-                                showPickupAvailable={showPickupAvailable}
-                            />
-                        </CurrencyProvider>
+                        <ProductGrid
+                            critical={critical}
+                            nonCritical={nonCritical}
+                            nonCriticalCount={nonCriticalCount}
+                            hasRefinementsPanel={hasRefinementsPanel}
+                            handleProductClick={handleProductClick}
+                            topCategoryName={topCategoryName}
+                            isLoading={isLoading}
+                            // @sfdc-extension-line SFDC_EXT_BOPIS
+                            showPickupAvailable={showPickupAvailable}
+                        />
                     </ConfigWrapper>
                 ),
             },

@@ -171,7 +171,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
               data-size="default"
               data-slot="button"
               data-variant="default"
-              href="/global/en-GB/checkout"
+              href="/RefArchGlobal/en-GB/checkout"
             >
               Proceed to Checkout
               <svg

@@ -19,7 +19,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { ConfigProvider, createAppConfig, deepMerge } from '@salesforce/storefront-next-runtime/config';
-import { CurrencyProvider } from '@/providers/currency';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import ProductContentProvider from '@/providers/product-content';
 import ProductViewProvider from '@/providers/product-view';
 import { mockBuildConfig } from '@/test-utils/config';
@@ -53,7 +53,11 @@ function FaqWrapper(): ReactElement {
     const inRouter = useInRouterContext();
     const content = (
         <ConfigProvider config={faqStoryConfig}>
-            <CurrencyProvider value="USD">
+            <SiteProvider
+                site={faqStoryConfig.commerce.sites[0]}
+                locale={faqStoryConfig.commerce.sites[0].supportedLocales[0]}
+                language="en-GB"
+                currency="USD">
                 <ProductContentProvider>
                     <ProductViewProvider product={mockProduct} mode="add">
                         <div className="max-w-md p-6">
@@ -61,7 +65,7 @@ function FaqWrapper(): ReactElement {
                         </div>
                     </ProductViewProvider>
                 </ProductContentProvider>
-            </CurrencyProvider>
+            </SiteProvider>
         </ConfigProvider>
     );
 

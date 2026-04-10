@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render as rtlRender, screen, waitFor, type RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ShippingOptions from './shipping-options';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getTranslation } from '@/lib/i18next';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
+
+const render = (ui: React.ReactElement, options?: RenderOptions) =>
+    rtlRender(ui, { wrapper: AllProvidersWrapper, ...options });
 
 // Use real hooks for integration tests
 vi.mock('@/providers/basket', () => ({ useBasket: vi.fn() }));
 vi.mock('@/hooks/checkout/use-customer-profile', () => ({
     useCustomerProfile: vi.fn(() => null),
 }));
-vi.mock('@/providers/currency', () => ({ useCurrency: vi.fn(() => 'USD') }));
-
 const createMockBasket = (overrides = {}) => ({
     basketId: 'test-basket-123',
     currency: 'USD',

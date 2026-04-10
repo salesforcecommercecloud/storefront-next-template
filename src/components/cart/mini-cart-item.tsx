@@ -35,7 +35,7 @@ import { findImageGroupBy } from '@/lib/image-groups-utils';
 import { getDisplayVariationValues } from '@/lib/product-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { getEffectiveStockLevel } from '@/lib/inventory-utils';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { toImageUrl } from '@/lib/dynamic-image';
 import ProductPrice from '@/components/product-price';
 import { Typography } from '@/components/typography';
@@ -111,7 +111,7 @@ export default function MiniCartItem({
     const config = useConfig<AppConfig>();
     const { t: tMiniCart } = useTranslation('miniCart');
     const { t: tRemoveItem } = useTranslation('removeItem');
-    const currency = useCurrency();
+    const { currency } = useSite();
     const productAltFallback = tMiniCart('productAltFallback') || 'Product';
 
     const fetcher = useItemFetcher({

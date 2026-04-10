@@ -18,9 +18,11 @@ import { describe, test, expect } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { OrderDetails } from './index';
 import { getTranslation } from '@/lib/i18next';
-import { ConfigWrapper } from '@/test-utils/config';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 const { t } = getTranslation();
 
@@ -77,9 +79,9 @@ function OrderDetailsWithProviders({ order = defaultOrder }: { order?: ShopperOr
     return (
         <MemoryRouter>
             <ConfigWrapper>
-                <CurrencyWrapper>
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
                     <OrderDetails order={order} productsById={defaultProductsById} />
-                </CurrencyWrapper>
+                </SiteProvider>
             </ConfigWrapper>
         </MemoryRouter>
     );

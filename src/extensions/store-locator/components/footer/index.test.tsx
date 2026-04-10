@@ -18,8 +18,20 @@ import { describe, it, expect } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import StoreLocatorFooter from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig } from '@/test-utils/config';
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
+
+const defaultMockSite = {
+    id: 'RefArch',
+    defaultLocale: 'en-US',
+    defaultCurrency: 'USD',
+    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
+    supportedCurrencies: ['USD'],
+};
+const defaultMockLocale =
+    defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
+    defaultMockSite.supportedLocales[0];
 
 // Helper to render with router and necessary providers
 const renderWithRouter = (component: React.ReactElement) => {
@@ -29,7 +41,9 @@ const renderWithRouter = (component: React.ReactElement) => {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <StoreLocatorProvider>{component}</StoreLocatorProvider>
+                        <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+                            <StoreLocatorProvider>{component}</StoreLocatorProvider>
+                        </SiteProvider>
                     </ConfigProvider>
                 ),
             },
@@ -44,7 +58,7 @@ describe('StoreLocatorFooter', () => {
         renderWithRouter(<StoreLocatorFooter />);
         const link = screen.getByRole('link', { name: /store locator/i });
         expect(link).toBeInTheDocument();
-        expect(link).toHaveAttribute('href', '/store-locator');
+        expect(link).toHaveAttribute('href', '/RefArch/en-GB/store-locator');
     });
 
     it('has proper styling classes matching footer links', () => {

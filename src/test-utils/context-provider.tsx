@@ -20,7 +20,6 @@ import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
 import { mockConfig, mockBuildConfig } from './config';
 import { TargetProviders } from '@/targets/target-providers';
-import { CurrencyProvider } from '@/providers/currency';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 
@@ -29,6 +28,10 @@ const defaultMockSite = {
     alias: mockBuildConfig.app.siteAliasMap?.RefArchGlobal ?? undefined,
 };
 
+const defaultMockLocale =
+    defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
+    defaultMockSite.supportedLocales[0];
+
 /**
  * React Testing Library wrapper component that provides ConfigProvider context
  */
@@ -36,12 +39,6 @@ export function ConfigWrapper({ children }: { children: ReactNode }) {
     return <ConfigProvider config={mockConfig}>{children}</ConfigProvider>;
 }
 
-/**
- * React Testing Library wrapper component that provides CurrencyProvider context
- */
-export function CurrencyWrapper({ children, currency = 'USD' }: { children: ReactNode; currency?: string }) {
-    return <CurrencyProvider value={currency}>{children}</CurrencyProvider>;
-}
 /**
  * React Testing Library wrapper component that provides all providers context
  *
@@ -80,14 +77,16 @@ export function AllProvidersWrapper({
 }) {
     return (
         <ConfigProvider config={config}>
-            <SiteProvider value={defaultMockSite}>
-                <CurrencyWrapper currency={currency}>
+            <SiteProvider
+                site={defaultMockSite}
+                locale={defaultMockLocale}
+                language={mockBuildConfig.app.commerce.sites[0].defaultLocale}
+                currency={currency}>
+                {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
+                <StoreLocatorProvider>
+                    <TargetProviders>{children}</TargetProviders>
                     {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-                    <StoreLocatorProvider>
-                        <TargetProviders>{children}</TargetProviders>
-                        {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
-                    </StoreLocatorProvider>
-                </CurrencyWrapper>
+                </StoreLocatorProvider>
             </SiteProvider>
         </ConfigProvider>
     );

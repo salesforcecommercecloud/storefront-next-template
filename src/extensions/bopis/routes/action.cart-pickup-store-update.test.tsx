@@ -32,9 +32,6 @@ vi.mock('@/extensions/bopis/lib/api/shipment');
 vi.mock('@/lib/inventory-utils');
 vi.mock('@/extensions/bopis/lib/basket-utils');
 vi.mock('@/lib/api-clients');
-vi.mock('@/providers/currency', () => ({
-    getCurrency: vi.fn(() => 'USD'),
-}));
 vi.mock('@/lib/utils', () => ({
     extractResponseError: vi.fn((error) => ({
         responseMessage: error instanceof Error ? error.message : 'Unknown error',

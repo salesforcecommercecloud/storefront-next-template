@@ -566,7 +566,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
             <a
               class="block hover:underline flex-1 max-w-[20%]"
               data-testid="product-tile"
-              href="/products/running-shoes"
+              href="/RefArchGlobal/en-GB/products/running-shoes"
             >
               <div
                 class="w-full"
@@ -605,7 +605,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
             <a
               class="block hover:underline flex-1 max-w-[20%]"
               data-testid="product-tile"
-              href="/products/hiking-boots"
+              href="/RefArchGlobal/en-GB/products/hiking-boots"
             >
               <div
                 class="w-full"
@@ -644,7 +644,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
             <a
               class="block hover:underline flex-1 max-w-[20%]"
               data-testid="product-tile"
-              href="/products/casual-sneakers"
+              href="/RefArchGlobal/en-GB/products/casual-sneakers"
             >
               <div
                 class="w-full"
@@ -691,7 +691,7 @@ exports[`SuggestionsSection stories snapshot > Default story renders and matches
         >
           <a
             class="text-header-foreground hover:text-header-foreground/80 font-medium text-sm"
-            href="/search?q=shoes"
+            href="/RefArchGlobal/en-GB/search?q=shoes"
           >
             View All
           </a>
@@ -987,7 +987,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
             <a
               class="block hover:underline flex-1 max-w-[20%]"
               data-testid="product-tile"
-              href="/products/running-shoes"
+              href="/RefArchGlobal/en-GB/products/running-shoes"
             >
               <div
                 class="w-full"
@@ -1026,7 +1026,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
             <a
               class="block hover:underline flex-1 max-w-[20%]"
               data-testid="product-tile"
-              href="/products/hiking-boots"
+              href="/RefArchGlobal/en-GB/products/hiking-boots"
             >
               <div
                 class="w-full"
@@ -1065,7 +1065,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
             <a
               class="block hover:underline flex-1 max-w-[20%]"
               data-testid="product-tile"
-              href="/products/casual-sneakers"
+              href="/RefArchGlobal/en-GB/products/casual-sneakers"
             >
               <div
                 class="w-full"
@@ -1112,7 +1112,7 @@ exports[`SuggestionsSection stories snapshot > ProductsOnly story renders and ma
         >
           <a
             class="text-header-foreground hover:text-header-foreground/80 font-medium text-sm"
-            href="/search?q=shoes"
+            href="/RefArchGlobal/en-GB/search?q=shoes"
           >
             View All
           </a>
@@ -1141,7 +1141,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
            
           <a
             class="text-header-foreground hover:text-header-foreground/80 font-medium"
-            href="/search?q=shoes"
+            href="/RefArchGlobal/en-GB/search?q=shoes"
           >
             shoes
             ?
@@ -1407,7 +1407,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
              
             <a
               class="text-header-foreground hover:text-header-foreground/80 font-medium"
-              href="/search?q=shoes"
+              href="/RefArchGlobal/en-GB/search?q=shoes"
             >
               shoes
               ?
@@ -1556,7 +1556,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
             <a
               class="block hover:underline flex-1 max-w-[20%]"
               data-testid="product-tile"
-              href="/products/running-shoes"
+              href="/RefArchGlobal/en-GB/products/running-shoes"
             >
               <div
                 class="w-full"
@@ -1595,7 +1595,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
             <a
               class="block hover:underline flex-1 max-w-[20%]"
               data-testid="product-tile"
-              href="/products/hiking-boots"
+              href="/RefArchGlobal/en-GB/products/hiking-boots"
             >
               <div
                 class="w-full"
@@ -1634,7 +1634,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
             <a
               class="block hover:underline flex-1 max-w-[20%]"
               data-testid="product-tile"
-              href="/products/casual-sneakers"
+              href="/RefArchGlobal/en-GB/products/casual-sneakers"
             >
               <div
                 class="w-full"
@@ -1681,7 +1681,7 @@ exports[`SuggestionsSection stories snapshot > WithDidYouMean story renders and 
         >
           <a
             class="text-header-foreground hover:text-header-foreground/80 font-medium text-sm"
-            href="/search?q=shoes"
+            href="/RefArchGlobal/en-GB/search?q=shoes"
           >
             View All
           </a>

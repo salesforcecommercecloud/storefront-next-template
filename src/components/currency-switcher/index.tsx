@@ -17,8 +17,7 @@ import { type ReactElement, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFetcher } from 'react-router';
 import { NativeSelect } from '@/components/ui/native-select';
-import { useSite, type Site } from '@salesforce/storefront-next-runtime/site-context';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useToast } from '@/components/toast';
 
 /**
@@ -32,9 +31,8 @@ export default function CurrencySwitcher(): ReactElement {
     const id = useId();
     const { t } = useTranslation('currencySwitcher');
     const fetcher = useFetcher();
-    const currentCurrency = useCurrency();
+    const { site: currentSite, currency: currentCurrency } = useSite();
     const { addToast } = useToast();
-    const currentSite = useSite() as Site;
 
     const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newCurrency = e.target.value;

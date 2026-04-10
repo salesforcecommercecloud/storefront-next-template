@@ -28,7 +28,7 @@ import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { formatCurrency } from '@/lib/currency';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { getPriceData } from '@/components/product-price/utils';
 
 interface BonusProductSelectionProps {
@@ -50,7 +50,7 @@ export default function BonusProductSelection({
     const { addToast } = useToast();
     const { t, i18n } = useTranslation();
     const config = useConfig<AppConfig>();
-    const currency = useCurrency();
+    const { currency } = useSite();
 
     // Track processed fetcher data to prevent duplicate toasts
     const processedDataRef = useRef<typeof addToCartFetcher.data>(null);

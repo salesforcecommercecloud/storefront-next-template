@@ -18,7 +18,6 @@ import { act, render, renderHook, screen } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import { CurrencyProvider } from '@/providers/currency';
 import { ProductTileProvider, useProductTileContext } from './context';
 
 const mockNavigate = vi.fn();
@@ -39,19 +38,15 @@ vi.mock('react-i18next', () => ({
 }));
 
 /**
- * Helper to render a hook within the full provider stack (Router + Config + Currency).
+ * Helper to render a hook within the full provider stack (Router + Config).
  */
-function createRouterWrapper({ currency = 'USD' }: { currency?: string } = {}) {
+function createRouterWrapper() {
     return function RouterWrapper({ children }: PropsWithChildren) {
         const router = createMemoryRouter(
             [
                 {
                     path: '/',
-                    element: (
-                        <AllProvidersWrapper>
-                            <CurrencyProvider value={currency}>{children}</CurrencyProvider>
-                        </AllProvidersWrapper>
-                    ),
+                    element: <AllProvidersWrapper>{children}</AllProvidersWrapper>,
                 },
             ],
             { initialEntries: ['/'] }
@@ -63,7 +58,7 @@ function createRouterWrapper({ currency = 'USD' }: { currency?: string } = {}) {
 /**
  * Helper to render a hook within the full provider stack including ProductTileProvider.
  */
-function createProviderWrapper({ currency = 'USD' }: { currency?: string } = {}) {
+function createProviderWrapper() {
     return function ProviderWrapper({ children }: PropsWithChildren) {
         const router = createMemoryRouter(
             [
@@ -71,9 +66,7 @@ function createProviderWrapper({ currency = 'USD' }: { currency?: string } = {})
                     path: '/',
                     element: (
                         <AllProvidersWrapper>
-                            <CurrencyProvider value={currency}>
-                                <ProductTileProvider>{children}</ProductTileProvider>
-                            </CurrencyProvider>
+                            <ProductTileProvider>{children}</ProductTileProvider>
                         </AllProvidersWrapper>
                     ),
                 },
@@ -100,11 +93,9 @@ describe('ProductTileProvider', () => {
                     path: '/',
                     element: (
                         <AllProvidersWrapper>
-                            <CurrencyProvider value="USD">
-                                <ProductTileProvider>
-                                    <div data-testid="child">Hello</div>
-                                </ProductTileProvider>
-                            </CurrencyProvider>
+                            <ProductTileProvider>
+                                <div data-testid="child">Hello</div>
+                            </ProductTileProvider>
                         </AllProvidersWrapper>
                     ),
                 },
@@ -142,12 +133,12 @@ describe('ProductTileProvider', () => {
         expect(result.current.t('moreOptions')).toBe('product:moreOptions');
     });
 
-    test('provides the currency from CurrencyProvider', () => {
+    test('provides the currency from SiteProvider', () => {
         const { result } = renderHook(() => useProductTileContext(), {
-            wrapper: createProviderWrapper({ currency: 'EUR' }),
+            wrapper: createProviderWrapper(),
         });
 
-        expect(result.current.currency).toBe('EUR');
+        expect(result.current.currency).toBe('USD');
     });
 
     test('provides navigate function from react-router', () => {

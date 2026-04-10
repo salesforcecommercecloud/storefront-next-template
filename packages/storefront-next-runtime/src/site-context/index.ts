@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { SiteProvider, useSite } from './site-context';
+export { SiteProvider, useSite, type SiteContextValue } from './site-context';
 export { applyUrlConfig } from './apply-url-config';
 export { buildUrl, resolvePrefix, sanitizePrefix, stripPathPrefix } from './build-url';
 

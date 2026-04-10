@@ -31,7 +31,12 @@ const defaultClientAuth: PublicSessionData = {
     customerId: 'test-customer',
     userType: 'registered',
 };
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockBuildConfig } from '@/test-utils/config';
+
+const mockSite = {
+    ...mockBuildConfig.app.commerce.sites[0],
+    alias: mockBuildConfig.app.siteAliasMap?.RefArchGlobal ?? undefined,
+};
 
 vi.mock('@/lib/i18next.client', async () => {
     const i18next = await import('i18next');
@@ -97,7 +102,6 @@ vi.mock('@/extensions/hybrid-proxy/config', () => ({
 vi.mock('@salesforce/storefront-next-runtime/config', async () => {
     const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
     const { ConfigContext, createAppConfig } = await import('@salesforce/storefront-next-runtime/config');
-    const { mockBuildConfig } = await import('@/test-utils/config');
 
     return {
         ...actual,
@@ -424,6 +428,7 @@ describe('root.tsx', () => {
                         appConfig: mockConfig,
                         locale: 'en-US',
                         currency: 'USD',
+                        site: mockSite,
                         getI18next: () => testI18nInstance,
                     }),
                 },
@@ -464,6 +469,7 @@ describe('root.tsx', () => {
                         clientAuth: undefined, // No auth from loader, should fall back to context default
                         basketSnapshot: null,
                         appConfig: mockConfig,
+                        site: mockSite,
                     }),
                 },
             ]);
@@ -502,6 +508,7 @@ describe('root.tsx', () => {
                         basketSnapshot: null,
                         locale: 'en-US',
                         currency: 'USD',
+                        site: mockSite,
                         getI18next: () => testI18nInstance,
                         // appConfig not in loader data
                     }),
@@ -557,6 +564,7 @@ describe('root.tsx', () => {
                             appConfig: appConfigWithHybrid,
                             locale: 'en-US',
                             currency: 'USD',
+                            site: mockSite,
                             getI18next: () => testI18nInstance,
                         }),
                     },
@@ -610,6 +618,7 @@ describe('root.tsx', () => {
                             appConfig: appConfigWithHybrid,
                             locale: 'en-US',
                             currency: 'USD',
+                            site: mockSite,
                             getI18next: () => testI18nInstance,
                         }),
                     },
@@ -663,6 +672,7 @@ describe('root.tsx', () => {
                             appConfig: mockConfig,
                             locale: 'en-US',
                             currency: 'USD',
+                            site: mockSite,
                             getI18next: () => testI18nInstance,
                         }),
                     },

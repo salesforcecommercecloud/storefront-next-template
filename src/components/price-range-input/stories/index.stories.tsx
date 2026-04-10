@@ -19,7 +19,10 @@ import { action } from 'storybook/actions';
 import { useEffect, useRef, useState, type ReactNode, type ReactElement } from 'react';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { CurrencyProvider } from '@/providers/currency';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 function PriceRangeInputStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -77,11 +80,11 @@ A price range input component with min and max price fields, validation, and app
     },
     decorators: [
         (Story) => (
-            <CurrencyProvider value="USD">
+            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
                 <PriceRangeInputStoryHarness>
                     <Story />
                 </PriceRangeInputStoryHarness>
-            </CurrencyProvider>
+            </SiteProvider>
         ),
     ],
 };

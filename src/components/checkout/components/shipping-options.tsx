@@ -28,7 +28,7 @@ import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi
 import CheckoutErrorBanner from './checkout-error-banner';
 import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { formatCurrency } from '@/lib/currency';
 
 interface ShippingMethod {
@@ -60,7 +60,7 @@ export default function ShippingOptions({
 }: ShippingOptionsProps) {
     const cart = useBasket();
     const customerProfile = useCustomerProfile();
-    const currency = useCurrency();
+    const { currency } = useSite();
     const { i18n } = useTranslation();
 
     const availableShippingMethods: ShippingMethod[] = useMemo(

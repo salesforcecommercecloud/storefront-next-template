@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 07, 2026)
 
+- Extend `useSite()` to return `{ site, language, locale, currency }` and remove `CurrencyProvider`/`useCurrency()` (@W-21787278) ([#1384](https://github.com/commerce-emu/storefront-next/pull/1384))
 - Add Cloudflare Turnstile bot protection integration for passwordless login with graceful degradation
 - Remove `'use client'` directives from template app source files ([#1375](https://github.com/commerce-emu/storefront-next/pull/1375))
 - Save checkout user info for new user consistently (@W-21918823)

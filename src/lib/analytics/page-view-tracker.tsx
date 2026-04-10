@@ -23,7 +23,6 @@ import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
 import { useTrackingConsent } from '@/hooks/use-tracking-consent';
 import { createLogger } from '@/lib/logger';
-import { useTranslation } from 'react-i18next';
 
 const logger = createLogger();
 
@@ -41,8 +40,7 @@ export function PageViewTracker() {
     const config = useConfig<AppConfig>();
     const auth = useAuth();
     const { trackingConsent, isTrackingConsentEnabled } = useTrackingConsent();
-    const site = useSite();
-    const { i18n } = useTranslation();
+    const { site, language } = useSite();
     const trackedRef = useRef<{ path: string; timestamp: number } | null>(null);
     const trackingResetDuration = config.engagement.analytics.pageViewsResetDuration;
 
@@ -114,7 +112,7 @@ export function PageViewTracker() {
                         usid: auth.usid,
                     },
                 });
-                const eventSiteInfo = site ? { siteId: site.id, localeId: i18n.language } : undefined;
+                const eventSiteInfo = { siteId: site.id, localeId: language };
                 sendViewPageEvent(event, mediator, eventSiteInfo, consentPreferences);
             } catch (error) {
                 // Silently fail - analytics should not break the app
@@ -138,7 +136,7 @@ export function PageViewTracker() {
         trackingResetDuration,
         isTrackingConsentEnabled,
         site,
-        i18n.language,
+        language,
     ]);
 
     return null;

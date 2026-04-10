@@ -32,7 +32,7 @@ import {
 import { ProductItemVariantImage } from '@/components/product-item';
 import CurrentPrice from '@/components/product-price/current-price';
 import { getPriceData } from '@/components/product-price/utils';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 /**
@@ -99,7 +99,7 @@ export default function CheckoutPickup({
     const pickupContext = usePickup();
     const store = getFirstPickupStore(cart, pickupContext?.pickupStores);
     // Get currency from context (automatically derived from locale)
-    const currency = useCurrency();
+    const { currency } = useSite();
     const openStoreLocator = useStoreLocator((s) => s.open);
     const setSelectedStoreInfoRaw = useStoreLocator((s) => s.setSelectedStoreInfo);
     const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);

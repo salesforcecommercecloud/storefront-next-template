@@ -56,8 +56,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 1"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-0"
-                          to="/product/P0048M-0"
+                          href="/RefArchGlobal/en-GB/product/P0048M-0"
+                          to="/RefArchGlobal/en-GB/product/P0048M-0"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -112,9 +112,9 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 1"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-0"
+                        href="/RefArchGlobal/en-GB/product/P0048M-0"
                         tabindex="-1"
-                        to="/product/P0048M-0"
+                        to="/RefArchGlobal/en-GB/product/P0048M-0"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -192,8 +192,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-0"
-                        to="/product/P0048M-0"
+                        href="/RefArchGlobal/en-GB/product/P0048M-0"
+                        to="/RefArchGlobal/en-GB/product/P0048M-0"
                       >
                         Laptop Briefcase with wheels (37L) 1
                       </a>
@@ -356,8 +356,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 2"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-1"
-                          to="/product/P0048M-1"
+                          href="/RefArchGlobal/en-GB/product/P0048M-1"
+                          to="/RefArchGlobal/en-GB/product/P0048M-1"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -412,9 +412,9 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 2"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-1"
+                        href="/RefArchGlobal/en-GB/product/P0048M-1"
                         tabindex="-1"
-                        to="/product/P0048M-1"
+                        to="/RefArchGlobal/en-GB/product/P0048M-1"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -492,8 +492,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-1"
-                        to="/product/P0048M-1"
+                        href="/RefArchGlobal/en-GB/product/P0048M-1"
+                        to="/RefArchGlobal/en-GB/product/P0048M-1"
                       >
                         Laptop Briefcase with wheels (37L) 2
                       </a>
@@ -656,8 +656,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 3"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-2"
-                          to="/product/P0048M-2"
+                          href="/RefArchGlobal/en-GB/product/P0048M-2"
+                          to="/RefArchGlobal/en-GB/product/P0048M-2"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -712,9 +712,9 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 3"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-2"
+                        href="/RefArchGlobal/en-GB/product/P0048M-2"
                         tabindex="-1"
-                        to="/product/P0048M-2"
+                        to="/RefArchGlobal/en-GB/product/P0048M-2"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -792,8 +792,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-2"
-                        to="/product/P0048M-2"
+                        href="/RefArchGlobal/en-GB/product/P0048M-2"
+                        to="/RefArchGlobal/en-GB/product/P0048M-2"
                       >
                         Laptop Briefcase with wheels (37L) 3
                       </a>
@@ -956,8 +956,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 4"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-3"
-                          to="/product/P0048M-3"
+                          href="/RefArchGlobal/en-GB/product/P0048M-3"
+                          to="/RefArchGlobal/en-GB/product/P0048M-3"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -1012,9 +1012,9 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 4"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-3"
+                        href="/RefArchGlobal/en-GB/product/P0048M-3"
                         tabindex="-1"
-                        to="/product/P0048M-3"
+                        to="/RefArchGlobal/en-GB/product/P0048M-3"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -1092,8 +1092,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-3"
-                        to="/product/P0048M-3"
+                        href="/RefArchGlobal/en-GB/product/P0048M-3"
+                        to="/RefArchGlobal/en-GB/product/P0048M-3"
                       >
                         Laptop Briefcase with wheels (37L) 4
                       </a>
@@ -1256,8 +1256,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 5"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-4"
-                          to="/product/P0048M-4"
+                          href="/RefArchGlobal/en-GB/product/P0048M-4"
+                          to="/RefArchGlobal/en-GB/product/P0048M-4"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -1312,9 +1312,9 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 5"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-4"
+                        href="/RefArchGlobal/en-GB/product/P0048M-4"
                         tabindex="-1"
-                        to="/product/P0048M-4"
+                        to="/RefArchGlobal/en-GB/product/P0048M-4"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -1392,8 +1392,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-4"
-                        to="/product/P0048M-4"
+                        href="/RefArchGlobal/en-GB/product/P0048M-4"
+                        to="/RefArchGlobal/en-GB/product/P0048M-4"
                       >
                         Laptop Briefcase with wheels (37L) 5
                       </a>
@@ -1556,8 +1556,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 6"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-5"
-                          to="/product/P0048M-5"
+                          href="/RefArchGlobal/en-GB/product/P0048M-5"
+                          to="/RefArchGlobal/en-GB/product/P0048M-5"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -1612,9 +1612,9 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 6"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-5"
+                        href="/RefArchGlobal/en-GB/product/P0048M-5"
                         tabindex="-1"
-                        to="/product/P0048M-5"
+                        to="/RefArchGlobal/en-GB/product/P0048M-5"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -1692,8 +1692,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-5"
-                        to="/product/P0048M-5"
+                        href="/RefArchGlobal/en-GB/product/P0048M-5"
+                        to="/RefArchGlobal/en-GB/product/P0048M-5"
                       >
                         Laptop Briefcase with wheels (37L) 6
                       </a>
@@ -1856,8 +1856,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 7"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-6"
-                          to="/product/P0048M-6"
+                          href="/RefArchGlobal/en-GB/product/P0048M-6"
+                          to="/RefArchGlobal/en-GB/product/P0048M-6"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -1912,9 +1912,9 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 7"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-6"
+                        href="/RefArchGlobal/en-GB/product/P0048M-6"
                         tabindex="-1"
-                        to="/product/P0048M-6"
+                        to="/RefArchGlobal/en-GB/product/P0048M-6"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -1992,8 +1992,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-6"
-                        to="/product/P0048M-6"
+                        href="/RefArchGlobal/en-GB/product/P0048M-6"
+                        to="/RefArchGlobal/en-GB/product/P0048M-6"
                       >
                         Laptop Briefcase with wheels (37L) 7
                       </a>
@@ -2156,8 +2156,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 8"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-7"
-                          to="/product/P0048M-7"
+                          href="/RefArchGlobal/en-GB/product/P0048M-7"
+                          to="/RefArchGlobal/en-GB/product/P0048M-7"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -2212,9 +2212,9 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 8"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-7"
+                        href="/RefArchGlobal/en-GB/product/P0048M-7"
                         tabindex="-1"
-                        to="/product/P0048M-7"
+                        to="/RefArchGlobal/en-GB/product/P0048M-7"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -2292,8 +2292,8 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-7"
-                        to="/product/P0048M-7"
+                        href="/RefArchGlobal/en-GB/product/P0048M-7"
+                        to="/RefArchGlobal/en-GB/product/P0048M-7"
                       >
                         Laptop Briefcase with wheels (37L) 8
                       </a>
@@ -2587,8 +2587,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 1"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-0"
-                          to="/product/P0048M-0"
+                          href="/RefArchGlobal/en-GB/product/P0048M-0"
+                          to="/RefArchGlobal/en-GB/product/P0048M-0"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -2643,9 +2643,9 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 1"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-0"
+                        href="/RefArchGlobal/en-GB/product/P0048M-0"
                         tabindex="-1"
-                        to="/product/P0048M-0"
+                        to="/RefArchGlobal/en-GB/product/P0048M-0"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -2723,8 +2723,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-0"
-                        to="/product/P0048M-0"
+                        href="/RefArchGlobal/en-GB/product/P0048M-0"
+                        to="/RefArchGlobal/en-GB/product/P0048M-0"
                       >
                         Laptop Briefcase with wheels (37L) 1
                       </a>
@@ -2887,8 +2887,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 2"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-1"
-                          to="/product/P0048M-1"
+                          href="/RefArchGlobal/en-GB/product/P0048M-1"
+                          to="/RefArchGlobal/en-GB/product/P0048M-1"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -2943,9 +2943,9 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 2"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-1"
+                        href="/RefArchGlobal/en-GB/product/P0048M-1"
                         tabindex="-1"
-                        to="/product/P0048M-1"
+                        to="/RefArchGlobal/en-GB/product/P0048M-1"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -3023,8 +3023,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-1"
-                        to="/product/P0048M-1"
+                        href="/RefArchGlobal/en-GB/product/P0048M-1"
+                        to="/RefArchGlobal/en-GB/product/P0048M-1"
                       >
                         Laptop Briefcase with wheels (37L) 2
                       </a>
@@ -3187,8 +3187,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 3"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-2"
-                          to="/product/P0048M-2"
+                          href="/RefArchGlobal/en-GB/product/P0048M-2"
+                          to="/RefArchGlobal/en-GB/product/P0048M-2"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -3243,9 +3243,9 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 3"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-2"
+                        href="/RefArchGlobal/en-GB/product/P0048M-2"
                         tabindex="-1"
-                        to="/product/P0048M-2"
+                        to="/RefArchGlobal/en-GB/product/P0048M-2"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -3323,8 +3323,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-2"
-                        to="/product/P0048M-2"
+                        href="/RefArchGlobal/en-GB/product/P0048M-2"
+                        to="/RefArchGlobal/en-GB/product/P0048M-2"
                       >
                         Laptop Briefcase with wheels (37L) 3
                       </a>
@@ -3487,8 +3487,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 4"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-3"
-                          to="/product/P0048M-3"
+                          href="/RefArchGlobal/en-GB/product/P0048M-3"
+                          to="/RefArchGlobal/en-GB/product/P0048M-3"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -3543,9 +3543,9 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 4"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-3"
+                        href="/RefArchGlobal/en-GB/product/P0048M-3"
                         tabindex="-1"
-                        to="/product/P0048M-3"
+                        to="/RefArchGlobal/en-GB/product/P0048M-3"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -3623,8 +3623,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-3"
-                        to="/product/P0048M-3"
+                        href="/RefArchGlobal/en-GB/product/P0048M-3"
+                        to="/RefArchGlobal/en-GB/product/P0048M-3"
                       >
                         Laptop Briefcase with wheels (37L) 4
                       </a>
@@ -3787,8 +3787,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 5"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-4"
-                          to="/product/P0048M-4"
+                          href="/RefArchGlobal/en-GB/product/P0048M-4"
+                          to="/RefArchGlobal/en-GB/product/P0048M-4"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -3843,9 +3843,9 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 5"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-4"
+                        href="/RefArchGlobal/en-GB/product/P0048M-4"
                         tabindex="-1"
-                        to="/product/P0048M-4"
+                        to="/RefArchGlobal/en-GB/product/P0048M-4"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -3923,8 +3923,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-4"
-                        to="/product/P0048M-4"
+                        href="/RefArchGlobal/en-GB/product/P0048M-4"
+                        to="/RefArchGlobal/en-GB/product/P0048M-4"
                       >
                         Laptop Briefcase with wheels (37L) 5
                       </a>
@@ -4087,8 +4087,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 6"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-5"
-                          to="/product/P0048M-5"
+                          href="/RefArchGlobal/en-GB/product/P0048M-5"
+                          to="/RefArchGlobal/en-GB/product/P0048M-5"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -4143,9 +4143,9 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 6"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-5"
+                        href="/RefArchGlobal/en-GB/product/P0048M-5"
                         tabindex="-1"
-                        to="/product/P0048M-5"
+                        to="/RefArchGlobal/en-GB/product/P0048M-5"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -4223,8 +4223,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-5"
-                        to="/product/P0048M-5"
+                        href="/RefArchGlobal/en-GB/product/P0048M-5"
+                        to="/RefArchGlobal/en-GB/product/P0048M-5"
                       >
                         Laptop Briefcase with wheels (37L) 6
                       </a>
@@ -4387,8 +4387,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 7"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-6"
-                          to="/product/P0048M-6"
+                          href="/RefArchGlobal/en-GB/product/P0048M-6"
+                          to="/RefArchGlobal/en-GB/product/P0048M-6"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -4443,9 +4443,9 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 7"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-6"
+                        href="/RefArchGlobal/en-GB/product/P0048M-6"
                         tabindex="-1"
-                        to="/product/P0048M-6"
+                        to="/RefArchGlobal/en-GB/product/P0048M-6"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -4523,8 +4523,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-6"
-                        to="/product/P0048M-6"
+                        href="/RefArchGlobal/en-GB/product/P0048M-6"
+                        to="/RefArchGlobal/en-GB/product/P0048M-6"
                       >
                         Laptop Briefcase with wheels (37L) 7
                       </a>
@@ -4687,8 +4687,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 8"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-7"
-                          to="/product/P0048M-7"
+                          href="/RefArchGlobal/en-GB/product/P0048M-7"
+                          to="/RefArchGlobal/en-GB/product/P0048M-7"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -4743,9 +4743,9 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 8"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-7"
+                        href="/RefArchGlobal/en-GB/product/P0048M-7"
                         tabindex="-1"
-                        to="/product/P0048M-7"
+                        to="/RefArchGlobal/en-GB/product/P0048M-7"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -4823,8 +4823,8 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-7"
-                        to="/product/P0048M-7"
+                        href="/RefArchGlobal/en-GB/product/P0048M-7"
+                        to="/RefArchGlobal/en-GB/product/P0048M-7"
                       >
                         Laptop Briefcase with wheels (37L) 8
                       </a>
@@ -5092,8 +5092,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 1"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-0"
-                          to="/product/P0048M-0"
+                          href="/RefArchGlobal/en-GB/product/P0048M-0"
+                          to="/RefArchGlobal/en-GB/product/P0048M-0"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -5148,9 +5148,9 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 1"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-0"
+                        href="/RefArchGlobal/en-GB/product/P0048M-0"
                         tabindex="-1"
-                        to="/product/P0048M-0"
+                        to="/RefArchGlobal/en-GB/product/P0048M-0"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -5228,8 +5228,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-0"
-                        to="/product/P0048M-0"
+                        href="/RefArchGlobal/en-GB/product/P0048M-0"
+                        to="/RefArchGlobal/en-GB/product/P0048M-0"
                       >
                         Laptop Briefcase with wheels (37L) 1
                       </a>
@@ -5392,8 +5392,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 2"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-1"
-                          to="/product/P0048M-1"
+                          href="/RefArchGlobal/en-GB/product/P0048M-1"
+                          to="/RefArchGlobal/en-GB/product/P0048M-1"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -5448,9 +5448,9 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 2"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-1"
+                        href="/RefArchGlobal/en-GB/product/P0048M-1"
                         tabindex="-1"
-                        to="/product/P0048M-1"
+                        to="/RefArchGlobal/en-GB/product/P0048M-1"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -5528,8 +5528,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-1"
-                        to="/product/P0048M-1"
+                        href="/RefArchGlobal/en-GB/product/P0048M-1"
+                        to="/RefArchGlobal/en-GB/product/P0048M-1"
                       >
                         Laptop Briefcase with wheels (37L) 2
                       </a>
@@ -5692,8 +5692,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 3"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-2"
-                          to="/product/P0048M-2"
+                          href="/RefArchGlobal/en-GB/product/P0048M-2"
+                          to="/RefArchGlobal/en-GB/product/P0048M-2"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -5748,9 +5748,9 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 3"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-2"
+                        href="/RefArchGlobal/en-GB/product/P0048M-2"
                         tabindex="-1"
-                        to="/product/P0048M-2"
+                        to="/RefArchGlobal/en-GB/product/P0048M-2"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -5828,8 +5828,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-2"
-                        to="/product/P0048M-2"
+                        href="/RefArchGlobal/en-GB/product/P0048M-2"
+                        to="/RefArchGlobal/en-GB/product/P0048M-2"
                       >
                         Laptop Briefcase with wheels (37L) 3
                       </a>
@@ -5992,8 +5992,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 4"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-3"
-                          to="/product/P0048M-3"
+                          href="/RefArchGlobal/en-GB/product/P0048M-3"
+                          to="/RefArchGlobal/en-GB/product/P0048M-3"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -6048,9 +6048,9 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 4"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-3"
+                        href="/RefArchGlobal/en-GB/product/P0048M-3"
                         tabindex="-1"
-                        to="/product/P0048M-3"
+                        to="/RefArchGlobal/en-GB/product/P0048M-3"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -6128,8 +6128,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-3"
-                        to="/product/P0048M-3"
+                        href="/RefArchGlobal/en-GB/product/P0048M-3"
+                        to="/RefArchGlobal/en-GB/product/P0048M-3"
                       >
                         Laptop Briefcase with wheels (37L) 4
                       </a>
@@ -6292,8 +6292,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 5"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-4"
-                          to="/product/P0048M-4"
+                          href="/RefArchGlobal/en-GB/product/P0048M-4"
+                          to="/RefArchGlobal/en-GB/product/P0048M-4"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -6348,9 +6348,9 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 5"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-4"
+                        href="/RefArchGlobal/en-GB/product/P0048M-4"
                         tabindex="-1"
-                        to="/product/P0048M-4"
+                        to="/RefArchGlobal/en-GB/product/P0048M-4"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -6428,8 +6428,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-4"
-                        to="/product/P0048M-4"
+                        href="/RefArchGlobal/en-GB/product/P0048M-4"
+                        to="/RefArchGlobal/en-GB/product/P0048M-4"
                       >
                         Laptop Briefcase with wheels (37L) 5
                       </a>
@@ -6592,8 +6592,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 6"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-5"
-                          to="/product/P0048M-5"
+                          href="/RefArchGlobal/en-GB/product/P0048M-5"
+                          to="/RefArchGlobal/en-GB/product/P0048M-5"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -6648,9 +6648,9 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 6"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-5"
+                        href="/RefArchGlobal/en-GB/product/P0048M-5"
                         tabindex="-1"
-                        to="/product/P0048M-5"
+                        to="/RefArchGlobal/en-GB/product/P0048M-5"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -6728,8 +6728,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-5"
-                        to="/product/P0048M-5"
+                        href="/RefArchGlobal/en-GB/product/P0048M-5"
+                        to="/RefArchGlobal/en-GB/product/P0048M-5"
                       >
                         Laptop Briefcase with wheels (37L) 6
                       </a>
@@ -6892,8 +6892,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 7"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-6"
-                          to="/product/P0048M-6"
+                          href="/RefArchGlobal/en-GB/product/P0048M-6"
+                          to="/RefArchGlobal/en-GB/product/P0048M-6"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -6948,9 +6948,9 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 7"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-6"
+                        href="/RefArchGlobal/en-GB/product/P0048M-6"
                         tabindex="-1"
-                        to="/product/P0048M-6"
+                        to="/RefArchGlobal/en-GB/product/P0048M-6"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -7028,8 +7028,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-6"
-                        to="/product/P0048M-6"
+                        href="/RefArchGlobal/en-GB/product/P0048M-6"
+                        to="/RefArchGlobal/en-GB/product/P0048M-6"
                       >
                         Laptop Briefcase with wheels (37L) 7
                       </a>
@@ -7192,8 +7192,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <a
                           aria-label="View Laptop Briefcase with wheels (37L) 8"
                           class="block w-full h-full flex-1"
-                          href="/product/P0048M-7"
-                          to="/product/P0048M-7"
+                          href="/RefArchGlobal/en-GB/product/P0048M-7"
+                          to="/RefArchGlobal/en-GB/product/P0048M-7"
                         >
                           <div
                             class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -7248,9 +7248,9 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       <a
                         aria-label="View Laptop Briefcase with wheels (37L) 8"
                         class="absolute inset-0 z-[1] cursor-pointer"
-                        href="/product/P0048M-7"
+                        href="/RefArchGlobal/en-GB/product/P0048M-7"
                         tabindex="-1"
-                        to="/product/P0048M-7"
+                        to="/RefArchGlobal/en-GB/product/P0048M-7"
                       />
                       <div
                         class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -7328,8 +7328,8 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                        href="/product/P0048M-7"
-                        to="/product/P0048M-7"
+                        href="/RefArchGlobal/en-GB/product/P0048M-7"
+                        to="/RefArchGlobal/en-GB/product/P0048M-7"
                       >
                         Laptop Briefcase with wheels (37L) 8
                       </a>

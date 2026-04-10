@@ -18,13 +18,15 @@ import ProductCarousel, { ProductCarouselWithSuspense } from '../carousel';
 // @ts-expect-error mock file is JS
 import { mockStandardProductHit } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import DynamicImageProvider from '@/providers/dynamic-image';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -75,7 +77,7 @@ const meta: Meta<typeof ProductCarousel> = {
     decorators: [
         (Story: React.ComponentType) => (
             <ConfigProvider config={mockConfig}>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <ActionLogger>
                         <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
                             <div className="p-8">
@@ -83,7 +85,7 @@ const meta: Meta<typeof ProductCarousel> = {
                             </div>
                         </DynamicImageProvider>
                     </ActionLogger>
-                </CurrencyWrapper>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],

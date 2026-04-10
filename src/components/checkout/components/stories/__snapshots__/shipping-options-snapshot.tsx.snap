@@ -403,7 +403,7 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
                 <span
                   class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  $9.99
+                  £9.99
                 </span>
               </div>
               <span
@@ -448,7 +448,7 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
                 <span
                   class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  $19.99
+                  £19.99
                 </span>
               </div>
               <span
@@ -697,7 +697,7 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
                 <span
                   class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  $9.99
+                  £9.99
                 </span>
               </div>
               <span
@@ -742,7 +742,7 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
                 <span
                   class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  $19.99
+                  £19.99
                 </span>
               </div>
               <span
@@ -920,7 +920,7 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
                 <span
                   class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  $9.99
+                  £9.99
                 </span>
               </div>
               <span
@@ -1136,7 +1136,7 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
                 <span
                   class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  $19.99
+                  £19.99
                 </span>
               </div>
               <span
@@ -1307,7 +1307,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                 <span
                   class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  $9.99
+                  £9.99
                 </span>
               </div>
               <span
@@ -1352,7 +1352,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                 <span
                   class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  $19.99
+                  £19.99
                 </span>
               </div>
               <span
@@ -1397,7 +1397,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                 <span
                   class="shrink-0 text-sm font-semibold leading-none"
                 >
-                  $29.99
+                  £29.99
                 </span>
               </div>
               <span
