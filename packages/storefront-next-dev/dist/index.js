@@ -1599,6 +1599,66 @@ function componentLoadersPlugin(config = {}) {
 }
 
 //#endregion
+//#region src/plugins/ssrSourcemapFix.ts
+const INLINE_SOURCEMAP_PREFIX = "//# sourceMappingURL=data:application/json;base64,";
+/**
+* Vite plugin that fixes SSR sourcemap `sources` to use full module paths
+* instead of bare basenames.
+*
+* **Problem:** When the React Router `v8_viteEnvironmentApi` future flag is
+* enabled, SSR modules are evaluated by Vite's Environment API module runner.
+* Vite's `ssrTransform` generates inline sourcemaps with
+* `sources: [path.basename(url)]` (e.g., `"search.tsx"` or `"index.tsx"`).
+* V8's debugger cannot resolve bare basenames back to files on disk, so
+* Chrome DevTools (via `--inspect`) displays the wrong source file content
+* when pausing at breakpoints — even for files with unique names.
+*
+* **Why `fetchModule`:** A Vite transform plugin cannot fix this because
+* `ssrTransform` runs *after* the plugin transform pipeline and overwrites
+* `map.sources` with `[path.basename(url)]`. The only viable interception
+* point is `fetchModule` — the public API method on `DevEnvironment` that
+* returns the final transformed code (with inline sourcemaps already embedded)
+* to the module runner.
+*
+* **Removable:** If Vite updates `ssrTransform` to use full paths instead of
+* `path.basename()`, this plugin can be deleted with no other changes.
+*
+* Only active in development mode (`configureServer` does not run in build).
+*/
+function ssrSourcemapFixPlugin() {
+	return {
+		name: "storefront-next:ssr-sourcemap-fix",
+		configureServer(server) {
+			const ssrEnv = server.environments.ssr;
+			if (!ssrEnv) return;
+			const originalFetchModule = ssrEnv.fetchModule.bind(ssrEnv);
+			ssrEnv.fetchModule = async (id, importer, options) => {
+				const result = await originalFetchModule(id, importer, options);
+				if (!result || "externalize" in result || "cache" in result || !("code" in result)) return result;
+				const smIndex = result.code.lastIndexOf(INLINE_SOURCEMAP_PREFIX);
+				if (smIndex === -1) return result;
+				try {
+					const base64Start = smIndex + 50;
+					const base64End = result.code.indexOf("\n", base64Start);
+					const base64Data = base64End === -1 ? result.code.slice(base64Start).trim() : result.code.slice(base64Start, base64End).trim();
+					const mapJson = JSON.parse(Buffer.from(base64Data, "base64").toString("utf-8"));
+					if (!mapJson.sources || !Array.isArray(mapJson.sources)) return result;
+					const fileId = result.file || result.id;
+					if (!fileId) return result;
+					if (mapJson.sources.length !== 1) return result;
+					const source = mapJson.sources[0];
+					if (!source || source.includes("/")) return result;
+					mapJson.sources = [fileId];
+					const patchedBase64 = Buffer.from(JSON.stringify(mapJson)).toString("base64");
+					result.code = result.code.slice(0, base64Start) + patchedBase64 + (base64End === -1 ? "" : result.code.slice(base64End));
+				} catch {}
+				return result;
+			};
+		}
+	};
+}
+
+//#endregion
 //#region src/storefront-next-targets.ts
 /**
 * Storefront Next Vite plugin that powers the React Router app.
@@ -1636,7 +1696,8 @@ function storefrontNextTargets(config = {}) {
 		platformEntryPlugin(),
 		transformTargetPlaceholderPlugin(),
 		watchConfigFilesPlugin(),
-		buildMiddlewareRegistryPlugin()
+		buildMiddlewareRegistryPlugin(),
+		ssrSourcemapFixPlugin()
 	];
 	if (staticRegistry?.componentPath && staticRegistry?.registryPath) {
 		plugins.push(staticRegistryPlugin(staticRegistry));

@@ -24,8 +24,8 @@ describe('storefrontNextTargets', () => {
     // Base plugin count without SCAPI_PROXY_HOST (workspace plugin excluded):
     // managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter,
     // platformEntry, transformTargetPlaceholder, watchConfigFiles, buildMiddlewareRegistry,
-    // eventInstrumentationValidator
-    const BASE_PLUGIN_COUNT = 8;
+    // ssrSourcemapFix, eventInstrumentationValidator
+    const BASE_PLUGIN_COUNT = 9;
 
     it('should return an array of targets with default config', () => {
         const targets = storefrontNextTargets();
@@ -84,8 +84,9 @@ describe('storefrontNextTargets', () => {
         expect(targetNames[4]).toBe('storefront-next:transform-target-placeholder');
         expect(targetNames[5]).toBe('storefront-next:watch-config-files');
         expect(targetNames[6]).toBe('storefront-next:build-middleware-registry');
-        expect(targetNames[7]).toBe('storefrontnext:event-instrumentation-validator');
-        expect(targetNames[8]).toBe('storefront-next:readable-chunk-file-names');
+        expect(targetNames[7]).toBe('storefront-next:ssr-sourcemap-fix');
+        expect(targetNames[8]).toBe('storefrontnext:event-instrumentation-validator');
+        expect(targetNames[9]).toBe('storefront-next:readable-chunk-file-names');
     });
 
     it('should accept StorefrontNextTargetsConfig type with readableChunkNames', () => {

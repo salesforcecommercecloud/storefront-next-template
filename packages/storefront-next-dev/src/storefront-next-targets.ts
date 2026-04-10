@@ -29,6 +29,7 @@ import { buildMiddlewareRegistryPlugin } from './plugins/buildMiddlewareRegistry
 import { platformEntryPlugin } from './plugins/platformEntry';
 import { workspacePlugin } from './plugins/workspace';
 import { componentLoadersPlugin } from './plugins/componentLoaders';
+import { ssrSourcemapFixPlugin } from './plugins/ssrSourcemapFix';
 
 /**
  * Configuration options for the Storefront Next Vite plugin.
@@ -122,6 +123,7 @@ export function storefrontNextTargets(config: StorefrontNextTargetsConfig = {}):
         transformTargetPlaceholderPlugin(),
         watchConfigFilesPlugin(),
         buildMiddlewareRegistryPlugin(),
+        ssrSourcemapFixPlugin(),
     ];
 
     // Add static registry plugin if enabled
