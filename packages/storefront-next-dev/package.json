@@ -13,6 +13,12 @@
         "default": "./dist/index.js"
       }
     },
+    "./data-store/local-provider": {
+      "import": {
+        "types": "./dist/data-store/local-provider.d.ts",
+        "default": "./dist/data-store/local-provider.js"
+      }
+    },
     "./logger": {
       "import": {
         "types": "./dist/logger/index.d.ts",
@@ -186,7 +192,7 @@
     "compressible": "2.0.18",
     "compression": "^1.7.4",
     "dotenv": "^16.4.7",
-    "express": "5.2.1",
+    "express": "5.1.0",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
     "handlebars": "4.7.8",

@@ -83,7 +83,7 @@
         "clsx": "2.1.1",
         "core-js": "3.45.1",
         "embla-carousel-react": "8.6.0",
-        "express": "5.2.1",
+        "express": "5.1.0",
         "i18next": "25.5.3",
         "i18next-browser-languagedetector": "8.2.0",
         "input-otp": "1.4.2",
@@ -184,7 +184,7 @@
         "server": [
             {
                 "name": "**/*",
-                "limit": "5 mB"
+                "limit": "5.2 mB"
             }
         ],
         "client": [

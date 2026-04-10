@@ -17,7 +17,7 @@
 
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { defineConfig, perEnvironmentPlugin, loadEnv } from 'vite';
 import { configDefaults, coverageConfigDefaults } from 'vitest/config';
 import coverageConfigThresholds from './vitest.thresholds';
@@ -56,6 +56,19 @@ export default defineConfig(({ mode }) => {
     }
 
     const target = scapiProxyHost || (shortCode && `https://${shortCode}.api.commercecloud.salesforce.com`);
+
+    const localProviderPath = resolve(__dirname, '../storefront-next-dev/dist/data-store/local-provider.js');
+    const mrtUtilitiesPath = resolve(
+        __dirname,
+        '../storefront-next-runtime/node_modules/@salesforce/mrt-utilities/dist/esm/middleware/index.js'
+    );
+    const localDevAliases: Record<string, string> = {};
+    if (existsSync(localProviderPath)) {
+        localDevAliases['@salesforce/storefront-next-dev/data-store/local-provider'] = localProviderPath;
+    }
+    if (existsSync(mrtUtilitiesPath)) {
+        localDevAliases['@salesforce/mrt-utilities/middleware'] = mrtUtilitiesPath;
+    }
 
     return {
         build: {
@@ -159,6 +172,8 @@ export default defineConfig(({ mode }) => {
                 // Server-only config access (must be before '@' to take precedence)
                 '@/config/server': resolve(__dirname, './config.server.ts'),
                 '@': resolve(__dirname, './src'),
+                // Fonts alias for easy customization
+                ...localDevAliases,
                 // Fonts alias — uses root-absolute path (not a filesystem resolve) because fonts
                 // live in public/. Vite serves public assets at the root, so '/fonts' maps to
                 // public/fonts/. Using resolve(__dirname, './public/fonts') would trigger Vite

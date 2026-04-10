@@ -46,6 +46,88 @@ Entry point for React Page Designer integration. Exports only the minimal set of
 
 CSS stylesheet containing design layer styles for Page Designer integration. Provides visual overlays, selection indicators, and design-time UI elements. Can be imported and consumed in various ways depending on your bundler configuration and build setup.
 
+### `/data-store` MRT Data Store Access
+
+Utilities and middleware for reading scoped entries from the MRT data access layer. This module intentionally exposes only key-specific helpers (initially site preferences).
+
+**Environment Variables:**
+
+- `AWS_REGION` (required): AWS region for the data store table (e.g., `us-east-1`)
+- `MOBIFY_PROPERTY_ID` (required): MRT property identifier (e.g., `abcd1234`)
+- `DEPLOY_TARGET` (required): MRT deploy target (e.g., `production`)
+
+These are managed by Managed Runtime and are not typically set by SDK consumers directly.
+
+**Provider Selection:**
+
+The runtime auto-selects the MRT provider when all MRT environment variables are present.
+If any are missing, it loads a local provider from `@salesforce/storefront-next-dev` in
+development or when explicitly allowed.
+
+Local provider opt-in outside development:
+
+- `SFNEXT_DATA_STORE_ALLOW_LOCAL` (optional): set to `true` to allow local provider
+- `CI` (optional): when set to `true`, allows the local provider
+
+Local provider environment variables (development only):
+
+- `SFNEXT_DATA_STORE_DEFAULTS` (optional): JSON map of keys to preference objects
+- `SFNEXT_DATA_STORE_WARN_ON_MISSING` (optional): set to `false` to silence warnings
+
+**Example Usage:**
+
+```typescript
+import { customSitePreferencesMiddleware, getSitePreferences } from '@salesforce/storefront-next-runtime/data-store';
+
+export const middleware = [
+  // Must run after the multi-site middleware to resolve site-specific keys.
+  customSitePreferencesMiddleware,
+  // ...other middleware
+];
+
+export const loader = ({ context }) => {
+  const sitePreferences = getSitePreferences(context);
+  return { sitePreferences };
+};
+```
+
+**Custom Middleware Usage:**
+
+If you want to read a different key or apply a custom transform, you can build your own
+middleware with `createDataStoreMiddleware` and `createDataStoreContext`.
+
+```typescript
+import {
+  createDataStoreContext,
+  createDataStoreMiddleware,
+} from '@salesforce/storefront-next-runtime/data-store';
+
+type CustomPreferences = {
+  featureFlags: Record<string, boolean>;
+};
+
+export const customPreferencesContext = createDataStoreContext<CustomPreferences>();
+
+export const customPreferencesMiddleware = createDataStoreMiddleware({
+  entryKey: 'custom-preferences',
+  context: customPreferencesContext,
+  transform: (value) => ({
+    featureFlags: value.featureFlags as Record<string, boolean>,
+  }),
+});
+
+export const loader = ({ context }) => {
+  const customPreferences = context.get(customPreferencesContext);
+  return { customPreferences };
+};
+```
+
+The site preferences middleware reads data from a site-scoped key in the data store using this format:
+
+```
+<siteid>-custom-site-preferences
+```
+
 ### `/scapi-client` SCAPI Client
 
 Type-safe, auto-generated API clients for Salesforce Commerce APIs with operation-based method names.

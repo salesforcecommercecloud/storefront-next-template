@@ -62,6 +62,24 @@
         "default": "./dist/events.js"
       }
     },
+    "./data-store": {
+      "import": {
+        "types": "./dist/data-store.d.ts",
+        "default": "./dist/data-store.js"
+      }
+    },
+    "./data-store/custom-site-preferences": {
+      "import": {
+        "types": "./dist/data-store-custom-site-preferences.d.ts",
+        "default": "./dist/data-store-custom-site-preferences.js"
+      }
+    },
+    "./data-store/custom-global-preferences": {
+      "import": {
+        "types": "./dist/data-store-custom-global-preferences.d.ts",
+        "default": "./dist/data-store-custom-global-preferences.js"
+      }
+    },
     "./site-context": {
       "import": {
         "types": "./dist/site-context.d.ts",
@@ -118,6 +136,7 @@
   "author": "cc-pwa-kit@salesforce.com",
   "license": "Apache-2.0",
   "dependencies": {
+    "@salesforce/mrt-utilities": "0.1.0",
     "jiti": "^2.6.1",
     "openapi-fetch": "0.15.0"
   },
@@ -125,7 +144,6 @@
     "@react-router/dev": "7.12.0",
     "@react-router/fs-routes": "7.12.0",
     "@testing-library/react": "^16.1.0",
-    "react-router": "7.12.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
@@ -136,14 +154,15 @@
     "openapi-typescript": "7.10.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-router": "7.12.0",
     "shx": "^0.4.0",
     "tsdown": "^0.15.4",
     "typescript": "^5.6.0",
     "vitest": "4.0.18"
   },
   "peerDependencies": {
-    "@react-router/fs-routes": ">=7.0.0",
     "@react-router/dev": ">=7.0.0",
+    "@react-router/fs-routes": ">=7.0.0",
     "react": ">=19.0.0",
     "react-dom": ">=19.0.0",
     "react-router": ">=7.0.0"

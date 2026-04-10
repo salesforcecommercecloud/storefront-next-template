@@ -40,6 +40,10 @@ import { type i18n } from 'i18next';
 import { I18nextProvider } from 'react-i18next';
 import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
+import {
+    customGlobalPreferencesMiddleware,
+    customSitePreferencesMiddleware,
+} from '@salesforce/storefront-next-runtime/data-store';
 import { SiteProvider, siteContext, type Site, type Locale } from '@salesforce/storefront-next-runtime/site-context';
 
 // Middlewares
@@ -136,7 +140,9 @@ export const middleware: MiddlewareFunction<Response>[] = [
     loggingMiddleware,
     modeDetectionMiddlewareServer,
     appConfigMiddlewareServer,
-    siteContextMiddleware, // Must run after appConfig, before i18next. Resolves site + locale + currency.
+    siteContextMiddleware, // Must run after appConfig, before i18next and currency
+    customSitePreferencesMiddleware,
+    customGlobalPreferencesMiddleware,
     i18nextMiddleware,
     selectedStoreMiddleware /** @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */,
     performanceMetricsMiddlewareServer,
