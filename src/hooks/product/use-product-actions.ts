@@ -191,7 +191,13 @@ export function useProductActions({
         currentVariant,
     ]);
 
-    const isOutOfStock = !isInStock;
+    /** Master inventory is not a reliable OOS signal until a variant is resolved (also avoids flash during URL/swatches updates). */
+    const isAwaitingVariantSelection = useMemo(
+        () => (product.variants?.length ?? 0) > 0 && currentVariant == null,
+        [product.variants?.length, currentVariant]
+    );
+
+    const isOutOfStock = !isInStock && !isAwaitingVariantSelection;
 
     // Check if product is a master or variant product (has variation attributes like size, color)
     const isMasterOrVariantProduct = product?.type?.master === true || product?.type?.variant === true;

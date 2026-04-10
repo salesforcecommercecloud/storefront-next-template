@@ -131,7 +131,7 @@ export default function ShippingCalculator({ onCalculate, productId }: ShippingC
                 </div>
 
                 {showInvalidZipError && (
-                    <p id="validation-error" className="text-xs text-destructive" role="alert">
+                    <p id="validation-error" className="text-xs text-status-critical-strong" role="alert">
                         {t('deliveryOptions.pickupOrDelivery.invalidZipCode')}
                     </p>
                 )}

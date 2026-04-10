@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 import { type ReactElement, useState, useEffect, lazy, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { InfoModalData } from '@/components/info-modal/types';
 import { useProductContent } from '@/hooks/product-content/use-product-content';
+import { useCurrency } from '@/providers/currency';
+import { formatCurrency } from '@/lib/currency';
 import type { BuyNowPayLaterMessageData, BuyNowPayLaterLearnMoreData } from '@/lib/adapters/product-content-data-types';
 
 const InfoModal = lazy(() => import('@/components/info-modal'));
@@ -66,6 +69,8 @@ export default function BuyNowPayLater({ productId }: BuyNowPayLaterProps = {}):
     const [modalData, setModalData] = useState<InfoModalData | undefined>(undefined);
 
     const { adapter, isEnabled } = useProductContent();
+    const currency = useCurrency();
+    const { i18n } = useTranslation();
 
     useEffect(() => {
         if (!isEnabled || !adapter) return;
@@ -99,13 +104,14 @@ export default function BuyNowPayLater({ productId }: BuyNowPayLaterProps = {}):
     const paymentCount = messageData?.paymentCount ?? 4;
     const amountPerPayment = messageData?.amountPerPayment ?? 12.25;
     const learnMoreLabel = messageData?.learnMoreLabel ?? 'Learn more';
+    const formattedInstallment = formatCurrency(amountPerPayment, i18n.language, currency);
 
     return (
         <>
             <div className="text-sm text-muted-foreground">
                 <span>
                     Pay in {paymentCount} interest-free payments of{' '}
-                    <span className="font-bold text-foreground">${amountPerPayment.toFixed(2)}</span>.{' '}
+                    <span className="font-bold text-foreground">{formattedInstallment}</span>.{' '}
                 </span>
                 <button
                     type="button"

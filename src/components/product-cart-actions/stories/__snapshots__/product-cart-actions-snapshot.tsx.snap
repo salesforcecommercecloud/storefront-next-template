@@ -28,8 +28,7 @@ exports[`ProductCartActions stories snapshot > Default story renders and matches
           <span
             class="font-bold text-foreground"
           >
-            $
-            12.25
+            $12.25
           </span>
           .
            

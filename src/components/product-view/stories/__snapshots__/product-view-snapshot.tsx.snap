@@ -618,8 +618,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 <span
                   class="font-bold text-foreground"
                 >
-                  $
-                  12.25
+                  £12.25
                 </span>
                 .
                  
@@ -1347,8 +1346,7 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
                 <span
                   class="font-bold text-foreground"
                 >
-                  $
-                  12.25
+                  £12.25
                 </span>
                 .
                  

@@ -480,6 +480,27 @@ describe('useProductActions', () => {
                 expect(result.current.isInStock).toBe(false);
             });
 
+            test('isOutOfStock is false while variant selection is incomplete even if master inventory shows OOS', () => {
+                const masterWithVariantsOos = {
+                    ...standardProd,
+                    type: { master: true },
+                    inventory: { ats: 0, id: 'inventory_test', orderable: false },
+                    variants: [
+                        { productId: 'v1', variationValues: { color: 'A' } },
+                        { productId: 'v2', variationValues: { color: 'B' } },
+                    ],
+                };
+                const { result } = renderHook(
+                    () => useProductActions({ product: masterWithVariantsOos, currentVariant: null }),
+                    {
+                        wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                    }
+                );
+
+                expect(result.current.isInStock).toBe(false);
+                expect(result.current.isOutOfStock).toBe(false);
+            });
+
             test('isInStock handles undefined inventory', () => {
                 const productNoInventory = { ...standardProd, inventory: undefined };
                 const { result } = renderHook(

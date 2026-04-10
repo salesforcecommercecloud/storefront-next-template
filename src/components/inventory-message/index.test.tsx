@@ -39,6 +39,24 @@ describe('InventoryMessage', () => {
         expect(screen.getByText('In Stock (10 units) ready to be shipped')).toBeInTheDocument();
     });
 
+    it('renders generic in stock when status is in-stock but ATS is zero (no "0 units" copy)', () => {
+        const productAtsZero = {
+            ...baseProduct,
+            inventory: {
+                id: 'test-inventory',
+                ats: 0,
+                orderable: true,
+                backorderable: false,
+                preorderable: false,
+            },
+        };
+
+        render(<InventoryMessage product={productAtsZero} getInventoryStatus={() => 'in-stock'} />);
+
+        expect(screen.getByText('In stock')).toBeInTheDocument();
+        expect(screen.queryByText(/0 units/)).not.toBeInTheDocument();
+    });
+
     it('renders in-stock message without count when ats is undefined', () => {
         const productNoAts = {
             ...baseProduct,
@@ -100,6 +118,159 @@ describe('InventoryMessage', () => {
         };
 
         render(<InventoryMessage product={outOfStockProduct} />);
+
+        expect(screen.getByText('Out of stock')).toBeInTheDocument();
+    });
+
+    it('hides out-of-stock when product has variants but no variant is selected yet', () => {
+        const masterShowsOosWithVariants = {
+            ...baseProduct,
+            inventory: {
+                id: 'test-inventory',
+                orderable: false,
+                ats: 0,
+                backorderable: false,
+                preorderable: false,
+            },
+            variants: [
+                {
+                    productId: 'variant-a',
+                    variationValues: { color: 'RED' },
+                },
+                {
+                    productId: 'variant-b',
+                    variationValues: { color: 'BLUE' },
+                },
+            ],
+        } as ShopperProducts.schemas['Product'];
+
+        const { container } = render(<InventoryMessage product={masterShowsOosWithVariants} />);
+
+        expect(container.querySelector('div')).toHaveAttribute('aria-hidden', 'true');
+        expect(container).toHaveTextContent('Inventory unavailable');
+    });
+
+    it('shows out-of-stock for a variant product once currentVariant is resolved', () => {
+        const masterShowsOosWithVariants = {
+            ...baseProduct,
+            inventory: {
+                id: 'test-inventory',
+                orderable: false,
+                ats: 0,
+                backorderable: false,
+                preorderable: false,
+            },
+            variants: [
+                {
+                    productId: 'variant-a',
+                    variationValues: { color: 'RED' },
+                },
+            ],
+        } as ShopperProducts.schemas['Product'];
+
+        const variant = {
+            productId: 'variant-a',
+            variationValues: { color: 'RED' },
+            inventory: {
+                id: 'variant-inv',
+                orderable: false,
+                ats: 0,
+                backorderable: false,
+                preorderable: false,
+            },
+        } as unknown as ShopperProducts.schemas['Variant'];
+
+        render(<InventoryMessage product={masterShowsOosWithVariants} currentVariant={variant} />);
+
+        expect(screen.getByText('Out of stock')).toBeInTheDocument();
+    });
+
+    it('does not use master inventory for OOS when variant is selected but inventory payload is not present yet', () => {
+        const masterOos = {
+            ...baseProduct,
+            inventory: {
+                id: 'master-inv',
+                orderable: false,
+                ats: 0,
+                backorderable: false,
+                preorderable: false,
+            },
+            variants: [
+                {
+                    productId: 'variant-in-stock',
+                    orderable: true,
+                    variationValues: { color: 'RED' },
+                },
+            ],
+        } as ShopperProducts.schemas['Product'];
+
+        const variant = {
+            productId: 'variant-in-stock',
+            orderable: true,
+            variationValues: { color: 'RED' },
+        } as ShopperProducts.schemas['Variant'];
+
+        render(<InventoryMessage product={masterOos} currentVariant={variant} />);
+
+        expect(screen.getByText('In stock')).toBeInTheDocument();
+    });
+
+    it('shows unit count from master ATS when variant has no inventory but master is orderable with ATS', () => {
+        const master = {
+            ...baseProduct,
+            inventory: {
+                id: 'master-inv',
+                orderable: true,
+                ats: 24,
+                backorderable: false,
+                preorderable: false,
+            },
+            variants: [
+                {
+                    productId: 'variant-sku',
+                    orderable: true,
+                    variationValues: { color: 'RED' },
+                },
+            ],
+        } as ShopperProducts.schemas['Product'];
+
+        const variant = {
+            productId: 'variant-sku',
+            orderable: true,
+            variationValues: { color: 'RED' },
+        } as ShopperProducts.schemas['Variant'];
+
+        render(<InventoryMessage product={master} currentVariant={variant} maxStockDisplay={99} />);
+
+        expect(screen.getByText('In Stock (24 units) ready to be shipped')).toBeInTheDocument();
+    });
+
+    it('shows out-of-stock when variant is orderable false and has no inventory object', () => {
+        const master = {
+            ...baseProduct,
+            inventory: {
+                id: 'master-inv',
+                ats: 100,
+                orderable: true,
+                backorderable: false,
+                preorderable: false,
+            },
+            variants: [
+                {
+                    productId: 'variant-oos',
+                    orderable: false,
+                    variationValues: { color: 'RED' },
+                },
+            ],
+        } as ShopperProducts.schemas['Product'];
+
+        const variant = {
+            productId: 'variant-oos',
+            orderable: false,
+            variationValues: { color: 'RED' },
+        } as ShopperProducts.schemas['Variant'];
+
+        render(<InventoryMessage product={master} currentVariant={variant} />);
 
         expect(screen.getByText('Out of stock')).toBeInTheDocument();
     });

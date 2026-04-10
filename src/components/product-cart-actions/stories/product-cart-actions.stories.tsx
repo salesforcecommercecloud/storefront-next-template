@@ -19,6 +19,7 @@ import ProductCartActions from '../index';
 // @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import ProductViewProvider from '@/providers/product-view';
+import { CurrencyProvider } from '@/providers/currency';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
@@ -81,11 +82,13 @@ const meta: Meta<typeof ProductCartActions> = {
         (Story: React.ComponentType, context) => {
             return (
                 <ConfigProvider config={mockConfig}>
-                    <ProductViewProvider product={context.args.product as any} initialQuantity={1} mode="add">
-                        <ActionLogger>
-                            <Story />
-                        </ActionLogger>
-                    </ProductViewProvider>
+                    <CurrencyProvider value="USD">
+                        <ProductViewProvider product={context.args.product as any} initialQuantity={1} mode="add">
+                            <ActionLogger>
+                                <Story />
+                            </ActionLogger>
+                        </ProductViewProvider>
+                    </CurrencyProvider>
                 </ConfigProvider>
             );
         },

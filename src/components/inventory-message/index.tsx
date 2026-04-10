@@ -117,11 +117,18 @@ function getInventoryMessage(
     stockDisplay?: number | string
 ): InventoryStatusInfo {
     switch (status) {
-        case InventoryStatus.IN_STOCK:
+        case InventoryStatus.IN_STOCK: {
+            // Avoid "In stock (0 units)" while ATS is still settling (e.g. master 0 then variant 58).
+            const showUnitCount =
+                stockDisplay != null &&
+                (typeof stockDisplay === 'string'
+                    ? stockDisplay.endsWith('+') || Number(stockDisplay) > 0
+                    : stockDisplay > 0);
             return {
-                message: stockDisplay != null ? t('inStockCount', { stockDisplay }) : t('inStock'),
+                message: showUnitCount ? t('inStockCount', { stockDisplay }) : t('inStock'),
                 className: 'text-status-positive',
             };
+        }
         case InventoryStatus.LOW_STOCK:
             return {
                 message: stockDisplay != null ? t('lowStockCount', { stockDisplay }) : t('lowStock'),
@@ -173,11 +180,34 @@ export default function InventoryMessage({
     const inventory = currentVariant?.inventory || product.inventory;
     const stockLevel = inventory?.ats;
     const displayStock = stockLevel != null && stockLevel > maxStockDisplay ? `${maxStockDisplay}+` : stockLevel;
-    const status = customGetInventoryStatus
+
+    let status = customGetInventoryStatus
         ? customGetInventoryStatus(product, currentVariant)
         : getInventoryStatus(product, currentVariant, lowStockThreshold);
 
-    const statusInfo = getInventoryMessage(status, t, displayStock);
+    const hasVariants = (product.variants?.length ?? 0) > 0;
+    const effectiveDisplay: number | string | undefined = displayStock;
+
+    if (!customGetInventoryStatus && hasVariants) {
+        const awaitingVariant = currentVariant == null;
+        const variantResolvedWithoutInventory = currentVariant != null && currentVariant.inventory == null;
+
+        // Hide misleading master "out of stock" until a variant is chosen
+        if (awaitingVariant && status === InventoryStatus.OUT_OF_STOCK) {
+            status = InventoryStatus.UNKNOWN;
+        }
+
+        if (variantResolvedWithoutInventory) {
+            if (currentVariant.orderable === false) {
+                status = InventoryStatus.OUT_OF_STOCK;
+            } else if (currentVariant.orderable === true && status === InventoryStatus.OUT_OF_STOCK) {
+                // Master rollup can say OOS while the selected variant is orderable and inventory is not on the variant yet
+                status = InventoryStatus.IN_STOCK;
+            }
+        }
+    }
+
+    const statusInfo = getInventoryMessage(status, t, effectiveDisplay);
     const isUnknown = status === InventoryStatus.UNKNOWN;
 
     return (

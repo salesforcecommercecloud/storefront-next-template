@@ -47,9 +47,12 @@ vi.mock('@/components/info-modal', () => ({
     },
 }));
 
-// Mock currency provider
+const { mockUseCurrency } = vi.hoisted(() => ({
+    mockUseCurrency: vi.fn(() => 'USD'),
+}));
+
 vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
+    useCurrency: () => mockUseCurrency(),
 }));
 
 const renderWithRouter = (component: React.ReactElement) => {
@@ -65,6 +68,7 @@ const renderWithRouter = (component: React.ReactElement) => {
 describe('BuyNowPayLater', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockUseCurrency.mockReturnValue('USD');
     });
 
     it('should render the installment message', () => {
@@ -73,6 +77,13 @@ describe('BuyNowPayLater', () => {
         expect(screen.getByText(/Pay in 4 interest-free payments of/i)).toBeInTheDocument();
         expect(screen.getByText('$12.25')).toBeInTheDocument();
         expect(screen.getByText('Learn more')).toBeInTheDocument();
+    });
+
+    it('formats installment amount using currency from context', () => {
+        mockUseCurrency.mockReturnValue('GBP');
+        renderWithRouter(<BuyNowPayLater />);
+
+        expect(screen.getByText('£12.25')).toBeInTheDocument();
     });
 
     it('should open modal when "Learn more" button is clicked', async () => {

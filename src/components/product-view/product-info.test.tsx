@@ -187,8 +187,10 @@ describe('ProductInfo', () => {
 
     describe('inventory and stock handling', () => {
         test('should show out of stock message when inventory is zero', () => {
+            // Simple item (no variants) so OOS reflects this SKU, not indeterminate master inventory
             const outOfStockProduct = {
-                ...mockProduct,
+                ...standardProd,
+                name: mockProduct.name,
                 inventory: { ats: 0, orderable: false, id: 'test-inventory' },
             };
 
@@ -280,7 +282,8 @@ describe('ProductInfo', () => {
 
         test('should display out-of-stock inventory message when product is not orderable', () => {
             const outOfStockProduct = {
-                ...mockProduct,
+                ...standardProd,
+                name: mockProduct.name,
                 inventory: {
                     ats: 0,
                     orderable: false,
@@ -288,7 +291,6 @@ describe('ProductInfo', () => {
                     backorderable: false,
                     preorderable: false,
                 },
-                variationAttributes: [],
             };
 
             renderProductInfo({ product: outOfStockProduct });
