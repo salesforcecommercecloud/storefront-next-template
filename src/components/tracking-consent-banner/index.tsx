@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useState, useMemo } from 'react';
 import { useTrackingConsent } from '@/hooks/use-tracking-consent';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';

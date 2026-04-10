@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useRef, useState, useCallback, useEffect, type ReactNode } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';

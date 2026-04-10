@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useEffect, useRef, useMemo, type ReactElement } from 'react';
 import { useRecommenders, type Product } from '@/hooks/recommenders/use-recommenders';
 import ProductCarousel from '@/components/product-carousel/carousel';

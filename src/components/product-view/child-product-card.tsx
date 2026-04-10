@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import ImageGallery from '@/components/image-gallery';
 import ProductQuantityPicker from '@/components/product-quantity-picker';
 import { Button } from '@/components/ui/button';

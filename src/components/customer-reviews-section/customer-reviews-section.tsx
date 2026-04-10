@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { type ReactElement, useState, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';

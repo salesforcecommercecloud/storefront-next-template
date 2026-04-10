@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useState, useEffect, useRef, type ReactElement } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DynamicImage } from '@/components/dynamic-image';

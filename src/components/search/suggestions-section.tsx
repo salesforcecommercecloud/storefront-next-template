@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { Link } from '@/components/link';
 import SuggestionsList from './suggestions-list';
 import SuggestionsGrid from './suggestions-grid';

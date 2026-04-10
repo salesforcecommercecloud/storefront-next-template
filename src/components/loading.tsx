@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useEffect, useRef, useState } from 'react';
 import { useNavigation } from 'react-router';
 

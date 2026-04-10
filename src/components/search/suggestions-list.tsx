@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import type React from 'react';
 import { cn } from '@/lib/utils';
 import { DynamicImage } from '@/components/dynamic-image';

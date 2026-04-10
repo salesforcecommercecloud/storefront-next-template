@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigation, useRouteLoaderData } from 'react-router';
 import { useTranslation } from 'react-i18next';

@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useState, useEffect, Suspense, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';

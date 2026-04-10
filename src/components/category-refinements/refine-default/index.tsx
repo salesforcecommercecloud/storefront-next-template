@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import type { ReactElement } from 'react';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Checkbox } from '@/components/ui/checkbox';

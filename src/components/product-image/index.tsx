@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useCallback, useState } from 'react';
 import { Link } from '@/components/link';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';

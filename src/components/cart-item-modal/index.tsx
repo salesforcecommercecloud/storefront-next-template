@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { type ReactElement, useState, useCallback, useMemo } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';

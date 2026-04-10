@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { Form } from 'react-router';
 import { Link } from '@/components/link';
 import { Input } from '@/components/ui/input';

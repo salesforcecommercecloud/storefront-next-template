@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { PasswordRequirement } from '@/components/password-requirements';

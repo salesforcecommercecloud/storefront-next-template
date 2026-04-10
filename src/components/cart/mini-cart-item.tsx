@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 // React
 import { type ReactElement, useMemo } from 'react';
 

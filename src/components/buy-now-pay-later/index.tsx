@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useState, useEffect, lazy, Suspense } from 'react';
 import type { InfoModalData } from '@/components/info-modal/types';
 import { useProductContent } from '@/hooks/product-content/use-product-content';

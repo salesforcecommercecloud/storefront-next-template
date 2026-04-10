@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { createContext, useContext, useState, type ComponentPropsWithoutRef, type ReactElement } from 'react';
 import { NavLink } from '@/components/link';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';

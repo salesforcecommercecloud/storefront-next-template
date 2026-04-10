@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useMemo, useId, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStoreLocatorList } from '@/extensions/store-locator/hooks/use-store-locator-list';

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 // React
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 

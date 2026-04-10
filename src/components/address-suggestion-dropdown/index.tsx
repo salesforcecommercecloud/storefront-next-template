@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useEffect, useRef, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, MapPin } from 'lucide-react';

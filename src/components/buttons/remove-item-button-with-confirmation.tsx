@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
 
 /*
  * Copyright (c) 2025, Salesforce, Inc.

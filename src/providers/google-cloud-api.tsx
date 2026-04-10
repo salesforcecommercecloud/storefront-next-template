@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import type { PropsWithChildren } from 'react';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';

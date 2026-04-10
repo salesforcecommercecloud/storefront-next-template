@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ComponentProps, createContext, type ReactNode, type Ref, useContext, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

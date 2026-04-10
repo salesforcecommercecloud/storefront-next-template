@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';

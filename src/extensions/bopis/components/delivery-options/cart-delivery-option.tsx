@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useCallback, useEffect, useRef } from 'react';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';

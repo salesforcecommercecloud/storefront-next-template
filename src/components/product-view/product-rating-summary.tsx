@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useMemo, useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { StarRating } from '@/components/product-ratings/star-rating';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

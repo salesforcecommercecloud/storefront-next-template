@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { type ReactElement, Suspense, lazy, startTransition, useState, useEffect } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';

@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useMemo, useCallback, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Typography } from '@/components/typography';

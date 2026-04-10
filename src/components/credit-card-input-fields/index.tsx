@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useState } from 'react';
 import { type UseFormReturn, type FieldValues, type Path } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';

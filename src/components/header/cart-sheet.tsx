@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type PropsWithChildren, type ReactElement, useEffect, useMemo, useCallback, memo } from 'react';
 import { useFetcher } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';

@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import type React from 'react';
 import { ImageOff } from 'lucide-react';
 import { Link } from '@/components/link';

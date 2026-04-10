@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 /** @sfdc-extension-file SFDC_EXT_STORE_LOCATOR */
-'use client';
-
 import { type ReactElement, useEffect, useRef } from 'react';
 import { useRevalidator } from 'react-router';
 import { useTranslation } from 'react-i18next';

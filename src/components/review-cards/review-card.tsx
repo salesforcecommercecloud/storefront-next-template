@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useState, useRef, useEffect, useCallback, type ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
