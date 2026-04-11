@@ -136,7 +136,8 @@ export const Empty: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText('Select a product')).toBeInTheDocument();
+        // In non-design mode (Storybook), an empty carousel renders nothing
+        await expect(canvas.queryByText('Select a product')).not.toBeInTheDocument();
     },
 };
 
@@ -146,5 +147,22 @@ export const WithSuspenseWrapper: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         await expect(canvas.getByText('Suspense Wrapper')).toBeInTheDocument();
+    },
+};
+
+export const PageDesignerMode: Story = {
+    args: {
+        products,
+        title: 'Page Designer Carousel',
+        component: {
+            id: 'pd-carousel-1',
+            typeId: 'Layout.productCarousel',
+            regions: [],
+        } as any,
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Page Designer Carousel')).toBeInTheDocument();
     },
 };

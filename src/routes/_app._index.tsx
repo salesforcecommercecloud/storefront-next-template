@@ -15,7 +15,7 @@
  */
 import { type LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { fetchSearchProducts } from '@/lib/api/search';
+import { fetchCarouselProducts } from '@/components/product-carousel/loaders';
 import { fetchCategories } from '@/lib/api/categories';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { Region } from '@/components/region';
@@ -86,8 +86,8 @@ export function loader(args: LoaderFunctionArgs): HomePageData {
         page: fetchPageWithComponentData(args, {
             pageId: 'homepage',
         }),
-        searchResult: fetchSearchProducts(args.context, {
-            refine: ['cgid=root'],
+        searchResult: fetchCarouselProducts(args.context, {
+            categoryId: 'root',
             limit: getConfig<AppConfig>(args.context).pages.home.featuredProductsCount,
             currency: currency ?? undefined,
         }),

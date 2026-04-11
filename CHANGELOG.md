@@ -1,3 +1,9 @@
+## v0.4.0-dev (Apr 10, 2026)
+
+- ProductCarousel: fix category-driven product fetching in Page Designer — loader now correctly invoked when `categoryId` attribute is set
+- ProductCarousel: hide empty-state placeholder on live storefront; "Select a product" now only shown in Page Designer design mode
+- ProductCarousel: add `categoryId` and `limit` Page Designer attribute definitions; update cartridge metadata
+
 ## v0.4.0-dev (Apr 07, 2026)
 
 - Extend `useSite()` to return `{ site, language, locale, currency }` and remove `CurrencyProvider`/`useCurrency()` (@W-21787278) ([#1384](https://github.com/commerce-emu/storefront-next/pull/1384))

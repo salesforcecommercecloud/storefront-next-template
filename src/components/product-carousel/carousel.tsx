@@ -25,6 +25,7 @@ import ProductCarouselSkeleton from './skeleton';
 import { cn } from '@/lib/utils';
 import type { ComponentType } from '@/components/region';
 import { Component } from '@/components/region/component';
+import { usePageDesignerMode } from '@salesforce/storefront-next-runtime/design/react/core';
 
 export interface ProductCarouselProps {
     /** Array of product search hits to display in the carousel */
@@ -99,6 +100,7 @@ export default function ProductCarousel({
     component,
 }: ProductCarouselProps): ReactNode {
     const { t } = useTranslation('product');
+    const { isDesignMode } = usePageDesignerMode();
     const productsRegion = component?.regions?.find((region) => region.id === 'products');
     const regionComponents = productsRegion?.components ?? [];
     const resolvedTitle = title || ''; // put empty string as the title since dont currently have i18n for these default values.
@@ -129,9 +131,13 @@ export default function ProductCarousel({
         </div>
     );
 
-    // Safety check for undefined or null products.
-    // In Page Designer container mode, region components are the source of truth.
+    // When there are no products and no region components, only show the prompt in
+    // Page Designer design mode (to guide the content author). On the live storefront
+    // render nothing to avoid showing a confusing placeholder to shoppers.
     if ((!products || products.length === 0) && regionComponents.length === 0) {
+        if (!isDesignMode) {
+            return null;
+        }
         return (
             <div className={cn('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12', className)}>
                 {titleSection}

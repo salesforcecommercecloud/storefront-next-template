@@ -36,7 +36,7 @@ export function initializeRegistry(targetRegistry = registry): void {
     targetRegistry.registerImporter('Layout.grid', () => import('../components/grid/index'));
     targetRegistry.registerImporter('Layout.heroCarousel', () => import('../components/hero-carousel/index'), { fallback: 'fallback' });
     targetRegistry.registerImporter('Layout.popularCategories', () => import('../components/home/popular-categories/index'), { loader: 'loader' });
-    targetRegistry.registerImporter('Layout.productCarousel', () => import('../components/product-carousel/index'), { fallback: 'fallback' });
+    targetRegistry.registerImporter('Layout.productCarousel', () => import('../components/product-carousel/index'), { loader: 'loader', fallback: 'fallback' });
 }
 
 // STATIC_REGISTRY_END

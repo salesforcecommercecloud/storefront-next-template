@@ -1,3 +1,7 @@
+## v0.4.0-dev (Apr 10, 2026)
+
+- Add `dw.json` to `.gitignore` to prevent credentials from being accidentally committed
+
 ## v0.4.0-dev (Apr 07, 2026)
 
 - Add local dev support to MRT Data Layer [#1215](https://github.com/commerce-emu/storefront-next/pull/1215)

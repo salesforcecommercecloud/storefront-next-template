@@ -20,6 +20,12 @@ import { vi, describe, test, expect, beforeEach } from 'vitest';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import ProductCarousel, { ProductCarouselWithSuspense, ProductCarouselWithData } from './carousel';
 
+let mockIsDesignMode = false;
+vi.mock('@salesforce/storefront-next-runtime/design/react/core', () => ({
+    usePageDesignerMode: () => ({ isDesignMode: mockIsDesignMode }),
+    createReactRegionDesignDecorator: (Component: any) => Component,
+}));
+
 // Mock data
 const mockProducts: ShopperSearch.schemas['ProductSearchHit'][] = [
     {
@@ -171,6 +177,7 @@ describe('ProductCarousel', () => {
         vi.clearAllMocks();
         mockCanScrollPrev = false;
         mockCanScrollNext = false;
+        mockIsDesignMode = false;
     });
 
     describe('Basic Rendering', () => {
@@ -214,22 +221,34 @@ describe('ProductCarousel', () => {
     });
 
     describe('Empty State Handling', () => {
-        test('renders "Select a product" when products array is empty', () => {
+        test('renders nothing on live storefront when products array is empty', () => {
+            mockIsDesignMode = false;
+            const { container } = renderComponent(<ProductCarousel products={[]} title="Featured Products" />);
+
+            expect(container).toBeEmptyDOMElement();
+            expect(screen.queryByText('Select a product')).not.toBeInTheDocument();
+            expect(screen.queryByTestId('carousel')).not.toBeInTheDocument();
+        });
+
+        test('renders nothing on live storefront when products is null', () => {
+            mockIsDesignMode = false;
+            const { container } = renderComponent(<ProductCarousel products={null as any} title="Featured Products" />);
+
+            expect(container).toBeEmptyDOMElement();
+        });
+
+        test('renders nothing on live storefront when products is undefined', () => {
+            mockIsDesignMode = false;
+            const { container } = renderComponent(
+                <ProductCarousel products={undefined as any} title="Featured Products" />
+            );
+
+            expect(container).toBeEmptyDOMElement();
+        });
+
+        test('renders "Select a product" in Page Designer design mode when products are empty', () => {
+            mockIsDesignMode = true;
             renderComponent(<ProductCarousel products={[]} title="Featured Products" />);
-
-            expect(screen.getByText('Select a product')).toBeInTheDocument();
-            expect(screen.queryByTestId('carousel')).not.toBeInTheDocument();
-        });
-
-        test('renders "Select a product" when products is null', () => {
-            renderComponent(<ProductCarousel products={null as any} title="Featured Products" />);
-
-            expect(screen.getByText('Select a product')).toBeInTheDocument();
-            expect(screen.queryByTestId('carousel')).not.toBeInTheDocument();
-        });
-
-        test('renders "Select a product" when products is undefined', () => {
-            renderComponent(<ProductCarousel products={undefined as any} title="Featured Products" />);
 
             expect(screen.getByText('Select a product')).toBeInTheDocument();
             expect(screen.queryByTestId('carousel')).not.toBeInTheDocument();
@@ -296,17 +315,23 @@ describe('ProductCarouselWithData', () => {
             expect(screen.getByTestId('product-tile-test-product-1')).toBeInTheDocument();
         });
 
-        test('renders empty state when no data provided', () => {
-            renderComponent(<ProductCarouselWithData data={undefined} title="Featured Products" />);
+        test('renders nothing on live storefront when no data provided', () => {
+            mockIsDesignMode = false;
+            const { container } = renderComponent(
+                <ProductCarouselWithData data={undefined} title="Featured Products" />
+            );
 
-            expect(screen.getByText('Select a product')).toBeInTheDocument();
+            expect(container).toBeEmptyDOMElement();
             expect(screen.queryByTestId('carousel')).not.toBeInTheDocument();
         });
 
-        test('renders empty state when data is null', () => {
-            renderComponent(<ProductCarouselWithData data={null as any} title="Featured Products" />);
+        test('renders nothing on live storefront when data is null', () => {
+            mockIsDesignMode = false;
+            const { container } = renderComponent(
+                <ProductCarouselWithData data={null as any} title="Featured Products" />
+            );
 
-            expect(screen.getByText('Select a product')).toBeInTheDocument();
+            expect(container).toBeEmptyDOMElement();
             expect(screen.queryByTestId('carousel')).not.toBeInTheDocument();
         });
 

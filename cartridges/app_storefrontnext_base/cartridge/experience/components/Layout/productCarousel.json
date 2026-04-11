@@ -30,6 +30,13 @@
                     "default_value": ""
                 },
                 {
+                    "id": "categoryId",
+                    "name": "Category",
+                    "type": "category",
+                    "required": false,
+                    "description": "Select a category to populate the carousel with its products. When set, the carousel fetches products automatically and the manual product-tile region is ignored."
+                },
+                {
                     "id": "limit",
                     "name": "Product Limit",
                     "type": "integer",

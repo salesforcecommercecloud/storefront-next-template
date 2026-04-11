@@ -22,6 +22,8 @@
  * @fileoverview Exports for product carousel functionality including loading states and Suspense boundaries
  */
 import { AttributeDefinition, Component, RegionDefinition } from '@/lib/decorators';
+// eslint-disable-next-line react-refresh/only-export-components
+export { loader } from './loaders';
 
 const productCarouselDefaults = {
     title: '',
@@ -59,6 +61,14 @@ export class ProductCarouselWithSuspenseMetadata {
         defaultValue: productCarouselDefaults.title,
     })
     title?: string;
+
+    @AttributeDefinition({
+        name: 'Category',
+        description:
+            'Select a category to populate the carousel with its products. When set, the carousel fetches products automatically and the manual product-tile region is ignored.',
+        type: 'category',
+    })
+    categoryId?: string;
 
     @AttributeDefinition({
         name: 'Product Limit',
