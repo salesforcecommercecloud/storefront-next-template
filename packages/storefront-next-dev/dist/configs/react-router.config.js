@@ -48,7 +48,8 @@ function storefrontNextPreset() {
 		ssr: true,
 		future: {
 			v8_middleware: true,
-			v8_viteEnvironmentApi: true
+			v8_viteEnvironmentApi: true,
+			unstable_optimizeDeps: true
 		},
 		basename: getBasePath() || "/",
 		...sfwFalconInstance && { allowedActionOrigins: [`*.dataplane.cvw-dataplane-test.${sfwFalconInstance}.aws.sfdc.cl`] }

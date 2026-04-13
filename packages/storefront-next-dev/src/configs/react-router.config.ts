@@ -39,6 +39,7 @@ export function storefrontNextPreset(): Preset {
         future: {
             v8_middleware: true,
             v8_viteEnvironmentApi: true,
+            unstable_optimizeDeps: true,
         },
         // Set basename from base path for CDN routing
         // When set, all routes are served under this base path (e.g., /site-a/category/womens)

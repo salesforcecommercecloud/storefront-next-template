@@ -4,6 +4,7 @@
 
 ## v0.4.0-dev (Apr 07, 2026)
 
+- Enable `future.unstable_optimizeDeps` in React Router preset to fix duplicate React module crash on dev server startup
 - Add local dev support to MRT Data Layer [#1215](https://github.com/commerce-emu/storefront-next/pull/1215)
 - Clean up RSC/React Server Components references from documentation and comments ([#1363](https://github.com/commerce-emu/storefront-next/pull/1363))
 - Fix incorrect SSR sourcemaps for files sharing a basename in local dev debugger (@W-21175764)

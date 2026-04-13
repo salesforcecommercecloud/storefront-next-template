@@ -28,7 +28,7 @@ const createMockResolvedConfig = (overrides: Record<string, any> = {}) => {
         future: {
             v8_middleware: true,
             v8_viteEnvironmentApi: true,
-            unstable_optimizeDeps: false,
+            unstable_optimizeDeps: true,
             v8_splitRouteModules: false,
             unstable_subResourceIntegrity: false,
             unstable_trailingSlashAwareDataRequests: false,
@@ -96,6 +96,7 @@ describe('react-router.config', () => {
                     future: {
                         v8_middleware: true,
                         v8_viteEnvironmentApi: true,
+                        unstable_optimizeDeps: true,
                     },
                 });
             });
@@ -190,9 +191,10 @@ describe('react-router.config', () => {
                     future: {
                         v8_middleware: false,
                         v8_viteEnvironmentApi: true,
-                        unstable_optimizeDeps: false,
+                        unstable_optimizeDeps: true,
                         v8_splitRouteModules: false,
                         unstable_subResourceIntegrity: false,
+                        unstable_trailingSlashAwareDataRequests: false,
                     },
                 });
 
@@ -211,7 +213,7 @@ describe('react-router.config', () => {
                     future: {
                         v8_middleware: true,
                         v8_viteEnvironmentApi: false,
-                        unstable_optimizeDeps: false,
+                        unstable_optimizeDeps: true,
                         v8_splitRouteModules: false,
                         unstable_subResourceIntegrity: false,
                     },
@@ -235,7 +237,7 @@ describe('react-router.config', () => {
                     future: {
                         v8_middleware: false,
                         v8_viteEnvironmentApi: false,
-                        unstable_optimizeDeps: false,
+                        unstable_optimizeDeps: true,
                         v8_splitRouteModules: false,
                         unstable_subResourceIntegrity: false,
                     },
