@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 10, 2026)
 
+- Added SDD (Spec-Driven Development) support with multi-agent code generation
 - ProductCarousel: fix category-driven product fetching in Page Designer — loader now correctly invoked when `categoryId` attribute is set
 - ProductCarousel: hide empty-state placeholder on live storefront; "Select a product" now only shown in Page Designer design mode
 - ProductCarousel: add `categoryId` and `limit` Page Designer attribute definitions; update cartridge metadata
