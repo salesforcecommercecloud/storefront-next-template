@@ -68,12 +68,17 @@ export const action: ActionFunction = async ({ request, context }) => {
         // Standard flow: refresh the SLAS token with tracking consent embedded (DNT claim).
         // The authMiddleware in api-clients.ts automatically injects the sfdc_dwsid header
         // on SLAS requests, so SLAS reuses the existing ECOM session.
-        const tokenResponse = await refreshAccessToken(context, refreshToken, {
-            trackingConsent,
-        });
-
-        // Update the auth context with the new token response
-        updateAuth(context, tokenResponse);
+        // refreshAccessToken can throw an ApiError that has status/headers/body properties,
+        // which React Router misidentifies as a Response and calls .json() — crashing.
+        try {
+            const tokenResponse = await refreshAccessToken(context, refreshToken, {
+                trackingConsent,
+            });
+            // Update the auth context with the new token response
+            updateAuth(context, tokenResponse);
+        } catch (error) {
+            logger.warn('UpdateTrackingConsent: token refresh failed, updating session only', { error });
+        }
 
         // Restore userType and set tracking consent.
         updateAuth(context, (session) => ({

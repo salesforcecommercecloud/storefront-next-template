@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useState, useMemo } from 'react';
+import { useRouteLoaderData } from 'react-router';
 import { useTrackingConsent } from '@/hooks/use-tracking-consent';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
@@ -120,7 +121,9 @@ export function TrackingConsentBanner({ onConsentChange }: TrackingConsentBanner
         void handleConsent(TrackingConsent.Declined, 'decline');
     };
 
-    if (!shouldShowBanner) {
+    const rootData = useRouteLoaderData('root');
+
+    if (!shouldShowBanner || rootData?.pageDesignerMode) {
         return null;
     }
 

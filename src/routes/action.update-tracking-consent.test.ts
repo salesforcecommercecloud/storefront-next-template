@@ -201,13 +201,17 @@ describe('action.update-tracking-consent', () => {
             expect(mockUpdateAuth).toHaveBeenCalledTimes(1);
         });
 
-        it('should propagate error when refresh token operation fails', async () => {
+        it('should catch refresh token error and still update session', async () => {
             const mockError = new Error('Token refresh failed');
             mockRefreshAccessToken.mockRejectedValue(mockError);
 
-            await expect(action(createActionArgs(TrackingConsent.Accepted))).rejects.toThrow('Token refresh failed');
+            const result = (await action(createActionArgs(TrackingConsent.Accepted))) as DataWithResponseInit<{
+                success: boolean;
+                trackingConsent: TrackingConsent;
+            }>;
 
-            expect(mockUpdateAuth).not.toHaveBeenCalled();
+            expect(result.data).toEqual({ success: true, trackingConsent: TrackingConsent.Accepted });
+            expect(mockUpdateAuth).toHaveBeenCalledTimes(1);
         });
     });
 
