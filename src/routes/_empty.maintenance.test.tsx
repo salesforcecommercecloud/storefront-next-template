@@ -19,6 +19,8 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import MaintenancePage, { loader } from './_empty.maintenance';
 import type { AppConfig } from '@/types/config';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { I18nextProvider } from 'react-i18next';
+import i18next from 'i18next';
 
 // Mock the config module
 const mockConfig: AppConfig = {
@@ -77,15 +79,17 @@ describe('MaintenancePage', () => {
             );
 
             render(
-                <AllProvidersWrapper>
-                    <RouterProvider router={router} />
-                </AllProvidersWrapper>
+                <I18nextProvider i18n={i18next}>
+                    <AllProvidersWrapper>
+                        <RouterProvider router={router} />
+                    </AllProvidersWrapper>
+                </I18nextProvider>
             );
 
             // Wait for navigation to complete
-            await screen.findByText('Site Under Maintenance');
+            await screen.findByText(/We're making things even better/i);
 
-            expect(screen.getByText('Site Under Maintenance')).toBeInTheDocument();
+            expect(screen.getByText(/We're making things even better/i)).toBeInTheDocument();
             expect(screen.getByText(/scheduled maintenance/i)).toBeInTheDocument();
         });
 
@@ -104,13 +108,15 @@ describe('MaintenancePage', () => {
             );
 
             const { container } = render(
-                <AllProvidersWrapper>
-                    <RouterProvider router={router} />
-                </AllProvidersWrapper>
+                <I18nextProvider i18n={i18next}>
+                    <AllProvidersWrapper>
+                        <RouterProvider router={router} />
+                    </AllProvidersWrapper>
+                </I18nextProvider>
             );
 
             // Wait for content to load
-            await screen.findByText('Site Under Maintenance');
+            await screen.findByText(/We're making things even better/i);
 
             // Should not have header or footer elements
             expect(container.querySelector('header')).not.toBeInTheDocument();
@@ -133,9 +139,11 @@ describe('MaintenancePage', () => {
             );
 
             render(
-                <AllProvidersWrapper>
-                    <RouterProvider router={router} />
-                </AllProvidersWrapper>
+                <I18nextProvider i18n={i18next}>
+                    <AllProvidersWrapper>
+                        <RouterProvider router={router} />
+                    </AllProvidersWrapper>
+                </I18nextProvider>
             );
 
             await screen.findByText('Custom Maintenance');

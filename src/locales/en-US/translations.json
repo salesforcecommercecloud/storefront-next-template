@@ -1474,5 +1474,12 @@
             "productsAvailable_one": "1 product available",
             "productsAvailable_other": "{{count}} products available"
         }
+    },
+    "maintenancePage": {
+        "heading": "We're making things even better",
+        "description": "Our store is temporarily closed for scheduled maintenance. We're working to improve your shopping experience and will be back shortly.",
+        "apology": "We apologize for any inconvenience. Thank you for your patience!",
+        "checkBack": "Check back in a few minutes, or follow us for updates.",
+        "tryAgain": "Try Again"
     }
 }

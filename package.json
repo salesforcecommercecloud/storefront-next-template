@@ -236,12 +236,12 @@
             },
             {
                 "name": "assets/\\(locales\\)-*-index.*.js",
-                "limit": "66 kB",
-                "comment": "Locales chunks (all locale translations, includes checkout registration strings). Uncompressed; en-US ~62 kB baseline."
+                "limit": "69 kB",
+                "comment": "Locales chunks (all locale translations, includes checkout registration strings). Uncompressed; en-US ~62 kB baseline. Increased to 69 kB (+5%) for maintenancePage translations."
             },
             {
                 "name": "assets/\\(components\\)-\\(checkout\\)-*.js",
-                "limit": "560 kB",
+                "limit": "570 kB",
                 "comment": "Checkout components with dependencies. Lazy loaded on /checkout route only. @see W-21553426"
             },
             {

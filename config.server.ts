@@ -103,8 +103,8 @@ export default defineConfig<Config>(
                     suggestionsDebounce: 400,
                 },
                 maintenancePage: {
-                    sharedMaintenancePage: false,
-                    cdnUrl: 'http://prd.cmp.cdn.commercecloud.salesforce.com',
+                    sharedMaintenancePage: true,
+                    cdnUrl: 'https://prd.cmp.cdn.commercecloud.salesforce.com',
                     forwardedHost: '',
                 },
             },
