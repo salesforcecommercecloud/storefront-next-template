@@ -90,6 +90,7 @@ export interface ClientEventNameMapping extends IsomorphicEventNameMapping {
     HostKeyPressed: Domain.HostKeyPressedEvent;
     ClientAcknowledged: Domain.ClientAcknowledgedEvent;
     ClientConfigurationChanged: Domain.ClientConfigurationChangedEvent;
+    ComponentUpdated: Domain.ComponentUpdatedEvent;
     ClientWindowDragEntered: Domain.ClientWindowDragEnteredEvent;
     ClientWindowDragMoved: Domain.ClientWindowDragMovedEvent;
     ClientWindowDragExited: Domain.ClientWindowDragExitedEvent;
@@ -731,4 +732,20 @@ export interface HostApi extends IsomorphicApi {
      * ```
      */
     setClientConfiguration(event: EventPayload<Domain.ClientConfigurationChangedEvent>): void;
+    /**
+     * Notifies the client that a component has been updated.
+     *
+     * @param event - The component update event containing the component ID, change type, and new value
+     * @stability development
+     *
+     * @example
+     * ```typescript
+     * api.notifyComponentUpdated({
+     *   componentId: 'comp-123',
+     *   changeType: 'name',
+     *   newValue: 'New Component Name'
+     * });
+     * ```
+     */
+    notifyComponentUpdated(event: EventPayload<Domain.ComponentUpdatedEvent>): void;
 }

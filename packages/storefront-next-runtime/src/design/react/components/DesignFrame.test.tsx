@@ -63,6 +63,7 @@ describe('DesignFrame', () => {
                         labels: {
                             fallback: 'Fallback',
                         },
+                        regions: {},
                     }),
             });
 
@@ -104,6 +105,7 @@ describe('DesignFrame', () => {
                         labels: {
                             fallback: 'Fallback',
                         },
+                        regions: {},
                     }),
             });
 
@@ -146,6 +148,7 @@ describe('DesignFrame', () => {
                         labels: {
                             fallback: 'Custom Fallback Label',
                         },
+                        regions: {},
                     }),
             });
 
@@ -185,6 +188,7 @@ describe('DesignFrame', () => {
                             },
                         },
                         labels: {},
+                        regions: {},
                     }),
             });
 

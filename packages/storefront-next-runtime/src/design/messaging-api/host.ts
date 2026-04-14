@@ -24,7 +24,8 @@ import type {
 import type { ClientInitializedEvent } from './domain-types';
 import { Messenger } from './messenger';
 
-const defaultConfigFactory: ConfigFactory = () => Promise.resolve({ components: {}, componentTypes: {}, labels: {} });
+const defaultConfigFactory: ConfigFactory = () =>
+    Promise.resolve({ components: {}, componentTypes: {}, labels: {}, regions: {} });
 /**
  * Factory function to create a HostApi instance.
  *
@@ -69,6 +70,7 @@ export function createHostApi({ emitter, id, logger }: HostConfiguration): HostA
         notifyError: messenger.toEmitter('Error'),
         focusComponent: messenger.toEmitter('ComponentFocused'),
         setClientConfiguration: messenger.toEmitter('ClientConfigurationChanged'),
+        notifyComponentUpdated: messenger.toEmitter('ComponentUpdated'),
         connect: ({
             configFactory = defaultConfigFactory,
             onClientConnected,

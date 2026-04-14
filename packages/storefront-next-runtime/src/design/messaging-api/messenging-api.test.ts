@@ -34,7 +34,7 @@ type AnyFunction = (...args: unknown[]) => unknown;
 function makeHostConnectionPromise(
     host: HostApi,
     {
-        configFactory = () => Promise.resolve({ components: {}, componentTypes: {}, labels: {} }),
+        configFactory = () => Promise.resolve({ components: {}, componentTypes: {}, labels: {}, regions: {} }),
     }: { configFactory?: ConfigFactory } = {}
 ): Promise<void> {
     return new Promise<void>((resolve) =>
@@ -287,7 +287,7 @@ describe('Messaging API', () => {
             host.on('ComponentSelected', spy);
 
             // @ts-expect-error - We are assigning this above in the promise constructor
-            resolveConfig({ components: {}, componentTypes: {}, labels: {} });
+            resolveConfig({ components: {}, componentTypes: {}, labels: {}, regions: {} });
 
             await Promise.all([hostPromise, clientPromise]);
 
@@ -455,6 +455,7 @@ describe('Messaging API', () => {
                     componentTypes: {},
                     labels: {},
                     locale: 'en-US',
+                    regions: {},
                 };
                 expect(clientConfigs).toHaveLength(1);
                 host.setClientConfiguration(config);
@@ -581,7 +582,7 @@ describe('Messaging API', () => {
             ${'notifyPageSettingsChanged'}     | ${'PageSettingsChanged'}        | ${{ settings: { theme: 'dark' } }}
             ${'notifyMediaChanged'}            | ${'MediaChangedEvent'}          | ${{}}
             ${'notifyError'}                   | ${'Error'}                      | ${{ message: 'Test error message', code: 'TEST_ERROR' }}
-            ${'setClientConfiguration'}        | ${'ClientConfigurationChanged'} | ${{ components: {}, componentTypes: {}, labels: {}, locale: 'en-US' }}
+            ${'setClientConfiguration'}        | ${'ClientConfigurationChanged'} | ${{ components: {}, componentTypes: {}, labels: {}, locale: 'en-US', regions: {} }}
         `(
             'when $method is called on the host',
             ({

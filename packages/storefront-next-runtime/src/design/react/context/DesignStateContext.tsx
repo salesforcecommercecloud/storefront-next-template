@@ -20,6 +20,7 @@ import { useDeleteInteraction } from '../hooks/useDeleteInteraction';
 import { useFocusInteraction } from '../hooks/useFocusInteraction';
 import { useScrollInteraction, type ScrollInteraction } from '../hooks/useScrollInteraction';
 import { useDragInteraction, type DragInteraction } from '../hooks/useDragInteraction';
+import { useComponentUpdateInteraction, type ComponentUpdateInteraction } from '../hooks/useComponentUpdateInteraction';
 import type { ComponentDeletedEvent, EventPayload } from '../../messaging-api';
 
 export interface NodeToTargetMapEntry {
@@ -32,7 +33,7 @@ export interface NodeToTargetMapEntry {
     componentTypeExclusions?: string[];
 }
 
-export interface DesignState extends DragInteraction, ScrollInteraction {
+export interface DesignState extends DragInteraction, ScrollInteraction, ComponentUpdateInteraction {
     selectedComponentId: string | null;
     hoveredComponentId: string | null;
     setSelectedComponent: (componentId: string) => void;
@@ -57,6 +58,7 @@ export const DesignStateProvider = ({ children }: { children: React.ReactNode })
         setSelectedComponent: selectInteraction.setSelectedComponent,
     });
     const scrollInteraction = useScrollInteraction();
+    const componentUpdateInteraction = useComponentUpdateInteraction();
     const nodeToTargetMap = React.useMemo(() => new WeakMap(), []);
     const dragInteraction = useDragInteraction({ nodeToTargetMap });
 
@@ -68,6 +70,7 @@ export const DesignStateProvider = ({ children }: { children: React.ReactNode })
             ...focusInteraction,
             ...dragInteraction,
             ...scrollInteraction,
+            ...componentUpdateInteraction,
             nodeToTargetMap,
         }),
         [
@@ -78,6 +81,7 @@ export const DesignStateProvider = ({ children }: { children: React.ReactNode })
             dragInteraction,
             nodeToTargetMap,
             scrollInteraction,
+            componentUpdateInteraction,
         ]
     );
 

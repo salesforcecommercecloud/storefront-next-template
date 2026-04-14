@@ -25,17 +25,20 @@ import { ComponentContext, useComponentContext, type ComponentContextType } from
 import { useComponentDiscovery } from '../hooks/useComponentDiscovery';
 import { useComponentType } from '../hooks/useComponentType';
 import { useThrottledCallback } from '../hooks/useThrottledCallback';
+import { useComponentInfo } from '../hooks/useComponentInfo';
 
 export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.JSX.Element {
     const { designMetadata, children } = props;
     const { id = '', name, isFragment = false, isVisible = true, isLocalized = false } = designMetadata ?? {};
     const componentId = id;
     const componentType = useComponentType(componentId);
-    const componentName = componentType?.label || name || 'Component';
+    const componentInfo = useComponentInfo(componentId);
+    const { nodeToTargetMap } = useDesignState();
+
+    const componentName = componentInfo?.name || componentType?.label || name || 'Component';
     const dragRef = useRef<HTMLDivElement>(null);
     const { regionId } = useRegionContext() ?? {};
     const { componentId: parentComponentId } = useComponentContext() ?? {};
-    const { nodeToTargetMap } = useDesignState();
 
     const {
         selectedComponentId,

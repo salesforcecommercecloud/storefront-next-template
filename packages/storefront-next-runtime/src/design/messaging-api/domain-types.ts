@@ -78,6 +78,10 @@ export interface HostToClientConfiguration {
      * The locale to use on the client.
      */
     locale?: string;
+    /**
+     * The regions by id that are available in the component tree.
+     */
+    regions: Record<string, RegionInfo>;
 }
 
 /**
@@ -98,6 +102,20 @@ export interface ComponentInfo {
      * The component type.
      */
     type: string;
+    /**
+     * The custom name for the component.
+     */
+    name?: string;
+}
+
+/**
+ * Information about a region in the component tree.
+ */
+export interface RegionInfo {
+    /**
+     * The custom name for the region.
+     */
+    name: string;
 }
 
 /**
@@ -253,6 +271,32 @@ export interface ClientAcknowledgedEvent extends WithBaseEvent, HostToClientConf
  */
 export interface ClientConfigurationChangedEvent extends WithBaseEvent, HostToClientConfiguration {
     eventType: 'ClientConfigurationChanged';
+}
+
+/**
+ * Emits when a component is updated in the editor.
+ *
+ * @target client
+ * @group Events
+ */
+export interface ComponentUpdatedEvent extends WithBaseEvent {
+    eventType: 'ComponentUpdated';
+    /**
+     * The unique identifier of the component
+     */
+    componentId: string;
+    /**
+     * The type of change that occurred
+     */
+    changeType: 'name' | 'visibility';
+    /**
+     * The new value after the change
+     */
+    newValue: unknown;
+    /**
+     * The old value before the change (optional)
+     */
+    oldValue?: unknown;
 }
 
 /**

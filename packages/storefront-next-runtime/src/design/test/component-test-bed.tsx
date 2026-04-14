@@ -116,6 +116,7 @@ export function createComponentTestBed<TState extends Record<string, unknown>>(s
                         },
                     },
                     labels: {},
+                    regions: {},
                 });
 
             const connectionPromise = new Promise<void>((resolve, reject) => {

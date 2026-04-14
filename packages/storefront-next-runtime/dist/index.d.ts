@@ -54,6 +54,10 @@ interface HostToClientConfiguration {
    * The locale to use on the client.
    */
   locale?: string;
+  /**
+   * The regions by id that are available in the component tree.
+   */
+  regions: Record<string, RegionInfo>;
 }
 /**
  * The default keys that are forwarded from the host to the client.
@@ -72,6 +76,19 @@ interface ComponentInfo {
    * The component type.
    */
   type: string;
+  /**
+   * The custom name for the component.
+   */
+  name?: string;
+}
+/**
+ * Information about a region in the component tree.
+ */
+interface RegionInfo {
+  /**
+   * The custom name for the region.
+   */
+  name: string;
 }
 /**
  * Information about a component type.
@@ -210,6 +227,31 @@ interface ClientAcknowledgedEvent extends WithBaseEvent, HostToClientConfigurati
  */
 interface ClientConfigurationChangedEvent extends WithBaseEvent, HostToClientConfiguration {
   eventType: 'ClientConfigurationChanged';
+}
+/**
+ * Emits when a component is updated in the editor.
+ *
+ * @target client
+ * @group Events
+ */
+interface ComponentUpdatedEvent extends WithBaseEvent {
+  eventType: 'ComponentUpdated';
+  /**
+   * The unique identifier of the component
+   */
+  componentId: string;
+  /**
+   * The type of change that occurred
+   */
+  changeType: 'name' | 'visibility';
+  /**
+   * The new value after the change
+   */
+  newValue: unknown;
+  /**
+   * The old value before the change (optional)
+   */
+  oldValue?: unknown;
 }
 /**
  * Emits when dragging from the host enters the client window.
@@ -538,6 +580,7 @@ interface ClientEventNameMapping extends IsomorphicEventNameMapping {
   HostKeyPressed: HostKeyPressedEvent;
   ClientAcknowledged: ClientAcknowledgedEvent;
   ClientConfigurationChanged: ClientConfigurationChangedEvent;
+  ComponentUpdated: ComponentUpdatedEvent;
   ClientWindowDragEntered: ClientWindowDragEnteredEvent;
   ClientWindowDragMoved: ClientWindowDragMovedEvent;
   ClientWindowDragExited: ClientWindowDragExitedEvent;
@@ -1136,6 +1179,22 @@ interface HostApi extends IsomorphicApi {
    * ```
    */
   setClientConfiguration(event: EventPayload<ClientConfigurationChangedEvent>): void;
+  /**
+   * Notifies the client that a component has been updated.
+   *
+   * @param event - The component update event containing the component ID, change type, and new value
+   * @stability development
+   *
+   * @example
+   * ```typescript
+   * api.notifyComponentUpdated({
+   *   componentId: 'comp-123',
+   *   changeType: 'name',
+   *   newValue: 'New Component Name'
+   * });
+   * ```
+   */
+  notifyComponentUpdated(event: EventPayload<ComponentUpdatedEvent>): void;
 }
 //#endregion
 //#region src/design/messaging-api/client.d.ts
@@ -1167,5 +1226,5 @@ declare function createHostApi({
   logger
 }: HostConfiguration): HostApi;
 //#endregion
-export { ClientWindowDragExitedEvent as A, ComponentMovedToRegionEvent as B, ClientConfigurationChangedEvent as C, ClientReady as D, ClientPageChangedEvent as E, ComponentDragStartedEvent as F, ErrorEvent as G, ComponentSelectedEvent as H, ComponentFocusedEvent as I, HostToClientConfiguration as J, HostDisconnected as K, ComponentHoveredInEvent as L, ComponentAddedToRegionEvent as M, ComponentDeletedEvent as N, ClientWindowDragDroppedEvent as O, ComponentDeselectedEvent as P, ComponentHoveredOutEvent as R, ClientAcknowledgedEvent as S, ClientInitializedEvent as T, ComponentType as U, ComponentPropertiesChangedEvent as V, DefaultForwardedKeys as W, PageSettingsChangedEvent as X, MediaChangedEvent as Y, WindowScrollChangedEvent as Z, IsomorphicEventNameMapping as _, ClientEventNameMapping as a, WithEventType as b, EventHandler as c, HostApi as d, HostConfiguration as f, IsomorphicConfiguration as g, IsomorphicApi as h, ClientConfiguration as i, ClientWindowDragMovedEvent as j, ClientWindowDragEnteredEvent as k, EventPayload as l, HostMessage as m, createClientApi as n, ClientMessage as o, HostEventNameMapping as p, HostKeyPressedEvent as q, ClientApi as r, ConfigFactory as s, createHostApi as t, EventTypeName as u, MessageEmitter as v, ClientDisconnectedEvent as w, WithMeta as x, Source as y, ComponentInfo as z };
+export { WindowScrollChangedEvent as $, ClientWindowDragExitedEvent as A, ComponentMovedToRegionEvent as B, ClientConfigurationChangedEvent as C, ClientReady as D, ClientPageChangedEvent as E, ComponentDragStartedEvent as F, DefaultForwardedKeys as G, ComponentSelectedEvent as H, ComponentFocusedEvent as I, HostKeyPressedEvent as J, ErrorEvent as K, ComponentHoveredInEvent as L, ComponentAddedToRegionEvent as M, ComponentDeletedEvent as N, ClientWindowDragDroppedEvent as O, ComponentDeselectedEvent as P, RegionInfo as Q, ComponentHoveredOutEvent as R, ClientAcknowledgedEvent as S, ClientInitializedEvent as T, ComponentType as U, ComponentPropertiesChangedEvent as V, ComponentUpdatedEvent as W, MediaChangedEvent as X, HostToClientConfiguration as Y, PageSettingsChangedEvent as Z, IsomorphicEventNameMapping as _, ClientEventNameMapping as a, WithEventType as b, EventHandler as c, HostApi as d, HostConfiguration as f, IsomorphicConfiguration as g, IsomorphicApi as h, ClientConfiguration as i, ClientWindowDragMovedEvent as j, ClientWindowDragEnteredEvent as k, EventPayload as l, HostMessage as m, createClientApi as n, ClientMessage as o, HostEventNameMapping as p, HostDisconnected as q, ClientApi as r, ConfigFactory as s, createHostApi as t, EventTypeName as u, MessageEmitter as v, ClientDisconnectedEvent as w, WithMeta as x, Source as y, ComponentInfo as z };
 //# sourceMappingURL=index.d.ts.map

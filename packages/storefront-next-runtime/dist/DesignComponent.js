@@ -1,5 +1,5 @@
 import "./messaging-api.js";
-import { a as useDesignState, i as useThrottledCallback, s as useComponentDiscovery } from "./DesignContext.js";
+import { a as useDesignState, i as useThrottledCallback, r as useDesignContext, s as useComponentDiscovery } from "./DesignContext.js";
 import "./modeDetection.js";
 import "./PageDesignerProvider.js";
 import { i as useRegionContext, n as useComponentContext, t as ComponentContext } from "./ComponentContext.js";
@@ -49,17 +49,39 @@ function useFocusedComponentHandler(componentId, nodeRef) {
 }
 
 //#endregion
+//#region src/design/react/hooks/useComponentInfo.ts
+/**
+* Hook that returns the current ComponentInfo for a given component ID,
+* merging the base config with any runtime updates.
+*
+* @param componentId - The ID of the component to get info for
+* @returns The merged ComponentInfo or null if the component doesn't exist
+*/
+function useComponentInfo(componentId) {
+	const { pageDesignerConfig } = useDesignContext();
+	const { componentUpdates } = useDesignState();
+	const baseComponentInfo = pageDesignerConfig?.components?.[componentId];
+	const updates = componentUpdates?.[componentId] ?? {};
+	if (!baseComponentInfo) return null;
+	return {
+		...baseComponentInfo,
+		...updates
+	};
+}
+
+//#endregion
 //#region src/design/react/components/DesignComponent.tsx
 function DesignComponent(props) {
 	const { designMetadata, children } = props;
 	const { id = "", name, isFragment = false, isVisible = true, isLocalized = false } = designMetadata ?? {};
 	const componentId = id;
 	const componentType = useComponentType(componentId);
-	const componentName = componentType?.label || name || "Component";
+	const componentInfo = useComponentInfo(componentId);
+	const { nodeToTargetMap } = useDesignState();
+	const componentName = componentInfo?.name || componentType?.label || name || "Component";
 	const dragRef = useRef(null);
 	const { regionId } = useRegionContext() ?? {};
 	const { componentId: parentComponentId } = useComponentContext() ?? {};
-	const { nodeToTargetMap } = useDesignState();
 	const { selectedComponentId, hoveredComponentId, setSelectedComponent, setHoveredComponent, startComponentMove, setPendingComponentDragId, dragState: { pendingComponentDragId, isDragging, sourceComponentId: draggingSourceComponentId } } = useDesignState();
 	useFocusedComponentHandler(componentId, dragRef);
 	useNodeToTargetStore({

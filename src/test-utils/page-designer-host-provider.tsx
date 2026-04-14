@@ -73,6 +73,7 @@ export function PageDesignerHostProvider({
                     components: {},
                     componentTypes: {},
                     labels: {},
+                    regions: {},
                 }),
             onClientConnected: (clientId) => {
                 logger.debug(`PageDesignerHost connected to client ${clientId}`);
@@ -122,6 +123,7 @@ function getHostConfigFromPage(page: ShopperExperience.schemas['Page'] | null): 
         components: {},
         componentTypes: {},
         labels: {},
+        regions: {},
     };
 
     for (const component of forEachComponent(page?.regions ?? [])) {

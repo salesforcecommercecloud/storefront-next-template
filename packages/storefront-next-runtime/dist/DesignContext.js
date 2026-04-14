@@ -511,6 +511,48 @@ function useDragInteraction({ nodeToTargetMap }) {
 }
 
 //#endregion
+//#region src/design/react/hooks/useComponentUpdateInteraction.ts
+/**
+* Custom hook that manages component update state and handles
+* client-host communication for component update events.
+*
+* Listens for ComponentUpdated events from the host and maintains
+* a map of component IDs to their updated data.
+*
+* @returns Component update state
+*/
+function useComponentUpdateInteraction() {
+	const { state: componentUpdates } = useInteraction({
+		initialState: {},
+		eventHandlers: {
+			ClientAcknowledged: { handler: (event, setState) => {
+				const initialUpdates = {};
+				Object.entries(event.components).forEach(([id, componentInfo]) => {
+					if (componentInfo.name) initialUpdates[id] = { name: componentInfo.name };
+				});
+				if (Object.keys(initialUpdates).length > 0) setState((prev) => ({
+					...prev,
+					...initialUpdates
+				}));
+			} },
+			ComponentUpdated: { handler: (event, setState) => {
+				setState((prev) => {
+					const componentId = event.componentId;
+					const updated = { ...prev[componentId] || {} };
+					if (event.changeType === "name") updated.name = event.newValue;
+					else if (event.changeType === "visibility") updated.visibility = event.newValue;
+					return {
+						...prev,
+						[componentId]: updated
+					};
+				});
+			} }
+		}
+	});
+	return { componentUpdates };
+}
+
+//#endregion
 //#region src/design/react/context/DesignStateContext.tsx
 const DesignStateContext = React.createContext(null);
 const DesignStateProvider = ({ children }) => {
@@ -522,6 +564,7 @@ const DesignStateProvider = ({ children }) => {
 	});
 	const focusInteraction = useFocusInteraction({ setSelectedComponent: selectInteraction.setSelectedComponent });
 	const scrollInteraction = useScrollInteraction();
+	const componentUpdateInteraction = useComponentUpdateInteraction();
 	const nodeToTargetMap = React.useMemo(() => /* @__PURE__ */ new WeakMap(), []);
 	const dragInteraction = useDragInteraction({ nodeToTargetMap });
 	const state = React.useMemo(() => ({
@@ -531,6 +574,7 @@ const DesignStateProvider = ({ children }) => {
 		...focusInteraction,
 		...dragInteraction,
 		...scrollInteraction,
+		...componentUpdateInteraction,
 		nodeToTargetMap
 	}), [
 		deleteInteraction,
@@ -539,7 +583,8 @@ const DesignStateProvider = ({ children }) => {
 		focusInteraction,
 		dragInteraction,
 		nodeToTargetMap,
-		scrollInteraction
+		scrollInteraction,
+		componentUpdateInteraction
 	]);
 	return /* @__PURE__ */ jsx(DesignStateContext.Provider, {
 		value: state,

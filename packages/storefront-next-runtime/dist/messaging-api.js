@@ -258,7 +258,8 @@ function createClientApi({ emitter, id, forwardedKeys = [], logger }) {
 const defaultConfigFactory = () => Promise.resolve({
 	components: {},
 	componentTypes: {},
-	labels: {}
+	labels: {},
+	regions: {}
 });
 /**
 * Factory function to create a HostApi instance.
@@ -303,6 +304,7 @@ function createHostApi({ emitter, id, logger }) {
 		notifyError: messenger.toEmitter("Error"),
 		focusComponent: messenger.toEmitter("ComponentFocused"),
 		setClientConfiguration: messenger.toEmitter("ClientConfigurationChanged"),
+		notifyComponentUpdated: messenger.toEmitter("ComponentUpdated"),
 		connect: ({ configFactory = defaultConfigFactory, onClientConnected, onClientDisconnected, onError }) => {
 			if (isConnected) disconnect();
 			const { markIsReady, emptyQueue } = messenger.connect();

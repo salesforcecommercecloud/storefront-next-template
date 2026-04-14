@@ -329,6 +329,7 @@ describe('design/react/ComponentDecorator', () => {
                                 },
                             },
                             labels: {},
+                            regions: {},
                         }),
                 });
 
@@ -356,12 +357,12 @@ describe('design/react/ComponentDecorator', () => {
                             components: {
                                 'test-1': {
                                     id: 'test-1',
-                                    name: 'Test 1',
                                     type: 'commerce.test',
                                 },
                             },
                             componentTypes: {},
                             labels: {},
+                            regions: {},
                         }),
                 });
 
@@ -388,12 +389,12 @@ describe('design/react/ComponentDecorator', () => {
                             components: {
                                 'test-1': {
                                     id: 'test-1',
-                                    name: 'Test 1',
                                     type: 'commerce.test',
                                 },
                             },
                             componentTypes: {},
                             labels: {},
+                            regions: {},
                         }),
                 });
 
@@ -468,6 +469,7 @@ describe('design/react/ComponentDecorator', () => {
                         labels: {
                             fallback: 'Fallback',
                         },
+                        regions: {},
                     }),
             });
 
@@ -509,6 +511,7 @@ describe('design/react/ComponentDecorator', () => {
                         labels: {
                             fallback: 'Fallback',
                         },
+                        regions: {},
                     }),
             });
 
@@ -551,6 +554,7 @@ describe('design/react/ComponentDecorator', () => {
                         labels: {
                             fallback: 'Custom Fallback Label',
                         },
+                        regions: {},
                     }),
             });
 
