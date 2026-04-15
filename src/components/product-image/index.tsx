@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Link } from '@/components/link';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { createProductUrl, getImagesForColor } from '@/lib/product-utils';
@@ -45,7 +45,10 @@ const ProductImageContainer = ({
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     // Get all images for the selected color variant
-    const allImages = getImagesForColor(product, selectedColorValue, 'medium');
+    const allImages = useMemo(
+        () => getImagesForColor(product, selectedColorValue, 'medium'),
+        [product, selectedColorValue]
+    );
 
     const currentImage = allImages[selectedImageIndex] ?? allImages[0] ?? product.image;
     const currentImageUrl = currentImage?.disBaseLink || currentImage?.link;

@@ -28,18 +28,16 @@ vi.mock('@/components/cart-item-modal', () => ({
     },
 }));
 
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key: string) => {
-            const map: Record<string, string> = { quickAdd: 'Quick Add' };
-            return map[key] ?? key;
-        },
-    }),
-}));
-
 const mockNavigate = vi.fn();
-vi.mock('@/hooks/use-navigate', () => ({
-    useNavigate: () => mockNavigate,
+const mockT = (key: string) => {
+    const map: Record<string, string> = { quickAdd: 'Quick Add' };
+    return map[key] ?? key;
+};
+vi.mock('./context', () => ({
+    useProductTileContext: () => ({
+        navigate: mockNavigate,
+        t: mockT,
+    }),
 }));
 
 vi.mock('@/lib/product-utils', () => ({

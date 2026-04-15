@@ -15,6 +15,7 @@
  */
 import { type ReactElement, Suspense, use, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDeferredRender } from '@/hooks/use-deferred-render';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { useShowPickupAvailable } from './use-pickup-filter';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
@@ -118,9 +119,11 @@ function ProductGridSkeleton({ count = 8 }: { count?: number }) {
  * initializing its own hooks (navigate, config, translation, currency), the provider initializes them once and shares
  * them via context.
  *
- * The grid accepts both synchronous (critical) and asynchronous (non-critical) data as input. Depending on the
- * positioning of the grid in the DOM, this allows the consumer to influence metrics such as LCP. The images associated
- * with product items that have been marked as critical are also loaded with high priority and eagerly.
+ * Performance optimizations: The grid accepts both synchronous (critical) and asynchronous (non-critical) data as
+ * input. Depending on the positioning of the grid in the DOM, this allows the consumer to influence metrics such as
+ * LCP. The images associated with product items that have been marked as critical are also loaded with high priority
+ * and eagerly. Non-critical tiles are deferred until an idle frame is available, reducing initial render blocking time
+ * (TBT) and improving LCP by prioritizing the first batch of visible tiles.
  */
 export default function ProductGrid({
     critical,
@@ -160,6 +163,10 @@ export default function ProductGrid({
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
     const loadingSkeletonCount = Math.max(criticalData.length + nonCriticalCount, 4);
 
+    // Defer rendering of non-critical tiles until an idle frame is available.
+    // This improves initial render performance by prioritizing the critical (above-the-fold) tiles.
+    const shouldRenderNonCritical = useDeferredRender(nonCriticalCount > 0);
+
     if (isLoading) {
         return (
             <ProductTileProvider>
@@ -188,7 +195,26 @@ export default function ProductGrid({
                         ))}
                     </DynamicImageProvider>
                 )}
-                {nonCritical ? (
+                {/*
+                    Three-phase rendering strategy for non-critical content:
+
+                    Phase 1 (Pre-Idle): nonCritical exists BUT shouldRenderNonCritical is false
+                    - We have a promise with non-critical products, but idle callback hasn't triggered yet
+                    - Show simple skeletons without mounting the Suspense boundary (until requestIdleCallback fires)
+                    - Why: Mounting Suspense immediately would force React to process it during initial render,
+                      blocking the main thread (causing TBT, delaying LCP). By deferring the Suspense boundary
+                      itself, we keep the initial render minimal (just critical tiles + lightweight skeletons).
+
+                    Phase 2 (Post-Idle, Pending): shouldRenderNonCritical is true, promise is pending
+                    - Idle callback has triggered, Suspense boundary is now mounted
+                    - Show skeletons via Suspense fallback while the promise resolves
+
+                    Phase 3 (Resolved): shouldRenderNonCritical is true, promise resolved
+                    - All non-critical tiles are rendered
+                    - Skeletons are replaced with actual product tiles
+                */}
+                {nonCritical && shouldRenderNonCritical ? (
+                    // Phase 2 & 3: Post-idle — mount Suspense boundary and render tiles
                     <Suspense
                         fallback={Array.from({ length: nonCriticalCount }, (_, i) => (
                             <ProductTileSkeleton key={i} />
@@ -203,7 +229,13 @@ export default function ProductGrid({
                             showPickupAvailable={showPickupAvailable}
                         />
                     </Suspense>
+                ) : nonCritical ? (
+                    // Phase 1: Pre-idle — show lightweight skeletons before Suspense boundary mounts
+                    // This prevents React from processing the Suspense boundary during initial render,
+                    // reducing Total Blocking Time (TBT) and improving LCP for critical tiles.
+                    Array.from({ length: nonCriticalCount }, (_, i) => <ProductTileSkeleton key={i} />)
                 ) : (
+                    // No non-critical promise exists — show empty state if no critical tiles either
                     <NoProductsMessage criticalSize={l} nonCriticalSize={0} />
                 )}
             </div>

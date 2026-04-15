@@ -34,7 +34,7 @@ import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
-import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
 import {
     getInitialFiltersOpen,
     getSearchWithoutClientOnlyParams,
@@ -73,7 +73,7 @@ export type SearchPageData = {
     searchTerm: string;
     searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    page: Promise<PageWithComponentData>;
+    page: ReturnType<typeof fetchPageWithComponentData>;
     pageUrl: string;
     refine: string[];
     currency: string;
@@ -109,29 +109,31 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
 
     const limit = config.search.products.hits.limit;
 
+    // Ensure criticalCount doesn't exceed limit to prevent negative non-critical limit
     const criticalCount = config.search.products.hits.critical ?? 2;
+    const safeCriticalCount = Math.min(criticalCount, limit);
 
     logger.debug('Search: loader starting', { q, offset, sort, refineCount: refine.length });
-
     const searchResultCritical = await fetchSearchProducts(context, {
         q,
-        limit: criticalCount,
+        limit: safeCriticalCount,
         offset,
         sort,
         refine,
         currency,
     });
-
     logger.info('Search: results loaded', { query: q, total: searchResultCritical.total, offset });
+
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
+    const effectiveCriticalCount = searchResultCritical.hits?.length ?? 0;
 
     return {
         searchTerm: q,
         searchResultCritical,
         searchResultNonCritical: fetchSearchProducts(context, {
             q,
-            limit: limit - criticalCount,
-            offset: offset + criticalCount,
+            limit: limit - effectiveCriticalCount,
+            offset: offset + effectiveCriticalCount,
             sort,
             refine,
             currency,
@@ -182,11 +184,14 @@ export default function SearchPage({
 
     const [filtersOpen, toggleFiltersOpen] = useFiltersPanelState(initialFiltersOpen);
 
-    // Determine the maximum number of skeletons to display in the product grid
+    // Determine the maximum number of skeletons to display in the product grid.
     // Out-of-the-box the idea is to not display more than 8 skeletons, i.e., two rows on a desktop device.
+    // Wrap in Math.max(0, ...) to prevent negative values when criticalCount is high(er).
     const criticalCount = searchResultCritical.hits?.length ?? 0;
-    const nonCriticalCount =
-        Math.min(8, limit, searchResultCritical.total - searchResultCritical.offset) - criticalCount;
+    const nonCriticalCount = Math.max(
+        0,
+        Math.min(8, limit, searchResultCritical.total - searchResultCritical.offset) - criticalCount
+    );
 
     const analytics = useAnalytics();
     const lastTrackedSearchRef = useRef<string | null>(null);

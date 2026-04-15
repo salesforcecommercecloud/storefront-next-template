@@ -34,7 +34,7 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
-import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
 import CategoryBanner from '@/components/category-banner';
 import CategoryBannerSkeleton from '@/components/category-banner/skeleton';
 import { JsonLd } from '@/components/json-ld';
@@ -81,7 +81,7 @@ type CategoryPageData = {
     category: ShopperProducts.schemas['Category'];
     searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    page: Promise<PageWithComponentData | null>;
+    page: ReturnType<typeof fetchPageWithComponentData>;
     categoryId: string;
     pageUrl: string;
     refine: string[];
@@ -148,23 +148,26 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
 
     // Keep non-category refinements and apply exactly one category refinement.
     // If URL already contains a cgid refine (e.g. from quick filters), honor it.
-    // Otherwise default to the category id from the route path.
+    // Otherwise, default to the category id from the route path.
     const effectiveRefine = refine.filter((r) => !r.startsWith('cgid='));
     const selectedCgidRefine = refine.find((r) => r.startsWith('cgid='));
     effectiveRefine.push(selectedCgidRefine ?? `cgid=${categoryId}`);
 
-    const criticalCount = config.search.products.hits.critical ?? 2;
+    // Ensure criticalCount doesn't exceed limit to prevent negative non-critical limit
+    const criticalCount = config.search.products.hits.critical ?? 4;
+    const safeCriticalCount = Math.min(criticalCount, limit);
     const searchResultCritical = await fetchSearchProducts(context, {
-        limit: criticalCount,
+        limit: safeCriticalCount,
         offset,
         sort,
         refine: effectiveRefine,
         currency,
     });
 
+    const effectiveCriticalCount = searchResultCritical.hits?.length ?? 0;
     const searchResultNonCritical = fetchSearchProducts(context, {
-        limit: limit - criticalCount,
-        offset: offset + criticalCount,
+        limit: limit - effectiveCriticalCount,
+        offset: offset + effectiveCriticalCount,
         sort,
         refine: effectiveRefine,
         currency,
@@ -281,11 +284,14 @@ export default function CategoryPage({
     const [filtersOpen, toggleFiltersOpen] = useFiltersPanelState(initialFiltersOpen);
     const limit = config.search.products.hits.limit;
 
-    // Determine the maximum number of skeletons to display in the product grid
+    // Determine the maximum number of skeletons to display in the product grid.
     // Out-of-the-box the idea is to not display more than 8 skeletons, i.e., two rows on a desktop device.
+    // Wrap in Math.max(0, ...) to prevent negative values when criticalCount is high(er).
     const criticalCount = searchResultCritical.hits?.length ?? 0;
-    const nonCriticalCount =
-        Math.min(8, limit, searchResultCritical.total - searchResultCritical.offset) - criticalCount;
+    const nonCriticalCount = Math.max(
+        0,
+        Math.min(8, limit, searchResultCritical.total - searchResultCritical.offset) - criticalCount
+    );
 
     const analytics = useAnalytics();
     const lastTrackedDataRef = useRef<string | null>(null);

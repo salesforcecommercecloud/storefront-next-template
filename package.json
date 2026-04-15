@@ -17,7 +17,7 @@
         "validate:cartridge": "sfnext validate-cartridge",
         "generate:eslint": "node scripts/generate-eslint-config.js",
         "locales:aggregate-extensions": "node scripts/aggregate-extension-locales.js",
-        "start": "sfnext preview",
+        "start": "cross-env SFNEXT_DATA_STORE_ALLOW_LOCAL=true sfnext preview",
         "preview": "pnpm start",
         "push": "sfnext push --project-directory .",
         "typecheck": "node scripts/typecheck-ratchet.js",

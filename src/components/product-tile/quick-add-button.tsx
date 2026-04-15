@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 import { lazy, Suspense, useState } from 'react';
-import { useNavigate } from '@/hooks/use-navigate';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { createProductUrl } from '@/lib/product-utils';
+import { useProductTileContext } from './context';
 
 interface QuickAddButtonProps {
     productId: string;
@@ -42,8 +41,7 @@ const CartItemModal = lazy(() =>
 export function QuickAddButton({ productId, productName, selectedColorValue, label }: QuickAddButtonProps) {
     const [loaded, setLoaded] = useState(false);
     const [open, setOpen] = useState(false);
-    const navigate = useNavigate();
-    const { t } = useTranslation('product');
+    const { navigate, t } = useProductTileContext();
 
     const resolvedLabel = label ?? t('quickAdd');
 

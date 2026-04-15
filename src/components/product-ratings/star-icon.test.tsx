@@ -155,7 +155,7 @@ describe('StarIcon', () => {
     describe('ref forwarding', () => {
         test('forwards ref to SVG element', () => {
             const ref = { current: null };
-            render(<StarIcon opacity={1} filled={true} ref={ref as any} />);
+            render(<StarIcon opacity={1} filled={true} ref={ref} />);
             expect(ref.current).toBeInstanceOf(SVGSVGElement);
         });
     });

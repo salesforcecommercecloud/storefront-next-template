@@ -69,12 +69,12 @@ describe('ProductTileSwatchesSkeleton', () => {
         });
     });
 
-    test('each skeleton item has h-[22px] w-[22px] dimensions matching real swatches', () => {
+    test('each skeleton item has h-4 w-4 dimensions matching real swatches', () => {
         const { container } = render(<ProductTileSwatchesSkeleton count={2} />);
         const wrapper = container.firstElementChild;
         Array.from(wrapper?.children ?? []).forEach((child) => {
-            expect(child.className).toContain('h-[22px]');
-            expect(child.className).toContain('w-[22px]');
+            expect(child.className).toContain('h-4');
+            expect(child.className).toContain('w-4');
         });
     });
 });

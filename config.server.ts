@@ -312,7 +312,7 @@ export default defineConfig<Config>(
                     },
                     hits: {
                         limit: 24,
-                        critical: 2,
+                        critical: 4,
                     },
                 },
             },

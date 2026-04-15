@@ -351,6 +351,9 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             },
             [swatchMode]
         );
+        const handleClick = useCallback(() => {
+            product && handleProductClick?.(product);
+        }, [handleProductClick, product]);
 
         const productUrl = createProductUrl(product?.productId ?? '');
         const productName = product?.productName ?? '';
@@ -408,7 +411,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             to={productUrl}
                             className="absolute inset-0 z-[1] cursor-pointer"
                             aria-label={`View ${productName}`}
-                            onClick={() => handleProductClick?.(product)}
+                            onClick={handleClick}
                             tabIndex={-1}
                         />
 
@@ -479,7 +482,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                                     colorValues={colorValues}
                                     selectedAttributeValue={selectedAttributeValue}
                                     onSwatchHover={handleSwatchHover}
-                                    onSwatchClick={() => handleProductClick?.(product)}
+                                    onSwatchClick={handleClick}
                                     productName={productName}
                                     totalColorCount={colorAttributes[0]?.values?.length ?? colorValues.length}
                                     maxSwatches={maxSwatches}
@@ -502,7 +505,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                         <Link
                             to={productUrl}
                             className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                            onClick={() => handleProductClick?.(product)}>
+                            onClick={handleClick}>
                             {productName}
                         </Link>
                     </h3>

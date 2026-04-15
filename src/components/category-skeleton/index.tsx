@@ -20,7 +20,7 @@ export function ProductTileSwatchesSkeleton({ count = 2 }: { count?: number }) {
     return (
         <div className="product-tile-swatches-skeleton flex items-center flex-wrap gap-1 mb-2 relative z-20">
             {Array.from({ length: count }, (_, i) => (
-                <Skeleton key={i} className="h-[22px] w-[22px] rounded-full" />
+                <Skeleton key={i} className="h-4 w-4 rounded-full" />
             ))}
         </div>
     );

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentProps } from 'react';
+import { type ComponentProps, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import type {
     ShopperBasketsV2,
@@ -80,7 +80,7 @@ export default function ProductPrice({
     hidePromo = false,
     currentPriceOnly = false,
 }: ProductPriceProps) {
-    const priceData = getPriceData(product, { quantity });
+    const priceData = useMemo(() => getPriceData(product, { quantity }), [product, quantity]);
     const { listPrice, currentPrice, isASet, isMaster, isOnSale, isRange, maxPrice } = priceData;
 
     // Show strikethrough (list price) only for single price, not when displaying price range (min – max)
