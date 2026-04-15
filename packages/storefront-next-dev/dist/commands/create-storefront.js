@@ -5,11 +5,9 @@ import { a as trimExtensions, i as validateNoCycles, n as resolveDependenciesFor
 import { t as prepareForLocalDev } from "../local-dev-setup.js";
 import { Command, Flags } from "@oclif/core";
 import { execFileSync, execSync } from "child_process";
-import { fileURLToPath } from "node:url";
 import path from "path";
 import fs from "fs-extra";
 import dotenv from "dotenv";
-import Handlebars from "handlebars";
 import prompts from "prompts";
 
 //#region src/create-storefront.ts
@@ -102,22 +100,10 @@ const createStorefront = async (options = {}) => {
 		recursive: true,
 		force: true
 	});
-	const gitignoreExclusions = /* @__PURE__ */ new Set();
-	const gitignorePath = path.join(outputPath, ".gitignore");
-	if (fs.existsSync(gitignorePath)) for (const line of fs.readFileSync(gitignorePath, "utf8").split("\n")) {
-		const entry = line.trim().replace(/\/$/, "");
-		if (entry && !entry.startsWith("#") && !entry.startsWith("!") && !entry.includes("/") && !entry.includes("*")) gitignoreExclusions.add(entry);
-	}
-	const subPackages = fs.readdirSync(outputPath).filter((name) => {
-		if (name === "node_modules" || name.startsWith(".")) return false;
-		if (gitignoreExclusions.has(name)) return false;
-		const subDir = path.join(outputPath, name);
-		return fs.statSync(subDir).isDirectory() && fs.existsSync(path.join(subDir, "package.json"));
-	});
-	const workspaceTemplatePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../templates/pnpm-workspace.yaml.hbs");
-	const workspaceTemplate = Handlebars.compile(fs.readFileSync(workspaceTemplatePath, "utf8"));
-	const packagesBlock = subPackages.length > 0 ? `packages:\n${subPackages.map((p) => `  - ${p}`).join("\n")}\n` : "";
-	fs.writeFileSync(path.join(outputPath, "pnpm-workspace.yaml"), workspaceTemplate({ packages: packagesBlock }));
+	const workspaceHbsPath = path.join(outputPath, "pnpm-workspace.yaml.hbs");
+	if (!fs.existsSync(workspaceHbsPath)) throw new Error(`Template is missing pnpm-workspace.yaml.hbs.\nExpected at: ${workspaceHbsPath}\nEach template must include this file to generate a pnpm-workspace.yaml for the new project.`);
+	fs.copyFileSync(workspaceHbsPath, path.join(outputPath, "pnpm-workspace.yaml"));
+	fs.rmSync(workspaceHbsPath);
 	if (isLocalPath(template) || options.localPackagesDir) {
 		const templatePath = template.replace("file://", "");
 		await prepareForLocalDev({
@@ -192,7 +178,7 @@ const createStorefront = async (options = {}) => {
         🎉 Congratulations! Your storefront is ready to use! 🎉
         What's next:
         - Navigate to the storefront directory: cd ${outputPath}
-        - Install dependencies: ${options.localPackagesDir ? "pnpm install --ignore-workspace" : "pnpm install"}
+        - Install dependencies: pnpm install
         - Build the storefront: pnpm run build
         - Run the development server: pnpm run dev
     `;

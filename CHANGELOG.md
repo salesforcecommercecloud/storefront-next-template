@@ -34,3 +34,9 @@
 - Page Designer: `storefrontnext_base` default `@Component` group, Layout/Content groups, resolved region type refs for inclusions/exclusions; updated cartridge metadata and static registry (@W-21816874)
 - Hero Banner: Page Designer **Overlay Position** (nine placements: top/middle/bottom × left/center/right) and **Overlay Alignment** (text/CTA left, center, right); updated cartridge metadata (@W-21816944)
 - Hero Banner: Page Designer **Title Typography**, **Subtitle Typography**, optional **Title/Subtitle Color** (hex), and **Button Style** (Primary/Secondary/Tertiary) for the CTA; hide CTA when link is empty; derive default CTA label from URL; legacy horizontal overlay values map to the nine-position grid; updated cartridge metadata (@W-21816953)
+
+## v0.3.1 (Apr 13, 2026)
+
+- Fix `pnpm install` failing on freshly generated storefronts: add `trustPolicyExclude` in `pnpm-workspace.yaml.hbs` for `chokidar` and `semver`, which lost their SLSA provenance attestations and triggered `ERR_PNPM_TRUST_DOWNGRADE`
+- Add `minimumReleaseAgeExclude` for `@salesforce/storefront-next-dev` and `@salesforce/storefront-next-runtime` in `pnpm-workspace.yaml.hbs` so freshly released SDK versions can be installed without hitting the 48-hour quarantine window
+- Fix template CI: `build-bundle` action now falls back to `--no-frozen-lockfile` when no lockfile exists; `deploy.yml` adds missing `SFCC_ACCOUNT_MANAGER_HOST` env var
