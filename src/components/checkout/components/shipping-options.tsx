@@ -185,9 +185,7 @@ export default function ShippingOptions({
     // The ToggleCard will handle the collapsed/expanded state based on editing prop
 
     const stepTitle = (
-        <span className="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground">
-            {t('shippingOptions.title')}
-        </span>
+        <span className="text-xl font-bold tracking-tight text-card-foreground">{t('shippingOptions.title')}</span>
     );
 
     return (

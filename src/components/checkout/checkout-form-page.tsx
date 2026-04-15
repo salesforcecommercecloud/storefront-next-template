@@ -535,6 +535,9 @@ export default function CheckoutFormPage({
         <div className="min-h-screen bg-background pb-20 lg:pb-0">
             <UITarget targetId="checkout.page.before" />
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <Typography variant="h2" as="h1" className="mb-8">
+                    {t('pageTitle')}
+                </Typography>
                 {/* Mobile Order Summary + My Cart */}
                 <div className="lg:hidden mb-6">
                     <Accordion type="single" collapsible defaultValue="order-summary">

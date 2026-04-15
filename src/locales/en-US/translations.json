@@ -402,6 +402,7 @@
         }
     },
     "checkout": {
+        "pageTitle": "Checkout",
         "contactInfo": {
             "title": "Contact Information",
             "emailLabel": "Email Address",

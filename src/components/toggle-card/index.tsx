@@ -67,12 +67,15 @@ export function ToggleCard({
     const contextValue = useMemo<ToggleCardContextValue>(() => ({ editing, disabled }), [editing, disabled]);
 
     const showHeaderContentGap = editing || (!editing && !disabled);
-    const isCompact = !editing && disabled;
 
     return (
         <ToggleCardContext.Provider value={contextValue}>
             <Card
-                className={cn('relative', showHeaderContentGap ? 'gap-4' : 'gap-0', isCompact && 'py-4', className)}
+                className={cn(
+                    'relative rounded-none py-4 shadow-none',
+                    showHeaderContentGap ? 'gap-4' : 'gap-0',
+                    className
+                )}
                 data-testid={id ? `sf-toggle-card-${id}` : undefined}
                 aria-disabled={disabled && !editing ? true : undefined}
                 {...props}>
@@ -130,7 +133,7 @@ export function ToggleCard({
                 <CardContent data-testid={id ? `sf-toggle-card-${id}-content` : undefined}>{children}</CardContent>
 
                 {isLoading ? (
-                    <div className="absolute inset-0 z-10 rounded-xl bg-background/60">
+                    <div className="absolute inset-0 z-10 bg-background/60">
                         <div className="flex h-full w-full items-center justify-center">
                             <Spinner size="md" />
                         </div>

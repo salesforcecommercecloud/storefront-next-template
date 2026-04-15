@@ -6,7 +6,7 @@ exports[`ContactInfo stories snapshot > CompletedState story renders and matches
 >
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-contact-info"
     >
@@ -20,7 +20,7 @@ exports[`ContactInfo stories snapshot > CompletedState story renders and matches
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -64,7 +64,7 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
 >
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-contact-info"
     >
@@ -78,7 +78,7 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -282,7 +282,7 @@ exports[`ContactInfo stories snapshot > DisabledState story renders and matches 
 >
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-contact-info"
     >
@@ -296,7 +296,7 @@ exports[`ContactInfo stories snapshot > DisabledState story renders and matches 
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -340,7 +340,7 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
 >
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-contact-info"
     >
@@ -354,7 +354,7 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -549,7 +549,7 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
         </form>
       </div>
       <div
-        class="absolute inset-0 z-10 rounded-xl bg-background/60"
+        class="absolute inset-0 z-10 bg-background/60"
       >
         <div
           class="flex h-full w-full items-center justify-center"
@@ -570,7 +570,7 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
 >
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-contact-info"
     >
@@ -584,7 +584,7 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -788,7 +788,7 @@ exports[`ContactInfo stories snapshot > WithFormError story renders and matches 
 >
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-contact-info"
     >
@@ -802,7 +802,7 @@ exports[`ContactInfo stories snapshot > WithFormError story renders and matches 
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -1013,7 +1013,7 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
 >
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-contact-info"
     >
@@ -1027,7 +1027,7 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>

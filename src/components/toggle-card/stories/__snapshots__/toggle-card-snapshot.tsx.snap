@@ -3,7 +3,7 @@
 exports[`ToggleCard stories snapshot > CustomStyling story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl py-6 relative gap-4 border-2 border-primary shadow-lg"
+    class="bg-card text-card-foreground flex flex-col relative rounded-none py-4 gap-4 border-2 border-primary shadow-lg"
     data-slot="card"
   >
     <div
@@ -93,7 +93,7 @@ exports[`ToggleCard stories snapshot > CustomStyling story renders and matches s
 exports[`ToggleCard stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
   >
     <div
@@ -183,7 +183,7 @@ exports[`ToggleCard stories snapshot > Default story renders and matches snapsho
 exports[`ToggleCard stories snapshot > DisableEdit story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
   >
     <div
@@ -264,7 +264,7 @@ exports[`ToggleCard stories snapshot > Disabled story renders and matches snapsh
 <div>
   <div
     aria-disabled="true"
-    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm relative gap-0 py-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-0"
     data-slot="card"
   >
     <div
@@ -344,7 +344,7 @@ exports[`ToggleCard stories snapshot > Disabled story renders and matches snapsh
 exports[`ToggleCard stories snapshot > Loading story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
   >
     <div
@@ -428,7 +428,7 @@ exports[`ToggleCard stories snapshot > Loading story renders and matches snapsho
       </div>
     </div>
     <div
-      class="absolute inset-0 z-10 rounded-xl bg-background/60"
+      class="absolute inset-0 z-10 bg-background/60"
     >
       <div
         class="flex h-full w-full items-center justify-center"
@@ -445,7 +445,7 @@ exports[`ToggleCard stories snapshot > Loading story renders and matches snapsho
 exports[`ToggleCard stories snapshot > LongContent story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
   >
     <div
@@ -538,7 +538,7 @@ exports[`ToggleCard stories snapshot > MultipleCards story renders and matches s
     class="space-y-4"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
     >
       <div
@@ -623,7 +623,7 @@ exports[`ToggleCard stories snapshot > MultipleCards story renders and matches s
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
     >
       <div
@@ -708,7 +708,7 @@ exports[`ToggleCard stories snapshot > MultipleCards story renders and matches s
       </div>
     </div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
     >
       <div
@@ -800,7 +800,7 @@ exports[`ToggleCard stories snapshot > StaticView story renders and matches snap
 <div>
   <div
     aria-disabled="true"
-    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm relative gap-0 py-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-0"
     data-slot="card"
   >
     <div
@@ -867,7 +867,7 @@ exports[`ToggleCard stories snapshot > StaticView story renders and matches snap
 exports[`ToggleCard stories snapshot > WithoutDescription story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
   >
     <div

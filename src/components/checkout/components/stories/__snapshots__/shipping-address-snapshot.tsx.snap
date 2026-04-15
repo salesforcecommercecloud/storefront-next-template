@@ -3,7 +3,7 @@
 exports[`ShippingAddress stories snapshot > CompletedState story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
     data-testid="sf-toggle-card-shipping-address"
   >
@@ -17,7 +17,7 @@ exports[`ShippingAddress stories snapshot > CompletedState story renders and mat
         tabindex="0"
       >
         <span
-          class="text-2xl font-bold tracking-tight text-card-foreground"
+          class="text-xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -55,7 +55,7 @@ exports[`ShippingAddress stories snapshot > CompletedState story renders and mat
 exports[`ShippingAddress stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
     data-testid="sf-toggle-card-shipping-address"
   >
@@ -69,7 +69,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
         tabindex="0"
       >
         <span
-          class="text-2xl font-bold tracking-tight text-card-foreground"
+          class="text-xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -690,7 +690,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
 exports[`ShippingAddress stories snapshot > DisabledState story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
     data-testid="sf-toggle-card-shipping-address"
   >
@@ -704,7 +704,7 @@ exports[`ShippingAddress stories snapshot > DisabledState story renders and matc
         tabindex="0"
       >
         <span
-          class="text-2xl font-bold tracking-tight text-card-foreground"
+          class="text-xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -732,7 +732,7 @@ exports[`ShippingAddress stories snapshot > DisabledState story renders and matc
 exports[`ShippingAddress stories snapshot > InternationalAddress story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
     data-testid="sf-toggle-card-shipping-address"
   >
@@ -746,7 +746,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
         tabindex="0"
       >
         <span
-          class="text-2xl font-bold tracking-tight text-card-foreground"
+          class="text-xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -1367,7 +1367,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
 exports[`ShippingAddress stories snapshot > LoadingState story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
     data-testid="sf-toggle-card-shipping-address"
   >
@@ -1381,7 +1381,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
         tabindex="0"
       >
         <span
-          class="text-2xl font-bold tracking-tight text-card-foreground"
+          class="text-xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -1997,7 +1997,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
       </form>
     </div>
     <div
-      class="absolute inset-0 z-10 rounded-xl bg-background/60"
+      class="absolute inset-0 z-10 bg-background/60"
     >
       <div
         class="flex h-full w-full items-center justify-center"
@@ -2014,7 +2014,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
 exports[`ShippingAddress stories snapshot > WithExistingAddress story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
     data-testid="sf-toggle-card-shipping-address"
   >
@@ -2028,7 +2028,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
         tabindex="0"
       >
         <span
-          class="text-2xl font-bold tracking-tight text-card-foreground"
+          class="text-xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -2649,7 +2649,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
 exports[`ShippingAddress stories snapshot > WithFormError story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
     data-testid="sf-toggle-card-shipping-address"
   >
@@ -2663,7 +2663,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
         tabindex="0"
       >
         <span
-          class="text-2xl font-bold tracking-tight text-card-foreground"
+          class="text-xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -3291,7 +3291,7 @@ exports[`ShippingAddress stories snapshot > WithFormError story renders and matc
 exports[`ShippingAddress stories snapshot > WithValidationErrors story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+    class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
     data-slot="card"
     data-testid="sf-toggle-card-shipping-address"
   >
@@ -3305,7 +3305,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
         tabindex="0"
       >
         <span
-          class="text-2xl font-bold tracking-tight text-card-foreground"
+          class="text-xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>

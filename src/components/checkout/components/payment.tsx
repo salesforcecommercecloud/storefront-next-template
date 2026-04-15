@@ -503,9 +503,7 @@ export default function Payment({
     }, [actionData?.fieldErrors, form]);
 
     const stepTitle = (
-        <span className="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground">
-            {t('payment.title')}
-        </span>
+        <span className="text-xl font-bold tracking-tight text-card-foreground">{t('payment.title')}</span>
     );
 
     return (
@@ -830,7 +828,7 @@ export default function Payment({
                                                 )}
                                                 {(selectedBillingAddressId === 'new' ||
                                                     billingAddressOptions.length === 0) && (
-                                                    <div className="bg-muted p-4">
+                                                    <div>
                                                         <AddressFormFields
                                                             form={form}
                                                             fieldPrefix="billing"

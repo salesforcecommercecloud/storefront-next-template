@@ -385,6 +385,7 @@
         }
     },
     "checkout": {
+        "pageTitle": "Cassa",
         "contactInfo": {
             "title": "Informazioni di contatto",
             "emailLabel": "Indirizzo email",

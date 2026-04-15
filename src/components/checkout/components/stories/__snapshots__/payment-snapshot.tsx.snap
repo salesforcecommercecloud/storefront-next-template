@@ -4,7 +4,7 @@ exports[`Payment stories snapshot > CompletedState story renders and matches sna
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -18,7 +18,7 @@ exports[`Payment stories snapshot > CompletedState story renders and matches sna
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
@@ -62,7 +62,7 @@ exports[`Payment stories snapshot > Default story renders and matches snapshot 1
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -76,7 +76,7 @@ exports[`Payment stories snapshot > Default story renders and matches snapshot 1
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
@@ -456,7 +456,7 @@ exports[`Payment stories snapshot > DesktopView story renders and matches snapsh
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -470,7 +470,7 @@ exports[`Payment stories snapshot > DesktopView story renders and matches snapsh
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
@@ -514,7 +514,7 @@ exports[`Payment stories snapshot > DisabledState story renders and matches snap
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -528,7 +528,7 @@ exports[`Payment stories snapshot > DisabledState story renders and matches snap
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
@@ -572,7 +572,7 @@ exports[`Payment stories snapshot > LoadingState story renders and matches snaps
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -586,7 +586,7 @@ exports[`Payment stories snapshot > LoadingState story renders and matches snaps
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
@@ -958,7 +958,7 @@ exports[`Payment stories snapshot > LoadingState story renders and matches snaps
         </form>
       </div>
       <div
-        class="absolute inset-0 z-10 rounded-xl bg-background/60"
+        class="absolute inset-0 z-10 bg-background/60"
       >
         <div
           class="flex h-full w-full items-center justify-center"
@@ -977,7 +977,7 @@ exports[`Payment stories snapshot > MobileView story renders and matches snapsho
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -991,7 +991,7 @@ exports[`Payment stories snapshot > MobileView story renders and matches snapsho
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
@@ -1371,7 +1371,7 @@ exports[`Payment stories snapshot > TabletView story renders and matches snapsho
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -1385,7 +1385,7 @@ exports[`Payment stories snapshot > TabletView story renders and matches snapsho
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
@@ -1765,7 +1765,7 @@ exports[`Payment stories snapshot > WithBillingAddress story renders and matches
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -1779,7 +1779,7 @@ exports[`Payment stories snapshot > WithBillingAddress story renders and matches
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
@@ -2159,7 +2159,7 @@ exports[`Payment stories snapshot > WithExistingPayment story renders and matche
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -2173,7 +2173,7 @@ exports[`Payment stories snapshot > WithExistingPayment story renders and matche
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
@@ -2553,7 +2553,7 @@ exports[`Payment stories snapshot > WithFormError story renders and matches snap
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -2567,7 +2567,7 @@ exports[`Payment stories snapshot > WithFormError story renders and matches snap
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
@@ -2954,7 +2954,7 @@ exports[`Payment stories snapshot > WithValidationErrors story renders and match
 <div>
   <div>
     <div
-      class="bg-card text-card-foreground flex flex-col rounded-xl border py-6 shadow-sm relative gap-4"
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
       data-slot="card"
       data-testid="sf-toggle-card-payment"
     >
@@ -2968,7 +2968,7 @@ exports[`Payment stories snapshot > WithValidationErrors story renders and match
           tabindex="0"
         >
           <span
-            class="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground"
+            class="text-xl font-bold tracking-tight text-card-foreground"
           >
             Payment
           </span>
