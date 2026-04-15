@@ -473,9 +473,8 @@ describe('ShippingMultiOptions', () => {
             { wrapper }
         );
 
-        // The component displays "Free" when price is 0
-        // The component displays "Free" when price is 0 (not "Free Shipping" which is the method name)
-        expect(screen.getByText('Free')).toBeInTheDocument();
+        // The component displays "FREE" when price is 0 (not "Free Shipping" which is the method name)
+        expect(screen.getByText('FREE')).toBeInTheDocument();
     });
 
     test('filters invalid shipping methods', () => {

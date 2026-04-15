@@ -491,7 +491,7 @@
             "enterAddressFirst": "Enter your shipping address to view available shipping methods.",
             "arrives": "Arrives: {{estimatedArrivalTime}}",
             "priceAndMethod": "{{price}} | {{methodName}}",
-            "free": "Free",
+            "free": "FREE",
             "noMethodsAvailable": "No shipping methods available",
             "noMethodsAvailableHelp": "Make sure your shipping address is complete and try again."
         },

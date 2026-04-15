@@ -16,9 +16,7 @@
 import { type FormEvent, useEffect, useMemo, useRef } from 'react';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/typography';
 import { useBasket } from '@/providers/basket';
 import { getDefaultShippingMethod } from '@/lib/customer-profile-utils';
@@ -31,11 +29,18 @@ import { useTranslation } from 'react-i18next';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { formatCurrency } from '@/lib/currency';
 
+interface ShippingPromotion {
+    calloutMsg?: string;
+    promotionId?: string;
+    promotionName?: string;
+}
+
 interface ShippingMethod {
     id: string;
     name: string;
     description?: string;
     price: number;
+    shippingPromotions?: ShippingPromotion[];
 }
 
 interface ShippingOptionsProps {
@@ -74,10 +79,33 @@ export default function ShippingOptions({
                     name: method.name,
                     description: method.description,
                     price: method.price,
+                    shippingPromotions: method.shippingPromotions,
                 })) || [],
         [shippingMethods?.applicableShippingMethods]
     );
     const { t } = useTranslation('checkout');
+
+    const shippingDiscount = useMemo(() => {
+        const adjustment = cart?.shippingItems?.[0]?.priceAdjustments?.[0];
+        if (!adjustment?.appliedDiscount) return undefined;
+        return adjustment.appliedDiscount;
+    }, [cart?.shippingItems]);
+
+    const getDiscountedPrice = (basePrice: number): number => {
+        if (!shippingDiscount) return basePrice;
+        switch (shippingDiscount.type) {
+            case 'free':
+                return 0;
+            case 'percentage':
+                return basePrice * (1 - (shippingDiscount.amount ?? 0));
+            case 'amount':
+                return Math.max(0, basePrice - (shippingDiscount.amount ?? 0));
+            case 'fixed_price':
+                return shippingDiscount.amount ?? basePrice;
+            default:
+                return basePrice;
+        }
+    };
 
     const selectedMethod = cart?.shipments?.[0]?.shippingMethod;
     // Basket may only have shippingMethod.id after prefill; resolve name/price from applicable methods for summary
@@ -90,6 +118,7 @@ export default function ShippingOptions({
             name: selectedMethod.name ?? selectedMethod.id,
             description: selectedMethod.description,
             price: typeof selectedMethod.price === 'number' ? selectedMethod.price : 0,
+            shippingPromotions: selectedMethod.shippingPromotions,
         };
     }, [selectedMethod, availableShippingMethods]);
     const isGuest = !customerProfile?.customer?.customerId;
@@ -198,19 +227,34 @@ export default function ShippingOptions({
                                                 autoFocus={isEditing && availableShippingMethods.indexOf(method) === 0}
                                             />
                                             <span className="flex-1 text-sm font-medium leading-none">
-                                                {method.name}
+                                                {method.description || method.name}
                                             </span>
-                                            <span className="shrink-0 text-sm font-semibold leading-none">
-                                                {method.price === 0
-                                                    ? t('shippingOptions.free')
-                                                    : formatCurrency(method.price, i18n.language, currency)}
+                                            <span className="flex shrink-0 items-center gap-1.5">
+                                                {method.shippingPromotions?.length && method.price > 0 ? (
+                                                    <>
+                                                        <span className="text-sm text-muted-foreground line-through">
+                                                            {formatCurrency(method.price, i18n.language, currency)}
+                                                        </span>
+                                                        <span className="text-sm font-semibold leading-none">
+                                                            {getDiscountedPrice(method.price) === 0
+                                                                ? t('shippingOptions.free')
+                                                                : formatCurrency(
+                                                                      getDiscountedPrice(method.price),
+                                                                      i18n.language,
+                                                                      currency
+                                                                  )}
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <span className="text-sm font-semibold leading-none">
+                                                        {method.price === 0
+                                                            ? t('shippingOptions.free')
+                                                            : formatCurrency(method.price, i18n.language, currency)}
+                                                    </span>
+                                                )}
                                             </span>
                                         </div>
-                                        {method.description && (
-                                            <span className="pl-6 text-sm text-muted-foreground">
-                                                {method.description}
-                                            </span>
-                                        )}
+                                        <span className="pl-6 text-sm text-foreground">{method.name}</span>
                                     </label>
                                 ))}
                             </RadioGroup>
@@ -227,15 +271,6 @@ export default function ShippingOptions({
                             </div>
                         )}
                     </div>
-
-                    {availableShippingMethods.length > 0 && (
-                        <div className="flex items-center gap-2 rounded-lg border border-border-subtle p-4">
-                            <Checkbox id="shipping-options-gift-wrapping" name="giftWrapping" value="true" />
-                            <Label htmlFor="shipping-options-gift-wrapping" className="cursor-pointer">
-                                {(t as (key: string) => string)('shippingOptions.giftWrappingLabel')}
-                            </Label>
-                        </div>
-                    )}
 
                     <div className="w-full pt-2">
                         <Button
@@ -254,19 +289,34 @@ export default function ShippingOptions({
                         <div className="space-y-1.5">
                             {summaryMethod.description && (
                                 <p className="text-sm font-normal leading-5 text-foreground">
-                                    {t('shippingOptions.arrives', {
-                                        estimatedArrivalTime: summaryMethod.description,
-                                    })}
+                                    {summaryMethod.description}
                                 </p>
                             )}
                             <p className="text-sm font-normal leading-5 text-foreground">
-                                {t('shippingOptions.priceAndMethod', {
-                                    price:
-                                        summaryMethod.price === 0
+                                {summaryMethod.shippingPromotions?.length && summaryMethod.price > 0 ? (
+                                    <>
+                                        <span className="text-foreground line-through">
+                                            {formatCurrency(summaryMethod.price, i18n.language, currency)}
+                                        </span>{' '}
+                                        {getDiscountedPrice(summaryMethod.price) === 0
                                             ? t('shippingOptions.free')
-                                            : formatCurrency(summaryMethod.price ?? 0, i18n.language, currency),
-                                    methodName: summaryMethod.name || '',
-                                })}
+                                            : formatCurrency(
+                                                  getDiscountedPrice(summaryMethod.price),
+                                                  i18n.language,
+                                                  currency
+                                              )}
+                                        {' | '}
+                                        {summaryMethod.name}
+                                    </>
+                                ) : (
+                                    t('shippingOptions.priceAndMethod', {
+                                        price:
+                                            summaryMethod.price === 0
+                                                ? t('shippingOptions.free')
+                                                : formatCurrency(summaryMethod.price ?? 0, i18n.language, currency),
+                                        methodName: summaryMethod.name || '',
+                                    })
+                                )}
                             </p>
                         </div>
                     </div>

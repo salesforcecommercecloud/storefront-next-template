@@ -140,7 +140,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithFree })} />);
 
-            expect(screen.getByText('Free')).toBeInTheDocument();
+            expect(screen.getByText('FREE')).toBeInTheDocument();
             expect(screen.getByText('Free Standard Shipping')).toBeInTheDocument();
             expect(screen.getByText('7-10 business days')).toBeInTheDocument();
         });
@@ -216,7 +216,7 @@ describe('ShippingOptions Integration Tests', () => {
                 />
             );
 
-            expect(screen.getByText('Arrives: 2-3 business days')).toBeInTheDocument();
+            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
         });
 
         test('does not show arrives text in summary when description is missing', () => {
@@ -307,7 +307,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithFree })} />);
 
-            expect(screen.getByText('Free')).toBeInTheDocument();
+            expect(screen.getByText('FREE')).toBeInTheDocument();
             expect(screen.getByText('Free Standard Shipping')).toBeInTheDocument();
             expect(screen.getByText('Free shipping on orders over $50')).toBeInTheDocument();
             expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
@@ -355,7 +355,7 @@ describe('ShippingOptions Integration Tests', () => {
                 />
             );
 
-            expect(screen.getByText('Free | Free Standard Shipping')).toBeInTheDocument();
+            expect(screen.getByText('FREE | Free Standard Shipping')).toBeInTheDocument();
             expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
         });
 
@@ -385,7 +385,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ shippingMethods: mixedMethods })} />);
 
-            expect(screen.getByText('Free')).toBeInTheDocument();
+            expect(screen.getByText('FREE')).toBeInTheDocument();
             expect(screen.getByText('Free Standard Shipping')).toBeInTheDocument();
             expect(screen.getByText('$5.99')).toBeInTheDocument();
             expect(screen.getByText('$12.99')).toBeInTheDocument();
@@ -416,7 +416,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ shippingMethods: promotionalFreeMethods })} />);
 
-            expect(screen.getByText('Free')).toBeInTheDocument();
+            expect(screen.getByText('FREE')).toBeInTheDocument();
             expect(screen.getByText('Standard Shipping')).toBeInTheDocument();
             expect(screen.getByText('5-7 business days')).toBeInTheDocument();
             expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
@@ -1021,7 +1021,7 @@ describe('ShippingOptions Integration Tests', () => {
 
             render(<ShippingOptions {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
 
-            expect(screen.getByText(/Free \| Standard Ground/)).toBeInTheDocument();
+            expect(screen.getByText(/FREE \| Standard Ground/)).toBeInTheDocument();
         });
     });
 

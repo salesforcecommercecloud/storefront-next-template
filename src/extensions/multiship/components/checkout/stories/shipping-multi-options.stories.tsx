@@ -650,8 +650,8 @@ export const FreeShipping: Story = {
         const canvas = within(canvasElement);
 
         expect(canvas.getByText('Free Standard Shipping')).toBeInTheDocument();
-        // Should show "Free" instead of price
-        expect(canvas.getByText('Free')).toBeInTheDocument();
+        // Should show "FREE" instead of price
+        expect(canvas.getByText('FREE')).toBeInTheDocument();
     },
 };
 

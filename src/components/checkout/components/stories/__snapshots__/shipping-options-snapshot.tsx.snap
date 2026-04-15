@@ -398,18 +398,22 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
                 <span
                   class="flex-1 text-sm font-medium leading-none"
                 >
-                  Standard Shipping
+                  5-7 business days
                 </span>
                 <span
-                  class="shrink-0 text-sm font-semibold leading-none"
+                  class="flex shrink-0 items-center gap-1.5"
                 >
-                  £9.99
+                  <span
+                    class="text-sm font-semibold leading-none"
+                  >
+                    £9.99
+                  </span>
                 </span>
               </div>
               <span
-                class="pl-6 text-sm text-muted-foreground"
+                class="pl-6 text-sm text-foreground"
               >
-                5-7 business days
+                Standard Shipping
               </span>
             </label>
             <label
@@ -443,50 +447,25 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
                 <span
                   class="flex-1 text-sm font-medium leading-none"
                 >
-                  Express Shipping
+                  2-3 business days
                 </span>
                 <span
-                  class="shrink-0 text-sm font-semibold leading-none"
+                  class="flex shrink-0 items-center gap-1.5"
                 >
-                  £19.99
+                  <span
+                    class="text-sm font-semibold leading-none"
+                  >
+                    £19.99
+                  </span>
                 </span>
               </div>
               <span
-                class="pl-6 text-sm text-muted-foreground"
+                class="pl-6 text-sm text-foreground"
               >
-                2-3 business days
+                Express Shipping
               </span>
             </label>
           </div>
-        </div>
-        <div
-          class="flex items-center gap-2 rounded-lg border border-border-subtle p-4"
-        >
-          <button
-            aria-checked="false"
-            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-            data-slot="checkbox"
-            data-state="unchecked"
-            id="shipping-options-gift-wrapping"
-            role="checkbox"
-            type="button"
-            value="true"
-          />
-          <input
-            aria-hidden="true"
-            name="giftWrapping"
-            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
-            tabindex="-1"
-            type="checkbox"
-            value="true"
-          />
-          <label
-            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 cursor-pointer"
-            data-slot="label"
-            for="shipping-options-gift-wrapping"
-          >
-            Send as a gift (gift wrapping)
-          </label>
         </div>
         <div
           class="w-full pt-2"
@@ -692,18 +671,22 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
                 <span
                   class="flex-1 text-sm font-medium leading-none"
                 >
-                  Standard Shipping
+                  5-7 business days
                 </span>
                 <span
-                  class="shrink-0 text-sm font-semibold leading-none"
+                  class="flex shrink-0 items-center gap-1.5"
                 >
-                  £9.99
+                  <span
+                    class="text-sm font-semibold leading-none"
+                  >
+                    £9.99
+                  </span>
                 </span>
               </div>
               <span
-                class="pl-6 text-sm text-muted-foreground"
+                class="pl-6 text-sm text-foreground"
               >
-                5-7 business days
+                Standard Shipping
               </span>
             </label>
             <label
@@ -737,50 +720,25 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
                 <span
                   class="flex-1 text-sm font-medium leading-none"
                 >
-                  Express Shipping
+                  2-3 business days
                 </span>
                 <span
-                  class="shrink-0 text-sm font-semibold leading-none"
+                  class="flex shrink-0 items-center gap-1.5"
                 >
-                  £19.99
+                  <span
+                    class="text-sm font-semibold leading-none"
+                  >
+                    £19.99
+                  </span>
                 </span>
               </div>
               <span
-                class="pl-6 text-sm text-muted-foreground"
+                class="pl-6 text-sm text-foreground"
               >
-                2-3 business days
+                Express Shipping
               </span>
             </label>
           </div>
-        </div>
-        <div
-          class="flex items-center gap-2 rounded-lg border border-border-subtle p-4"
-        >
-          <button
-            aria-checked="false"
-            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-            data-slot="checkbox"
-            data-state="unchecked"
-            id="shipping-options-gift-wrapping"
-            role="checkbox"
-            type="button"
-            value="true"
-          />
-          <input
-            aria-hidden="true"
-            name="giftWrapping"
-            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
-            tabindex="-1"
-            type="checkbox"
-            value="true"
-          />
-          <label
-            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 cursor-pointer"
-            data-slot="label"
-            for="shipping-options-gift-wrapping"
-          >
-            Send as a gift (gift wrapping)
-          </label>
         </div>
         <div
           class="w-full pt-2"
@@ -915,50 +873,25 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
                 <span
                   class="flex-1 text-sm font-medium leading-none"
                 >
-                  Standard Shipping
+                  5-7 business days
                 </span>
                 <span
-                  class="shrink-0 text-sm font-semibold leading-none"
+                  class="flex shrink-0 items-center gap-1.5"
                 >
-                  £9.99
+                  <span
+                    class="text-sm font-semibold leading-none"
+                  >
+                    £9.99
+                  </span>
                 </span>
               </div>
               <span
-                class="pl-6 text-sm text-muted-foreground"
+                class="pl-6 text-sm text-foreground"
               >
-                5-7 business days
+                Standard Shipping
               </span>
             </label>
           </div>
-        </div>
-        <div
-          class="flex items-center gap-2 rounded-lg border border-border-subtle p-4"
-        >
-          <button
-            aria-checked="false"
-            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-            data-slot="checkbox"
-            data-state="unchecked"
-            id="shipping-options-gift-wrapping"
-            role="checkbox"
-            type="button"
-            value="true"
-          />
-          <input
-            aria-hidden="true"
-            name="giftWrapping"
-            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
-            tabindex="-1"
-            type="checkbox"
-            value="true"
-          />
-          <label
-            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 cursor-pointer"
-            data-slot="label"
-            for="shipping-options-gift-wrapping"
-          >
-            Send as a gift (gift wrapping)
-          </label>
         </div>
         <div
           class="w-full pt-2"
@@ -1086,18 +1019,22 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
                 <span
                   class="flex-1 text-sm font-medium leading-none"
                 >
-                  Free Standard Shipping
+                  5-7 business days
                 </span>
                 <span
-                  class="shrink-0 text-sm font-semibold leading-none"
+                  class="flex shrink-0 items-center gap-1.5"
                 >
-                  Free
+                  <span
+                    class="text-sm font-semibold leading-none"
+                  >
+                    FREE
+                  </span>
                 </span>
               </div>
               <span
-                class="pl-6 text-sm text-muted-foreground"
+                class="pl-6 text-sm text-foreground"
               >
-                5-7 business days
+                Free Standard Shipping
               </span>
             </label>
             <label
@@ -1131,50 +1068,25 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
                 <span
                   class="flex-1 text-sm font-medium leading-none"
                 >
-                  Express Shipping
+                  2-3 business days
                 </span>
                 <span
-                  class="shrink-0 text-sm font-semibold leading-none"
+                  class="flex shrink-0 items-center gap-1.5"
                 >
-                  £19.99
+                  <span
+                    class="text-sm font-semibold leading-none"
+                  >
+                    £19.99
+                  </span>
                 </span>
               </div>
               <span
-                class="pl-6 text-sm text-muted-foreground"
+                class="pl-6 text-sm text-foreground"
               >
-                2-3 business days
+                Express Shipping
               </span>
             </label>
           </div>
-        </div>
-        <div
-          class="flex items-center gap-2 rounded-lg border border-border-subtle p-4"
-        >
-          <button
-            aria-checked="false"
-            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-            data-slot="checkbox"
-            data-state="unchecked"
-            id="shipping-options-gift-wrapping"
-            role="checkbox"
-            type="button"
-            value="true"
-          />
-          <input
-            aria-hidden="true"
-            name="giftWrapping"
-            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
-            tabindex="-1"
-            type="checkbox"
-            value="true"
-          />
-          <label
-            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 cursor-pointer"
-            data-slot="label"
-            for="shipping-options-gift-wrapping"
-          >
-            Send as a gift (gift wrapping)
-          </label>
         </div>
         <div
           class="w-full pt-2"
@@ -1302,18 +1214,22 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                 <span
                   class="flex-1 text-sm font-medium leading-none"
                 >
-                  Standard Shipping
+                  5-7 business days
                 </span>
                 <span
-                  class="shrink-0 text-sm font-semibold leading-none"
+                  class="flex shrink-0 items-center gap-1.5"
                 >
-                  £9.99
+                  <span
+                    class="text-sm font-semibold leading-none"
+                  >
+                    £9.99
+                  </span>
                 </span>
               </div>
               <span
-                class="pl-6 text-sm text-muted-foreground"
+                class="pl-6 text-sm text-foreground"
               >
-                5-7 business days
+                Standard Shipping
               </span>
             </label>
             <label
@@ -1347,18 +1263,22 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                 <span
                   class="flex-1 text-sm font-medium leading-none"
                 >
-                  Express Shipping
+                  2-3 business days
                 </span>
                 <span
-                  class="shrink-0 text-sm font-semibold leading-none"
+                  class="flex shrink-0 items-center gap-1.5"
                 >
-                  £19.99
+                  <span
+                    class="text-sm font-semibold leading-none"
+                  >
+                    £19.99
+                  </span>
                 </span>
               </div>
               <span
-                class="pl-6 text-sm text-muted-foreground"
+                class="pl-6 text-sm text-foreground"
               >
-                2-3 business days
+                Express Shipping
               </span>
             </label>
             <label
@@ -1392,50 +1312,25 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
                 <span
                   class="flex-1 text-sm font-medium leading-none"
                 >
-                  Overnight Shipping
+                  Next business day
                 </span>
                 <span
-                  class="shrink-0 text-sm font-semibold leading-none"
+                  class="flex shrink-0 items-center gap-1.5"
                 >
-                  £29.99
+                  <span
+                    class="text-sm font-semibold leading-none"
+                  >
+                    £29.99
+                  </span>
                 </span>
               </div>
               <span
-                class="pl-6 text-sm text-muted-foreground"
+                class="pl-6 text-sm text-foreground"
               >
-                Next business day
+                Overnight Shipping
               </span>
             </label>
           </div>
-        </div>
-        <div
-          class="flex items-center gap-2 rounded-lg border border-border-subtle p-4"
-        >
-          <button
-            aria-checked="false"
-            class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-            data-slot="checkbox"
-            data-state="unchecked"
-            id="shipping-options-gift-wrapping"
-            role="checkbox"
-            type="button"
-            value="true"
-          />
-          <input
-            aria-hidden="true"
-            name="giftWrapping"
-            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
-            tabindex="-1"
-            type="checkbox"
-            value="true"
-          />
-          <label
-            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 cursor-pointer"
-            data-slot="label"
-            for="shipping-options-gift-wrapping"
-          >
-            Send as a gift (gift wrapping)
-          </label>
         </div>
         <div
           class="w-full pt-2"
