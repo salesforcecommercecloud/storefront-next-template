@@ -1,3 +1,7 @@
+## v0.4.0-dev (Apr 14, 2026)
+
+- Bug fix to allow Canadian saved shipping address (@W-21915532)
+
 ## v0.4.0-dev (Apr 10, 2026)
 
 - Checkout: Shipping method styling as per UX (@W-21512931)

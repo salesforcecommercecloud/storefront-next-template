@@ -80,11 +80,10 @@ export async function action(formData: FormData, context: RouterContextProvider)
         );
     }
 
-    // Use validated data and add additional fields not in validation schema
     const validatedAddress = result.data;
     const addressDataWithExtras = {
         ...validatedAddress,
-        countryCode: formData.get('countryCode')?.toString() || 'US',
+        countryCode: validatedAddress.countryCode || 'US',
     };
 
     const basketBeforeShippingUpdate = (await getBasket(context)).current;

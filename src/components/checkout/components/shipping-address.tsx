@@ -104,6 +104,7 @@ export default function ShippingAddress({
             city: shippingAddress?.city || customerShippingAddress.city || '',
             stateCode: shippingAddress?.stateCode || customerShippingAddress.stateCode || '',
             postalCode: shippingAddress?.postalCode || customerShippingAddress.postalCode || '',
+            countryCode: shippingAddress?.countryCode || customerShippingAddress.countryCode || DEFAULT_COUNTRY_CODE,
             phoneCountryCode: extractCountryCode(prioritizedPhoneNumber),
             phone: stripCountryCode(prioritizedPhoneNumber),
         },
@@ -216,10 +217,13 @@ export default function ShippingAddress({
     const handleFormSubmit = (data: ShippingAddressData) => {
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
-            if (value) {
+            if (value != null && value !== '') {
                 formData.append(key, value);
             }
         });
+        if (!formData.has('countryCode')) {
+            formData.append('countryCode', DEFAULT_COUNTRY_CODE);
+        }
         onSubmit(formData);
     };
 

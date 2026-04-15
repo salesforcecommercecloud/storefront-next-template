@@ -201,6 +201,7 @@ export function addressToFormData(address: AddressBookItem): FormData {
     if (address.city) formData.append('city', address.city);
     if (address.stateCode) formData.append('stateCode', address.stateCode);
     if (address.postalCode) formData.append('postalCode', address.postalCode);
+    if (address.countryCode) formData.append('countryCode', address.countryCode);
     if (address.phone) formData.append('phone', address.phone);
     return formData;
 }
