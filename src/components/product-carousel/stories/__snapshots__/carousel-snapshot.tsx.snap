@@ -6,10 +6,10 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
     class="p-8"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12"
+      class="px-4 sm:px-8 lg:px-16 py-6"
     >
       <div
-        class="flex items-center justify-between mb-6"
+        class="flex items-center justify-between"
       >
         <h2
           class="text-2xl md:text-3xl font-normal text-foreground tracking-tight"
@@ -20,7 +20,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
       <div
         aria-label="Featured Products carousel"
         aria-roledescription="carousel"
-        class="relative w-full"
+        class="relative w-full py-6"
         data-slot="carousel"
         role="region"
       >
@@ -2519,10 +2519,10 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
     class="p-8"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12"
+      class="px-4 sm:px-8 lg:px-16 py-6"
     >
       <div
-        class="flex items-center justify-between mb-6"
+        class="flex items-center justify-between"
       >
         <h2
           class="text-2xl md:text-3xl font-normal text-foreground tracking-tight"
@@ -2531,7 +2531,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
       <div
         aria-label=" carousel"
         aria-roledescription="carousel"
-        class="relative w-full"
+        class="relative w-full py-6"
         data-slot="carousel"
         role="region"
       >
@@ -5022,10 +5022,10 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
     class="p-8"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12"
+      class="px-4 sm:px-8 lg:px-16 py-6"
     >
       <div
-        class="flex items-center justify-between mb-6"
+        class="flex items-center justify-between"
       >
         <h2
           class="text-2xl md:text-3xl font-normal text-foreground tracking-tight"
@@ -5036,7 +5036,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
       <div
         aria-label="Page Designer Carousel carousel"
         aria-roledescription="carousel"
-        class="relative w-full"
+        class="relative w-full py-6"
         data-slot="carousel"
         role="region"
       >
@@ -7527,10 +7527,10 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
     class="p-8"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12"
+      class="px-4 sm:px-8 lg:px-16 py-6"
     >
       <div
-        class="flex items-center justify-between mb-6"
+        class="flex items-center justify-between"
       >
         <h2
           class="text-2xl md:text-3xl font-normal text-foreground tracking-tight"
@@ -7541,7 +7541,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
       <div
         aria-label="Suspense Wrapper carousel"
         aria-roledescription="carousel"
-        class="relative w-full"
+        class="relative w-full py-6"
         data-slot="carousel"
         role="region"
       >

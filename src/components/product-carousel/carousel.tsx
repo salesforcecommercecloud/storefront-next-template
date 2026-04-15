@@ -106,7 +106,7 @@ export default function ProductCarousel({
     const resolvedTitle = title || ''; // put empty string as the title since dont currently have i18n for these default values.
 
     const titleSection = (
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between">
             {subtitle ? (
                 <div>
                     <h2 className={titleClassName ?? defaultTitleClassName}>{resolvedTitle}</h2>
@@ -139,7 +139,7 @@ export default function ProductCarousel({
             return null;
         }
         return (
-            <div className={cn('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12', className)}>
+            <div className={cn('px-4 sm:px-8 lg:px-16 py-6', className)}>
                 {titleSection}
                 <div role="status" aria-live="polite">
                     {t('selectProduct')}
@@ -149,11 +149,11 @@ export default function ProductCarousel({
     }
 
     return (
-        <div className={cn('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12', className)}>
+        <div className={cn('px-4 sm:px-8 lg:px-16 py-6', className)}>
             {titleSection}
 
             <Carousel
-                className="w-full"
+                className="w-full py-6"
                 opts={{
                     align: 'start',
                 }}
