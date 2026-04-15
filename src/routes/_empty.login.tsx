@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement } from 'react';
-import {
-    redirect,
-    useActionData,
-    type LoaderFunctionArgs,
-    type ActionFunctionArgs,
-    // type ClientActionFunctionArgs,
-} from 'react-router';
+import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
 import { SeoMeta } from '@/components/seo-meta';
@@ -35,6 +29,7 @@ import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@/lib/i18next';
 import { updateBasketResource } from '@/middlewares/basket.server';
+import { buildUrlFromContext } from '@/lib/url.server';
 
 // services
 import {
@@ -52,8 +47,6 @@ import { getLogger } from '@/lib/logger.server';
 type LoginActionResponse = {
     success: boolean;
     error?: string;
-    redirectUrl?: string;
-    auth?: ReturnType<typeof getAuth>;
     showOTPForm?: boolean;
     email?: string;
 };
@@ -173,12 +166,17 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 }
 
 /**
- * This server action is required for authentication, because login must be handled server-side for security reasons,
- * and proper integration with session management and Salesforce Commerce Cloud's authentication system. It operates
- * together with the client action to ensure a smooth login process.
+ * Server action for authentication. Login is handled server-side for security (httpOnly cookies,
+ * PKCE code verifier storage) and integration with SLAS.
+ *
+ * Returns `LoginActionResponse | Response` because the action has two distinct outcomes:
+ * - `Response` (redirect) — successful login or social IDP authorization. React Router intercepts
+ *   the redirect before it reaches the component, so `useActionData()` never sees it.
+ * - `LoginActionResponse` — errors or intermediate states (e.g., OTP form). This data is
+ *   serialized and delivered to the component via `useActionData()` for rendering.
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export async function action({ request, context }: ActionFunctionArgs): Promise<LoginActionResponse> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<LoginActionResponse | Response> {
     const logger = getLogger(context);
     const config = getConfig<AppConfig>(context);
     const { t } = getTranslation(context);
@@ -202,7 +200,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             const socialCallback = config.features.socialLogin.callbackUri;
             const socialLoginRedirectURI = isAbsoluteURL(socialCallback)
                 ? socialCallback
-                : `${getAppOrigin()}${socialCallback}`;
+                : `${getAppOrigin()}${buildUrlFromContext(socialCallback, context)}`;
             const finalRedirectURI = redirectPath
                 ? `${socialLoginRedirectURI}?redirectUrl=${redirectPath}`
                 : socialLoginRedirectURI;
@@ -212,7 +210,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             });
             if (result.success && result.redirectUrl) {
                 logger.info('Login: social redirect initiated', { provider });
-                return { success: true, redirectUrl: result.redirectUrl };
+                return redirect(result.redirectUrl);
             }
             logger.warn('Login: social authorization failed', { provider });
             return { success: false, error: genericError };
@@ -258,7 +256,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 if (actionParams) {
                     params.set('actionParams', actionParams);
                 }
-                return { success: true, redirectUrl: `/login?${params.toString()}`, showOTPForm: true, email };
+                return { success: true, showOTPForm: true, email };
             } catch (error) {
                 const errorMessage = extractErrorMessage(error);
                 const errorKey = getPasswordlessErrorMessageKey(errorMessage);
@@ -302,9 +300,8 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             const pendingAction = actionFromForm || actionFromUrl;
             const actionParams = actionParamsFromForm || actionParamsFromUrl;
 
-            // Build final redirect URL with returnUrl and preserved action params
+            // Redirect to returnUrl (with preserved action params) or home
             if (returnUrl) {
-                // If we have action/actionParams, append them to returnUrl
                 if (pendingAction || actionParams) {
                     const returnUrlObj = new URL(returnUrl, getAppOrigin());
                     if (pendingAction) {
@@ -313,18 +310,12 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                     if (actionParams) {
                         returnUrlObj.searchParams.set('actionParams', actionParams);
                     }
-                    // Return relative path with query params
-                    return {
-                        success: true,
-                        redirectUrl: returnUrlObj.pathname + returnUrlObj.search,
-                        auth: getAuth(context),
-                    };
+                    return redirect(returnUrlObj.pathname + returnUrlObj.search);
                 }
-                return { success: true, redirectUrl: returnUrl, auth: getAuth(context) };
+                return redirect(returnUrl);
             }
 
-            // No returnUrl - redirect to home
-            return { success: true, redirectUrl: '/', auth: getAuth(context) };
+            return redirect('/');
         }
     } catch {
         return { success: false, error: genericError };

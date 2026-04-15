@@ -444,9 +444,9 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result).toHaveProperty('redirectUrl', '/');
-            expect(result).toHaveProperty('auth');
-            expect(result.auth).toMatchObject({ userType: 'registered' });
+            expect(result).toBeInstanceOf(Response);
+            expect((result as Response).status).toBe(302);
+            expect((result as Response).headers.get('Location')).toBe('/');
             expect(mockLoginRegisteredUser).toHaveBeenCalledWith(mockContext, {
                 email: 'test@example.com',
                 password: 'password123',
@@ -481,8 +481,9 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result).toHaveProperty('redirectUrl', '/product/123');
-            expect(result).toHaveProperty('auth');
+            expect(result).toBeInstanceOf(Response);
+            expect((result as Response).status).toBe(302);
+            expect((result as Response).headers.get('Location')).toBe('/product/123');
         });
 
         it('should preserve action and actionParams in returnUrl on successful login', async () => {
@@ -513,10 +514,11 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result.redirectUrl).toContain('/product/123');
-            expect(result.redirectUrl).toContain('action=addToCart');
-            expect(result.redirectUrl).toContain('actionParams=');
-            expect(result).toHaveProperty('auth');
+            expect(result).toBeInstanceOf(Response);
+            const location = (result as Response).headers.get('Location') ?? '';
+            expect(location).toContain('/product/123');
+            expect(location).toContain('action=addToCart');
+            expect(location).toContain('actionParams=');
         });
 
         it('should continue login even if basket merge fails', async () => {
@@ -543,8 +545,9 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result).toHaveProperty('redirectUrl', '/');
-            expect(result).toHaveProperty('auth');
+            expect(result).toBeInstanceOf(Response);
+            expect((result as Response).status).toBe(302);
+            expect((result as Response).headers.get('Location')).toBe('/');
             expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
             expect(mockUpdateBasketResource).not.toHaveBeenCalled();
         });
@@ -641,7 +644,9 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result.redirectUrl).toContain('oauth2/authorize');
+            expect(result).toBeInstanceOf(Response);
+            expect((result as Response).status).toBe(302);
+            expect((result as Response).headers.get('Location')).toContain('oauth2/authorize');
             expect(mockAuthorizeIDP).toHaveBeenCalledWith(mockContext, {
                 hint: 'Google',
                 redirectURI: 'http://localhost:5173/social-callback',
@@ -746,9 +751,11 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result.success).toBe(true);
-            expect(result.redirectUrl).toContain('/login?otp=true');
-            expect(result.redirectUrl).toContain('email=test%40example.com');
+            expect(result).not.toBeInstanceOf(Response);
+            const data = result as { success: boolean; showOTPForm?: boolean; email?: string };
+            expect(data.success).toBe(true);
+            expect(data.showOTPForm).toBe(true);
+            expect(data.email).toBe('test@example.com');
             expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
                 mockContext,
                 expect.objectContaining({

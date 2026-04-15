@@ -20,6 +20,7 @@ import { getAppOrigin, getErrorMessage, isAbsoluteURL } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { buildUrlFromContext } from '@/lib/url.server';
 import { mergeBasket } from '@/lib/api/basket';
 import { getTranslation } from '@/lib/i18next';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
@@ -186,9 +187,10 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
 
         // Handle successful authorization with code
         if (code) {
-            // Construct redirect URI - use absolute URL if provided, otherwise build from app origin
             const callbackUri = config.features.socialLogin.callbackUri;
-            const redirectURI = isAbsoluteURL(callbackUri) ? callbackUri : `${getAppOrigin()}${callbackUri}`;
+            const redirectURI = isAbsoluteURL(callbackUri)
+                ? callbackUri
+                : `${getAppOrigin()}${buildUrlFromContext(callbackUri, context)}`;
 
             const result = await loginIDPUser(context, {
                 code,
