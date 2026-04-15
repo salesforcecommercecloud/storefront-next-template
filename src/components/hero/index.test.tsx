@@ -283,6 +283,29 @@ describe('Hero Component', () => {
         });
     });
 
+    describe('Height', () => {
+        test('applies full height class by default', () => {
+            const { container } = renderHero();
+            expect(container.firstChild).toHaveClass('h-[100vh]', 'md:h-[85vh]');
+        });
+
+        test.each([
+            { height: 'sm', classes: ['h-[250px]', 'md:h-[300px]', 'lg:h-[350px]'] },
+            { height: 'md', classes: ['h-[350px]', 'md:h-[450px]', 'lg:h-[500px]'] },
+            { height: 'lg', classes: ['h-[400px]', 'md:h-[500px]', 'lg:h-[600px]'] },
+            { height: 'xl', classes: ['h-[500px]', 'md:h-[600px]', 'lg:h-[700px]'] },
+            { height: 'full', classes: ['h-[100vh]', 'md:h-[85vh]'] },
+        ])('applies $height height class', ({ height, classes }) => {
+            const { container } = renderHero({ height });
+            expect(container.firstChild).toHaveClass(...classes);
+        });
+
+        test('falls back to full height for invalid height value', () => {
+            const { container } = renderHero({ height: 'invalid' });
+            expect(container.firstChild).toHaveClass('h-[100vh]', 'md:h-[85vh]');
+        });
+    });
+
     describe('Component Behavior', () => {
         test('renders all elements when fully configured', () => {
             renderHero({

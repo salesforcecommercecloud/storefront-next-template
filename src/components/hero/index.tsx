@@ -56,6 +56,17 @@ type HeroTypography = (typeof HERO_TYPOGRAPHY_VALUES)[number];
 const BUTTON_STYLE_VALUES = ['Primary', 'Secondary', 'Tertiary'] as const;
 type ButtonStyle = (typeof BUTTON_STYLE_VALUES)[number];
 
+const HERO_HEIGHT_VALUES = ['sm', 'md', 'lg', 'xl', 'full'] as const;
+type HeroHeight = (typeof HERO_HEIGHT_VALUES)[number];
+
+const HERO_HEIGHT_CLASS: Record<HeroHeight, string> = {
+    sm: 'h-[250px] md:h-[300px] lg:h-[350px]',
+    md: 'h-[350px] md:h-[450px] lg:h-[500px]',
+    lg: 'h-[400px] md:h-[500px] lg:h-[600px]',
+    xl: 'h-[500px] md:h-[600px] lg:h-[700px]',
+    full: 'h-[100vh] md:h-[85vh]',
+};
+
 /** Maps Page Designer labels to shadcn Button variants (no literal "tertiary" variant — outline is the tertiary treatment). */
 const BUTTON_STYLE_TO_VARIANT: Record<ButtonStyle, NonNullable<VariantProps<typeof buttonVariants>['variant']>> = {
     Primary: 'default',
@@ -105,6 +116,13 @@ function normalizeButtonStyle(value: string | undefined): ButtonStyle {
         return value as ButtonStyle;
     }
     return 'Primary';
+}
+
+function normalizeHeroHeight(value: string | undefined): HeroHeight {
+    if (value && (HERO_HEIGHT_VALUES as readonly string[]).includes(value)) {
+        return value as HeroHeight;
+    }
+    return 'full';
 }
 
 function getCtaLabel(ctaText: string | undefined, ctaLink: string): string {
@@ -270,6 +288,16 @@ export class HeroMetadata {
         defaultValue: 'center',
     })
     overlayAlignment?: string;
+
+    @AttributeDefinition({
+        id: 'height',
+        name: 'Height',
+        description: 'Height of the hero banner',
+        type: 'enum',
+        values: ['sm', 'md', 'lg', 'xl', 'full'],
+        defaultValue: 'full',
+    })
+    height?: string;
 }
 /* v8 ignore stop */
 
@@ -288,6 +316,7 @@ export default function Hero({
     buttonStyle,
     overlayPosition,
     overlayAlignment,
+    height,
 }: {
     title?: string;
     titleTypography?: string;
@@ -303,6 +332,7 @@ export default function Hero({
     buttonStyle?: string;
     overlayPosition?: string;
     overlayAlignment?: string;
+    height?: string;
 }): ReactElement {
     const renderImage = () => {
         if (!imageUrl?.url) return <div className="absolute inset-0 bg-muted" />;
@@ -329,6 +359,7 @@ export default function Hero({
     const titleTypo = normalizeHeroTypography(titleTypography);
     const subtitleTypo = normalizeHeroTypography(subtitleTypography);
     const resolvedButtonStyle = normalizeButtonStyle(buttonStyle);
+    const heightClass = HERO_HEIGHT_CLASS[normalizeHeroHeight(height)];
     const buttonVariant = BUTTON_STYLE_TO_VARIANT[resolvedButtonStyle];
 
     const titleHex = parseOptionalHex(titleColor);
@@ -363,7 +394,7 @@ export default function Hero({
     const showCta = ctaHref.length > 0;
 
     return (
-        <div className="relative w-full overflow-hidden h-[100vh] md:h-[85vh]">
+        <div className={cn('relative w-full overflow-hidden', heightClass)}>
             {renderImage()}
 
             <div className={cn('absolute inset-0 z-10 flex', overlayRowClass, overlayEdgePaddingClass)}>

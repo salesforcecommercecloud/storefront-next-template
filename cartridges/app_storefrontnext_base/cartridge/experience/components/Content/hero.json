@@ -145,6 +145,15 @@
                     "description": "Text alignment for title, subtitle, and call-to-action",
                     "values": ["left", "center", "right"],
                     "default_value": "center"
+                },
+                {
+                    "id": "height",
+                    "name": "Height",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Height of the hero banner",
+                    "values": ["sm", "md", "lg", "xl", "full"],
+                    "default_value": "full"
                 }
             ]
         }
