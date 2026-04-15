@@ -13,42 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type FormEvent, useEffect, useMemo, useRef } from 'react';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Typography } from '@/components/typography';
-import { useBasket } from '@/providers/basket';
-import { getDefaultShippingMethod } from '@/lib/customer-profile-utils';
-import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { CheckoutActionData } from '../types';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import CheckoutErrorBanner from './checkout-error-banner';
-import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { formatCurrency } from '@/lib/currency';
-
-interface ShippingPromotion {
-    calloutMsg?: string;
-    promotionId?: string;
-    promotionName?: string;
-}
-
-interface ShippingMethod {
-    id: string;
-    name: string;
-    description?: string;
-    price: number;
-    shippingPromotions?: ShippingPromotion[];
-}
+import { useShippingOptions } from './use-shipping-options';
 
 interface ShippingOptionsProps {
     onSubmit: (formData: FormData) => void;
     isLoading: boolean;
     actionData?: CheckoutActionData;
     shippingMethods?: ShopperBasketsV2.schemas['ShippingMethodResult'];
-    // Step state managed by container
     isCompleted: boolean;
     isEditing: boolean;
     onEdit: () => void;
@@ -63,126 +44,21 @@ export default function ShippingOptions({
     isEditing,
     onEdit,
 }: ShippingOptionsProps) {
-    const cart = useBasket();
-    const customerProfile = useCustomerProfile();
     const { currency } = useSite();
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation('checkout');
 
-    const availableShippingMethods: ShippingMethod[] = useMemo(
-        () =>
-            shippingMethods?.applicableShippingMethods
-                ?.filter((method): method is NonNullable<typeof method> & { id: string; name: string; price: number } =>
-                    Boolean(method.id && method.name && typeof method.price === 'number' && !Number.isNaN(method.price))
-                )
-                .map((method) => ({
-                    id: method.id,
-                    name: method.name,
-                    description: method.description,
-                    price: method.price,
-                    shippingPromotions: method.shippingPromotions,
-                })) || [],
-        [shippingMethods?.applicableShippingMethods]
-    );
-    const { t } = useTranslation('checkout');
-
-    const shippingDiscount = useMemo(() => {
-        const adjustment = cart?.shippingItems?.[0]?.priceAdjustments?.[0];
-        if (!adjustment?.appliedDiscount) return undefined;
-        return adjustment.appliedDiscount;
-    }, [cart?.shippingItems]);
-
-    const getDiscountedPrice = (basePrice: number): number => {
-        if (!shippingDiscount) return basePrice;
-        switch (shippingDiscount.type) {
-            case 'free':
-                return 0;
-            case 'percentage':
-                return basePrice * (1 - (shippingDiscount.amount ?? 0));
-            case 'amount':
-                return Math.max(0, basePrice - (shippingDiscount.amount ?? 0));
-            case 'fixed_price':
-                return shippingDiscount.amount ?? basePrice;
-            default:
-                return basePrice;
-        }
-    };
-
-    const selectedMethod = cart?.shipments?.[0]?.shippingMethod;
-    // Basket may only have shippingMethod.id after prefill; resolve name/price from applicable methods for summary
-    const summaryMethod: ShippingMethod | undefined = useMemo(() => {
-        if (!selectedMethod?.id) return undefined;
-        const fromList = availableShippingMethods.find((m) => m.id === selectedMethod.id);
-        if (fromList) return fromList;
-        return {
-            id: selectedMethod.id,
-            name: selectedMethod.name ?? selectedMethod.id,
-            description: selectedMethod.description,
-            price: typeof selectedMethod.price === 'number' ? selectedMethod.price : 0,
-            shippingPromotions: selectedMethod.shippingPromotions,
-        };
-    }, [selectedMethod, availableShippingMethods]);
-    const isGuest = !customerProfile?.customer?.customerId;
-    const hideChangeForGuest = isGuest && !selectedMethod;
-    const isUpcomingStep = !isEditing && !selectedMethod;
-
-    const defaultShippingMethodId = getDefaultShippingMethod(
+    const {
         availableShippingMethods,
         selectedMethod,
-        shippingMethods?.defaultShippingMethodId
-    );
-    const shippingOptionsError = getCheckoutDisplayError(actionData, 'shippingOptions');
-
-    // Track if we've already auto-submitted to prevent infinite loops
-    const hasAutoSubmitted = useRef(false);
-
-    // Auto-apply default shipping method for returning customers only
-    // Guest users should always see and choose shipping options manually
-    useEffect(() => {
-        if (
-            isEditing &&
-            !selectedMethod?.id &&
-            customerProfile &&
-            availableShippingMethods.length > 0 &&
-            !hasAutoSubmitted.current &&
-            !isLoading
-        ) {
-            hasAutoSubmitted.current = true;
-
-            const isDefaultValid =
-                defaultShippingMethodId &&
-                availableShippingMethods.some((method) => method.id === defaultShippingMethodId);
-            const methodIdToSubmit = isDefaultValid ? defaultShippingMethodId : availableShippingMethods[0]?.id;
-
-            if (methodIdToSubmit) {
-                const formData = new FormData();
-                formData.append('shippingMethodId', methodIdToSubmit);
-                onSubmit(formData);
-            }
-        }
-
-        // Reset auto-submit flag when user moves away from this step
-        if (!isEditing) {
-            hasAutoSubmitted.current = false;
-        }
-    }, [
-        isEditing,
-        selectedMethod?.id,
-        shippingMethods?.applicableShippingMethods,
+        summaryMethod,
         defaultShippingMethodId,
-        onSubmit,
-        isLoading,
-        customerProfile,
-        availableShippingMethods,
-    ]);
-
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        onSubmit(formData);
-    };
-
-    // For single page layout, always show the component but in collapsed state when not editing
-    // The ToggleCard will handle the collapsed/expanded state based on editing prop
+        shippingOptionsError,
+        isGuest,
+        hideChangeForGuest,
+        isUpcomingStep,
+        getDiscountedPrice,
+        handleSubmit,
+    } = useShippingOptions({ onSubmit, isLoading, actionData, shippingMethods, isEditing });
 
     const stepTitle = (
         <span className="text-xl font-bold tracking-tight text-card-foreground">{t('shippingOptions.title')}</span>
@@ -200,7 +76,6 @@ export default function ShippingOptions({
             showHeaderSeparator
             isLoading={isLoading}>
             <ToggleCardEdit>
-                {/* Body vertical rhythm: header→content uses ToggleCard gap-4 (16px); no extra pt (Figma Body container 25706:53930). */}
                 <form method="post" className="flex flex-col gap-4" onSubmit={handleSubmit}>
                     {shippingOptionsError && <CheckoutErrorBanner message={shippingOptionsError} />}
 

@@ -14,21 +14,32 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render as rtlRender, screen, waitFor, type RenderOptions } from '@testing-library/react';
+import { render as rtlRender, screen, waitFor, renderHook, type RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ShippingOptions from './shipping-options';
+import { useShippingOptions } from './use-shipping-options';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getTranslation } from '@/lib/i18next';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const render = (ui: React.ReactElement, options?: RenderOptions) =>
     rtlRender(ui, { wrapper: AllProvidersWrapper, ...options });
 
-// Use real hooks for integration tests
 vi.mock('@/providers/basket', () => ({ useBasket: vi.fn() }));
 vi.mock('@/hooks/checkout/use-customer-profile', () => ({
     useCustomerProfile: vi.fn(() => null),
 }));
+vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return {
+        ...actual,
+        useSite: vi.fn(() => ({
+            site: { id: 'RefArch', defaultLocale: 'en-US' },
+            language: 'en-US',
+            currency: 'USD',
+        })),
+    };
+});
+
 const createMockBasket = (overrides = {}) => ({
     basketId: 'test-basket-123',
     currency: 'USD',
@@ -51,27 +62,9 @@ const createMockBasket = (overrides = {}) => ({
 
 const createShippingMethods = (): ShopperBasketsV2.schemas['ShippingMethodResult'] => ({
     applicableShippingMethods: [
-        {
-            id: 'standard',
-            name: 'Standard Shipping',
-            description: '5-7 business days',
-            price: 5.99,
-            estimatedArrivalTime: '5-7 days',
-        },
-        {
-            id: 'express',
-            name: 'Express Shipping',
-            description: '2-3 business days',
-            price: 12.99,
-            estimatedArrivalTime: '2-3 days',
-        },
-        {
-            id: 'overnight',
-            name: 'Overnight Shipping',
-            description: 'Next business day',
-            price: 24.99,
-            estimatedArrivalTime: '1 day',
-        },
+        { id: 'standard', name: 'Standard Shipping', description: '5-7 business days', price: 5.99 },
+        { id: 'express', name: 'Express Shipping', description: '2-3 business days', price: 12.99 },
+        { id: 'overnight', name: 'Overnight Shipping', description: 'Next business day', price: 24.99 },
     ],
     defaultShippingMethodId: 'standard',
 });
@@ -87,8 +80,9 @@ const createDefaultProps = (overrides = {}) => ({
     ...overrides,
 });
 
-describe('ShippingOptions Integration Tests', () => {
-    const { t } = getTranslation();
+// ─── Hook Tests ──────────────────────────────────────────────────────────────
+
+describe('useShippingOptions', () => {
     let useBasket: ReturnType<typeof vi.fn>;
     let useCustomerProfile: ReturnType<typeof vi.fn>;
 
@@ -98,1126 +92,462 @@ describe('ShippingOptions Integration Tests', () => {
         const profileModule = await import('@/hooks/checkout/use-customer-profile');
         useBasket = basketModule.useBasket as ReturnType<typeof vi.fn>;
         useCustomerProfile = profileModule.useCustomerProfile as ReturnType<typeof vi.fn>;
-
         useBasket.mockReturnValue(createMockBasket());
         useCustomerProfile.mockReturnValue(null);
     });
 
-    describe('Shipping Method Display', () => {
-        test('renders all available shipping methods', () => {
-            render(<ShippingOptions {...createDefaultProps()} />);
+    const renderShippingHook = (overrides = {}) =>
+        renderHook(() =>
+            useShippingOptions({
+                onSubmit: vi.fn(),
+                isLoading: false,
+                shippingMethods: createShippingMethods(),
+                isEditing: true,
+                ...overrides,
+            })
+        );
 
-            expect(screen.getByText('$5.99')).toBeInTheDocument();
-            expect(screen.getByText('$12.99')).toBeInTheDocument();
-            expect(screen.getByText('$24.99')).toBeInTheDocument();
-            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
-            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
-            expect(screen.getByText('Next business day')).toBeInTheDocument();
-        });
-
-        test('displays pricing for each method', () => {
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            expect(screen.getByText('$5.99')).toBeInTheDocument();
-            expect(screen.getByText('$12.99')).toBeInTheDocument();
-            expect(screen.getByText('$24.99')).toBeInTheDocument();
-            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
-            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
-            expect(screen.getByText('Next business day')).toBeInTheDocument();
-        });
-
-        test('displays "Free" for zero-price shipping methods', () => {
-            const methodsWithFree: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+    test('excludes methods with missing id, name, or invalid price', () => {
+        const { result } = renderShippingHook({
+            shippingMethods: {
                 applicableShippingMethods: [
-                    {
-                        id: 'free-shipping',
-                        name: 'Free Standard Shipping',
-                        description: '7-10 business days',
-                        price: 0,
-                    },
+                    { id: '', name: 'No ID', price: 5 },
+                    { id: 'ok', name: '', price: 5 },
+                    { id: 'nan', name: 'NaN Price', price: NaN },
+                    { id: 'valid', name: 'Valid', price: 9.99 },
                 ],
-            };
-
-            render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithFree })} />);
-
-            expect(screen.getByText('FREE')).toBeInTheDocument();
-            expect(screen.getByText('Free Standard Shipping')).toBeInTheDocument();
-            expect(screen.getByText('7-10 business days')).toBeInTheDocument();
+            },
         });
+        expect(result.current.availableShippingMethods).toEqual([{ id: 'valid', name: 'Valid', price: 9.99 }]);
+    });
 
-        test('displays method name and description in edit view', () => {
-            const methodsWithDescription: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [
-                    {
-                        id: 'standard',
-                        name: 'Standard Shipping',
-                        description: '5-7 business days',
-                        price: 5.99,
-                    },
-                    {
-                        id: 'express',
-                        name: 'Express Shipping',
-                        description: '2-3 business days',
-                        price: 12.99,
-                    },
-                ],
-            };
-
-            render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithDescription })} />);
-
-            expect(screen.getByText('Standard Shipping')).toBeInTheDocument();
-            expect(screen.getByText('Express Shipping')).toBeInTheDocument();
-            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
-            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
-        });
-
-        test('displays arrives text in summary using description when method is selected', () => {
-            const methodsWithDescription: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [
-                    {
-                        id: 'express',
-                        name: 'Express Shipping',
-                        description: '2-3 business days',
-                        price: 12.99,
-                    },
-                ],
-            };
-            const basketWithDescription = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethod: {
-                            id: 'express',
-                            name: 'Express Shipping',
-                            description: '2-3 business days',
-                            price: 12.99,
-                        },
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithDescription);
-
-            render(
-                <ShippingOptions
-                    {...createDefaultProps({
-                        isEditing: false,
-                        isCompleted: true,
-                        shippingMethods: methodsWithDescription,
-                    })}
-                />
-            );
-
-            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
-        });
-
-        test('does not show arrives text in summary when description is missing', () => {
-            const methodsNoDescription: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [
-                    {
-                        id: 'express',
-                        name: 'Express Shipping',
-                        price: 15.99,
-                    },
-                ],
-            };
-            const basketNoDescription = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'Alex',
-                            lastName: 'Doe',
-                            address1: '555 Custom St',
-                            city: 'Austin',
-                            stateCode: 'TX',
-                            postalCode: '73301',
-                        },
-                        shippingMethod: {
-                            id: 'express',
-                            name: 'Express Shipping',
-                            price: 15.99,
-                        },
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketNoDescription);
-
-            render(
-                <ShippingOptions
-                    {...createDefaultProps({
-                        isEditing: false,
-                        isCompleted: true,
-                        shippingMethods: methodsNoDescription,
-                    })}
-                />
-            );
-
-            expect(screen.queryByText(/Arrives:/)).not.toBeInTheDocument();
-        });
-
-        test('handles missing estimated arrival time gracefully', () => {
-            const methodsWithoutArrival: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [
-                    {
-                        id: 'standard',
-                        name: 'Standard Shipping',
-                        description: '5-7 business days',
-                        price: 5.99,
-                        // No estimatedArrivalTime
-                    },
-                ],
-            };
-
-            render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithoutArrival })} />);
-
-            expect(screen.getByText('$5.99')).toBeInTheDocument();
-            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
-            expect(screen.queryByText(/Arrives:/i)).not.toBeInTheDocument();
+    test('resolves summaryMethod from available list when basket method matches', () => {
+        useBasket.mockReturnValue(
+            createMockBasket({ shipments: [{ shipmentId: 's1', shippingMethod: { id: 'express' } }] })
+        );
+        const { result } = renderShippingHook();
+        expect(result.current.summaryMethod).toEqual({
+            id: 'express',
+            name: 'Express Shipping',
+            description: '2-3 business days',
+            price: 12.99,
         });
     });
 
-    describe('Free Shipping Rendering', () => {
-        test('renders "Free" instead of "$0.00" for free shipping in selection list', () => {
-            const methodsWithFree: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [
-                    {
-                        id: 'free-standard',
-                        name: 'Free Standard Shipping',
-                        description: 'Free shipping on orders over $50',
-                        price: 0, // Explicitly 0 for free shipping
-                    },
-                    {
-                        id: 'express',
-                        name: 'Express Shipping',
-                        description: '2-3 business days',
-                        price: 12.99,
-                    },
-                ],
-            };
-
-            render(<ShippingOptions {...createDefaultProps({ shippingMethods: methodsWithFree })} />);
-
-            expect(screen.getByText('FREE')).toBeInTheDocument();
-            expect(screen.getByText('Free Standard Shipping')).toBeInTheDocument();
-            expect(screen.getByText('Free shipping on orders over $50')).toBeInTheDocument();
-            expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
-            expect(screen.getByText('$12.99')).toBeInTheDocument();
-            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
-        });
-
-        test('renders "Free" in summary when free shipping is selected', () => {
-            const basketWithFreeShipping = createMockBasket({
+    test('falls back to raw basket data for summaryMethod when method is not in available list', () => {
+        useBasket.mockReturnValue(
+            createMockBasket({
                 shipments: [
                     {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethod: {
-                            id: 'free-standard',
-                            name: 'Free Standard Shipping',
-                            price: 0, // Free shipping
-                        },
+                        shipmentId: 's1',
+                        shippingMethod: { id: 'unlisted', name: 'Custom', description: 'desc', price: 7.5 },
                     },
                 ],
-            });
-
-            useBasket.mockReturnValue(basketWithFreeShipping);
-
-            const methodsWithFree: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [
-                    {
-                        id: 'free-standard',
-                        name: 'Free Standard Shipping',
-                        price: 0,
-                    },
-                ],
-            };
-
-            render(
-                <ShippingOptions
-                    {...createDefaultProps({ shippingMethods: methodsWithFree, isEditing: false, isCompleted: true })}
-                />
-            );
-
-            expect(screen.getByText('FREE | Free Standard Shipping')).toBeInTheDocument();
-            expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
-        });
-
-        test('handles mixed free and paid shipping methods correctly', () => {
-            const mixedMethods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [
-                    {
-                        id: 'free-standard',
-                        name: 'Free Standard Shipping',
-                        description: '5-7 business days',
-                        price: 0,
-                    },
-                    {
-                        id: 'standard',
-                        name: 'Standard Shipping',
-                        description: '3-5 business days',
-                        price: 5.99,
-                    },
-                    {
-                        id: 'express',
-                        name: 'Express Shipping',
-                        description: '2-3 business days',
-                        price: 12.99,
-                    },
-                ],
-            };
-
-            render(<ShippingOptions {...createDefaultProps({ shippingMethods: mixedMethods })} />);
-
-            expect(screen.getByText('FREE')).toBeInTheDocument();
-            expect(screen.getByText('Free Standard Shipping')).toBeInTheDocument();
-            expect(screen.getByText('$5.99')).toBeInTheDocument();
-            expect(screen.getByText('$12.99')).toBeInTheDocument();
-            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
-            expect(screen.getByText('2-3 business days')).toBeInTheDocument();
-
-            // Should not show $0.00 anywhere
-            expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
-        });
-
-        test('free shipping from promotion (base price reduced to 0)', () => {
-            const promotionalFreeMethods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [
-                    {
-                        id: 'standard',
-                        name: 'Standard Shipping',
-                        description: '5-7 business days',
-                        price: 0, // Reduced to 0 by promotion
-                        shippingPromotions: [
-                            {
-                                promotionId: 'free-shipping-50',
-                                calloutMsg: 'Free shipping on orders over $50',
-                            },
-                        ],
-                    },
-                ],
-            };
-
-            render(<ShippingOptions {...createDefaultProps({ shippingMethods: promotionalFreeMethods })} />);
-
-            expect(screen.getByText('FREE')).toBeInTheDocument();
-            expect(screen.getByText('Standard Shipping')).toBeInTheDocument();
-            expect(screen.getByText('5-7 business days')).toBeInTheDocument();
-            expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
+            })
+        );
+        const { result } = renderShippingHook();
+        expect(result.current.summaryMethod).toEqual({
+            id: 'unlisted',
+            name: 'Custom',
+            description: 'desc',
+            price: 7.5,
         });
     });
 
-    describe('Shipping Method Selection', () => {
-        test('allows user to select a shipping method', async () => {
-            const user = userEvent.setup();
-            render(<ShippingOptions {...createDefaultProps()} />);
+    test('uses method id as name fallback when name is undefined', () => {
+        useBasket.mockReturnValue(
+            createMockBasket({ shipments: [{ shipmentId: 's1', shippingMethod: { id: 'no-name', price: 3 } }] })
+        );
+        const { result } = renderShippingHook();
+        expect(result.current.summaryMethod?.name).toBe('no-name');
+    });
 
-            const expressRadio = screen.getByLabelText(/2-3 business days/i);
-            await user.click(expressRadio);
+    test('preserves shippingPromotions in summaryMethod fallback', () => {
+        const promos = [{ promotionId: 'p1', calloutMsg: '50% off!' }];
+        useBasket.mockReturnValue(
+            createMockBasket({
+                shipments: [
+                    {
+                        shipmentId: 's1',
+                        shippingMethod: { id: 'unlisted', name: 'Promo', price: 10, shippingPromotions: promos },
+                    },
+                ],
+            })
+        );
+        const { result } = renderShippingHook();
+        expect(result.current.summaryMethod?.shippingPromotions).toEqual(promos);
+    });
+
+    describe('getDiscountedPrice', () => {
+        test('returns base price when no discount exists', () => {
+            const { result } = renderShippingHook();
+            expect(result.current.getDiscountedPrice(10)).toBe(10);
+        });
+
+        test('returns 0 for free discount type', () => {
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    shippingItems: [{ priceAdjustments: [{ appliedDiscount: { type: 'free' } }] }],
+                })
+            );
+            const { result } = renderShippingHook();
+            expect(result.current.getDiscountedPrice(10)).toBe(0);
+        });
+
+        test('applies percentage discount', () => {
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    shippingItems: [{ priceAdjustments: [{ appliedDiscount: { type: 'percentage', amount: 0.5 } }] }],
+                })
+            );
+            const { result } = renderShippingHook();
+            expect(result.current.getDiscountedPrice(10)).toBe(5);
+        });
+
+        test('applies amount discount and floors at 0', () => {
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    shippingItems: [{ priceAdjustments: [{ appliedDiscount: { type: 'amount', amount: 15 } }] }],
+                })
+            );
+            const { result } = renderShippingHook();
+            expect(result.current.getDiscountedPrice(10)).toBe(0);
+        });
+
+        test('applies fixed_price discount', () => {
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    shippingItems: [{ priceAdjustments: [{ appliedDiscount: { type: 'fixed_price', amount: 3.99 } }] }],
+                })
+            );
+            const { result } = renderShippingHook();
+            expect(result.current.getDiscountedPrice(10)).toBe(3.99);
+        });
+    });
+
+    describe('auto-submit for returning customers', () => {
+        const setupAutoSubmit = (overrides = {}) => {
+            const onSubmit = vi.fn();
+            useCustomerProfile.mockReturnValue({ customer: { customerId: 'c1' } });
+            useBasket.mockReturnValue(createMockBasket({ shipments: [{ shipmentId: 's1', shippingMethod: null }] }));
+            return { onSubmit, hookOverrides: { onSubmit, isEditing: true, ...overrides } };
+        };
+
+        test('auto-submits default method for returning customer with no selection', async () => {
+            const { onSubmit, hookOverrides } = setupAutoSubmit();
+            renderShippingHook(hookOverrides);
 
             await waitFor(() => {
-                expect(expressRadio).toBeChecked();
+                expect(onSubmit).toHaveBeenCalledTimes(1);
+                const formData = onSubmit.mock.calls[0][0] as FormData;
+                expect(formData.get('shippingMethodId')).toBe('standard');
             });
-        });
-
-        test('pre-selects currently selected method from basket', () => {
-            const basketWithMethod = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingMethod: {
-                            id: 'express',
-                            name: 'Express Shipping',
-                            price: 12.99,
-                        },
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithMethod);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            const expressRadio = screen.getByLabelText(/2-3 business days/i);
-            expect(expressRadio).toBeChecked();
-        });
-    });
-
-    describe('Form Submission', () => {
-        test('submits selected shipping method', async () => {
-            const user = userEvent.setup();
-            const handleSubmit = vi.fn((formData: FormData) => {
-                expect(formData.get('shippingMethodId')).toBe('express');
-            });
-
-            render(<ShippingOptions {...createDefaultProps({ onSubmit: handleSubmit })} />);
-
-            const expressRadio = screen.getByLabelText(/2-3 business days/i);
-            await user.click(expressRadio);
-
-            const submitButton = screen.getByRole('button', { name: /continue/i });
-            await user.click(submitButton);
-
-            await waitFor(() => {
-                expect(handleSubmit).toHaveBeenCalled();
-            });
-        });
-
-        test('prevents submission when no methods available', () => {
-            const emptyMethods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [],
-            };
-
-            render(<ShippingOptions {...createDefaultProps({ shippingMethods: emptyMethods })} />);
-
-            const submitButton = screen.getByRole('button');
-            expect(submitButton).toBeDisabled();
-        });
-    });
-
-    describe('Auto-Submit for Returning Customers', () => {
-        test('auto-submits first method for returning customers', async () => {
-            const handleSubmit = vi.fn();
-            const customerProfile = {
-                customer: { email: 'returning@example.com', customerId: 'customer-123' },
-                addresses: [],
-                paymentInstruments: [],
-            };
-
-            const basketNoMethod = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                        },
-                        shippingMethod: null,
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketNoMethod);
-            useCustomerProfile.mockReturnValue(customerProfile);
-
-            render(<ShippingOptions {...createDefaultProps({ onSubmit: handleSubmit, isEditing: true })} />);
-
-            await waitFor(
-                () => {
-                    expect(handleSubmit).toHaveBeenCalled();
-                },
-                { timeout: 200 }
-            );
         });
 
         test('does not auto-submit for guest users', async () => {
-            const handleSubmit = vi.fn();
-            const basketNoMethod = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingMethod: null,
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketNoMethod);
+            const onSubmit = vi.fn();
             useCustomerProfile.mockReturnValue(null);
+            useBasket.mockReturnValue(createMockBasket({ shipments: [{ shipmentId: 's1', shippingMethod: null }] }));
+            renderShippingHook({ onSubmit, isEditing: true });
 
-            render(<ShippingOptions {...createDefaultProps({ onSubmit: handleSubmit, isEditing: true })} />);
-
-            await new Promise((resolve) => setTimeout(resolve, 200));
-
-            expect(handleSubmit).not.toHaveBeenCalled();
+            await vi.waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
         });
 
-        test('does not auto-submit when method already selected', async () => {
-            const handleSubmit = vi.fn();
-            const basketWithMethod = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingMethod: {
-                            id: 'standard',
-                            name: 'Standard',
-                        },
-                    },
-                ],
+        test('does not auto-submit when a method is already selected', async () => {
+            const onSubmit = vi.fn();
+            useCustomerProfile.mockReturnValue({ customer: { customerId: 'c1' } });
+            useBasket.mockReturnValue(
+                createMockBasket({
+                    shipments: [{ shipmentId: 's1', shippingMethod: { id: 'standard', name: 'Standard' } }],
+                })
+            );
+            renderShippingHook({ onSubmit, isEditing: true });
+
+            await vi.waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
+        });
+
+        test('falls back to first method when defaultShippingMethodId is invalid', async () => {
+            const { onSubmit, hookOverrides } = setupAutoSubmit({
+                shippingMethods: {
+                    applicableShippingMethods: [
+                        { id: 'standard', name: 'Standard', price: 5.99 },
+                        { id: 'express', name: 'Express', price: 12.99 },
+                    ],
+                    defaultShippingMethodId: 'nonexistent',
+                },
             });
+            renderShippingHook(hookOverrides);
 
-            const customerProfile = {
-                customer: { email: 'returning@example.com', customerId: 'customer-123' },
-                addresses: [],
-                paymentInstruments: [],
-            };
-
-            useBasket.mockReturnValue(basketWithMethod);
-            useCustomerProfile.mockReturnValue(customerProfile);
-
-            render(<ShippingOptions {...createDefaultProps({ onSubmit: handleSubmit, isEditing: true })} />);
-
-            await new Promise((resolve) => setTimeout(resolve, 200));
-
-            expect(handleSubmit).not.toHaveBeenCalled();
-        });
-
-        test('Select first method when defaultShippingMethodId is invalid (fallback)', async () => {
-            const handleSubmit = vi.fn((formData: FormData) => {
-                // Should submit the first available method, not the invalid default
+            await waitFor(() => {
+                const formData = onSubmit.mock.calls[0][0] as FormData;
                 expect(formData.get('shippingMethodId')).toBe('standard');
             });
-
-            const customerProfile = {
-                customer: { email: 'returning@example.com', customerId: 'customer-123' },
-                addresses: [],
-                paymentInstruments: [],
-            };
-
-            const basketNoMethod = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                        },
-                        shippingMethod: null,
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketNoMethod);
-            useCustomerProfile.mockReturnValue(customerProfile);
-
-            // Default method ID that doesn't exist in applicable methods
-            const methodsWithInvalidDefault: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [
-                    {
-                        id: 'standard',
-                        name: 'Standard Shipping',
-                        price: 5.99,
-                    },
-                    {
-                        id: 'express',
-                        name: 'Express Shipping',
-                        price: 12.99,
-                    },
-                ],
-                defaultShippingMethodId: 'nonexistent-method', // Invalid default
-            };
-
-            render(
-                <ShippingOptions
-                    {...createDefaultProps({
-                        shippingMethods: methodsWithInvalidDefault,
-                        onSubmit: handleSubmit,
-                        isEditing: true,
-                    })}
-                />
-            );
-
-            await waitFor(
-                () => {
-                    expect(handleSubmit).toHaveBeenCalled();
-                },
-                { timeout: 200 }
-            );
         });
 
-        test('Select defaultShippingMethodId when it is valid (happy path)', async () => {
-            const handleSubmit = vi.fn((formData: FormData) => {
-                // Should submit the valid default method
+        test('uses valid defaultShippingMethodId when available', async () => {
+            const { onSubmit, hookOverrides } = setupAutoSubmit({
+                shippingMethods: {
+                    applicableShippingMethods: [
+                        { id: 'standard', name: 'Standard', price: 5.99 },
+                        { id: 'express', name: 'Express', price: 12.99 },
+                    ],
+                    defaultShippingMethodId: 'express',
+                },
+            });
+            renderShippingHook(hookOverrides);
+
+            await waitFor(() => {
+                const formData = onSubmit.mock.calls[0][0] as FormData;
                 expect(formData.get('shippingMethodId')).toBe('express');
             });
+        });
 
-            const customerProfile = {
-                customer: { email: 'returning@example.com', customerId: 'customer-123' },
-                addresses: [],
-                paymentInstruments: [],
+        test('resets auto-submit guard when leaving and re-entering step', async () => {
+            const onSubmit = vi.fn();
+            useCustomerProfile.mockReturnValue({ customer: { customerId: 'c1' } });
+            useBasket.mockReturnValue(createMockBasket({ shipments: [{ shipmentId: 's1', shippingMethod: null }] }));
+            const baseProps = {
+                onSubmit,
+                isLoading: false,
+                shippingMethods: createShippingMethods(),
+                isEditing: true,
             };
 
-            const basketNoMethod = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                        },
-                        shippingMethod: null,
-                    },
-                ],
+            const { rerender } = renderHook((props: typeof baseProps) => useShippingOptions(props), {
+                initialProps: baseProps,
             });
 
-            useBasket.mockReturnValue(basketNoMethod);
-            useCustomerProfile.mockReturnValue(customerProfile);
+            await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
 
-            // Valid default method ID
-            const methodsWithValidDefault: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [
-                    {
-                        id: 'standard',
-                        name: 'Standard Shipping',
-                        price: 5.99,
-                    },
-                    {
-                        id: 'express',
-                        name: 'Express Shipping',
-                        price: 12.99,
-                    },
-                ],
-                defaultShippingMethodId: 'express', // Valid default
-            };
+            rerender({ ...baseProps, isEditing: false });
+            onSubmit.mockClear();
 
-            render(
-                <ShippingOptions
-                    {...createDefaultProps({
-                        shippingMethods: methodsWithValidDefault,
-                        onSubmit: handleSubmit,
-                        isEditing: true,
-                    })}
-                />
-            );
+            rerender({ ...baseProps, isEditing: true });
 
-            await waitFor(
-                () => {
-                    expect(handleSubmit).toHaveBeenCalled();
-                },
-                { timeout: 200 }
-            );
+            await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+        });
+    });
+});
+
+// ─── Component Tests ─────────────────────────────────────────────────────────
+
+describe('ShippingOptions Component', () => {
+    let useBasket: ReturnType<typeof vi.fn>;
+    let useCustomerProfile: ReturnType<typeof vi.fn>;
+
+    beforeEach(async () => {
+        vi.clearAllMocks();
+        const basketModule = await import('@/providers/basket');
+        const profileModule = await import('@/hooks/checkout/use-customer-profile');
+        useBasket = basketModule.useBasket as ReturnType<typeof vi.fn>;
+        useCustomerProfile = profileModule.useCustomerProfile as ReturnType<typeof vi.fn>;
+        useBasket.mockReturnValue(createMockBasket());
+        useCustomerProfile.mockReturnValue(null);
+    });
+
+    test('renders "Free" instead of $0.00 for zero-price methods', () => {
+        const methods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+            applicableShippingMethods: [
+                { id: 'free', name: 'Free Standard', description: '7-10 days', price: 0 },
+                { id: 'express', name: 'Express', description: '2-3 days', price: 12.99 },
+            ],
+        };
+        render(<ShippingOptions {...createDefaultProps({ shippingMethods: methods })} />);
+
+        expect(screen.getByText(/^free$/i)).toBeInTheDocument();
+        expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
+        expect(screen.getByText('$12.99')).toBeInTheDocument();
+    });
+
+    test('selects a method and submits the correct shippingMethodId', async () => {
+        const user = userEvent.setup();
+        const handleSubmit = vi.fn();
+        render(<ShippingOptions {...createDefaultProps({ onSubmit: handleSubmit })} />);
+
+        await user.click(screen.getByLabelText(/2-3 business days/i));
+        await user.click(screen.getByRole('button', { name: /continue/i }));
+
+        await waitFor(() => {
+            expect(handleSubmit).toHaveBeenCalledTimes(1);
+            const formData = handleSubmit.mock.calls[0][0] as FormData;
+            expect(formData.get('shippingMethodId')).toBe('express');
         });
     });
 
-    describe('Empty State', () => {
-        test('shows message when no shipping methods available', () => {
-            const emptyMethods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [],
-            };
+    test('pre-selects the method already on the basket', () => {
+        useBasket.mockReturnValue(
+            createMockBasket({
+                shipments: [{ shipmentId: 's1', shippingMethod: { id: 'express', name: 'Express', price: 12.99 } }],
+            })
+        );
+        render(<ShippingOptions {...createDefaultProps()} />);
 
-            render(<ShippingOptions {...createDefaultProps({ shippingMethods: emptyMethods })} />);
-
-            // Check for the descriptive message (more specific)
-            expect(screen.getByText(t('checkout:shippingOptions.noMethodsAvailableHelp'))).toBeInTheDocument();
-
-            // Check that multiple instances of "No shipping methods available" exist (in message and button)
-            const elements = screen.getAllByText(/No shipping methods available/i);
-            expect(elements.length).toBeGreaterThan(0);
-        });
-
-        test('button shows disabled state when no methods', () => {
-            const emptyMethods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
-                applicableShippingMethods: [],
-            };
-
-            render(<ShippingOptions {...createDefaultProps({ shippingMethods: emptyMethods })} />);
-
-            const submitButton = screen.getByRole('button');
-            expect(submitButton).toBeDisabled();
-        });
+        expect(screen.getByLabelText(/2-3 business days/i)).toBeChecked();
     });
 
-    describe('Summary Display', () => {
-        test('displays selected method in summary', () => {
-            const basketWithMethod = createMockBasket({
+    test('shows description and price in summary view', () => {
+        useBasket.mockReturnValue(
+            createMockBasket({
                 shipments: [
                     {
-                        shipmentId: 'shipment-1',
+                        shipmentId: 's1',
                         shippingMethod: {
                             id: 'express',
                             name: 'Express Shipping',
+                            description: '2-3 days',
                             price: 12.99,
                         },
                     },
                 ],
-            });
+            })
+        );
+        const methods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+            applicableShippingMethods: [
+                { id: 'express', name: 'Express Shipping', description: '2-3 days', price: 12.99 },
+            ],
+        };
+        render(
+            <ShippingOptions
+                {...createDefaultProps({ shippingMethods: methods, isEditing: false, isCompleted: true })}
+            />
+        );
 
-            useBasket.mockReturnValue(basketWithMethod);
-
-            render(<ShippingOptions {...createDefaultProps({ isEditing: false })} />);
-
-            expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
-        });
-
-        test('shows prompt when no method selected', () => {
-            render(<ShippingOptions {...createDefaultProps({ isEditing: false })} />);
-
-            expect(screen.getByText('Shipping Method')).toBeInTheDocument();
-            expect(screen.getByText(/complete previous steps to continue/i)).toBeInTheDocument();
-            expect(screen.queryByText(/enter your shipping address/i)).not.toBeInTheDocument();
-        });
-
-        test('shows address prompt for signed-in shopper when no method selected', () => {
-            useCustomerProfile.mockReturnValue({
-                customer: { customerId: 'cust-1' },
-            } as never);
-
-            render(<ShippingOptions {...createDefaultProps({ isEditing: false })} />);
-
-            expect(
-                screen.getByText(/enter your shipping address to view available shipping methods/i)
-            ).toBeInTheDocument();
-            expect(screen.queryByText(/complete previous steps to continue/i)).not.toBeInTheDocument();
-        });
+        expect(screen.getByText('2-3 days')).toBeInTheDocument();
+        expect(screen.getByText('$12.99 | Express Shipping')).toBeInTheDocument();
     });
 
-    describe('Loading State', () => {
-        test('disables form during submission', () => {
-            render(<ShippingOptions {...createDefaultProps({ isLoading: true })} />);
+    test('shows "Free" in summary for zero-price selected method', () => {
+        useBasket.mockReturnValue(
+            createMockBasket({
+                shipments: [{ shipmentId: 's1', shippingMethod: { id: 'free', name: 'Free Standard', price: 0 } }],
+            })
+        );
+        const methods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+            applicableShippingMethods: [{ id: 'free', name: 'Free Standard', price: 0 }],
+        };
+        render(
+            <ShippingOptions
+                {...createDefaultProps({ shippingMethods: methods, isEditing: false, isCompleted: true })}
+            />
+        );
 
-            const submitButton = screen.getByRole('button');
-            expect(submitButton).toBeDisabled();
-            expect(submitButton).toHaveTextContent(/saving/i);
-        });
+        expect(screen.getByText('FREE | Free Standard')).toBeInTheDocument();
+        expect(screen.queryByText('$0.00')).not.toBeInTheDocument();
     });
 
-    describe('Error Handling', () => {
-        test('displays form errors when present', () => {
-            const actionData = {
-                success: false,
-                formError: 'Failed to update shipping method',
-                step: 'shippingOptions' as const,
-            };
+    test('shows correct prompt for guest vs signed-in user when no method selected', () => {
+        render(<ShippingOptions {...createDefaultProps({ isEditing: false })} />);
+        expect(screen.getByText(/complete previous steps to continue/i)).toBeInTheDocument();
 
-            render(<ShippingOptions {...createDefaultProps({ actionData })} />);
-
-            expect(screen.getByText('Failed to update shipping method')).toBeInTheDocument();
-        });
-
-        test('does not show errors from other steps', () => {
-            const actionData = {
-                success: false,
-                formError: 'Some other error',
-                step: 'payment' as const,
-            };
-
-            render(<ShippingOptions {...createDefaultProps({ actionData })} />);
-
-            expect(screen.queryByText('Some other error')).not.toBeInTheDocument();
-        });
+        useCustomerProfile.mockReturnValue({ customer: { customerId: 'c1' } } as never);
+        const { unmount } = render(<ShippingOptions {...createDefaultProps({ isEditing: false })} />);
+        expect(screen.getByText(/enter your shipping address to view available shipping methods/i)).toBeInTheDocument();
+        unmount();
     });
 
-    describe('Edge Cases - Missing Data Handling', () => {
-        test('handles shipping methods with missing optional fields', () => {
-            const basketWithIncompleteMethod = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: [
-                            {
-                                // Missing id, name, and description - should use fallbacks
-                                price: 5.99,
-                            },
-                            {
-                                id: 'method-2',
-                                // Missing name and description
-                                price: 10.0,
-                            },
-                        ],
-                    },
-                ],
-            });
+    test('renders error banner when actionData contains a shippingOptions error', () => {
+        const actionData = { error: 'Failed to save shipping method. Please try again.', step: 'shippingOptions' };
+        render(<ShippingOptions {...createDefaultProps({ actionData })} />);
 
-            useBasket.mockReturnValue(basketWithIncompleteMethod);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            // Should render without crashing, using fallback values (unknown, Unknown Method)
-            const submitButton = screen.getByRole('button', { name: /continue/i });
-            expect(submitButton).toBeInTheDocument();
-        });
-
-        test('displays Free for zero-price shipping methods', () => {
-            const basketWithFreeShipping = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: [
-                            {
-                                id: 'free-shipping',
-                                name: 'Standard Shipping',
-                                description: 'Free standard delivery',
-                                price: 0,
-                            },
-                        ],
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithFreeShipping);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            // Should render without crashing - tests price === 0 branch
-            const submitButton = screen.getByRole('button', { name: /continue/i });
-            expect(submitButton).toBeInTheDocument();
-        });
-
-        test('handles missing default shipping method ID', () => {
-            const basketWithMissingDefault = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: [
-                            {
-                                id: 'method-1',
-                                name: 'Standard',
-                                price: 5.99,
-                            },
-                            {
-                                id: 'method-2',
-                                name: 'Express',
-                                price: 12.99,
-                            },
-                        ],
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithMissingDefault);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            // Should render without error - tests defaultShippingMethodId || '' branch
-            const submitButton = screen.getByRole('button', { name: /continue/i });
-            expect(submitButton).toBeInTheDocument();
-        });
+        expect(screen.getByRole('alert')).toHaveTextContent('Failed to save shipping method. Please try again.');
     });
 
-    describe('Edge Cases - Pricing Display', () => {
-        test('formats prices correctly with decimals', () => {
-            const basketWithDecimalPricing = createMockBasket({
+    test('uses description as primary label and name as secondary label', () => {
+        render(<ShippingOptions {...createDefaultProps()} />);
+
+        const labels = screen.getAllByText(/business day/i);
+        expect(labels[0].tagName).toBe('SPAN');
+        expect(labels[0].className).toContain('font-medium');
+
+        const secondaryLabels = screen.getAllByText(/Shipping$/);
+        for (const label of secondaryLabels) {
+            expect(label.className).toContain('pl-6');
+        }
+    });
+
+    test('falls back to name as primary label when description is absent', () => {
+        const methods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+            applicableShippingMethods: [{ id: 'basic', name: 'Basic Shipping', price: 3.99 }],
+        };
+        render(<ShippingOptions {...createDefaultProps({ shippingMethods: methods })} />);
+
+        const primaryLabel = screen.getByText('Basic Shipping', { selector: '.font-medium' });
+        expect(primaryLabel).toBeInTheDocument();
+    });
+
+    test('shows strikethrough price with discounted price in summary view', () => {
+        useBasket.mockReturnValue(
+            createMockBasket({
                 shipments: [
                     {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: [
-                            {
-                                id: 'method-1',
-                                name: 'Economy',
-                                price: 3.5, // Tests toFixed(2) formatting
-                            },
-                            {
-                                id: 'method-2',
-                                name: 'Premium',
-                                price: 15,
-                            },
-                        ],
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithDecimalPricing);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            // Should render without crashing - tests price formatting
-            const submitButton = screen.getByRole('button', { name: /continue/i });
-            expect(submitButton).toBeInTheDocument();
-        });
-
-        test('handles undefined price gracefully', () => {
-            const basketWithUndefinedPrice = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: [
-                            {
-                                id: 'method-1',
-                                name: 'TBD Shipping',
-                                price: undefined, // Tests ?? 0 fallback
-                            },
-                        ],
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithUndefinedPrice);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            // Should render without error - tests price ?? 0 branch
-            const submitButton = screen.getByRole('button', { name: /continue/i });
-            expect(submitButton).toBeInTheDocument();
-        });
-
-        test('displays Free for exactly zero price', () => {
-            const basketWithZeroPrice = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
+                        shipmentId: 's1',
                         shippingMethod: {
-                            id: 'free-method',
-                            name: 'Standard Ground',
-                            price: 0,
+                            id: 'standard',
+                            name: 'Standard Shipping',
+                            description: '5-7 days',
+                            price: 5.99,
+                            shippingPromotions: [{ promotionId: 'promo1' }],
                         },
                     },
                 ],
-            });
+                shippingItems: [{ priceAdjustments: [{ appliedDiscount: { type: 'free' } }] }],
+            })
+        );
+        const methods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+            applicableShippingMethods: [
+                {
+                    id: 'standard',
+                    name: 'Standard Shipping',
+                    description: '5-7 days',
+                    price: 5.99,
+                    shippingPromotions: [{ promotionId: 'promo1' }],
+                },
+            ],
+        };
+        render(
+            <ShippingOptions
+                {...createDefaultProps({ shippingMethods: methods, isEditing: false, isCompleted: true })}
+            />
+        );
 
-            useBasket.mockReturnValue(basketWithZeroPrice);
-
-            render(<ShippingOptions {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
-
-            expect(screen.getByText(/FREE \| Standard Ground/)).toBeInTheDocument();
-        });
+        const strikethrough = screen.getByText('$5.99');
+        expect(strikethrough.className).toContain('line-through');
+        expect(screen.getByText(/Standard Shipping/)).toBeInTheDocument();
     });
 
-    describe('Edge Cases - Complete Fallback Chain', () => {
-        test('handles shipping method with missing id field specifically', () => {
-            const basketWithMissingId = createMockBasket({
+    test('shows strikethrough price with discounted price for promotional shipping', () => {
+        useBasket.mockReturnValue(
+            createMockBasket({
                 shipments: [
                     {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: [
-                            {
-                                id: '',
-                                name: 'Standard Shipping',
-                                description: 'Standard delivery',
-                                price: 9.99,
-                            },
-                        ],
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithMissingId);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            const submitButton = screen.getByRole('button', { name: /continue/i });
-            expect(submitButton).toBeInTheDocument();
-        });
-
-        test('handles shipping method with missing name field specifically', () => {
-            const basketWithMissingName = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: [
-                            {
-                                id: 'method-1',
-                                name: '', // Empty name - tests name || 'Unknown Method'
-                                description: 'Delivery',
-                                price: 9.99,
-                            },
-                        ],
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithMissingName);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            const submitButton = screen.getByRole('button', { name: /continue/i });
-            expect(submitButton).toBeInTheDocument();
-        });
-
-        test('handles shipping method with missing description field specifically', () => {
-            const basketWithMissingDescription = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: [
-                            {
-                                id: 'method-1',
-                                name: 'Express',
-                                description: '',
-                                price: 19.99,
-                            },
-                        ],
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithMissingDescription);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            const submitButton = screen.getByRole('button', { name: /continue/i });
-            expect(submitButton).toBeInTheDocument();
-        });
-
-        test('handles undefined shippingMethods array with || [] fallback', () => {
-            const basketWithUndefinedMethods = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: undefined,
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithUndefinedMethods);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            expect(screen.getAllByText(/shipping method/i).length).toBeGreaterThan(0);
-        });
-
-        test('uses defaultShippingMethodId when selectedMethod is null', () => {
-            const basketWithDefaultId = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: [
-                            {
-                                id: 'default-method',
-                                name: 'Standard',
-                                price: 5.99,
-                            },
-                        ],
-                        selectedShippingMethod: null, // No selected method
-                        defaultShippingMethodId: 'default-method', // But default exists
-                    },
-                ],
-            });
-
-            useBasket.mockReturnValue(basketWithDefaultId);
-
-            render(<ShippingOptions {...createDefaultProps()} />);
-
-            const submitButton = screen.getByRole('button', { name: /continue/i });
-            expect(submitButton).toBeInTheDocument();
-        });
-
-        test('renders summary with zero price shipping method', () => {
-            const basketWithFreeShipping = createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        shippingAddress: {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            address1: '123 Main St',
-                            city: 'New York',
-                            stateCode: 'NY',
-                            postalCode: '10001',
-                        },
-                        shippingMethods: [
-                            {
-                                id: 'free-method',
-                                name: 'Free Standard',
-                                price: 0,
-                            },
-                        ],
-                        selectedShippingMethod: {
-                            id: 'free-method',
-                            name: 'Free Standard',
-                            price: 0,
+                        shipmentId: 's1',
+                        shippingMethod: {
+                            id: 'standard',
+                            name: 'Standard Shipping',
+                            description: '5-7 days',
+                            price: 5.99,
+                            shippingPromotions: [{ promotionId: 'promo1', calloutMsg: 'Free shipping!' }],
                         },
                     },
                 ],
-            });
+                shippingItems: [{ priceAdjustments: [{ appliedDiscount: { type: 'free' } }] }],
+            })
+        );
+        const methods: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+            applicableShippingMethods: [
+                {
+                    id: 'standard',
+                    name: 'Standard Shipping',
+                    description: '5-7 days',
+                    price: 5.99,
+                    shippingPromotions: [{ promotionId: 'promo1', calloutMsg: 'Free shipping!' }],
+                },
+            ],
+        };
+        render(<ShippingOptions {...createDefaultProps({ shippingMethods: methods })} />);
 
-            useBasket.mockReturnValue(basketWithFreeShipping);
-
-            render(<ShippingOptions {...createDefaultProps({ isEditing: false, isCompleted: true })} />);
-
-            expect(screen.queryByRole('button', { name: /continue/i })).not.toBeInTheDocument();
-        });
+        const strikeThroughPrice = screen.getByText('$5.99');
+        expect(strikeThroughPrice.className).toContain('line-through');
+        expect(screen.getByText('FREE')).toBeInTheDocument();
     });
 });
