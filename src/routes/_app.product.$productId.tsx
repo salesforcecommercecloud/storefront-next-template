@@ -302,9 +302,9 @@ function ProductRecommendationsSection() {
 
     return (
         <div className="mt-16 space-y-16">
-            <ProductRecommendations recommender={completeSetRecommender} />
-            <ProductRecommendations recommender={mightAlsoLikeRecommender} />
-            <ProductRecommendations recommender={recentlyViewedRecommender} />
+            <ProductRecommendations recommender={completeSetRecommender} className="max-w-none px-0" />
+            <ProductRecommendations recommender={mightAlsoLikeRecommender} className="max-w-none px-0" />
+            <ProductRecommendations recommender={recentlyViewedRecommender} className="max-w-none px-0" />
         </div>
     );
 }
