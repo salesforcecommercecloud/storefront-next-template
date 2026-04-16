@@ -53,6 +53,13 @@ export interface PageManifest {
             dataBinding?: ComponentDataBinding | null;
         };
     };
+    /** Region-level configuration extracted from the page layout, keyed by region ID. */
+    regionInfo: {
+        [regionId: string]: {
+            /** Maximum number of visible components to render in this region, or `null` for no limit. */
+            maxComponents: number | null;
+        };
+    };
 }
 
 /**

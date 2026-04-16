@@ -40,6 +40,13 @@ interface PageManifest {
       dataBinding?: ComponentDataBinding | null;
     };
   };
+  /** Region-level configuration extracted from the page layout, keyed by region ID. */
+  regionInfo: {
+    [regionId: string]: {
+      /** Maximum number of visible components to render in this region, or `null` for no limit. */
+      maxComponents: number | null;
+    };
+  };
 }
 /**
  * Site-wide manifest containing content assignments that map product and category
@@ -245,8 +252,17 @@ interface PageProcessorContext {
   qualifiers: QualifierContext | null;
   /** Component visibility rule definitions extracted from the page layout. */
   componentInfo: PageManifest['componentInfo'];
+  /** Region-level configuration (e.g. maxComponents limits), keyed by region ID. */
+  regionInfo: PageManifest['regionInfo'];
   /** The locale to use when resolving locale-specific component content (e.g. `"en_US"`). */
   locale: string;
+  /**
+   * When `true` (default), invisible components are removed from the tree and
+   * regions are truncated to their `maxComponents` limit. When `false`, invisible
+   * components and overflow components are kept in the tree but marked with
+   * `visible: false` — used in design/preview mode so the editor can display them.
+   */
+  pruneInvisible?: boolean;
 }
 /**
  * Filters a page's components based on their visibility rules and resolves
@@ -682,6 +698,7 @@ declare function resolveComponentDataBindings(component: ShopperExperience.schem
  * @param options.manifestStorage - Storage implementation for fetching manifests.
  * @param options.contextResolver - Optional async function that returns the shopper's qualifier context. Only called if a visibility rule needs it.
  * @param options.aspectType - The aspect type to resolve the page for when the identifier type is `'product'` or `'category'`.
+ * @param options.pruneInvisible - When `true` (default), invisible and overflow components are removed. When `false`, they are kept but marked `visible: false` for design/preview mode.
  * @returns The fully resolved and filtered page, or `null`.
  *
  * @example
@@ -724,7 +741,8 @@ declare function resolvePage({
   aspectType,
   locale,
   manifestStorage,
-  contextResolver
+  contextResolver,
+  pruneInvisible
 }: {
   id: string;
   identifierType: IdentifierType;
@@ -732,6 +750,7 @@ declare function resolvePage({
   locale: string;
   manifestStorage: ManifestStorage;
   contextResolver?: ContextResolver;
+  pruneInvisible?: boolean;
 }): Promise<ShopperExperience.schemas['Page'] | null>;
 //#endregion
 //#region src/design/data/manifest/resolve-dynamic-page-id.d.ts

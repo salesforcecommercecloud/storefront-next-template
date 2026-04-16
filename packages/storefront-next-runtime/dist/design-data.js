@@ -564,34 +564,64 @@ function validateRule(rule, locale, context) {
 * ```
 */
 function processPage(page, processorContext) {
-	return transformPage(page, { visitComponent(ctx) {
-		const componentInfo = processorContext.componentInfo[ctx.node.id];
-		const visibilityRules = componentInfo?.visibilityRules ?? [];
-		if (visibilityRules.length > 0) {
-			if (!visibilityRules.some((rule) => validateRule(rule, processorContext.locale, processorContext.qualifiers))) return null;
-		}
-		const defaultContent = componentInfo?.content?.default ?? {};
-		const localeContent = componentInfo?.content?.[processorContext.locale] ?? {};
-		const content = {
-			...defaultContent,
-			...localeContent
-		};
-		const isLocalized = Boolean(componentInfo?.content?.[processorContext.locale]);
-		let node = {
-			...ctx.node,
-			localized: isLocalized,
-			visible: true,
-			data: {
-				...ctx.node.data,
-				...content
+	return transformPage(page, {
+		visitRegion(ctx) {
+			const regionInfo = processorContext.regionInfo[ctx.node.id];
+			const pruneInvisible = processorContext.pruneInvisible ?? true;
+			let components = ctx.visitComponents(ctx.node.components);
+			if (regionInfo?.maxComponents != null) if (pruneInvisible) components = components.slice(0, regionInfo.maxComponents);
+			else {
+				const result = [];
+				let visibleCount = 0;
+				for (const comp of components) {
+					if (comp.visible) visibleCount++;
+					if (visibleCount > regionInfo.maxComponents) result.push({
+						...comp,
+						visible: false
+					});
+					else result.push(comp);
+				}
+				components = result;
 			}
-		};
-		node = resolveComponentDataBindings(node, componentInfo?.dataBinding, processorContext.qualifiers?.dataBindings);
-		return {
-			...node,
-			regions: ctx.visitRegions(ctx.node.regions)
-		};
-	} });
+			return {
+				...ctx.node,
+				components
+			};
+		},
+		visitComponent(ctx) {
+			const componentInfo = processorContext.componentInfo[ctx.node.id];
+			const visibilityRules = componentInfo?.visibilityRules ?? [];
+			const pruneInvisible = processorContext.pruneInvisible ?? true;
+			let isVisible = true;
+			if (visibilityRules.length > 0) {
+				if (!visibilityRules.some((rule) => validateRule(rule, processorContext.locale, processorContext.qualifiers))) {
+					if (pruneInvisible) return null;
+					isVisible = false;
+				}
+			}
+			const defaultContent = componentInfo?.content?.default ?? {};
+			const localeContent = componentInfo?.content?.[processorContext.locale] ?? {};
+			const content = {
+				...defaultContent,
+				...localeContent
+			};
+			const isLocalized = Boolean(componentInfo?.content?.[processorContext.locale]);
+			let node = {
+				...ctx.node,
+				localized: isLocalized,
+				visible: isVisible,
+				data: {
+					...ctx.node.data,
+					...content
+				}
+			};
+			node = resolveComponentDataBindings(node, componentInfo?.dataBinding, processorContext.qualifiers?.dataBindings);
+			return {
+				...node,
+				regions: ctx.visitRegions(ctx.node.regions)
+			};
+		}
+	});
 }
 
 //#endregion
@@ -853,6 +883,7 @@ async function getPageFromManifest(manifest, { contextResolver, locale }) {
 * @param options.manifestStorage - Storage implementation for fetching manifests.
 * @param options.contextResolver - Optional async function that returns the shopper's qualifier context. Only called if a visibility rule needs it.
 * @param options.aspectType - The aspect type to resolve the page for when the identifier type is `'product'` or `'category'`.
+* @param options.pruneInvisible - When `true` (default), invisible and overflow components are removed. When `false`, they are kept but marked `visible: false` for design/preview mode.
 * @returns The fully resolved and filtered page, or `null`.
 *
 * @example
@@ -889,7 +920,7 @@ async function getPageFromManifest(manifest, { contextResolver, locale }) {
 * }
 * ```
 */
-async function resolvePage({ id, identifierType, aspectType, locale, manifestStorage, contextResolver }) {
+async function resolvePage({ id, identifierType, aspectType, locale, manifestStorage, contextResolver, pruneInvisible = true }) {
 	let resolvedId = null;
 	if (ContentAssignmentResolvers.has(identifierType)) {
 		const siteManifest = await manifestStorage.getSiteManifest(locale);
@@ -914,7 +945,9 @@ async function resolvePage({ id, identifierType, aspectType, locale, manifestSto
 	return processPage(pageResults.entry.page, {
 		qualifiers: context,
 		componentInfo: pageManifest.componentInfo,
-		locale
+		regionInfo: pageManifest.regionInfo,
+		locale,
+		pruneInvisible
 	});
 }
 

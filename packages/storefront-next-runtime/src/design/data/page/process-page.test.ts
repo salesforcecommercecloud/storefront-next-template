@@ -50,6 +50,7 @@ describe('processPage', () => {
                         visibilityRules: [],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -71,6 +72,7 @@ describe('processPage', () => {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -88,6 +90,7 @@ describe('processPage', () => {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -114,6 +117,7 @@ describe('processPage', () => {
                         ],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -141,6 +145,7 @@ describe('processPage', () => {
                         ],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -169,6 +174,7 @@ describe('processPage', () => {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -214,6 +220,7 @@ describe('processPage', () => {
                         },
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -238,6 +245,7 @@ describe('processPage', () => {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -266,6 +274,7 @@ describe('processPage', () => {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -303,6 +312,7 @@ describe('processPage', () => {
                         },
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -327,6 +337,7 @@ describe('processPage', () => {
                         visibilityRules: [],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -357,6 +368,7 @@ describe('processPage', () => {
                         },
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -380,6 +392,7 @@ describe('processPage', () => {
                         },
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -407,6 +420,7 @@ describe('processPage', () => {
                         },
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -431,6 +445,7 @@ describe('processPage', () => {
                         visibilityRules: [],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -453,6 +468,7 @@ describe('processPage', () => {
                         },
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -476,6 +492,7 @@ describe('processPage', () => {
                         },
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -516,6 +533,7 @@ describe('processPage', () => {
                         },
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -543,6 +561,7 @@ describe('processPage', () => {
                         },
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -565,6 +584,7 @@ describe('processPage', () => {
                         },
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -583,6 +603,7 @@ describe('processPage', () => {
                         visibilityRules: [],
                     },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -602,6 +623,7 @@ describe('processPage', () => {
                     banner: { visibilityRules: [] },
                     promo: { visibilityRules: [] },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -626,6 +648,7 @@ describe('processPage', () => {
                     container: { visibilityRules: [] },
                     child: { visibilityRules: [] },
                 },
+                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -636,12 +659,269 @@ describe('processPage', () => {
         });
     });
 
+    describe('region maxComponents', () => {
+        test('truncates components to maxComponents limit', () => {
+            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b'), makeComponent('c')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {},
+                regionInfo: {
+                    main: { maxComponents: 2 },
+                },
+            };
+
+            const result = processPage(page, context);
+            expect(result.regions?.[0].components?.map((c) => c.id)).toEqual(['a', 'b']);
+        });
+
+        test('keeps all components when maxComponents is null', () => {
+            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b'), makeComponent('c')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {},
+                regionInfo: {
+                    main: { maxComponents: null },
+                },
+            };
+
+            const result = processPage(page, context);
+            expect(result.regions?.[0].components).toHaveLength(3);
+        });
+
+        test('keeps all components when region is not in regionInfo', () => {
+            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b'), makeComponent('c')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {},
+                regionInfo: {},
+            };
+
+            const result = processPage(page, context);
+            expect(result.regions?.[0].components).toHaveLength(3);
+        });
+
+        test('applies maxComponents after visibility filtering', () => {
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('visible-1'),
+                    makeComponent('hidden'),
+                    makeComponent('visible-2'),
+                    makeComponent('visible-3'),
+                ]),
+            ]);
+
+            const context: PageProcessorContext = {
+                qualifiers: { customerGroups: {}, campaignQualifiers: {} },
+                locale: 'en_US',
+                componentInfo: {
+                    'visible-1': { visibilityRules: [] },
+                    hidden: {
+                        visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
+                    },
+                    'visible-2': { visibilityRules: [] },
+                    'visible-3': { visibilityRules: [] },
+                },
+                regionInfo: {
+                    main: { maxComponents: 2 },
+                },
+            };
+
+            const result = processPage(page, context);
+            // 'hidden' is removed by visibility rules first, then maxComponents=2 keeps only the first 2 visible
+            expect(result.regions?.[0].components?.map((c) => c.id)).toEqual(['visible-1', 'visible-2']);
+        });
+
+        test('handles maxComponents greater than component count', () => {
+            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {},
+                regionInfo: {
+                    main: { maxComponents: 10 },
+                },
+            };
+
+            const result = processPage(page, context);
+            expect(result.regions?.[0].components).toHaveLength(2);
+        });
+
+        test('handles maxComponents of zero', () => {
+            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {},
+                regionInfo: {
+                    main: { maxComponents: 0 },
+                },
+            };
+
+            const result = processPage(page, context);
+            expect(result.regions?.[0].components).toHaveLength(0);
+        });
+
+        test('applies maxComponents independently per region', () => {
+            const page = makePage([
+                makeRegion('header', [makeComponent('h1'), makeComponent('h2'), makeComponent('h3')]),
+                makeRegion('footer', [makeComponent('f1'), makeComponent('f2'), makeComponent('f3')]),
+            ]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {},
+                regionInfo: {
+                    header: { maxComponents: 1 },
+                    footer: { maxComponents: 2 },
+                },
+            };
+
+            const result = processPage(page, context);
+            expect(result.regions?.[0].components?.map((c) => c.id)).toEqual(['h1']);
+            expect(result.regions?.[1].components?.map((c) => c.id)).toEqual(['f1', 'f2']);
+        });
+
+        test('applies maxComponents to nested regions', () => {
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('container', {
+                        regions: [makeRegion('inner', [makeComponent('n1'), makeComponent('n2'), makeComponent('n3')])],
+                    }),
+                ]),
+            ]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {
+                    container: { visibilityRules: [] },
+                },
+                regionInfo: {
+                    inner: { maxComponents: 1 },
+                },
+            };
+
+            const result = processPage(page, context);
+            const innerRegion = result.regions?.[0].components?.[0].regions?.[0];
+            expect(innerRegion?.components?.map((c) => c.id)).toEqual(['n1']);
+        });
+    });
+
+    describe('pruneInvisible: false (preview mode)', () => {
+        test('keeps invisible components with visible: false instead of removing them', () => {
+            const page = makePage([makeRegion('main', [makeComponent('public'), makeComponent('vip-only')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: { customerGroups: {}, campaignQualifiers: {} },
+                locale: 'en_US',
+                componentInfo: {
+                    public: { visibilityRules: [] },
+                    'vip-only': {
+                        visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
+                    },
+                },
+                regionInfo: {},
+                pruneInvisible: false,
+            };
+
+            const result = processPage(page, context);
+            const components = result.regions?.[0].components as Record<string, unknown>[];
+            expect(components).toHaveLength(2);
+            expect(components[0].visible).toBe(true);
+            expect(components[1].visible).toBe(false);
+        });
+
+        test('marks overflow components as visible: false instead of truncating', () => {
+            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b'), makeComponent('c')])]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {},
+                regionInfo: {
+                    main: { maxComponents: 1 },
+                },
+                pruneInvisible: false,
+            };
+
+            const result = processPage(page, context);
+            const components = result.regions?.[0].components as Record<string, unknown>[];
+            expect(components).toHaveLength(3);
+            expect(components[0].visible).toBe(true);
+            expect(components[1].visible).toBe(false);
+            expect(components[2].visible).toBe(false);
+        });
+
+        test.each([
+            {
+                name: 'invisible in middle',
+                ids: ['visible-1', 'hidden', 'visible-2', 'visible-3'],
+                expected: [true, false, true, false],
+            },
+            {
+                name: 'invisible at start',
+                ids: ['hidden', 'visible-1', 'visible-2', 'visible-3'],
+                expected: [false, true, true, false],
+            },
+            {
+                name: 'invisible at end',
+                ids: ['visible-1', 'visible-2', 'visible-3', 'hidden'],
+                expected: [true, true, false, false],
+            },
+            {
+                name: 'multiple invisible scattered',
+                ids: ['hidden-1', 'visible-1', 'hidden-2', 'visible-2', 'visible-3'],
+                expected: [false, true, false, true, false],
+            },
+        ])('maxComponents only counts visible components ($name)', ({ ids, expected }) => {
+            const hiddenRule = [{ activeLocales: ['en_US'], customerGroups: ['vip'] }];
+            const page = makePage([
+                makeRegion(
+                    'main',
+                    ids.map((id) => makeComponent(id))
+                ),
+            ]);
+
+            const context: PageProcessorContext = {
+                qualifiers: { customerGroups: {}, campaignQualifiers: {} },
+                locale: 'en_US',
+                componentInfo: Object.fromEntries(
+                    ids.map((id) => [
+                        id,
+                        {
+                            visibilityRules: id.startsWith('hidden') ? hiddenRule : [],
+                        },
+                    ])
+                ),
+                regionInfo: {
+                    main: { maxComponents: 2 },
+                },
+                pruneInvisible: false,
+            };
+
+            const result = processPage(page, context);
+            const components = result.regions?.[0].components as Record<string, unknown>[];
+            expect(components).toHaveLength(ids.length);
+            expect(components.map((c) => c.visible)).toEqual(expected);
+        });
+    });
+
     test('handles page with no regions', () => {
         const page = makePage();
         const context: PageProcessorContext = {
             qualifiers: null,
             locale: 'en_US',
             componentInfo: {},
+            regionInfo: {},
         };
 
         const result = processPage(page, context);
@@ -654,6 +934,7 @@ describe('processPage', () => {
             qualifiers: null,
             locale: 'en_US',
             componentInfo: {},
+            regionInfo: {},
         };
 
         const result = processPage(page, context);
@@ -678,6 +959,7 @@ describe('processPage', () => {
                     visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
                 },
             },
+            regionInfo: {},
         };
 
         const result = processPage(page, context);

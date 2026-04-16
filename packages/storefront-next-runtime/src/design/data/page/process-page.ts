@@ -29,8 +29,17 @@ export interface PageProcessorContext {
     qualifiers: QualifierContext | null;
     /** Component visibility rule definitions extracted from the page layout. */
     componentInfo: PageManifest['componentInfo'];
+    /** Region-level configuration (e.g. maxComponents limits), keyed by region ID. */
+    regionInfo: PageManifest['regionInfo'];
     /** The locale to use when resolving locale-specific component content (e.g. `"en_US"`). */
     locale: string;
+    /**
+     * When `true` (default), invisible components are removed from the tree and
+     * regions are truncated to their `maxComponents` limit. When `false`, invisible
+     * components and overflow components are kept in the tree but marked with
+     * `visible: false` — used in design/preview mode so the editor can display them.
+     */
+    pruneInvisible?: boolean;
 }
 
 /**
@@ -89,9 +98,51 @@ export function processPage(
     processorContext: PageProcessorContext
 ): ShopperExperience.schemas['Page'] {
     return transformPage(page, {
+        visitRegion(ctx) {
+            const regionInfo = processorContext.regionInfo[ctx.node.id];
+            const pruneInvisible = processorContext.pruneInvisible ?? true;
+
+            // Visit each component first — this runs visitComponent which
+            // filters out components that fail their visibility rules.
+            let components = ctx.visitComponents(ctx.node.components);
+
+            if (regionInfo?.maxComponents != null) {
+                if (pruneInvisible) {
+                    components = components.slice(0, regionInfo.maxComponents);
+                } else {
+                    const result: ShopperExperience.schemas['Component'][] = [];
+                    let visibleCount = 0;
+
+                    for (const comp of components) {
+                        // @ts-expect-error - This isn't updated in the schema yet.
+                        if (comp.visible) {
+                            visibleCount++;
+                        }
+
+                        if (visibleCount > regionInfo.maxComponents) {
+                            // @ts-expect-error - This isn't updated in the schema yet.
+                            result.push({ ...comp, visible: false });
+                        } else {
+                            result.push(comp);
+                        }
+                    }
+
+                    components = result;
+                }
+            }
+
+            return {
+                ...ctx.node,
+                // After visibility filtering, enforce the region's max component
+                // limit by keeping only the first N visible components.
+                components,
+            };
+        },
         visitComponent(ctx) {
             const componentInfo = processorContext.componentInfo[ctx.node.id];
             const visibilityRules = componentInfo?.visibilityRules ?? [];
+            const pruneInvisible = processorContext.pruneInvisible ?? true;
+            let isVisible = true;
 
             // Visibility rules use OR logic: the component is visible
             // if ANY rule passes. Only remove it when it has its own
@@ -102,7 +153,11 @@ export function processPage(
                 );
 
                 if (!anyRulePassed) {
-                    return null;
+                    if (pruneInvisible) {
+                        return null;
+                    }
+
+                    isVisible = false;
                 }
             }
 
@@ -117,11 +172,7 @@ export function processPage(
                 ...ctx.node,
                 // @ts-expect-error - This isn't updated in the schema yet.
                 localized: isLocalized,
-                // Always true here — this processing logic only runs in live/published mode
-                // where invisible components are already filtered out above. The `visible`
-                // flag is only false in design/preview mode, which returns all components
-                // unfiltered and bypasses this code path entirely.
-                visible: true,
+                visible: isVisible,
                 data: {
                     ...(ctx.node.data as Record<string, unknown>),
                     ...content,

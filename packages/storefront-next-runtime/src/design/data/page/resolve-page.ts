@@ -41,6 +41,7 @@ import { RequiredError } from '../errors/required';
  * @param options.manifestStorage - Storage implementation for fetching manifests.
  * @param options.contextResolver - Optional async function that returns the shopper's qualifier context. Only called if a visibility rule needs it.
  * @param options.aspectType - The aspect type to resolve the page for when the identifier type is `'product'` or `'category'`.
+ * @param options.pruneInvisible - When `true` (default), invisible and overflow components are removed. When `false`, they are kept but marked `visible: false` for design/preview mode.
  * @returns The fully resolved and filtered page, or `null`.
  *
  * @example
@@ -84,6 +85,7 @@ export async function resolvePage({
     locale,
     manifestStorage,
     contextResolver,
+    pruneInvisible = true,
 }: {
     id: string;
     identifierType: IdentifierType;
@@ -91,6 +93,7 @@ export async function resolvePage({
     locale: string;
     manifestStorage: ManifestStorage;
     contextResolver?: ContextResolver;
+    pruneInvisible?: boolean;
 }): Promise<ShopperExperience.schemas['Page'] | null> {
     let resolvedId: string | null = null;
 
@@ -132,6 +135,8 @@ export async function resolvePage({
     return processPage(pageResults.entry.page, {
         qualifiers: context,
         componentInfo: pageManifest.componentInfo,
+        regionInfo: pageManifest.regionInfo,
         locale,
+        pruneInvisible,
     });
 }
