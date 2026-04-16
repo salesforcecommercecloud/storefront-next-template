@@ -36,8 +36,9 @@ import {
 } from 'react-router';
 
 // Third-party libraries
-import { type i18n } from 'i18next';
-import { I18nextProvider } from 'react-i18next';
+import { createInstance, type i18n } from 'i18next';
+import { I18nextProvider, useTranslation, initReactI18next } from 'react-i18next';
+import resources from '@/locales'; // Server-side translations
 import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
 import {
@@ -117,6 +118,9 @@ import { TargetProviders } from '@/targets/target-providers';
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
+
+// Layout Components - logo for error page
+import logo from '/images/logo.svg';
 
 export const links: LinksFunction = () => {
     return [
@@ -306,6 +310,132 @@ export function Layout({ children }: PropsWithChildren) {
     );
 }
 
+/**
+ * Error page content component with i18n support
+ */
+function ErrorPageContent({
+    status,
+    details,
+    stack,
+}: {
+    status: number | undefined;
+    details: string | undefined;
+    stack: string | undefined;
+}) {
+    const { t } = useTranslation('error');
+
+    return (
+        <>
+            {/* Simple Header */}
+            <header className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
+                <div className="px-4 lg:px-9">
+                    <div className="flex items-center gap-x-4 lg:gap-x-6 h-16">
+                        <a href="/" className="flex-shrink-0 flex items-center">
+                            <img
+                                src={logo}
+                                alt="Logo"
+                                className="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+                            />
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            {/* Main Content */}
+            <main className="grow pt-8">
+                <div className="flex items-center justify-center min-h-[60vh] px-4 py-12">
+                    <div className="mx-auto max-w-3xl w-full text-center">
+                        {/* Large status code */}
+                        {status && <div className="text-error-status font-bold leading-none mb-8">{status}</div>}
+
+                        {/* Error content - conditional based on status */}
+                        {status === 404 ? (
+                            <>
+                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('404.title')}</h1>
+                                <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
+                                    {t('404.message')}
+                                </p>
+                                <p className="text-base text-muted-foreground mb-4 max-w-2xl mx-auto">
+                                    {t('404.secondaryMessage')}
+                                </p>
+                                <p className="text-sm text-muted-foreground mb-12 max-w-2xl mx-auto opacity-50">
+                                    {t('404.details')}
+                                </p>
+                            </>
+                        ) : status === 403 ? (
+                            <>
+                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('403.title')}</h1>
+                                <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
+                                    {t('403.message')}
+                                </p>
+                                <p className="text-base text-muted-foreground mb-12 max-w-2xl mx-auto">
+                                    {t('403.secondaryMessage')}
+                                </p>
+                            </>
+                        ) : status === 500 ? (
+                            <>
+                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('500.title')}</h1>
+                                <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
+                                    {t('500.message')}
+                                </p>
+                                <p className="text-base text-muted-foreground mb-12 max-w-2xl mx-auto">
+                                    {t('500.secondaryMessage')}
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('defaultTitle')}</h1>
+                                {/* For other errors: show technical details */}
+                                {details && (
+                                    <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
+                                        Error: {details}
+                                    </p>
+                                )}
+                            </>
+                        )}
+
+                        {/* Back to home button */}
+                        <div>
+                            <a
+                                href="/"
+                                className="inline-block rounded-none bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
+                                {t('goToHomepage')}
+                            </a>
+                        </div>
+
+                        {/* Stack trace (only in dev mode with stack) */}
+                        {stack && (
+                            <div className="mt-16 border border-border rounded-lg bg-muted/30 text-left">
+                                <div className="flex items-center px-4 py-3 border-b border-border">
+                                    <h2 className="text-sm font-semibold text-foreground">Stack Trace</h2>
+                                </div>
+                                <pre className="p-4 overflow-auto max-h-80 text-xs leading-relaxed text-foreground/90 font-mono">
+                                    <code>{stack}</code>
+                                </pre>
+                                <div className="px-4 py-3 border-t border-border">
+                                    <p className="text-xs text-muted-foreground">
+                                        To disable stack traces in production, turn off{' '}
+                                        <code className="text-xs">unstable_devTools</code> in your router config.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </main>
+
+            {/* Simple Footer */}
+            <footer className="mt-auto bg-background border-t border-border">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+                    <p className="text-center text-sm text-muted-foreground">
+                        © {new Date().getFullYear()} {t('allRightsReserved')}
+                    </p>
+                </div>
+            </footer>
+        </>
+    );
+}
+
 export function ErrorBoundary({ error }: { error: unknown }) {
     // Handle maintenance mode errors
     // Error is serialized when crossing server->client boundary, so we check the string representation
@@ -314,15 +444,14 @@ export function ErrorBoundary({ error }: { error: unknown }) {
         return <Navigate to="/maintenance" replace />;
     }
 
-    let title = 'Something went wrong';
+    // For all other errors, render error page with app layout
     let status: number | undefined;
     let details: string | undefined;
     let stack: string | undefined;
 
     if (isRouteErrorResponse(error)) {
         status = error.status;
-        title = error.status === 404 ? 'Page not found' : 'Something went wrong';
-        details = error.status === 404 ? 'The requested page could not be found.' : error.statusText;
+        details = error.statusText;
     } else if (error instanceof Error) {
         details = error.message;
         stack = error.stack;
@@ -330,72 +459,31 @@ export function ErrorBoundary({ error }: { error: unknown }) {
         details = error;
     }
 
+    // Always create a new i18next instance with pre-loaded translations for the ErrorBoundary
+    // This ensures translations are immediately available without async loading
+    const language =
+        typeof window !== 'undefined' && i18nextOnClient
+            ? i18nextOnClient.language || 'en-US'
+            : typeof document !== 'undefined'
+              ? document.documentElement.lang || 'en-US'
+              : 'en-US';
+
+    const i18nextInstance = createInstance();
+    // Initialize synchronously with pre-loaded resources
+    void i18nextInstance.use(initReactI18next).init({
+        lng: language,
+        fallbackLng: 'en-US',
+        resources,
+        interpolation: {
+            escapeValue: false,
+        },
+        initImmediate: true, // Ensures synchronous initialization with pre-loaded resources
+    });
+
     return (
-        <main className="flex items-center justify-center min-h-[60vh] p-4">
-            <div className="w-full max-w-2xl">
-                {/* Error header */}
-                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
-                    <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-0.5 rounded-full bg-destructive/20 p-2">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="size-5 text-destructive">
-                                <circle cx="12" cy="12" r="10" />
-                                <line x1="12" y1="8" x2="12" y2="12" />
-                                <line x1="12" y1="16" x2="12.01" y2="16" />
-                            </svg>
-                        </div>
-                        <div>
-                            {status && <p className="text-sm font-medium text-destructive/70 mb-1">{status}</p>}
-                            <h1 className="text-xl font-semibold text-destructive">{title}</h1>
-                            {details && <p className="mt-1.5 text-sm text-foreground/80 break-all">Error: {details}</p>}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Stack trace */}
-                {stack && (
-                    <div className="mt-4 border border-border rounded-lg bg-muted/30">
-                        <div className="flex items-center px-4 py-3 border-b border-border">
-                            <h2 className="text-sm font-semibold text-foreground">Stack Trace</h2>
-                        </div>
-                        <pre className="p-4 overflow-auto max-h-80 text-xs leading-relaxed text-foreground/90 font-mono">
-                            <code>{stack}</code>
-                        </pre>
-                        <div className="px-4 py-3 border-t border-border">
-                            <p className="text-xs text-muted-foreground">
-                                To disable stack traces in production, turn off <strong>Enable Source Maps</strong> in
-                                your Managed Runtime environment.{' '}
-                                <a
-                                    href="https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/debugging.html#debug-on-managed-runtime"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="underline hover:no-underline">
-                                    Learn more about debugging on Managed Runtime
-                                </a>
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {/* No stack trace - fallback message */}
-                {!stack && (
-                    <div className="mt-4 border border-border rounded-lg bg-muted/30 px-6 py-4">
-                        <p className="text-sm text-muted-foreground">
-                            {details
-                                ? 'If this problem persists, please contact support.'
-                                : 'An unexpected error occurred. Please try again later.'}
-                        </p>
-                    </div>
-                )}
-            </div>
-        </main>
+        <I18nextProvider i18n={i18nextInstance}>
+            <ErrorPageContent status={status} details={details} stack={stack} />
+        </I18nextProvider>
     );
 }
 

@@ -1346,5 +1346,35 @@
         "apology": "Ci scusiamo per l'inconveniente. Grazie per la pazienza!",
         "checkBack": "Ricontrolla tra qualche minuto o seguici per aggiornamenti.",
         "tryAgain": "Riprova"
+    },
+    "error": {
+        "defaultTitle": "Si è verificato un errore",
+        "defaultDescription": "Si è verificato un errore",
+        "defaultDetails": "Si è verificato un errore imprevisto.",
+        "notFoundTitle": "Pagina non trovata",
+        "notFoundDetails": "La pagina richiesta non è stata trovata.",
+        "persistsMessage": "Se il problema persiste, contatta l'assistenza.",
+        "tryAgainMessage": "Si è verificato un errore imprevisto. Riprova più tardi.",
+        "goToHomepage": "Vai alla Homepage",
+        "allRightsReserved": "Tutti i diritti riservati.",
+        "recommendations": {
+            "title": "Potrebbero interessarti anche"
+        },
+        "404": {
+            "title": "Pagina non trovata",
+            "message": "Non siamo riusciti a trovare la pagina che stai cercando. Potrebbe essere stata spostata o il link potrebbe essere errato.",
+            "secondaryMessage": "Non preoccuparti—puoi ancora esplorare la nostra collezione o tornare alla home.",
+            "details": "La pagina richiesta non è stata trovata."
+        },
+        "403": {
+            "title": "Accesso limitato",
+            "message": "Non hai il permesso di visualizzare questa pagina. Se ritieni che questo sia un errore, contatta il nostro team di supporto.",
+            "secondaryMessage": "Nel frattempo, sentiti libero di sfogliare la nostra collezione."
+        },
+        "500": {
+            "title": "Si è verificato un errore",
+            "message": "Ci scusiamo, ma si è verificato un problema imprevisto da parte nostra. Il nostro team è stato notificato e sta lavorando per risolverlo.",
+            "secondaryMessage": "Riprova tra qualche istante o sfoglia il nostro negozio mentre risolviamo il problema."
+        }
     }
 }

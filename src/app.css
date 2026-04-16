@@ -19,6 +19,10 @@
     --text-lg--line-height: 1.422rem;
     --text-xl: 1.5rem;       /* 24px - DEPRECATED: should use text-2xl instead */
     --text-xl--line-height: 2rem;
+
+    /* Error page tokens */
+    --text-error-status: 12rem;  /* Large status code display for error pages */
+
     /* Radius tokens */
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);

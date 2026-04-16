@@ -46,13 +46,42 @@ vi.mock('@/lib/i18next.client', async () => {
     // (no resources pre-loaded, uses backend to fetch translations)
     const testInstance = i18next.default.createInstance();
 
-    // Mock the backend to return empty translations for testing
+    // Mock the backend to return test translations
     const mockBackend = {
         type: 'backend' as const,
         init: vi.fn(),
-        read: vi.fn((_language: string, _namespace: string, callback: (error: any, data: any) => void) => {
-            // Return empty translations to simulate the backend
-            callback(null, {});
+        read: vi.fn((_language: string, namespace: string, callback: (error: any, data: any) => void) => {
+            // Return test translations for error namespace
+            if (namespace === 'error') {
+                callback(null, {
+                    defaultTitle: 'Something went wrong',
+                    goToHomepage: 'Go to Homepage',
+                    allRightsReserved: 'All rights reserved.',
+                    '404': {
+                        title: 'Page not found',
+                        message:
+                            "We couldn't find the page you're looking for. It may have been moved or the link might be incorrect.",
+                        secondaryMessage: "Don't worry—you can still explore our collection or head back home.",
+                        details: 'The requested page could not be found.',
+                    },
+                    '403': {
+                        title: 'Access restricted',
+                        message:
+                            "You don't have permission to view this page. If you believe this is an error, please contact our support team.",
+                        secondaryMessage: 'In the meantime, feel free to browse our collection.',
+                    },
+                    '500': {
+                        title: 'Something went wrong',
+                        message:
+                            "We're sorry, but something unexpected happened on our end. Our team has been notified and is working to fix it.",
+                        secondaryMessage:
+                            'Please try again in a few moments, or browse our shop while we sort things out.',
+                    },
+                });
+            } else {
+                // Return empty translations for other namespaces
+                callback(null, {});
+            }
         }),
     };
 
@@ -330,7 +359,8 @@ describe('root.tsx', () => {
 
                 expect(getByText('500')).toBeInTheDocument();
                 expect(getByText('Something went wrong')).toBeInTheDocument();
-                expect(getByText(/Internal Server Error/)).toBeInTheDocument();
+                // 500 errors now show friendly translated message instead of statusText
+                expect(getByText(/We're sorry, but something unexpected happened on our end/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -391,7 +421,8 @@ describe('root.tsx', () => {
 
                 expect(getByText('500')).toBeInTheDocument();
                 expect(getByText('Something went wrong')).toBeInTheDocument();
-                expect(getByText(/Internal Server Error/)).toBeInTheDocument();
+                // 500 errors now show friendly translated message instead of statusText
+                expect(getByText(/We're sorry, but something unexpected happened on our end/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
