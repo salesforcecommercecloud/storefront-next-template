@@ -22,13 +22,7 @@ export {
     transformRegion,
 } from './page/transform';
 export { RequiredError } from './errors/required';
-export {
-    type ComponentDataBinding,
-    type DataBindingContext,
-    parseExpression,
-    resolveExpression,
-    resolveComponentDataBindings,
-} from './page/resolve-data-bindings';
+export { parseExpression, resolveExpression, resolveComponentDataBindings } from './page/resolve-data-bindings';
 export { resolvePage } from './page/resolve-page';
 export { resolveDynamicPageId } from './manifest/resolve-dynamic-page-id';
 export { getPageFromManifest } from './manifest/get-page';

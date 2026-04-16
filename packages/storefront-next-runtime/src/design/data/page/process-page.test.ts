@@ -185,12 +185,6 @@ describe('processPage', () => {
                             makeRegion('inner', [
                                 makeComponent('bound-child', {
                                     data: { heading: 'Fallback' } as unknown as Component['data'],
-                                    custom: {
-                                        dataBinding: {
-                                            expressions: { heading: 'content_asset.title' },
-                                            contexts: [{ type: 'content_asset', id: 'asset-1' }],
-                                        },
-                                    } as unknown as Component['custom'],
                                 }),
                             ]),
                         ],
@@ -210,9 +204,14 @@ describe('processPage', () => {
                 componentInfo: {
                     container: {
                         visibilityRules: [],
+                        dataBinding: null,
                     },
                     'bound-child': {
                         visibilityRules: [],
+                        dataBinding: {
+                            expressions: { heading: 'content_asset.title' },
+                            contexts: [{ type: 'content_asset', id: 'asset-1' }],
+                        },
                     },
                 },
             };
@@ -282,12 +281,6 @@ describe('processPage', () => {
                 makeRegion('main', [
                     makeComponent('banner', {
                         data: { heading: 'Fallback' } as unknown as Component['data'],
-                        custom: {
-                            dataBinding: {
-                                expressions: { heading: 'content_asset.title' },
-                                contexts: [{ type: 'content_asset', id: 'asset-1' }],
-                            },
-                        } as unknown as Component['custom'],
                     }),
                 ]),
             ]);
@@ -304,6 +297,10 @@ describe('processPage', () => {
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
+                        dataBinding: {
+                            expressions: { heading: 'content_asset.title' },
+                            contexts: [{ type: 'content_asset', id: 'asset-1' }],
+                        },
                     },
                 },
             };
@@ -494,12 +491,6 @@ describe('processPage', () => {
                 makeRegion('main', [
                     makeComponent('banner', {
                         data: { heading: 'Default', body: 'Default Body' } as unknown as Component['data'],
-                        custom: {
-                            dataBinding: {
-                                expressions: { heading: 'content_asset.title' },
-                                contexts: [{ type: 'content_asset', id: 'asset-1' }],
-                            },
-                        } as unknown as Component['custom'],
                     }),
                 ]),
             ]);
@@ -518,6 +509,10 @@ describe('processPage', () => {
                         visibilityRules: [],
                         content: {
                             en_US: { heading: 'Locale Heading', body: 'Locale Body' },
+                        },
+                        dataBinding: {
+                            expressions: { heading: 'content_asset.title' },
+                            contexts: [{ type: 'content_asset', id: 'asset-1' }],
                         },
                     },
                 },

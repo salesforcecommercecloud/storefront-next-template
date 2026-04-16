@@ -129,7 +129,11 @@ export function processPage(
             };
 
             // Resolve data binding expressions (overrides content for bound attributes).
-            node = resolveComponentDataBindings(node, processorContext.qualifiers?.dataBindings);
+            node = resolveComponentDataBindings(
+                node,
+                componentInfo?.dataBinding,
+                processorContext.qualifiers?.dataBindings
+            );
 
             return {
                 ...node,

@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 import { describe, test, expect } from 'vitest';
-import {
-    type DataBindingContext,
-    parseExpression,
-    resolveExpression,
-    resolveComponentDataBindings,
-} from './resolve-data-bindings';
+import { parseExpression, resolveExpression, resolveComponentDataBindings } from './resolve-data-bindings';
 import type { ShopperExperience } from '@/scapi-client/types';
-import type { QualifierContext } from '../types';
+import type { ComponentDataBinding, DataBindingRequirement, QualifierContext } from '../types';
 
 type Component = ShopperExperience.schemas['Component'];
 
@@ -61,7 +56,7 @@ describe('parseExpression', () => {
 });
 
 describe('resolveExpression', () => {
-    const contexts: DataBindingContext[] = [{ type: 'content_asset', id: 'asset-uuid-1' }];
+    const contexts: DataBindingRequirement[] = [{ type: 'content_asset', id: 'asset-uuid-1' }];
 
     const dataBindings: NonNullable<QualifierContext['dataBindings']> = {
         content_asset: {
@@ -110,7 +105,7 @@ describe('resolveExpression', () => {
     });
 
     test('resolves with multiple contexts selecting the correct one', () => {
-        const multiContexts: DataBindingContext[] = [
+        const multiContexts: DataBindingRequirement[] = [
             { type: 'content_asset', id: 'asset-uuid-1' },
             { type: 'product', id: 'prod-123' },
         ];
@@ -140,18 +135,17 @@ describe('resolveComponentDataBindings', () => {
         const component = makeComponent({
             id: 'banner',
             data: { heading: 'Fallback Title', body: 'Fallback Body' } as unknown as Component['data'],
-            custom: {
-                dataBinding: {
-                    expressions: {
-                        heading: 'content_asset.title',
-                        body: 'content_asset.body',
-                    },
-                    contexts: [{ type: 'content_asset', id: 'asset-uuid-1' }],
-                },
-            } as unknown as Component['custom'],
         });
 
-        const result = resolveComponentDataBindings(component, dataBindings);
+        const binding: ComponentDataBinding = {
+            expressions: {
+                heading: 'content_asset.title',
+                body: 'content_asset.body',
+            },
+            contexts: [{ type: 'content_asset', id: 'asset-uuid-1' }],
+        };
+
+        const result = resolveComponentDataBindings(component, binding, dataBindings);
         const data = result.data as Record<string, unknown>;
 
         expect(data.heading).toBe('Winter Sale');
@@ -165,15 +159,14 @@ describe('resolveComponentDataBindings', () => {
                 heading: 'Static Heading',
                 subheading: 'Keep This',
             } as unknown as Component['data'],
-            custom: {
-                dataBinding: {
-                    expressions: { heading: 'content_asset.title' },
-                    contexts: [{ type: 'content_asset', id: 'asset-uuid-1' }],
-                },
-            } as unknown as Component['custom'],
         });
 
-        const result = resolveComponentDataBindings(component, dataBindings);
+        const binding: ComponentDataBinding = {
+            expressions: { heading: 'content_asset.title' },
+            contexts: [{ type: 'content_asset', id: 'asset-uuid-1' }],
+        };
+
+        const result = resolveComponentDataBindings(component, binding, dataBindings);
         const data = result.data as Record<string, unknown>;
 
         expect(data.heading).toBe('Winter Sale');
@@ -181,26 +174,35 @@ describe('resolveComponentDataBindings', () => {
     });
 
     test('returns component unchanged when dataBindings is undefined', () => {
-        const component = makeComponent({
-            custom: {
-                dataBinding: {
-                    expressions: { heading: 'content_asset.title' },
-                    contexts: [{ type: 'content_asset', id: 'asset-uuid-1' }],
-                },
-            } as unknown as Component['custom'],
-        });
+        const component = makeComponent();
 
-        const result = resolveComponentDataBindings(component, undefined);
+        const binding: ComponentDataBinding = {
+            expressions: { heading: 'content_asset.title' },
+            contexts: [{ type: 'content_asset', id: 'asset-uuid-1' }],
+        };
+
+        const result = resolveComponentDataBindings(component, binding, undefined);
         expect(result).toBe(component);
     });
 
-    test('returns component unchanged without dataBinding metadata', () => {
+    test('returns component unchanged when binding is null', () => {
         const component = makeComponent({
             id: 'plain',
             data: { heading: 'No Binding' } as unknown as Component['data'],
         });
 
-        const result = resolveComponentDataBindings(component, dataBindings);
+        const result = resolveComponentDataBindings(component, null, dataBindings);
+        expect(result).toBe(component);
+        expect((result.data as Record<string, unknown>).heading).toBe('No Binding');
+    });
+
+    test('returns component unchanged when binding is undefined', () => {
+        const component = makeComponent({
+            id: 'plain',
+            data: { heading: 'No Binding' } as unknown as Component['data'],
+        });
+
+        const result = resolveComponentDataBindings(component, undefined, dataBindings);
         expect(result).toBe(component);
         expect((result.data as Record<string, unknown>).heading).toBe('No Binding');
     });
@@ -209,15 +211,14 @@ describe('resolveComponentDataBindings', () => {
         const component = makeComponent({
             id: 'banner',
             data: { heading: 'Fallback' } as unknown as Component['data'],
-            custom: {
-                dataBinding: {
-                    expressions: { heading: 'content_asset.nonexistent' },
-                    contexts: [{ type: 'content_asset', id: 'asset-uuid-1' }],
-                },
-            } as unknown as Component['custom'],
         });
 
-        const result = resolveComponentDataBindings(component, dataBindings);
+        const binding: ComponentDataBinding = {
+            expressions: { heading: 'content_asset.nonexistent' },
+            contexts: [{ type: 'content_asset', id: 'asset-uuid-1' }],
+        };
+
+        const result = resolveComponentDataBindings(component, binding, dataBindings);
         expect((result.data as Record<string, unknown>).heading).toBe('');
     });
 
@@ -225,31 +226,29 @@ describe('resolveComponentDataBindings', () => {
         const component = makeComponent({
             id: 'banner',
             data: { heading: 'Static' } as unknown as Component['data'],
-            custom: {
-                dataBinding: {
-                    expressions: {},
-                    contexts: [{ type: 'content_asset', id: 'asset-uuid-1' }],
-                },
-            } as unknown as Component['custom'],
         });
 
-        const result = resolveComponentDataBindings(component, dataBindings);
+        const binding: ComponentDataBinding = {
+            expressions: {},
+            contexts: [{ type: 'content_asset', id: 'asset-uuid-1' }],
+        };
+
+        const result = resolveComponentDataBindings(component, binding, dataBindings);
         expect(result).toBe(component);
     });
 
-    test('returns component unchanged with empty contexts array', () => {
+    test('returns component unchanged with empty context array', () => {
         const component = makeComponent({
             id: 'banner',
             data: { heading: 'Static' } as unknown as Component['data'],
-            custom: {
-                dataBinding: {
-                    expressions: { heading: 'content_asset.title' },
-                    contexts: [],
-                },
-            } as unknown as Component['custom'],
         });
 
-        const result = resolveComponentDataBindings(component, dataBindings);
+        const binding: ComponentDataBinding = {
+            expressions: { heading: 'content_asset.title' },
+            contexts: [],
+        };
+
+        const result = resolveComponentDataBindings(component, binding, dataBindings);
         expect(result).toBe(component);
     });
 
@@ -266,21 +265,20 @@ describe('resolveComponentDataBindings', () => {
         const component = makeComponent({
             id: 'promo',
             data: { heading: 'Default', price: 0 } as unknown as Component['data'],
-            custom: {
-                dataBinding: {
-                    expressions: {
-                        heading: 'content_asset.title',
-                        price: 'product.salesPrice',
-                    },
-                    contexts: [
-                        { type: 'content_asset', id: 'asset-uuid-1' },
-                        { type: 'product', id: 'prod-123' },
-                    ],
-                },
-            } as unknown as Component['custom'],
         });
 
-        const result = resolveComponentDataBindings(component, multiBindings);
+        const binding: ComponentDataBinding = {
+            expressions: {
+                heading: 'content_asset.title',
+                price: 'product.salesPrice',
+            },
+            contexts: [
+                { type: 'content_asset', id: 'asset-uuid-1' },
+                { type: 'product', id: 'prod-123' },
+            ],
+        };
+
+        const result = resolveComponentDataBindings(component, binding, multiBindings);
         const data = result.data as Record<string, unknown>;
 
         expect(data.heading).toBe('Winter Sale');

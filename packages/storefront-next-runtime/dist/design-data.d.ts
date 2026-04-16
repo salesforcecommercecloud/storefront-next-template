@@ -36,6 +36,8 @@ interface PageManifest {
       content?: {
         [locale: string]: Record<string, unknown>;
       };
+      /** Data binding metadata for this component, or `null` if not bound. */
+      dataBinding?: ComponentDataBinding | null;
     };
   };
 }
@@ -76,6 +78,16 @@ interface SiteManifest {
       parentCategory?: string;
     };
   };
+}
+/**
+ * Data binding metadata for a component instance. Stored in the page manifest's
+ * `componentInfo` map, keyed by component ID.
+ */
+interface ComponentDataBinding {
+  /** Maps attribute names to expression strings (e.g. `"content_asset.body"`). */
+  expressions: Record<string, string>;
+  /** The data contexts bound to this component, identifying the records to resolve against. */
+  contexts: DataBindingRequirement[];
 }
 /**
  * A campaign and promotion pair used in visibility rules. Both the campaign and
@@ -569,27 +581,6 @@ declare class RequiredError extends Error {
 //#endregion
 //#region src/design/data/page/resolve-data-bindings.d.ts
 /**
- * Data binding metadata attached to a component instance. Stored in the
- * component's `custom.dataBinding` field by ECOM when the author binds a
- * data source to the component in Page Designer.
- */
-interface ComponentDataBinding {
-  /** Maps attribute names to expression strings (e.g. `"content_asset.body"`). */
-  expressions: Record<string, string>;
-  /** The data contexts bound to this component, identifying the records to resolve against. */
-  contexts: DataBindingContext[];
-}
-/**
- * A data context reference on a component instance, identifying a specific
- * record from a data provider.
- */
-interface DataBindingContext {
-  /** The data provider type (e.g. `"content_asset"`). */
-  type: string;
-  /** The record identifier (e.g. a content asset UUID). */
-  id: string;
-}
-/**
  * Parses a binding expression string into its provider type and field name.
  * Supports the bare `type.field` format.
  *
@@ -619,7 +610,7 @@ declare function parseExpression(expression: string): {
  * @param dataBindings - The resolved data bindings from {@link QualifierContext}.
  * @returns The resolved value, or `''` if resolution fails.
  */
-declare function resolveExpression(expression: string, contexts: DataBindingContext[], dataBindings: NonNullable<QualifierContext['dataBindings']>): unknown;
+declare function resolveExpression(expression: string, contexts: DataBindingRequirement[], dataBindings: NonNullable<QualifierContext['dataBindings']>): unknown;
 /**
  * Resolves data binding expressions for a single component. Replaces attribute
  * values in the component's `data` with the resolved values from context
@@ -631,6 +622,7 @@ declare function resolveExpression(expression: string, contexts: DataBindingCont
  * `dataBindings` is `undefined`.
  *
  * @param component - The component to resolve data bindings for.
+ * @param binding - The component's data binding metadata from the page manifest's `componentInfo`, or `null`/`undefined` if not bound.
  * @param dataBindings - The resolved data bindings from {@link QualifierContext}, or `undefined` if no bindings were resolved.
  * @returns The component with resolved attribute values, or the original component if no bindings apply.
  *
@@ -642,16 +634,15 @@ declare function resolveExpression(expression: string, contexts: DataBindingCont
  *     id: 'banner',
  *     typeId: 'commerce_assets.contentBanner',
  *     data: { heading: 'Fallback Title', body: 'Fallback Body' },
- *     custom: {
- *         dataBinding: {
- *             expressions: {
- *                 heading: 'content_asset.title',
- *                 body: 'content_asset.body',
- *             },
- *             contexts: [{ type: 'content_asset', id: 'winter-sale-uuid' }],
- *         },
- *     },
  *     regions: [],
+ * };
+ *
+ * const binding = {
+ *     expressions: {
+ *         heading: 'content_asset.title',
+ *         body: 'content_asset.body',
+ *     },
+ *     contexts: [{ type: 'content_asset', id: 'winter-sale-uuid' }],
  * };
  *
  * const dataBindings = {
@@ -663,12 +654,12 @@ declare function resolveExpression(expression: string, contexts: DataBindingCont
  *     },
  * };
  *
- * const resolved = resolveComponentDataBindings(component, dataBindings);
+ * const resolved = resolveComponentDataBindings(component, binding, dataBindings);
  * // resolved.data.heading === 'Winter Sale'
  * // resolved.data.body === '<div>Free Shipping on all orders!</div>'
  * ```
  */
-declare function resolveComponentDataBindings(component: ShopperExperience.schemas['Component'], dataBindings: QualifierContext['dataBindings']): ShopperExperience.schemas['Component'];
+declare function resolveComponentDataBindings(component: ShopperExperience.schemas['Component'], binding: ComponentDataBinding | null | undefined, dataBindings: QualifierContext['dataBindings']): ShopperExperience.schemas['Component'];
 //#endregion
 //#region src/design/data/page/resolve-page.d.ts
 /**
@@ -992,5 +983,5 @@ declare const ContentAssignmentResolvers: Map<string, ContentAssignmentResolver>
  */
 declare function validateRule(rule: VisibilityRuleDef, locale: string, context?: QualifierContext | null): boolean;
 //#endregion
-export { CampaignQualifier, type ComponentDataBinding, ContentAssignmentResolvers, ContextResolver, type DataBindingContext, DataBindingRequirement, IdentifierType, InferNodeFromType, ManifestStorage, PageManifest, PageManifestContext, type PageProcessorContext, type PageVisitor, QualifierContext, RequiredError, ResolvedDataBinding, SiteManifest, VariationEntry, VisibilityRuleDef, type VisitorContext, VisitorContextType, getPageFromManifest, parseExpression, processPage, resolveComponentDataBindings, resolveDynamicPageId, resolveExpression, resolvePage, transformComponent, transformPage, transformRegion, validateRule };
+export { CampaignQualifier, ComponentDataBinding, ContentAssignmentResolvers, ContextResolver, DataBindingRequirement, IdentifierType, InferNodeFromType, ManifestStorage, PageManifest, PageManifestContext, type PageProcessorContext, type PageVisitor, QualifierContext, RequiredError, ResolvedDataBinding, SiteManifest, VariationEntry, VisibilityRuleDef, type VisitorContext, VisitorContextType, getPageFromManifest, parseExpression, processPage, resolveComponentDataBindings, resolveDynamicPageId, resolveExpression, resolvePage, transformComponent, transformPage, transformRegion, validateRule };
 //# sourceMappingURL=design-data.d.ts.map

@@ -382,14 +382,6 @@ function resolveExpression(expression, contexts, dataBindings) {
 	return record[parsed.field] ?? "";
 }
 /**
-* Extracts the {@link ComponentDataBinding} metadata from a component's
-* `custom` field. Returns `undefined` if the component has no data binding
-* configuration.
-*/
-function getDataBinding(component) {
-	return component.custom?.dataBinding;
-}
-/**
 * Resolves data binding expressions for a single component. Replaces attribute
 * values in the component's `data` with the resolved values from context
 * resolution. Attributes without a matching expression are preserved as-is.
@@ -400,6 +392,7 @@ function getDataBinding(component) {
 * `dataBindings` is `undefined`.
 *
 * @param component - The component to resolve data bindings for.
+* @param binding - The component's data binding metadata from the page manifest's `componentInfo`, or `null`/`undefined` if not bound.
 * @param dataBindings - The resolved data bindings from {@link QualifierContext}, or `undefined` if no bindings were resolved.
 * @returns The component with resolved attribute values, or the original component if no bindings apply.
 *
@@ -411,16 +404,15 @@ function getDataBinding(component) {
 *     id: 'banner',
 *     typeId: 'commerce_assets.contentBanner',
 *     data: { heading: 'Fallback Title', body: 'Fallback Body' },
-*     custom: {
-*         dataBinding: {
-*             expressions: {
-*                 heading: 'content_asset.title',
-*                 body: 'content_asset.body',
-*             },
-*             contexts: [{ type: 'content_asset', id: 'winter-sale-uuid' }],
-*         },
-*     },
 *     regions: [],
+* };
+*
+* const binding = {
+*     expressions: {
+*         heading: 'content_asset.title',
+*         body: 'content_asset.body',
+*     },
+*     contexts: [{ type: 'content_asset', id: 'winter-sale-uuid' }],
 * };
 *
 * const dataBindings = {
@@ -432,14 +424,13 @@ function getDataBinding(component) {
 *     },
 * };
 *
-* const resolved = resolveComponentDataBindings(component, dataBindings);
+* const resolved = resolveComponentDataBindings(component, binding, dataBindings);
 * // resolved.data.heading === 'Winter Sale'
 * // resolved.data.body === '<div>Free Shipping on all orders!</div>'
 * ```
 */
-function resolveComponentDataBindings(component, dataBindings) {
+function resolveComponentDataBindings(component, binding, dataBindings) {
 	if (!dataBindings) return component;
-	const binding = getDataBinding(component);
 	if (!binding?.contexts?.length) return component;
 	const expressionEntries = Object.entries(binding.expressions ?? {});
 	if (expressionEntries.length === 0) return component;
@@ -595,7 +586,7 @@ function processPage(page, processorContext) {
 				...content
 			}
 		};
-		node = resolveComponentDataBindings(node, processorContext.qualifiers?.dataBindings);
+		node = resolveComponentDataBindings(node, componentInfo?.dataBinding, processorContext.qualifiers?.dataBindings);
 		return {
 			...node,
 			regions: ctx.visitRegions(ctx.node.regions)

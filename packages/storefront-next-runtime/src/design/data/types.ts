@@ -49,6 +49,8 @@ export interface PageManifest {
             content?: {
                 [locale: string]: Record<string, unknown>;
             };
+            /** Data binding metadata for this component, or `null` if not bound. */
+            dataBinding?: ComponentDataBinding | null;
         };
     };
 }
@@ -90,6 +92,17 @@ export interface SiteManifest {
             parentCategory?: string;
         };
     };
+}
+
+/**
+ * Data binding metadata for a component instance. Stored in the page manifest's
+ * `componentInfo` map, keyed by component ID.
+ */
+export interface ComponentDataBinding {
+    /** Maps attribute names to expression strings (e.g. `"content_asset.body"`). */
+    expressions: Record<string, string>;
+    /** The data contexts bound to this component, identifying the records to resolve against. */
+    contexts: DataBindingRequirement[];
 }
 
 /**

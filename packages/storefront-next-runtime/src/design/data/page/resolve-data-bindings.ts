@@ -13,31 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { QualifierContext, ResolvedDataBinding } from '../types';
+import type { ComponentDataBinding, DataBindingRequirement, QualifierContext, ResolvedDataBinding } from '../types';
 import type { ShopperExperience } from '@/scapi-client/types';
-
-/**
- * Data binding metadata attached to a component instance. Stored in the
- * component's `custom.dataBinding` field by ECOM when the author binds a
- * data source to the component in Page Designer.
- */
-export interface ComponentDataBinding {
-    /** Maps attribute names to expression strings (e.g. `"content_asset.body"`). */
-    expressions: Record<string, string>;
-    /** The data contexts bound to this component, identifying the records to resolve against. */
-    contexts: DataBindingContext[];
-}
-
-/**
- * A data context reference on a component instance, identifying a specific
- * record from a data provider.
- */
-export interface DataBindingContext {
-    /** The data provider type (e.g. `"content_asset"`). */
-    type: string;
-    /** The record identifier (e.g. a content asset UUID). */
-    id: string;
-}
 
 /**
  * Pattern matching bare expressions: `type.field`.
@@ -81,7 +58,7 @@ export function parseExpression(expression: string): { type: string; field: stri
  */
 export function resolveExpression(
     expression: string,
-    contexts: DataBindingContext[],
+    contexts: DataBindingRequirement[],
     dataBindings: NonNullable<QualifierContext['dataBindings']>
 ): unknown {
     const parsed = parseExpression(expression);
@@ -97,16 +74,6 @@ export function resolveExpression(
 }
 
 /**
- * Extracts the {@link ComponentDataBinding} metadata from a component's
- * `custom` field. Returns `undefined` if the component has no data binding
- * configuration.
- */
-function getDataBinding(component: ShopperExperience.schemas['Component']): ComponentDataBinding | undefined {
-    const custom = component.custom as Record<string, unknown> | undefined;
-    return custom?.dataBinding as ComponentDataBinding | undefined;
-}
-
-/**
  * Resolves data binding expressions for a single component. Replaces attribute
  * values in the component's `data` with the resolved values from context
  * resolution. Attributes without a matching expression are preserved as-is.
@@ -117,6 +84,7 @@ function getDataBinding(component: ShopperExperience.schemas['Component']): Comp
  * `dataBindings` is `undefined`.
  *
  * @param component - The component to resolve data bindings for.
+ * @param binding - The component's data binding metadata from the page manifest's `componentInfo`, or `null`/`undefined` if not bound.
  * @param dataBindings - The resolved data bindings from {@link QualifierContext}, or `undefined` if no bindings were resolved.
  * @returns The component with resolved attribute values, or the original component if no bindings apply.
  *
@@ -128,16 +96,15 @@ function getDataBinding(component: ShopperExperience.schemas['Component']): Comp
  *     id: 'banner',
  *     typeId: 'commerce_assets.contentBanner',
  *     data: { heading: 'Fallback Title', body: 'Fallback Body' },
- *     custom: {
- *         dataBinding: {
- *             expressions: {
- *                 heading: 'content_asset.title',
- *                 body: 'content_asset.body',
- *             },
- *             contexts: [{ type: 'content_asset', id: 'winter-sale-uuid' }],
- *         },
- *     },
  *     regions: [],
+ * };
+ *
+ * const binding = {
+ *     expressions: {
+ *         heading: 'content_asset.title',
+ *         body: 'content_asset.body',
+ *     },
+ *     contexts: [{ type: 'content_asset', id: 'winter-sale-uuid' }],
  * };
  *
  * const dataBindings = {
@@ -149,20 +116,20 @@ function getDataBinding(component: ShopperExperience.schemas['Component']): Comp
  *     },
  * };
  *
- * const resolved = resolveComponentDataBindings(component, dataBindings);
+ * const resolved = resolveComponentDataBindings(component, binding, dataBindings);
  * // resolved.data.heading === 'Winter Sale'
  * // resolved.data.body === '<div>Free Shipping on all orders!</div>'
  * ```
  */
 export function resolveComponentDataBindings(
     component: ShopperExperience.schemas['Component'],
+    binding: ComponentDataBinding | null | undefined,
     dataBindings: QualifierContext['dataBindings']
 ): ShopperExperience.schemas['Component'] {
     if (!dataBindings) {
         return component;
     }
 
-    const binding = getDataBinding(component);
     if (!binding?.contexts?.length) return component;
 
     const expressionEntries = Object.entries(binding.expressions ?? {});
