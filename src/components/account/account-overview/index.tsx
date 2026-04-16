@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense, useMemo } from 'react';
+import { Await } from 'react-router';
 import { Link } from '@/components/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import ProductRecommendations from '@/components/product-recommendations';
 import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
+import { OrderListBody, OrderListSkeleton } from '@/components/account/order-list';
 import { User, CreditCard, Receipt, MapPin } from 'lucide-react';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@/hooks/use-navigate';
 import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
 import { AppDownloadSection } from '@/components/account/app-download-section';
 import { AccountHelp } from '@/components/account/account-help';
+import type { CustomerOrdersResult } from '@/lib/api/order';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -43,6 +48,8 @@ interface QuickLinkItem {
 export interface AccountOverviewProps {
     /** Customer data for personalization */
     customer?: Customer | null;
+    /** Deferred promise for the shopper's recent orders */
+    ordersPromise?: Promise<CustomerOrdersResult>;
 }
 
 /**
@@ -207,17 +214,77 @@ export function CuratedForYouSectionSkeleton(): ReactElement {
 }
 
 /**
+ * Recent Orders section displaying the shopper's last 5 orders.
+ * Reuses OrderListHeader + OrderListBody with a "View All" link.
+ */
+export function RecentOrdersSection({ ordersPromise }: { ordersPromise: Promise<CustomerOrdersResult> }): ReactElement {
+    const { t } = useTranslation('account');
+    const navigate = useNavigate();
+
+    const handleViewDetails = (orderNo: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises -- navigate() result intentionally not awaited
+        navigate(`/account/orders/${orderNo}`);
+    };
+
+    return (
+        <div className="space-y-0">
+            <Card className="bg-card border-border rounded-b-none border-b-0">
+                <CardContent className="px-5">
+                    <div className="flex items-center justify-between">
+                        <div className="flex flex-col items-start gap-1.5 flex-1">
+                            <h2 className="text-lg font-bold leading-[120%] text-card-foreground" tabIndex={0}>
+                                {t('overview.recentOrders.title')}
+                            </h2>
+                            <p className="text-sm font-normal leading-5 text-muted-foreground">
+                                {t('overview.recentOrders.subtitle')}
+                            </p>
+                        </div>
+                        <Button variant="outline" asChild className="shrink-0 bg-secondary shadow-2xs">
+                            <Link to="/account/orders">{t('overview.recentOrders.viewAll')}</Link>
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+            <Suspense fallback={<OrderListSkeleton />}>
+                <Await resolve={ordersPromise}>
+                    {(result) => <OrderListBody orders={result.orders} onViewDetails={handleViewDetails} />}
+                </Await>
+            </Suspense>
+        </div>
+    );
+}
+
+/**
+ * Skeleton for the Recent Orders section while loading
+ */
+export function RecentOrdersSectionSkeleton(): ReactElement {
+    return (
+        <div className="space-y-0">
+            <Card className="bg-card border-border rounded-b-none border-b-0">
+                <CardContent className="px-5">
+                    <Skeleton className="h-7 w-40 mb-1.5" />
+                    <Skeleton className="h-4 w-56" />
+                </CardContent>
+            </Card>
+            <OrderListSkeleton />
+        </div>
+    );
+}
+
+/**
  * Account Overview Dashboard component
  *
  * This dashboard displays:
  * - Welcome back greeting with customer name
+ * - Recent orders (last 5)
  * - Curated product recommendations (using Einstein)
  * - Quick Links to key account sections
  */
-export function AccountOverview({ customer }: AccountOverviewProps): ReactElement {
+export function AccountOverview({ customer, ordersPromise }: AccountOverviewProps): ReactElement {
     return (
         <div className="space-y-5">
             <WelcomeSection customer={customer} />
+            {ordersPromise && <RecentOrdersSection ordersPromise={ordersPromise} />}
             <CuratedForYouSection />
             <AccountHelp />
             <AppDownloadSection />
@@ -278,6 +345,7 @@ export function AccountOverviewSkeleton(): ReactElement {
     return (
         <div className="space-y-5">
             <WelcomeSectionSkeleton />
+            <RecentOrdersSectionSkeleton />
             <CuratedForYouSectionSkeleton />
             <AccountHelpSkeleton />
             <AppDownloadSectionSkeleton />

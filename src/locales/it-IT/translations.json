@@ -770,6 +770,11 @@
                 "appStore": "App Store",
                 "googlePlay": "Google Play",
                 "qrCode": "Codice QR"
+            },
+            "recentOrders": {
+                "title": "Ordini Recenti",
+                "subtitle": "Questi sono i tuoi ultimi 5 ordini",
+                "viewAll": "Vedi Tutti"
             }
         },
         "shopperAgentEntry": {

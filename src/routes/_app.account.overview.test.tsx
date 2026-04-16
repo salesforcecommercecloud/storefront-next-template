@@ -18,11 +18,13 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider, Outlet } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { createTestContext, createLoaderArgs } from '@/lib/test-utils';
+import { loader } from './_app.account.overview';
 
-let capturedOverviewProps: { customer?: any } = {};
+let capturedOverviewProps: { customer?: any; ordersPromise?: any } = {};
 
 vi.mock('@/components/account/account-overview', () => ({
-    AccountOverview: (props: { customer?: any }) => {
+    AccountOverview: (props: { customer?: any; ordersPromise?: any }) => {
         capturedOverviewProps = props;
         return <div data-testid="account-overview" />;
     },
@@ -35,6 +37,16 @@ vi.mock('@/components/seo-meta', () => ({
     ),
 }));
 
+const mockFetchCustomerOrders = vi.fn();
+
+vi.mock('@/lib/api/order', () => ({
+    fetchCustomerOrders: (...args: any[]) => mockFetchCustomerOrders(...args),
+}));
+
+vi.mock('@/middlewares/auth.server', () => ({
+    getAuth: vi.fn(() => ({ customerId: 'cust-123' })),
+}));
+
 const mockCustomer = {
     customerId: 'cust-123',
     firstName: 'Jane',
@@ -42,71 +54,116 @@ const mockCustomer = {
     email: 'jane@example.com',
 };
 
+const mockOrdersResult = {
+    orders: [
+        { orderNo: 'ORD-001', orderDate: '2026-04-10', status: 'completed', total: 125, itemCount: 2 },
+        { orderNo: 'ORD-002', orderDate: '2026-04-08', status: 'new', total: 89.99, itemCount: 1 },
+    ],
+    total: 2,
+    offset: 0,
+    limit: 5,
+};
+
 describe('Account Overview page', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         capturedOverviewProps = {};
+        mockFetchCustomerOrders.mockReturnValue(Promise.resolve(mockOrdersResult));
     });
 
-    async function renderRoute(customerPromise: Promise<any>) {
-        const AccountOverviewRoute = (await import('./_app.account.overview')).default;
+    describe('loader', () => {
+        test('fetches the 5 most recent orders for the authenticated customer', async () => {
+            const context = createTestContext();
+            const args = createLoaderArgs(new Request('http://localhost/account/overview'), context, {
+                unstable_pattern: '/account/overview',
+            });
 
-        const router = createMemoryRouter(
-            [
-                {
-                    path: '/account',
-                    element: <Outlet context={{ customer: customerPromise }} />,
-                    children: [
-                        {
-                            index: true,
-                            element: <AccountOverviewRoute />,
-                        },
-                    ],
-                },
-            ],
-            { initialEntries: ['/account'] }
-        );
+            const result = loader(args);
 
-        return render(
-            <AllProvidersWrapper>
-                <RouterProvider router={router} />
-            </AllProvidersWrapper>
-        );
-    }
+            expect(result.ordersPromise).toBeDefined();
+            expect(mockFetchCustomerOrders).toHaveBeenCalledTimes(1);
+            expect(mockFetchCustomerOrders).toHaveBeenCalledWith(context, 'cust-123', {
+                offset: 0,
+                limit: 5,
+            });
 
-    test('shows the account dashboard once customer data loads', async () => {
-        await renderRoute(Promise.resolve(mockCustomer));
+            const orders = await result.ordersPromise;
+            expect(orders).toEqual(mockOrdersResult);
+        });
+    });
 
-        await waitFor(() => {
-            expect(screen.getByTestId('account-overview')).toBeInTheDocument();
+    describe('component', () => {
+        async function renderRoute(customerPromise: Promise<any>) {
+            const AccountOverviewRoute = (await import('./_app.account.overview')).default;
+
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/account',
+                        element: <Outlet context={{ customer: customerPromise }} />,
+                        children: [
+                            {
+                                index: true,
+                                element: <AccountOverviewRoute />,
+                                loader: () => ({
+                                    ordersPromise: Promise.resolve(mockOrdersResult),
+                                }),
+                            },
+                        ],
+                    },
+                ],
+                { initialEntries: ['/account'] }
+            );
+
+            return render(
+                <AllProvidersWrapper>
+                    <RouterProvider router={router} />
+                </AllProvidersWrapper>
+            );
+        }
+
+        test('shows the account dashboard with customer and orders data once loaded', async () => {
+            await renderRoute(Promise.resolve(mockCustomer));
+
+            await waitFor(() => {
+                expect(screen.getByTestId('account-overview')).toBeInTheDocument();
+            });
+
+            expect(capturedOverviewProps.customer).toEqual(mockCustomer);
+            expect(capturedOverviewProps.ordersPromise).toBeDefined();
         });
 
-        expect(capturedOverviewProps.customer).toEqual(mockCustomer);
-    });
+        test('shows the account dashboard for a guest with no customer data', async () => {
+            await renderRoute(Promise.resolve(null));
 
-    test('shows the account dashboard for a guest with no customer data', async () => {
-        await renderRoute(Promise.resolve(null));
+            await waitFor(() => {
+                expect(screen.getByTestId('account-overview')).toBeInTheDocument();
+            });
 
-        await waitFor(() => {
-            expect(screen.getByTestId('account-overview')).toBeInTheDocument();
+            expect(capturedOverviewProps.customer).toBeNull();
+            expect(capturedOverviewProps.ordersPromise).toBeDefined();
         });
 
-        expect(capturedOverviewProps.customer).toBeNull();
-    });
+        test('shows a loading skeleton while customer data is being fetched', async () => {
+            const pendingPromise = new Promise<any>(() => {});
+            await renderRoute(pendingPromise);
 
-    test('shows a loading skeleton while customer data is being fetched', async () => {
-        const pendingPromise = new Promise<any>(() => {});
-        await renderRoute(pendingPromise);
+            await waitFor(() => {
+                expect(screen.getByTestId('account-overview-skeleton')).toBeInTheDocument();
+            });
+            expect(screen.queryByTestId('account-overview')).not.toBeInTheDocument();
+        });
 
-        expect(screen.getByTestId('account-overview-skeleton')).toBeInTheDocument();
-        expect(screen.queryByTestId('account-overview')).not.toBeInTheDocument();
-    });
+        test('sets the page title to Account Overview and hides from search engines', async () => {
+            await renderRoute(Promise.resolve(mockCustomer));
 
-    test('sets the page title to Account Overview and hides from search engines', async () => {
-        await renderRoute(Promise.resolve(mockCustomer));
+            await waitFor(() => {
+                expect(screen.getByTestId('seo-meta')).toBeInTheDocument();
+            });
 
-        const seoMeta = screen.getByTestId('seo-meta');
-        expect(seoMeta).toHaveAttribute('data-title', 'Account Overview');
-        expect(seoMeta).toHaveAttribute('data-no-index', 'true');
+            const seoMeta = screen.getByTestId('seo-meta');
+            expect(seoMeta).toHaveAttribute('data-title', 'Account Overview');
+            expect(seoMeta).toHaveAttribute('data-no-index', 'true');
+        });
     });
 });
