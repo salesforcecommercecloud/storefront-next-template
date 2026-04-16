@@ -92,6 +92,11 @@ export function useProductFetcher({
 
     // Effect 2: Process fetcher data when it arrives
     useEffect(() => {
+        // When disabled, ignore stale/replayed fetcher data.
+        if (!enabled) {
+            return;
+        }
+
         // Only process when fetch is successful, has data, and is idle
         if (!fetcher.success || !fetcher.data || fetcher.state !== 'idle') {
             return;
@@ -113,5 +118,5 @@ export function useProductFetcher({
 
         // Notify consumer that data is ready
         onDataReceived(loadedProduct);
-    }, [fetcher.success, fetcher.data, fetcher.state, onDataReceived, validateProductId]);
+    }, [enabled, fetcher.success, fetcher.data, fetcher.state, onDataReceived, validateProductId]);
 }

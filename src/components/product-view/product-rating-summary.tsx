@@ -35,7 +35,7 @@ const POPOVER_CLOSE_DELAY_MS = 150;
  * popover underneath with distribution and "See customer reviews". Clicking that
  * link scrolls to the customer reviews accordion.
  */
-export function ProductRatingSummary(): ReactElement | null {
+export function ProductRatingSummary({ interactive = true }: { interactive?: boolean }): ReactElement | null {
     const { reviewsSummary, reviews, expandReviews, registerOnExpanded } = useProductReviews();
     const [popoverOpen, setPopoverOpen] = useState(false);
     const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -101,6 +101,7 @@ export function ProductRatingSummary(): ReactElement | null {
     }, [reviews, reviewsSummary]);
 
     const hasReviews = aggregateRating.count > 0;
+    const canInteract = interactive && hasReviews;
 
     const scrollToReviews = useCallback(() => {
         document.getElementById(CUSTOMER_REVIEWS_ID)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -120,13 +121,13 @@ export function ProductRatingSummary(): ReactElement | null {
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent) => {
-            if (!hasReviews) return;
+            if (!canInteract) return;
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 handleSummaryClick();
             }
         },
-        [hasReviews, handleSummaryClick]
+        [canInteract, handleSummaryClick]
     );
 
     return (
@@ -134,19 +135,19 @@ export function ProductRatingSummary(): ReactElement | null {
             <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                 <PopoverTrigger asChild>
                     <div
-                        className={cn('relative inline-block', hasReviews && 'cursor-pointer')}
+                        className={cn('relative inline-block', canInteract && 'cursor-pointer')}
                         onMouseEnter={() => {
-                            if (!hasReviews) return;
+                            if (!canInteract) return;
                             clearCloseTimeout();
                             setPopoverOpen(true);
                         }}
-                        onMouseLeave={() => hasReviews && scheduleClose()}
-                        onClick={() => hasReviews && handleSummaryClick()}
+                        onMouseLeave={() => canInteract && scheduleClose()}
+                        onClick={() => canInteract && handleSummaryClick()}
                         onKeyDown={handleKeyDown}
-                        role={hasReviews ? 'button' : undefined}
-                        tabIndex={hasReviews ? 0 : undefined}
-                        aria-label={hasReviews ? 'View customer reviews' : undefined}
-                        aria-expanded={hasReviews ? popoverOpen : undefined}>
+                        role={canInteract ? 'button' : undefined}
+                        tabIndex={canInteract ? 0 : undefined}
+                        aria-label={canInteract ? 'View customer reviews' : undefined}
+                        aria-expanded={canInteract ? popoverOpen : undefined}>
                         <div className="flex items-center gap-2">
                             <StarRating
                                 rating={aggregateRating.average}

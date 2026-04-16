@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, useCallback, type MouseEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { createProductUrl } from '@/lib/product-utils';
 import { useProductTileContext } from './context';
@@ -45,10 +45,15 @@ export function QuickAddButton({ productId, productName, selectedColorValue, lab
 
     const resolvedLabel = label ?? t('quickAdd');
 
-    const handleBuyItNow = () => {
+    const handleBuyItNow = useCallback(() => {
         setOpen(false);
         void navigate(createProductUrl(productId, selectedColorValue ?? null, 'color'));
-    };
+    }, [navigate, productId, selectedColorValue]);
+    const handleOpenModal = useCallback((e: MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        setLoaded(true);
+        setOpen(true);
+    }, []);
 
     return (
         <>
@@ -56,13 +61,8 @@ export function QuickAddButton({ productId, productName, selectedColorValue, lab
                 variant="outline"
                 size="default"
                 className="w-full shadow-sm cursor-pointer"
-                tabIndex={-1}
                 aria-label={`${resolvedLabel} ${productName}`}
-                onClick={(e) => {
-                    e.preventDefault();
-                    setLoaded(true);
-                    setOpen(true);
-                }}>
+                onClick={handleOpenModal}>
                 {resolvedLabel}
             </Button>
 

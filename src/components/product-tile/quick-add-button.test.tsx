@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { QuickAddButton } from './quick-add-button';
@@ -96,9 +96,13 @@ describe('QuickAddButton', () => {
         expect(screen.getByTestId('cart-item-modal')).toBeInTheDocument();
 
         // Simulate the modal calling onOpenChange(false)
-        mockOnOpenChange(false);
-        // Re-render is triggered by state update — assert via the mock call
-        expect(mockOnOpenChange).toHaveBeenCalledWith(false);
+        act(() => {
+            mockOnOpenChange(false);
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByTestId('cart-item-modal')).not.toBeInTheDocument();
+        });
     });
 
     test('navigates to PDP with color param when Buy it Now fires and color is set', async () => {
@@ -122,9 +126,9 @@ describe('QuickAddButton', () => {
         expect(screen.getByTestId('cart-item-modal')).toBeInTheDocument();
     });
 
-    test('button has tabIndex={-1} to exclude it from keyboard tab order', () => {
+    test('button is keyboard-focusable (no tabIndex={-1})', () => {
         renderButton();
         const btn = screen.getByRole('button', { name: /quick add test product/i });
-        expect(btn).toHaveAttribute('tabindex', '-1');
+        expect(btn).not.toHaveAttribute('tabindex', '-1');
     });
 });

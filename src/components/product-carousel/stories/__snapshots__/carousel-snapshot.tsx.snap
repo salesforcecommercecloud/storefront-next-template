@@ -131,7 +131,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -163,8 +162,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 1"
@@ -172,7 +170,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -431,7 +428,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -463,8 +459,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 2"
@@ -472,7 +467,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -731,7 +725,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -763,8 +756,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 3"
@@ -772,7 +764,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -1031,7 +1022,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -1063,8 +1053,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 4"
@@ -1072,7 +1061,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -1331,7 +1319,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -1363,8 +1350,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 5"
@@ -1372,7 +1358,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -1631,7 +1616,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -1663,8 +1647,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 6"
@@ -1672,7 +1655,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -1931,7 +1913,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -1963,8 +1944,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 7"
@@ -1972,7 +1952,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -2231,7 +2210,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -2263,8 +2241,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 8"
@@ -2272,7 +2249,6 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -2642,7 +2618,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -2674,8 +2649,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 1"
@@ -2683,7 +2657,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -2942,7 +2915,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -2974,8 +2946,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 2"
@@ -2983,7 +2954,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -3242,7 +3212,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -3274,8 +3243,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 3"
@@ -3283,7 +3251,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -3542,7 +3509,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -3574,8 +3540,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 4"
@@ -3583,7 +3548,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -3842,7 +3806,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -3874,8 +3837,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 5"
@@ -3883,7 +3845,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -4142,7 +4103,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -4174,8 +4134,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 6"
@@ -4183,7 +4142,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -4442,7 +4400,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -4474,8 +4431,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 7"
@@ -4483,7 +4439,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -4742,7 +4697,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -4774,8 +4728,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 8"
@@ -4783,7 +4736,6 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -5147,7 +5099,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -5179,8 +5130,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 1"
@@ -5188,7 +5138,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -5447,7 +5396,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -5479,8 +5427,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 2"
@@ -5488,7 +5435,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -5747,7 +5693,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -5779,8 +5724,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 3"
@@ -5788,7 +5732,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -6047,7 +5990,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -6079,8 +6021,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 4"
@@ -6088,7 +6029,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -6347,7 +6287,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -6379,8 +6318,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 5"
@@ -6388,7 +6326,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -6647,7 +6584,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -6679,8 +6615,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 6"
@@ -6688,7 +6623,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -6947,7 +6881,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -6979,8 +6912,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 7"
@@ -6988,7 +6920,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -7247,7 +7178,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -7279,8 +7209,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 8"
@@ -7288,7 +7217,6 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -7652,7 +7580,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -7684,8 +7611,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 1"
@@ -7693,7 +7619,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -7952,7 +7877,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -7984,8 +7908,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 2"
@@ -7993,7 +7916,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -8252,7 +8174,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -8284,8 +8205,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 3"
@@ -8293,7 +8213,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -8552,7 +8471,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -8584,8 +8502,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 4"
@@ -8593,7 +8510,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -8852,7 +8768,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -8884,8 +8799,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 5"
@@ -8893,7 +8807,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -9152,7 +9065,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -9184,8 +9096,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 6"
@@ -9193,7 +9104,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -9452,7 +9362,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -9484,8 +9393,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 7"
@@ -9493,7 +9401,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>
@@ -9752,7 +9659,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         </span>
                       </div>
                       <div
-                        aria-hidden="true"
                         class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
                       >
                         <div
@@ -9784,8 +9690,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
                       />
                       <div
-                        aria-hidden="true"
-                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
                       >
                         <button
                           aria-label="Quick Add Laptop Briefcase with wheels (37L) 8"
@@ -9793,7 +9698,6 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                           data-size="default"
                           data-slot="button"
                           data-variant="outline"
-                          tabindex="-1"
                         >
                           Quick Add
                         </button>

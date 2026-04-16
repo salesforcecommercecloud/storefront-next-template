@@ -200,26 +200,30 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
             </button>
           </div>
           <div
-            class="pr-20"
+            class="flex items-start justify-between gap-4"
           >
-            <h1
-              class="text-2xl lg:text-3xl font-medium text-foreground tracking-tight"
-              data-testid="product-title"
+            <div
+              class="pr-20 min-w-0"
             >
-              Men's Classic Deer Gloves
-            </h1>
-            <p
-              class="mt-2 text-xs text-muted-foreground"
-            >
-              SKU:
-               
-              061492183589M
-            </p>
-            <p
-              class="mt-2 text-lg text-muted-foreground"
-            >
-              These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-            </p>
+              <h1
+                class="text-2xl lg:text-3xl font-medium text-foreground tracking-tight"
+                data-testid="product-title"
+              >
+                Men's Classic Deer Gloves
+              </h1>
+              <p
+                class="mt-2 text-xs text-muted-foreground"
+              >
+                SKU:
+                 
+                061492183589M
+              </p>
+              <p
+                class="mt-2 text-lg text-muted-foreground"
+              >
+                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
+              </p>
+            </div>
           </div>
           <div
             class="relative mt-2 inline-block"
@@ -928,26 +932,30 @@ exports[`ProductView stories snapshot > WithoutBreadcrumbs story renders and mat
             </button>
           </div>
           <div
-            class="pr-20"
+            class="flex items-start justify-between gap-4"
           >
-            <h1
-              class="text-2xl lg:text-3xl font-medium text-foreground tracking-tight"
-              data-testid="product-title"
+            <div
+              class="pr-20 min-w-0"
             >
-              Men's Classic Deer Gloves
-            </h1>
-            <p
-              class="mt-2 text-xs text-muted-foreground"
-            >
-              SKU:
-               
-              061492183589M
-            </p>
-            <p
-              class="mt-2 text-lg text-muted-foreground"
-            >
-              These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-            </p>
+              <h1
+                class="text-2xl lg:text-3xl font-medium text-foreground tracking-tight"
+                data-testid="product-title"
+              >
+                Men's Classic Deer Gloves
+              </h1>
+              <p
+                class="mt-2 text-xs text-muted-foreground"
+              >
+                SKU:
+                 
+                061492183589M
+              </p>
+              <p
+                class="mt-2 text-lg text-muted-foreground"
+              >
+                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
+              </p>
+            </div>
           </div>
           <div
             class="relative mt-2 inline-block"

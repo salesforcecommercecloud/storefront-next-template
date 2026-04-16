@@ -288,7 +288,7 @@ describe('ProductTile — navigation', () => {
 
     test('image area overlay link points to the PDP', () => {
         renderTile();
-        const overlayLink = screen.getByRole('link', { name: /view test product/i });
+        const overlayLink = screen.getByLabelText('View Test Product');
         expect(overlayLink).toHaveAttribute('href', '/global/en-GB/product/test-product');
     });
 });
@@ -303,12 +303,11 @@ describe('ProductTile — swatch rendering', () => {
         vi.restoreAllMocks();
     });
 
-    test('renders color swatches inside an aria-hidden container', async () => {
+    test('renders color swatches for interaction', async () => {
         const { container } = renderTile();
-        // Swatches are visual/mouse-only; their container is aria-hidden so AT ignores them
-        // LazySwatches loads async; wait for it to render
+        // LazySwatches loads async; wait for it to render.
         await waitFor(() => {
-            const swatchWrapper = container.querySelector('[aria-hidden="true"] [aria-label="Available colors"]');
+            const swatchWrapper = container.querySelector('[aria-label="Available colors"]');
             expect(swatchWrapper).toBeInTheDocument();
         });
     });
@@ -331,16 +330,22 @@ describe('ProductTile — accessibility', () => {
         vi.restoreAllMocks();
     });
 
-    test('wishlist button is inside an aria-hidden container', () => {
+    test('wishlist button is not in an aria-hidden container', () => {
         renderTile();
         const wishlistBtn = screen.getByRole('button', { name: /add.*to wishlist/i, hidden: true });
-        expect(wishlistBtn.closest('[aria-hidden="true"]')).toBeInTheDocument();
+        expect(wishlistBtn.closest('[aria-hidden="true"]')).not.toBeInTheDocument();
     });
 
-    test('quick add button is inside an aria-hidden container', () => {
+    test('quick add button is not in an aria-hidden container', () => {
         renderTile();
         const quickAddBtn = screen.getByRole('button', { name: /quick add test product/i, hidden: true });
-        expect(quickAddBtn.closest('[aria-hidden="true"]')).toBeInTheDocument();
+        expect(quickAddBtn.closest('[aria-hidden="true"]')).not.toBeInTheDocument();
+    });
+
+    test('quick add container becomes visible when tile receives keyboard focus', () => {
+        renderTile();
+        const quickAddBtn = screen.getByRole('button', { name: /quick add test product/i, hidden: true });
+        expect(quickAddBtn.parentElement).toHaveClass('group-focus-within:opacity-100');
     });
 
     test('product name heading wraps the PDP link', () => {

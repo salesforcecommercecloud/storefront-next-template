@@ -719,6 +719,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                                 border-2 transition-colors cursor-pointer
                                 border-primary
                             "
+                  data-index="0"
                 >
                   <img
                     alt="Quilted Jacket, , large"
@@ -733,6 +734,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                                 border-2 transition-colors cursor-pointer
                                 border-transparent hover:border-border
                             "
+                  data-index="1"
                 >
                   <img
                     alt="Quilted Jacket, , large"
@@ -1155,6 +1157,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                                 border-2 transition-colors cursor-pointer
                                 border-primary
                             "
+                  data-index="0"
                 >
                   <img
                     alt="Pull On Pant, , large"
@@ -1169,6 +1172,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                                 border-2 transition-colors cursor-pointer
                                 border-transparent hover:border-border
                             "
+                  data-index="1"
                 >
                   <img
                     alt="Pull On Pant, , large"
@@ -1610,6 +1614,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                                 border-2 transition-colors cursor-pointer
                                 border-primary
                             "
+                  data-index="0"
                 >
                   <img
                     alt="Zerrick, , large"
@@ -1624,6 +1629,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                                 border-2 transition-colors cursor-pointer
                                 border-transparent hover:border-border
                             "
+                  data-index="1"
                 >
                   <img
                     alt="Zerrick, , large"

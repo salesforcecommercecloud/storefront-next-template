@@ -428,8 +428,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             </div>
                         )}
 
-                        {/* Action icons — top-right (aria-hidden: SR reaches PDP via product name link; tabIndex={-1} on children keeps them out of keyboard tab order) */}
-                        <div aria-hidden="true" className="absolute top-2 right-2 flex flex-col items-end gap-2 z-20">
+                        {/* Action icons — top-right. Keep children out of tab order with tabIndex={-1}. */}
+                        <div className="absolute top-2 right-2 flex flex-col items-end gap-2 z-20">
                             {showPickupAvailable && (
                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <div className="group/pickup relative" data-testid="pickup-available-indicator">
@@ -458,10 +458,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                         {/* Hover overlay — subtle dark tint */}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none" />
 
-                        {/* Quick Add button — aria-hidden: mouse/touch only, keyboard reaches cart via PDP */}
-                        <div
-                            aria-hidden="true"
-                            className="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                        {/* Quick Add button */}
+                        <div className="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20">
                             <QuickAddButton
                                 productId={product.productId ?? ''}
                                 productName={productName}
@@ -474,9 +472,9 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
 
                 {/* Info section */}
                 <div className="relative p-4">
-                    {/* Color swatches — aria-hidden: visual/mouse preview only, SR navigates via product name link */}
+                    {/* Color swatches */}
                     {colorValues.length > 0 && (
-                        <div aria-hidden="true">
+                        <div>
                             <Suspense fallback={<ProductTileSwatchesSkeleton count={maxSwatches} />}>
                                 <LazySwatches
                                     colorValues={colorValues}

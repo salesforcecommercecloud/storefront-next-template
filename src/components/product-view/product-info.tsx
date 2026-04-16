@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { type ReactElement } from 'react';
+import { type ReactElement, type ReactNode, useMemo, useState } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import ProductQuantityPicker from '@/components/product-quantity-picker';
 import { SwatchGroup, Swatch } from '@/components/swatch-group';
 import { useVariationAttributes } from '@/hooks/product/use-variation-attributes';
-import { useProductView } from '@/providers/product-view';
+import { useOptionalProductView } from '@/providers/product-view';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import ProductPrice from '../product-price';
 import { isProductSet, isProductBundle } from '@/lib/product-utils';
-import InventoryMessage from '../inventory-message';
+import InventoryMessage, { InventoryStatus } from '../inventory-message';
 import { ProductRatingSummary } from './product-rating-summary';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { useTranslation } from 'react-i18next';
@@ -42,6 +42,16 @@ type ProductInfoBaseProps = {
     variantStyle?: 'full' | 'compact';
     /** When true and mode is 'edit', show quantity picker (e.g. in cart edit modal) */
     showQuantityInEditMode?: boolean;
+    /** Optional current variant from parent orchestration (used by controlled modal flows) */
+    currentVariantOverride?: ShopperProducts.schemas['Variant'];
+    /** Whether selected variant inventory is currently being fetched */
+    isVariantInventoryLoading?: boolean;
+    /** Hide top-right action icons (wishlist/share) */
+    hideActionIcons?: boolean;
+    /** Optional action content rendered inline with title in full variant style */
+    headerAction?: ReactNode;
+    /** Disable rating summary interactions (hover popover and review links) */
+    disableRatingInteraction?: boolean;
 };
 type ProductInfoUncontrolledProps = ProductInfoBaseProps & {
     /** Mode for swatch interaction: 'uncontrolled' uses URL navigation */
@@ -58,6 +68,34 @@ type ProductInfoControlledProps = ProductInfoBaseProps & {
     variationValues: { [key: string]: string };
 };
 type ProductInfoProps = ProductInfoUncontrolledProps | ProductInfoControlledProps;
+
+const isControlledVariantValueOrderable = ({
+    variants,
+    currentSelection,
+    attributeId,
+    attributeValue,
+}: {
+    variants: ShopperProducts.schemas['Variant'][] | undefined;
+    currentSelection: Record<string, string>;
+    attributeId: string;
+    attributeValue: string;
+}): boolean => {
+    if (!variants || variants.length === 0) {
+        return true;
+    }
+
+    const nextSelection = {
+        ...currentSelection,
+        [attributeId]: attributeValue,
+    };
+
+    return variants
+        .filter((variant) =>
+            Object.entries(nextSelection).every(([key, value]) => variant.variationValues?.[key] === value)
+        )
+        .some((variant) => variant.orderable);
+};
+
 /**
  * ProductInfo component displays product details including title, description, price, variants, and quantity picker
  *
@@ -80,27 +118,67 @@ export default function ProductInfo({
     hideVariantSelection = false,
     variantStyle = 'full',
     showQuantityInEditMode = false,
+    currentVariantOverride,
+    isVariantInventoryLoading = false,
+    hideActionIcons = false,
+    headerAction,
+    disableRatingInteraction = false,
 }: ProductInfoProps): ReactElement {
     const config = useConfig<AppConfig>();
     const isProductASet = isProductSet(product);
     const isProductABundle = isProductBundle(product);
     // Use variation attributes hook for URL-aware swatches
     const variationAttributes = useVariationAttributes({ product });
-    // Get current variant for UI display
-    const currentVariant = useCurrentVariant({ product });
+    const urlCurrentVariant = useCurrentVariant({ product });
+    const controlledCurrentVariant = useMemo(() => {
+        if (swatchMode !== 'controlled') return undefined;
+        if (!variationValues) return undefined;
+
+        const potentialVariants =
+            product.variants?.filter((variant) =>
+                Object.keys(variationValues).every((key) => variant.variationValues?.[key] === variationValues[key])
+            ) ?? [];
+        return potentialVariants.length === 1 ? potentialVariants[0] : undefined;
+    }, [swatchMode, product.variants, variationValues]);
+    // For controlled modal flows, prefer explicit override (can include fetched inventory),
+    // then controlled selection, then URL-based variant as fallback.
+    const currentVariant = currentVariantOverride || controlledCurrentVariant || urlCurrentVariant;
+    const productForPrice = useMemo(() => {
+        if (!currentVariant) return product;
+        // Build a variant-like product shape so ProductPrice does not treat it as master range pricing.
+        return {
+            ...product,
+            ...currentVariant,
+            type: { ...(product.type ?? {}), master: false, variant: true },
+            variants: undefined,
+        } as ShopperProducts.schemas['Product'];
+    }, [product, currentVariant]);
+    const productForDeliveryOptions = useMemo(() => {
+        if (!currentVariant) return product;
+        const variantWithInventory = currentVariant as ShopperProducts.schemas['Variant'] & {
+            inventory?: ShopperProducts.schemas['Inventory'];
+            inventories?: ShopperProducts.schemas['Inventory'][];
+        };
+        // Preserve the master id for pickup-context bookkeeping while hydrating
+        // delivery checks with selected variant inventory.
+        return {
+            ...product,
+            inventory: variantWithInventory.inventory ?? product.inventory,
+            inventories: variantWithInventory.inventories ?? product.inventories,
+        };
+    }, [product, currentVariant]);
     // Get currency from context (automatically derived from locale)
     const { currency } = useSite();
-    // Get shared state from context
-    const {
-        quantity,
-        isOutOfStock,
-        stockLevel,
-        maxQuantity,
-        setQuantity,
-        mode,
-        // @sfdc-extension-line SFDC_EXT_BOPIS
-        basketPickupStore,
-    } = useProductView();
+    const productView = useOptionalProductView();
+    const [standaloneQuantity, setStandaloneQuantity] = useState(1);
+    const quantity = productView?.quantity ?? standaloneQuantity;
+    const isOutOfStock = productView?.isOutOfStock ?? product.inventory?.orderable === false;
+    const stockLevel = productView?.stockLevel ?? product.inventory?.ats;
+    const maxQuantity = productView?.maxQuantity;
+    const setQuantity = productView?.setQuantity ?? setStandaloneQuantity;
+    const mode = productView?.mode ?? 'add';
+    // @sfdc-extension-line SFDC_EXT_BOPIS
+    const basketPickupStore = productView?.basketPickupStore;
 
     const { t } = useTranslation('product');
 
@@ -119,11 +197,65 @@ export default function ProductInfo({
               return aPriority - bPriority;
           })
         : variationAttributes;
+    const selectedVariationValues = useMemo(() => {
+        if (swatchMode === 'controlled') {
+            return variationValues ?? {};
+        }
+        return variationAttributes.reduce<Record<string, string>>((acc, attribute) => {
+            const selectedValue = attribute.selectedValue?.value;
+            if (selectedValue) {
+                acc[attribute.id] = selectedValue;
+            }
+            return acc;
+        }, {});
+    }, [swatchMode, variationValues, variationAttributes]);
+    const shouldHideInventoryForPartialVariantSelection = useMemo(() => {
+        const variants = product.variants ?? [];
+        const variationAttributeCount = product.variationAttributes?.length ?? 0;
+        if (variants.length === 0 || variationAttributeCount <= 1) {
+            return false;
+        }
+
+        const potentialVariants = variants.filter((variant) =>
+            Object.entries(selectedVariationValues).every(([key, value]) => variant.variationValues?.[key] === value)
+        );
+
+        // Keep inventory hidden until the shopper narrows selection down to a single variant.
+        return potentialVariants.length !== 1;
+    }, [product.variants, product.variationAttributes?.length, selectedVariationValues]);
+    const inventoryStatusOverride = useMemo(() => {
+        if (!isVariantInventoryLoading && !shouldHideInventoryForPartialVariantSelection) {
+            return undefined;
+        }
+        return (
+            inventoryProduct: ShopperProducts.schemas['Product'],
+            inventoryVariant?: ShopperProducts.schemas['Variant'] | null
+        ) => {
+            if (shouldHideInventoryForPartialVariantSelection) {
+                return InventoryStatus.UNKNOWN;
+            }
+            const hasVariants = (inventoryProduct.variants?.length ?? 0) > 0;
+            const missingVariantInventory =
+                (
+                    inventoryVariant as
+                        | (ShopperProducts.schemas['Variant'] & {
+                              inventory?: ShopperProducts.schemas['Inventory'];
+                          })
+                        | null
+                )?.inventory == null;
+            // During quick-add variant fetch, hide transient inventory message
+            // until selected variant inventory is available.
+            if (hasVariants && missingVariantInventory) {
+                return InventoryStatus.UNKNOWN;
+            }
+            return InventoryStatus.IN_STOCK;
+        };
+    }, [isVariantInventoryLoading, shouldHideInventoryForPartialVariantSelection]);
 
     return (
         <div className="relative grid gap-4">
             {/* Action icons — top-right */}
-            {!isCompactStyle && (
+            {!isCompactStyle && !hideActionIcons && (
                 <div className="absolute top-0 right-0 flex items-center gap-2 z-10">
                     <WishlistButton
                         product={{
@@ -157,30 +289,38 @@ export default function ProductInfo({
 
             {/* Product Title, SKU, Description */}
             {!isCompactStyle && (
-                <div className="pr-20">
-                    <h1
-                        data-testid="product-title"
-                        className="text-2xl lg:text-3xl font-medium text-foreground tracking-tight">
-                        {product.name}
-                    </h1>
-                    {product.id && (
-                        <p className="mt-2 text-xs text-muted-foreground">
-                            {t('sku')} {product.id}
-                        </p>
-                    )}
-                    {product.shortDescription && (
-                        <p className="mt-2 text-lg text-muted-foreground">{product.shortDescription}</p>
-                    )}
+                <div className="flex items-start justify-between gap-4">
+                    <div className={`${hideActionIcons ? '' : 'pr-20'} min-w-0`}>
+                        {product.brand && (
+                            <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">
+                                {product.brand}
+                            </p>
+                        )}
+                        <h1
+                            data-testid="product-title"
+                            className="text-2xl lg:text-3xl font-medium text-foreground tracking-tight">
+                            {product.name}
+                        </h1>
+                        {product.id && (
+                            <p className="mt-2 text-xs text-muted-foreground">
+                                {t('sku')} {product.id}
+                            </p>
+                        )}
+                        {product.shortDescription && (
+                            <p className="mt-2 text-lg text-muted-foreground">{product.shortDescription}</p>
+                        )}
+                    </div>
+                    {headerAction ? <div className="pt-1 shrink-0">{headerAction}</div> : null}
                 </div>
             )}
             {/* Rating summary - visible on both mobile and desktop */}
-            {!isCompactStyle && <ProductRatingSummary />}
+            {!isCompactStyle && <ProductRatingSummary interactive={!disableRatingInteraction} />}
 
             {/* Price - show unit price on PDP */}
             <div className="space-y-3">
                 <ProductPrice
                     type="unit"
-                    product={product}
+                    product={productForPrice}
                     quantity={quantity}
                     currency={currency}
                     labelForA11y={product?.name}
@@ -202,6 +342,7 @@ export default function ProductInfo({
                     currentVariant={currentVariant}
                     lowStockThreshold={config.global.inventory.lowStockThreshold}
                     maxStockDisplay={config.global.inventory.maxStockDisplay}
+                    getInventoryStatus={inventoryStatusOverride}
                 />
             )}
 
@@ -220,6 +361,15 @@ export default function ProductInfo({
 
                 const swatches = swatchesToShow.map((value) => {
                     const { href, name: valueName, image, value: swatchValue, orderable } = value;
+                    const isOrderableInCurrentSelection =
+                        swatchMode === 'controlled'
+                            ? isControlledVariantValueOrderable({
+                                  variants: product.variants,
+                                  currentSelection: variationValues ?? {},
+                                  attributeId: id,
+                                  attributeValue: swatchValue,
+                              })
+                            : (orderable ?? true);
                     const swatchImageUrl = (image && toImageUrl({ image, config })) || '';
                     const content = image ? (
                         <>
@@ -249,7 +399,7 @@ export default function ProductInfo({
                             key={swatchValue}
                             href={swatchMode === 'uncontrolled' ? href : undefined}
                             // Disable when not orderable (out of stock)
-                            disabled={!orderable}
+                            disabled={!isOrderableInCurrentSelection}
                             value={swatchValue}
                             name={valueName}
                             shape={id === 'color' ? 'color' : 'label'}
@@ -282,7 +432,7 @@ export default function ProductInfo({
             {/* Hide for non-pickup items when opened from cart page */}
             {!isOutOfStock && (mode !== 'edit' || basketPickupStore) && !(isProductABundle || isProductASet) && (
                 <DeliveryOptions
-                    product={product}
+                    product={productForDeliveryOptions}
                     quantity={quantity}
                     basketPickupStore={basketPickupStore}
                     className="mt-6"

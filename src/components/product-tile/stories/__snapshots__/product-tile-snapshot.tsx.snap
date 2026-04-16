@@ -75,7 +75,6 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -107,8 +106,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -116,7 +114,6 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -126,9 +123,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -394,7 +389,6 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
           </span>
         </div>
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -462,8 +456,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Long Sleeve Embellished Boat Neck Top"
@@ -471,7 +464,6 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -481,9 +473,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -772,7 +762,6 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           </span>
         </div>
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -804,8 +793,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -813,7 +801,6 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -823,9 +810,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -1082,7 +1067,6 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
           to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -1150,8 +1134,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -1159,7 +1142,6 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -1169,9 +1151,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -1428,7 +1408,6 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
           to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -1460,8 +1439,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -1469,7 +1447,6 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -1479,9 +1456,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -1738,7 +1713,6 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
           to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -1770,8 +1744,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -1779,7 +1752,6 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -1789,9 +1761,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -2048,7 +2018,6 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
           to="/RefArchGlobal/en-GB/product/25518101M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -2080,8 +2049,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Long Sleeve Embellished Boat Neck Top"
@@ -2089,7 +2057,6 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -2099,9 +2066,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -2377,7 +2342,6 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
           to="/RefArchGlobal/en-GB/product/25518101M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -2409,8 +2373,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Long Sleeve Embellished Boat Neck Top"
@@ -2418,7 +2381,6 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -2428,9 +2390,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -2700,7 +2660,6 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
           to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -2732,8 +2691,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -2741,7 +2699,6 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -2751,9 +2708,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -3015,7 +2970,6 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
           to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -3047,8 +3001,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -3056,7 +3009,6 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -3066,9 +3018,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"

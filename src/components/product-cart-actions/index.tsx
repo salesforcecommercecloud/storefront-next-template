@@ -106,8 +106,11 @@ export default function ProductCartActions({
     });
 
     const onAddOrUpdateToCart = async () => {
-        // Call before callback (e.g., for optimistic UI like closing modal in edit mode)
-        onBeforeCartAction?.();
+        // Keep edit-mode optimistic close behavior, but for add-mode quick-add we
+        // wait for success so the mounted hook can emit toast + open mini-cart.
+        if (isEditMode) {
+            onBeforeCartAction?.();
+        }
 
         try {
             // Use handleUpdateCart in edit mode, handleAddToCart in add mode

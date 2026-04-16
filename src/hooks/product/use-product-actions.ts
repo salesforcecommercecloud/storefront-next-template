@@ -438,7 +438,9 @@ export function useProductActions({
 
     // Handle adding to cart
     const handleAddToCart = useCallback(async () => {
-        if (isAddingToOrUpdatingCart || !canAddToCart) return;
+        if (isAddingToOrUpdatingCart || !canAddToCart) {
+            return;
+        }
 
         // Remember: not all products have variation attributes, so `product` in this case could be a standard product
         const productToAdd = isMasterOrVariantProduct ? currentVariant : product;

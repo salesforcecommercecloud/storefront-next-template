@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useRef, type ReactElement } from 'react';
+import { useState, useEffect, useRef, useCallback, type MouseEvent, type ReactElement } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DynamicImage } from '@/components/dynamic-image';
 import ImageNavArrows from '@/components/image-nav-arrows';
@@ -50,6 +50,18 @@ export default function ImageGallery({
 }: ImageGalleryProps): ReactElement {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const thumbStripRef = useRef<HTMLDivElement>(null);
+    const handleScrollThumbnailsLeft = useCallback(() => {
+        thumbStripRef.current?.scrollBy({ left: -THUMBNAIL_SCROLL_OFFSET, behavior: 'smooth' });
+    }, []);
+    const handleScrollThumbnailsRight = useCallback(() => {
+        thumbStripRef.current?.scrollBy({ left: THUMBNAIL_SCROLL_OFFSET, behavior: 'smooth' });
+    }, []);
+    const handleThumbnailClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+        const nextIndex = Number(event.currentTarget.dataset.index);
+        if (!Number.isNaN(nextIndex)) {
+            setSelectedImageIndex(nextIndex);
+        }
+    }, []);
 
     useEffect(() => {
         // When images change (e.g., color variant changes), try to preserve the selected index
@@ -108,7 +120,8 @@ export default function ImageGallery({
                     {images.map((image, index) => (
                         <button
                             key={image.src + (image.thumbSrc || '')}
-                            onClick={() => setSelectedImageIndex(index)}
+                            onClick={handleThumbnailClick}
+                            data-index={index}
                             className={`
                                 aspect-square overflow-hidden rounded-lg bg-muted
                                 border-2 transition-colors cursor-pointer
@@ -131,16 +144,14 @@ export default function ImageGallery({
 
             {/* Horizontal Scrollable Thumbnail Strip */}
             {images.length > 1 && horizontalThumbnails && (
-                <div className="relative flex items-center gap-1">
+                <div className="relative flex items-center gap-2">
                     {images.length > 4 && (
                         <button
                             type="button"
-                            onClick={() => {
-                                thumbStripRef.current?.scrollBy({ left: -THUMBNAIL_SCROLL_OFFSET, behavior: 'smooth' });
-                            }}
+                            onClick={handleScrollThumbnailsLeft}
                             className={cn(
-                                'flex-shrink-0 rounded-full p-1 cursor-pointer',
-                                'text-muted-foreground hover:text-foreground transition-colors',
+                                'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-background shadow-md',
+                                'hover:bg-muted transition-colors',
                                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                             )}
                             aria-label={tCommon('previousImage')}>
@@ -149,13 +160,14 @@ export default function ImageGallery({
                     )}
                     <div
                         ref={thumbStripRef}
-                        className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                        className="flex flex-1 gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         {images.map((image, index) => (
                             <button
                                 key={image.src + (image.thumbSrc || '')}
-                                onClick={() => setSelectedImageIndex(index)}
+                                onClick={handleThumbnailClick}
+                                data-index={index}
                                 className={cn(
-                                    'flex-shrink-0 w-14 h-14 overflow-hidden rounded-md bg-muted',
+                                    'flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-lg bg-muted',
                                     'border-2 transition-colors cursor-pointer',
                                     selectedImageIndex === index
                                         ? 'border-primary'
@@ -173,12 +185,10 @@ export default function ImageGallery({
                     {images.length > 4 && (
                         <button
                             type="button"
-                            onClick={() => {
-                                thumbStripRef.current?.scrollBy({ left: THUMBNAIL_SCROLL_OFFSET, behavior: 'smooth' });
-                            }}
+                            onClick={handleScrollThumbnailsRight}
                             className={cn(
-                                'flex-shrink-0 rounded-full p-1 cursor-pointer',
-                                'text-muted-foreground hover:text-foreground transition-colors',
+                                'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-background shadow-md',
+                                'hover:bg-muted transition-colors',
                                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                             )}
                             aria-label={tCommon('nextImage')}>
