@@ -279,7 +279,6 @@ async function fetchProductsInBasket(
  * - Returns promises for async data loading
  * @returns Promise resolving to cart page data with basket and product details
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export const loader: LoaderFunction = ({ context, request }: LoaderFunctionArgs): CartPageData => {
     const logger = getLogger(context);
     logger.debug('Cart: loader starting');

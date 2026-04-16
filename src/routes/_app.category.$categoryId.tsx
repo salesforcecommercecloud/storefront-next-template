@@ -96,7 +96,6 @@ type CategoryPageData = {
  * This function runs on the server during SSR and prepares data for the category page.
  * @returns Object containing search results, category data, and page metadata
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData> {
     const {
         context,
@@ -230,7 +229,6 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
     };
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
     const clientOnlyParamsChanged =
         currentUrl.pathname === nextUrl.pathname &&

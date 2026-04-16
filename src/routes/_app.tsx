@@ -41,12 +41,10 @@ type LoaderData = {
  * caching strategy, including specific reload/refresh intervals/conditions.
  * @see {@link https://reactrouter.com/start/framework/route-module#shouldrevalidate}
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate() {
     return false;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context }: LoaderFunctionArgs): LoaderData {
     const logger = getLogger(context);
     const config = getConfig<AppConfig>(context);

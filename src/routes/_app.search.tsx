@@ -86,7 +86,6 @@ export type SearchPageData = {
  * This function runs on the server during SSR and prepares data for the search page.
  * @returns Object containing search results, refinements, and page metadata
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> {
     const { context, request } = args;
     const requestUrl = new URL(request.url);
@@ -149,7 +148,6 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
     };
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
     const clientOnlyParamsChanged =
         currentUrl.pathname === nextUrl.pathname &&

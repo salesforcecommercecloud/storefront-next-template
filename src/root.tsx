@@ -118,7 +118,6 @@ import StoreLocatorProvider from '@/extensions/store-locator/providers/store-loc
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const links: LinksFunction = () => {
     return [
         // Preload critical fonts
@@ -128,12 +127,10 @@ export const links: LinksFunction = () => {
     ];
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const meta: MetaFunction<typeof loader> = ({ loaderData }) => {
     return loaderData?.seoMeta ?? [];
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const middleware: MiddlewareFunction<Response>[] = [
     correlationMiddleware,
     loggingMiddleware,
@@ -151,7 +148,6 @@ export const middleware: MiddlewareFunction<Response>[] = [
     shopperContextMiddlewareServer,
 ];
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>>[] = [
     // Client middleware functions have varying return types, but React Router expects Record<string, DataStrategyResult>
     // We cast through unknown to avoid type errors while maintaining runtime correctness
@@ -167,7 +163,6 @@ export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyRes
 const i18nextOnClient =
     typeof window !== 'undefined' ? initI18next({ language: document.documentElement.lang || undefined }) : undefined;
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const loader = ({
     context,
     request,
@@ -286,13 +281,11 @@ export function Layout({ children }: PropsWithChildren) {
                     <link key={href} rel="prefetch" href={href} />
                 ))}
                 <style
-                    // eslint-disable-next-line react/no-danger
                     dangerouslySetInnerHTML={{
                         __html: `@font-face{font-family:'Sen';src:url(${sen}) format('woff2');font-weight:400 800;font-style:normal;font-display:swap}`,
                     }}
                 />
                 <script
-                    // eslint-disable-next-line react/no-danger
                     dangerouslySetInnerHTML={{
                         __html: `
                         ${appConfigScript}

@@ -65,7 +65,6 @@ export type AboutUsPageData = {
     ogImageUrl: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader(args: LoaderFunctionArgs): Promise<AboutUsPageData> {
     const logger = getLogger(args.context);
     logger.debug('AboutUs: loader starting');

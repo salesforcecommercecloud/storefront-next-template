@@ -38,7 +38,6 @@ type ForgotPasswordActionData = {
     email?: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context }: LoaderFunctionArgs): Response | void {
     // If user is already logged in as registered user, redirect to login page
     const session = getAuth(context);
@@ -49,7 +48,6 @@ export function loader({ context }: LoaderFunctionArgs): Response | void {
 
 // Server action required for authentication - password reset token generation must be handled
 // server-side to maintain security and proper integration with SFCC's authentication system
-// eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<ForgotPasswordActionData> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);

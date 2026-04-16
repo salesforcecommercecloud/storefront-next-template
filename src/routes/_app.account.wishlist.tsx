@@ -32,7 +32,6 @@ type Product = ShopperProducts.schemas['Product'];
  * Product details are returned as a Promise for streaming — the Suspense boundary
  * in the component shows a skeleton until they resolve.
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader({ context }: LoaderFunctionArgs): Promise<{
     wishlist: CustomerProductList | null;
     items: CustomerProductListItem[];
@@ -110,7 +109,6 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
  * Prevent automatic revalidation after wishlist remove actions.
  * Disabled-item state is managed client-side to avoid unnecessary refetches.
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({ formAction, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
     if (formAction === '/action/wishlist-remove') {
         return false;

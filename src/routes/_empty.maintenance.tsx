@@ -21,7 +21,6 @@ import { getLogger } from '@/lib/logger.server';
 import { Settings } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader(args: LoaderFunctionArgs) {
     const logger = getLogger(args.context);
     logger.debug('MaintenancePage: loader starting');

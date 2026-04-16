@@ -84,7 +84,6 @@ export type ProductPageData = {
  * This function runs on the server during SSR and can access cookies for store information.
  * @returns Object containing product, category, page data, and component data promises
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): ProductPageData {
     const { request, params, context } = args;
     const logger = getLogger(context);
@@ -236,7 +235,6 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
  * https://reactrouter.com/start/data/route-object#shouldrevalidate
  * we don't want the page to show skeleton when loading variant product after first initial load
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({
     currentUrl,
     nextUrl,

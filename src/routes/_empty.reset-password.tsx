@@ -34,7 +34,6 @@ type ResetPasswordActionData = {
     error?: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ request, context }: LoaderFunctionArgs): ResetPasswordLoaderData | Response {
     const url = new URL(request.url);
     const token = url.searchParams.get('token');
@@ -52,7 +51,6 @@ export function loader({ request, context }: LoaderFunctionArgs): ResetPasswordL
 
 // Server action required for authentication - password reset must be handled
 // server-side to maintain security and proper integration with SFCC's authentication system
-// eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<ResetPasswordActionData | Response> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);

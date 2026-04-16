@@ -16,6 +16,8 @@
 
 import { buildSitePath } from '../utils/url-utils';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- codeceptjs/steps has no ESM export
+const step = require('codeceptjs/steps');
 const { I } = inject();
 
 /**
@@ -70,7 +72,11 @@ class LoginPage {
      * Fill in the password field
      */
     fillPassword(password: string): void {
-        I.fillField(this.locators.passwordInput, password);
+        // Filling the email field can trigger a React re-render that briefly
+        // detaches the password input. This is only observable under accumulated
+        // browser state (e.g., 9th login in the same spec run).
+        // @ts-expect-error step.retry() is a valid trailing arg at runtime but not in CodeceptJS typings
+        I.fillField(this.locators.passwordInput, password, step.retry(3));
     }
 
     /**

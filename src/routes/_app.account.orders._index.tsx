@@ -40,7 +40,6 @@ type OrderListLoaderData = {
  * Loader fetches all customer orders via SCAPI getCustomerOrders endpoint.
  * Returns a deferred promise for streaming/suspense support.
  */
-// eslint-disable-next-line react-refresh/only-export-components -- route file exports loader
 export function loader({ context, request }: LoaderFunctionArgs): OrderListLoaderData {
     const logger = getLogger(context);
     logger.debug('OrderList: loader starting');

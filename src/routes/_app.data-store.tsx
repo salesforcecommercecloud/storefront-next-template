@@ -30,7 +30,6 @@ export type DataStoreRouteData = {
     customGlobalPreferences: CustomGlobalPreferences;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context }: LoaderFunctionArgs): DataStoreRouteData {
     return {
         sitePreferences: getSitePreferences(context),

@@ -227,11 +227,17 @@ function AccountDetailsContent({
                 urlConfig: config.url,
                 params: { siteId: siteRef, localeId: localeRef },
             });
+            const accountUrl = buildUrl({
+                to: '/account',
+                urlConfig: config.url,
+                params: { siteId: siteRef, localeId: localeRef },
+            });
             void loginFetcher.submit(
                 {
                     email: userInfo.email,
                     password: formData.password,
                     loginMode: 'password',
+                    returnUrl: accountUrl,
                 },
                 {
                     method: 'POST',

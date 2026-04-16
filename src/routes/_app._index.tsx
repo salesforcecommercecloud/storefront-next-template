@@ -73,7 +73,6 @@ export type HomePageData = {
  * This function runs on the server during SSR and prepares data for the home page.
  * @returns Promise that resolves to an object containing search result promise
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): HomePageData {
     const logger = getLogger(args.context);
     logger.debug('HomePage: loader starting');

@@ -47,7 +47,6 @@ type OrderDetailsPageLoaderData = {
 };
 
 /** Loader fetches order and product details via SCAPI (getOrder + getProducts). */
-// eslint-disable-next-line react-refresh/only-export-components -- route file exports loader
 export function loader({ context, params }: LoaderFunctionArgs): OrderDetailsPageLoaderData {
     const { orderNo } = params;
     const logger = getLogger(context);

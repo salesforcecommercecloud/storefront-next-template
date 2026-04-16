@@ -51,7 +51,6 @@ type AccountPageData = {
  * @param args - Loader function arguments containing request context
  * @returns Promise containing customer data or redirects to login
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs) {
     const logger = getLogger(args.context);
     logger.debug('Account: loader starting');
@@ -76,7 +75,6 @@ export function loader(args: LoaderFunctionArgs) {
     return { customer, subscriptions };
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({ defaultShouldRevalidate, formAction }: ShouldRevalidateFunctionArgs) {
     // Defer revalidation when a fetcher submits to our SCAPI resource route (profile/password update)
     // so AccountDetailsContent stays mounted and useScapiFetcherEffect can fire its callbacks.

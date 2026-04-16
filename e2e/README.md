@@ -41,13 +41,14 @@ cp e2e/.env.sample e2e/.env
 
 Key variables in `.env`:
 
-| Variable | Default | Description                      |
-|----------|---------|----------------------------------|
-| `BASE_URL` | `http://localhost:5173` | Storefront URL                   |
-| `SITE_ID` | `RefArchGlobal` | Commerce Cloud site ID           |
-| `SITE_ALIAS` | _(empty)_ | URL prefix for site routing      |
-| `LOCALE` | _(empty)_ | Locale prefix for locale routing |
-| `HEADLESS` | `false` | Run browser headless             |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `BASE_URL` | `http://localhost:5173` | Storefront URL |
+| `SITE_ID` | `RefArchGlobal` | Commerce Cloud site ID |
+| `SITE_ALIAS` | _(empty)_ | URL prefix for multisite routing |
+| `LOCALE` | _(empty)_ | Locale prefix for multisite routing |
+| `HEADLESS` | `false` | Run browser headless |
+| `RECORD_VIDEO` | `false` | Record video for each test; failed-test videos are attached to the Allure report |
 
 ## Running Tests
 

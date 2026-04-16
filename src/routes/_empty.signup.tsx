@@ -35,7 +35,6 @@ type SignupActionResponse = {
     error?: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context }: LoaderFunctionArgs): null | Response {
     const session = getAuth(context);
     if (session.userType === 'registered') {
@@ -49,7 +48,6 @@ export function loader({ context }: LoaderFunctionArgs): null | Response {
  * This server action is required for authentication, because registration must be handled server-side for security reasons,
  * and proper integration with session management and Salesforce Commerce Cloud's authentication system.
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<SignupActionResponse | Response> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);

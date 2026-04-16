@@ -66,7 +66,6 @@ type LoginLoaderData = {
     pageUrl: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader({ request, context }: LoaderFunctionArgs) {
     const logger = getLogger(context);
     const session = getAuth(context);
@@ -175,7 +174,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
  * - `LoginActionResponse` — errors or intermediate states (e.g., OTP form). This data is
  *   serialized and delivered to the component via `useActionData()` for rendering.
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<LoginActionResponse | Response> {
     const logger = getLogger(context);
     const config = getConfig<AppConfig>(context);

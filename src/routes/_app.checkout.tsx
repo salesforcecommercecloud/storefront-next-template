@@ -35,10 +35,8 @@ import { action as submitShippingOptions } from '@/lib/actions/action.submit-shi
 import { action as submitPayment } from '@/lib/actions/action.submit-payment.server';
 import { getLogger } from '@/lib/logger.server';
 
-// eslint-disable-next-line react-refresh/only-export-components
 export { loader };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
     const formData = await request.formData();

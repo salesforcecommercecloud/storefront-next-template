@@ -31,7 +31,6 @@ import { getLogger } from '@/lib/logger.server';
  * When the store-locator extension is installed, this loader reads the
  * selectedStoreInfo cookie and fetches full store details from SCAPI.
  */
-// eslint-disable-next-line react-refresh/only-export-components -- Loader exports are required by React Router
 export async function loader({ context }: LoaderFunctionArgs) {
     const logger = getLogger(context);
     const { t } = getTranslation(context);

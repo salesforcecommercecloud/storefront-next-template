@@ -5,7 +5,7 @@
  * Provides environment reporting and test failure tracking for Allure dashboard
  */
 
-const { appendFileSync, mkdirSync, existsSync } = require('fs');
+const { appendFileSync, mkdirSync, existsSync, readFileSync } = require('fs');
 const { join, dirname } = require('path');
 const { env } = require('process');
 
@@ -48,6 +48,14 @@ class AllureHelper extends Helper {
         appendFileSync(path, text);
     };
 
+    _before() {
+        this._isFailedTest = false;
+        // Store page reference now so we can access video path in _after,
+        // after Playwright has already closed the context and saved the video.
+        const playwright = this.helpers.Playwright;
+        this._currentPage = playwright ? playwright.page : null;
+    }
+
     _passed(test) {
         if (test.title && env.SUITE === 'setup') {
             const setupTag = test.title.substring(1, test.title.indexOf('-'));
@@ -59,12 +67,30 @@ class AllureHelper extends Helper {
     }
 
     _failed(test) {
+        this._isFailedTest = true;
         if (test.title && env.SUITE === 'setup') {
             const setupTag = test.title.substring(1, test.title.indexOf('-'));
             if (this.failedTags.indexOf(setupTag) < 0) {
                 this.failedTags.push(setupTag);
                 this.printEnvOnAllureReport('FAILED_TESTS_TO_RETRY', this.failedTags.join(','));
             }
+        }
+    }
+
+    async _after() {
+        if (!this._isFailedTest || process.env.RECORD_VIDEO !== 'true') return;
+        // Playwright helper's _after runs before ours (helper registration order),
+        // so the context is already closed and the video file is saved to disk.
+        try {
+            const videoPath = await this._currentPage?.video()?.path();
+            if (!videoPath || !existsSync(videoPath)) return;
+
+            const allurePlugin = codeceptjs.container.plugins('allure');
+            if (!allurePlugin) return;
+
+            allurePlugin.addAttachment('Test Recording', readFileSync(videoPath), 'video/webm');
+        } catch (e) {
+            console.warn('[AllureHelper] Could not attach video recording:', e.message);
         }
     }
 
