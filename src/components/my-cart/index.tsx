@@ -23,6 +23,7 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 // Components
 import { UITarget } from '@/targets/ui-target';
 import ProductPrice from '@/components/product-price';
+import { getPriceData } from '@/components/product-price/utils';
 import { useTranslation } from 'react-i18next';
 
 // Hooks
@@ -98,10 +99,10 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                     : basket?.shipments?.flatMap((s) => s.productItems ?? []).find((si) => si.itemId === item.itemId);
             const effectiveItem = adjustmentsSource ?? item;
 
-            // Calculate savings for badge (use effective item for discount-aware fields)
-            const basePrice = effectiveItem.basePrice ?? effectiveItem.price ?? 0;
-            const priceAfterDiscount = effectiveItem.priceAfterItemDiscount ?? effectiveItem.price ?? 0;
-            const savings = basePrice - priceAfterDiscount;
+            // Calculate savings using getPriceData (same logic as ProductPrice component)
+            const priceData = getPriceData(enrichedProduct, { quantity: 1 });
+            const savings =
+                priceData.isOnSale && priceData.listPrice ? priceData.listPrice - priceData.currentPrice : 0;
             const hasSavings = savings > 0;
 
             return (

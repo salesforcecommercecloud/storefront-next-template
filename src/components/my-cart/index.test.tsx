@@ -19,6 +19,7 @@ import type { ReactNode } from 'react';
 import MyCart from './index';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig, mockLocale } from '@/test-utils/config';
+import { getPriceData } from '@/components/product-price/utils';
 
 const mockSite = mockConfig.commerce.sites[0];
 
@@ -68,6 +69,17 @@ vi.mock('@/components/promo-popover', () => ({
 vi.mock('@/components/product-price', () => ({
     __esModule: true,
     default: () => <span data-testid="product-price" />,
+}));
+
+vi.mock('@/components/product-price/utils', () => ({
+    getPriceData: vi.fn().mockReturnValue({
+        currentPrice: 0,
+        listPrice: undefined,
+        isOnSale: false,
+        isASet: false,
+        isMaster: false,
+        isRange: false,
+    }),
 }));
 
 vi.mock('@/targets/ui-target', () => ({
@@ -151,5 +163,42 @@ describe('MyCart', () => {
 
         expect(screen.getByTestId('my-cart-toggle')).toBeInTheDocument();
         expect(screen.getByTestId('my-cart-item-prod-1')).toBeInTheDocument();
+    });
+
+    it('shows savings badge when getPriceData reports a sale', () => {
+        vi.mocked(getPriceData).mockReturnValue({
+            currentPrice: 19.99,
+            listPrice: 39.5,
+            isOnSale: true,
+            isASet: false,
+            isMaster: false,
+            isRange: false,
+            pricePerUnit: 19.99,
+            tieredPrice: undefined,
+            maxPrice: undefined,
+        });
+
+        render(<MyCart basket={basket} productMap={productMap} />);
+
+        const badges = screen.getAllByText(/Saved/);
+        expect(badges.length).toBeGreaterThan(0);
+    });
+
+    it('hides savings badge when item is not on sale', () => {
+        vi.mocked(getPriceData).mockReturnValue({
+            currentPrice: 15,
+            listPrice: undefined,
+            isOnSale: false,
+            isASet: false,
+            isMaster: false,
+            isRange: false,
+            pricePerUnit: 15,
+            tieredPrice: undefined,
+            maxPrice: undefined,
+        });
+
+        render(<MyCart basket={basket} productMap={productMap} />);
+
+        expect(screen.queryByText(/Saved/)).not.toBeInTheDocument();
     });
 });
