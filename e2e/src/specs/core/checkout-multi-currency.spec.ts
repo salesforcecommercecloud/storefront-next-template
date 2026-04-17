@@ -35,12 +35,17 @@ import {
 
 const siteAliases: readonly string[] = TEST_LOCALE_CURRENCIES.map((e) => e.siteAlias);
 
+// Multi-currency tests construct /${siteAlias}/${locale} URL prefixes to switch between
+// site/locale contexts. This only works with the prefix-site-locale URL configuration
+// (/:siteId/:localeId). Self-skip for all other URL configurations.
+const isPrefixSiteLocale = Boolean(process.env.SITE_ALIAS) && Boolean(process.env.LOCALE);
+
 for (const localeCurrency of TEST_LOCALE_CURRENCIES) {
     const envAlias = process.env.SITE_ALIAS;
     const canRun =
-        !envAlias ||
-        localeCurrency.siteAlias === envAlias ||
-        (!siteAliases.includes(envAlias) && localeCurrency.locale === process.env.LOCALE);
+        isPrefixSiteLocale &&
+        (localeCurrency.siteAlias === envAlias ||
+            (!siteAliases.includes(envAlias as string) && localeCurrency.locale === process.env.LOCALE));
     const scenarioFn = canRun ? Scenario : Scenario.skip;
 
     scenarioFn(`Guest shopper completes checkout in ${localeCurrency.label}`, async () => {
