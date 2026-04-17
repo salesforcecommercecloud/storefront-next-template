@@ -56,7 +56,7 @@ const assignmentQualifiersApiFieldNames = assignmentQualifiersKeys.map(
 );
 
 const couponCodesMapping = SHOPPER_CONTEXT_SEARCH_PARAMS.couponCodes as QualifierMapping;
-const customerGroupIdsMapping = SHOPPER_CONTEXT_SEARCH_PARAMS.customerGroupIds as QualifierMapping;
+const customerGroupIdsMapping = SHOPPER_CONTEXT_SEARCH_PARAMS.customerGroupIds as QualifierMapping | undefined;
 
 export const isCustomQualifier = (key: string): boolean => {
     return customQualifiersApiFieldNames.includes(key) || customQualifiersKeys.includes(key);
@@ -75,8 +75,8 @@ export const isCouponCode = (key: string): boolean => {
 
 export const isCustomerGroupIds = (key: string): boolean => {
     return (
-        customerGroupIdsMapping[QUALIFIER_MAPPING_API_FIELD_NAME] === key ||
-        customerGroupIdsMapping[QUALIFIER_MAPPING_PARAM_NAME] === key
+        customerGroupIdsMapping?.[QUALIFIER_MAPPING_API_FIELD_NAME] === key ||
+        customerGroupIdsMapping?.[QUALIFIER_MAPPING_PARAM_NAME] === key
     );
 };
 

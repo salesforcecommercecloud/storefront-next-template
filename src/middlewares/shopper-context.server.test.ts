@@ -22,6 +22,24 @@ import { getAuth } from './auth.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 
+vi.mock('@/lib/shopper-context-constants', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/shopper-context-constants')>();
+    return {
+        ...actual,
+        SHOPPER_CONTEXT_SEARCH_PARAMS: {
+            ...actual.SHOPPER_CONTEXT_SEARCH_PARAMS,
+            effectiveDateTime: {
+                [actual.QUALIFIER_MAPPING_PARAM_NAME]: 'effectiveDateTime',
+                [actual.QUALIFIER_MAPPING_API_FIELD_NAME]: 'effectiveDateTime',
+            },
+            customerGroupIds: {
+                [actual.QUALIFIER_MAPPING_PARAM_NAME]: 'customerGroupIds',
+                [actual.QUALIFIER_MAPPING_API_FIELD_NAME]: 'customerGroupIds',
+            },
+        },
+    };
+});
+
 vi.mock('@/lib/api/shopper-context', () => ({
     createShopperContext: vi.fn(),
 }));
