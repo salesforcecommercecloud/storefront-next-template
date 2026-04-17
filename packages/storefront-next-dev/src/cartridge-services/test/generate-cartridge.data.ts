@@ -220,9 +220,9 @@ export const testRoutes = [
                         file: 'routes/_app.about-us.tsx',
                     },
                     {
-                        id: 'routes/_app.checkout',
+                        id: 'routes/_checkout.checkout',
                         path: 'checkout',
-                        file: 'routes/_app.checkout.tsx',
+                        file: 'routes/_checkout.checkout.tsx',
                     },
                     {
                         id: 'routes/_app.account',

@@ -283,7 +283,7 @@ describe('Checkout Route Components', () => {
             };
             mockCheckoutLoadersLoader.mockResolvedValue(mockLoaderResult);
 
-            const checkoutRoute = await import('./_app.checkout');
+            const checkoutRoute = await import('./_checkout.checkout');
             const mockArgs = {
                 request: new Request('http://localhost/checkout'),
                 params: {},
@@ -303,7 +303,7 @@ describe('Checkout Route Components', () => {
 
     describe('CheckoutView Component Integration', () => {
         it('should render with basket from loaderData', async () => {
-            const checkoutRoute = await import('./_app.checkout');
+            const checkoutRoute = await import('./_checkout.checkout');
             const CheckoutPage = checkoutRoute.default;
 
             const mockBasket = {
@@ -329,7 +329,7 @@ describe('Checkout Route Components', () => {
         });
 
         it('should handle missing basket in loaderData', async () => {
-            const checkoutRoute = await import('./_app.checkout');
+            const checkoutRoute = await import('./_checkout.checkout');
             const CheckoutPage = checkoutRoute.default;
 
             const mockLoaderData = {
@@ -349,7 +349,7 @@ describe('Checkout Route Components', () => {
         });
 
         it('should render with customer profile data', async () => {
-            const checkoutRoute = await import('./_app.checkout');
+            const checkoutRoute = await import('./_checkout.checkout');
             const CheckoutPage = checkoutRoute.default;
 
             const mockCustomerProfile = {
@@ -378,7 +378,7 @@ describe('Checkout Route Components', () => {
         });
 
         it('should render with shipping methods data', async () => {
-            const checkoutRoute = await import('./_app.checkout');
+            const checkoutRoute = await import('./_checkout.checkout');
             const CheckoutPage = checkoutRoute.default;
 
             const mockShippingMethodsMap = {
@@ -405,7 +405,7 @@ describe('Checkout Route Components', () => {
         });
 
         it('should render with complete loaderData', async () => {
-            const checkoutRoute = await import('./_app.checkout');
+            const checkoutRoute = await import('./_checkout.checkout');
             const CheckoutPage = checkoutRoute.default;
 
             const mockBasket = {
@@ -446,7 +446,7 @@ describe('Checkout Route Components', () => {
         });
 
         it('should handle undefined customerProfile promise', async () => {
-            const checkoutRoute = await import('./_app.checkout');
+            const checkoutRoute = await import('./_checkout.checkout');
             const CheckoutPage = checkoutRoute.default;
 
             const mockLoaderData = {
@@ -466,7 +466,7 @@ describe('Checkout Route Components', () => {
         });
 
         it('should handle undefined shippingMethods promise', async () => {
-            const checkoutRoute = await import('./_app.checkout');
+            const checkoutRoute = await import('./_checkout.checkout');
             const CheckoutPage = checkoutRoute.default;
 
             const mockLoaderData = {
@@ -486,7 +486,7 @@ describe('Checkout Route Components', () => {
         });
 
         it('should handle all undefined promises', async () => {
-            const checkoutRoute = await import('./_app.checkout');
+            const checkoutRoute = await import('./_checkout.checkout');
             const CheckoutPage = checkoutRoute.default;
 
             const mockLoaderData = {

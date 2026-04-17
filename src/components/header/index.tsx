@@ -31,14 +31,16 @@ import { UITarget } from '@/targets/ui-target';
 
 interface HeaderProps extends PropsWithChildren {
     beforeHeader?: ReactNode;
+    variant?: 'full' | 'checkout';
 }
 
-export default function Header({ children, beforeHeader }: HeaderProps): ReactElement {
+export default function Header({ children, beforeHeader, variant = 'full' }: HeaderProps): ReactElement {
     const { t } = useTranslation('header');
     const location = useLocation();
     const headerRef = useRef<HTMLElement>(null);
     const config = useConfig<AppConfig>();
     const showChat =
+        variant === 'full' &&
         (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
         validateShopperAgentConfig(config.commerceAgent);
     const updateHeaderHeight = useCallback(() => {
@@ -57,6 +59,28 @@ export default function Header({ children, beforeHeader }: HeaderProps): ReactEl
         observer.observe(el);
         return () => observer.disconnect();
     }, [updateHeaderHeight]);
+
+    if (variant === 'checkout') {
+        return (
+            <header
+                ref={headerRef}
+                className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
+                <div className="px-4 lg:px-9">
+                    <div className="flex items-center h-16">
+                        <Link to="/" className="flex-shrink-0 flex items-center" data-testid="header-logo">
+                            <img
+                                src={logo}
+                                alt={t('logoAlt')}
+                                className="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+                            />
+                        </Link>
+                        <div className="flex-1" />
+                        <CartBadge />
+                    </div>
+                </div>
+            </header>
+        );
+    }
 
     return (
         <header

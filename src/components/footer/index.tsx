@@ -27,10 +27,33 @@ import logo from '/images/logo.svg';
 
 interface FooterProps {
     categories?: Promise<ShopperProducts.schemas['Category']>;
+    variant?: 'full' | 'checkout';
 }
 
-export default function Footer({ categories }: FooterProps): ReactElement {
+export default function Footer({ categories, variant = 'full' }: FooterProps): ReactElement {
     const { t } = useTranslation('footer');
+
+    if (variant === 'checkout') {
+        return (
+            <footer className="mt-auto border-t border-border">
+                <div className="container mx-auto px-4 lg:px-9 py-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm text-muted-foreground">
+                        <div>
+                            © {t('logoAlt')} {t('address')}
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Link to="/privacy" className="hover:text-foreground transition-colors">
+                                {t('links.privacyPolicy')}
+                            </Link>
+                            <Link to="/terms" className="hover:text-foreground transition-colors">
+                                {t('links.termsOfUse')}
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        );
+    }
 
     return (
         <footer className="mt-auto">

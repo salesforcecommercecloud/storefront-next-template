@@ -69,8 +69,17 @@ describe('routes.ts', () => {
                     id: 'routes/_app.cart',
                     path: 'cart',
                 }),
+            ])
+        );
+
+        // Find the _checkout layout route (minimal header/footer) inside the wrapper
+        const checkoutLayout = wrappedRoutes.find((r: any) => r.id === 'routes/_checkout');
+        expect(checkoutLayout).toBeDefined();
+        expect(checkoutLayout?.file).toBe('routes/_checkout.tsx');
+        expect(checkoutLayout?.children).toEqual(
+            expect.arrayContaining([
                 expect.objectContaining({
-                    id: 'routes/_app.checkout',
+                    id: 'routes/_checkout.checkout',
                     path: 'checkout',
                 }),
             ])
