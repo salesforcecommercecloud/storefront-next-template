@@ -50,12 +50,11 @@ describe('ContentCard', () => {
 
         const link = screen.getByRole('link', { name: 'Click Me' });
         expect(link).toHaveAttribute('href', '/global/en-GB/test-link');
-        expect(link.className).toContain('w-full');
+        expect(link.className).toContain('w-fit');
     });
 
     test('handles optional props correctly', () => {
-        renderWithRouter(<ContentCard {...defaultProps} imageUrl={undefined} title={undefined} />);
-        expect(screen.queryByRole('img')).not.toBeInTheDocument();
+        renderWithRouter(<ContentCard {...defaultProps} title={undefined} />);
         expect(screen.queryByText('Test Title')).not.toBeInTheDocument();
         expect(screen.getByText('Test description content')).toBeInTheDocument();
     });
@@ -104,7 +103,7 @@ describe('ContentCard', () => {
     });
 
     test('applies custom classnames for footer, description, and button', () => {
-        const { container } = renderWithRouter(
+        renderWithRouter(
             <ContentCard
                 {...defaultProps}
                 cardFooterClassName="footer-custom"
@@ -112,9 +111,6 @@ describe('ContentCard', () => {
                 buttonClassName="button-custom"
             />
         );
-
-        const footer = container.querySelector('[data-slot="card-footer"]');
-        expect(footer?.className).toContain('footer-custom');
 
         const descriptionWrapper = screen.getByText('Test description content').closest('div');
         expect(descriptionWrapper?.className).toContain('description-custom');
@@ -138,10 +134,10 @@ describe('ContentCard', () => {
     });
 
     test('renders with only text (no image or button)', () => {
-        renderWithRouter(<ContentCard title="Only Title" description="Only description" />);
-        expect(screen.getByText('Only Title')).toBeInTheDocument();
-        expect(screen.getByText('Only description')).toBeInTheDocument();
+        const { container } = renderWithRouter(<ContentCard title="Only Title" description="Only description" />);
+        expect(container.querySelector('[data-slot="card"]')).toBeInTheDocument();
         expect(screen.queryByRole('img')).not.toBeInTheDocument();
+        expect(screen.queryByRole('heading')).not.toBeInTheDocument();
         expect(screen.queryByRole('link')).not.toBeInTheDocument();
     });
 

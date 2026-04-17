@@ -12,7 +12,7 @@
                     "type_id": "Content.popularCategory"
                 }
             ],
-            "max_components": 4
+            "max_components": 12
         }
     ],
     "attribute_definition_groups": [

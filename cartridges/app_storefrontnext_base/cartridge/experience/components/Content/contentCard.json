@@ -48,7 +48,7 @@
                 {
                     "id": "buttonLink",
                     "name": "Button Link",
-                    "type": "string",
+                    "type": "url",
                     "required": false,
                     "description": "Field: buttonLink"
                 },

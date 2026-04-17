@@ -136,25 +136,24 @@ Standard content card with all features enabled.
     },
 };
 
-export const WithoutImage: Story = {
+export const WithoutButton: Story = {
     render: () => (
         <ContentCard
             title="Text Only Card"
-            description="This card doesn't have an image, just text content and a button."
-            buttonText="Learn More"
-            buttonLink="/about"
+            description="This card has an image with text overlay but no button."
+            imageUrl="https://via.placeholder.com/400x300"
+            imageAlt="Text only card"
         />
     ),
     parameters: {
         docs: {
             description: {
                 story: `
-Content card without an image.
+Content card without a button.
 
 ### Features:
-- No image
-- Text content only
-- Still has button
+- Image with text overlay
+- No call-to-action button
             `,
             },
         },
@@ -172,18 +171,22 @@ Content card without an image.
 
 export const Minimal: Story = {
     render: () => (
-        <ContentCard title="Minimal Card" description="A simple card with just title and description, no button." />
+        <ContentCard
+            title="Minimal Card"
+            description="A simple card with image and text overlay."
+            imageUrl="https://via.placeholder.com/400x300"
+            imageAlt="Minimal card"
+        />
     ),
     parameters: {
         docs: {
             description: {
                 story: `
-Minimal content card with only title and description.
+Minimal content card with image and text overlay.
 
 ### Features:
-- No image
+- Image with text overlay
 - No button
-- Just text content
             `,
             },
         },
@@ -204,6 +207,8 @@ export const NoBackground: Story = {
         <ContentCard
             title="Transparent Card"
             description="This card has no background or border for a cleaner look."
+            imageUrl="https://via.placeholder.com/400x300"
+            imageAlt="Transparent card"
             showBackground={false}
             showBorder={false}
             buttonText="Explore"

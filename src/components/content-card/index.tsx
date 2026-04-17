@@ -17,7 +17,7 @@ import { forwardRef, type ComponentProps } from 'react';
 import { Link } from '@/components/link';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import { cn, resolveAssetUrl } from '@/lib/utils';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
@@ -73,7 +73,12 @@ export class ContentCardMetadata {
     @AttributeDefinition()
     buttonText?: string;
 
-    @AttributeDefinition()
+    @AttributeDefinition({
+        id: 'buttonLink',
+        name: 'Button Link',
+        type: 'url',
+        required: false,
+    })
     buttonLink?: string;
 
     @AttributeDefinition({ defaultValue: contentCardDefaults.showBackground })
@@ -122,7 +127,7 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
             <Card
                 ref={ref}
                 className={cn(
-                    'h-full overflow-hidden',
+                    'relative h-full overflow-hidden',
                     showBackground ? 'ring-secondary/40 bg-muted/50' : 'bg-transparent',
                     !showBorder && 'border-0 shadow-none',
                     className
@@ -138,26 +143,42 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
                                 style={{ objectPosition }}
                                 loading={loading}
                             />
+                            {(title || description || (buttonText && buttonLink)) && (
+                                <div
+                                    className={cn(
+                                        'absolute inset-0 flex flex-col justify-end p-6 md:p-8',
+                                        cardFooterClassName
+                                    )}>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent -z-10" />
+                                    <div className="relative z-10">
+                                        {(title || description) && (
+                                            <div
+                                                className={cn(
+                                                    'flex-1 flex flex-col justify-end',
+                                                    cardDescriptionClassName
+                                                )}>
+                                                {description && (
+                                                    <p className="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line">
+                                                        {description}
+                                                    </p>
+                                                )}
+                                                {title && (
+                                                    <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4">
+                                                        {title}
+                                                    </h3>
+                                                )}
+                                            </div>
+                                        )}
+                                        {buttonText && buttonLink && (
+                                            <Button asChild variant="default" className={cn('w-fit', buttonClassName)}>
+                                                <Link to={buttonLink}>{buttonText}</Link>
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </CardContent>
-                )}
-
-                {(title || description || (buttonText && buttonLink)) && (
-                    <CardFooter className={cn('flex-col items-start gap-4 p-6 flex-1', cardFooterClassName)}>
-                        {(title || description) && (
-                            <div className={cn('flex-1', cardDescriptionClassName)}>
-                                {title && <h3 className="text-2xl font-bold text-foreground mb-3">{title}</h3>}
-                                {description && (
-                                    <p className="text-sm text-muted-foreground whitespace-pre-line">{description}</p>
-                                )}
-                            </div>
-                        )}
-                        {buttonText && buttonLink && (
-                            <Button asChild className={cn('w-full', buttonClassName)}>
-                                <Link to={buttonLink}>{buttonText}</Link>
-                            </Button>
-                        )}
-                    </CardFooter>
                 )}
             </Card>
         );

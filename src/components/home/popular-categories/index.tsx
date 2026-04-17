@@ -51,7 +51,7 @@ interface PopularCategoriesProps {
         id: 'categories',
         name: 'Categories',
         description: 'Add Category Card components to display in the scrollable row',
-        maxComponents: 4,
+        maxComponents: 12,
         componentTypeInclusions: ['Content.popularCategory'],
     },
 ])
