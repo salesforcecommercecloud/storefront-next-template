@@ -321,6 +321,9 @@ export default function OrderSummary({
                             <UITarget targetId="orderSummary.total.after" />
                         </div>
 
+                        <UITarget targetId="sfcc.orderSummary.shipping.deliveryEstimate" />
+                        <UITarget targetId="sfcc.cart.loyalty.pointsEarned" />
+
                         {/* Promo Code Form */}
                         {showPromoCodeForm && <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />}
                         <UITarget targetId="orderSummary.promoCode.before" />
@@ -328,6 +331,8 @@ export default function OrderSummary({
                             {showPromoCodeForm ? <PromoCodeForm basket={basket} /> : null}
                         </UITarget>
                         <UITarget targetId="orderSummary.promoCode.after" />
+                        <UITarget targetId="sfcc.cart.giftCards.apply" />
+                        <UITarget targetId="sfcc.cart.identity.verification" />
 
                         {/* Checkout Action */}
                         {showCheckoutAction && (
@@ -339,6 +344,7 @@ export default function OrderSummary({
                                         <Lock className="ml-2 w-4 h-4" aria-label={t('checkout.secure')} />
                                     </Link>
                                 </Button>
+                                <UITarget targetId="sfcc.cart.payments.expressCheckout" />
 
                                 <div className="flex justify-center">
                                     <VisaIcon width={40} height={32} className="mr-2" />

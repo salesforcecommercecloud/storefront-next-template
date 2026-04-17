@@ -46,6 +46,7 @@ import { getFirstPickupStore, filterPickupProductItems } from '@/extensions/bopi
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 import CartDeliveryOption from '@/extensions/bopis/components/delivery-options/cart-delivery-option';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
+import { UITarget } from '@/targets/ui-target';
 
 // utils
 import { isStandardProduct, isBonusProduct, isRuleBasedPromotion, type EnrichedProductItem } from '@/lib/product-utils';
@@ -207,6 +208,7 @@ export default function CartContent({
                         showPromoCodeForm={true}
                         showCheckoutAction={true}
                     />
+                    <UITarget targetId="sfcc.cart.bnpl.message" />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
@@ -264,6 +266,7 @@ export default function CartContent({
                             showPromoCodeForm={true}
                             showCheckoutAction={true}
                         />
+                        <UITarget targetId="sfcc.cart.bnpl.message" />
                     </div>
                 </div>
 

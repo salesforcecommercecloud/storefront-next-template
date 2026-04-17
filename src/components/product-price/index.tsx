@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type ComponentProps, useMemo } from 'react';
+import { type ComponentProps, type ReactNode, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import type {
     ShopperBasketsV2,
@@ -41,6 +41,8 @@ interface ProductPriceProps {
     currentPriceProps?: Omit<ComponentProps<typeof CurrentPrice>, 'price' | 'currency' | 'labelForA11y'>;
     listPriceProps?: Omit<ComponentProps<typeof ListPrice>, 'price' | 'currency' | 'labelForA11y'>;
     promoCalloutProps?: Omit<ComponentProps<typeof PromoCallout>, 'product'>;
+    /** Optional custom content rendered between price and promo callout */
+    afterPriceContent?: ReactNode;
     type?: 'unit' | 'total';
     className?: string;
     /** Hide promotional callout text (e.g. in modal/edit mode) */
@@ -76,6 +78,7 @@ export default function ProductPrice({
     currentPriceProps = {},
     listPriceProps = {},
     promoCalloutProps = {},
+    afterPriceContent,
     className,
     hidePromo = false,
     currentPriceOnly = false,
@@ -135,6 +138,7 @@ export default function ProductPrice({
         return (
             <>
                 <div className={cn('items-center gap-2', className)}>{renderCurrentPrice(true)}</div>
+                {afterPriceContent}
                 {!hidePromo && (
                     <PromoCallout
                         product={product}
@@ -150,6 +154,7 @@ export default function ProductPrice({
         return (
             <>
                 <div className={cn('items-center gap-2', className)}>{renderPriceSet(isRange ?? false)}</div>
+                {afterPriceContent}
                 {!hidePromo && (
                     <PromoCallout
                         product={product}
@@ -164,6 +169,7 @@ export default function ProductPrice({
     return (
         <>
             <div className={cn('items-center gap-2', className)}>{renderPriceSet(isRange ?? false)}</div>
+            {afterPriceContent}
             {!hidePromo && (
                 <PromoCallout
                     product={product}

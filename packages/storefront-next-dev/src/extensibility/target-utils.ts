@@ -147,8 +147,10 @@ function findAndReplaceComponent(
                 // replace the element with its children
                 element.replaceWithMultiple(element.node.children);
             } else {
-                // No children, just remove the element
-                element.remove();
+                // No children and no target replacement:
+                // use an empty fragment instead of remove() so UITarget inside
+                // JSX expression containers (e.g. prop values) remains valid JSX.
+                element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), []));
             }
         }
     }

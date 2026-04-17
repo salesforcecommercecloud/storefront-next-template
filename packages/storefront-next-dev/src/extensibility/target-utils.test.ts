@@ -203,6 +203,20 @@ describe('target-utils', () => {
             expect(output).toContain('<span>Hello</span>');
             expect(output).not.toContain('UITarget');
         });
+
+        it('should preserve valid JSX when unresolved UITarget is inside prop expression', () => {
+            const codeWithTargetInPropExpression = `
+        import React from "react";
+        import { UITarget } from '@/targets/ui-target';
+        function Wrapper({ slot }) { return <div>{slot}</div>; }
+        export default function Test() {
+          return <Wrapper slot={<UITarget targetId="not.found" />} />;
+        }
+      `;
+            const output = transformTargets(codeWithTargetInPropExpression, targetRegistry, []);
+            expect(output).toContain('slot={<></>}');
+            expect(output).not.toContain('UITarget');
+        });
     });
 
     describe('injectTargetContextProviders', () => {

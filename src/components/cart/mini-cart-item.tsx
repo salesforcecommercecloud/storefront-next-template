@@ -42,6 +42,7 @@ import { Typography } from '@/components/typography';
 import QuantityPicker from '@/components/quantity-picker/quantity-picker';
 import { Label } from '@/components/ui/label';
 import { ProductItemPromotions } from '@/components/product-item';
+import { UITarget } from '@/targets/ui-target';
 
 /**
  * Basket item data enriched with product details for mini cart display
@@ -232,6 +233,8 @@ export default function MiniCartItem({
                                 'bg-muted text-foreground border-0 text-xs font-medium rounded-pill inline-block mt-1 mx-0',
                         }}
                     />
+                    <UITarget targetId="sfcc.miniCart.shipping.deliveryEstimate" />
+                    <UITarget targetId="sfcc.miniCart.tax.lineItemMessage" />
                     <ProductItemPromotions productItem={product} />
                 </div>
 

@@ -44,6 +44,7 @@ import { useToast } from '@/components/toast';
 import type { BasketActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
+import { UITarget } from '@/targets/ui-target';
 /**
  * Container component for MiniCartItem that handles remove functionality
  * Uses useFetcher to submit remove requests to the cart API
@@ -321,6 +322,8 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                                   : ''}
                         </Link>
                     </Button>
+                    <UITarget targetId="sfcc.miniCart.payments.expressCheckout" />
+                    <UITarget targetId="sfcc.miniCart.bnpl.message" />
                     <Button
                         variant="secondary"
                         className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 border border-input bg-secondary text-secondary-foreground text-sm font-semibold leading-5 font-sans rounded-md shadow-2xs"

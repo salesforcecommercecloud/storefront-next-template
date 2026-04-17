@@ -51,6 +51,7 @@ import { getEffectiveStockLevel } from '@/lib/inventory-utils';
 import { cn } from '@/lib/utils';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { useTranslation } from 'react-i18next';
+import { UITarget } from '@/targets/ui-target';
 
 /**
  * ProductItemVariantImage component that renders product images with fallback
@@ -382,6 +383,7 @@ function ProductItem({
                                         className="text-xs break-words hidden md:block">
                                         {productItem?.shortDescription}
                                     </Typography>
+                                    <UITarget targetId="sfcc.cart.tax.lineItemMessage" />
                                 </div>
                                 <div className="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2">
                                     {/* Delivery Actions - desktop only */}
@@ -415,6 +417,9 @@ function ProductItem({
                                                             className:
                                                                 'bg-muted text-foreground border-0 text-xs font-medium rounded-pill inline-block mt-3 mx-0',
                                                         }}
+                                                        afterPriceContent={
+                                                            <UITarget targetId="sfcc.cart.shipping.deliveryEstimate" />
+                                                        }
                                                     />
                                                 )}
                                             </div>
