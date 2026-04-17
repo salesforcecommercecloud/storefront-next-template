@@ -861,9 +861,14 @@ export const registry = new ComponentRegistry();
 	const endIndex = existingContent.indexOf(endMarker);
 	if (startIndex === -1 || endIndex === -1) throw new Error(`Registry file ${registryFilePath} is missing static registry markers. Please add "${startMarker}" and "${endMarker}" markers to define the generated content area.`);
 	const updatedContent = `${existingContent.slice(0, startIndex + 24)}\n${generatedCode}\n${existingContent.slice(endIndex)}`;
+	if (updatedContent === existingContent) {
+		logger.debug(`⏭️  Registry unchanged, skipping write: ${registryFilePath}`);
+		return false;
+	}
 	try {
 		writeFileSync(registryFilePath, updatedContent, "utf-8");
 		logger.debug(`💾 Updated registry file: ${registryFilePath}`);
+		return true;
 	} catch (error) {
 		throw new Error(`Failed to write registry file: ${error.message}`);
 	}
@@ -907,9 +912,12 @@ const staticRegistryPlugin = (config = {}) => {
 		logger.debug(`📦 Found ${components.length} components with @Component decorators`);
 		const generatedCode = generateRegistryCode(components, registryIdentifier);
 		const registryFilePath = resolve$1(projectRoot, registryPath);
-		updateRegistryFile(registryFilePath, generatedCode);
+		const changed = updateRegistryFile(registryFilePath, generatedCode);
 		logger.debug("✅ Static registry generation complete!");
-		return registryFilePath;
+		return {
+			registryFilePath,
+			changed
+		};
 	};
 	return {
 		name: "storefrontnext:static-registry",
@@ -931,10 +939,12 @@ const staticRegistryPlugin = (config = {}) => {
 			if (normalizedFile.includes(`/${normalizedComponentPath}/`) && (normalizedFile.endsWith(".ts") || normalizedFile.endsWith(".tsx"))) {
 				logger.debug(`🔄 Component file changed: ${file}, regenerating registry...`);
 				try {
-					const registryFilePath = await runRegistryGeneration();
-					const registryModule = server.moduleGraph.getModuleById(registryFilePath);
-					if (registryModule) await server.reloadModule(registryModule);
-					logger.debug("✅ Registry regenerated successfully!");
+					const { registryFilePath, changed } = await runRegistryGeneration();
+					if (changed) {
+						const registryModule = server.moduleGraph.getModuleById(registryFilePath);
+						if (registryModule) await server.reloadModule(registryModule);
+						logger.debug("✅ Registry regenerated successfully!");
+					} else logger.debug("⏭️  Registry unchanged, skipping reload");
 				} catch (error) {
 					logger.error(`❌ Failed to regenerate registry: ${error.message}`);
 				}

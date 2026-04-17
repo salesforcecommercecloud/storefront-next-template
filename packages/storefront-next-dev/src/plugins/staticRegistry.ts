@@ -357,7 +357,7 @@ ${registrations}
 /**
  * Updates the registry.ts file with the generated code
  */
-export function updateRegistryFile(registryFilePath: string, generatedCode: string): void {
+export function updateRegistryFile(registryFilePath: string, generatedCode: string): boolean {
     let existingContent: string;
 
     // Check if file exists, if not create a basic one
@@ -403,9 +403,19 @@ export const registry = new ComponentRegistry();
 
     const updatedContent = `${before}\n${generatedCode}\n${after}`;
 
+    // Skip write if content is unchanged to avoid triggering unnecessary HMR cascades.
+    // Without this check, every component file save writes static-registry.ts even when
+    // the registry hasn't changed, which triggers Vite's file watcher -> SSR page reload
+    // -> root.tsx HMR -> app.css HMR in a rapid loop.
+    if (updatedContent === existingContent) {
+        logger.debug(`⏭️  Registry unchanged, skipping write: ${registryFilePath}`);
+        return false;
+    }
+
     try {
         writeFileSync(registryFilePath, updatedContent, 'utf-8');
         logger.debug(`💾 Updated registry file: ${registryFilePath}`);
+        return true;
     } catch (error) {
         throw new Error(`Failed to write registry file: ${(error as Error).message}`);
     }
@@ -470,11 +480,11 @@ export const staticRegistryPlugin = (config: StaticRegistryPluginConfig = {}): P
 
         const generatedCode = generateRegistryCode(components, registryIdentifier);
         const registryFilePath = resolve(projectRoot, registryPath);
-        updateRegistryFile(registryFilePath, generatedCode);
+        const changed = updateRegistryFile(registryFilePath, generatedCode);
 
         logger.debug('✅ Static registry generation complete!');
 
-        return registryFilePath;
+        return { registryFilePath, changed };
     };
 
     return {
@@ -507,14 +517,20 @@ export const staticRegistryPlugin = (config: StaticRegistryPluginConfig = {}): P
                 logger.debug(`🔄 Component file changed: ${file}, regenerating registry...`);
 
                 try {
-                    const registryFilePath = await runRegistryGeneration();
+                    const { registryFilePath, changed } = await runRegistryGeneration();
 
-                    const registryModule = server.moduleGraph.getModuleById(registryFilePath);
-                    if (registryModule) {
-                        await server.reloadModule(registryModule);
+                    // Only reload the registry module if the generated content actually changed.
+                    // This prevents an HMR cascade: write -> file watcher -> SSR reload ->
+                    // root.tsx HMR -> app.css HMR -> repeat.
+                    if (changed) {
+                        const registryModule = server.moduleGraph.getModuleById(registryFilePath);
+                        if (registryModule) {
+                            await server.reloadModule(registryModule);
+                        }
+                        logger.debug('✅ Registry regenerated successfully!');
+                    } else {
+                        logger.debug('⏭️  Registry unchanged, skipping reload');
                     }
-
-                    logger.debug('✅ Registry regenerated successfully!');
                 } catch (error) {
                     logger.error(`❌ Failed to regenerate registry: ${(error as Error).message}`);
                 }
