@@ -197,7 +197,7 @@ Enforced by ESLint via `eslint-plugin-header`.
 
 Overlay components that are hidden on initial render **must** use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction:
 
-```typescript
+```jsx
 const MyModal = lazy(() => import('@/components/my-modal').then((m) => ({ default: m.MyModal })));
 
 function MyComponent() {
@@ -222,11 +222,122 @@ function MyComponent() {
 - **Anti-pattern:** Importing overlay components synchronously (non-lazy) bundles them into the main chunk, increasing page load size and Total Blocking Time (TBT)
 - **Discouraged:** `<Suspense><LazyComponent /></Suspense>` without a guard — the chunk is separate but still fetched and parsed on mount, adding to TBT during page startup
 
-**Styling:**
-- Use Tailwind utility classes
-- Use design tokens: `bg-foreground`, `text-muted-foreground` (not hard-coded colors)
-- Use `cn()` utility from `@/lib/utils` to merge class names
-- Responsive breakpoints: `sm`, `md`, `lg`, `xl`, `2xl`
+**Suspense Boundary Granularity — One Boundary per Promise:**
+
+When a component consumes multiple asynchronous data sources (via `<Await>`, React's `use()`, or any other suspending mechanism), each promise **must** be wrapped in its own `<Suspense>` boundary. When multiple promises share a single boundary, resolution of the faster promise re-renders the subtree, only for the still-pending slower promise to suspend the boundary again — tearing down already-rendered content and re-showing the fallback. This causes visible layout thrashing and inflates interactivity metrics like INP.
+
+With separate boundaries each promise resolves independently — fast content streams in and stays visible while slower content continues loading with its own skeleton.
+
+> **References:**
+> - React documentation on Suspense: *"Revealing nested content as it loads"* — each [`<Suspense>`](https://react.dev/reference/react/Suspense) boundary creates an independent loading sequence
+> - React 18 [architecture discussion](https://github.com/reactwg/react-18/discussions/37):
+>   - Suspense boundaries define the granularity of the loading UI; content outside a boundary is never affected by suspensions inside it
+>   - A boundary acts like a `try/catch` for async — everything inside the boundary is treated as a single loading unit
+
+```jsx
+// ✅ Correct: each Await/use() has its own Suspense boundary
+<div>
+    <Suspense fallback={<BreadcrumbsSkeleton />}>
+        <Await resolve={categoryPromise}>
+            {(category) => <Breadcrumbs category={category} />}
+        </Await>
+    </Suspense>
+
+    <Suspense fallback={<ProductSkeleton />}>
+        <Await resolve={productPromise}>
+            {(product) => <ProductContent product={product} />}
+        </Await>
+    </Suspense>
+</div>
+```
+
+```jsx
+// ✅ Correct: use() wrapper components, each behind its own Suspense
+function ProductWrapper({ promise }: { promise: Promise<Product> }) {
+    const product = use(promise);
+    return <ProductContent product={product} />;
+}
+
+function ReviewsWrapper({ promise }: { promise: Promise<Reviews> }) {
+    const reviews = use(promise);
+    return <ReviewsSection reviews={reviews} />;
+}
+
+<div>
+    <Suspense fallback={<ProductSkeleton />}>
+        <ProductWrapper promise={productPromise} />
+    </Suspense>
+    <Suspense fallback={<ReviewsSkeleton />}>
+        <ReviewsWrapper promise={reviewsPromise} />
+    </Suspense>
+</div>
+```
+
+**Anti-pattern — Multiple promises sharing one boundary (`<Await>`):**
+```jsx
+// ❌ BAD: Both Await children share a single Suspense boundary.
+// When promise1 resolves first, Component1 renders briefly, then
+// promise2 (still pending) suspends the boundary again — tearing
+// down Component1 and showing <ComponentsSkeleton /> a second time.
+<Suspense fallback={<ComponentsSkeleton />}>
+    <div>
+        <Await resolve={promise1}>
+            {(resolved) => <Component1 resolved={resolved} />}
+        </Await>
+        <Await resolve={promise2}>
+            {(resolved) => <Component2 resolved={resolved} />}
+        </Await>
+    </div>
+</Suspense>
+```
+
+**Anti-pattern — Multiple `use()` calls in one component:**
+```jsx
+// ❌ BAD: Both use() calls suspend within the same component,
+// which means they share the nearest parent Suspense boundary.
+// Resolution of one promise triggers a re-render that re-suspends
+// for the other, causing the same fallback thrashing.
+function CombinedView({
+    promise1,
+    promise2,
+}: {
+    promise1: Promise<Component1Data>;
+    promise2: Promise<Component2Data>;
+}) {
+    const data1 = use(promise1);
+    const data2 = use(promise2);
+    return (
+        <>
+            <Component1 resolved={data1} />
+            <Component2 resolved={data2} />
+        </>
+    );
+}
+
+<Suspense fallback={<ComponentsSkeleton />}>
+    <CombinedView promise1={promise1} promise2={promise2} />
+</Suspense>
+```
+
+**Anti-pattern — Nested Await inside one boundary:**
+```jsx
+// ❌ BAD: promise2 cannot even begin to resolve until promise1 is done,
+// creating an artificial waterfall on top of the shared-boundary problem.
+<Suspense fallback={<ComponentsSkeleton />}>
+    <Await resolve={promise1}>
+        {(resolved1) => (
+            <>
+                <Component1 resolved={resolved1} />
+                <Await resolve={promise2}>
+                    {(resolved2) => <Component2 resolved={resolved2} />}
+                </Await>
+            </>
+        )}
+    </Await>
+</Suspense>
+```
+
+- **Exception:** Truly dependent promises (e.g., fetching details after a list) may share a boundary because they represent one logical loading unit
 
 **Component Exports:**
 ```typescript
@@ -236,6 +347,12 @@ export default function MyComponent() {}
 // ✅ Named exports for types/utilities
 export interface MyComponentProps {}
 ```
+
+**Styling:**
+- Use Tailwind utility classes
+- Use design tokens: `bg-foreground`, `text-muted-foreground` (not hard-coded colors)
+- Use `cn()` utility from `@/lib/utils` to merge class names
+- Responsive breakpoints: `sm`, `md`, `lg`, `xl`, `2xl`
 
 ### i18n
 ```typescript
