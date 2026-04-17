@@ -114,14 +114,6 @@ type Story = StoryObj<typeof ProductView>;
 export const Default: Story = {
     args: {
         product: mockStandardProductOrderable.product as any,
-        category: {
-            id: 'mens-clothing-suits',
-            name: 'Suits',
-            parentCategoryTree: [
-                { id: 'mens', name: 'Mens' },
-                { id: 'mens-clothing', name: 'Clothing' },
-            ],
-        } as any,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -139,20 +131,5 @@ export const Default: Story = {
         // Check Add to Cart
         const addToCart = canvas.getByRole('button', { name: /add to cart/i });
         await expect(addToCart).toBeInTheDocument();
-
-        // Check Breadcrumbs
-        await expect(canvas.getByText('Mens')).toBeInTheDocument();
-        await expect(canvas.getByText('Clothing')).toBeInTheDocument();
-    },
-};
-
-export const WithoutBreadcrumbs: Story = {
-    args: {
-        product: mockStandardProductOrderable.product as any,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByRole('heading', { level: 1 })).toBeInTheDocument();
     },
 };

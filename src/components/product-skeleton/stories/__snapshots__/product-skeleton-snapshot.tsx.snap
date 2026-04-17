@@ -1,401 +1,216 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ProductSkeleton stories snapshot > Default story renders and matches snapshot 1`] = `
+exports[`ProductContentSkeleton stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="min-h-screen bg-background"
+    class="space-y-8"
     data-testid="product-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-12"
     >
       <div
-        class="mb-8"
-        data-testid="promo-content-skeleton"
-      />
-      <div
-        class="block md:hidden mb-8"
-        data-testid="mobile-title-skeleton"
+        class="order-1"
       >
         <div
-          class="bg-accent animate-pulse rounded-md h-8 w-3/4 mb-2"
-          data-slot="skeleton"
-        />
-        <div
-          class="bg-accent animate-pulse rounded-md h-4 w-full mb-1"
-          data-slot="skeleton"
-        />
-        <div
-          class="bg-accent animate-pulse rounded-md h-4 w-2/3"
-          data-slot="skeleton"
-        />
-      </div>
-      <div
-        class="space-y-8"
-      >
-        <div
-          class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 space-y-6"
+          class="space-y-4"
+          data-testid="image-gallery-skeleton"
         >
           <div
-            class="order-1"
-          >
-            <div
-              class="space-y-4"
-              data-testid="image-gallery-skeleton"
-            >
-              <div
-                class="bg-accent animate-pulse aspect-square w-full rounded-lg"
-                data-slot="skeleton"
-                data-testid="main-image-skeleton"
-              />
-              <div
-                class="flex space-x-2 overflow-x-auto"
-                data-testid="thumbnails-skeleton"
-              >
-                <div
-                  class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
-                  data-slot="skeleton"
-                />
-                <div
-                  class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
-                  data-slot="skeleton"
-                />
-                <div
-                  class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
-                  data-slot="skeleton"
-                />
-                <div
-                  class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
-                  data-slot="skeleton"
-                />
-                <div
-                  class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
-                  data-slot="skeleton"
-                />
-              </div>
-            </div>
-          </div>
+            class="bg-accent animate-pulse aspect-square w-full rounded-lg"
+            data-slot="skeleton"
+            data-testid="main-image-skeleton"
+          />
           <div
-            class="order-2"
+            class="flex space-x-2 overflow-x-auto"
+            data-testid="thumbnails-skeleton"
           >
             <div
-              class="grid gap-4"
-              data-testid="product-info-skeleton"
-            >
-              <div
-                class="hidden md:block"
-                data-testid="breadcrumbs-skeleton"
-              >
-                <nav
-                  aria-label="Breadcrumb"
-                  class="mb-6"
-                >
-                  <div
-                    class="flex flex-wrap items-center text-sm"
-                  >
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-5 w-20"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md mx-1 h-3 w-3"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-5 w-24"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md mx-1 h-3 w-3"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-5 w-32"
-                      data-slot="skeleton"
-                    />
-                  </div>
-                </nav>
-              </div>
-              <div
-                class="hidden md:block"
-                data-testid="desktop-title-skeleton"
-              >
-                <div
-                  class="bg-accent animate-pulse rounded-md h-9 w-3/4 mb-2"
-                  data-slot="skeleton"
-                />
-                <div
-                  class="bg-accent animate-pulse rounded-md h-5 w-full mb-1"
-                  data-slot="skeleton"
-                />
-                <div
-                  class="bg-accent animate-pulse rounded-md h-5 w-2/3"
-                  data-slot="skeleton"
-                />
-              </div>
-              <div
-                data-testid="price-skeleton"
-              >
-                <div
-                  class="bg-accent animate-pulse rounded-md h-7 w-24"
-                  data-slot="skeleton"
-                />
-              </div>
-              <div
-                data-testid="inventory-skeleton"
-              >
-                <div
-                  class="bg-accent animate-pulse rounded-md h-5 w-32"
-                  data-slot="skeleton"
-                />
-              </div>
-              <div
-                class="space-y-4"
-                data-testid="variants-skeleton"
-              >
-                <div>
-                  <div
-                    class="bg-accent animate-pulse rounded-md h-5 w-20 mb-2"
-                    data-slot="skeleton"
-                  />
-                  <div
-                    class="flex space-x-2"
-                  >
-                    <div
-                      class="bg-accent animate-pulse h-10 w-10 rounded-full"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse h-10 w-10 rounded-full"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse h-10 w-10 rounded-full"
-                      data-slot="skeleton"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div
-                    class="bg-accent animate-pulse rounded-md h-5 w-16 mb-2"
-                    data-slot="skeleton"
-                  />
-                  <div
-                    class="flex space-x-2"
-                  >
-                    <div
-                      class="bg-accent animate-pulse h-10 w-14 rounded-md"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse h-10 w-14 rounded-md"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse h-10 w-14 rounded-md"
-                      data-slot="skeleton"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                data-testid="quantity-skeleton"
-              >
-                <div
-                  class="bg-accent animate-pulse rounded-md h-5 w-20 mb-2"
-                  data-slot="skeleton"
-                />
-                <div
-                  class="bg-accent animate-pulse h-10 w-24 rounded-md"
-                  data-slot="skeleton"
-                />
-              </div>
-              <div
-                class="mt-6"
-                data-testid="delivery-options-skeleton"
-              >
-                <div
-                  class="bg-accent animate-pulse rounded-md h-5 w-32 mb-3"
-                  data-slot="skeleton"
-                />
-                <div
-                  class="space-y-2"
-                >
-                  <div
-                    class="bg-accent animate-pulse h-12 w-full rounded-md"
-                    data-slot="skeleton"
-                  />
-                  <div
-                    class="bg-accent animate-pulse h-12 w-full rounded-md"
-                    data-slot="skeleton"
-                  />
-                </div>
-              </div>
-              <div
-                class="space-y-2"
-                data-testid="features-skeleton"
-              >
-                <div
-                  class="bg-accent animate-pulse rounded-md h-4 w-full"
-                  data-slot="skeleton"
-                />
-                <div
-                  class="bg-accent animate-pulse rounded-md h-4 w-5/6"
-                  data-slot="skeleton"
-                />
-                <div
-                  class="bg-accent animate-pulse rounded-md h-4 w-4/5"
-                  data-slot="skeleton"
-                />
-              </div>
-              <div
-                class="mt-6"
-                data-testid="cart-actions-skeleton"
-              >
-                <div
-                  class="flex flex-col gap-3"
-                >
-                  <div
-                    class="bg-accent animate-pulse h-12 w-full rounded-md"
-                    data-slot="skeleton"
-                    data-testid="add-to-cart-skeleton"
-                  />
-                  <div
-                    class="grid grid-cols-2 gap-3"
-                  >
-                    <div
-                      class="bg-accent animate-pulse h-12 w-full rounded-md"
-                      data-slot="skeleton"
-                      data-testid="wishlist-skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse h-12 w-full rounded-md"
-                      data-slot="skeleton"
-                      data-testid="share-skeleton"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
+              data-slot="skeleton"
+            />
           </div>
         </div>
+      </div>
+      <div
+        class="order-2"
+      >
         <div
-          class="mt-16"
+          class="grid gap-4"
+          data-testid="product-info-skeleton"
         >
           <div
-            data-testid="recommended-products-skeleton"
+            data-testid="desktop-title-skeleton"
           >
             <div
-              class="space-y-6"
-              data-testid="recommendation-section-skeleton"
-            >
+              class="bg-accent animate-pulse rounded-md h-9 w-3/4 mb-2"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-5 w-full mb-1"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-5 w-2/3"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            data-testid="price-skeleton"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-7 w-24"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            data-testid="inventory-skeleton"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-5 w-32"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="space-y-4"
+            data-testid="variants-skeleton"
+          >
+            <div>
               <div
-                class="bg-accent animate-pulse rounded-md h-8 w-48"
+                class="bg-accent animate-pulse rounded-md h-5 w-20 mb-2"
                 data-slot="skeleton"
               />
               <div
-                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+                class="flex space-x-2"
               >
                 <div
-                  class="space-y-3"
-                  data-testid="recommended-product-item"
-                >
-                  <div
-                    class="bg-accent animate-pulse aspect-square w-full rounded-md"
-                    data-slot="skeleton"
-                  />
-                  <div
-                    class="space-y-2"
-                  >
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-4 w-full"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-4 w-3/4"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-5 w-16"
-                      data-slot="skeleton"
-                    />
-                  </div>
-                </div>
+                  class="bg-accent animate-pulse h-10 w-10 rounded-full"
+                  data-slot="skeleton"
+                />
                 <div
-                  class="space-y-3"
-                  data-testid="recommended-product-item"
-                >
-                  <div
-                    class="bg-accent animate-pulse aspect-square w-full rounded-md"
-                    data-slot="skeleton"
-                  />
-                  <div
-                    class="space-y-2"
-                  >
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-4 w-full"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-4 w-3/4"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-5 w-16"
-                      data-slot="skeleton"
-                    />
-                  </div>
-                </div>
+                  class="bg-accent animate-pulse h-10 w-10 rounded-full"
+                  data-slot="skeleton"
+                />
                 <div
-                  class="space-y-3"
-                  data-testid="recommended-product-item"
-                >
-                  <div
-                    class="bg-accent animate-pulse aspect-square w-full rounded-md"
-                    data-slot="skeleton"
-                  />
-                  <div
-                    class="space-y-2"
-                  >
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-4 w-full"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-4 w-3/4"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-5 w-16"
-                      data-slot="skeleton"
-                    />
-                  </div>
-                </div>
+                  class="bg-accent animate-pulse h-10 w-10 rounded-full"
+                  data-slot="skeleton"
+                />
+              </div>
+            </div>
+            <div>
+              <div
+                class="bg-accent animate-pulse rounded-md h-5 w-16 mb-2"
+                data-slot="skeleton"
+              />
+              <div
+                class="flex space-x-2"
+              >
                 <div
-                  class="space-y-3"
-                  data-testid="recommended-product-item"
-                >
-                  <div
-                    class="bg-accent animate-pulse aspect-square w-full rounded-md"
-                    data-slot="skeleton"
-                  />
-                  <div
-                    class="space-y-2"
-                  >
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-4 w-full"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-4 w-3/4"
-                      data-slot="skeleton"
-                    />
-                    <div
-                      class="bg-accent animate-pulse rounded-md h-5 w-16"
-                      data-slot="skeleton"
-                    />
-                  </div>
-                </div>
+                  class="bg-accent animate-pulse h-10 w-14 rounded-md"
+                  data-slot="skeleton"
+                />
+                <div
+                  class="bg-accent animate-pulse h-10 w-14 rounded-md"
+                  data-slot="skeleton"
+                />
+                <div
+                  class="bg-accent animate-pulse h-10 w-14 rounded-md"
+                  data-slot="skeleton"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            data-testid="quantity-skeleton"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-5 w-20 mb-2"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse h-10 w-24 rounded-md"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="mt-6"
+            data-testid="delivery-options-skeleton"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-5 w-32 mb-3"
+              data-slot="skeleton"
+            />
+            <div
+              class="space-y-2"
+            >
+              <div
+                class="bg-accent animate-pulse h-12 w-full rounded-md"
+                data-slot="skeleton"
+              />
+              <div
+                class="bg-accent animate-pulse h-12 w-full rounded-md"
+                data-slot="skeleton"
+              />
+            </div>
+          </div>
+          <div
+            class="space-y-2"
+            data-testid="features-skeleton"
+          >
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-full"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-5/6"
+              data-slot="skeleton"
+            />
+            <div
+              class="bg-accent animate-pulse rounded-md h-4 w-4/5"
+              data-slot="skeleton"
+            />
+          </div>
+          <div
+            class="mt-6"
+            data-testid="cart-actions-skeleton"
+          >
+            <div
+              class="flex flex-col gap-3"
+            >
+              <div
+                class="bg-accent animate-pulse h-12 w-full rounded-md"
+                data-slot="skeleton"
+                data-testid="add-to-cart-skeleton"
+              />
+              <div
+                class="grid grid-cols-2 gap-3"
+              >
+                <div
+                  class="bg-accent animate-pulse h-12 w-full rounded-md"
+                  data-slot="skeleton"
+                  data-testid="wishlist-skeleton"
+                />
+                <div
+                  class="bg-accent animate-pulse h-12 w-full rounded-md"
+                  data-slot="skeleton"
+                  data-testid="share-skeleton"
+                />
               </div>
             </div>
           </div>

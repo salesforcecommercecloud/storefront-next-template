@@ -139,33 +139,6 @@ describe('ProductView', () => {
         });
     });
 
-    describe('breadcrumbs', () => {
-        test('should render breadcrumbs when category is provided', () => {
-            const mockCategory = {
-                id: 'mens-clothing',
-                name: "Men's Clothing",
-                parentCategoryTree: [
-                    { id: 'root', name: 'All Categories' },
-                    { id: 'mens', name: 'Men' },
-                    { id: 'mens-clothing', name: "Men's Clothing" },
-                ],
-            };
-
-            renderProductView({ product: mockProduct, category: mockCategory });
-
-            // Breadcrumb items should be visible
-            expect(screen.getByText('All Categories')).toBeInTheDocument();
-            expect(screen.getByText('Men')).toBeInTheDocument();
-        });
-
-        test('should not render breadcrumbs when category is not provided', () => {
-            renderProductView({ product: mockProduct });
-
-            // No breadcrumb navigation should be present
-            expect(screen.queryByRole('navigation', { name: /breadcrumb/i })).not.toBeInTheDocument();
-        });
-    });
-
     describe('product types', () => {
         test('should render correctly for standard product', () => {
             renderProductView({ product: standardProd });
@@ -284,23 +257,6 @@ describe('ProductView', () => {
             expect(screen.getByRole('button', { name: /add to wishlist/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
         });
-
-        test('provides proper navigation structure', () => {
-            const mockCategory = {
-                id: 'mens-clothing',
-                name: "Men's Clothing",
-                parentCategoryTree: [
-                    { id: 'root', name: 'All Categories' },
-                    { id: 'mens', name: 'Men' },
-                ],
-            };
-
-            renderProductView({ product: mockProduct, category: mockCategory });
-
-            // Should have proper navigation structure
-            expect(screen.getByText('All Categories')).toBeInTheDocument();
-            expect(screen.getByText('Men')).toBeInTheDocument();
-        });
     });
 
     describe('Component Integration', () => {
@@ -342,30 +298,6 @@ describe('ProductView', () => {
             expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /add to wishlist/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
-        });
-
-        test('handles product with category breadcrumbs', () => {
-            const mockCategory = {
-                id: 'test-category',
-                name: 'Test Category',
-                parentCategoryTree: [
-                    { id: 'root', name: 'Home' },
-                    { id: 'test-category', name: 'Test Category' },
-                ],
-            };
-
-            renderProductView({ product: mockProduct, category: mockCategory });
-
-            expect(screen.getByText('Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit')).toBeInTheDocument();
-            expect(screen.getByText('Home')).toBeInTheDocument();
-            expect(screen.getByText('Test Category')).toBeInTheDocument();
-        });
-
-        test('renders product without category', () => {
-            renderProductView({ product: mockProduct });
-
-            expect(screen.getByText('Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit')).toBeInTheDocument();
-            expect(screen.queryByText('Home')).not.toBeInTheDocument();
         });
 
         test('handles product with different pricing structures', () => {

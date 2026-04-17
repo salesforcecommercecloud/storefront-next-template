@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Fragment, Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
+import { Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
 import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
 import { ApiError, type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCategory } from '@/lib/api/categories';
@@ -364,7 +364,7 @@ export default function CategoryPage({
     );
 
     return (
-        <Fragment>
+        <>
             <SeoMeta
                 title={category.name || category.id}
                 description={category.pageDescription || category.description}
@@ -465,6 +465,6 @@ export default function CategoryPage({
             <Suspense fallback={null}>
                 <CategoryJsonLd categorySchemaPromise={categorySchema} />
             </Suspense>
-        </Fragment>
+        </>
     );
 }

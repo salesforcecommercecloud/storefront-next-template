@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 15, 2026)
 
+- Fix re-render cycles on PDP due to shared Suspense boundary ([#1434](https://github.com/commerce-emu/storefront-next/pull/1434))
 - User registration verified badge and spinner (@W-22015539)
 - Update order summary UX (@W-22015905)
 - UX changes on checkout page (@W-22015673)

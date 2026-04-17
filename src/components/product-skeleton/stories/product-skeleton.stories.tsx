@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import ProductSkeleton from '../index';
+import ProductContentSkeleton from '../index';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
@@ -57,9 +57,9 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     return <div ref={containerRef}>{children}</div>;
 }
 
-const meta: Meta<typeof ProductSkeleton> = {
-    title: 'Components/ProductSkeleton',
-    component: ProductSkeleton,
+const meta: Meta<typeof ProductContentSkeleton> = {
+    title: 'Components/ProductContentSkeleton',
+    component: ProductContentSkeleton,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'fullscreen',
@@ -74,7 +74,7 @@ const meta: Meta<typeof ProductSkeleton> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof ProductSkeleton>;
+type Story = StoryObj<typeof ProductContentSkeleton>;
 
 export const Default: Story = {
     args: {},

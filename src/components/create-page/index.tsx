@@ -65,7 +65,7 @@ export type RouteComponentProps<TLoaderData = any> = LoaderDataProp<TLoaderData>
  * // Product page without page key (no Fragment wrapping)
  * const ProductPage = createPage({
  *   component: ProductView,
- *   fallback: <ProductSkeleton />
+ *   fallback: <ProductViewSkeleton />
  * });
  * ```
  */

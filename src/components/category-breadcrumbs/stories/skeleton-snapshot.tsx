@@ -15,16 +15,16 @@
  */
 import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
-import * as ProductContentSkeletonStories from './product-skeleton.stories';
+import * as CategoryBreadcrumbsSkeletonStories from './skeleton.stories';
 import { render, cleanup } from '@testing-library/react';
 
-const composed = composeStories(ProductContentSkeletonStories);
+const composed = composeStories(CategoryBreadcrumbsSkeletonStories);
 
 afterEach(() => {
     cleanup();
 });
 
-describe('ProductContentSkeleton stories snapshot', () => {
+describe('CategoryBreadcrumbsSkeleton stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);
