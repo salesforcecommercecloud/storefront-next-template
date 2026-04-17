@@ -17,6 +17,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useBasketWithProducts } from './use-basket-with-products';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { findImageGroupBy } from '@/lib/image-groups-utils';
 
 // Mock React Router's useFetcher
 const mockFetcher = {
@@ -36,6 +37,8 @@ vi.mock('@/lib/image-groups-utils', () => ({
         images: [{ link: 'https://example.com/small.jpg', alt: 'Small image' }],
     })),
 }));
+
+const mockedFindImageGroupBy = vi.mocked(findImageGroupBy);
 
 describe('useBasketWithProducts', () => {
     const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
@@ -198,5 +201,60 @@ describe('useBasketWithProducts', () => {
 
         // load should not be called because data already exists
         expect(mockFetcher.load).not.toHaveBeenCalled();
+    });
+
+    it('should trigger fetch when basket includes unfetched product IDs', () => {
+        // product-2 is missing from existing fetcher data
+        mockFetcher.data = {
+            'product-1': mockProductsData['product-1'],
+        };
+
+        renderHook(() => useBasketWithProducts(mockBasket));
+
+        expect(mockFetcher.load).toHaveBeenCalledWith('/resource/basket-products');
+    });
+
+    it('derives variation values from single-value variation attributes when basket variation values are missing', async () => {
+        const basketWithoutVariationValues: ShopperBasketsV2.schemas['Basket'] = {
+            basketId: 'basket-123',
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'product-1',
+                    productName: 'Test Product 1',
+                    quantity: 1,
+                    price: 50,
+                },
+            ],
+        };
+        mockFetcher.data = {
+            'product-1': {
+                ...mockProductsData['product-1'],
+                variationValues: undefined,
+                variationAttributes: [{ id: 'color', name: 'Color', values: [{ value: 'yellow', name: 'Yellow' }] }],
+            },
+        };
+
+        const { result } = renderHook(() => useBasketWithProducts(basketWithoutVariationValues));
+
+        await waitFor(() => {
+            expect(result.current.productItems.length).toBe(1);
+        });
+
+        expect(mockedFindImageGroupBy).not.toHaveBeenCalled();
+        expect(result.current.productItems[0].variationValues).toEqual({ color: 'yellow' });
+    });
+
+    it('uses variation image matching when explicit variation values exist', async () => {
+        mockFetcher.data = mockProductsData;
+
+        renderHook(() => useBasketWithProducts(mockBasket));
+
+        await waitFor(() => {
+            expect(mockedFindImageGroupBy).toHaveBeenCalledWith(expect.any(Array), {
+                viewType: 'small',
+                selectedVariationAttributes: { color: 'red', size: 'M' },
+            });
+        });
     });
 });

@@ -19,7 +19,7 @@
  * Uses a resource route to fetch product data
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFetcher } from 'react-router';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
@@ -39,6 +39,41 @@ interface UseBasketWithProductsResult {
     error: Error | null;
 }
 
+const deriveVariationValuesFromAttributes = (
+    variationAttributes: ShopperProducts.schemas['VariationAttribute'][] | undefined
+): Record<string, string> | undefined => {
+    if (!variationAttributes?.length) return undefined;
+
+    const selected = variationAttributes.reduce<Record<string, string>>((acc, attribute) => {
+        const value = attribute.values?.length === 1 ? attribute.values[0]?.value : undefined;
+        if (attribute.id && value) {
+            acc[attribute.id] = value;
+        }
+        return acc;
+    }, {});
+
+    return Object.keys(selected).length > 0 ? selected : undefined;
+};
+
+const normalizeVariationValues = (value: unknown): Record<string, string> | undefined => {
+    if (!value || typeof value !== 'object') return undefined;
+    const entries = Object.entries(value).filter(
+        (entry): entry is [string, string] => typeof entry[0] === 'string' && typeof entry[1] === 'string'
+    );
+    return entries.length > 0 ? Object.fromEntries(entries) : undefined;
+};
+
+const getFallbackImageGroup = (
+    imageGroups: ShopperProducts.schemas['ImageGroup'][] | undefined
+): ShopperProducts.schemas['ImageGroup'] | undefined => {
+    if (!imageGroups?.length) return undefined;
+
+    const smallGroups = imageGroups.filter((group) => group.viewType === 'small');
+    if (smallGroups.length === 0) return undefined;
+
+    return smallGroups.find((group) => !group.variationAttributes?.length) ?? smallGroups[0];
+};
+
 /**
  * Fetches full product details for items in the basket
  * Merges product data (images, variations) with basket product items
@@ -47,20 +82,28 @@ export function useBasketWithProducts(
     basket: ShopperBasketsV2.schemas['Basket'] | undefined
 ): UseBasketWithProductsResult {
     const fetcher = useFetcher<Record<string, ShopperProducts.schemas['Product']>>();
+    const { state: fetcherState, data: fetcherData, load: loadProducts } = fetcher;
     const [productItems, setProductItems] = useState<BasketItemWithProduct[]>([]);
     const [error, setError] = useState<Error | null>(null);
+    const basketProductIds = useMemo(
+        () => basket?.productItems?.map((item) => item.productId).filter((id): id is string => Boolean(id)) ?? [],
+        [basket?.productItems]
+    );
 
     useEffect(() => {
-        if (!basket?.productItems?.length) {
+        if (!basketProductIds.length) {
             setProductItems([]);
             return;
         }
 
-        // Trigger fetch of product details via resource route
-        if (fetcher.state === 'idle' && !fetcher.data) {
-            void fetcher.load('/resource/basket-products');
+        const existingProductIds = new Set(fetcherData ? Object.keys(fetcherData) : []);
+        const hasUnfetchedProducts = basketProductIds.some((id) => !existingProductIds.has(id));
+
+        // Trigger fetch when we have no data yet, or basket contains product IDs not yet fetched.
+        if (fetcherState === 'idle' && (!fetcherData || hasUnfetchedProducts)) {
+            void loadProducts('/resource/basket-products');
         }
-    }, [basket, fetcher]);
+    }, [basketProductIds, fetcherState, fetcherData, loadProducts]);
 
     useEffect(() => {
         if (!basket?.productItems?.length) {
@@ -69,13 +112,20 @@ export function useBasketWithProducts(
         }
 
         // If we don't have product data yet, use basic basket items
-        if (!fetcher.data) {
+        if (!fetcherData) {
             setProductItems(basket.productItems);
             return;
         }
 
         try {
-            const productsById = fetcher.data;
+            const productsById = fetcherData;
+            const hasAllCurrentProductData = basketProductIds.every((productId) => Boolean(productsById[productId]));
+
+            // Avoid mixing stale fetcher data with the current basket while a refresh is in flight.
+            if (!hasAllCurrentProductData) {
+                setProductItems(basket.productItems);
+                return;
+            }
 
             // Merge basket items with full product data
             const enrichedItems: BasketItemWithProduct[] = basket.productItems.map((item) => {
@@ -85,12 +135,24 @@ export function useBasketWithProducts(
                 }
 
                 const fullProduct = productsById[productId];
+                const explicitImageVariationValues =
+                    normalizeVariationValues(item.variationValues) ||
+                    normalizeVariationValues(fullProduct.variationValues);
+                const derivedDisplayVariationValues = deriveVariationValuesFromAttributes(
+                    fullProduct.variationAttributes
+                );
+                const resolvedVariationValues = explicitImageVariationValues || derivedDisplayVariationValues;
 
-                // Find the correct image for this variation
-                const imageGroup = findImageGroupBy(fullProduct.imageGroups, {
-                    viewType: 'small',
-                    selectedVariationAttributes: item.variationValues,
-                });
+                // SKU-first image strategy:
+                // 1) Prefer SKU-resolved product image groups directly (fallback group)
+                // 2) Only apply variation filtering when explicit variation values are present
+                const imageGroup =
+                    (explicitImageVariationValues
+                        ? findImageGroupBy(fullProduct.imageGroups, {
+                              viewType: 'small',
+                              selectedVariationAttributes: explicitImageVariationValues,
+                          })
+                        : undefined) ?? getFallbackImageGroup(fullProduct.imageGroups);
 
                 return {
                     ...item,
@@ -100,8 +162,8 @@ export function useBasketWithProducts(
                     quantity: item.quantity,
                     price: item.price,
                     priceAfterItemDiscount: item.priceAfterItemDiscount,
-                    // Keep fullProduct.variationValues unless item has its own
-                    variationValues: item.variationValues || fullProduct.variationValues,
+                    // Keep line-item values, then product values, then derive from single-value variation attrs.
+                    variationValues: resolvedVariationValues,
                     // Keep fullProduct.variationAttributes for proper display names
                     variationAttributes: fullProduct.variationAttributes,
                     // Use the correct image for the variation
@@ -116,11 +178,11 @@ export function useBasketWithProducts(
             // Fallback to basket items without enrichment
             setProductItems(basket.productItems);
         }
-    }, [basket, fetcher.data]);
+    }, [basket, basketProductIds, fetcherData]);
 
     return {
         productItems,
-        isLoading: fetcher.state === 'loading',
+        isLoading: fetcherState === 'loading',
         error,
     };
 }
