@@ -84,20 +84,16 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
             // Get product image
             const imageGroup = findImageGroupBy(productData?.imageGroups, {
                 viewType: 'small',
-                selectedVariationAttributes: item.variationValues,
+                selectedVariationAttributes: productData?.variationValues,
             });
             const image = imageGroup?.images?.[0];
             const imageUrl = toImageUrl({ image, config }) || '';
 
-            // Get variation attributes
-            const displayVariationValues = getDisplayVariationValues(item.variationAttributes, item.variationValues);
-
-            // Resolve effective item: use item's priceAdjustments source, or fall back to shipment-level item
-            const adjustmentsSource =
-                (item.priceAdjustments?.length ?? 0) > 0
-                    ? item
-                    : basket?.shipments?.flatMap((s) => s.productItems ?? []).find((si) => si.itemId === item.itemId);
-            const effectiveItem = adjustmentsSource ?? item;
+            // Get variation attributes from product API data (basket items don't carry variation metadata)
+            const displayVariationValues = getDisplayVariationValues(
+                productData?.variationAttributes,
+                productData?.variationValues
+            );
 
             // Calculate savings using getPriceData (same logic as ProductPrice component)
             const priceData = getPriceData(enrichedProduct, { quantity: 1 });
@@ -135,12 +131,12 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                                     {productName}
                                 </Link>
                                 <div className="flex flex-col items-end gap-1 shrink-0">
-                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                    <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 flex items-center gap-1">
                                         <Truck className="size-3" />
                                         {t('myCart.delivery')}
                                     </span>
                                     {hasSavings && (
-                                        <span className="text-xs font-medium text-muted-foreground">
+                                        <span className="text-xs font-medium text-muted-foreground bg-muted px-1.5 py-0.5">
                                             {t('myCart.saved', {
                                                 amount: formatCurrency(savings, i18n.language, currency),
                                             })}
@@ -184,7 +180,7 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                 </div>
             );
         });
-    }, [basket?.productItems, basket?.shipments, productMap, currency, i18n.language, config, t, tCart]);
+    }, [basket?.productItems, productMap, currency, i18n.language, config, t, tCart]);
 
     return (
         <div className="w-full">

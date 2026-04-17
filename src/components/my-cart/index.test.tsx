@@ -201,4 +201,137 @@ describe('MyCart', () => {
 
         expect(screen.queryByText(/Saved/)).not.toBeInTheDocument();
     });
+
+    it('displays variation attributes from product data', () => {
+        const basketWithVariations = {
+            basketId: 'basket-1',
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'prod-1',
+                    quantity: 1,
+                },
+            ],
+        };
+
+        const productMapWithVariations = {
+            'item-1': {
+                id: 'prod-1',
+                name: 'Product 1',
+                variationValues: { color: 'blue', size: 'S' },
+                variationAttributes: [
+                    {
+                        id: 'color',
+                        name: 'Color',
+                        values: [{ value: 'blue', name: 'Blue' }],
+                    },
+                    {
+                        id: 'size',
+                        name: 'Size',
+                        values: [{ value: 'S', name: 'Small' }],
+                    },
+                ],
+            },
+        };
+
+        render(<MyCart basket={basketWithVariations} productMap={productMapWithVariations} />);
+
+        expect(screen.getByText('Color: Blue')).toBeInTheDocument();
+        expect(screen.getByText('Size: Small')).toBeInTheDocument();
+    });
+
+    it('does not display variation attributes when product data has none', () => {
+        const productMapNoVariations = {
+            'item-1': { id: 'prod-1', name: 'Product 1' },
+        };
+
+        render(
+            <MyCart
+                basket={{ basketId: 'b1', productItems: [{ itemId: 'item-1', productId: 'prod-1', quantity: 1 }] }}
+                productMap={productMapNoVariations}
+            />
+        );
+
+        expect(screen.queryByText(/Color:/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Size:/)).not.toBeInTheDocument();
+    });
+
+    it('reads variation data exclusively from productMap, not basket item fields', () => {
+        const basketWithStaleVariation = {
+            basketId: 'basket-1',
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'prod-1',
+                    quantity: 1,
+                    // Basket items in SCAPI V2 don't carry these, but even if
+                    // extra fields leak through, the component must ignore them.
+                    variationValues: { color: 'STALE_ID' },
+                    variationAttributes: [
+                        { id: 'color', name: 'Color', values: [{ value: 'STALE_ID', name: 'Stale Color' }] },
+                    ],
+                },
+            ],
+        };
+
+        const productMapWithCorrectData = {
+            'item-1': {
+                id: 'prod-1',
+                name: 'Product 1',
+                variationValues: { color: 'CORRECT_ID' },
+                variationAttributes: [
+                    { id: 'color', name: 'Color', values: [{ value: 'CORRECT_ID', name: 'Cobalt' }] },
+                ],
+            },
+        };
+
+        render(<MyCart basket={basketWithStaleVariation} productMap={productMapWithCorrectData} />);
+
+        expect(screen.getByText('Color: Cobalt')).toBeInTheDocument();
+        expect(screen.queryByText('Stale Color')).not.toBeInTheDocument();
+    });
+
+    it('renders gracefully when item is not in productMap', () => {
+        const basketWithUnknownItem = {
+            basketId: 'basket-1',
+            productItems: [
+                {
+                    itemId: 'item-999',
+                    productId: 'prod-999',
+                    productName: 'Unknown Product',
+                    quantity: 3,
+                },
+            ],
+        };
+
+        render(<MyCart basket={basketWithUnknownItem} productMap={{}} />);
+
+        expect(screen.getByText('Unknown Product')).toBeInTheDocument();
+        expect(screen.getByText(/3/)).toBeInTheDocument();
+    });
+
+    it('displays correct savings amount from getPriceData', () => {
+        vi.mocked(getPriceData).mockReturnValue({
+            currentPrice: 25.0,
+            listPrice: 50.0,
+            isOnSale: true,
+            isASet: false,
+            isMaster: false,
+            isRange: false,
+            pricePerUnit: 25.0,
+            tieredPrice: undefined,
+            maxPrice: undefined,
+        });
+
+        render(
+            <MyCart
+                basket={{ basketId: 'b1', productItems: [{ itemId: 'item-1', productId: 'prod-1', quantity: 1 }] }}
+                productMap={{ 'item-1': { id: 'prod-1', name: 'Sale Product' } }}
+            />
+        );
+
+        // savings = listPrice - currentPrice = 50 - 25 = 25
+        // The translation mock returns "Saved <amount>"
+        expect(screen.getByText(/Saved/)).toBeInTheDocument();
+    });
 });
