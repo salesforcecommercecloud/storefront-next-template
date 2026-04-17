@@ -277,7 +277,7 @@ Scenario('Registered shopper can select saved billing address from dropdown', as
 
     await checkoutPage.addMultipleAddressesToProfile([
         {
-            addressId: 'TestAddr_2',
+            addressId: `addr_billing_${Date.now()}_1`,
             firstName: 'Billing',
             lastName: 'Address1',
             address1: '111 Billing Street',
@@ -289,7 +289,7 @@ Scenario('Registered shopper can select saved billing address from dropdown', as
             preferred: false,
         },
         {
-            addressId: 'TestAddr_3',
+            addressId: `addr_billing_${Date.now()}_2`,
             firstName: 'Billing',
             lastName: 'Address2',
             address1: '222 Billing Avenue',
@@ -301,7 +301,7 @@ Scenario('Registered shopper can select saved billing address from dropdown', as
             preferred: false,
         },
         {
-            addressId: 'TestAddr_4',
+            addressId: `addr_billing_${Date.now()}_3`,
             firstName: 'Billing',
             lastName: 'Address3',
             address1: '333 Billing Boulevard',

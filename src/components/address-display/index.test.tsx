@@ -17,7 +17,10 @@
 import { render, screen } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import AddressDisplay from './index';
+import { getTranslation } from '@/lib/i18next';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+
+const { t } = getTranslation();
 
 const mockUSMinimalAddress: ShopperCustomers.schemas['CustomerAddress'] = {
     addressId: 'address-1',
@@ -253,6 +256,46 @@ describe('AddressDisplay', () => {
 
             expect(screen.getByText('24 Sussex Drive')).toBeInTheDocument();
             expect(screen.getByText('K1M 1M4, Ottawa, Ontario, Canada')).toBeInTheDocument();
+        });
+    });
+
+    describe('Default badge display', () => {
+        test('displays default badge when isPreferred is true and showName is true', () => {
+            render(<AddressDisplay address={mockUSMinimalAddress} showName={true} isPreferred={true} />);
+
+            expect(screen.getByText(t('account:addresses.default'))).toBeInTheDocument();
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+        });
+
+        test('does not display default badge when isPreferred is false', () => {
+            render(<AddressDisplay address={mockUSMinimalAddress} showName={true} isPreferred={false} />);
+
+            expect(screen.queryByText(t('account:addresses.default'))).not.toBeInTheDocument();
+        });
+
+        test('does not display default badge when isPreferred is not provided', () => {
+            render(<AddressDisplay address={mockUSMinimalAddress} showName={true} />);
+
+            expect(screen.queryByText(t('account:addresses.default'))).not.toBeInTheDocument();
+        });
+
+        test('does not display default badge when showName is false even if isPreferred is true', () => {
+            render(<AddressDisplay address={mockUSMinimalAddress} showName={false} isPreferred={true} />);
+
+            // Name is not shown, so badge should not be shown either
+            expect(screen.queryByText(t('account:addresses.default'))).not.toBeInTheDocument();
+        });
+
+        test('displays badge inline with name', () => {
+            const { container } = render(
+                <AddressDisplay address={mockUSMinimalAddress} showName={true} isPreferred={true} />
+            );
+
+            // Badge and name should be in the same flex container
+            const nameContainer = container.querySelector('.flex.items-center.gap-2');
+            expect(nameContainer).toBeInTheDocument();
+            expect(nameContainer?.textContent).toContain('John Doe');
+            expect(nameContainer?.textContent).toContain(t('account:addresses.default'));
         });
     });
 });

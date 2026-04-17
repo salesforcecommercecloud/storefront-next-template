@@ -38,6 +38,7 @@ import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
 
 //lib
 import { FETCHER_STATES } from '@/lib/fetcher-states';
+import { generateAddressId } from '@/lib/address-id-utils';
 
 //types
 import { createCustomerAddressFormSchema, type CustomerAddressFormData } from './index';
@@ -98,7 +99,6 @@ export const CustomerAddressForm = ({
         // @ts-expect-error - zodResolver type mismatch with zod version
         resolver: zodResolver(schema),
         defaultValues: {
-            addressId: initialData?.addressId ?? '',
             firstName: initialData?.firstName || '',
             lastName: initialData?.lastName || '',
             phone: initialData?.phone || '',
@@ -130,7 +130,6 @@ export const CustomerAddressForm = ({
             const address = data;
 
             const formData: CustomerAddressFormData = {
-                addressId: address.addressId ?? '',
                 firstName: address.firstName || '',
                 lastName: address.lastName || '',
                 phone: address.phone || '',
@@ -183,9 +182,9 @@ export const CustomerAddressForm = ({
      * @param data - The validated form data containing address information
      */
     const handleSubmit = form.handleSubmit((data) => {
-        // Auto-generate addressId if not provided (for new addresses)
-        // Use existing addressId for edits, or generate from name for new addresses
-        const addressId = data.addressId || `${data.firstName}_${data.lastName}_${Date.now()}`.replace(/\s+/g, '_');
+        // Auto-generate addressId for all addresses
+        // Use existing addressId for edits, or generate new one for new addresses
+        const addressId = initialData?.addressId || generateAddressId();
 
         // If this is the first address and it's a new address (no initialData), set preferred to true
         const shouldSetPreferred = isFirstAddress && !initialData;

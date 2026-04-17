@@ -26,7 +26,6 @@ describe('customerAddressFormSchema', () => {
     describe('valid data', () => {
         it('should validate when all required fields are provided for US address', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -44,7 +43,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should validate when all required fields are provided for Canadian address', () => {
             const validData = {
-                addressId: 'Work',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -62,7 +60,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should validate without phone field', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -80,7 +77,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should reject with empty phone field', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '',
@@ -98,7 +94,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should validate with addressId', () => {
             const validData = {
-                addressId: 'addr_123',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -116,9 +111,8 @@ describe('customerAddressFormSchema', () => {
     });
 
     describe('addressId validation', () => {
-        it('should reject when addressId is empty (required field)', () => {
-            const invalidData = {
-                addressId: '',
+        it('should validate when addressId is not provided (no longer required)', () => {
+            const validData = {
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -130,32 +124,14 @@ describe('customerAddressFormSchema', () => {
                 preferred: false,
             };
 
-            const result = customerAddressFormSchema.safeParse(invalidData);
-            expect(result.success).toBe(false);
-        });
-
-        it('should reject when addressId is missing (required field)', () => {
-            const invalidData = {
-                firstName: 'John',
-                lastName: 'Doe',
-                phone: '1234567890',
-                countryCode: 'US' as const,
-                address1: '123 Main St',
-                city: 'New York',
-                stateCode: 'NY',
-                postalCode: '10001',
-                preferred: false,
-            };
-
-            const result = customerAddressFormSchema.safeParse(invalidData);
-            expect(result.success).toBe(false);
+            const result = customerAddressFormSchema.safeParse(validData);
+            expect(result.success).toBe(true);
         });
     });
 
     describe('firstName validation', () => {
         it('should reject when firstName is empty', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: '',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -176,7 +152,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should reject when firstName is missing', () => {
             const invalidData = {
-                addressId: 'Home',
                 lastName: 'Doe',
                 phone: '1234567890',
                 countryCode: 'US' as const,
@@ -195,7 +170,6 @@ describe('customerAddressFormSchema', () => {
     describe('lastName validation', () => {
         it('should reject when lastName is empty', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: '',
                 phone: '1234567890',
@@ -218,7 +192,6 @@ describe('customerAddressFormSchema', () => {
     describe('countryCode validation', () => {
         it('should reject invalid country code', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -236,7 +209,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept US country code', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -254,7 +226,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept CA country code', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -274,7 +245,6 @@ describe('customerAddressFormSchema', () => {
     describe('address2 validation', () => {
         it('should accept address with address2 provided', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -293,7 +263,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept address without address2 (optional field)', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -311,7 +280,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept empty string for address2', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -330,7 +298,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should reject when address2 exceeds 256 characters', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -352,7 +319,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept address2 with exactly 256 characters', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -373,7 +339,6 @@ describe('customerAddressFormSchema', () => {
     describe('address1 validation', () => {
         it('should reject when address1 is empty', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -393,7 +358,6 @@ describe('customerAddressFormSchema', () => {
     describe('city validation', () => {
         it('should reject when city is empty', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -413,7 +377,6 @@ describe('customerAddressFormSchema', () => {
     describe('stateCode validation', () => {
         it('should reject when stateCode is missing for US', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -433,7 +396,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should reject when stateCode is missing for CA', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -450,7 +412,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept valid state code for US', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -468,7 +429,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept valid province code for CA', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -488,7 +448,6 @@ describe('customerAddressFormSchema', () => {
     describe('postalCode validation', () => {
         it('should reject when postalCode is empty', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -506,7 +465,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept valid US postal code (5 digits)', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -524,7 +482,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept valid US postal code (5+4 format)', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -542,7 +499,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should reject invalid US postal code', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -563,7 +519,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept valid Canadian postal code', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -581,7 +536,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept valid Canadian postal code without space', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -599,7 +553,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should reject invalid Canadian postal code', () => {
             const invalidData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -622,7 +575,6 @@ describe('customerAddressFormSchema', () => {
     describe('phone validation', () => {
         it('should accept valid phone number with digits only', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -640,7 +592,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept phone number with formatting characters', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '(123) 456-7890',
@@ -658,7 +609,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept any phone format (no validation)', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '123-ABC-7890',
@@ -679,7 +629,6 @@ describe('customerAddressFormSchema', () => {
     describe('preferred validation', () => {
         it('should accept preferred as true', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',
@@ -697,7 +646,6 @@ describe('customerAddressFormSchema', () => {
 
         it('should accept preferred as false', () => {
             const validData = {
-                addressId: 'Home',
                 firstName: 'John',
                 lastName: 'Doe',
                 phone: '1234567890',

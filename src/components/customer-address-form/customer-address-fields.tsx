@@ -100,29 +100,6 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
 
     return (
         <div className="space-y-4">
-            {/* Address Title Field */}
-            <FormField
-                control={form.control}
-                name="addressId"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="text-sm font-medium text-foreground">
-                            {t('addressForm.addressTitleLabel')}
-                        </FormLabel>
-                        <FormControl>
-                            <Input
-                                type="text"
-                                maxLength={256}
-                                placeholder={t('addressForm.addressTitlePlaceholder')}
-                                className="rounded-md"
-                                {...field}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-
             {/* First Name and Last Name Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* First Name Field */}

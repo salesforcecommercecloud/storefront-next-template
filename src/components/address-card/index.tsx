@@ -16,9 +16,8 @@
 
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Spinner } from '@/components/spinner';
 import AddressDisplay from '@/components/address-display';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
@@ -75,21 +74,8 @@ export default function AddressCard({
 
     return (
         <Card className={`gap-0 py-4 relative ${isPreferred ? 'border-primary border-2' : 'border-border'}`}>
-            <CardHeader className="pb-1">
-                <CardTitle className="text-left flex items-center gap-2">
-                    {/* Show address.addressId as the Address Title */}
-                    {address.addressId}
-                    {isPreferred && (
-                        <Badge
-                            variant="secondary"
-                            className="text-xs font-normal bg-primary/10 text-primary rounded-md">
-                            {t('account:addresses.default')}
-                        </Badge>
-                    )}
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="px-6">
-                <AddressDisplay address={address} showName={true} />
+            <CardContent className="px-6 pt-4">
+                <AddressDisplay address={address} showName={true} isPreferred={isPreferred} />
             </CardContent>
             {(onEdit || onRemove || onSetDefault) && (
                 <CardFooter className="gap-4 px-6 pt-2">

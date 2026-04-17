@@ -24,7 +24,6 @@ import { getStorefrontOrigin } from '../utils/cookie-utils';
 interface RegisteredShopperSetupResult {
     signupData: SignupData;
     addressData: {
-        addressId: string;
         firstName: string;
         lastName: string;
         phone: string;
@@ -101,7 +100,6 @@ class RegisteredShopperSetupFlow {
                 confirmPassword: result.signupData.password,
             },
             addressData: {
-                addressId: result.addressData.addressId,
                 firstName: result.addressData.firstName,
                 lastName: result.addressData.lastName,
                 phone: result.addressData.phone,
@@ -184,7 +182,6 @@ class RegisteredShopperSetupFlow {
             return {
                 signupData,
                 addressData: {
-                    addressId: addressData.addressId,
                     firstName: addressData.firstName,
                     lastName: addressData.lastName,
                     phone: addressData.phone,

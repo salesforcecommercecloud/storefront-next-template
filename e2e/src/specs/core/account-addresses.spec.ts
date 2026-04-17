@@ -150,7 +150,6 @@ Scenario('User can add first address', async () => {
 
     // Fill address form
     const addressData = {
-        addressId: 'Home',
         firstName: 'John',
         lastName: 'Doe',
         phone: '5551234567',
@@ -174,7 +173,9 @@ Scenario('User can add first address', async () => {
     accountAddressesPage.waitForDialogClosed(5);
 
     // Verify address appears in list (optimistic UI)
-    const addressExists = await accountAddressesPage.addressExists(addressData.addressId);
+    // Since addressId is auto-generated and hidden, verify by name instead
+    const addressName = `${addressData.firstName} ${addressData.lastName}`;
+    const addressExists = await accountAddressesPage.addressExistsByName(addressName);
     expect(addressExists, 'Address should appear in list after creation').to.be.true;
 
     // Verify dialog closed
@@ -183,7 +184,7 @@ Scenario('User can add first address', async () => {
 
     // Refresh page to verify address persisted to backend
     accountAddressesPage.refreshPage();
-    accountAddressesPage.waitForAddress(addressData.addressId, 10);
+    accountAddressesPage.waitForAddressWithName(addressName, 10);
     const addressPersistedCount = await accountAddressesPage.getAddressCount();
     expect(addressPersistedCount, 'Address should persist after page refresh').to.equal(1);
 })
@@ -212,7 +213,6 @@ Scenario('User can add second address', async () => {
 
     // Add second address
     const addressData = {
-        addressId: `Work_${Date.now()}`,
         firstName: 'Jane',
         lastName: 'Smith',
         phone: '5559876543',
@@ -229,8 +229,9 @@ Scenario('User can add second address', async () => {
     const finalCount = await accountAddressesPage.getAddressCount();
     expect(finalCount, 'Should have at least two addresses').to.be.greaterThanOrEqual(2);
 
-    // Verify second address exists
-    const secondAddressExists = await accountAddressesPage.addressExists(addressData.addressId);
+    // Verify second address exists by name
+    const addressName = `${addressData.firstName} ${addressData.lastName}`;
+    const secondAddressExists = await accountAddressesPage.addressExistsByName(addressName);
     expect(secondAddressExists, 'Second address should appear in list').to.be.true;
 })
     .tag('@create')
@@ -385,8 +386,8 @@ Scenario('User can delete non-default address', async () => {
         );
     }
 
-    // Get address ID for tracking
-    const addressIdToDelete = await accountAddressesPage.getAddressId(indexToDelete);
+    // Get address name for tracking
+    const addressNameToDelete = await accountAddressesPage.getAddressName(indexToDelete);
 
     // Click remove
     accountAddressesPage.clickRemoveAddress(indexToDelete);
@@ -402,7 +403,7 @@ Scenario('User can delete non-default address', async () => {
     accountAddressesPage.validateSuccessToast();
 
     // Verify address removed from list
-    const addressExists = await accountAddressesPage.addressExists(addressIdToDelete);
+    const addressExists = await accountAddressesPage.addressExistsByName(addressNameToDelete);
     expect(addressExists, 'Address should be removed from list').to.be.false;
 
     // Verify count decreased
@@ -451,8 +452,8 @@ Scenario('Deleting default address auto-promotes remaining address', async () =>
         defaultIndex = 0;
     }
 
-    // Get address ID for tracking
-    const addressIdToDelete = await accountAddressesPage.getAddressId(defaultIndex);
+    // Get address name for tracking
+    const addressNameToDelete = await accountAddressesPage.getAddressName(defaultIndex);
 
     // Delete the default address
     accountAddressesPage.clickRemoveAddress(defaultIndex);
@@ -462,7 +463,7 @@ Scenario('Deleting default address auto-promotes remaining address', async () =>
     accountAddressesPage.validateSuccessToast();
 
     // Verify address removed
-    const addressExists = await accountAddressesPage.addressExists(addressIdToDelete);
+    const addressExists = await accountAddressesPage.addressExistsByName(addressNameToDelete);
     expect(addressExists, 'Default address should be removed').to.be.false;
 
     // Verify count decreased to 1
@@ -515,7 +516,7 @@ Scenario('User can cancel adding new address', async () => {
     accountAddressesPage.clickAddNewAddress();
 
     // Fill some fields
-    accountAddressesPage.fillPartialAddressForm({ addressId: 'TempAddress', firstName: 'Test' });
+    accountAddressesPage.fillPartialAddressForm({ firstName: 'TestCancel' });
 
     // Cancel
     accountAddressesPage.clickCancelAddress();
@@ -527,10 +528,6 @@ Scenario('User can cancel adding new address', async () => {
     // Verify count unchanged
     const newCount = await accountAddressesPage.getAddressCount();
     expect(newCount, 'Address count should not change after cancel').to.equal(initialCount);
-
-    // Verify temp address was not created
-    const tempAddressExists = await accountAddressesPage.addressExists('TempAddress');
-    expect(tempAddressExists, 'Temp address should not exist after cancel').to.be.false;
 })
     .tag('@cancel')
     .tag('@dialog-interaction');
@@ -558,8 +555,8 @@ Scenario('User can cancel deleting address', async () => {
     await accountAddressesPage.ensureMinimumAddresses(1);
     const initialCount = await accountAddressesPage.getAddressCount();
 
-    // Get address ID to verify it persists
-    const addressId = await accountAddressesPage.getAddressId(0);
+    // Get address name to verify it persists
+    const addressName = await accountAddressesPage.getAddressName(0);
 
     // Click remove
     accountAddressesPage.clickRemoveAddress(0);
@@ -576,7 +573,7 @@ Scenario('User can cancel deleting address', async () => {
     expect(dialogStillOpen, 'Delete dialog should close after cancel').to.be.false;
 
     // Verify address still exists
-    const addressExists = await accountAddressesPage.addressExists(addressId);
+    const addressExists = await accountAddressesPage.addressExistsByName(addressName);
     expect(addressExists, 'Address should still exist after cancel').to.be.true;
 
     // Verify count unchanged
@@ -643,8 +640,8 @@ Scenario('Address list persists after browser refresh', async () => {
     await accountAddressesPage.ensureMinimumAddresses(1);
     const initialCount = await accountAddressesPage.getAddressCount();
 
-    // Get first address ID for verification
-    const firstAddressId = await accountAddressesPage.getAddressId(0);
+    // Get first address name for verification
+    const firstAddressName = await accountAddressesPage.getAddressName(0);
 
     // Refresh browser
     accountAddressesPage.refreshPage();
@@ -657,7 +654,7 @@ Scenario('Address list persists after browser refresh', async () => {
     expect(newCount, 'Address count should persist after refresh').to.equal(initialCount);
 
     // Verify first address still exists
-    const addressExists = await accountAddressesPage.addressExists(firstAddressId);
+    const addressExists = await accountAddressesPage.addressExistsByName(firstAddressName);
     expect(addressExists, 'First address should persist after refresh').to.be.true;
 })
     .tag('@persistence')

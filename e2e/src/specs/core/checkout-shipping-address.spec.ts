@@ -186,7 +186,7 @@ Scenario('Registered shopper with 4+ addresses can use View All/View Less and ad
 
     await checkoutPage.addMultipleAddressesToProfile([
         {
-            addressId: 'TestAddr_2',
+            addressId: `addr_shipping_${Date.now()}_1`,
             firstName: 'Address',
             lastName: 'Two',
             address1: '200 Second St',
@@ -198,7 +198,7 @@ Scenario('Registered shopper with 4+ addresses can use View All/View Less and ad
             preferred: false,
         },
         {
-            addressId: 'TestAddr_3',
+            addressId: `addr_shipping_${Date.now()}_2`,
             firstName: 'Address',
             lastName: 'Three',
             address1: '300 Third Ave',
@@ -210,7 +210,7 @@ Scenario('Registered shopper with 4+ addresses can use View All/View Less and ad
             preferred: false,
         },
         {
-            addressId: 'TestAddr_4',
+            addressId: `addr_shipping_${Date.now()}_3`,
             firstName: 'Address',
             lastName: 'Four',
             address1: '400 Fourth Rd',
@@ -300,7 +300,7 @@ Scenario('Registered shopper can select non-default saved address and place orde
 
     await checkoutPage.addMultipleAddressesToProfile([
         {
-            addressId: 'TestAddr_2',
+            addressId: `addr_saved_${Date.now()}_1`,
             firstName: 'Shipping',
             lastName: 'AddressTwo',
             address1: '200 Second Street',
@@ -312,7 +312,7 @@ Scenario('Registered shopper can select non-default saved address and place orde
             preferred: false,
         },
         {
-            addressId: 'TestAddr_3',
+            addressId: `addr_saved_${Date.now()}_2`,
             firstName: 'Shipping',
             lastName: 'AddressThree',
             address1: '300 Third Avenue',
@@ -340,10 +340,21 @@ Scenario('Registered shopper can select non-default saved address and place orde
     const firstAddressText = await checkoutPage.getSavedAddressText(0);
     expect(firstAddressText, 'Default address should be at the top').to.include(setupResult.addressData.city);
 
-    await checkoutPage.selectSavedAddress(1);
+    // Find and select the Austin address (addresses are sorted by addressId)
+    let austinIndex = -1;
+    for (let i = 0; i < addressCount; i++) {
+        const addressText = await checkoutPage.getSavedAddressText(i);
+        if (addressText.includes('Austin')) {
+            austinIndex = i;
+            break;
+        }
+    }
+    expect(austinIndex, 'Should find Austin address in the list').to.be.greaterThan(-1);
 
-    const selectedAddressText = await checkoutPage.getSavedAddressText(1);
-    expect(selectedAddressText, 'Selected address should be address #2').to.include('Austin');
+    await checkoutPage.selectSavedAddress(austinIndex);
+
+    const selectedAddressText = await checkoutPage.getSavedAddressText(austinIndex);
+    expect(selectedAddressText, 'Selected address should be Austin address').to.include('Austin');
 
     checkoutPage.clickContinueToShippingOptions();
 

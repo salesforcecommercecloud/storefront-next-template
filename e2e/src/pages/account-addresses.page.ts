@@ -42,10 +42,9 @@ class AccountAddressesPage {
         emptyStateCard: locate('[data-slot="card"]').as('Empty State Card'),
         emptyStateMessage: locate('p').withText('No Saved Addresses').as('Empty State Message'),
 
-        // Address cards (only cards that contain a card-title, excluding empty state card)
-        addressCards: locate('[data-slot="card"]:has([data-slot="card-title"])').as('Address Cards'),
-        addressCardTitle: (addressId: string) =>
-            locate('[data-slot="card-title"]').withText(addressId).as(`Address Card Title: ${addressId}`),
+        // Address cards (excluding header and empty state cards)
+        // Address cards have CardFooter with action buttons (Edit, Remove, Set Default)
+        addressCards: locate('[data-slot="card"]:has([data-slot="card-footer"])').as('Address Cards'),
 
         // Default badge
         defaultBadge: locate('[data-slot="badge"]').withText('Default').as('Default Badge'),
@@ -62,7 +61,6 @@ class AccountAddressesPage {
         editDialogTitle: locate('[data-slot="dialog-title"]').withText('Edit Address').as('Edit Dialog Title'),
 
         // Address form fields
-        addressIdField: locate('input[name="addressId"]').as('Address ID Field'),
         firstNameField: locate('input[name="firstName"]').as('First Name Field'),
         lastNameField: locate('input[name="lastName"]').as('Last Name Field'),
         phoneField: locate('input[name="phone"]').as('Phone Field'),
@@ -155,7 +153,6 @@ class AccountAddressesPage {
      * @param data - Address data to fill
      */
     fillAddressForm(data: {
-        addressId: string;
         firstName: string;
         lastName: string;
         phone: string;
@@ -167,7 +164,6 @@ class AccountAddressesPage {
         postalCode: string;
         preferred?: boolean;
     }): void {
-        I.fillField(this.locators.addressIdField, data.addressId);
         I.fillField(this.locators.firstNameField, data.firstName);
         I.fillField(this.locators.lastNameField, data.lastName);
         I.fillField(this.locators.phoneField, data.phone);
@@ -257,13 +253,14 @@ class AccountAddressesPage {
     }
 
     /**
-     * Get addressId of a specific address card
+     * Get customer name from a specific address card
      * @param index - Index of the address card (0-based)
-     * @returns Promise<string> - The addressId text
+     * @returns Promise<string> - The customer name
      */
-    async getAddressId(index: number = 0): Promise<string> {
-        const titleLocator = locate('[data-slot="card-title"]').at(index + 1);
-        return await I.grabTextFrom(titleLocator);
+    async getAddressName(index: number = 0): Promise<string> {
+        const card = locate(this.locators.addressCards).at(index + 1);
+        const nameLocator = card.find('p.font-medium').first();
+        return await I.grabTextFrom(nameLocator);
     }
 
     /**
@@ -277,12 +274,13 @@ class AccountAddressesPage {
     }
 
     /**
-     * Check if address card exists with specific addressId
-     * @param addressId - The addressId to search for
-     * @returns Promise<boolean> - True if address card with addressId exists
+     * Check if address card exists with specific customer name
+     * @param name - The customer name to search for (e.g., "John Doe")
+     * @returns Promise<boolean> - True if address card with name exists
      */
-    async addressExists(addressId: string): Promise<boolean> {
-        const count = await I.grabNumberOfVisibleElements(this.locators.addressCardTitle(addressId));
+    async addressExistsByName(name: string): Promise<boolean> {
+        const nameLocator = locate('[data-slot="card"]').find('p.font-medium').withText(name);
+        const count = await I.grabNumberOfVisibleElements(nameLocator);
         return count > 0;
     }
 
@@ -356,7 +354,6 @@ class AccountAddressesPage {
      * @param data - Address data to create
      */
     createAddress(data: {
-        addressId: string;
         firstName: string;
         lastName: string;
         phone: string;
@@ -378,11 +375,10 @@ class AccountAddressesPage {
 
     /**
      * Create a test address with generated data
-     * @param index - Optional index to make addressId unique
+     * @param index - Optional index to make firstName unique
      * @returns The generated address data
      */
     createTestAddress(index?: number): {
-        addressId: string;
         firstName: string;
         lastName: string;
         phone: string;
@@ -392,11 +388,9 @@ class AccountAddressesPage {
         stateCode: string;
         postalCode: string;
     } {
-        const timestamp = Date.now();
-        const suffix = index !== undefined ? `_${index}` : '';
+        const suffix = index !== undefined ? `${index}` : '';
         const addressData = {
-            addressId: `TestAddr_${timestamp}${suffix}`,
-            firstName: 'Test',
+            firstName: `Test${suffix}`,
             lastName: 'User',
             phone: '5551234567',
             countryCode: 'US' as const,
@@ -473,12 +467,13 @@ class AccountAddressesPage {
     }
 
     /**
-     * Wait for an address card with the given addressId to appear in the list
-     * @param addressId - The addressId text to look for
+     * Wait for an address card with the given customer name to appear in the list
+     * @param name - The customer name to look for (e.g., "John Doe")
      * @param timeout - Seconds to wait (default: 10)
      */
-    waitForAddress(addressId: string, timeout: number = 10): void {
-        I.waitForElement(this.locators.addressCardTitle(addressId), timeout);
+    waitForAddressWithName(name: string, timeout: number = 10): void {
+        const nameLocator = locate('[data-slot="card"]').find('p.font-medium').withText(name);
+        I.waitForElement(nameLocator, timeout);
     }
 
     /**
@@ -509,10 +504,7 @@ class AccountAddressesPage {
      * Fill a subset of address form fields (for cancel/partial-fill scenarios)
      * @param data - Partial address data; only defined fields are filled
      */
-    fillPartialAddressForm(data: { addressId?: string; firstName?: string }): void {
-        if (data.addressId !== undefined) {
-            I.fillField(this.locators.addressIdField, data.addressId);
-        }
+    fillPartialAddressForm(data: { firstName?: string }): void {
         if (data.firstName !== undefined) {
             I.fillField(this.locators.firstNameField, data.firstName);
         }

@@ -5,11 +5,15 @@ exports[`AddressDisplay stories snapshot > Default story renders and matches sna
   <div
     class="space-y-1"
   >
-    <p
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
+    <div
+      class="flex items-center gap-2"
     >
-      Gurpreet Saini
-    </p>
+      <p
+        class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
+      >
+        Gurpreet Saini
+      </p>
+    </div>
     <p
       class="text-sm font-medium leading-none text-left text-muted-foreground"
     >
@@ -39,11 +43,15 @@ exports[`AddressDisplay stories snapshot > WithAddress2 story renders and matche
   <div
     class="space-y-1"
   >
-    <p
-      class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
+    <div
+      class="flex items-center gap-2"
     >
-      Gurpreet Saini
-    </p>
+      <p
+        class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
+      >
+        Gurpreet Saini
+      </p>
+    </div>
     <p
       class="text-sm font-medium leading-none text-left text-muted-foreground"
     >

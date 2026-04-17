@@ -5,6 +5,7 @@
 - Update order summary UX (@W-22015905)
 - UX changes on checkout page (@W-22015673)
 - Bug fix to allow Canadian saved shipping address (@W-21915532)
+- My Account: Hide auto-generated address IDs and remove Address Title field; show customer name with Default badge instead (@W-21565912)
 
 ## v0.4.0-dev (Apr 10, 2026)
 

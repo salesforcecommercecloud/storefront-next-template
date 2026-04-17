@@ -29,12 +29,6 @@ import { canadianPostalCodeRegex, usPostalCodeRegex } from './constants';
 export const createCustomerAddressFormSchema = (t: TFunction<['errors', 'account']>) => {
     return z
         .object({
-            addressId: z
-                .string()
-                .min(1, {
-                    message: t('account:addressForm.validation.addressTitleRequired'),
-                })
-                .max(256),
             firstName: z
                 .string()
                 .min(1, {
