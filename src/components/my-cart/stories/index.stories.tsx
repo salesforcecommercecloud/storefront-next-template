@@ -117,14 +117,13 @@ My cart with multiple items, collapsed by default.
 
         await waitForStorybookReady(canvasElement);
 
-        // Check for cart title with item count
-        const cartTitle = await canvas.findByText(/my cart/i, {}, { timeout: 5000 });
-        await expect(cartTitle).toBeInTheDocument();
+        const cartContainer = await canvas.findByTestId('my-cart-toggle', {}, { timeout: 5000 });
+        await expect(cartContainer).toBeInTheDocument();
     },
 };
 
 export const Expanded: Story = {
-    render: () => <MyCart basket={checkoutWithMultipleItems.cart} productMap={productMap} itemsExpanded={true} />,
+    render: () => <MyCart basket={checkoutWithMultipleItems.cart} productMap={productMap} />,
     parameters: {
         docs: {
             story: `
@@ -141,9 +140,8 @@ My cart with items expanded by default.
 
         await waitForStorybookReady(canvasElement);
 
-        // Check for cart title
-        const cartTitle = await canvas.findByText(/my cart/i, {}, { timeout: 5000 });
-        await expect(cartTitle).toBeInTheDocument();
+        const cartContainer = await canvas.findByTestId('my-cart-toggle', {}, { timeout: 5000 });
+        await expect(cartContainer).toBeInTheDocument();
     },
 };
 
@@ -165,8 +163,7 @@ My cart with a single item.
 
         await waitForStorybookReady(canvasElement);
 
-        // Check for cart title
-        const cartTitle = await canvas.findByText(/my cart/i, {}, { timeout: 5000 });
-        await expect(cartTitle).toBeInTheDocument();
+        const cartContainer = await canvas.findByTestId('my-cart-toggle', {}, { timeout: 5000 });
+        await expect(cartContainer).toBeInTheDocument();
     },
 };

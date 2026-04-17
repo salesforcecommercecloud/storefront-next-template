@@ -135,7 +135,7 @@ describe('OrderSummary', () => {
         expect(screen.getByText('$10.00')).toBeInTheDocument();
         expect(screen.getByText(t('cart:summary.tax'))).toBeInTheDocument();
         expect(screen.getByText('$8.50')).toBeInTheDocument();
-        expect(screen.getByText(t('cart:summary.orderTotal'))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:summary.total'))).toBeInTheDocument();
         expect(screen.getByText('$118.50')).toBeInTheDocument();
     });
 
@@ -190,13 +190,8 @@ describe('OrderSummary', () => {
         expect(screen.getByText(t('cart:items.editCart'))).toBeInTheDocument();
     });
 
-    test('renders promo code form when showPromoCodeForm is true', async () => {
-        const user = userEvent.setup();
+    test('renders promo code form when showPromoCodeForm is true', () => {
         renderWithProviders(<OrderSummary basket={mockBasket} showPromoCodeForm={true} />);
-
-        // Open the promo code accordion
-        const promoCodeTrigger = screen.getByText(t('cart:promoCode.accordionTitle'));
-        await user.click(promoCodeTrigger);
 
         expect(screen.getByPlaceholderText(t('cart:promoCode.placeholder'))).toBeInTheDocument();
         expect(screen.getByRole('button', { name: t('cart:promoCode.apply') })).toBeInTheDocument();
@@ -206,7 +201,7 @@ describe('OrderSummary', () => {
         renderWithProviders(<OrderSummary basket={mockBasket} isEstimate={true} />);
 
         expect(screen.getByText(t('cart:summary.estimatedTotal'))).toBeInTheDocument();
-        expect(screen.queryByText(t('cart:summary.orderTotal'))).not.toBeInTheDocument();
+        expect(screen.queryByText(t('cart:summary.total'))).not.toBeInTheDocument();
     });
 
     test('displays order price adjustments when present', () => {

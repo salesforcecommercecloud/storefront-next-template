@@ -185,7 +185,7 @@ function MyCartWithData({
     const productMap = use(productMapPromise);
     const promotions = promotionsPromise ? use(promotionsPromise) : undefined;
 
-    return <MyCart basket={basket} productMap={productMap} promotions={promotions} itemsExpanded={true} />;
+    return <MyCart basket={basket} productMap={productMap} promotions={promotions} />;
 }
 
 export default function CheckoutFormPage({
@@ -735,49 +735,57 @@ export default function CheckoutFormPage({
 
                     {/* Order Summary Sidebar - scrolls independently when content exceeds viewport */}
                     <div
-                        className="hidden lg:block lg:col-span-1 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto"
+                        className="hidden lg:block lg:col-span-1 lg:relative"
                         data-testid="checkout-order-summary-sidebar">
-                        <UITarget targetId="checkout.sidebar.before" />
-                        <div className="sticky top-8 space-y-6">
-                            {/* Order Summary */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>
-                                        <Typography variant="h4" as="h2">
-                                            {t('orderSummary.title')}
-                                        </Typography>
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <UITarget targetId="checkout.orderSummary.before" />
-                                    <UITarget targetId="checkout.orderSummary">
-                                        <Suspense fallback={<OrderSummarySkeleton />}>
-                                            <OrderSummary
-                                                basket={cart}
-                                                showCartItems={false}
-                                                showHeading={false}
-                                                showPromoCodeForm={true}
-                                                productsByItemId={{}}
-                                            />
-                                        </Suspense>
-                                    </UITarget>
-                                    <UITarget targetId="checkout.orderSummary.after" />
-                                </CardContent>
-                            </Card>
+                        <div className="lg:absolute lg:inset-0 lg:overflow-y-auto">
+                            <UITarget targetId="checkout.sidebar.before" />
+                            <div className="space-y-6">
+                                {/* Order Summary + Cart Items */}
+                                <Card className="rounded-none shadow-none [--cart-divider-extend:1.5rem]">
+                                    <CardHeader className="border-b border-border pb-4">
+                                        <CardTitle>
+                                            <span className="text-xl font-bold tracking-tight text-card-foreground">
+                                                {t('orderSummary.title')}
+                                            </span>
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <UITarget targetId="checkout.orderSummary.before" />
+                                        <UITarget targetId="checkout.orderSummary">
+                                            <Suspense fallback={<OrderSummarySkeleton />}>
+                                                <OrderSummary
+                                                    basket={cart}
+                                                    showCartItems={false}
+                                                    showHeading={false}
+                                                    showPromoCodeForm={true}
+                                                    productsByItemId={{}}
+                                                    className="border-none shadow-none rounded-none !py-0 [&_[data-slot=card-content]]:px-0 [--cart-summary-px:1.5rem]"
+                                                />
+                                            </Suspense>
+                                        </UITarget>
+                                        <UITarget targetId="checkout.orderSummary.after" />
 
-                            <UITarget targetId="checkout.myCart.before" />
-                            <UITarget targetId="checkout.myCart">
-                                <Suspense fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
-                                    <MyCartWithData
-                                        basket={cart}
-                                        productMapPromise={productMapPromise}
-                                        promotionsPromise={promotionsPromise}
-                                    />
-                                </Suspense>
-                            </UITarget>
-                            <UITarget targetId="checkout.myCart.after" />
+                                        <hr className="border-border -mx-6" />
+
+                                        <UITarget targetId="checkout.myCart.before" />
+                                        <UITarget targetId="checkout.myCart">
+                                            <Suspense
+                                                fallback={
+                                                    <MyCartSkeleton itemCount={cart?.productItems?.length || 2} />
+                                                }>
+                                                <MyCartWithData
+                                                    basket={cart}
+                                                    productMapPromise={productMapPromise}
+                                                    promotionsPromise={promotionsPromise}
+                                                />
+                                            </Suspense>
+                                        </UITarget>
+                                        <UITarget targetId="checkout.myCart.after" />
+                                    </CardContent>
+                                </Card>
+                            </div>
+                            <UITarget targetId="checkout.sidebar.after" />
                         </div>
-                        <UITarget targetId="checkout.sidebar.after" />
                     </div>
                 </div>
             </div>

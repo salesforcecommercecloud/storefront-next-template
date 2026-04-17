@@ -35,6 +35,7 @@ import PromoCodeForm from '@/components/promo-code-form';
 import { VisaIcon, MastercardIcon, AmexIcon, DiscoverIcon } from '@/components/icons';
 
 // Utils
+import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/currency';
 import { useTranslation } from 'react-i18next';
 import PromoPopover from '@/components/promo-popover';
@@ -72,6 +73,8 @@ interface OrderSummaryProps {
     onEditCart?: () => void;
     showCheckoutAction?: boolean;
     onSelectBonusProducts?: () => void;
+    /** Additional className for the outermost Card wrapper */
+    className?: string;
 }
 
 /**
@@ -175,6 +178,7 @@ export default function OrderSummary({
     onEditCart,
     showCheckoutAction,
     onSelectBonusProducts,
+    className,
 }: OrderSummaryProps): ReactElement {
     const { t, i18n } = useTranslation('cart');
     const { currency } = useSite();
@@ -199,7 +203,7 @@ export default function OrderSummary({
     };
 
     return (
-        <Card className="!py-4">
+        <Card className={cn('!py-4', className)}>
             <CardContent className="px-[var(--cart-summary-px)]">
                 <div className="space-y-4" data-testid="sf-order-summary">
                     {showHeading && (
@@ -297,24 +301,13 @@ export default function OrderSummary({
                                 </div>
                             </UITarget>
                             <UITarget targetId="orderSummary.tax.after" />
-                        </div>
 
-                        {/* Promo Code Form */}
-                        {showPromoCodeForm && <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />}
-                        <UITarget targetId="orderSummary.promoCode.before" />
-                        <UITarget targetId="orderSummary.promoCode">
-                            {showPromoCodeForm ? <PromoCodeForm basket={basket} /> : null}
-                        </UITarget>
-                        <UITarget targetId="orderSummary.promoCode.after" />
-
-                        {/* Total */}
-                        <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />
-                        <UITarget targetId="orderSummary.total.before" />
-                        <UITarget targetId="orderSummary.total">
-                            <div className="space-y-2 w-full text-sm pt-2">
-                                <div className="flex w-full justify-between items-center">
+                            {/* Total */}
+                            <UITarget targetId="orderSummary.total.before" />
+                            <UITarget targetId="orderSummary.total">
+                                <div className="flex justify-between items-center">
                                     <span className="font-bold">
-                                        {isEstimate ? t('summary.estimatedTotal') : t('summary.orderTotal')}
+                                        {isEstimate ? t('summary.estimatedTotal') : t('summary.total')}
                                     </span>
                                     <span className="font-bold">
                                         {formatCurrency(
@@ -324,9 +317,17 @@ export default function OrderSummary({
                                         )}
                                     </span>
                                 </div>
-                            </div>
+                            </UITarget>
+                            <UITarget targetId="orderSummary.total.after" />
+                        </div>
+
+                        {/* Promo Code Form */}
+                        {showPromoCodeForm && <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />}
+                        <UITarget targetId="orderSummary.promoCode.before" />
+                        <UITarget targetId="orderSummary.promoCode">
+                            {showPromoCodeForm ? <PromoCodeForm basket={basket} /> : null}
                         </UITarget>
-                        <UITarget targetId="orderSummary.total.after" />
+                        <UITarget targetId="orderSummary.promoCode.after" />
 
                         {/* Checkout Action */}
                         {showCheckoutAction && (

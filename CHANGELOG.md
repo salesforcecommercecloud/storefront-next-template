@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 15, 2026)
 
+- Update order summary UX (@W-22015905)
 - UX changes on checkout page (@W-22015673)
 - Bug fix to allow Canadian saved shipping address (@W-21915532)
 

@@ -149,7 +149,7 @@ describe('OrderDetails', () => {
         renderOrderDetails();
         expect(screen.getByTestId('sf-order-summary')).toBeInTheDocument();
         expect(screen.getByText(t('cart:summary.subtotal'))).toBeInTheDocument();
-        expect(screen.getByText(t('cart:summary.orderTotal'))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:summary.total'))).toBeInTheDocument();
         expect(screen.getByText(/71\.38/)).toBeInTheDocument();
     });
 

@@ -30,7 +30,7 @@ import { useTranslation } from 'react-i18next';
 export function PromoCodeFields({ form, applyFetcher }: PromoCodeFieldsProps) {
     const { t } = useTranslation('cart');
     return (
-        <div className="space-y-3">
+        <div className="space-y-2">
             <FormField
                 control={form.control}
                 name="code"
@@ -39,10 +39,11 @@ export function PromoCodeFields({ form, applyFetcher }: PromoCodeFieldsProps) {
                         <FormLabel className="sr-only">{t('promoCode.label')}</FormLabel>
                         <div className="flex gap-2">
                             <FormControl>
-                                <Input placeholder={t('promoCode.placeholder')} className="rounded-md" {...field} />
+                                <Input placeholder={t('promoCode.placeholder')} {...field} />
                             </FormControl>
                             <Button
                                 type="submit"
+                                variant="outline"
                                 disabled={applyFetcher.state === FETCHER_STATES.SUBMITTING}
                                 className="rounded-md cursor-pointer px-4">
                                 {applyFetcher.state === FETCHER_STATES.SUBMITTING

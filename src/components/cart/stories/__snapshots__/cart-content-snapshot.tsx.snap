@@ -555,12 +555,26 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                         $3.36
                       </span>
                     </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Estimated Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        $51.35
+                      </span>
+                    </div>
                   </div>
                   <hr
                     class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
                   />
                   <div
-                    class="w-full"
+                    class="flex w-full flex-col gap-2 pt-2 pb-4"
                   >
                     <div
                       class="mb-0"
@@ -571,26 +585,26 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                         class="border-b last:border-b-0"
                         data-orientation="vertical"
                         data-slot="accordion-item"
-                        data-state="closed"
+                        data-state="open"
                       >
                         <h3
                           class="flex"
                           data-orientation="vertical"
-                          data-state="closed"
+                          data-state="open"
                         >
                           <button
                             aria-controls="radix-_r_e_"
-                            aria-expanded="false"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
+                            aria-expanded="true"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
-                            data-state="closed"
+                            data-state="open"
                             id="radix-_r_d_"
                             type="button"
                           >
                             <span
-                              class="flex-1 text-left text-sm font-medium"
+                              class="text-left text-sm font-medium text-primary"
                             >
                               Do you have a promo code?
                             </span>
@@ -618,34 +632,61 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
                           data-orientation="vertical"
                           data-slot="accordion-content"
-                          data-state="closed"
-                          hidden=""
+                          data-state="open"
                           id="radix-_r_e_"
                           role="region"
-                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-                        />
+                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+                        >
+                          <div
+                            class="px-0 pt-2 pb-0"
+                          >
+                            <form
+                              data-testid="promo-code-form"
+                            >
+                              <div
+                                class="space-y-2"
+                              >
+                                <div
+                                  class="grid gap-2"
+                                  data-slot="form-item"
+                                >
+                                  <label
+                                    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+                                    data-error="false"
+                                    data-slot="form-label"
+                                    for="_r_f_-form-item"
+                                  >
+                                    Promo code
+                                  </label>
+                                  <div
+                                    class="flex gap-2"
+                                  >
+                                    <input
+                                      aria-describedby="_r_f_-form-item-description"
+                                      aria-invalid="false"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      data-slot="form-control"
+                                      id="_r_f_-form-item"
+                                      name="code"
+                                      placeholder="Promo code..."
+                                      value=""
+                                    />
+                                    <button
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-variant="outline"
+                                      type="submit"
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
-                    <div
-                      class="flex w-full justify-between items-center"
-                    >
-                      <span
-                        class="font-bold"
-                      >
-                        Estimated Total
-                      </span>
-                      <span
-                        class="font-bold"
-                      >
-                        $51.35
-                      </span>
                     </div>
                   </div>
                   <hr
@@ -1071,7 +1112,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_4t_"
+                                  id="radix-_r_54_"
                                   type="button"
                                 >
                                   <span
@@ -1148,7 +1189,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_4v_"
+                                  id="radix-_r_56_"
                                   type="button"
                                 >
                                   <span
@@ -1461,7 +1502,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_5a_"
+                                  id="radix-_r_5h_"
                                   type="button"
                                 >
                                   <span
@@ -1549,7 +1590,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_5c_"
+                                  id="radix-_r_5j_"
                                   type="button"
                                 >
                                   <span
@@ -1819,7 +1860,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_5n_"
+                                  id="radix-_r_5u_"
                                   type="button"
                                 >
                                   <span
@@ -1907,7 +1948,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_5p_"
+                                  id="radix-_r_60_"
                                   type="button"
                                 >
                                   <span
@@ -2205,12 +2246,26 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                         $11.20
                       </span>
                     </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Estimated Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        $151.20
+                      </span>
+                    </div>
                   </div>
                   <hr
                     class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
                   />
                   <div
-                    class="w-full"
+                    class="flex w-full flex-col gap-2 pt-2 pb-4"
                   >
                     <div
                       class="mb-0"
@@ -2221,26 +2276,26 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                         class="border-b last:border-b-0"
                         data-orientation="vertical"
                         data-slot="accordion-item"
-                        data-state="closed"
+                        data-state="open"
                       >
                         <h3
                           class="flex"
                           data-orientation="vertical"
-                          data-state="closed"
+                          data-state="open"
                         >
                           <button
-                            aria-controls="radix-_r_65_"
-                            aria-expanded="false"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
+                            aria-controls="radix-_r_6c_"
+                            aria-expanded="true"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
-                            data-state="closed"
-                            id="radix-_r_64_"
+                            data-state="open"
+                            id="radix-_r_6b_"
                             type="button"
                           >
                             <span
-                              class="flex-1 text-left text-sm font-medium"
+                              class="text-left text-sm font-medium text-primary"
                             >
                               Do you have a promo code?
                             </span>
@@ -2264,38 +2319,65 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                           </button>
                         </h3>
                         <div
-                          aria-labelledby="radix-_r_64_"
+                          aria-labelledby="radix-_r_6b_"
                           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
                           data-orientation="vertical"
                           data-slot="accordion-content"
-                          data-state="closed"
-                          hidden=""
-                          id="radix-_r_65_"
+                          data-state="open"
+                          id="radix-_r_6c_"
                           role="region"
-                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-                        />
+                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+                        >
+                          <div
+                            class="px-0 pt-2 pb-0"
+                          >
+                            <form
+                              data-testid="promo-code-form"
+                            >
+                              <div
+                                class="space-y-2"
+                              >
+                                <div
+                                  class="grid gap-2"
+                                  data-slot="form-item"
+                                >
+                                  <label
+                                    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+                                    data-error="false"
+                                    data-slot="form-label"
+                                    for="_r_6d_-form-item"
+                                  >
+                                    Promo code
+                                  </label>
+                                  <div
+                                    class="flex gap-2"
+                                  >
+                                    <input
+                                      aria-describedby="_r_6d_-form-item-description"
+                                      aria-invalid="false"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      data-slot="form-control"
+                                      id="_r_6d_-form-item"
+                                      name="code"
+                                      placeholder="Promo code..."
+                                      value=""
+                                    />
+                                    <button
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-variant="outline"
+                                      type="submit"
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
-                    <div
-                      class="flex w-full justify-between items-center"
-                    >
-                      <span
-                        class="font-bold"
-                      >
-                        Estimated Total
-                      </span>
-                      <span
-                        class="font-bold"
-                      >
-                        $151.20
-                      </span>
                     </div>
                   </div>
                   <hr
@@ -2706,7 +2788,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_f_"
+                                  id="radix-_r_g_"
                                   type="button"
                                 >
                                   <span
@@ -2794,7 +2876,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_h_"
+                                  id="radix-_r_i_"
                                   type="button"
                                 >
                                   <span
@@ -3064,7 +3146,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_s_"
+                                  id="radix-_r_t_"
                                   type="button"
                                 >
                                   <span
@@ -3152,7 +3234,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_u_"
+                                  id="radix-_r_v_"
                                   type="button"
                                 >
                                   <span
@@ -3444,12 +3526,26 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                         $6.00
                       </span>
                     </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Estimated Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        $81.00
+                      </span>
+                    </div>
                   </div>
                   <hr
                     class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
                   />
                   <div
-                    class="w-full"
+                    class="flex w-full flex-col gap-2 pt-2 pb-4"
                   >
                     <div
                       class="mb-0"
@@ -3460,26 +3556,26 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                         class="border-b last:border-b-0"
                         data-orientation="vertical"
                         data-slot="accordion-item"
-                        data-state="closed"
+                        data-state="open"
                       >
                         <h3
                           class="flex"
                           data-orientation="vertical"
-                          data-state="closed"
+                          data-state="open"
                         >
                           <button
-                            aria-controls="radix-_r_1a_"
-                            aria-expanded="false"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
+                            aria-controls="radix-_r_1b_"
+                            aria-expanded="true"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
-                            data-state="closed"
-                            id="radix-_r_19_"
+                            data-state="open"
+                            id="radix-_r_1a_"
                             type="button"
                           >
                             <span
-                              class="flex-1 text-left text-sm font-medium"
+                              class="text-left text-sm font-medium text-primary"
                             >
                               Do you have a promo code?
                             </span>
@@ -3503,38 +3599,65 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                           </button>
                         </h3>
                         <div
-                          aria-labelledby="radix-_r_19_"
+                          aria-labelledby="radix-_r_1a_"
                           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
                           data-orientation="vertical"
                           data-slot="accordion-content"
-                          data-state="closed"
-                          hidden=""
-                          id="radix-_r_1a_"
+                          data-state="open"
+                          id="radix-_r_1b_"
                           role="region"
-                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-                        />
+                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+                        >
+                          <div
+                            class="px-0 pt-2 pb-0"
+                          >
+                            <form
+                              data-testid="promo-code-form"
+                            >
+                              <div
+                                class="space-y-2"
+                              >
+                                <div
+                                  class="grid gap-2"
+                                  data-slot="form-item"
+                                >
+                                  <label
+                                    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+                                    data-error="false"
+                                    data-slot="form-label"
+                                    for="_r_1c_-form-item"
+                                  >
+                                    Promo code
+                                  </label>
+                                  <div
+                                    class="flex gap-2"
+                                  >
+                                    <input
+                                      aria-describedby="_r_1c_-form-item-description"
+                                      aria-invalid="false"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      data-slot="form-control"
+                                      id="_r_1c_-form-item"
+                                      name="code"
+                                      placeholder="Promo code..."
+                                      value=""
+                                    />
+                                    <button
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-variant="outline"
+                                      type="submit"
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
-                    <div
-                      class="flex w-full justify-between items-center"
-                    >
-                      <span
-                        class="font-bold"
-                      >
-                        Estimated Total
-                      </span>
-                      <span
-                        class="font-bold"
-                      >
-                        $81.00
-                      </span>
                     </div>
                   </div>
                   <hr
@@ -3995,7 +4118,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_3g_"
+                                  id="radix-_r_3k_"
                                   type="button"
                                 >
                                   <span
@@ -4083,7 +4206,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_3i_"
+                                  id="radix-_r_3m_"
                                   type="button"
                                 >
                                   <span
@@ -4381,12 +4504,26 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                         $33.60
                       </span>
                     </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Estimated Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        $453.60
+                      </span>
+                    </div>
                   </div>
                   <hr
                     class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
                   />
                   <div
-                    class="w-full"
+                    class="flex w-full flex-col gap-2 pt-2 pb-4"
                   >
                     <div
                       class="mb-0"
@@ -4397,26 +4534,26 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                         class="border-b last:border-b-0"
                         data-orientation="vertical"
                         data-slot="accordion-item"
-                        data-state="closed"
+                        data-state="open"
                       >
                         <h3
                           class="flex"
                           data-orientation="vertical"
-                          data-state="closed"
+                          data-state="open"
                         >
                           <button
-                            aria-controls="radix-_r_3u_"
-                            aria-expanded="false"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
+                            aria-controls="radix-_r_42_"
+                            aria-expanded="true"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
-                            data-state="closed"
-                            id="radix-_r_3t_"
+                            data-state="open"
+                            id="radix-_r_41_"
                             type="button"
                           >
                             <span
-                              class="flex-1 text-left text-sm font-medium"
+                              class="text-left text-sm font-medium text-primary"
                             >
                               Do you have a promo code?
                             </span>
@@ -4440,38 +4577,65 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                           </button>
                         </h3>
                         <div
-                          aria-labelledby="radix-_r_3t_"
+                          aria-labelledby="radix-_r_41_"
                           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
                           data-orientation="vertical"
                           data-slot="accordion-content"
-                          data-state="closed"
-                          hidden=""
-                          id="radix-_r_3u_"
+                          data-state="open"
+                          id="radix-_r_42_"
                           role="region"
-                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-                        />
+                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+                        >
+                          <div
+                            class="px-0 pt-2 pb-0"
+                          >
+                            <form
+                              data-testid="promo-code-form"
+                            >
+                              <div
+                                class="space-y-2"
+                              >
+                                <div
+                                  class="grid gap-2"
+                                  data-slot="form-item"
+                                >
+                                  <label
+                                    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+                                    data-error="false"
+                                    data-slot="form-label"
+                                    for="_r_43_-form-item"
+                                  >
+                                    Promo code
+                                  </label>
+                                  <div
+                                    class="flex gap-2"
+                                  >
+                                    <input
+                                      aria-describedby="_r_43_-form-item-description"
+                                      aria-invalid="false"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      data-slot="form-control"
+                                      id="_r_43_-form-item"
+                                      name="code"
+                                      placeholder="Promo code..."
+                                      value=""
+                                    />
+                                    <button
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-variant="outline"
+                                      type="submit"
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
-                    <div
-                      class="flex w-full justify-between items-center"
-                    >
-                      <span
-                        class="font-bold"
-                      >
-                        Estimated Total
-                      </span>
-                      <span
-                        class="font-bold"
-                      >
-                        $453.60
-                      </span>
                     </div>
                   </div>
                   <hr
@@ -4882,7 +5046,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_1q_"
+                                  id="radix-_r_1t_"
                                   type="button"
                                 >
                                   <span
@@ -4970,7 +5134,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_1s_"
+                                  id="radix-_r_1v_"
                                   type="button"
                                 >
                                   <span
@@ -5246,7 +5410,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_27_"
+                                  id="radix-_r_2a_"
                                   type="button"
                                 >
                                   <span
@@ -5334,7 +5498,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_29_"
+                                  id="radix-_r_2c_"
                                   type="button"
                                 >
                                   <span
@@ -5604,7 +5768,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_2k_"
+                                  id="radix-_r_2n_"
                                   type="button"
                                 >
                                   <span
@@ -5692,7 +5856,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_2m_"
+                                  id="radix-_r_2p_"
                                   type="button"
                                 >
                                   <span
@@ -5968,7 +6132,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_31_"
+                                  id="radix-_r_34_"
                                   type="button"
                                 >
                                   <span
@@ -6056,7 +6220,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_33_"
+                                  id="radix-_r_36_"
                                   type="button"
                                 >
                                   <span
@@ -6348,12 +6512,26 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                         $20.40
                       </span>
                     </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Estimated Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        $275.40
+                      </span>
+                    </div>
                   </div>
                   <hr
                     class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
                   />
                   <div
-                    class="w-full"
+                    class="flex w-full flex-col gap-2 pt-2 pb-4"
                   >
                     <div
                       class="mb-0"
@@ -6364,26 +6542,26 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                         class="border-b last:border-b-0"
                         data-orientation="vertical"
                         data-slot="accordion-item"
-                        data-state="closed"
+                        data-state="open"
                       >
                         <h3
                           class="flex"
                           data-orientation="vertical"
-                          data-state="closed"
+                          data-state="open"
                         >
                           <button
-                            aria-controls="radix-_r_3f_"
-                            aria-expanded="false"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
+                            aria-controls="radix-_r_3i_"
+                            aria-expanded="true"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
-                            data-state="closed"
-                            id="radix-_r_3e_"
+                            data-state="open"
+                            id="radix-_r_3h_"
                             type="button"
                           >
                             <span
-                              class="flex-1 text-left text-sm font-medium"
+                              class="text-left text-sm font-medium text-primary"
                             >
                               Do you have a promo code?
                             </span>
@@ -6407,38 +6585,65 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                           </button>
                         </h3>
                         <div
-                          aria-labelledby="radix-_r_3e_"
+                          aria-labelledby="radix-_r_3h_"
                           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
                           data-orientation="vertical"
                           data-slot="accordion-content"
-                          data-state="closed"
-                          hidden=""
-                          id="radix-_r_3f_"
+                          data-state="open"
+                          id="radix-_r_3i_"
                           role="region"
-                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-                        />
+                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+                        >
+                          <div
+                            class="px-0 pt-2 pb-0"
+                          >
+                            <form
+                              data-testid="promo-code-form"
+                            >
+                              <div
+                                class="space-y-2"
+                              >
+                                <div
+                                  class="grid gap-2"
+                                  data-slot="form-item"
+                                >
+                                  <label
+                                    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+                                    data-error="false"
+                                    data-slot="form-label"
+                                    for="_r_3j_-form-item"
+                                  >
+                                    Promo code
+                                  </label>
+                                  <div
+                                    class="flex gap-2"
+                                  >
+                                    <input
+                                      aria-describedby="_r_3j_-form-item-description"
+                                      aria-invalid="false"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      data-slot="form-control"
+                                      id="_r_3j_-form-item"
+                                      name="code"
+                                      placeholder="Promo code..."
+                                      value=""
+                                    />
+                                    <button
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-variant="outline"
+                                      type="submit"
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
-                    <div
-                      class="flex w-full justify-between items-center"
-                    >
-                      <span
-                        class="font-bold"
-                      >
-                        Estimated Total
-                      </span>
-                      <span
-                        class="font-bold"
-                      >
-                        $275.40
-                      </span>
                     </div>
                   </div>
                   <hr
@@ -6849,7 +7054,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_4e_"
+                                  id="radix-_r_4k_"
                                   type="button"
                                 >
                                   <span
@@ -6937,7 +7142,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_4g_"
+                                  id="radix-_r_4m_"
                                   type="button"
                                 >
                                   <span
@@ -7227,12 +7432,26 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                         $3.36
                       </span>
                     </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Estimated Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        $51.35
+                      </span>
+                    </div>
                   </div>
                   <hr
                     class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
                   />
                   <div
-                    class="w-full"
+                    class="flex w-full flex-col gap-2 pt-2 pb-4"
                   >
                     <div
                       class="mb-0"
@@ -7243,26 +7462,26 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                         class="border-b last:border-b-0"
                         data-orientation="vertical"
                         data-slot="accordion-item"
-                        data-state="closed"
+                        data-state="open"
                       >
                         <h3
                           class="flex"
                           data-orientation="vertical"
-                          data-state="closed"
+                          data-state="open"
                         >
                           <button
-                            aria-controls="radix-_r_4s_"
-                            aria-expanded="false"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
+                            aria-controls="radix-_r_52_"
+                            aria-expanded="true"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
-                            data-state="closed"
-                            id="radix-_r_4r_"
+                            data-state="open"
+                            id="radix-_r_51_"
                             type="button"
                           >
                             <span
-                              class="flex-1 text-left text-sm font-medium"
+                              class="text-left text-sm font-medium text-primary"
                             >
                               Do you have a promo code?
                             </span>
@@ -7286,38 +7505,65 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                           </button>
                         </h3>
                         <div
-                          aria-labelledby="radix-_r_4r_"
+                          aria-labelledby="radix-_r_51_"
                           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
                           data-orientation="vertical"
                           data-slot="accordion-content"
-                          data-state="closed"
-                          hidden=""
-                          id="radix-_r_4s_"
+                          data-state="open"
+                          id="radix-_r_52_"
                           role="region"
-                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-                        />
+                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+                        >
+                          <div
+                            class="px-0 pt-2 pb-0"
+                          >
+                            <form
+                              data-testid="promo-code-form"
+                            >
+                              <div
+                                class="space-y-2"
+                              >
+                                <div
+                                  class="grid gap-2"
+                                  data-slot="form-item"
+                                >
+                                  <label
+                                    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+                                    data-error="false"
+                                    data-slot="form-label"
+                                    for="_r_53_-form-item"
+                                  >
+                                    Promo code
+                                  </label>
+                                  <div
+                                    class="flex gap-2"
+                                  >
+                                    <input
+                                      aria-describedby="_r_53_-form-item-description"
+                                      aria-invalid="false"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      data-slot="form-control"
+                                      id="_r_53_-form-item"
+                                      name="code"
+                                      placeholder="Promo code..."
+                                      value=""
+                                    />
+                                    <button
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-variant="outline"
+                                      type="submit"
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
-                    <div
-                      class="flex w-full justify-between items-center"
-                    >
-                      <span
-                        class="font-bold"
-                      >
-                        Estimated Total
-                      </span>
-                      <span
-                        class="font-bold"
-                      >
-                        $51.35
-                      </span>
                     </div>
                   </div>
                   <hr
@@ -7726,7 +7972,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_3v_"
+                                  id="radix-_r_44_"
                                   type="button"
                                 >
                                   <span
@@ -7802,7 +8048,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_41_"
+                                  id="radix-_r_46_"
                                   type="button"
                                 >
                                   <span
@@ -8071,12 +8317,26 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                         $3.36
                       </span>
                     </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Estimated Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        $51.35
+                      </span>
+                    </div>
                   </div>
                   <hr
                     class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
                   />
                   <div
-                    class="w-full"
+                    class="flex w-full flex-col gap-2 pt-2 pb-4"
                   >
                     <div
                       class="mb-0"
@@ -8087,26 +8347,26 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                         class="border-b last:border-b-0"
                         data-orientation="vertical"
                         data-slot="accordion-item"
-                        data-state="closed"
+                        data-state="open"
                       >
                         <h3
                           class="flex"
                           data-orientation="vertical"
-                          data-state="closed"
+                          data-state="open"
                         >
                           <button
-                            aria-controls="radix-_r_4d_"
-                            aria-expanded="false"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
+                            aria-controls="radix-_r_4i_"
+                            aria-expanded="true"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
-                            data-state="closed"
-                            id="radix-_r_4c_"
+                            data-state="open"
+                            id="radix-_r_4h_"
                             type="button"
                           >
                             <span
-                              class="flex-1 text-left text-sm font-medium"
+                              class="text-left text-sm font-medium text-primary"
                             >
                               Do you have a promo code?
                             </span>
@@ -8130,38 +8390,65 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                           </button>
                         </h3>
                         <div
-                          aria-labelledby="radix-_r_4c_"
+                          aria-labelledby="radix-_r_4h_"
                           class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
                           data-orientation="vertical"
                           data-slot="accordion-content"
-                          data-state="closed"
-                          hidden=""
-                          id="radix-_r_4d_"
+                          data-state="open"
+                          id="radix-_r_4i_"
                           role="region"
-                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-                        />
+                          style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+                        >
+                          <div
+                            class="px-0 pt-2 pb-0"
+                          >
+                            <form
+                              data-testid="promo-code-form"
+                            >
+                              <div
+                                class="space-y-2"
+                              >
+                                <div
+                                  class="grid gap-2"
+                                  data-slot="form-item"
+                                >
+                                  <label
+                                    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+                                    data-error="false"
+                                    data-slot="form-label"
+                                    for="_r_4j_-form-item"
+                                  >
+                                    Promo code
+                                  </label>
+                                  <div
+                                    class="flex gap-2"
+                                  >
+                                    <input
+                                      aria-describedby="_r_4j_-form-item-description"
+                                      aria-invalid="false"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      data-slot="form-control"
+                                      id="_r_4j_-form-item"
+                                      name="code"
+                                      placeholder="Promo code..."
+                                      value=""
+                                    />
+                                    <button
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-variant="outline"
+                                      type="submit"
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
-                    <div
-                      class="flex w-full justify-between items-center"
-                    >
-                      <span
-                        class="font-bold"
-                      >
-                        Estimated Total
-                      </span>
-                      <span
-                        class="font-bold"
-                      >
-                        $51.35
-                      </span>
                     </div>
                   </div>
                   <hr
@@ -8531,12 +8818,26 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                       $3.36
                     </span>
                   </div>
+                  <div
+                    class="flex justify-between items-center"
+                  >
+                    <span
+                      class="font-bold"
+                    >
+                      Estimated Total
+                    </span>
+                    <span
+                      class="font-bold"
+                    >
+                      $51.35
+                    </span>
+                  </div>
                 </div>
                 <hr
                   class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
                 />
                 <div
-                  class="w-full"
+                  class="flex w-full flex-col gap-2 pt-2 pb-4"
                 >
                   <div
                     class="mb-0"
@@ -8547,26 +8848,26 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                       class="border-b last:border-b-0"
                       data-orientation="vertical"
                       data-slot="accordion-item"
-                      data-state="closed"
+                      data-state="open"
                     >
                       <h3
                         class="flex"
                         data-orientation="vertical"
-                        data-state="closed"
+                        data-state="open"
                       >
                         <button
-                          aria-controls="radix-_r_1c_"
-                          aria-expanded="false"
-                          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
+                          aria-controls="radix-_r_1e_"
+                          aria-expanded="true"
+                          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
                           data-orientation="vertical"
                           data-radix-collection-item=""
                           data-slot="accordion-trigger"
-                          data-state="closed"
-                          id="radix-_r_1b_"
+                          data-state="open"
+                          id="radix-_r_1d_"
                           type="button"
                         >
                           <span
-                            class="flex-1 text-left text-sm font-medium"
+                            class="text-left text-sm font-medium text-primary"
                           >
                             Do you have a promo code?
                           </span>
@@ -8590,38 +8891,65 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                         </button>
                       </h3>
                       <div
-                        aria-labelledby="radix-_r_1b_"
+                        aria-labelledby="radix-_r_1d_"
                         class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
                         data-orientation="vertical"
                         data-slot="accordion-content"
-                        data-state="closed"
-                        hidden=""
-                        id="radix-_r_1c_"
+                        data-state="open"
+                        id="radix-_r_1e_"
                         role="region"
-                        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-                      />
+                        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+                      >
+                        <div
+                          class="px-0 pt-2 pb-0"
+                        >
+                          <form
+                            data-testid="promo-code-form"
+                          >
+                            <div
+                              class="space-y-2"
+                            >
+                              <div
+                                class="grid gap-2"
+                                data-slot="form-item"
+                              >
+                                <label
+                                  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+                                  data-error="false"
+                                  data-slot="form-label"
+                                  for="_r_1f_-form-item"
+                                >
+                                  Promo code
+                                </label>
+                                <div
+                                  class="flex gap-2"
+                                >
+                                  <input
+                                    aria-describedby="_r_1f_-form-item-description"
+                                    aria-invalid="false"
+                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                    data-slot="form-control"
+                                    id="_r_1f_-form-item"
+                                    name="code"
+                                    placeholder="Promo code..."
+                                    value=""
+                                  />
+                                  <button
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                    data-size="default"
+                                    data-slot="button"
+                                    data-variant="outline"
+                                    type="submit"
+                                  >
+                                    Apply
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <hr
-                  class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                />
-                <div
-                  class="space-y-2 w-full text-sm pt-2"
-                >
-                  <div
-                    class="flex w-full justify-between items-center"
-                  >
-                    <span
-                      class="font-bold"
-                    >
-                      Estimated Total
-                    </span>
-                    <span
-                      class="font-bold"
-                    >
-                      $51.35
-                    </span>
                   </div>
                 </div>
                 <hr
@@ -8949,7 +9277,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 class="cursor-pointer"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
-                                id="radix-_r_1d_"
+                                id="radix-_r_1g_"
                                 type="button"
                               >
                                 <span
@@ -9037,7 +9365,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 class="cursor-pointer"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
-                                id="radix-_r_1f_"
+                                id="radix-_r_1i_"
                                 type="button"
                               >
                                 <span

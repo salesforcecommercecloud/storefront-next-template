@@ -120,17 +120,17 @@ describe('MyCart', () => {
         vi.clearAllMocks();
     });
 
-    it('renders the cart title with total quantity', () => {
+    it('renders the cart items container', () => {
         render(<MyCart basket={basket} productMap={productMap} />);
 
-        expect(screen.getByText(/My Cart \(3\)/)).toBeInTheDocument();
+        expect(screen.getByTestId('my-cart-toggle')).toBeInTheDocument();
     });
 
-    it('expands the accordion when itemsExpanded is true', () => {
-        render(<MyCart basket={basket} productMap={productMap} itemsExpanded />);
+    it('renders all product items directly without accordion', () => {
+        render(<MyCart basket={basket} productMap={productMap} />);
 
-        const accordion = screen.getByTestId('accordion');
-        expect(accordion).toHaveAttribute('data-default-value', 'my-cart-items');
+        expect(screen.getByTestId('my-cart-item-prod-1')).toBeInTheDocument();
+        expect(screen.getByTestId('my-cart-item-prod-2')).toBeInTheDocument();
     });
 
     it('renders a card per product item', () => {
@@ -149,7 +149,7 @@ describe('MyCart', () => {
     it('handles missing promotions gracefully', () => {
         render(<MyCart basket={basket} productMap={productMap} />);
 
-        expect(screen.getByText(/My Cart \(3\)/)).toBeInTheDocument();
+        expect(screen.getByTestId('my-cart-toggle')).toBeInTheDocument();
         expect(screen.getByTestId('my-cart-item-prod-1')).toBeInTheDocument();
     });
 });

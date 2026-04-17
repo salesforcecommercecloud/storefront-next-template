@@ -360,20 +360,13 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"
@@ -735,20 +728,13 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"
@@ -1216,20 +1202,13 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"
@@ -1609,20 +1588,13 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"
@@ -1984,20 +1956,13 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"
@@ -2393,20 +2358,13 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"

@@ -288,7 +288,7 @@ class CheckoutPage {
         }
 
         // Click "Continue to Shipping" - use regular click so form submit fires properly (forceClick can bypass form submission)
-        I.waitForElement(this.locators.continueToShippingButton, 10);
+        I.waitForElement(this.locators.continueToShippingButton, 20);
         I.scrollTo(this.locators.continueToShippingButton);
         I.click(this.locators.continueToShippingButton);
 
@@ -362,8 +362,7 @@ class CheckoutPage {
         I.waitForElement(this.locators.shippingMethodOption);
 
         if (index === 0) {
-            // Click "Continue to Payment" button
-            I.click(this.locators.submitButton);
+            I.click(this.locators.continueToPaymentButton);
             I.waitForElement('[data-testid="sf-toggle-card-payment-content"]', 10);
             return;
         }
@@ -372,8 +371,7 @@ class CheckoutPage {
         const labelOption = this.locators.shippingMethodLabelFirst.at(index + 1);
         I.click(labelOption);
 
-        // Click "Continue to Payment" button
-        I.click(this.locators.submitButton);
+        I.click(this.locators.continueToPaymentButton);
         I.waitForElement('[data-testid="sf-toggle-card-payment-content"]', 10);
     }
 
@@ -392,9 +390,9 @@ class CheckoutPage {
 
     /** Click "Continue to Payment" from shipping options step. */
     continueFromShippingOptions(): void {
-        I.waitForElement(this.locators.submitButton, 10);
-        I.scrollTo(this.locators.submitButton);
-        I.click(this.locators.submitButton);
+        I.waitForElement(this.locators.continueToPaymentButton, 10);
+        I.scrollTo(this.locators.continueToPaymentButton);
+        I.click(this.locators.continueToPaymentButton);
         I.waitForElement('[data-testid="sf-toggle-card-payment-content"]', 10);
     }
 
@@ -448,9 +446,9 @@ class CheckoutPage {
         I.fillField(this.locators.cardholderNameInput, payment.cardholderName);
         I.fillField(this.locators.expiryDateInput, payment.expiryDate);
         I.fillField(this.locators.cvvInput, payment.cvv);
-        I.waitForElement(this.locators.submitButton, 10);
-        // Click "Place Order" button
-        I.click(this.locators.submitButton);
+        const placeOrderBtn = locate('button[type="submit"]').withText('Place Order');
+        I.waitForElement(placeOrderBtn, 10);
+        I.click(placeOrderBtn);
         I.waitForElement(this.locators.confirmationMessage, 30);
     }
 
@@ -655,11 +653,11 @@ class CheckoutPage {
     }
 
     /**
-     * Expand the My Cart accordion on checkout so cart items are in the DOM.
+     * Wait for My Cart items to be present in the DOM.
+     * Items are always visible (no accordion), so this just waits for render.
      */
     expandMyCart(): void {
         I.waitForElement(this.locators.myCartToggle);
-        I.click(this.locators.myCartToggle);
         I.waitForElement(this.locators.myCartItems, 30);
     }
 
@@ -910,12 +908,14 @@ class CheckoutPage {
 
     /**
      * Get the number of items in the My Cart section (DOM count).
-     * Uses DOM count because accordion content can be present but not considered visible by Playwright.
+     * Scoped to the desktop sidebar to avoid double-counting mobile + desktop instances.
      * Useful for validating basket context sync after client-side navigation.
      */
     async getMyCartItemCount(): Promise<number> {
         const count = (await I.executeScript(() => {
-            return document.querySelectorAll('[data-testid^="my-cart-item-"]').length;
+            const sidebar = document.querySelector('[data-testid="checkout-order-summary-sidebar"]');
+            if (!sidebar) return document.querySelectorAll('[data-testid^="my-cart-item-"]').length;
+            return sidebar.querySelectorAll('[data-testid^="my-cart-item-"]').length;
         })) as number;
         return count;
     }
@@ -1205,10 +1205,13 @@ class CheckoutPage {
         }) as unknown as Promise<void>);
     }
 
-    expandPromoCodeAccordion(): void {
+    async expandPromoCodeAccordion(): Promise<void> {
         I.waitForElement(this.locators.promoCodeAccordionTrigger, 10);
         I.scrollTo(this.locators.promoCodeAccordionTrigger);
-        I.click(this.locators.promoCodeAccordionTrigger);
+        const expanded = await I.grabAttributeFrom(this.locators.promoCodeAccordionTrigger, 'data-state');
+        if (expanded !== 'open') {
+            I.click(this.locators.promoCodeAccordionTrigger);
+        }
         I.waitForElement(this.locators.promoCodeInput, 5);
     }
 
@@ -1381,9 +1384,11 @@ class CheckoutPage {
                 new Promise<number>((resolve) => {
                     const deadline = Date.now() + params.timeout;
                     const check = (): void => {
-                        const n = document.querySelectorAll('[data-testid^="my-cart-item-"]').length;
+                        const root =
+                            document.querySelector('[data-testid="checkout-order-summary-sidebar"]') ?? document;
+                        const n = root.querySelectorAll('[data-testid^="my-cart-item-"]').length;
                         if (n >= params.min || Date.now() >= deadline) {
-                            resolve(document.querySelectorAll('[data-testid^="my-cart-item-"]').length);
+                            resolve(n);
                             return;
                         }
                         setTimeout(check, 200);

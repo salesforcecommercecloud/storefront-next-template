@@ -169,7 +169,7 @@ Scenario('Promo code rejects too-short and invalid codes', async () => {
     await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
 
-    checkoutPage.expandPromoCodeAccordion();
+    await checkoutPage.expandPromoCodeAccordion();
 
     checkoutPage.applyPromoCode(INVALID_TEST_DATA.SHORT_PROMO_CODE);
     checkoutPage.waitForPromoCodeError(5);

@@ -171,7 +171,7 @@ export function TurnstileWidget({
 
     return (
         <div className="space-y-2">
-            <div ref={containerRef} data-testid="turnstile-widget" role="presentation" aria-label="Bot verification" />
+            <div ref={containerRef} data-testid="turnstile-widget" role="presentation" />
         </div>
     );
 }

@@ -98,21 +98,16 @@ describe('PromoCodeForm', () => {
         expect(screen.getByText(t('cart:promoCode.accordionTitle'))).toBeInTheDocument();
     });
 
-    test('accordion is closed by default', () => {
-        renderWithRoutesStub();
-
-        const accordionTrigger = screen.getByRole('button');
-        expect(accordionTrigger).toHaveAttribute('aria-expanded', 'false');
-    });
-
-    test('form is render properly when accordion is open', async () => {
-        const user = userEvent.setup();
+    test('accordion is expanded by default', () => {
         renderWithRoutesStub();
 
         const accordionTrigger = screen.getByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await user.click(accordionTrigger);
-
         expect(accordionTrigger).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    test('form is rendered when accordion is expanded', () => {
+        renderWithRoutesStub();
+
         expect(screen.getByTestId('promo-code-form')).toBeInTheDocument();
         expect(screen.getByPlaceholderText(t('cart:promoCode.placeholder'))).toBeInTheDocument();
         expect(screen.getByRole('button', { name: t('cart:promoCode.apply') })).toBeInTheDocument();
@@ -121,9 +116,6 @@ describe('PromoCodeForm', () => {
     test('validates minimum length requirement', async () => {
         const user = userEvent.setup();
         renderWithRoutesStub();
-
-        const accordionTrigger = screen.getByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await user.click(accordionTrigger);
 
         const input = screen.getByPlaceholderText(t('cart:promoCode.placeholder'));
         const submitButton = screen.getByRole('button', { name: t('cart:promoCode.apply') });
@@ -142,9 +134,6 @@ describe('PromoCodeForm', () => {
         const user = userEvent.setup();
         renderWithRoutesStub();
 
-        const accordionTrigger = screen.getByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await user.click(accordionTrigger);
-
         const input = screen.getByPlaceholderText(t('cart:promoCode.placeholder'));
         const submitButton = screen.getByRole('button', { name: t('cart:promoCode.apply') });
 
@@ -154,14 +143,10 @@ describe('PromoCodeForm', () => {
         expect(mockApplyPromoCode).toHaveBeenCalledWith('SAVE20');
     });
 
-    test('shows loading state when submitting', async () => {
-        const user = userEvent.setup();
+    test('shows loading state when submitting', () => {
         mockApplyFetcher = createMockFetcher({ state: 'submitting' as const });
 
         renderWithRoutesStub();
-
-        const accordionTrigger = screen.getByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await user.click(accordionTrigger);
 
         expect(screen.getByRole('button', { name: t('cart:promoCode.applying') })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: t('cart:promoCode.applying') })).toBeDisabled();
@@ -184,9 +169,6 @@ describe('PromoCodeForm', () => {
         });
 
         renderWithRoutesStub();
-
-        const accordionTrigger = screen.getByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await user.click(accordionTrigger);
 
         const input = screen.getByPlaceholderText(t('cart:promoCode.placeholder'));
         await user.type(input, 'SAVE20');
@@ -217,9 +199,6 @@ describe('PromoCodeForm', () => {
 
         renderWithRoutesStub();
 
-        const accordionTrigger = screen.getByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await user.click(accordionTrigger);
-
         const input = screen.getByPlaceholderText(t('cart:promoCode.placeholder'));
         await user.type(input, 'INVALID');
 
@@ -248,9 +227,6 @@ describe('PromoCodeForm', () => {
 
         renderWithRoutesStub();
 
-        const accordionTrigger = screen.getByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await user.click(accordionTrigger);
-
         const input = screen.getByPlaceholderText(t('cart:promoCode.placeholder'));
         await user.type(input, 'INVALID');
 
@@ -274,10 +250,6 @@ describe('PromoCodeForm', () => {
             removeFetcher: createMockFetcher() as FetcherWithComponents<unknown>,
         });
 
-        // Create a custom render function that passes undefined basketId
-        // Using createMemoryRouter in framework mode is fine
-        // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-        // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
         const router = createMemoryRouter(
             [
                 {
@@ -294,9 +266,6 @@ describe('PromoCodeForm', () => {
         );
 
         render(<RouterProvider router={router} />);
-
-        const accordionTrigger = screen.getByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await user.click(accordionTrigger);
 
         const input = screen.getByPlaceholderText(t('cart:promoCode.placeholder'));
         const submitButton = screen.getByRole('button', { name: t('cart:promoCode.apply') });
@@ -315,13 +284,12 @@ describe('PromoCodeForm', () => {
 
         const accordionTrigger = screen.getByRole('button', { name: t('cart:promoCode.accordionTitle') });
 
-        // Open accordion and enter text
-        await user.click(accordionTrigger);
+        // Accordion is already open, enter text
         const input = screen.getByPlaceholderText(t('cart:promoCode.placeholder'));
         await user.type(input, 'SAVE20');
         expect(input).toHaveValue('SAVE20');
 
-        // Click accordion trigger again to reset
+        // Click accordion trigger to close (resets form)
         await user.click(accordionTrigger);
 
         // Open again and check if form is reset
@@ -333,9 +301,6 @@ describe('PromoCodeForm', () => {
     test('form submission prevents default behavior', async () => {
         const user = userEvent.setup();
         renderWithRoutesStub();
-
-        const accordionTrigger = screen.getByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await user.click(accordionTrigger);
 
         const input = screen.getByPlaceholderText(t('cart:promoCode.placeholder'));
         const submitButton = screen.getByRole('button', { name: t('cart:promoCode.apply') });

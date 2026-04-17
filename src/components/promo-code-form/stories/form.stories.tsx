@@ -286,14 +286,11 @@ export const Default: Story = {
 
         await waitForStorybookReady(canvasElement);
 
-        // Test that accordion trigger is present
+        // Test that accordion trigger is present and expanded by default
         const accordionTrigger = await canvas.findByRole('button', { name: t('cart:promoCode.accordionTitle') });
         await expect(accordionTrigger).toBeInTheDocument();
 
-        // Test that accordion can be expanded
-        await userEvent.click(accordionTrigger);
-
-        // After expansion, test that input field appears
+        // Input field should be visible since accordion starts expanded
         const input = await canvas.findByPlaceholderText(/promo code|discount code|enter code/i);
         await expect(input).toBeInTheDocument();
 
@@ -324,10 +321,7 @@ export const WithoutBasketId: Story = {
         const accordionTrigger = await canvas.findByRole('button', { name: t('cart:promoCode.accordionTitle') });
         await expect(accordionTrigger).toBeInTheDocument();
 
-        // Test that accordion can be expanded
-        await userEvent.click(accordionTrigger);
-
-        // After expansion, test that input field appears
+        // Input field should be visible since accordion starts expanded
         const input = await canvas.findByPlaceholderText(/promo code|discount code|enter code/i);
         await expect(input).toBeInTheDocument();
 
@@ -362,10 +356,7 @@ export const WithCustomBasketId: Story = {
         const accordionTrigger = await canvas.findByRole('button', { name: t('cart:promoCode.accordionTitle') });
         await expect(accordionTrigger).toBeInTheDocument();
 
-        // Test that accordion can be expanded
-        await userEvent.click(accordionTrigger);
-
-        // After expansion, test that input field appears
+        // Input field should be visible since accordion starts expanded
         const input = await canvas.findByPlaceholderText(/promo code|discount code|enter code/i);
         await expect(input).toBeInTheDocument();
 
@@ -396,14 +387,11 @@ export const Expanded: Story = {
 
         await waitForStorybookReady(canvasElement);
 
-        // Test that accordion trigger is present
+        // Test that accordion trigger is present and expanded by default
         const accordionTrigger = await canvas.findByRole('button', { name: t('cart:promoCode.accordionTitle') });
         await expect(accordionTrigger).toBeInTheDocument();
 
-        // Test that accordion starts expanded (or can be expanded)
-        await userEvent.click(accordionTrigger);
-
-        // Test that input field is visible in expanded state
+        // Input field should be visible since accordion starts expanded
         const input = await canvas.findByPlaceholderText(/promo code|discount code|enter code/i);
         await expect(input).toBeInTheDocument();
 

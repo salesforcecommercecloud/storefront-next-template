@@ -314,6 +314,7 @@
             "taxTbd": "Da definire",
             "estimatedTotal": "Totale stimato",
             "orderTotal": "Totale ordine",
+            "total": "Totale",
             "noBasketData": "Nessun dato del carrello disponibile"
         },
         "promoCode": {
@@ -562,7 +563,8 @@
         },
         "myCart": {
             "title": "Il mio carrello",
-            "saved": "Risparmiato {{amount}}"
+            "saved": "Risparmiato {{amount}}",
+            "delivery": "Consegna"
         },
         "placeOrder": {
             "button": "Effettua ordine - {{total}}",

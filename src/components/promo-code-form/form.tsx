@@ -21,7 +21,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form } from '@/components/ui/form';
 import { PromoCodeFields } from './promo-code-field';
-import { X as CloseIcon } from 'lucide-react';
+import { Check, X as CloseIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { formatCurrency } from '@/lib/currency';
 //hooks
 import { useToast } from '@/components/toast';
 import { usePromoCodeActions } from '@/hooks/use-promo-code-actions';
@@ -56,9 +58,9 @@ const PROMO_CODE_FORM_VAL = 'promo-code';
  *
  */
 export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
-    const { t } = useTranslation('cart');
+    const { t, i18n } = useTranslation('cart');
     const basketId = basket?.basketId;
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
     const { applyPromoCode, removePromoCode, removeFetcher, applyFetcher } = usePromoCodeActions(basketId);
     const { addToast } = useToast();
 
@@ -141,7 +143,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
     });
 
     return (
-        <div className="w-full">
+        <div className="flex w-full flex-col gap-2 pt-2 pb-4">
             <Accordion
                 type="single"
                 collapsible
@@ -149,35 +151,51 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                 onValueChange={(value) => setIsOpen(value === PROMO_CODE_FORM_VAL)}
                 className="mb-0">
                 <AccordionItem value={PROMO_CODE_FORM_VAL}>
-                    <AccordionTrigger onClick={() => form.reset()} className="py-0">
-                        <span className="flex-1 text-left text-sm font-medium">{t('promoCode.accordionTitle')}</span>
+                    <AccordionTrigger
+                        onClick={() => form.reset()}
+                        className="justify-start gap-2 py-1 [&>svg]:text-primary">
+                        <span className="text-left text-sm font-medium text-primary">
+                            {t('promoCode.accordionTitle')}
+                        </span>
                     </AccordionTrigger>
-                    <AccordionContent className="px-0 py-0">
-                        <div className="bg-background">
-                            <Form {...form}>
-                                <form onSubmit={(e) => void handleSubmit(e)} data-testid="promo-code-form">
-                                    <PromoCodeFields form={form} applyFetcher={applyFetcher} />
-                                </form>
-                            </Form>
-                        </div>
+                    <AccordionContent className="px-0 pt-2 pb-0">
+                        <Form {...form}>
+                            <form onSubmit={(e) => void handleSubmit(e)} data-testid="promo-code-form">
+                                <PromoCodeFields form={form} applyFetcher={applyFetcher} />
+                            </form>
+                        </Form>
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
 
             {basket && basket.couponItems && basket.couponItems.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-1">
                     {basket.couponItems?.map((item) => (
-                        <div key={item.couponItemId} className="flex justify-between">
-                            <span className="px-2 text-sm rounded-md bg-secondary">{item.code}</span>
-                            <CloseIcon
-                                className="cursor-pointer hover:bg-secondary"
-                                size={15}
-                                onClick={() => {
-                                    if (item.couponItemId) {
-                                        removePromoCode(item.couponItemId);
-                                    }
-                                }}
-                            />
+                        <div key={item.couponItemId} className="flex items-center justify-between py-1">
+                            <Badge variant="secondary" className="gap-1 rounded-sm text-xs font-semibold">
+                                <Check className="size-3" />
+                                {item.code}
+                                <CloseIcon
+                                    className="size-3 cursor-pointer"
+                                    onClick={() => {
+                                        if (item.couponItemId) {
+                                            removePromoCode(item.couponItemId);
+                                        }
+                                    }}
+                                />
+                            </Badge>
+                            {item.statusCode === 'applied' &&
+                                basket.orderPriceAdjustments &&
+                                (() => {
+                                    const couponTotal = basket.orderPriceAdjustments
+                                        .filter((adj) => adj.couponCode === item.code)
+                                        .reduce((sum, adj) => sum + (adj.price ?? 0), 0);
+                                    return couponTotal !== 0 ? (
+                                        <span className="text-sm text-muted-foreground">
+                                            {formatCurrency(couponTotal, i18n.language, basket.currency ?? 'USD')}
+                                        </span>
+                                    ) : null;
+                                })()}
                         </div>
                     ))}
                 </div>

@@ -334,6 +334,7 @@
             "taxTbd": "TBD",
             "estimatedTotal": "Estimated Total",
             "orderTotal": "Order Total",
+            "total": "Total",
             "noBasketData": "No basket data available"
         },
         "promoCode": {
@@ -580,7 +581,8 @@
         },
         "myCart": {
             "title": "My Cart",
-            "saved": "Saved {{amount}}"
+            "saved": "Saved {{amount}}",
+            "delivery": "Delivery"
         },
         "placeOrder": {
             "button": "Place Order - {{total}}",
