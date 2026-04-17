@@ -9,7 +9,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -19,7 +19,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 1"
@@ -286,7 +286,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -296,7 +296,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 1"
@@ -410,7 +410,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               <a
                 aria-current="true"
                 aria-label="View Master Product 1 in Black"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-1?color=BLACKWL"
                 style="background-color: black;"
                 tabindex="-1"
@@ -564,7 +564,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -574,7 +574,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Multi 1"
@@ -687,13 +687,13 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             >
               <a
                 aria-label="View Master Multi 1 in Begonia Pink"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-MULTI-1?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -701,13 +701,13 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               <a
                 aria-current="true"
                 aria-label="View Master Multi 1 in Grey Heather"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-MULTI-1?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -870,7 +870,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -880,7 +880,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 2"
@@ -993,14 +993,14 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             >
               <a
                 aria-label="View Master Product 2 in Navy"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-2?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -1008,13 +1008,13 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               <a
                 aria-current="true"
                 aria-label="View Master Product 2 in Charcoal"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-2?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -1163,7 +1163,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -1173,7 +1173,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Product Set 1"
@@ -1411,7 +1411,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -1421,7 +1421,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 2"
@@ -1688,7 +1688,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -1698,7 +1698,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Multi 2"
@@ -1811,13 +1811,13 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             >
               <a
                 aria-label="View Master Multi 2 in Begonia Pink"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-MULTI-2?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -1825,13 +1825,13 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               <a
                 aria-current="true"
                 aria-label="View Master Multi 2 in Grey Heather"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-MULTI-2?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -1994,7 +1994,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -2004,7 +2004,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 3"
@@ -2117,14 +2117,14 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
             >
               <a
                 aria-label="View Master Product 3 in Navy"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-3?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -2132,13 +2132,13 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               <a
                 aria-current="true"
                 aria-label="View Master Product 3 in Charcoal"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-3?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -2300,7 +2300,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -2310,7 +2310,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 1"
@@ -2577,7 +2577,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -2587,7 +2587,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 1"
@@ -2701,7 +2701,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               <a
                 aria-current="true"
                 aria-label="View Master Product 1 in Black"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-1?color=BLACKWL"
                 style="background-color: black;"
                 tabindex="-1"
@@ -2855,7 +2855,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -2865,7 +2865,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Multi 1"
@@ -2978,13 +2978,13 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             >
               <a
                 aria-label="View Master Multi 1 in Begonia Pink"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-MULTI-1?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -2992,13 +2992,13 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               <a
                 aria-current="true"
                 aria-label="View Master Multi 1 in Grey Heather"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-MULTI-1?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -3161,7 +3161,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -3171,7 +3171,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 2"
@@ -3284,14 +3284,14 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             >
               <a
                 aria-label="View Master Product 2 in Navy"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-2?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -3299,13 +3299,13 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               <a
                 aria-current="true"
                 aria-label="View Master Product 2 in Charcoal"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-2?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -3454,7 +3454,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -3464,7 +3464,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Product Set 1"
@@ -3702,7 +3702,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -3712,7 +3712,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 2"
@@ -3979,7 +3979,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -3989,7 +3989,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Multi 2"
@@ -4102,13 +4102,13 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             >
               <a
                 aria-label="View Master Multi 2 in Begonia Pink"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-MULTI-2?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -4116,13 +4116,13 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               <a
                 aria-current="true"
                 aria-label="View Master Multi 2 in Grey Heather"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-MULTI-2?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -4285,7 +4285,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -4295,7 +4295,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 3"
@@ -4408,14 +4408,14 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
             >
               <a
                 aria-label="View Master Product 3 in Navy"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-3?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -4423,13 +4423,13 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               <a
                 aria-current="true"
                 aria-label="View Master Product 3 in Charcoal"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-3?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -4613,7 +4613,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -4623,7 +4623,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 1"
@@ -4890,7 +4890,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -4900,7 +4900,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 2"
@@ -5167,7 +5167,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -5177,7 +5177,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 3"
@@ -5430,7 +5430,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -5440,7 +5440,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 4"
@@ -5693,7 +5693,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -5703,7 +5703,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 5"
@@ -5956,7 +5956,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -5966,7 +5966,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 6"
@@ -6233,7 +6233,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -6243,7 +6243,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 7"
@@ -6510,7 +6510,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -6520,7 +6520,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 8"
@@ -6773,7 +6773,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -6783,7 +6783,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 9"
@@ -7036,7 +7036,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -7046,7 +7046,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 10"
@@ -7299,7 +7299,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -7309,7 +7309,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 11"
@@ -7576,7 +7576,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -7586,7 +7586,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 12"
@@ -7853,7 +7853,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -7863,7 +7863,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 13"
@@ -8116,7 +8116,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -8126,7 +8126,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 14"
@@ -8379,7 +8379,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -8389,7 +8389,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 15"
@@ -8642,7 +8642,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -8652,7 +8652,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 16"
@@ -8919,7 +8919,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -8929,7 +8929,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 17"
@@ -9196,7 +9196,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -9206,7 +9206,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 18"
@@ -9459,7 +9459,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -9469,7 +9469,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 19"
@@ -9722,7 +9722,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -9732,7 +9732,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 20"
@@ -9985,7 +9985,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -9995,7 +9995,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 21"
@@ -10262,7 +10262,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -10272,7 +10272,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 22"
@@ -10539,7 +10539,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -10549,7 +10549,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 23"
@@ -10802,7 +10802,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -10812,7 +10812,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 24"
@@ -11078,7 +11078,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -11088,7 +11088,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 1"
@@ -11355,7 +11355,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -11365,7 +11365,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 1"
@@ -11479,7 +11479,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               <a
                 aria-current="true"
                 aria-label="View Master Product 1 in Black"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-1?color=BLACKWL"
                 style="background-color: black;"
                 tabindex="-1"
@@ -11633,7 +11633,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -11643,7 +11643,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Multi 1"
@@ -11756,13 +11756,13 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             >
               <a
                 aria-label="View Master Multi 1 in Begonia Pink"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-MULTI-1?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -11770,13 +11770,13 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               <a
                 aria-current="true"
                 aria-label="View Master Multi 1 in Grey Heather"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-MULTI-1?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -11939,7 +11939,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -11949,7 +11949,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 2"
@@ -12062,14 +12062,14 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             >
               <a
                 aria-label="View Master Product 2 in Navy"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-2?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -12077,13 +12077,13 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               <a
                 aria-current="true"
                 aria-label="View Master Product 2 in Charcoal"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-2?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -12232,7 +12232,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -12242,7 +12242,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Product Set 1"
@@ -12480,7 +12480,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -12490,7 +12490,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Product 2"
@@ -12757,7 +12757,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -12767,7 +12767,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Multi 2"
@@ -12880,13 +12880,13 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             >
               <a
                 aria-label="View Master Multi 2 in Begonia Pink"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-MULTI-2?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -12894,13 +12894,13 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               <a
                 aria-current="true"
                 aria-label="View Master Multi 2 in Grey Heather"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-MULTI-2?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70"
                 />
@@ -13063,7 +13063,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -13073,7 +13073,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Master Product 3"
@@ -13186,14 +13186,14 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
             >
               <a
                 aria-label="View Master Product 3 in Navy"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
                 href="/product/MASTER-3?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -13201,13 +13201,13 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               <a
                 aria-current="true"
                 aria-label="View Master Product 3 in Charcoal"
-                class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+                class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
                 href="/product/MASTER-3?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
                   alt=""
-                  class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
+                  class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
                   loading="lazy"
                   src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
                 />
@@ -13369,7 +13369,7 @@ exports[`ProductGrid stories snapshot > SingleProductCritical story renders and 
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -13379,7 +13379,7 @@ exports[`ProductGrid stories snapshot > SingleProductCritical story renders and 
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Only"
@@ -13659,7 +13659,7 @@ exports[`ProductGrid stories snapshot > SingleProductNonCritical story renders a
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-8"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
         data-slot="card"
       >
         <div
@@ -13669,7 +13669,7 @@ exports[`ProductGrid stories snapshot > SingleProductNonCritical story renders a
             class="relative w-full overflow-hidden"
           >
             <div
-              class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+              class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
             >
               <a
                 aria-label="View Standard Only"

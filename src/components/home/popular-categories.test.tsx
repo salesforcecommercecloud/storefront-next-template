@@ -153,9 +153,9 @@ describe('PopularCategories', () => {
             { timeout: 3000 }
         );
 
-        // Check that the max-w-7xl container is present
-        const mainContainer = container.querySelector('.max-w-7xl');
-        expect(mainContainer).toBeInTheDocument();
+        // Check that the outer section wrapper is present (max-w-7xl was removed; carousel is now full-width)
+        const sectionWrapper = container.querySelector('section');
+        expect(sectionWrapper).toBeInTheDocument();
     });
 
     test('renders section wrapper with background', async () => {

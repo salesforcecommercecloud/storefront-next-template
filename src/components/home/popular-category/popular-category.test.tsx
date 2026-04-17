@@ -101,7 +101,10 @@ describe('PopularCategory', () => {
         expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         expect(screen.getByText('Shop all new arrivals including women and mens clothing')).toBeInTheDocument();
         expect(screen.getByText('Shop Now')).toBeInTheDocument();
-        expect(screen.getByRole('listitem')).toHaveAttribute('href', `${SITE_PREFIX}/category/newarrivals`);
+        expect(screen.getByRole('link', { name: /new arrivals/i })).toHaveAttribute(
+            'href',
+            `${SITE_PREFIX}/category/newarrivals`
+        );
     });
 
     test('renders category with category prop (programmatic use)', () => {
@@ -189,7 +192,7 @@ describe('PopularCategory', () => {
     test('generates correct category link', () => {
         renderComponent(<PopularCategory data={mockCategory} />);
 
-        const link = screen.getByRole('listitem');
+        const link = screen.getByRole('link', { name: /new arrivals/i });
         expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/newarrivals`);
     });
 
@@ -201,7 +204,7 @@ describe('PopularCategory', () => {
 
         renderComponent(<PopularCategory data={categoryWithEmptyId} />);
 
-        const link = screen.getByRole('listitem');
+        const link = screen.getByRole('link', { name: /new arrivals/i });
         expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/`);
     });
 

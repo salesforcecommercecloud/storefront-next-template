@@ -41,14 +41,6 @@
                     "type": "string",
                     "required": false,
                     "description": "Optional subtitle text for the category section"
-                },
-                {
-                    "id": "paddingX",
-                    "name": "Horizontal Padding",
-                    "type": "string",
-                    "required": false,
-                    "description": "Horizontal padding classes (e.g., px-4 sm:px-6 lg:px-8)",
-                    "default_value": "px-4 sm:px-6 lg:px-8"
                 }
             ]
         }

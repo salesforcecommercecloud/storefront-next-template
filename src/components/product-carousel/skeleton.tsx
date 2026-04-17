@@ -78,7 +78,7 @@ export default function ProductCarouselSkeleton({
                             {Array.from({ length: finalItemCount }, (_, i) => i).map((index) => (
                                 <div
                                     key={`carousel-item-${index}`}
-                                    className="basis-1/2 sm:basis-1/3 md:basis-1/4 py-1 flex pl-4 min-w-0 shrink-0 grow-0">
+                                    className="w-[348px] md:w-[256px] 2xl:w-[288px] basis-auto py-1 flex">
                                     <div className="w-full max-w-full min-w-0 flex">
                                         <ProductTileSkeleton />
                                     </div>
@@ -110,17 +110,17 @@ export default function ProductCarouselSkeleton({
  */
 function ProductTileSkeleton() {
     return (
-        <Card className="rounded-xl overflow-hidden w-full max-w-full flex flex-col h-full gap-0 py-0">
+        <Card className="!rounded-none !border-0 !shadow-none overflow-hidden w-full max-w-full flex flex-col h-full gap-0 py-0">
             {/* Image area */}
             <CardHeader className="p-0">
-                <Skeleton className="aspect-square w-full" />
+                <Skeleton className="w-full" style={{ aspectRatio: '0.8 / 1' }} />
             </CardHeader>
 
             {/* Swatches */}
             <CardContent className="px-4 pt-3 pb-0">
                 <div className="flex items-center gap-1">
-                    <Skeleton className="h-7 w-7 rounded-full" />
-                    <Skeleton className="h-7 w-7 rounded-full" />
+                    <Skeleton className="h-7 w-7 rounded-none" />
+                    <Skeleton className="h-7 w-7 rounded-none" />
                 </div>
             </CardContent>
 

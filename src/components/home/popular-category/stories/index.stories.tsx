@@ -165,7 +165,7 @@ export const Default: Story = {
         await expect(shopNowButton).toBeInTheDocument();
 
         // Verify category link
-        const link = canvas.getByRole('listitem');
+        const link = canvas.getByRole('link', { name: /mens/i });
         await expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/mens`);
     },
 };
@@ -190,7 +190,7 @@ export const WithCategoryProp: Story = {
 
         await expect(canvas.getByText('Ties')).toBeInTheDocument();
         await expect(canvas.getByText(/shop mens's ties/i)).toBeInTheDocument();
-        await expect(canvas.getByRole('listitem')).toHaveAttribute(
+        await expect(canvas.getByRole('link', { name: /ties/i })).toHaveAttribute(
             'href',
             `${SITE_PREFIX}/category/mens-accessories-ties`
         );
@@ -239,7 +239,7 @@ export const Fallback: Story = {
         const canvas = within(canvasElement);
 
         // Component returns null when no data is provided
-        await expect(canvas.queryByRole('listitem')).not.toBeInTheDocument();
+        await expect(canvas.queryByRole('link')).not.toBeInTheDocument();
     },
 };
 
@@ -265,8 +265,8 @@ export const InteractionTest: Story = {
         const title = await canvas.findByText('Mens', {}, { timeout: 3000 });
         await expect(title).toBeInTheDocument();
 
-        // Find the shop now button/link
-        const card = canvas.getByRole('listitem');
+        // Find the category card link
+        const card = canvas.getByRole('link', { name: /mens/i });
         await expect(card).toBeInTheDocument();
 
         // Test clicking the category card

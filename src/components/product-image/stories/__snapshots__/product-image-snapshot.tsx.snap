@@ -6,8 +6,8 @@ exports[`ProductImage stories snapshot > CustomAspectRatio story renders and mat
     class="w-64 h-64"
   >
     <div
-      class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col  "
-      style="aspect-ratio: 0.75; padding-bottom: 133.33333333333331%;"
+      class="relative overflow-hidden bg-secondary/20 flex flex-col  "
+      style="aspect-ratio: 0.75;"
     >
       <a
         aria-label="View Laptop Briefcase with wheels (37L)"
@@ -69,7 +69,7 @@ exports[`ProductImage stories snapshot > Default story renders and matches snaps
     class="w-64 h-64"
   >
     <div
-      class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square "
+      class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square "
     >
       <a
         aria-label="View Laptop Briefcase with wheels (37L)"
@@ -131,7 +131,7 @@ exports[`ProductImage stories snapshot > WithColorVariant story renders and matc
     class="w-64 h-64"
   >
     <div
-      class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square "
+      class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square "
     >
       <a
         aria-label="View Long Sleeve Embellished Boat Neck Top"

@@ -29,6 +29,4 @@ const dataLoader = (args: { componentData: unknown; context: LoaderFunctionArgs[
     return fetchCategories(routeContext, parentId, 1);
 };
 
-export const loader = {
-    server: dataLoader,
-};
+export const loader = dataLoader;

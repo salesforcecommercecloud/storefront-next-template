@@ -194,12 +194,10 @@ describe('ProductCarousel', () => {
             expect(screen.getByTestId('carousel-next')).toBeInTheDocument();
         });
 
-        test('renders an empty title heading when title is not provided', () => {
+        test('renders no title heading when title is not provided', () => {
             renderComponent(<ProductCarousel products={mockProducts} />);
 
-            const titleHeading = screen.getByRole('heading', { level: 2 });
-            expect(titleHeading).toBeInTheDocument();
-            expect(titleHeading).toBeEmptyDOMElement();
+            expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
             expect(screen.getByTestId('carousel')).toBeInTheDocument();
         });
 

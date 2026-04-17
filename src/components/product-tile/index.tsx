@@ -374,7 +374,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                 <Card
                     ref={ref}
                     className={cn(
-                        'product-card group w-full min-w-0 max-w-full overflow-hidden gap-0 py-0 rounded-xl',
+                        'product-card group w-full min-w-0 max-w-full overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none',
                         pageDesignerStyles,
                         className
                     )}
@@ -388,7 +388,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             <Card
                 ref={ref}
                 className={cn(
-                    'product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl',
+                    'product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none',
                     pageDesignerStyles,
                     className
                 )}

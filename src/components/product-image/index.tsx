@@ -62,24 +62,15 @@ const ProductImageContainer = ({
         handleProductClick?.(product);
     }, [handleProductClick, product]);
 
-    // Calculate height based on aspect ratio
-    // imgAspectRatio = width / height, so height = width / imgAspectRatio
-    // We use CSS calc with viewport units to compute height dynamically
-    const heightStyle =
-        imgAspectRatio !== 1
-            ? {
-                  // Use padding-bottom trick for aspect ratio, but calculate based on viewport width
-                  // For responsive widths, we need to calculate height for each breakpoint
-                  // Using aspect-ratio CSS property with calc for viewport-based calculation
-                  aspectRatio: `${imgAspectRatio}`,
-                  // Fallback: use padding-bottom percentage trick
-                  paddingBottom: imgAspectRatio !== 1 ? `${(1 / imgAspectRatio) * 100}%` : undefined,
-              }
-            : {};
+    // When a non-square aspect ratio is requested, apply it via the native CSS
+    // `aspect-ratio` property. The legacy padding-bottom percentage trick is not
+    // used here because it conflicts with the native property and collapses the
+    // image height to zero.
+    const heightStyle = imgAspectRatio !== 1 ? { aspectRatio: `${imgAspectRatio}` } : {};
 
     return (
         <div
-            className={`${showNavigationArrows ? 'group/image ' : ''}relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col ${
+            className={`${showNavigationArrows ? 'group/image ' : ''}relative overflow-hidden bg-secondary/20 flex flex-col ${
                 imgAspectRatio === 1 ? 'aspect-square' : ''
             } ${className || ''}`}
             style={heightStyle}>

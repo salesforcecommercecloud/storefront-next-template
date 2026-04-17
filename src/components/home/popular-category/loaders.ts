@@ -38,6 +38,4 @@ const dataLoader = (args: {
     return fetchCategory(routeContext, categoryId, 0);
 };
 
-export const loader = {
-    server: dataLoader,
-};
+export const loader = dataLoader;

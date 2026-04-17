@@ -54,7 +54,7 @@ describe('PopularCategory loader', () => {
             regions: [],
         };
 
-        const result = await loader.server({
+        const result = await loader({
             componentData,
             context: mockContext,
         });
@@ -72,7 +72,7 @@ describe('PopularCategory loader', () => {
         };
 
         expect(() => {
-            void loader.server({
+            void loader({
                 componentData,
                 context: mockContext,
             });
@@ -90,7 +90,7 @@ describe('PopularCategory loader', () => {
         };
 
         expect(() => {
-            void loader.server({
+            void loader({
                 componentData,
                 context: mockContext,
             });
@@ -108,7 +108,7 @@ describe('PopularCategory loader', () => {
         };
 
         expect(() => {
-            void loader.server({
+            void loader({
                 componentData,
                 context: mockContext,
             });
