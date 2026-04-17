@@ -17,6 +17,7 @@ import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
+import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useBasket } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
@@ -167,11 +168,13 @@ export default function RegisterCustomerSelection({
                 aria-label={t('registration.accountCreatedTitle')}>
                 <div className="flex flex-1 flex-col gap-1">
                     <h6 className="text-sm font-semibold text-foreground">{t('registration.accountCreatedTitle')}</h6>
-                    <p className="text-sm leading-5 text-foreground">{t('registration.accountCreatedDescription')}</p>
+                    <p className="text-sm leading-5 text-muted-foreground">
+                        {t('registration.accountCreatedDescription')}
+                    </p>
                 </div>
-                <div className="inline-flex shrink-0 items-center gap-1.5 rounded-sm border border-active-foreground px-2 py-0.5">
-                    <span className="text-sm font-medium text-active-foreground">{t('registration.verified')}</span>
-                </div>
+                <Badge variant="success" className="rounded-none">
+                    {t('registration.verified')}
+                </Badge>
             </section>
         );
     }
@@ -194,7 +197,7 @@ export default function RegisterCustomerSelection({
                     <span className="font-medium leading-5 text-foreground">{t('payment.saveForFutureUse')}</span>
                     <span className="leading-5 text-foreground">{t('payment.createAccountForFasterCheckout')}</span>
                     {registrationFetcher.state === 'submitting' && (
-                        <p className="text-foreground">{t('registration.sendingVerificationCode')}</p>
+                        <p className="text-muted-foreground">{t('registration.sendingVerificationCode')}</p>
                     )}
                     {shouldCreateAccount && !error && registrationFetcher.state !== 'submitting' && (
                         <p className="mt-3 leading-5 text-foreground">

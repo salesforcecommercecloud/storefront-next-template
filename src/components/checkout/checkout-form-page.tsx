@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, useEffect, lazy, Suspense, use, useRef, useState, type FormEvent } from 'react';
+import { useFetcher } from 'react-router';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket, useBasketHydrated } from '@/providers/basket';
 import { useCheckoutActions, type PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
@@ -31,6 +32,7 @@ import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
+import { Spinner } from '@/components/spinner';
 import CheckoutErrorBanner from './components/checkout-error-banner';
 import { CHECKOUT_STEPS, type CheckoutStep } from './utils/checkout-context-types';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -202,6 +204,8 @@ export default function CheckoutFormPage({
     const { step, STEPS, goToStep, editingStep, shipmentDistribution, exitEditMode } = useCheckoutContext();
     const customerProfile = useCustomerProfile();
     const isRegisteredUser = Boolean(customerProfile?.customer?.customerId);
+    const registrationFetcher = useFetcher({ key: 'checkout-registration' });
+    const isRegistrationInProgress = registrationFetcher.state !== 'idle';
 
     const paymentSubmissionRef = useRef<PaymentSubmissionRef['current']>({
         formDataGetter: null,
@@ -790,6 +794,11 @@ export default function CheckoutFormPage({
                 </div>
             </div>
             <UITarget targetId="checkout.page.after" />
+            {isRegistrationInProgress && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60">
+                    <Spinner size="lg" />
+                </div>
+            )}
         </div>
     );
 }
