@@ -215,6 +215,63 @@ Grid with max-width constraint.
     },
 };
 
+export const WithContainerAlignment: Story = {
+    render: () => (
+        <div className="space-y-8">
+            <div className="border-2 border-dashed border-gray-300 p-4">
+                <h3 className="text-sm font-semibold mb-2">Align: Start (Default)</h3>
+                <Grid columns="3" maxWidth="lg" containerAlign="start" columnGap="4">
+                    <div className="bg-muted p-4 rounded">Item 1</div>
+                    <div className="bg-muted p-4 rounded">Item 2</div>
+                    <div className="bg-muted p-4 rounded">Item 3</div>
+                </Grid>
+            </div>
+            <div className="border-2 border-dashed border-gray-300 p-4">
+                <h3 className="text-sm font-semibold mb-2">Align: Center</h3>
+                <Grid columns="3" maxWidth="lg" containerAlign="center" columnGap="4">
+                    <div className="bg-muted p-4 rounded">Item 1</div>
+                    <div className="bg-muted p-4 rounded">Item 2</div>
+                    <div className="bg-muted p-4 rounded">Item 3</div>
+                </Grid>
+            </div>
+            <div className="border-2 border-dashed border-gray-300 p-4">
+                <h3 className="text-sm font-semibold mb-2">Align: End</h3>
+                <Grid columns="3" maxWidth="lg" containerAlign="end" columnGap="4">
+                    <div className="bg-muted p-4 rounded">Item 1</div>
+                    <div className="bg-muted p-4 rounded">Item 2</div>
+                    <div className="bg-muted p-4 rounded">Item 3</div>
+                </Grid>
+            </div>
+        </div>
+    ),
+    parameters: {
+        docs: {
+            story: `
+Grid container alignment when maxWidth is set.
+
+### Features:
+- containerAlign="start" - Grid aligns to the left
+- containerAlign="center" - Grid centers horizontally (mx-auto)
+- containerAlign="end" - Grid aligns to the right
+- Most useful when maxWidth < full width
+            `,
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Verify all three alignment sections are rendered
+        const startHeading = await canvas.findByText(/align: start \(default\)/i, {}, { timeout: 5000 });
+        await expect(startHeading).toBeInTheDocument();
+        const centerHeading = await canvas.findByText(/align: center/i, {}, { timeout: 5000 });
+        await expect(centerHeading).toBeInTheDocument();
+        const endHeading = await canvas.findByText(/align: end/i, {}, { timeout: 5000 });
+        await expect(endHeading).toBeInTheDocument();
+    },
+};
+
 export const WithVerticalAlignment: Story = {
     render: () => (
         <Grid columns="3" verticalAlignment="center" columnGap="4" className="h-64">

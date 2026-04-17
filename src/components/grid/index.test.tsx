@@ -32,7 +32,11 @@ vi.mock('@/lib/decorators/attribute-definition', () => ({
 }));
 
 vi.mock('@/components/region', () => ({
-    Region: ({ regionId }: { regionId: string }) => <div data-testid={`region-${regionId}`}>Region: {regionId}</div>,
+    Region: ({ regionId, className }: { regionId: string; className?: string }) => (
+        <div data-testid={`region-${regionId}`} className={className}>
+            Region: {regionId}
+        </div>
+    ),
 }));
 
 describe('Grid Component', () => {
@@ -385,6 +389,37 @@ describe('Grid Component', () => {
             });
         });
 
+        describe('Container Alignment', () => {
+            const alignments = [
+                { value: 'start', class: 'mx-0' },
+                { value: 'center', class: 'mx-auto' },
+                { value: 'end', class: 'ml-auto' },
+            ] as const;
+
+            alignments.forEach(({ value, class: className }) => {
+                it(`should apply ${className} for containerAlign="${value}"`, () => {
+                    render(
+                        <Grid containerAlign={value} data-testid="grid">
+                            Content
+                        </Grid>
+                    );
+                    const grid = screen.getByTestId('grid');
+                    expect(grid.className).toContain(className);
+                });
+            });
+
+            it('should center grid with maxWidth and containerAlign="center"', () => {
+                render(
+                    <Grid maxWidth="lg" containerAlign="center" data-testid="grid">
+                        Content
+                    </Grid>
+                );
+                const grid = screen.getByTestId('grid');
+                expect(grid.className).toContain('max-w-screen-lg');
+                expect(grid.className).toContain('mx-auto');
+            });
+        });
+
         describe('Column Gap', () => {
             const gapValues = ['0', '1', '2', '3', '4', '6', '8', '12', '16'] as const;
 
@@ -494,7 +529,9 @@ describe('Grid Component', () => {
             it('should handle multiple new attributes together', () => {
                 render(
                     <Grid
+                        columns="3"
                         maxWidth="lg"
+                        containerAlign="center"
                         columnGap="8"
                         verticalAlignment="center"
                         backgroundGradient="purple"
@@ -505,6 +542,7 @@ describe('Grid Component', () => {
                 );
                 const grid = screen.getByTestId('grid');
                 expect(grid.className).toContain('max-w-screen-lg');
+                expect(grid.className).toContain('mx-auto');
                 expect(grid.className).toContain('gap-8');
                 expect(grid.className).toContain('items-center');
                 expect(grid.className).toContain('from-purple-500');
@@ -607,6 +645,33 @@ describe('Grid Component', () => {
             // Check that 4 regions are created
             const regions = screen.getAllByTestId(/^region-column_/);
             expect(regions).toHaveLength(4);
+        });
+
+        it('should render regions with w-full class only, not grid container classes', () => {
+            render(
+                <Grid columns="3" component={mockComponent} data-testid="grid">
+                    Fallback
+                </Grid>
+            );
+
+            const grid = screen.getByTestId('grid');
+
+            // Grid container should have grid classes
+            expect(grid.className).toContain('grid');
+            expect(grid.className).toContain('grid-cols-3');
+
+            // Regions should have w-full but NOT grid container classes
+            const region1 = screen.getByTestId('region-column_1');
+            const region2 = screen.getByTestId('region-column_2');
+            const region3 = screen.getByTestId('region-column_3');
+
+            // Each region should have w-full for full width within grid cell
+            [region1, region2, region3].forEach((region) => {
+                expect(region.className).toContain('w-full');
+                // Regions should NOT be grid containers themselves
+                expect(region.className).not.toContain('grid-cols');
+                expect(region.className).not.toContain('gap-');
+            });
         });
     });
 

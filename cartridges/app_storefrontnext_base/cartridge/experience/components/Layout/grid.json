@@ -54,6 +54,15 @@
                     "default_value": "full"
                 },
                 {
+                    "id": "containerAlign",
+                    "name": "Container Alignment",
+                    "type": "enum",
+                    "required": false,
+                    "description": "Horizontal alignment of the grid container within its parent",
+                    "values": ["start", "center", "end"],
+                    "default_value": "start"
+                },
+                {
                     "id": "columnGap",
                     "name": "Column Gap",
                     "type": "enum",

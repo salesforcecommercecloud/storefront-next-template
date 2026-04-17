@@ -76,6 +76,16 @@ export class GridMetadata {
     maxWidth?: string;
 
     @AttributeDefinition({
+        id: 'containerAlign',
+        name: 'Container Alignment',
+        description: 'Horizontal alignment of the grid container within its parent',
+        type: 'enum',
+        values: ['start', 'center', 'end'],
+        defaultValue: 'start',
+    })
+    containerAlign?: string;
+
+    @AttributeDefinition({
         id: 'columnGap',
         name: 'Column Gap',
         description: 'Space between columns',
@@ -133,6 +143,7 @@ interface GridProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
 
     // Page Designer attributes
     maxWidth?: string;
+    containerAlign?: string;
     columnGap?: string;
     verticalAlignment?: string;
     backgroundGradient?: string;
@@ -171,6 +182,12 @@ const maxWidthMap: Record<string, string> = {
     xl: 'max-w-screen-xl',
     '2xl': 'max-w-screen-2xl',
     full: 'max-w-full',
+};
+
+const alignMap: Record<string, string> = {
+    start: 'mx-0',
+    center: 'mx-auto',
+    end: 'ml-auto',
 };
 
 const columnGapMap: Record<string, string> = {
@@ -216,11 +233,12 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
             className,
             display = 'grid',
             columns = '1',
-            flow,
+            flow = 'row',
             p,
             px,
             py,
             maxWidth = 'full',
+            containerAlign = 'start',
             columnGap = '4',
             verticalAlignment = 'stretch',
             backgroundGradient = 'none',
@@ -262,6 +280,9 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
             // Max Width
             maxWidth && maxWidthMap[maxWidth],
 
+            // Container Alignment
+            containerAlign && alignMap[containerAlign],
+
             // Column Gap
             columnGap && columnGapMap[columnGap],
 
@@ -295,7 +316,7 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
                             regionId={regionId}
                             component={component}
                             errorElement={null}
-                            className={classes}
+                            className="w-full"
                         />
                     ))}
                 </ComponentElement>
