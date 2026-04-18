@@ -55,7 +55,7 @@ import { useTranslation } from 'react-i18next';
         id: 'main',
         name: 'Main Content Region',
         description: 'Region for main content',
-        maxComponents: 5,
+        maxComponents: 10,
     },
 ])
 export class HomePageMetadata {}

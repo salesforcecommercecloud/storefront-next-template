@@ -61,8 +61,27 @@ const orderScenario = testUserPassword ? Scenario : Scenario.skip;
 Before(async () => {
     if (!testUserPassword) return;
     if (await storefrontPage.hasRegisteredSession()) return;
-    await storefrontPage.clearCookies();
-    await loginFlow.executeWithCredentials(testUserEmail, testUserPassword);
+
+    const siteId = process.env.SITE_ID || 'RefArchGlobal';
+
+    /**
+     * After a full cookie clear, load the storefront and wait for a guest SLAS
+     * session before opening /login. Otherwise the login action can race a
+     * half-established context and surface the generic "Something went wrong" error.
+     * One retry absorbs transient SCAPI failures seen under parallel CI load.
+     */
+    const establishSessionAndLogin = async (): Promise<void> => {
+        await storefrontPage.clearCookies();
+        storefrontPage.navigate();
+        await storefrontPage.waitForSessionCookies('guest', siteId, 30);
+        await loginFlow.executeWithCredentials(testUserEmail, testUserPassword);
+    };
+
+    try {
+        await establishSessionAndLogin();
+    } catch {
+        await establishSessionAndLogin();
+    }
 });
 
 // =============================================================================
