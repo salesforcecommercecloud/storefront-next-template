@@ -122,21 +122,38 @@ function findAndReplaceComponent(
                 throw new Error(`UITarget must contain a targetId attribute`);
             }
             if (targetRegistry[targetId] && targetRegistry[targetId].length > 0) {
-                // Create JSX elements for each component
-                const components = targetRegistry[targetId].map((targetComponent: TargetComponentConfig) => {
-                    return jsxElement(
-                        jsxOpeningElement(jsxIdentifier(targetComponent.componentName), [], true),
-                        null,
-                        [],
-                        true
-                    );
-                });
-
-                // If multiple components, wrap in a fragment; otherwise use single component
-                if (components.length > 1) {
-                    element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), components));
+                const hasChildren = element.node.children.length > 0;
+                if (hasChildren) {
+                    // Preserve wrapped children and nest replacement components in order,
+                    // so wrappers continue to work and remain valid in JSX expression contexts.
+                    let nestedChildren = element.node.children;
+                    for (let i = targetRegistry[targetId].length - 1; i >= 0; i--) {
+                        const targetComponent = targetRegistry[targetId][i];
+                        const replacementElement = jsxElement(
+                            jsxOpeningElement(jsxIdentifier(targetComponent.componentName), [], false),
+                            jsxClosingElement(jsxIdentifier(targetComponent.componentName)),
+                            nestedChildren,
+                            false
+                        );
+                        nestedChildren = [replacementElement];
+                    }
+                    element.replaceWith(nestedChildren[0] as BabelJSXElement);
                 } else {
-                    element.replaceWith(components[0]);
+                    // Keep historical behavior for self-closing UITarget:
+                    // emit each replacement as a sibling component.
+                    const components = targetRegistry[targetId].map((targetComponent: TargetComponentConfig) => {
+                        return jsxElement(
+                            jsxOpeningElement(jsxIdentifier(targetComponent.componentName), [], true),
+                            null,
+                            [],
+                            true
+                        );
+                    });
+                    if (components.length > 1) {
+                        element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), components));
+                    } else {
+                        element.replaceWith(components[0]);
+                    }
                 }
                 targetIdReplaced = targetId;
                 replaced = true;
@@ -144,8 +161,9 @@ function findAndReplaceComponent(
         }
         if (!replaced) {
             if (element.node.children && element.node.children.length > 0) {
-                // replace the element with its children
-                element.replaceWithMultiple(element.node.children);
+                // Keep children in a fragment so replacement is valid in all contexts,
+                // including JSX expression containers (e.g. prop values).
+                element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), element.node.children));
             } else {
                 // No children and no target replacement:
                 // use an empty fragment instead of remove() so UITarget inside

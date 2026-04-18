@@ -204,6 +204,22 @@ describe('target-utils', () => {
             expect(output).not.toContain('UITarget');
         });
 
+        it('should preserve wrapped children when UITarget is replaced', () => {
+            const codeWithChildren = `
+        export default async function Test() {
+          return (
+            <UITarget targetId="test.target"><span>Hello</span></UITarget>
+          );
+        }
+      `;
+            const output = transformTargets(codeWithChildren, targetRegistry, []);
+            expect(output).toContain('<Bar_Foo1>');
+            expect(output).toContain('<Bar_Foo2>');
+            expect(output).toContain('<Bar_Foo3>');
+            expect(output).toContain('<span>Hello</span>');
+            expect(output).not.toContain('UITarget');
+        });
+
         it('should preserve valid JSX when unresolved UITarget is inside prop expression', () => {
             const codeWithTargetInPropExpression = `
         import React from "react";

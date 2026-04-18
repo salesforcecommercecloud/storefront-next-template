@@ -37,6 +37,7 @@ import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 import type { AppConfig } from '@/types/config';
+import { UITarget } from '@/targets/ui-target';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -398,6 +399,7 @@ function AccountDetailsContent({
                     )}
                 </CardContent>
             </Card>
+            <UITarget targetId="sfcc.myAccount.identity.verification" />
 
             {/* Interests & Preferences Section */}
             {customerId && (
@@ -443,6 +445,8 @@ function AccountDetailsContent({
                     />
                 </ToggleCardEdit>
             </ToggleCard>
+            <UITarget targetId="sfcc.myAccount.gdpr.dataRequest" />
+            <UITarget targetId="sfcc.myAccount.gdpr.deleteAccount" />
 
             {/* Email Preferences – MarketingConsent (part of My Account) */}
             <MarketingConsent

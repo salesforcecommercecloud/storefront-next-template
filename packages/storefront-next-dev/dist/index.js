@@ -463,16 +463,25 @@ function findAndReplaceComponent(componentName, element, targetRegistry) {
 			const targetId = attr && isJSXAttribute(attr) && attr.value && "value" in attr.value ? attr.value.value : void 0;
 			if (targetId == null) throw new Error(`UITarget must contain a targetId attribute`);
 			if (targetRegistry[targetId] && targetRegistry[targetId].length > 0) {
-				const components = targetRegistry[targetId].map((targetComponent) => {
-					return jsxElement(jsxOpeningElement(jsxIdentifier(targetComponent.componentName), [], true), null, [], true);
-				});
-				if (components.length > 1) element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), components));
-				else element.replaceWith(components[0]);
+				if (element.node.children.length > 0) {
+					let nestedChildren = element.node.children;
+					for (let i = targetRegistry[targetId].length - 1; i >= 0; i--) {
+						const targetComponent = targetRegistry[targetId][i];
+						nestedChildren = [jsxElement(jsxOpeningElement(jsxIdentifier(targetComponent.componentName), [], false), jsxClosingElement(jsxIdentifier(targetComponent.componentName)), nestedChildren, false)];
+					}
+					element.replaceWith(nestedChildren[0]);
+				} else {
+					const components = targetRegistry[targetId].map((targetComponent) => {
+						return jsxElement(jsxOpeningElement(jsxIdentifier(targetComponent.componentName), [], true), null, [], true);
+					});
+					if (components.length > 1) element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), components));
+					else element.replaceWith(components[0]);
+				}
 				targetIdReplaced = targetId;
 				replaced = true;
 			}
 		}
-		if (!replaced) if (element.node.children && element.node.children.length > 0) element.replaceWithMultiple(element.node.children);
+		if (!replaced) if (element.node.children && element.node.children.length > 0) element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), element.node.children));
 		else element.replaceWith(jsxFragment(jsxOpeningFragment(), jsxClosingFragment(), []));
 	}
 	return targetIdReplaced;

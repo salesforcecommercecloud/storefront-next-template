@@ -321,7 +321,6 @@ export default function OrderSummary({
                             <UITarget targetId="orderSummary.total.after" />
                         </div>
 
-                        <UITarget targetId="sfcc.orderSummary.shipping.deliveryEstimate" />
                         <UITarget targetId="sfcc.cart.loyalty.pointsEarned" />
 
                         {/* Promo Code Form */}

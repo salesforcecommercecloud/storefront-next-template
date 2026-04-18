@@ -31,6 +31,7 @@ import { SeoMeta } from '@/components/seo-meta';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { getLogger } from '@/lib/logger.server';
 import { getAuth } from '@/middlewares/auth.server';
+import { UITarget } from '@/targets/ui-target';
 
 type OrderListLoaderData = {
     ordersPromise: Promise<CustomerOrdersResult>;
@@ -110,6 +111,7 @@ export default function OrderListPage(): ReactElement {
                     )}
                 </Await>
             </Suspense>
+            <UITarget targetId="sfcc.myAccount.orders.tracking" />
         </div>
     );
 }

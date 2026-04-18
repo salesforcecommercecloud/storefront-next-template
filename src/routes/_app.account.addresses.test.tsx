@@ -100,6 +100,10 @@ vi.mock('@/components/remove-address-confirmation-dialog', () => ({
         ) : null,
 }));
 
+vi.mock('@/targets/ui-target', () => ({
+    UITarget: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+}));
+
 const mockAddresses: CustomerAddress[] = [
     {
         addressId: 'home',

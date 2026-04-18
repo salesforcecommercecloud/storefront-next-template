@@ -30,6 +30,7 @@ import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
 import { AppDownloadSection } from '@/components/account/app-download-section';
 import { AccountHelp } from '@/components/account/account-help';
 import type { CustomerOrdersResult } from '@/lib/api/order';
+import { UITarget } from '@/targets/ui-target';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -284,7 +285,9 @@ export function AccountOverview({ customer, ordersPromise }: AccountOverviewProp
     return (
         <div className="space-y-5">
             <WelcomeSection customer={customer} />
+            <UITarget targetId="sfcc.myAccount.loyalty.summary" />
             {ordersPromise && <RecentOrdersSection ordersPromise={ordersPromise} />}
+            <UITarget targetId="sfcc.myAccount.reviews.pending" />
             <CuratedForYouSection />
             <AccountHelp />
             <AppDownloadSection />

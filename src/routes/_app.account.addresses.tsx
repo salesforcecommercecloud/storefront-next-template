@@ -38,6 +38,7 @@ import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
 
 // Providers
 import { useAuth } from '@/providers/auth';
+import { UITarget } from '@/targets/ui-target';
 
 type AccountLayoutContext = {
     customer: Promise<ShopperCustomers.schemas['Customer'] | null>;
@@ -259,24 +260,28 @@ function AccountAddressesContent({
                         handleCancel();
                     }
                 }}>
-                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>{t('addresses.addNewAddress')}</DialogTitle>
-                    </DialogHeader>
-                    <CustomerAddressForm
-                        key={NEW_ADDRESS_ID}
-                        initialData={undefined}
-                        updateFetcher={createAddressFetcher}
-                        isFirstAddress={addresses.length === 0}
-                        onSuccess={(_formData: CustomerAddressFormData) => {
-                            // Success is handled by useScapiFetcherEffect
-                        }}
-                        onError={(_error: string) => {
-                            // Error is handled by useScapiFetcherEffect
-                        }}
-                        onCancel={handleCancel}
-                    />
-                </DialogContent>
+                {editingAddressId === NEW_ADDRESS_ID && (
+                    <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle>{t('addresses.addNewAddress')}</DialogTitle>
+                        </DialogHeader>
+                        <UITarget targetId="sfcc.myAccount.address.autocomplete">
+                            <CustomerAddressForm
+                                key={NEW_ADDRESS_ID}
+                                initialData={undefined}
+                                updateFetcher={createAddressFetcher}
+                                isFirstAddress={addresses.length === 0}
+                                onSuccess={(_formData: CustomerAddressFormData) => {
+                                    // Success is handled by useScapiFetcherEffect
+                                }}
+                                onError={(_error: string) => {
+                                    // Error is handled by useScapiFetcherEffect
+                                }}
+                                onCancel={handleCancel}
+                            />
+                        </UITarget>
+                    </DialogContent>
+                )}
             </Dialog>
 
             {/* Edit Address Dialog */}
@@ -287,38 +292,43 @@ function AccountAddressesContent({
                         handleCancel();
                     }
                 }}>
-                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>{t('addresses.editAddress')}</DialogTitle>
-                    </DialogHeader>
-                    {editingAddress && (
-                        <CustomerAddressForm
-                            key={editingAddress.addressId}
-                            initialData={{
-                                addressId: editingAddress.addressId,
-                                firstName: editingAddress.firstName || '',
-                                lastName: editingAddress.lastName || '',
-                                phone: editingAddress.phone || '',
-                                countryCode: (editingAddress.countryCode as 'US' | 'CA') || 'US',
-                                address1: editingAddress.address1 || '',
-                                address2: editingAddress.address2 || '',
-                                city: editingAddress.city || '',
-                                stateCode: editingAddress.stateCode || '',
-                                postalCode: editingAddress.postalCode || '',
-                                preferred: editingAddress.preferred || false,
-                            }}
-                            updateFetcher={updateAddressFetcher}
-                            onSuccess={(_formData: CustomerAddressFormData) => {
-                                // Success is handled by useScapiFetcherEffect
-                            }}
-                            onError={(_error: string) => {
-                                // Error is handled by useScapiFetcherEffect
-                            }}
-                            onCancel={handleCancel}
-                        />
-                    )}
-                </DialogContent>
+                {editingAddressId !== null && editingAddressId !== NEW_ADDRESS_ID && (
+                    <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle>{t('addresses.editAddress')}</DialogTitle>
+                        </DialogHeader>
+                        <UITarget targetId="sfcc.myAccount.address.autocomplete">
+                            {editingAddress && (
+                                <CustomerAddressForm
+                                    key={editingAddress.addressId}
+                                    initialData={{
+                                        addressId: editingAddress.addressId,
+                                        firstName: editingAddress.firstName || '',
+                                        lastName: editingAddress.lastName || '',
+                                        phone: editingAddress.phone || '',
+                                        countryCode: (editingAddress.countryCode as 'US' | 'CA') || 'US',
+                                        address1: editingAddress.address1 || '',
+                                        address2: editingAddress.address2 || '',
+                                        city: editingAddress.city || '',
+                                        stateCode: editingAddress.stateCode || '',
+                                        postalCode: editingAddress.postalCode || '',
+                                        preferred: editingAddress.preferred || false,
+                                    }}
+                                    updateFetcher={updateAddressFetcher}
+                                    onSuccess={(_formData: CustomerAddressFormData) => {
+                                        // Success is handled by useScapiFetcherEffect
+                                    }}
+                                    onError={(_error: string) => {
+                                        // Error is handled by useScapiFetcherEffect
+                                    }}
+                                    onCancel={handleCancel}
+                                />
+                            )}
+                        </UITarget>
+                    </DialogContent>
+                )}
             </Dialog>
+            <UITarget targetId="sfcc.myAccount.address.validation" />
 
             {/* Remove Confirmation Dialog */}
             {addressToRemove && (

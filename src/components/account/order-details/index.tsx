@@ -24,6 +24,7 @@ import OrderSummary from '@/components/order-summary';
 import ShippingAddressDisplay from '@/components/checkout/components/shipping-address-display';
 import { formatStatusFallbackLabel, getOrderStatusConfig, getShippingStatusConfig } from '@/lib/order-status';
 import { cn } from '@/lib/utils';
+import { UITarget } from '@/targets/ui-target';
 
 export type { ProductDataById };
 
@@ -165,9 +166,11 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                 </div>
                                                 <div className="p-3">
                                                     <OrderItemsList items={items} productsById={productsById} />
+                                                    <UITarget targetId="sfcc.myAccount.orderDetails.review" />
                                                 </div>
                                                 {/* Tracking Number and Shipping Address for this shipment */}
                                                 <div className="mt-2 border-t border-muted-foreground/20 pt-4 px-3 pb-3 mx-3">
+                                                    <UITarget targetId="sfcc.myAccount.orderDetails.tracking" />
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                         {shipment.trackingNumber != null && (
                                                             <Card
@@ -215,7 +218,12 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                         {/* Order Summary – OrderSummary accepts both Basket and Order for totals */}
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold">{t('orders.orderSummary')}</h3>
-                            <OrderSummary basket={order} showCartItems={false} showHeading={false} />
+                            <UITarget targetId="sfcc.myAccount.orderDetails.tax">
+                                <OrderSummary basket={order} showCartItems={false} showHeading={false} />
+                            </UITarget>
+                            <UITarget targetId="sfcc.myAccount.orderDetails.returns" />
+                            <UITarget targetId="sfcc.myAccount.orderDetails.cancel" />
+                            <UITarget targetId="sfcc.myAccount.orderDetails.support" />
                             {paymentMethodDisplays.length > 0 && (
                                 <div className="space-y-1.5">
                                     <p className="text-xs font-semibold text-foreground">{t('orders.paymentMethod')}</p>

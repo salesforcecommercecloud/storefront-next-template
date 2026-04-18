@@ -51,6 +51,10 @@ vi.mock('@/components/toast', () => ({
     useToast: () => ({ addToast: vi.fn() }),
 }));
 
+vi.mock('@/targets/ui-target', () => ({
+    UITarget: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+}));
+
 describe('PaymentMethods', () => {
     const mockCustomer: ShopperCustomers.schemas['Customer'] = {
         customerId: 'customer-1',

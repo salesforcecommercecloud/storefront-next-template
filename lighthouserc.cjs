@@ -60,7 +60,7 @@ module.exports = {
                         'categories:best-practices': ['error', { minScore: 0.96, aggregationMethod: 'median' }],
                         'resource-summary:script:size': [
                             'error',
-                            { maxNumericValue: 424050, aggregationMethod: 'median' },
+                            { maxNumericValue: 424250, aggregationMethod: 'median' },
                         ],
                         'resource-summary:document:size': [
                             'error',
