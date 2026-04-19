@@ -39,6 +39,7 @@ import CategoryBanner from '@/components/category-banner';
 import CategoryBannerSkeleton from '@/components/category-banner/skeleton';
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
+import { UITarget } from '@/targets/ui-target';
 import { generateCategorySchema } from '@/utils/category-schema';
 import { getPublicOrigin } from '@/utils/schema-url';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
@@ -392,6 +393,7 @@ export default function CategoryPage({
                         <h1 className="text-3xl font-bold text-foreground">
                             {category?.name || category.id} ({searchResultCritical.total})
                         </h1>
+                        <UITarget targetId="plp.search.summary" />
                         {searchResultCritical?.sortingOptions && searchResultCritical.sortingOptions.length > 0 && (
                             <div className="flex-shrink-0">
                                 <CategorySorting result={searchResultCritical} />
@@ -433,18 +435,21 @@ export default function CategoryPage({
                             {/* plpTopContent */}
                             <Region className="mb-8" page={page} regionId="plpTopContent" />
 
-                            <ProductGrid
-                                key={productGridDataKey}
-                                critical={searchResultCritical.hits ?? []}
-                                nonCritical={nonCriticalPromise}
-                                nonCriticalCount={nonCriticalCount}
-                                hasRefinementsPanel={filtersOpen}
-                                isLoading={isProductGridLoading}
-                                handleProductClick={handleProductClick}
-                                topCategoryName={
-                                    category.parentCategoryTree?.find((p) => p.id !== 'root')?.name ?? category.name
-                                }
-                            />
+                            <UITarget targetId="plp.agent.categoryHelper" />
+                            <UITarget targetId="plp.search.results">
+                                <ProductGrid
+                                    key={productGridDataKey}
+                                    critical={searchResultCritical.hits ?? []}
+                                    nonCritical={nonCriticalPromise}
+                                    nonCriticalCount={nonCriticalCount}
+                                    hasRefinementsPanel={filtersOpen}
+                                    isLoading={isProductGridLoading}
+                                    handleProductClick={handleProductClick}
+                                    topCategoryName={
+                                        category.parentCategoryTree?.find((p) => p.id !== 'root')?.name ?? category.name
+                                    }
+                                />
+                            </UITarget>
 
                             {searchResultCritical.total > 1 && (
                                 <div className="mt-10">

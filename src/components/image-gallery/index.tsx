@@ -19,6 +19,7 @@ import { DynamicImage } from '@/components/dynamic-image';
 import ImageNavArrows from '@/components/image-nav-arrows';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { UITarget } from '@/targets/ui-target';
 
 export interface GalleryImage {
     src: string;
@@ -94,35 +95,36 @@ export default function ImageGallery({
     const imageAltFallback = productName || tProduct('imageAlt') || 'Product Image';
 
     return (
-        <div className="space-y-4">
-            {/* Main Image */}
-            <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
-                <DynamicImage
-                    src={`${selectedImage.src}[?sw={width}]`}
-                    alt={selectedImage.alt || imageAltFallback}
-                    widths={['100vw', '680px']}
-                    className="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
-                    loading={eager ? 'eager' : 'lazy'}
-                    priority={eager ? 'high' : undefined}
-                />
-                {showNavigationArrows && images.length > 1 && (
-                    <ImageNavArrows
-                        imageCount={images.length}
-                        onIndexChange={setSelectedImageIndex}
-                        size={navigationArrowSize}
+        <UITarget targetId="pdp.products.gallery">
+            <div className="space-y-4">
+                {/* Main Image */}
+                <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
+                    <DynamicImage
+                        src={`${selectedImage.src}[?sw={width}]`}
+                        alt={selectedImage.alt || imageAltFallback}
+                        widths={['100vw', '680px']}
+                        className="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+                        loading={eager ? 'eager' : 'lazy'}
+                        priority={eager ? 'high' : undefined}
                     />
-                )}
-            </div>
+                    {showNavigationArrows && images.length > 1 && (
+                        <ImageNavArrows
+                            imageCount={images.length}
+                            onIndexChange={setSelectedImageIndex}
+                            size={navigationArrowSize}
+                        />
+                    )}
+                </div>
 
-            {/* Thumbnail Navigation */}
-            {images.length > 1 && !horizontalThumbnails && (
-                <div className="grid grid-cols-4 gap-2 sm:gap-3">
-                    {images.map((image, index) => (
-                        <button
-                            key={image.src + (image.thumbSrc || '')}
-                            onClick={handleThumbnailClick}
-                            data-index={index}
-                            className={`
+                {/* Thumbnail Navigation */}
+                {images.length > 1 && !horizontalThumbnails && (
+                    <div className="grid grid-cols-4 gap-2 sm:gap-3">
+                        {images.map((image, index) => (
+                            <button
+                                key={image.src + (image.thumbSrc || '')}
+                                onClick={handleThumbnailClick}
+                                data-index={index}
+                                className={`
                                 aspect-square overflow-hidden rounded-lg bg-muted
                                 border-2 transition-colors cursor-pointer
                                 ${
@@ -131,72 +133,73 @@ export default function ImageGallery({
                                         : 'border-transparent hover:border-border'
                                 }
                             `}>
-                            <img
-                                src={image.thumbSrc || image.src}
-                                alt={image.alt || imageAltFallback}
-                                className="w-full h-full object-cover object-center"
-                                loading="lazy"
-                            />
-                        </button>
-                    ))}
-                </div>
-            )}
-
-            {/* Horizontal Scrollable Thumbnail Strip */}
-            {images.length > 1 && horizontalThumbnails && (
-                <div className="relative flex items-center gap-2">
-                    {images.length > 4 && (
-                        <button
-                            type="button"
-                            onClick={handleScrollThumbnailsLeft}
-                            className={cn(
-                                'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-background shadow-md',
-                                'hover:bg-muted transition-colors',
-                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
-                            )}
-                            aria-label={tCommon('previousImage')}>
-                            <ChevronLeft className="size-4" />
-                        </button>
-                    )}
-                    <div
-                        ref={thumbStripRef}
-                        className="flex flex-1 gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                        {images.map((image, index) => (
-                            <button
-                                key={image.src + (image.thumbSrc || '')}
-                                onClick={handleThumbnailClick}
-                                data-index={index}
-                                className={cn(
-                                    'flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-lg bg-muted',
-                                    'border-2 transition-colors cursor-pointer',
-                                    selectedImageIndex === index
-                                        ? 'border-primary'
-                                        : 'border-transparent hover:border-border'
-                                )}>
                                 <img
                                     src={image.thumbSrc || image.src}
-                                    alt={image.alt}
+                                    alt={image.alt || imageAltFallback}
                                     className="w-full h-full object-cover object-center"
                                     loading="lazy"
                                 />
                             </button>
                         ))}
                     </div>
-                    {images.length > 4 && (
-                        <button
-                            type="button"
-                            onClick={handleScrollThumbnailsRight}
-                            className={cn(
-                                'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-background shadow-md',
-                                'hover:bg-muted transition-colors',
-                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
-                            )}
-                            aria-label={tCommon('nextImage')}>
-                            <ChevronRight className="size-4" />
-                        </button>
-                    )}
-                </div>
-            )}
-        </div>
+                )}
+
+                {/* Horizontal Scrollable Thumbnail Strip */}
+                {images.length > 1 && horizontalThumbnails && (
+                    <div className="relative flex items-center gap-2">
+                        {images.length > 4 && (
+                            <button
+                                type="button"
+                                onClick={handleScrollThumbnailsLeft}
+                                className={cn(
+                                    'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-background shadow-md',
+                                    'hover:bg-muted transition-colors',
+                                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+                                )}
+                                aria-label={tCommon('previousImage')}>
+                                <ChevronLeft className="size-4" />
+                            </button>
+                        )}
+                        <div
+                            ref={thumbStripRef}
+                            className="flex flex-1 gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                            {images.map((image, index) => (
+                                <button
+                                    key={image.src + (image.thumbSrc || '')}
+                                    onClick={handleThumbnailClick}
+                                    data-index={index}
+                                    className={cn(
+                                        'flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-lg bg-muted',
+                                        'border-2 transition-colors cursor-pointer',
+                                        selectedImageIndex === index
+                                            ? 'border-primary'
+                                            : 'border-transparent hover:border-border'
+                                    )}>
+                                    <img
+                                        src={image.thumbSrc || image.src}
+                                        alt={image.alt}
+                                        className="w-full h-full object-cover object-center"
+                                        loading="lazy"
+                                    />
+                                </button>
+                            ))}
+                        </div>
+                        {images.length > 4 && (
+                            <button
+                                type="button"
+                                onClick={handleScrollThumbnailsRight}
+                                className={cn(
+                                    'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-background shadow-md',
+                                    'hover:bg-muted transition-colors',
+                                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+                                )}
+                                aria-label={tCommon('nextImage')}>
+                                <ChevronRight className="size-4" />
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+        </UITarget>
     );
 }

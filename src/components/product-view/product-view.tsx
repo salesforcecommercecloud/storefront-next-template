@@ -30,6 +30,7 @@ import ProductAdapterSection from '@/components/product-adapter-section';
 import Faq from '@/components/faq';
 import { useTranslation } from 'react-i18next';
 import { resolvePdpSections } from '@/lib/pdp-sections';
+import { UITarget } from '@/targets/ui-target';
 
 interface ProductViewProps {
     product: ShopperProducts.schemas['Product'];
@@ -78,6 +79,7 @@ export default function ProductView({ product }: ProductViewProps): ReactElement
                         navigationArrowSize="lg"
                         productName={product.name}
                     />
+                    <UITarget targetId="pdp.agent.productHelper" />
                     {product.longDescription && product.longDescription !== product.shortDescription && (
                         <CollapsibleHtmlSection
                             label={`${t('description')}:`}

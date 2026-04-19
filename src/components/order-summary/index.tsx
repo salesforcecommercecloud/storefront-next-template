@@ -243,6 +243,7 @@ export default function OrderSummary({
                                 </div>
                             </UITarget>
                             <UITarget targetId="orderSummary.subtotal.after" />
+                            <UITarget targetId="orderSummary.giftCards.applied" />
 
                             {/* Order Price Adjustments */}
                             <UITarget targetId="orderSummary.adjustments.before" />
@@ -291,14 +292,16 @@ export default function OrderSummary({
                             {/* Tax */}
                             <UITarget targetId="orderSummary.tax.before" />
                             <UITarget targetId="orderSummary.tax">
-                                <div className="flex justify-between items-center">
-                                    <span>{t('summary.tax')}</span>
-                                    {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
-                                        <span>{formatCurrency(basket.taxTotal, i18n.language, currency)}</span>
-                                    ) : (
-                                        <span className="text-muted-foreground">{t('summary.taxTbd')}</span>
-                                    )}
-                                </div>
+                                <UITarget targetId="orderSummary.tax.line">
+                                    <div className="flex justify-between items-center">
+                                        <span>{t('summary.tax')}</span>
+                                        {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
+                                            <span>{formatCurrency(basket.taxTotal, i18n.language, currency)}</span>
+                                        ) : (
+                                            <span className="text-muted-foreground">{t('summary.taxTbd')}</span>
+                                        )}
+                                    </div>
+                                </UITarget>
                             </UITarget>
                             <UITarget targetId="orderSummary.tax.after" />
 

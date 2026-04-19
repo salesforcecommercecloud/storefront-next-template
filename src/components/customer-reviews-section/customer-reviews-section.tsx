@@ -20,6 +20,7 @@ import { StarRating } from '@/components/product-ratings/star-rating';
 import { StarRatingDistributions } from '@/components/product-ratings/star-rating-distributions';
 import { useProduct } from '@/providers/product-context';
 import { useProductReviews } from '@/hooks/product-reviews/use-product-reviews';
+import { UITarget } from '@/targets/ui-target';
 
 // Lazy load the ReviewCardsSection to improve initial page load
 const ReviewCardsSection = lazy(() => import('@/components/review-cards/review-cards-section'));
@@ -137,81 +138,84 @@ export default function CustomerReviewsSection(): ReactElement {
             : t('reviewsForProductName', { count: aggregateRating.count, productName });
 
     return (
-        <div id="customer-reviews">
-            <Accordion type="multiple" className="w-full" value={accordionValue} onValueChange={setAccordionValue}>
-                <AccordionItem value={CUSTOMER_REVIEWS_ACCORDION_VALUE}>
-                    <AccordionTrigger className="text-left hover:no-underline py-2 cursor-pointer">
-                        <span className="sm:text-2xl text-brand-black font-medium">{t('customerReviews')}</span>
-                    </AccordionTrigger>
-                    {/* Always visible: review count line (from summary until list is loaded) */}
-                    {!isLoadingHeader && aggregateRating.count > 0 && (
-                        <p className="sm:text-sm mt-px text-brand-gray-600">{reviewCountLabel}</p>
-                    )}
-                    {/* Always visible: AI Review Summary box (lazy-loaded to reduce bundle) */}
-                    {!isLoadingHeader && aiSummary && (
-                        <div className="mt-2">
-                            <Suspense fallback={null}>
-                                <AiInsightCard
-                                    variant="review"
-                                    title={t('aiReviewSummary')}
-                                    badgeText="Beta"
-                                    description={aiSummary}
-                                    rating={aggregateRating.average}
-                                    reviewCount={aggregateRating.count}
-                                />
-                            </Suspense>
-                        </div>
-                    )}
-                    <AccordionContent>
-                        {reviewsLoading && reviews.length === 0 ? (
-                            <p className="text-muted-foreground pt-4">{t('loadingReviews')}</p>
-                        ) : reviews.length === 0 && !reviewsLoading ? (
-                            <p className="text-muted-foreground pt-4">{t('noReviewsForProduct')}</p>
-                        ) : (
-                            <div className="space-y-6 pt-4">
-                                {/* Rating summary card: rounded box with background (per UX) */}
-                                <div
-                                    className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl"
-                                    style={{ backgroundColor: '#f8f8f8' }}>
-                                    {/* Left: Overall Rating */}
-                                    <div className="flex flex-col items-start space-y-2">
-                                        <StarRating
-                                            rating={aggregateRating.average}
-                                            reviewCount={aggregateRating.count}
-                                            showRatingLabel={true}
-                                            ratingLabelPosition="top"
-                                            ratingLabelFormat="short"
-                                            starSize="default"
-                                            ratingLabelClassName="text-4xl font-bold text-foreground"
-                                            showReviewCountLabel={true}
-                                            reviewCountLabelClassName="text-sm text-muted-foreground mt-1"
-                                        />
-                                    </div>
-
-                                    {/* Right: Rating Distribution Bars (spans 2 cols, clickable to filter) */}
-                                    <div className="md:col-span-2 min-w-0">
-                                        <StarRatingDistributions
-                                            distributions={ratingDistributions}
-                                            selectedRating={selectedRatingFilter}
-                                            onRatingClick={(rating) =>
-                                                setSelectedRatingFilter((prev) => (prev === rating ? null : rating))
-                                            }
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Review Cards Section with filters, search, and pagination */}
-                                <Suspense fallback={<div className="text-muted-foreground">{t('loadingReviews')}</div>}>
-                                    <ReviewCardsSection
-                                        selectedRating={selectedRatingFilter}
-                                        onRatingChange={setSelectedRatingFilter}
+        <UITarget targetId="pdp.reviews.summary">
+            <div id="customer-reviews">
+                <Accordion type="multiple" className="w-full" value={accordionValue} onValueChange={setAccordionValue}>
+                    <AccordionItem value={CUSTOMER_REVIEWS_ACCORDION_VALUE}>
+                        <AccordionTrigger className="text-left hover:no-underline py-2 cursor-pointer">
+                            <span className="sm:text-2xl text-brand-black font-medium">{t('customerReviews')}</span>
+                        </AccordionTrigger>
+                        {/* Always visible: review count line (from summary until list is loaded) */}
+                        {!isLoadingHeader && aggregateRating.count > 0 && (
+                            <p className="sm:text-sm mt-px text-brand-gray-600">{reviewCountLabel}</p>
+                        )}
+                        {/* Always visible: AI Review Summary box (lazy-loaded to reduce bundle) */}
+                        {!isLoadingHeader && aiSummary && (
+                            <div className="mt-2">
+                                <Suspense fallback={null}>
+                                    <AiInsightCard
+                                        variant="review"
+                                        title={t('aiReviewSummary')}
+                                        badgeText="Beta"
+                                        description={aiSummary}
+                                        rating={aggregateRating.average}
+                                        reviewCount={aggregateRating.count}
                                     />
                                 </Suspense>
                             </div>
                         )}
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </div>
+                        <AccordionContent>
+                            {reviewsLoading && reviews.length === 0 ? (
+                                <p className="text-muted-foreground pt-4">{t('loadingReviews')}</p>
+                            ) : reviews.length === 0 && !reviewsLoading ? (
+                                <p className="text-muted-foreground pt-4">{t('noReviewsForProduct')}</p>
+                            ) : (
+                                <div className="space-y-6 pt-4">
+                                    {/* Rating summary card: rounded box with background (per UX) */}
+                                    <div
+                                        className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl"
+                                        style={{ backgroundColor: '#f8f8f8' }}>
+                                        {/* Left: Overall Rating */}
+                                        <div className="flex flex-col items-start space-y-2">
+                                            <StarRating
+                                                rating={aggregateRating.average}
+                                                reviewCount={aggregateRating.count}
+                                                showRatingLabel={true}
+                                                ratingLabelPosition="top"
+                                                ratingLabelFormat="short"
+                                                starSize="default"
+                                                ratingLabelClassName="text-4xl font-bold text-foreground"
+                                                showReviewCountLabel={true}
+                                                reviewCountLabelClassName="text-sm text-muted-foreground mt-1"
+                                            />
+                                        </div>
+
+                                        {/* Right: Rating Distribution Bars (spans 2 cols, clickable to filter) */}
+                                        <div className="md:col-span-2 min-w-0">
+                                            <StarRatingDistributions
+                                                distributions={ratingDistributions}
+                                                selectedRating={selectedRatingFilter}
+                                                onRatingClick={(rating) =>
+                                                    setSelectedRatingFilter((prev) => (prev === rating ? null : rating))
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Review Cards Section with filters, search, and pagination */}
+                                    <Suspense
+                                        fallback={<div className="text-muted-foreground">{t('loadingReviews')}</div>}>
+                                        <ReviewCardsSection
+                                            selectedRating={selectedRatingFilter}
+                                            onRatingChange={setSelectedRatingFilter}
+                                        />
+                                    </Suspense>
+                                </div>
+                            )}
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            </div>
+        </UITarget>
     );
 }

@@ -32,6 +32,7 @@ import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { useTranslation } from 'react-i18next';
 import { WishlistButton } from '@/components/buttons/wishlist-button';
 import { ShareButton } from '@/components/buttons/share-button';
+import { UITarget } from '@/targets/ui-target';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
 
@@ -314,7 +315,11 @@ export default function ProductInfo({
                 </div>
             )}
             {/* Rating summary - visible on both mobile and desktop */}
-            {!isCompactStyle && <ProductRatingSummary interactive={!disableRatingInteraction} />}
+            {!isCompactStyle && (
+                <UITarget targetId="pdp.reviews.rating">
+                    <ProductRatingSummary interactive={!disableRatingInteraction} />
+                </UITarget>
+            )}
 
             {/* Price - show unit price on PDP */}
             <div className="space-y-3">
@@ -337,14 +342,17 @@ export default function ProductInfo({
 
             {/* Inventory Status Message - hidden in compact/edit mode */}
             {!isCompactStyle && (
-                <InventoryMessage
-                    product={product}
-                    currentVariant={currentVariant}
-                    lowStockThreshold={config.global.inventory.lowStockThreshold}
-                    maxStockDisplay={config.global.inventory.maxStockDisplay}
-                    getInventoryStatus={inventoryStatusOverride}
-                />
+                <UITarget targetId="pdp.shipping.deliveryEstimate">
+                    <InventoryMessage
+                        product={product}
+                        currentVariant={currentVariant}
+                        lowStockThreshold={config.global.inventory.lowStockThreshold}
+                        maxStockDisplay={config.global.inventory.maxStockDisplay}
+                        getInventoryStatus={inventoryStatusOverride}
+                    />
+                </UITarget>
             )}
+            {!isCompactStyle && <UITarget targetId="pdp.loyalty.points" />}
 
             {/* Swatch Groups for Product Variations */}
             {sortedVariationAttributes.map(({ id, name, selectedValue, values }) => {
@@ -426,6 +434,7 @@ export default function ProductInfo({
                     </SwatchGroup>
                 );
             })}
+            {!isCompactStyle && <UITarget targetId="pdp.products.visualization" />}
 
             {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
             {/* Delivery Options - For individual products */}

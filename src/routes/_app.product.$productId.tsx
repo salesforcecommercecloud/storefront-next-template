@@ -46,6 +46,7 @@ import { generateProductSchema } from '@/utils/product-schema';
 import { getPublicOrigin } from '@/utils/schema-url';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { getLogger } from '@/lib/logger.server';
+import { UITarget } from '@/targets/ui-target';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
@@ -358,6 +359,7 @@ function ProductContent({ product, url }: { product: ShopperProducts.schemas['Pr
                         <Suspense fallback={null}>
                             <CustomerReviewsSection />
                         </Suspense>
+                        <UITarget targetId="pdp.reviews.qna" />
                     </div>
                 </ProductReviewsProvider>
             </ProductContentProvider>

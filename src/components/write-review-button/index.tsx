@@ -21,6 +21,7 @@ import type { WriteReviewFormData } from '@/lib/adapters/product-content-data-ty
 import { useProduct } from '@/providers/product-context';
 import { useProductContent } from '@/hooks/product-content/use-product-content';
 import { useRequireAuth } from '@/hooks/use-require-auth';
+import { UITarget } from '@/targets/ui-target';
 
 const InfoModal = lazy(() => import('@/components/info-modal'));
 
@@ -75,7 +76,7 @@ export default function WriteReviewButton(): ReactElement {
     );
 
     return (
-        <>
+        <UITarget targetId="pdp.reviews.form">
             <Button
                 type="button"
                 variant="default"
@@ -91,6 +92,6 @@ export default function WriteReviewButton(): ReactElement {
                     <InfoModal open={open} onOpenChange={setOpen} data={data} />
                 </Suspense>
             )}
-        </>
+        </UITarget>
     );
 }

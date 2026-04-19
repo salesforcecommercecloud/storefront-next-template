@@ -142,6 +142,7 @@ export default function ProductCartActions({
             {isMasterOrVariantProduct && !currentVariant && !isProductASet && !isProductABundle && (
                 <div className="text-destructive font-medium">{t('selectAllOptions')}</div>
             )}
+            <UITarget targetId="pdp.tax.productMessage" />
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-3">
@@ -155,14 +156,16 @@ export default function ProductCartActions({
                             size="lg">
                             {isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
                         </Button>
-                        <Button
-                            onClick={onBuyNow}
-                            disabled={!canAddToCart}
-                            variant="outline"
-                            className="w-full"
-                            size="lg">
-                            {t('buyItNow')}
-                        </Button>
+                        <UITarget targetId="quickAdd.payments.expressCheckout">
+                            <Button
+                                onClick={onBuyNow}
+                                disabled={!canAddToCart}
+                                variant="outline"
+                                className="w-full"
+                                size="lg">
+                                {t('buyItNow')}
+                            </Button>
+                        </UITarget>
                     </div>
                 )}
 
@@ -184,14 +187,16 @@ export default function ProductCartActions({
                     !isProductABundle &&
                     !isEditMode &&
                     shouldLoadExpressPayments && (
-                        <Suspense fallback={null}>
-                            <ExpressPayments
-                                layout="vertical"
-                                separatorPosition="top"
-                                separatorText={t('expressPayments.separatorBuyWith')}
-                                disabled={!canAddToCart}
-                            />
-                        </Suspense>
+                        <UITarget targetId="pdp.payments.expressCheckout">
+                            <Suspense fallback={null}>
+                                <ExpressPayments
+                                    layout="vertical"
+                                    separatorPosition="top"
+                                    separatorText={t('expressPayments.separatorBuyWith')}
+                                    disabled={!canAddToCart}
+                                />
+                            </Suspense>
+                        </UITarget>
                     )}
 
                 <UITarget targetId="pdp.after.addToCart">
@@ -199,6 +204,7 @@ export default function ProductCartActions({
                         <BuyNowPayLater productId={String(currentProductId)} />
                     )}
                 </UITarget>
+                <UITarget targetId="pdp.bnpl.message" />
             </div>
         </div>
     );

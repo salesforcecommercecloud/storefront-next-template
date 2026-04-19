@@ -22,6 +22,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Plus, Minus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@/components/typography';
+import { UITarget } from '@/targets/ui-target';
 import type { FilterValue, RefinementProps } from './types';
 import RefineDefault from './refine-default';
 import RefineColor from './refine-color';
@@ -158,36 +159,38 @@ export default function CategoryRefinements({
     }
 
     return (
-        <div className={isPending ? 'pointer-events-none opacity-50 transition-opacity' : ''}>
-            {/*  @sfdc-extension-block-start SFDC_EXT_BOPIS */}
-            <RefineInventory
-                isFilterSelected={isFilterSelected}
-                hasActiveFilter={hasActiveFilter}
-                toggleFilter={toggleFilter}
-            />
-            {/*  @sfdc-extension-block-end SFDC_EXT_BOPIS */}
+        <UITarget targetId="plp.search.filters">
+            <div className={isPending ? 'pointer-events-none opacity-50 transition-opacity' : ''}>
+                {/*  @sfdc-extension-block-start SFDC_EXT_BOPIS */}
+                <RefineInventory
+                    isFilterSelected={isFilterSelected}
+                    hasActiveFilter={hasActiveFilter}
+                    toggleFilter={toggleFilter}
+                />
+                {/*  @sfdc-extension-block-end SFDC_EXT_BOPIS */}
 
-            {/* Individual collapsible sections for each refinement category */}
-            {refinements.map((refinement) => {
-                const { values, attributeId, label } = refinement;
-                if (!Array.isArray(values) || !values.length) {
-                    return null;
-                }
+                {/* Individual collapsible sections for each refinement category */}
+                {refinements.map((refinement) => {
+                    const { values, attributeId, label } = refinement;
+                    if (!Array.isArray(values) || !values.length) {
+                        return null;
+                    }
 
-                return (
-                    <FilterSection
-                        key={attributeId}
-                        label={label || attributeId}
-                        defaultOpen={hasActiveFilter(attributeId)}>
-                        {renderFilterValues(
-                            refinement as ShopperSearch.schemas['ProductSearchRefinement'] & {
-                                values: FilterValue[];
-                            }
-                        )}
-                    </FilterSection>
-                );
-            })}
-        </div>
+                    return (
+                        <FilterSection
+                            key={attributeId}
+                            label={label || attributeId}
+                            defaultOpen={hasActiveFilter(attributeId)}>
+                            {renderFilterValues(
+                                refinement as ShopperSearch.schemas['ProductSearchRefinement'] & {
+                                    values: FilterValue[];
+                                }
+                            )}
+                        </FilterSection>
+                    );
+                })}
+            </div>
+        </UITarget>
     );
 }
 

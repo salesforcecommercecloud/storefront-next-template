@@ -38,6 +38,7 @@ import type { ComponentType } from '@/components/region';
 import { ProductImageContainer } from '@/components/product-image';
 import ProductPrice from '@/components/product-price';
 import { StarRating } from '@/components/product-ratings/star-rating';
+import { UITarget } from '@/targets/ui-target';
 import { Card } from '@/components/ui/card';
 import { loader as loaders } from './loaders';
 
@@ -405,6 +406,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             className="w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
                             handleProductClick={handleProductClick}
                         />
+                        <UITarget targetId="plp.shipping.deliveryEstimate" />
 
                         {/* Clickable product link overlay */}
                         <Link
@@ -527,6 +529,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             ratingLinkClassName="text-xs text-muted-foreground"
                         />
                     </div>
+                    <UITarget targetId="productCard.reviews.rating" />
 
                     {/* Price */}
                     <div>
@@ -547,6 +550,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             className="text-sm"
                         />
                     </div>
+                    <UITarget targetId="productCard.loyalty.points" />
+                    <UITarget targetId="productCard.bnpl.message" />
                 </div>
             </Card>
         );
