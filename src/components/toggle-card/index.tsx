@@ -38,6 +38,7 @@ export type ToggleCardProps = Omit<ComponentProps<'div'>, 'title'> & {
     editLabel?: ReactNode;
     editVariant?: 'link' | 'outline';
     editAction?: string;
+    editActionClassName?: string;
     onEditActionClick?: () => void;
     isLoading?: boolean;
     showHeaderSeparator?: boolean;
@@ -55,6 +56,7 @@ export function ToggleCard({
     editLabel,
     editVariant = 'link',
     editAction,
+    editActionClassName,
     isLoading = false,
     onEditActionClick,
     showHeaderSeparator = false,
@@ -119,7 +121,11 @@ export function ToggleCard({
 
                         {editing && editAction && onEditActionClick ? (
                             <Button
-                                className={cn('cursor-pointer', editVariant === 'link' && 'font-bold')}
+                                className={cn(
+                                    'cursor-pointer',
+                                    !editActionClassName && editVariant === 'link' && 'font-bold',
+                                    editActionClassName
+                                )}
                                 variant={editVariant}
                                 size="sm"
                                 onClick={onEditActionClick}

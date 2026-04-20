@@ -247,7 +247,7 @@ export default function ShippingAddress({
                             type="button"
                             variant="link"
                             size="sm"
-                            className="cursor-pointer font-bold"
+                            className="cursor-pointer text-xs font-normal leading-normal h-auto"
                             onClick={handleToggleShippingAddressMode}>
                             {tMultiship('checkout.deliverToMultipleAddresses')}
                         </Button>
@@ -280,6 +280,9 @@ export default function ShippingAddress({
             // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
             editAction={
                 enableMultiAddress && !hasSavedAddresses ? tMultiship('checkout.deliverToMultipleAddresses') : undefined
+            }
+            editActionClassName={
+                enableMultiAddress && !hasSavedAddresses ? 'text-xs font-normal leading-normal h-auto' : undefined
             }
             onEditActionClick={enableMultiAddress && !hasSavedAddresses ? handleToggleShippingAddressMode : undefined}
             // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
