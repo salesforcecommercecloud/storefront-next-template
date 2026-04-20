@@ -224,25 +224,28 @@ export function OrderSummarySkeleton(): ReactElement {
 export function MyCartSkeleton({ itemCount = 2 }: { itemCount?: number }): ReactElement {
     return (
         <div className="w-full" data-testid="my-cart-skeleton">
-            <div className="py-6 flex justify-between items-center border-b border-border">
-                <div className="flex items-center gap-2">
-                    <Skeleton className="w-5 h-5" />
-                    <Skeleton className="h-6 w-40" />
-                </div>
-                <Skeleton className="w-4 h-4" />
-            </div>
-            <div className="px-0 pb-6 space-y-4">
+            <div className="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-[var(--cart-divider-extend,0px)]">
                 {Array.from({ length: itemCount }).map((_, i) => (
                     // eslint-disable-next-line react/no-array-index-key
-                    <div key={`cart-item-skeleton-${i}`} className="border border-border rounded-lg p-4">
-                        <div className="flex gap-4">
-                            <Skeleton className="w-20 h-20 rounded flex-shrink-0" />
-                            <div className="flex-1 space-y-2">
-                                <Skeleton className="h-4 w-full" />
-                                <Skeleton className="h-4 w-3/4" />
-                                <div className="flex justify-between items-center mt-2">
-                                    <Skeleton className="h-4 w-16" />
-                                    <Skeleton className="h-4 w-16" />
+                    <div key={`cart-item-skeleton-${i}`} className="py-4" data-testid={`my-cart-item-skeleton-${i}`}>
+                        <div className="flex gap-3 md:gap-4">
+                            <Skeleton className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                                <div className="flex justify-between items-start gap-2">
+                                    <Skeleton className="h-5 w-3/4" />
+                                    <div className="flex flex-col items-end gap-1 shrink-0">
+                                        <Skeleton className="h-4 w-16" />
+                                    </div>
+                                </div>
+                                <div className="mt-1 space-y-0.5">
+                                    <Skeleton className="h-4 w-24" />
+                                    <Skeleton className="h-4 w-28" />
+                                </div>
+                                <div className="mt-1">
+                                    <Skeleton className="h-5 w-16" />
+                                </div>
+                                <div className="mt-0.5">
+                                    <Skeleton className="h-4 w-20" />
                                 </div>
                             </div>
                         </div>

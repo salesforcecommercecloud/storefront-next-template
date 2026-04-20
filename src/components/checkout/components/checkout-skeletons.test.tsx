@@ -130,21 +130,19 @@ describe('Checkout Skeleton Components', () => {
 
     describe('MyCartSkeleton', () => {
         it('should render without crashing', () => {
-            const { container } = render(<MyCartSkeleton />);
-            expect(
-                container.querySelector('[data-testid="card"]') || container.querySelector('.border')
-            ).toBeInTheDocument();
+            render(<MyCartSkeleton />);
+            expect(screen.getByTestId('my-cart-skeleton')).toBeInTheDocument();
         });
 
         it('should render default number of cart items', () => {
-            const { container } = render(<MyCartSkeleton />);
-            const items = container.querySelectorAll('.flex.gap-4');
+            render(<MyCartSkeleton />);
+            const items = screen.getAllByTestId(/^my-cart-item-skeleton-/);
             expect(items.length).toBe(2);
         });
 
         it('should render specified number of cart items', () => {
-            const { container } = render(<MyCartSkeleton itemCount={4} />);
-            const items = container.querySelectorAll('.flex.gap-4');
+            render(<MyCartSkeleton itemCount={4} />);
+            const items = screen.getAllByTestId(/^my-cart-item-skeleton-/);
             expect(items.length).toBe(4);
         });
     });
