@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import StaticPayPalButton from './static-paypal-button';
 import StaticVenmoButton from './static-venmo-button';
 import ApplePayLogo from './apple-pay-logo';
@@ -123,7 +124,7 @@ export default function ExpressPayments({
     disabled = false,
     layout = 'horizontal',
     separatorPosition = 'bottom',
-    separatorText = 'Or',
+    separatorText = 'or continue below',
 }: ExpressPaymentsProps) {
     const { t } = useTranslation('checkout');
     const applePayLabel = t('expressPayments.applePayLabel');
@@ -175,68 +176,60 @@ export default function ExpressPayments({
     };
 
     const gridClasses =
-        layout === 'vertical' ? 'grid grid-cols-1 gap-3' : 'grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3';
+        layout === 'vertical' ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2';
 
-    // Separator component (reusable for top or bottom placement)
     const separator = (
-        <div className="relative flex items-center py-2">
-            {/* Left line */}
-            <div className="flex-1 h-[2px] bg-separator" />
-            {/* Text */}
+        <div className="relative flex items-center gap-[15px]">
+            <div className="flex-1 h-px bg-separator" />
             <span
-                className="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+                className="text-sm font-normal leading-5 text-muted-foreground whitespace-nowrap"
                 data-express-payments-separator-label="">
                 {separatorText}
             </span>
-            {/* Right line */}
-            <div className="flex-1 h-[2px] bg-separator" />
+            <div className="flex-1 h-px bg-separator" />
         </div>
     );
 
     return (
-        <div className="space-y-2" data-testid="express-payments">
-            {/* Separator at top (if configured) */}
+        <div className="space-y-6" data-testid="express-payments">
             {separatorPosition === 'top' && separator}
 
-            {/* Express Payment Buttons */}
-            <div className={gridClasses}>
-                {/* Apple Pay Button */}
-                <Button
-                    onClick={handleApplePayClick}
-                    disabled={disabled}
-                    className="w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-                    size="lg"
-                    aria-label={applePayLabel}>
-                    <ApplePayLogo className="flex-shrink-0" decorative />
-                </Button>
+            <Card className="flex flex-col items-center gap-3 p-6 shadow-none">
+                <p className="text-sm font-normal text-card-foreground">{t('expressPayments.title')}</p>
+                <div className={`${gridClasses} w-full`}>
+                    {/* Google Pay Button */}
+                    <Button
+                        onClick={handleGooglePayClick}
+                        disabled={disabled}
+                        className="w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+                        aria-label={googlePayLabel}>
+                        <GooglePayLogo className="flex-shrink-0" inverted decorative />
+                    </Button>
 
-                {/* Google Pay Button */}
-                <Button
-                    onClick={handleGooglePayClick}
-                    disabled={disabled}
-                    className="w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
-                    size="lg"
-                    aria-label={googlePayLabel}>
-                    <GooglePayLogo className="flex-shrink-0" decorative />
-                </Button>
+                    {/* Apple Pay Button */}
+                    <Button
+                        onClick={handleApplePayClick}
+                        disabled={disabled}
+                        className="w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+                        aria-label={applePayLabel}>
+                        <ApplePayLogo className="flex-shrink-0" decorative />
+                    </Button>
 
-                {/* Amazon Pay Button */}
-                <Button
-                    onClick={handleAmazonPayClick}
-                    disabled={disabled}
-                    className="w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
-                    size="lg"
-                    aria-label={amazonPayLabel}>
-                    <AmazonPayLogo className="flex-shrink-0" decorative />
-                </Button>
+                    {/* PayPal & Venmo Static Buttons */}
+                    <StaticPayPalButton onClick={handlePayPalClick} disabled={disabled} />
+                    <StaticVenmoButton onClick={handleVenmoClick} disabled={disabled} />
 
-                {/* PayPal & Venmo Static Buttons - Always visible, never replaced */}
-                {/* SDK loads in background on click to customize Venmo message if needed */}
-                <StaticPayPalButton onClick={handlePayPalClick} disabled={disabled} />
-                <StaticVenmoButton onClick={handleVenmoClick} disabled={disabled} />
-            </div>
+                    {/* Amazon Pay Button */}
+                    <Button
+                        onClick={handleAmazonPayClick}
+                        disabled={disabled}
+                        className="w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+                        aria-label={amazonPayLabel}>
+                        <AmazonPayLogo className="flex-shrink-0" decorative />
+                    </Button>
+                </div>
+            </Card>
 
-            {/* Separator at bottom (if configured) */}
             {separatorPosition === 'bottom' && separator}
         </div>
     );

@@ -541,7 +541,8 @@
             "savePaymentToProfile": "Salva questo metodo di pagamento nel mio account"
         },
         "expressPayments": {
-            "separator": "Oppure"
+            "title": "Pagamento Rapido",
+            "separator": "o continua qui sotto"
         },
         "common": {
             "edit": "Modifica",

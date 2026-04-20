@@ -553,7 +553,8 @@
             "savePaymentToProfile": "Save payment method for future use"
         },
         "expressPayments": {
-            "separator": "Or",
+            "title": "Express Checkout",
+            "separator": "or continue below",
             "venmoUnavailable": "Venmo is not available on this device.",
             "applePayLabel": "Apple Pay",
             "googlePayLabel": "Google Pay",

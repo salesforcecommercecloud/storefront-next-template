@@ -224,8 +224,10 @@ export const UserInputInteraction: Story = {
         await step('Enter digits and verify auto-advance', async () => {
             const inputs = body.getAllByRole('textbox');
 
+            await expect(inputs[0]).toHaveFocus();
+
             for (let i = 0; i < partialCode.length; i++) {
-                await userEvent.type(inputs[i], partialCode[i]);
+                await userEvent.keyboard(partialCode[i]);
                 await expect(inputs[i + 1]).toHaveFocus();
             }
         });

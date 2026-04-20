@@ -20,16 +20,19 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export function ExpressPaymentsSkeleton(): ReactElement {
     return (
-        <div className="space-y-2" data-testid="express-payments-skeleton">
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                {[1, 2, 3, 4, 5].map((i) => (
-                    <Skeleton key={i} className="h-12 w-full rounded-lg" />
-                ))}
-            </div>
-            <div className="relative flex items-center py-2">
-                <Skeleton className="flex-1 h-[2px]" />
-                <Skeleton className="h-4 w-12 mx-4" />
-                <Skeleton className="flex-1 h-[2px]" />
+        <div className="space-y-6" data-testid="express-payments-skeleton">
+            <Card className="flex flex-col items-center gap-3 p-6">
+                <Skeleton className="h-5 w-32" />
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <Skeleton key={i} className="h-9 w-full" />
+                    ))}
+                </div>
+            </Card>
+            <div className="relative flex items-center gap-[15px]">
+                <Skeleton className="flex-1 h-px" />
+                <Skeleton className="h-5 w-28" />
+                <Skeleton className="flex-1 h-px" />
             </div>
         </div>
     );

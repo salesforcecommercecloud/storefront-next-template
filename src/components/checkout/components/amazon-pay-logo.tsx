@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import amazonPayLogo from '/images/amazon-pay-logo.svg';
+import amazonPayLogo from '/images/amazon-pay-logo.png';
 import { useTranslation } from 'react-i18next';
 
 /**
- * Amazon Pay Logo SVG Component
- * Official Amazon Pay logo matching SDK button appearance
- * Uses local Amazon Pay SVG file from public/images
+ * Amazon Pay Logo Component
+ * Official Amazon Pay logo matching the Figma design system
+ * Uses the amazonpay-logo-rgb_clr asset from public/images
  */
 export default function AmazonPayLogo({
     className,
@@ -36,10 +36,10 @@ export default function AmazonPayLogo({
         <img
             src={amazonPayLogo}
             alt={decorative ? '' : label}
-            width="62"
-            height="20"
+            width="99"
+            height="19"
             {...(decorative ? { 'aria-hidden': true } : {})}
-            className={`${className || ''} h-5 w-auto object-contain`}
+            className={`${className || ''} h-[19px] w-auto object-contain`}
         />
     );
 }

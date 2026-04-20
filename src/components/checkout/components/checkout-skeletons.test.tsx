@@ -33,11 +33,10 @@ describe('Checkout Skeleton Components', () => {
             expect(screen.getByTestId('express-payments-skeleton')).toBeInTheDocument();
         });
 
-        it('should render 4 payment button skeletons', () => {
+        it('should render 5 payment button skeletons', () => {
             const { container } = render(<ExpressPaymentsSkeleton />);
-            const skeletons = container.querySelectorAll('.h-12');
-            // 4 buttons + 2 separator lines + 1 separator text = at least 4 h-12 skeletons for buttons
-            expect(skeletons.length).toBeGreaterThanOrEqual(4);
+            const skeletons = container.querySelectorAll('.h-9');
+            expect(skeletons.length).toBe(5);
         });
     });
 

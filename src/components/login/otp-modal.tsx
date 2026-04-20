@@ -130,7 +130,12 @@ export default function OtpModal({
             setResendTimer(0);
 
             requestAnimationFrame(() => {
-                otpInputsRef.current.inputRefs.current[0]?.focus();
+                const alreadyFocused = otpInputsRef.current.inputRefs.current.some(
+                    (ref) => ref && ref === document.activeElement
+                );
+                if (!alreadyFocused) {
+                    otpInputsRef.current.inputRefs.current[0]?.focus();
+                }
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
