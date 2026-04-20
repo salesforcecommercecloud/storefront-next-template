@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 15, 2026)
 
+- My Account: overview “rate recent purchases” card (below recent orders) linking to order details; order details per-line Rate & Review using the PDP write-review modal, with “Review submitted” state after submit (@W-20873965)
 - Update style for Deliver to Multiple Addresses button ([#1463](https://github.com/commerce-emu/storefront-next/pull/1463))
 - Fix re-render cycles on PDP due to shared Suspense boundary ([#1434](https://github.com/commerce-emu/storefront-next/pull/1434))
 - User registration verified badge and spinner (@W-22015539)

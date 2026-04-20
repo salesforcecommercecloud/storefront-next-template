@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ReactElement } from 'react';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Check, Hash, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -92,8 +92,53 @@ function getPaymentMethodDisplays(
     });
 }
 
+function orderReviewStorageKey(orderNo: string | undefined): string {
+    return `orderReviewSubmittedLines:${orderNo ?? ''}`;
+}
+
 export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactElement {
     const { t } = useTranslation('account');
+    const orderNo = order.orderNo ?? '';
+    const [submittedReviewLineKeys, setSubmittedReviewLineKeys] = useState<Set<string>>(() => new Set());
+
+    useEffect(() => {
+        if (typeof sessionStorage === 'undefined' || !orderNo) {
+            return;
+        }
+        try {
+            const raw = sessionStorage.getItem(orderReviewStorageKey(orderNo));
+            if (!raw) {
+                return;
+            }
+            const parsed = JSON.parse(raw) as unknown;
+            if (Array.isArray(parsed)) {
+                setSubmittedReviewLineKeys(
+                    new Set(parsed.filter((x): x is string => typeof x === 'string' && x.length > 0))
+                );
+            }
+        } catch {
+            /* ignore corrupt storage */
+        }
+    }, [orderNo]);
+
+    const handleOrderLineReviewSubmitted = useCallback(
+        (lineKey: string) => {
+            setSubmittedReviewLineKeys((prev) => {
+                const next = new Set(prev);
+                next.add(lineKey);
+                try {
+                    if (typeof sessionStorage !== 'undefined' && orderNo) {
+                        sessionStorage.setItem(orderReviewStorageKey(orderNo), JSON.stringify([...next]));
+                    }
+                } catch {
+                    /* ignore quota */
+                }
+                return next;
+            });
+        },
+        [orderNo]
+    );
+
     const shipments = order.shipments ?? [];
     const productItems = order.productItems ?? [];
     const orderStatusConfig = getOrderStatusConfig(order.status);
@@ -165,7 +210,13 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                     />
                                                 </div>
                                                 <div className="p-3">
-                                                    <OrderItemsList items={items} productsById={productsById} />
+                                                    <OrderItemsList
+                                                        items={items}
+                                                        productsById={productsById}
+                                                        orderNo={order.orderNo}
+                                                        submittedReviewLineKeys={submittedReviewLineKeys}
+                                                        onOrderLineReviewSubmitted={handleOrderLineReviewSubmitted}
+                                                    />
                                                     <UITarget targetId="sfcc.myAccount.orderDetails.review" />
                                                 </div>
                                                 {/* Tracking Number and Shipping Address for this shipment */}

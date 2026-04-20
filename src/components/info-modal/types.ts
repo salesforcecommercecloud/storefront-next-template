@@ -18,6 +18,7 @@ import type {
     WriteReviewFormData,
     EstimatedDeliveryData,
     ReturnsAndWarrantyData,
+    ReviewItem,
 } from '@/lib/adapters/product-content-data-types';
 
 /**
@@ -66,6 +67,8 @@ export interface WriteReviewModalData extends InfoModalDataBase {
     type: 'write-review';
     /** Form labels, placeholders, and config from product content adapter (e.g. getWriteReviewForm). Optional until loaded. */
     formConfig?: WriteReviewFormData;
+    /** Called after a successful submit (e.g. order details: mark line as reviewed). PDP omits this. */
+    onAfterSubmit?: (review: ReviewItem) => void;
 }
 
 /** Rating distribution data for a single star rating */

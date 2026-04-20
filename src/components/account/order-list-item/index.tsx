@@ -38,6 +38,8 @@ export interface OrderProductItem {
     quantity: number;
     imageUrl?: string;
     imageAlt?: string;
+    /** Display name from catalog or SCAPI line item when available */
+    productName?: string;
 }
 
 /**

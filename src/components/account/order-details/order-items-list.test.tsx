@@ -17,9 +17,13 @@ import { render, screen } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { OrderItemsList } from './order-items-list';
+import { getOrderLineReviewKey } from './order-line-review-key';
 import { getTranslation } from '@/lib/i18next';
 import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+
+type OrderLine = ShopperOrders.schemas['ProductItem'];
 
 const mockSite = mockConfig.commerce.sites[0];
 
@@ -184,5 +188,21 @@ describe('OrderItemsList', () => {
         const img = screen.getByRole('img', { name: 'Product With Image' });
         expect(img).toBeInTheDocument();
         expect(img).toHaveAttribute('src', expect.stringContaining('example.com/img.jpg'));
+    });
+});
+
+describe('getOrderLineReviewKey', () => {
+    test('prefers itemId when present', () => {
+        expect(getOrderLineReviewKey('ORD-1', { itemId: 'abc-123', productId: 'p1' } as OrderLine, 0)).toBe('abc-123');
+    });
+
+    test('falls back to orderNo, productId, quantity, and index when itemId is missing', () => {
+        expect(getOrderLineReviewKey('ORD-1', { productId: 'p1', quantity: 2 } as OrderLine, 2)).toBe('ORD-1-p1-2-2');
+    });
+
+    test('uses unknown placeholders when orderNo and productId are missing', () => {
+        expect(getOrderLineReviewKey(undefined, { quantity: 1 } as OrderLine, 1)).toBe(
+            'unknown-order-unknown-product-1-1'
+        );
     });
 });

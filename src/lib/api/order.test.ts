@@ -298,6 +298,41 @@ describe('transformOrderForList', () => {
         });
     });
 
+    test('sets productName from catalog product when present, else SCAPI line productName', () => {
+        const scapiOrder: ShopperCustomers.schemas['Order'] = {
+            orderNo: 'ORD-N',
+            productItems: [
+                {
+                    productId: 'p1',
+                    quantity: 1,
+                    itemId: 'i1',
+                    productName: 'Line title ignored when catalog exists',
+                },
+                { productId: 'p2', quantity: 1, itemId: 'i2', productName: 'Line only name' },
+                { productId: 'p-missing', quantity: 1, itemId: 'i3', productName: 'Fallback from line' },
+            ],
+        } as ShopperCustomers.schemas['Order'];
+
+        const productsById: Record<string, ShopperProducts.schemas['Product'] | undefined> = {
+            p1: {
+                id: 'p1',
+                name: 'Catalog wins',
+                imageGroups: [],
+            } as ShopperProducts.schemas['Product'],
+            p2: {
+                id: 'p2',
+                name: 'Catalog two',
+                imageGroups: [],
+            } as ShopperProducts.schemas['Product'],
+        };
+
+        const result = transformOrderForList(scapiOrder, productsById);
+
+        expect(result.productItems?.[0]?.productName).toBe('Catalog wins');
+        expect(result.productItems?.[1]?.productName).toBe('Catalog two');
+        expect(result.productItems?.[2]?.productName).toBe('Fallback from line');
+    });
+
     test('handles missing optional fields', () => {
         const scapiOrder: ShopperCustomers.schemas['Order'] = {} as ShopperCustomers.schemas['Order'];
 

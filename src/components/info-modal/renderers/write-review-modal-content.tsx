@@ -37,9 +37,12 @@ function FieldError({ id, message }: { id?: string; message: string }): ReactEle
 export function WriteReviewModalContent({
     onClose,
     formConfig,
+    onAfterSubmit,
 }: {
     onClose?: () => void;
     formConfig?: WriteReviewFormData;
+    /** Invoked after a successful submit, after `addReview` (e.g. order line UI). PDP omits. */
+    onAfterSubmit?: (review: ReviewItem) => void;
 }): ReactElement | null {
     const [selectedRating, setSelectedRating] = useState(0);
     const [hoverRating, setHoverRating] = useState<number | null>(null);
@@ -122,10 +125,12 @@ export function WriteReviewModalContent({
                 reportLabel: tProduct('report'),
             };
             addReview(newReview);
+            onAfterSubmit?.(newReview);
             onClose?.();
         },
         [
             addReview,
+            onAfterSubmit,
             location,
             onClose,
             reviewBodyTrimmed,

@@ -125,11 +125,18 @@ export function transformOrderForList(
         const image = group?.images?.[0]; // Extract the first "small" image from a product's imageGroups.
         const imageAlt = image?.alt ?? product?.name ?? 'Product Image';
 
+        const scapiLineName =
+            'productName' in item && typeof (item as { productName?: unknown }).productName === 'string'
+                ? (item as { productName: string }).productName
+                : undefined;
+        const productName = (product?.name ?? scapiLineName)?.trim() || undefined;
+
         return {
             productId,
             quantity: item.quantity ?? 1,
             imageUrl: image?.link,
             imageAlt,
+            productName,
         };
     });
 

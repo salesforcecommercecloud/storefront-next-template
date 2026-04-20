@@ -30,6 +30,7 @@ import { Typography } from '@/components/typography';
 import { ChevronLeft } from 'lucide-react';
 import OrderDetails, { type ProductDataById } from '@/components/account/order-details';
 import OrderSkeleton from '@/components/order-skeleton';
+import ProductContentProvider from '@/providers/product-content';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
@@ -136,7 +137,11 @@ export default function OrderDetailsPage(): ReactElement {
                             <OrderNotFoundCard />
                         </div>
                     }>
-                    {(data) => <OrderDetails order={data.order} productsById={data.productsById} />}
+                    {(data) => (
+                        <ProductContentProvider>
+                            <OrderDetails order={data.order} productsById={data.productsById} />
+                        </ProductContentProvider>
+                    )}
                 </Await>
             </Suspense>
         </div>

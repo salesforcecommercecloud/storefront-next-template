@@ -21,6 +21,7 @@ import { getTranslation } from '@/lib/i18next';
 import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import ProductContentProvider from '@/providers/product-content';
 
 const mockSite = mockConfig.commerce.sites[0];
 
@@ -80,7 +81,9 @@ function OrderDetailsWithProviders({ order = defaultOrder }: { order?: ShopperOr
         <MemoryRouter>
             <ConfigWrapper>
                 <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
-                    <OrderDetails order={order} productsById={defaultProductsById} />
+                    <ProductContentProvider>
+                        <OrderDetails order={order} productsById={defaultProductsById} />
+                    </ProductContentProvider>
                 </SiteProvider>
             </ConfigWrapper>
         </MemoryRouter>

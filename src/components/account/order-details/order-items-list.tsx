@@ -27,6 +27,8 @@ import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
 import type { EnrichedProductItem } from '@/lib/product-utils';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { OrderLineRateReview } from '@/components/account/order-details/order-line-rate-review';
+import { getOrderLineReviewKey } from '@/components/account/order-details/order-line-review-key';
 
 type OrderItem = ShopperOrders.schemas['ProductItem'];
 
@@ -35,15 +37,27 @@ export type ProductDataById = Record<string, ShopperProducts.schemas['Product'] 
 export type OrderItemsListProps = {
     items: OrderItem[];
     productsById: ProductDataById;
+    /** Parent order number; used in fallback line keys when SCAPI omits `itemId` on a line. */
+    orderNo?: string;
+    /** When set with `onOrderLineReviewSubmitted`, shows Rate & review per shippable line with product data. */
+    submittedReviewLineKeys?: ReadonlySet<string>;
+    onOrderLineReviewSubmitted?: (lineKey: string) => void;
 };
 
 /**
  * Renders a list of order line items with image, name, variant, quantity, price, and Buy Again link.
  * Matches PWA-Kit order details line-item pattern (product row with image, details, price, reorder).
  */
-export function OrderItemsList({ items, productsById }: OrderItemsListProps): ReactElement {
+export function OrderItemsList({
+    items,
+    productsById,
+    orderNo,
+    submittedReviewLineKeys,
+    onOrderLineReviewSubmitted,
+}: OrderItemsListProps): ReactElement {
     const { t } = useTranslation('account');
     const { currency } = useSite();
+    const showLineReviews = submittedReviewLineKeys != null && onOrderLineReviewSubmitted != null;
 
     if (items.length === 0) {
         return (
@@ -59,6 +73,8 @@ export function OrderItemsList({ items, productsById }: OrderItemsListProps): Re
                 const productData = item.productId ? productsById[item.productId] : undefined;
                 const productKey = item.itemId ? `${item.itemId}-${index}` : `${item.productId ?? 'item'}-${index}`;
                 const productName = item.productName;
+                const lineReviewKey = getOrderLineReviewKey(orderNo, item, index);
+                const reviewSubmitted = submittedReviewLineKeys?.has(lineReviewKey) ?? false;
                 const enrichedItem: EnrichedProductItem = { ...productData, ...item } as EnrichedProductItem;
                 return (
                     <li key={productKey} data-testid="order-item">
@@ -75,6 +91,16 @@ export function OrderItemsList({ items, productsById }: OrderItemsListProps): Re
                                 <p className="text-xs text-muted-foreground">
                                     {t('orders.quantityLabel', { count: item.quantity ?? 1 })}
                                 </p>
+                                {showLineReviews && productData ? (
+                                    <div className="pt-1">
+                                        <OrderLineRateReview
+                                            product={productData}
+                                            lineKey={lineReviewKey}
+                                            reviewSubmitted={reviewSubmitted}
+                                            onLineReviewSubmitted={onOrderLineReviewSubmitted}
+                                        />
+                                    </div>
+                                ) : null}
                             </div>
                             <div className="flex shrink-0 flex-col items-end gap-1 sm:self-start">
                                 {currency ? (

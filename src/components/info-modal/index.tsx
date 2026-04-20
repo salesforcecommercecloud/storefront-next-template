@@ -173,6 +173,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                                 key={open ? 'open' : 'closed'}
                                 onClose={() => onOpenChange(false)}
                                 formConfig={data.formConfig}
+                                onAfterSubmit={data.onAfterSubmit}
                             />
                         </div>
                     </>

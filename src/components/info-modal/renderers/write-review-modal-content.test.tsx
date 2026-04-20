@@ -92,6 +92,20 @@ describe('WriteReviewModalContent', () => {
         expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
     });
 
+    it('calls onAfterSubmit before onClose when form is valid and submitted', async () => {
+        const user = userEvent.setup();
+        const onAfterSubmit = vi.fn();
+        const onClose = vi.fn();
+        render(<WriteReviewModalContent {...defaultProps} onClose={onClose} onAfterSubmit={onAfterSubmit} />);
+        const oneStar = screen.getByRole('radio', { name: '1 out of 5 stars' });
+        await user.click(oneStar);
+        await user.type(screen.getByPlaceholderText('What did you think?'), 'A'.repeat(50));
+        await user.click(screen.getByRole('button', { name: 'Submit Review' }));
+        expect(onAfterSubmit).toHaveBeenCalledTimes(1);
+        expect(onAfterSubmit.mock.invocationCallOrder[0]).toBeLessThan(onClose.mock.invocationCallOrder[0]);
+        expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
     it('shows review validation when body is under min characters', async () => {
         const user = userEvent.setup();
         render(<WriteReviewModalContent {...defaultProps} />);

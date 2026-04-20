@@ -798,6 +798,12 @@
                 "title": "Recent Orders",
                 "subtitle": "These are your last 5 orders",
                 "viewAll": "View All"
+            },
+            "rateRecentPurchases": {
+                "title": "Rate Your Recent Purchases",
+                "subtitle": "Share your experience and help others discover great products",
+                "orderCaption": "Order {{orderNo}} • {{status}}",
+                "cta": "Rate & review"
             }
         },
         "shopperAgentEntry": {
@@ -889,6 +895,8 @@
             "orderNotFound": "Order Not Found",
             "orderNotFoundDescription": "We couldn't find the order you're looking for.",
             "buyAgain": "Buy Again",
+            "rateAndReview": "Rate & Review",
+            "reviewSubmitted": "Review submitted",
             "emptyItemsFallback": "No items.",
             "productPlaceholderInitial": "Item",
             "quantityLabel": "Qty: {{count}}",

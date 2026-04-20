@@ -31,6 +31,7 @@ import { AppDownloadSection } from '@/components/account/app-download-section';
 import { AccountHelp } from '@/components/account/account-help';
 import type { CustomerOrdersResult } from '@/lib/api/order';
 import { UITarget } from '@/targets/ui-target';
+import { RateRecentPurchasesCard } from '@/components/account/account-overview/rate-recent-purchases-card';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -214,18 +215,16 @@ export function CuratedForYouSectionSkeleton(): ReactElement {
     );
 }
 
-/**
- * Recent Orders section displaying the shopper's last 5 orders.
- * Reuses OrderListHeader + OrderListBody with a "View All" link.
- */
-export function RecentOrdersSection({ ordersPromise }: { ordersPromise: Promise<CustomerOrdersResult> }): ReactElement {
-    const { t } = useTranslation('account');
-    const navigate = useNavigate();
+type RecentOrdersListBlockProps = {
+    result: CustomerOrdersResult;
+    onViewDetails: (orderNo: string) => void;
+};
 
-    const handleViewDetails = (orderNo: string) => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises -- navigate() result intentionally not awaited
-        navigate(`/account/orders/${orderNo}`);
-    };
+/**
+ * Recent orders header + list (no deferred data wrapper).
+ */
+function RecentOrdersListBlock({ result, onViewDetails }: RecentOrdersListBlockProps): ReactElement {
+    const { t } = useTranslation('account');
 
     return (
         <div className="space-y-0">
@@ -246,12 +245,37 @@ export function RecentOrdersSection({ ordersPromise }: { ordersPromise: Promise<
                     </div>
                 </CardContent>
             </Card>
-            <Suspense fallback={<OrderListSkeleton />}>
-                <Await resolve={ordersPromise}>
-                    {(result) => <OrderListBody orders={result.orders} onViewDetails={handleViewDetails} />}
-                </Await>
-            </Suspense>
+            <OrderListBody orders={result.orders} onViewDetails={onViewDetails} />
         </div>
+    );
+}
+
+/**
+ * Deferred recent orders plus “rate recent purchase” card (card renders below the list when orders exist).
+ */
+export function AccountOverviewOrdersAwait({
+    ordersPromise,
+}: {
+    ordersPromise: Promise<CustomerOrdersResult>;
+}): ReactElement {
+    const navigate = useNavigate();
+
+    const handleViewDetails = (orderNo: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises -- navigate() result intentionally not awaited
+        navigate(`/account/orders/${orderNo}`);
+    };
+
+    return (
+        <Suspense fallback={<RecentOrdersSectionSkeleton />}>
+            <Await resolve={ordersPromise}>
+                {(result) => (
+                    <div className="space-y-5">
+                        <RecentOrdersListBlock result={result} onViewDetails={handleViewDetails} />
+                        {result.orders.length > 0 ? <RateRecentPurchasesCard order={result.orders[0]} /> : null}
+                    </div>
+                )}
+            </Await>
+        </Suspense>
     );
 }
 
@@ -260,14 +284,39 @@ export function RecentOrdersSection({ ordersPromise }: { ordersPromise: Promise<
  */
 export function RecentOrdersSectionSkeleton(): ReactElement {
     return (
-        <div className="space-y-0">
-            <Card className="bg-card border-border rounded-b-none border-b-0">
-                <CardContent className="px-5">
-                    <Skeleton className="h-7 w-40 mb-1.5" />
-                    <Skeleton className="h-4 w-56" />
+        <div className="space-y-5">
+            <div className="space-y-0">
+                <Card className="bg-card border-border rounded-b-none border-b-0">
+                    <CardContent className="px-5">
+                        <Skeleton className="h-7 w-40 mb-1.5" />
+                        <Skeleton className="h-4 w-56" />
+                    </CardContent>
+                </Card>
+                <OrderListSkeleton />
+            </div>
+            <Card className="py-0">
+                <CardContent className="p-6 space-y-4">
+                    <Skeleton className="h-7 w-72 max-w-full" />
+                    <Skeleton className="h-4 w-full max-w-lg" />
+                    <div className="rounded-lg border border-border p-4 sm:p-5">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                            <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                                <div className="flex shrink-0 gap-2">
+                                    <Skeleton className="h-16 w-16 shrink-0 rounded-lg" />
+                                    <Skeleton className="h-16 w-16 shrink-0 rounded-lg" />
+                                </div>
+                                <div className="min-w-0 flex-1 space-y-2">
+                                    <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-3 w-40" />
+                                </div>
+                            </div>
+                            <div className="flex w-full justify-end sm:w-auto sm:self-center">
+                                <Skeleton className="h-10 w-full max-w-none sm:h-10 sm:w-40" />
+                            </div>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
-            <OrderListSkeleton />
         </div>
     );
 }
@@ -286,7 +335,7 @@ export function AccountOverview({ customer, ordersPromise }: AccountOverviewProp
         <div className="space-y-5">
             <WelcomeSection customer={customer} />
             <UITarget targetId="sfcc.myAccount.loyalty.summary" />
-            {ordersPromise && <RecentOrdersSection ordersPromise={ordersPromise} />}
+            {ordersPromise && <AccountOverviewOrdersAwait ordersPromise={ordersPromise} />}
             <UITarget targetId="sfcc.myAccount.reviews.pending" />
             <CuratedForYouSection />
             <AccountHelp />

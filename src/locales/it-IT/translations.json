@@ -778,6 +778,12 @@
                 "title": "Ordini Recenti",
                 "subtitle": "Questi sono i tuoi ultimi 5 ordini",
                 "viewAll": "Vedi Tutti"
+            },
+            "rateRecentPurchases": {
+                "title": "Valuta i tuoi acquisti recenti",
+                "subtitle": "Condividi la tua esperienza e aiuta altri a scoprire ottimi prodotti",
+                "orderCaption": "Ordine {{orderNo}} • {{status}}",
+                "cta": "Valuta e recensisci"
             }
         },
         "shopperAgentEntry": {
@@ -864,6 +870,8 @@
             "orderNotFound": "Ordine non trovato",
             "orderNotFoundDescription": "Impossibile trovare l'ordine richiesto.",
             "buyAgain": "Acquista di nuovo",
+            "rateAndReview": "Valuta e recensisci",
+            "reviewSubmitted": "Recensione inviata",
             "emptyItemsFallback": "Nessun articolo.",
             "productPlaceholderInitial": "Articolo",
             "quantityLabel": "Qtà: {{count}}",

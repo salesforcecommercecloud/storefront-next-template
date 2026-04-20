@@ -29,7 +29,7 @@ import {
     QuickLinksSection,
     WelcomeSectionSkeleton,
     QuickLinksSectionSkeleton,
-    RecentOrdersSection,
+    AccountOverviewOrdersAwait,
     RecentOrdersSectionSkeleton,
 } from '../index';
 import type { CustomerOrdersResult } from '@/lib/api/order';
@@ -248,8 +248,8 @@ export const WelcomeSectionLoading: StoryObj<typeof WelcomeSectionSkeleton> = {
 };
 
 // Recent Orders Section Stories
-export const RecentOrdersDefault: StoryObj<typeof RecentOrdersSection> = {
-    render: (args) => <RecentOrdersSection {...args} />,
+export const RecentOrdersDefault: StoryObj<typeof AccountOverviewOrdersAwait> = {
+    render: (args) => <AccountOverviewOrdersAwait {...args} />,
     args: {
         ordersPromise: Promise.resolve(mockOrders),
     },
@@ -271,8 +271,8 @@ export const RecentOrdersDefault: StoryObj<typeof RecentOrdersSection> = {
     },
 };
 
-export const RecentOrdersEmpty: StoryObj<typeof RecentOrdersSection> = {
-    render: (args) => <RecentOrdersSection {...args} />,
+export const RecentOrdersEmpty: StoryObj<typeof AccountOverviewOrdersAwait> = {
+    render: (args) => <AccountOverviewOrdersAwait {...args} />,
     args: {
         ordersPromise: Promise.resolve(emptyOrders),
     },
