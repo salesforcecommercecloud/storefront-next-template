@@ -28,14 +28,6 @@ function renderWithRouter(ui: React.ReactElement) {
     return render(<RouterProvider router={router} />);
 }
 
-// With SiteProvider — Link always gets site context from AllProvidersWrapper
-function renderWithoutSite(ui: React.ReactElement) {
-    const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{ui}</AllProvidersWrapper> }], {
-        initialEntries: ['/'],
-    });
-    return render(<RouterProvider router={router} />);
-}
-
 describe('Link', () => {
     afterEach(async () => {
         cleanup();
@@ -44,12 +36,6 @@ describe('Link', () => {
 
     test('renders a site context prefixed URL', () => {
         const { getByRole } = renderWithRouter(<Link to="/product/123">Product</Link>);
-
-        expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
-    });
-
-    test('renders a site context prefixed URL with renderWithoutSite helper', () => {
-        const { getByRole } = renderWithoutSite(<Link to="/product/123">Product</Link>);
 
         expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
     });
@@ -93,10 +79,10 @@ describe('Link', () => {
         expect(link).toHaveAttribute('data-testid', 'custom');
     });
 
-    test('does not prefix root path "/"', () => {
+    test('prefixes root path "/" with site context', () => {
         const { getByRole } = renderWithRouter(<Link to="/">Home</Link>);
 
-        expect(getByRole('link')).toHaveAttribute('href', '/');
+        expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/');
     });
 });
 
@@ -112,10 +98,12 @@ describe('NavLink', () => {
         expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
     });
 
-    test('renders a site context prefixed URL with renderWithoutSite helper', () => {
-        const { getByRole } = renderWithoutSite(<NavLink to="/product/123">Product</NavLink>);
+    test('passes through an object `to` prop without transformation', () => {
+        const { getByRole } = renderWithRouter(
+            <NavLink to={{ pathname: '/product/123', search: '?color=red' }}>Product</NavLink>
+        );
 
-        expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/product/123');
+        expect(getByRole('link')).toHaveAttribute('href', '/product/123?color=red');
     });
 
     test('forwards a ref to the anchor element', () => {
@@ -127,5 +115,31 @@ describe('NavLink', () => {
         );
 
         expect(ref.current).toBeInstanceOf(HTMLAnchorElement);
+    });
+
+    test('uses the current i18n language for locale segment', async () => {
+        await i18next.changeLanguage('it-IT');
+
+        const { getByRole } = renderWithRouter(<NavLink to="/product/123">Product</NavLink>);
+
+        expect(getByRole('link')).toHaveAttribute('href', '/global/it-IT/product/123');
+    });
+
+    test('passes additional props to the rendered anchor', () => {
+        const { getByRole } = renderWithRouter(
+            <NavLink to="/test" className="my-navlink" data-testid="custom">
+                Test
+            </NavLink>
+        );
+
+        const link = getByRole('link');
+        expect(link).toHaveClass('my-navlink');
+        expect(link).toHaveAttribute('data-testid', 'custom');
+    });
+
+    test('prefixes root path "/" with site context', () => {
+        const { getByRole } = renderWithRouter(<NavLink to="/">Home</NavLink>);
+
+        expect(getByRole('link')).toHaveAttribute('href', '/global/en-GB/');
     });
 });

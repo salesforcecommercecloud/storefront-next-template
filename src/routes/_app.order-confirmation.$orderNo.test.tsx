@@ -362,7 +362,7 @@ describe('Order Confirmation Route', () => {
             );
 
             const continueShoppingLink = screen.getByText('Continue Shopping').closest('a');
-            expect(continueShoppingLink).toHaveAttribute('href', '/');
+            expect(continueShoppingLink).toHaveAttribute('href', '/global/en-GB/');
         });
     });
 

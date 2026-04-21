@@ -73,7 +73,7 @@ describe('CartEmpty', () => {
             renderWithRouter(<CartEmpty />);
 
             const startShoppingLink = screen.getByText(t('cart:empty.continueShopping')).closest('a');
-            expect(startShoppingLink).toHaveAttribute('href', '/');
+            expect(startShoppingLink).toHaveAttribute('href', '/global/en-GB/');
         });
     });
 });

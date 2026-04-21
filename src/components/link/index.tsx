@@ -36,7 +36,7 @@ export const Link = forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
 
     const to =
-        typeof _to === 'string' && _to !== '/' && site
+        typeof _to === 'string' && site
             ? buildUrl({
                   to: _to,
                   urlConfig: config.url,
@@ -55,7 +55,7 @@ export const NavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps>(functio
     const config = useConfig<AppConfig>();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const to =
-        typeof _to === 'string' && _to !== '/' && site
+        typeof _to === 'string' && site
             ? buildUrl({
                   to: _to,
                   urlConfig: config.url,

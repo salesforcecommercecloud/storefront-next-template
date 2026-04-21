@@ -229,7 +229,7 @@ export const EmptyState: Story = {
         // Check Continue Shopping button is displayed
         const continueShoppingLink = canvas.getByRole('link', { name: 'Continue Shopping' });
         await expect(continueShoppingLink).toBeInTheDocument();
-        await expect(continueShoppingLink).toHaveAttribute('href', '/');
+        await expect(continueShoppingLink).toHaveAttribute('href', '/RefArchGlobal/en-GB/');
 
         // Check no View Order Details links exist
         const viewDetailsLinks = canvas.queryAllByText('View Order Details');

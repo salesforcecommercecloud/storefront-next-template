@@ -49,17 +49,12 @@ export function useNavigate() {
             const params = { siteId: siteRef, localeId: localeRef };
 
             if (typeof to === 'string') {
-                // '/' is always cookie-driven (no prefix).
-                if (to === '/') {
-                    return routerNavigate(to, options);
-                }
                 return routerNavigate(buildUrl({ to, urlConfig: config.url, params }), options);
             }
 
             // Object To — only transform if pathname is present
             if (to.pathname) {
-                const pathname =
-                    to.pathname === '/' ? to.pathname : buildUrl({ to: to.pathname, urlConfig: config.url, params });
+                const pathname = buildUrl({ to: to.pathname, urlConfig: config.url, params });
                 return routerNavigate({ ...to, pathname }, options);
             }
 
