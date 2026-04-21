@@ -1,0 +1,43 @@
+:root {
+    /* header & navigation */
+    --header-background: #000000;
+    --header-foreground: #ffffff;
+    --header-border: rgba(255, 255, 255, 0.1);
+    --header-divider: rgba(255, 255, 255, 0.1);
+    /* header menu dropdowns */
+    --header-menu-background: #000000;
+    --header-menu-foreground: #ffffff;
+    --header-menu-border: rgba(255, 255, 255, 0.1);
+    --header-menu-hover-background: #ffffff;
+    --header-menu-hover-foreground: #000000;
+    --header-menu-active-background: rgba(255, 255, 255, 0.05);
+    --header-menu-icon: rgba(255, 255, 255, 0.7);
+    /* logo.svg is black; invert to white on dark header */
+    --header-logo-filter: brightness(0) invert(1);
+
+    /* footer */
+    --footer-background: #ffffff;
+    --footer-foreground: #000000;
+}
+
+.dark {
+    /* header & navigation */
+    --header-background: #ffffff;
+    --header-foreground: #000000;
+    --header-border: rgba(0, 0, 0, 0.08);
+    --header-divider: rgba(0, 0, 0, 0.08);
+    /* header menu dropdowns */
+    --header-menu-background: #ffffff;
+    --header-menu-foreground: #000000;
+    --header-menu-border: rgba(0, 0, 0, 0.08);
+    --header-menu-hover-background: #000000;
+    --header-menu-hover-foreground: #ffffff;
+    --header-menu-active-background: rgba(0, 0, 0, 0.02);
+    --header-menu-icon: rgba(0, 0, 0, 0.5);
+    /* logo.svg is black; no filter on light header */
+    --header-logo-filter: none;
+
+    /* footer */
+    --footer-background: #121212;
+    --footer-foreground: #fafafa;
+}

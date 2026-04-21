@@ -1,0 +1,16 @@
+:root {
+    /* payment provider colors */
+    --paypal-gold: #FFC439;
+    --venmo-blue: #3D95CE;
+
+    /* cart & mini-cart tokens */
+    --cart-summary-px: 1rem;
+    --cart-free-price: #2E844A;
+    --cart-free-price-size: 1.125rem;
+}
+
+.dark {
+    /* payment provider colors */
+    --paypal-gold: #FFC439;
+    --venmo-blue: #3D95CE;
+}

@@ -13,7 +13,7 @@ The project uses **Tailwind CSS v4** with a utility-first approach.
 - Follow **mobile-first** responsive patterns using breakpoint prefixes: `sm:`, `md:`, `lg:`, `xl:`, `2xl:`.
 - **Do not use inline styles** (`style={{ ... }}`) for styling.
 - **Do not use CSS modules** (`.module.css`) or separate CSS files for component-level styles.
-- **Global and theme styles** belong in `src/app.css` only.
+- **Global and theme styles** belong in `src/theme/` only. The entry point is `src/theme/index.css`, with tokens split across `src/theme/tokens/`, base resets in `src/theme/base.css`, and component overrides in `src/theme/overrides/`.
 
 ### Design Tokens
 
@@ -90,7 +90,7 @@ No extra class changes are needed for dark mode when using design tokens.
 - Use **semantic HTML** (`<button>`, `<nav>`, `<main>`, etc.) and appropriate **ARIA** where needed.
 - Ensure **keyboard navigation** and visible **focus states** for interactive elements.
 - Aim for **WCAG** compliance (contrast, focus order, labels).
-- Keep **spacing and typography** consistent with the design system defined in `app.css` and Tailwind config.
+- Keep **spacing and typography** consistent with the design system defined in `src/theme/` and Tailwind config.
 
 ---
 
@@ -104,6 +104,6 @@ Quick reference:
 | `cn()` for conditional classes | Manual string concatenation for `className` |
 | Design tokens (`bg-background`, `text-muted-foreground`) | Hard-coded colors |
 | `npx shadcn@latest add <name>` | Manually copying or creating components in `src/components/ui/` |
-| Global/theme styles in `src/app.css` | Scattered or duplicate global CSS |
+| Global/theme styles in `src/theme/` | Scattered or duplicate global CSS |
 
 For a short checklist, see the styling section in the Storefront Next development guidelines (e.g. the `storefront_next_development_guidelines` tool).

@@ -110,7 +110,7 @@ import sen from '/fonts/sen-variable.woff2';
 
 // Styles
 import { PageDesignerInit } from '@/page-designer-init';
-import appStylesHref from './app.css?url';
+import appStylesHref from './theme/index.css?url';
 
 // Extensions
 import { TargetProviders } from '@/targets/target-providers';

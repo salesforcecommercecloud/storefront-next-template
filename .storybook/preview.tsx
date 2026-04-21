@@ -6,7 +6,7 @@ import { applyProviders } from '../src/lib/provider-utils';
 import { storybookProviders } from './storybook-providers';
 import { inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
 import { masterProduct } from '@/components/__mocks__/master-variant-product';
-import '../src/app.css'; // Import global CSS
+import '../src/theme/index.css'; // Import global CSS
 import { TargetProviders } from '@/targets/target-providers';
 
 // Create HOC that applies all Storybook providers
