@@ -34,9 +34,16 @@ interface HeaderProps extends PropsWithChildren {
     variant?: 'full' | 'checkout';
 }
 
+// Isolates the `useLocation()` subscription so that route changes only re-render the Search component (via key reset)
+// without cascading a re-render through the entire `Header` tree, which would unnecessarily re-render the navigation
+// menu and other stable children.
+function LocationKeyedSearch() {
+    const location = useLocation();
+    return <Search key={`${location.pathname}${location.search}`} />;
+}
+
 export default function Header({ children, beforeHeader, variant = 'full' }: HeaderProps): ReactElement {
     const { t } = useTranslation('header');
-    const location = useLocation();
     const headerRef = useRef<HTMLElement>(null);
     const config = useConfig<AppConfig>();
     const showChat =
@@ -107,7 +114,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
 
                     {/* Search - desktop only */}
                     <div className="hidden lg:block" data-testid="header-search-desktop">
-                        <Search key={`${location.pathname}${location.search}`} />
+                        <LocationKeyedSearch />
                     </div>
 
                     {/* Icons group - includes mobile hamburger */}
@@ -131,7 +138,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
 
                 {/* Mobile search - second row */}
                 <div className="pb-4 lg:hidden" data-testid="header-search-mobile">
-                    <Search key={`${location.pathname}${location.search}`} />
+                    <LocationKeyedSearch />
                 </div>
             </div>
         </header>

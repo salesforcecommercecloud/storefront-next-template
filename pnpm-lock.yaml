@@ -410,7 +410,7 @@ importers:
         version: 7.12.0(express@5.1.0)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)
       '@salesforce/b2c-tooling-sdk':
         specifier: ^1.0.0
-        version: 1.3.2(@oclif/core@4.10.5)(typescript@5.9.3)
+        version: 1.4.0(@oclif/core@4.10.5)(typescript@5.9.3)
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
@@ -3305,8 +3305,8 @@ packages:
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
 
-  '@salesforce/b2c-tooling-sdk@1.3.2':
-    resolution: {integrity: sha512-854yBblB2Ipd5Fivlas2vH3ik2Ws7hFigx/WB5nZYrok9VlxsgKZSx7KUmZWVNIP2grvX73Cd0Usj1RKnXXnTw==}
+  '@salesforce/b2c-tooling-sdk@1.4.0':
+    resolution: {integrity: sha512-RaKdFdhUoqzG86GhZFvz+EHgmEGbuvJrSDXwnRtBqM49hSGpiN3218IGu9afxrX+rdwIBxYj0hxiPekEkN8E5Q==}
     engines: {node: '>=22.16.0'}
     peerDependencies:
       '@oclif/core': ^4
@@ -12635,7 +12635,7 @@ snapshots:
 
   '@rtsao/scc@1.1.0': {}
 
-  '@salesforce/b2c-tooling-sdk@1.3.2(@oclif/core@4.10.5)(typescript@5.9.3)':
+  '@salesforce/b2c-tooling-sdk@1.4.0(@oclif/core@4.10.5)(typescript@5.9.3)':
     dependencies:
       '@vscode/debugadapter': 1.68.0
       applicationinsights: 2.9.8

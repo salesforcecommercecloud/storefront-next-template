@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactNode, Suspense, useEffect, useState, cloneElement, isValidElement } from 'react';
+import { cloneElement, isValidElement, type ReactNode, Suspense, useEffect, useMemo, useRef } from 'react';
 import { Await } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import CategoryNavigationMenu from './impl';
+import { SubCategoryContext, createSubCategoryStore } from './context';
 
 export type { CategoryNavigationMenuListCtx, CategoryNavigationMenuListItemCtx } from './impl';
 
@@ -56,48 +57,59 @@ function WithCategoryNavigationMenuView({
 }: Omit<WithCategoryNavigationMenuProps, 'resolve' | 'fallback' | 'errorElement'> & {
     root?: ShopperProducts.schemas['Category'];
 }) {
-    const [rootCategories, setRootCategories] = useState(
-        (rootCategory?.categories ?? []).filter((c: ShopperProducts.schemas['Category']) => filterItem(c, itemsFilter))
+    // Stable root categories — never updated, so the root-level items keep their references
+    const rootCategories = useMemo(
+        () =>
+            (rootCategory?.categories ?? []).filter((c: ShopperProducts.schemas['Category']) =>
+                filterItem(c, itemsFilter)
+            ),
+        [rootCategory, itemsFilter]
     );
 
-    useEffect(() => {
-        // Once the subcategories promise resolves, update the root categories
-        void subCategoriesPromise?.then((subCategories: ShopperProducts.schemas['Category'][]) => {
-            const subCategoriesMap = subCategories.reduce(
-                (
-                    acc: Map<string, ShopperProducts.schemas['Category']>,
-                    category: ShopperProducts.schemas['Category']
-                ) =>
-                    acc.set(category.id, {
-                        ...category,
-                        categories: category.categories?.filter((c: ShopperProducts.schemas['Category']) =>
-                            filterItem(c, itemsFilter)
-                        ),
-                    }),
-                new Map<string, ShopperProducts.schemas['Category']>()
-            );
+    // Stable store instance — the reference never changes, so the context provider never triggers re-renders.
+    // Subscribers (via `useSyncExternalStore`) are notified on update.
+    const storeRef = useRef<ReturnType<typeof createSubCategoryStore> | null>(null);
+    if (!storeRef.current) {
+        storeRef.current = createSubCategoryStore();
+    }
 
-            setRootCategories(
-                rootCategories.map(
-                    (category: ShopperProducts.schemas['Category']) => subCategoriesMap.get(category.id) ?? category
+    useEffect(() => {
+        void subCategoriesPromise?.then((subCategories: ShopperProducts.schemas['Category'][]) => {
+            storeRef.current?.update(
+                new Map(
+                    subCategories.map((category: ShopperProducts.schemas['Category']) => [
+                        category.id,
+                        {
+                            ...category,
+                            categories: category.categories?.filter((c: ShopperProducts.schemas['Category']) =>
+                                filterItem(c, itemsFilter)
+                            ),
+                        },
+                    ])
                 )
             );
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [subCategoriesPromise]);
 
-    // Clone the child element and inject the `categories` prop
-    if (isValidElement<CategoryNavigationMenuChildProps>(children)) {
-        return cloneElement(children, { categories: rootCategories });
+    function renderChildren() {
+        // Clone the child element and inject the `categories` prop
+        if (isValidElement<CategoryNavigationMenuChildProps>(children)) {
+            return cloneElement(children, { categories: rootCategories });
+        }
+
+        // If `children` is a function, call it with the `categories`
+        if (typeof children === 'function') {
+            return (children as (props: CategoryNavigationMenuChildProps) => ReactNode)({
+                categories: rootCategories,
+            });
+        }
+
+        // If children is not a valid element or function, return as-is
+        return children;
     }
 
-    // If `children` is a function, call it with the `categories`
-    if (typeof children === 'function') {
-        return (children as (props: CategoryNavigationMenuChildProps) => ReactNode)({ categories: rootCategories });
-    }
-
-    // If children is not a valid element or function, return as-is
-    return children;
+    return <SubCategoryContext value={storeRef.current}>{renderChildren()}</SubCategoryContext>;
 }
 
 /**
