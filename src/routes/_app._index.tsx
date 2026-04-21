@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type LoaderFunctionArgs } from 'react-router';
+import { type LoaderFunctionArgs, redirect } from 'react-router';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCarouselProducts } from '@/components/product-carousel/loaders';
 import { fetchCategories } from '@/lib/api/categories';
-import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
+import { siteContext, resolvePrefix, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { Region } from '@/components/region';
 import PopularCategories from '@/components/home/popular-categories';
 import ContentCard from '@/components/content-card';
@@ -77,8 +77,20 @@ export function loader(args: LoaderFunctionArgs): HomePageData {
     const logger = getLogger(args.context);
     logger.debug('HomePage: loader starting');
 
-    const currency = (args.context.get(siteContext) as SiteContext).currency;
+    const config = getConfig<AppConfig>(args.context);
     const requestUrl = new URL(args.request.url);
+
+    // Redirect bare "/" to the default site/locale prefixed homepage
+    if (requestUrl.pathname === '/' && config.url?.prefix && config.url.prefix !== '/') {
+        const siteRef = config.siteAliasMap?.[config.defaultSiteId] ?? config.defaultSiteId;
+        const defaultSite = config.commerce.sites.find((s) => s.id === config.defaultSiteId);
+        const defaultLocale = defaultSite?.defaultLocale ?? config.i18n.fallbackLng;
+        const localeRef = config.localeAliasMap?.[defaultLocale] ?? defaultLocale;
+        const prefixedPath = resolvePrefix(config.url.prefix, { siteId: siteRef, localeId: localeRef });
+        throw redirect(`${prefixedPath}/`);
+    }
+
+    const currency = (args.context.get(siteContext) as SiteContext).currency;
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
 
     return {
@@ -87,7 +99,7 @@ export function loader(args: LoaderFunctionArgs): HomePageData {
         }),
         searchResult: fetchCarouselProducts(args.context, {
             categoryId: 'root',
-            limit: getConfig<AppConfig>(args.context).pages.home.featuredProductsCount,
+            limit: config.pages.home.featuredProductsCount,
             currency: currency ?? undefined,
         }),
         categories: fetchCategories(args.context, 'root', 1),
