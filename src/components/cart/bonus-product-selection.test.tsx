@@ -451,8 +451,7 @@ describe('BonusProductSelection', () => {
             ]);
         });
 
-        test('shows success toast after successful direct add', async () => {
-            const { t } = getTranslation();
+        test('does not show toast after successful direct add', async () => {
             mockRequiresVariantSelection.mockReturnValue(false);
             // Set up fetcher with success state before render
             mockFetcher.state = 'idle';
@@ -462,7 +461,7 @@ describe('BonusProductSelection', () => {
             renderWithRouter(<BonusProductSelection {...props} />);
 
             await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalledWith(t('product:bonusProducts.addedToCart'), 'success');
+                expect(mockAddToast).not.toHaveBeenCalled();
             });
         });
 

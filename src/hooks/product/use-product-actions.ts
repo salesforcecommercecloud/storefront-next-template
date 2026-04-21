@@ -317,9 +317,8 @@ export function useProductActions({
             updateBasket(basketData);
 
             setIsAddingToOrUpdatingCart(false);
-            // Only show toast and open mini cart for add to cart action, not edit cart
+            // Only open mini cart for add to cart action, not edit cart
             if (!itemId) {
-                addToast(t('product:addedToCart', { productName: product.name || 'product' }), 'success');
                 setMiniCartOpen(true);
             }
         } else if (cartFetcher.data?.success === false) {
@@ -343,7 +342,6 @@ export function useProductActions({
             const basketData = multipleItemsFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
             updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
-            addToast(t('product:addedSetToCart'), 'success');
             setMiniCartOpen(true);
         } else if (multipleItemsFetcher.data?.success === false) {
             addToast(t('product:failedToAddItemsToCart', { error: multipleItemsFetcher.data.error }), 'error');
@@ -362,7 +360,6 @@ export function useProductActions({
             const basketData = bundleFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
             updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
-            addToast(t('product:addedBundleToCart'), 'success');
             setMiniCartOpen(true);
         } else if (bundleFetcher.data?.success === false) {
             addToast(t('product:failedToAddBundleToCart', { error: bundleFetcher.data.error }), 'error');

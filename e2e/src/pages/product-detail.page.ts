@@ -64,10 +64,8 @@ class ProductDetailPage {
             'button[data-testid*="add-to-cart"], button:has-text("Add to Cart"), button:has-text("Add to Bag")'
         ).as('Add to Cart Button'),
 
-        // Success message
-        addedToCartMessage: locate(
-            '[data-testid*="success"], [class*="success"], :has-text("Added to cart"), :has-text("Added to bag")'
-        ).as('Added to Cart Message'),
+        // Mini cart drawer (opens when item is successfully added to cart)
+        miniCartDrawer: locate('[data-slot="sheet-content"][data-state="open"]').as('Mini Cart Drawer'),
 
         // Out of stock message
         outOfStockMessage: locate(
@@ -76,8 +74,6 @@ class ProductDetailPage {
 
         // Error toast shown when add-to-cart fails (e.g. out of stock) - use for OOS detection after clicking Add to Cart
         addToCartErrorToast: locate('[data-sonner-toast][data-type="error"]').as('Add to Cart Error Toast'),
-        // Success toast shown when add-to-cart succeeds (template uses addToast(..., 'success'))
-        addToCartSuccessToast: locate('[data-sonner-toast][data-type="success"]').as('Add to Cart Success Toast'),
         // Wishlist toast: success (item added) or info/no-type (item already in wishlist)
         wishlistToast: locate('[data-sonner-toast][data-type="success"], [data-sonner-toast]:not([data-type])').as(
             'Wishlist Toast'
@@ -261,15 +257,17 @@ class ProductDetailPage {
 
     /**
      * Wait for add-to-cart outcome after clicking Add to Cart.
-     * Detects success (added to cart message) or error toast (e.g. out of stock / failed to add).
+     * Detects success (mini cart drawer opens) or error toast (e.g. out of stock / failed to add).
      * @param timeoutSeconds - How long to wait for outcome
-     * @returns 'success' if added to cart, 'error' if error toast appeared (e.g. OOS) or timeout
+     * @returns 'success' if added to cart (mini cart opened), 'error' if error toast appeared (e.g. OOS) or timeout
      */
     async waitForAddToCartOutcome(timeoutSeconds: number = 5): Promise<'success' | 'error'> {
         try {
             await (I.usePlaywrightTo('wait for add-to-cart outcome', async ({ page }) => {
+                // Wait for either mini cart drawer to open (success) or error toast (failure)
+                // The sheet content has data-state="open" when visible
                 const successOrError = page.locator(
-                    '[data-sonner-toast][data-type="success"], [data-sonner-toast][data-type="error"]'
+                    '[data-slot="sheet-content"][data-state="open"], [data-sonner-toast][data-type="error"]'
                 );
                 await successOrError.first().waitFor({ state: 'visible', timeout: timeoutSeconds * 1000 });
             }) as unknown as Promise<void>);
@@ -281,10 +279,10 @@ class ProductDetailPage {
     }
 
     /**
-     * Validate product was successfully added to cart
+     * Validate product was successfully added to cart (mini cart drawer opened)
      */
     validateAddedToCart(): void {
-        I.seeElement(this.locators.addedToCartMessage);
+        I.seeElement(this.locators.miniCartDrawer);
     }
 
     /**

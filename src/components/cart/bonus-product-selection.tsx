@@ -134,9 +134,7 @@ export default function BonusProductSelection({
             if (processedDataRef.current !== addToCartFetcher.data) {
                 processedDataRef.current = addToCartFetcher.data;
 
-                if (addToCartFetcher.data.success) {
-                    addToast(t('product:bonusProducts.addedToCart'), 'success');
-                } else {
+                if (!addToCartFetcher.data.success) {
                     addToast(
                         t('product:bonusProducts.failedToAdd', {
                             error: addToCartFetcher.data.error || t('product:unknownError'),
