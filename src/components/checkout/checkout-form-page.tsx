@@ -393,9 +393,9 @@ export default function CheckoutFormPage({
             paymentData && (!basketAlreadyHasPayment || doesPaymentSelectionDiffer(paymentData, cart));
 
         if (needsPaymentSync) {
-            // For new card entry, validate fields client-side before submitting so the user sees
-            // inline errors (empty card number, missing CVV, etc.)
-            if (!paymentData.useSavedPaymentMethod) {
+            // Validate client-side before submitting so the user sees inline errors.
+            // Runs for new card entry (card fields) and for different billing address (billing fields).
+            if (!paymentData.useSavedPaymentMethod || paymentData.useDifferentBilling) {
                 const schema = createPaymentSchema(t);
                 const result = schema.safeParse(paymentData);
                 if (!result.success) {

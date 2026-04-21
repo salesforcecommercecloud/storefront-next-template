@@ -158,7 +158,7 @@ describe('Payment Integration Tests', () => {
             paymentInstruments: [],
         });
 
-        test('shows saved address dropdown when checkbox is checked and addresses exist', async () => {
+        test('shows saved address dropdown with first address auto-selected when checkbox is checked', async () => {
             const user = userEvent.setup();
             useCustomerProfile.mockReturnValue(createProfileWithAddresses(2));
             render(<Payment {...createDefaultProps()} />);
@@ -167,7 +167,7 @@ describe('Payment Integration Tests', () => {
             await user.click(checkbox);
 
             await waitFor(() => {
-                expect(screen.getByText(/select an address/i)).toBeInTheDocument();
+                expect(screen.getByText(/First1 Last1, 100 Test St, City1, MA, 01000/)).toBeInTheDocument();
             });
         });
 
@@ -189,7 +189,7 @@ describe('Payment Integration Tests', () => {
             expect(screen.queryByText(/select an address/i)).not.toBeInTheDocument();
         });
 
-        test('populates billing fields when a saved address is selected', async () => {
+        test('populates billing fields when a different saved address is selected', async () => {
             const user = userEvent.setup();
             useCustomerProfile.mockReturnValue(createProfileWithAddresses(2));
             render(<Payment {...createDefaultProps()} />);
@@ -197,14 +197,15 @@ describe('Payment Integration Tests', () => {
             const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
             await user.click(checkbox);
 
-            const trigger = await screen.findByText(/select an address/i);
+            // First address is auto-selected; open dropdown and pick the second one
+            const trigger = await screen.findByText(/First1 Last1, 100 Test St, City1, MA, 01000/);
             await user.click(trigger);
 
-            const option = await screen.findByText(/First1 Last1, 100 Test St, City1, MA, 01000/);
+            const option = await screen.findByText(/First2 Last2, 101 Test St, City2, MA, 01001/);
             await user.click(option);
 
             await waitFor(() => {
-                expect(screen.getByText(/First1 Last1, 100 Test St, City1, MA, 01000/)).toBeInTheDocument();
+                expect(screen.getByText(/First2 Last2, 101 Test St, City2, MA, 01001/)).toBeInTheDocument();
             });
         });
 
@@ -216,7 +217,8 @@ describe('Payment Integration Tests', () => {
             const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
             await user.click(checkbox);
 
-            const trigger = await screen.findByText(/select an address/i);
+            // First address is auto-selected; open dropdown and pick "Add new address"
+            const trigger = await screen.findByText(/First1 Last1, 100 Test St, City1, MA, 01000/);
             await user.click(trigger);
 
             const addNew = await screen.findByText(/\+ add new address/i);
@@ -235,13 +237,9 @@ describe('Payment Integration Tests', () => {
             const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
             await user.click(checkbox);
 
-            const trigger = await screen.findByText(/select an address/i);
+            // First address is auto-selected; open dropdown and pick "Add new address"
+            const trigger = await screen.findByText(/First1 Last1/);
             await user.click(trigger);
-            const option = await screen.findByText(/First1 Last1/);
-            await user.click(option);
-
-            const updatedTrigger = await screen.findByText(/First1 Last1/);
-            await user.click(updatedTrigger);
             const addNew = await screen.findByText(/\+ add new address/i);
             await user.click(addNew);
 
@@ -259,16 +257,16 @@ describe('Payment Integration Tests', () => {
             const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
             await user.click(checkbox);
             await waitFor(() => {
-                expect(screen.getByText(/select an address/i)).toBeInTheDocument();
+                expect(screen.getByText(/First1 Last1, 100 Test St, City1, MA, 01000/)).toBeInTheDocument();
             });
 
             await user.click(checkbox);
             await waitFor(() => {
-                expect(screen.queryByText(/select an address/i)).not.toBeInTheDocument();
+                expect(screen.queryByText(/First1 Last1, 100 Test St, City1, MA, 01000/)).not.toBeInTheDocument();
             });
         });
 
-        test('shows check icon next to selected address in dropdown', async () => {
+        test('shows check icon next to auto-selected address in dropdown', async () => {
             const user = userEvent.setup();
             useCustomerProfile.mockReturnValue(createProfileWithAddresses(2));
             render(<Payment {...createDefaultProps()} />);
@@ -276,13 +274,9 @@ describe('Payment Integration Tests', () => {
             const checkbox = screen.getByRole('checkbox', { name: /different billing address/i });
             await user.click(checkbox);
 
-            const trigger = await screen.findByText(/select an address/i);
+            // First address is auto-selected; open dropdown to verify check icon
+            const trigger = await screen.findByText(/First1 Last1/);
             await user.click(trigger);
-            const option = await screen.findByText(/First1 Last1, 100 Test St, City1, MA, 01000/);
-            await user.click(option);
-
-            const updatedTrigger = await screen.findByText(/First1 Last1/);
-            await user.click(updatedTrigger);
 
             await waitFor(() => {
                 const buttons = screen.getAllByRole('button');

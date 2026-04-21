@@ -1020,13 +1020,26 @@ class CheckoutPage {
     async areBillingAddressFieldsVisible(): Promise<boolean> {
         const fieldsVisible = (await I.grabNumberOfVisibleElements(this.locators.billingFirstNameInput)) > 0;
         if (fieldsVisible) return true;
+        // Check for the billing address dropdown (may show "Select an address" or a pre-selected address)
         const dropdownVisible = await (I.usePlaywrightTo('check billing dropdown', async ({ page }) => {
-            const dropdown = page.locator(
-                '[data-testid="sf-toggle-card-payment-content"] button:has-text("Select an address")'
-            );
-            return await dropdown.isVisible();
+            const paymentContent = page.locator('[data-testid="sf-toggle-card-payment-content"]');
+            const dropdown = paymentContent.locator('button').filter({
+                has: page.locator('svg.lucide-chevron-down, svg[class*="chevron"]'),
+            });
+            return await dropdown
+                .first()
+                .isVisible()
+                .catch(() => false);
         }) as unknown as Promise<boolean>);
         return dropdownVisible;
+    }
+
+    /**
+     * Check if the billing address form inputs are visible (not the dropdown, but the actual form fields).
+     * Returns true only when the address form is rendered (e.g. when "Add new address" is selected).
+     */
+    async isBillingAddressFormVisible(): Promise<boolean> {
+        return (await I.grabNumberOfVisibleElements(this.locators.billingFirstNameInput)) > 0;
     }
 
     /**
@@ -1118,9 +1131,9 @@ class CheckoutPage {
     private async selectNewBillingAddressFromDropdown(): Promise<void> {
         await (I.usePlaywrightTo('select new billing address from dropdown', async ({ page }) => {
             const paymentContent = page.locator('[data-testid="sf-toggle-card-payment-content"]');
-            const dropdownTrigger = paymentContent.locator(
-                'button:has-text("Select an address"), button:has-text("Add new address")'
-            );
+            const dropdownTrigger = paymentContent.locator('button').filter({
+                has: page.locator('svg.lucide-chevron-down'),
+            });
             await dropdownTrigger.first().waitFor({ state: 'visible', timeout: 10_000 });
             await dropdownTrigger.first().click();
 
@@ -1131,6 +1144,25 @@ class CheckoutPage {
     }
 
     /**
+     * Get the text currently shown in the billing address dropdown trigger.
+     * Returns the displayed text (e.g. a formatted address) or null if no dropdown is visible.
+     */
+    async getBillingDropdownSelectedText(): Promise<string | null> {
+        return (await I.usePlaywrightTo('get billing dropdown selected text', async ({ page }) => {
+            const paymentContent = page.locator('[data-testid="sf-toggle-card-payment-content"]');
+            const trigger = paymentContent.locator('button').filter({
+                has: page.locator('svg.lucide-chevron-down'),
+            });
+            const isVisible = await trigger
+                .first()
+                .isVisible()
+                .catch(() => false);
+            if (!isVisible) return null;
+            return (await trigger.first().textContent())?.trim() ?? null;
+        })) as unknown as Promise<string | null>;
+    }
+
+    /**
      * Select a saved billing address from the dropdown by index (0-based)
      * @param index - Index of the saved billing address to select (0 = default address)
      */
@@ -1138,9 +1170,10 @@ class CheckoutPage {
         await (I.usePlaywrightTo('select saved billing address from dropdown', async ({ page }) => {
             const paymentContent = page.locator('[data-testid="sf-toggle-card-payment-content"]');
 
-            const dropdownTrigger = paymentContent.locator(
-                'button:has-text("Select an address"), button:has-text("Add new address")'
-            );
+            // Dropdown trigger shows either a pre-selected address or "Select an address"
+            const dropdownTrigger = paymentContent.locator('button').filter({
+                has: page.locator('svg.lucide-chevron-down'),
+            });
             await dropdownTrigger.first().waitFor({ state: 'visible', timeout: 10_000 });
             await dropdownTrigger.first().click();
 

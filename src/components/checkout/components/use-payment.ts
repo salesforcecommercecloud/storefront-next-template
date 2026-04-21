@@ -287,6 +287,7 @@ export function usePayment({
     );
     const previousUseDifferentBillingRef = useRef<boolean | null>(null);
     const useDifferentBillingWatched = form.watch('useDifferentBilling');
+    const [selectedBillingAddressId, setSelectedBillingAddressId] = useState('');
 
     useEffect(() => {
         if (!showUseDifferentBilling || !shippingAddress || !shippingAddressSyncKey) return;
@@ -308,15 +309,32 @@ export function usePayment({
         }
 
         if (toggledFromSameToDifferent) {
-            form.setValue('billingFirstName', '');
-            form.setValue('billingLastName', '');
-            form.setValue('billingAddress1', '');
-            form.setValue('billingAddress2', '');
-            form.setValue('billingCity', '');
-            form.setValue('billingStateCode', '');
-            form.setValue('billingPostalCode', '');
-            form.setValue('billingCountryCode', 'US');
+            // In multi-ship, saved addresses that differ from the shipping address are available
+            // as billing options. Auto-select the first one so the form populates immediately
+            // instead of showing an empty dropdown with no address form visible.
+            if (billingAddressOptions.length > 0) {
+                const firstOption = billingAddressOptions[0];
+                setSelectedBillingAddressId(firstOption.id);
+                form.setValue('billingFirstName', firstOption.firstName ?? '');
+                form.setValue('billingLastName', firstOption.lastName ?? '');
+                form.setValue('billingAddress1', firstOption.address1 ?? '');
+                form.setValue('billingAddress2', firstOption.address2 ?? '');
+                form.setValue('billingCity', firstOption.city ?? '');
+                form.setValue('billingStateCode', firstOption.stateCode ?? '');
+                form.setValue('billingPostalCode', firstOption.postalCode ?? '');
+                form.setValue('billingCountryCode', firstOption.countryCode ?? 'US');
+            } else {
+                form.setValue('billingFirstName', '');
+                form.setValue('billingLastName', '');
+                form.setValue('billingAddress1', '');
+                form.setValue('billingAddress2', '');
+                form.setValue('billingCity', '');
+                form.setValue('billingStateCode', '');
+                form.setValue('billingPostalCode', '');
+                form.setValue('billingCountryCode', 'US');
+            }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- billingAddressOptions excluded: derived from savedAddresses (unstable ref) and shippingAddress (already covered by shippingAddressSyncKey). Including it causes infinite re-renders. The value is read synchronously when the toggle fires.
     }, [showUseDifferentBilling, shippingAddress, shippingAddressSyncKey, useDifferentBillingWatched, form]);
 
     useEffect(() => {
@@ -419,7 +437,6 @@ export function usePayment({
 
     const useDifferentBilling = form.watch('useDifferentBilling');
 
-    const [selectedBillingAddressId, setSelectedBillingAddressId] = useState('');
     const [billingDropdownOpen, setBillingDropdownOpen] = useState(false);
 
     const setBillingFields = useCallback(
