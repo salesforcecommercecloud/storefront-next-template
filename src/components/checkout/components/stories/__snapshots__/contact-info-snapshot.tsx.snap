@@ -823,7 +823,7 @@ exports[`ContactInfo stories snapshot > WithFormError story renders and matches 
         >
           <div
             aria-live="polite"
-            class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold"
+            class="bg-status-critical-bg border border-status-critical-border text-status-critical-foreground px-4 py-3 rounded text-xl font-bold"
             role="alert"
           >
             Failed to save contact information. Please try again.

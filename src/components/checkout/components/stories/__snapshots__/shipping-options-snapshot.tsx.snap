@@ -797,7 +797,7 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
       >
         <div
           aria-live="polite"
-          class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold"
+          class="bg-status-critical-bg border border-status-critical-border text-status-critical-foreground px-4 py-3 rounded text-sm font-medium"
           role="alert"
         >
           Failed to save shipping method. Please try again.

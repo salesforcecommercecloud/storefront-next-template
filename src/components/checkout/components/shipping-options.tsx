@@ -30,6 +30,7 @@ interface ShippingOptionsProps {
     isLoading: boolean;
     actionData?: CheckoutActionData;
     shippingMethods?: ShopperBasketsV2.schemas['ShippingMethodResult'];
+    validationError?: string | null;
     isCompleted: boolean;
     isEditing: boolean;
     onEdit: () => void;
@@ -40,6 +41,7 @@ export default function ShippingOptions({
     isLoading,
     actionData,
     shippingMethods,
+    validationError,
     isCompleted: _isCompleted,
     isEditing,
     onEdit,
@@ -77,7 +79,12 @@ export default function ShippingOptions({
             isLoading={isLoading}>
             <ToggleCardEdit>
                 <form method="post" className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                    {shippingOptionsError && <CheckoutErrorBanner message={shippingOptionsError} />}
+                    {(shippingOptionsError || validationError) && (
+                        <CheckoutErrorBanner
+                            message={shippingOptionsError || validationError}
+                            className="text-sm font-medium"
+                        />
+                    )}
 
                     <div className="flex flex-col gap-4">
                         {availableShippingMethods.length > 0 ? (

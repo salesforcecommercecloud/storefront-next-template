@@ -17,7 +17,7 @@ import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
 const CHECKOUT_ERROR_BANNER_CLASSES =
-    'bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-xl font-bold' as const;
+    'bg-status-critical-bg border border-status-critical-border text-status-critical-foreground px-4 py-3 rounded text-xl font-bold' as const;
 
 export interface CheckoutErrorBannerProps {
     message: React.ReactNode;

@@ -197,6 +197,7 @@ export default function CheckoutFormPage({
     showToast,
 }: CheckoutFormPageProps) {
     const { t, i18n } = useTranslation('checkout');
+    const { t: tErrors } = useTranslation('errors');
     const { currency } = useSite();
 
     const cart = useBasket();
@@ -343,15 +344,45 @@ export default function CheckoutFormPage({
 
     const isPlacingOrder = placeOrderFetcher.state === 'submitting';
     const [isPlaceOrderPending, setIsPlaceOrderPending] = useState(false);
+    const [placeOrderClientError, setPlaceOrderClientError] = useState<string | null>(null);
+    const [shippingMethodValidationError, setShippingMethodValidationError] = useState<string | null>(null);
 
     // Form submission handlers - delegated to checkout actions hook
     const handleContactSubmit = submitContactInfo;
     const handleShippingAddressSubmit = submitShippingAddress;
-    const handleShippingOptionsSubmit = submitShippingOptions;
+    const handleShippingOptionsSubmit = (formData: FormData) => {
+        setShippingMethodValidationError(null);
+        submitShippingOptions(formData);
+    };
     const handlePaymentSubmit = submitPayment;
 
     const handlePlaceOrderSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setPlaceOrderClientError(null);
+
+        // Validate that all non-empty shipments have a shipping method selected.
+        // Without this, the request goes through payment sync → server place-order round-trip
+        // before the user sees the error, making the UI appear stuck.
+        if (cart?.shipments && cart?.productItems) {
+            const shipmentItemCounts = new Map<string, number>();
+            for (const item of cart.productItems) {
+                if (item.shipmentId) {
+                    shipmentItemCounts.set(item.shipmentId, (shipmentItemCounts.get(item.shipmentId) || 0) + 1);
+                }
+            }
+            const missingShippingMethod = cart.shipments.some(
+                (shipment) =>
+                    shipment.shipmentId &&
+                    (shipmentItemCounts.get(shipment.shipmentId) || 0) > 0 &&
+                    !shipment.shippingMethod
+            );
+            if (missingShippingMethod) {
+                setShippingMethodValidationError(tErrors('checkout.shippingMethodRequired'));
+                goToStep(STEPS.SHIPPING_OPTIONS);
+                return;
+            }
+        }
+
         const paymentData = paymentSubmissionRef.current.formDataGetter?.();
         const basketAlreadyHasPayment = Boolean(cart?.paymentInstruments?.[0]);
 
@@ -501,6 +532,7 @@ export default function CheckoutFormPage({
             isLoading={isSubmitting('shipping-options')}
             actionData={shippingOptionsFetcher.data}
             shippingMethods={shippingMethodsMap[defaultShipmentId]}
+            validationError={shippingMethodValidationError}
             {...shippingOptionsState}
         />
     );
@@ -694,6 +726,12 @@ export default function CheckoutFormPage({
                                             </UITarget>
                                             <UITarget targetId="checkout.createAccount.after" />
                                         </div>
+                                    )}
+                                    {placeOrderClientError && (
+                                        <CheckoutErrorBanner
+                                            message={placeOrderClientError}
+                                            className="w-full text-sm font-medium"
+                                        />
                                     )}
                                     {placeOrderFetcher.data &&
                                         !placeOrderFetcher.data.success &&
