@@ -17,7 +17,8 @@ import { z } from 'zod';
 import type { TFunction } from 'i18next';
 
 /** Accept any TFunction for schema factories (namespace branding differs by usage) */
-type SchemaTFunction = TFunction | ((key: string) => string);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SchemaTFunction = TFunction<any, any>;
 
 /**
  * Checkout validation schemas using factory functions to prevent i18next race conditions.

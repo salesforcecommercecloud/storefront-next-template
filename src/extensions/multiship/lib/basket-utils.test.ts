@@ -75,7 +75,7 @@ describe('updateBasketWithCustomerInfoFallback', () => {
     let mockBasketResource: { current: ShopperBasketsV2.schemas['Basket'] | null } | undefined;
     const mockContext = {
         get: vi.fn((context) => (context === basketResourceContext ? mockBasketResource : undefined)),
-    } as Readonly<RouterContextProvider>;
+    } as unknown as Readonly<RouterContextProvider>;
 
     beforeEach(() => {
         vi.clearAllMocks();

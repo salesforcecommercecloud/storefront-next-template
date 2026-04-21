@@ -248,7 +248,6 @@ export default function ShippingMultiOptions({
     return (
         <ToggleCard
             id="shipping-multi-options"
-            // @ts-expect-error - ToggleCard title prop type issue, matches pattern used in shipping-options.tsx
             title={stepTitle}
             editing={isEditing}
             onEdit={onEdit}

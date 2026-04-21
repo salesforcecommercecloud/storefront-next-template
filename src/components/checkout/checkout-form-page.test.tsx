@@ -1025,7 +1025,7 @@ describe('CheckoutFormPage', () => {
 
     describe('MyCartWithData component', () => {
         test('handles productMapPromise resolution', async () => {
-            const productMap = { product1: { productId: 'product1', name: 'Test Product' } };
+            const productMap = { product1: { id: 'product1', productId: 'product1', name: 'Test Product' } };
             const productMapPromise = Promise.resolve(productMap);
 
             await renderCheckoutPage({

@@ -213,9 +213,11 @@ export function hasValidPaymentCard(
     }
 
     // For new payment methods, check if any form of masked card number exists
+    const pi = paymentInstrument as Record<string, unknown>;
+    const card = paymentInstrument.paymentCard as Record<string, unknown> | undefined;
     const hasCardNumber = !!(
-        paymentInstrument.maskedCreditCardNumber ||
-        paymentInstrument.paymentCard?.maskedCreditCardNumber ||
+        pi.maskedCreditCardNumber ||
+        card?.maskedCreditCardNumber ||
         paymentInstrument.paymentCard?.maskedNumber
     );
 

@@ -49,7 +49,7 @@ describe('auth.utils', () => {
                     registeredRefreshTokenExpirySeconds: undefined,
                 },
             },
-        } as AppConfig;
+        } as unknown as AppConfig;
     });
 
     describe('getRefreshTokenExpiry', () => {

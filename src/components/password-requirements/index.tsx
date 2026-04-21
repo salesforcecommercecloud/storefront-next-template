@@ -123,7 +123,7 @@ export function PasswordRequirement({ password, className }: PasswordRequirement
                             ) : (
                                 <X className="h-4 w-4 text-muted-foreground" data-testid="x-icon" />
                             )}
-                            <span>{t(requirement.textKey)}</span>
+                            <span>{t(requirement.textKey as never)}</span>
                         </div>
                     );
                 })}

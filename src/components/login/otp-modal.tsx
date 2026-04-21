@@ -32,6 +32,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { useOtpVerification } from '@/hooks/use-otp-verification';
 
 interface OtpModalProps {
@@ -45,7 +46,8 @@ interface OtpModalProps {
     initialError?: string;
 }
 
-const createOtpSchema = (t: (key: string, options?: object) => string, otpLength: number) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createOtpSchema = (t: TFunction<any, any>, otpLength: number) => {
     return z.object({
         otpCode: z
             .string()
@@ -164,7 +166,7 @@ export default function OtpModal({
         else if (fetcher.state === 'idle' && fetcher.data?.success === false && fetcher.data?.error) {
             const rawError = fetcher.data.error;
             const errorMessageKey = getPasswordlessErrorMessageKey(extractErrorMessage(rawError));
-            const userFriendlyError = t(errorMessageKey);
+            const userFriendlyError = String(t(errorMessageKey as never));
             setError(userFriendlyError);
             setIsVerifying(false);
             // Clear OTP inputs so user can retry

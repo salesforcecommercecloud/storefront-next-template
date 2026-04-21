@@ -103,7 +103,8 @@ describe('useVariationAttributes', () => {
             const product = createMockProduct([
                 createMockVariationAttribute('color', 'Color', [{ name: 'Red', value: 'RED' }]),
             ]);
-            product.id = undefined;
+
+            (product as any).id = undefined;
 
             const { result } = renderHook(() => useVariationAttributes({ product }));
 

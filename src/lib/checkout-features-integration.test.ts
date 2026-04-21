@@ -22,7 +22,7 @@ describe('Checkout Features Integration Tests', () => {
     const createMockShippingMethodResult = (
         methods: Array<{ id: string; name: string; price: number }>,
         defaultId?: string
-    ): ShopperBasketsV2.schemas['ShippingMethodResult'] => ({
+    ) => ({
         applicableShippingMethods: methods.map((m) => ({
             id: m.id,
             name: m.name,
@@ -157,7 +157,7 @@ describe('Checkout Features Integration Tests', () => {
 
         describe('Validate with SCAPI Response Structures', () => {
             it('should handle typical SFCC API response', () => {
-                const apiResponse: ShopperBasketsV2.schemas['ShippingMethodResult'] = {
+                const apiResponse = {
                     applicableShippingMethods: [
                         {
                             id: '001',
@@ -177,10 +177,15 @@ describe('Checkout Features Integration Tests', () => {
                         },
                     ],
                     defaultShippingMethodId: '001',
-                };
+                } as unknown as ShopperBasketsV2.schemas['ShippingMethodResult'];
 
                 const result = getDefaultShippingMethod(
-                    apiResponse.applicableShippingMethods,
+                    apiResponse.applicableShippingMethods as {
+                        id: string;
+                        name: string;
+                        price?: number;
+                        description?: string;
+                    }[],
                     undefined,
                     apiResponse.defaultShippingMethodId
                 );

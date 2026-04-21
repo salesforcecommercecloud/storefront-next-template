@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next';
 // Hooks
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 
 // Utils
 import { formatCurrency } from '@/lib/currency';
@@ -68,7 +69,8 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
     const { t: tCart } = useTranslation('cart');
     const { i18n } = useTranslation();
     const { currency } = useSite();
-    const config = useConfig();
+    const config = useConfig<AppConfig>();
+
     const productItems = useMemo(() => {
         return (basket?.productItems || []).map((item, index) => {
             const productData = item.itemId ? productMap[item.itemId] : undefined;

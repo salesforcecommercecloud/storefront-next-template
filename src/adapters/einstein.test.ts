@@ -349,7 +349,7 @@ describe('Einstein Adapter', () => {
             };
             const adapter = createEinsteinAdapter(configWithUnsupported) as EinsteinAdapter;
 
-            await expect(adapter.sendEvent(unsupportedEvent, undefined, defaultConsent)).rejects.toThrow(
+            await expect(adapter.sendEvent(unsupportedEvent as any, undefined, defaultConsent)).rejects.toThrow(
                 'Unsupported event type in Einstein adapter'
             );
             expect(mockSendBeacon).not.toHaveBeenCalled();
@@ -572,7 +572,7 @@ describe('Einstein Adapter', () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
 
             // This should throw because the adapter expects product data for product_view events
-            await expect(adapter.sendEvent(eventWithoutProduct, undefined, defaultConsent)).rejects.toThrow();
+            await expect(adapter.sendEvent(eventWithoutProduct as any, undefined, defaultConsent)).rejects.toThrow();
         });
 
         it('should handle missing cart items gracefully', async () => {
@@ -580,7 +580,7 @@ describe('Einstein Adapter', () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
 
             // This should throw because the adapter expects cartItems for cart_item_add events
-            await expect(adapter.sendEvent(eventWithoutCartItems, undefined, defaultConsent)).rejects.toThrow();
+            await expect(adapter.sendEvent(eventWithoutCartItems as any, undefined, defaultConsent)).rejects.toThrow();
         });
 
         it('should handle missing basket data gracefully', async () => {
@@ -588,7 +588,7 @@ describe('Einstein Adapter', () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
 
             // This should throw because the adapter expects basket for checkout_start events
-            await expect(adapter.sendEvent(eventWithoutBasket, undefined, defaultConsent)).rejects.toThrow();
+            await expect(adapter.sendEvent(eventWithoutBasket as any, undefined, defaultConsent)).rejects.toThrow();
         });
 
         it('should handle products with missing master data', async () => {

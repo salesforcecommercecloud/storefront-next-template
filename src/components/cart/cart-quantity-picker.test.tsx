@@ -333,6 +333,7 @@ describe('CartQuantityPicker', () => {
             vi.mocked(useCartQuantityUpdate).mockReturnValue({
                 quantity: 5,
                 stockValidationError: 'Only 3 left in stock',
+                stockMax: 3,
                 showRemoveConfirmation: false,
                 handleQuantityChange: mockHandleQuantityChange,
                 handleQuantityBlur: mockHandleQuantityBlur,
@@ -352,6 +353,7 @@ describe('CartQuantityPicker', () => {
             vi.mocked(useCartQuantityUpdate).mockReturnValue({
                 quantity: 5,
                 stockValidationError: 'Only 3 left in stock',
+                stockMax: 3,
                 showRemoveConfirmation: false,
                 handleQuantityChange: mockHandleQuantityChange,
                 handleQuantityBlur: mockHandleQuantityBlur,

@@ -537,9 +537,13 @@ describe('useProductActions', () => {
                         { id: 'p2', inventory: { ats: 0, orderable: false } }, // Out of stock
                     ],
                 };
-                const { result } = renderHook(() => useProductActions({ product: setProduct, currentVariant: null }), {
-                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
-                });
+
+                const { result } = renderHook(
+                    () => useProductActions({ product: setProduct as any, currentVariant: null }),
+                    {
+                        wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                    }
+                );
 
                 expect(result.current.isInStock).toBe(false);
             });
@@ -553,9 +557,13 @@ describe('useProductActions', () => {
                         { id: 'p2', inventory: { ats: 3, orderable: true } },
                     ],
                 };
-                const { result } = renderHook(() => useProductActions({ product: setProduct, currentVariant: null }), {
-                    wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
-                });
+
+                const { result } = renderHook(
+                    () => useProductActions({ product: setProduct as any, currentVariant: null }),
+                    {
+                        wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
+                    }
+                );
 
                 expect(result.current.isInStock).toBe(true);
             });
@@ -1360,7 +1368,7 @@ describe('useProductActions', () => {
                 const { result } = renderHook(
                     () =>
                         useProductActions({
-                            product: bundleProductNoId,
+                            product: bundleProductNoId as any,
                             itemId: 'item-bundle',
                             currentVariant: null,
                         }),
@@ -1505,7 +1513,7 @@ describe('useProductActions', () => {
                     inventory: { ats: 10, id: 'inv-1', orderable: true },
                 };
                 const { result } = renderHook(
-                    () => useProductActions({ product: productNoId, itemId: 'item-1', currentVariant: null }),
+                    () => useProductActions({ product: productNoId as any, itemId: 'item-1', currentVariant: null }),
                     {
                         wrapper: ({ children }) => wrapper({ children, basket: mockBasket }),
                     }

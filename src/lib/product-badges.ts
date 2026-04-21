@@ -46,16 +46,16 @@ export const getProductBadges = ({ product, badgeDetails, maxBadges = 3 }: GetPr
     }
 
     // Check custom properties as fallback
-    if (product.customProperties && Array.isArray(product.customProperties)) {
+    const customProperties = product.customProperties as Array<{ id?: string; value?: unknown }> | undefined;
+    if (customProperties && Array.isArray(customProperties)) {
         badgeDetails.forEach((badge) => {
             // Skip if badge already found in representedProduct
             if (activeBadges.find((b) => b.propertyName === badge.propertyName)) {
                 return;
             }
 
-            const customProp = product.customProperties?.find(
-                (prop: { id?: string; value?: unknown }) =>
-                    prop.id === badge.propertyName || prop.id?.toLowerCase() === badge.propertyName.toLowerCase()
+            const customProp = customProperties.find(
+                (prop) => prop.id === badge.propertyName || prop.id?.toLowerCase() === badge.propertyName.toLowerCase()
             );
 
             if (customProp && shouldShowBadge(customProp.value)) {
@@ -65,7 +65,8 @@ export const getProductBadges = ({ product, badgeDetails, maxBadges = 3 }: GetPr
     }
 
     // Check promotions for sale badge (if not already found)
-    if (product.promotions && product.promotions.length > 0) {
+    const promotions = product.promotions as Array<unknown> | undefined;
+    if (promotions && promotions.length > 0) {
         const saleBadge = badgeDetails.find((badge) => badge.propertyName === 'c_isSale');
         if (saleBadge && !activeBadges.find((badge) => badge.propertyName === 'c_isSale')) {
             activeBadges.push(saleBadge);

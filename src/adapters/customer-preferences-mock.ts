@@ -160,7 +160,10 @@ const MOCK_AVAILABLE_PREFERENCES: PreferenceOption[] = [
 
 // In-memory storage for mock data (simulating a database)
 const customerInterestsStore = new Map<string, string[]>();
-const customerPreferencesStore = new Map<string, Record<string, boolean | string | string[]>>();
+const customerPreferencesStore = new Map<
+    string,
+    Record<string, boolean | string | string[] | Record<string, string>>
+>();
 
 // Default preferences for new customers
 const DEFAULT_CUSTOMER_PREFERENCES: Record<string, boolean | string | string[] | Record<string, string>> = {

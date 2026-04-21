@@ -72,7 +72,7 @@ export function loader({ context }: LoaderFunctionArgs): LoaderData {
                                   typeof subCategory.onlineSubCategoriesCount === 'number' &&
                                   subCategory.onlineSubCategoriesCount > 0
                               ) {
-                                  acc.push(fetchCategory(context, subCategory.id, maxDepth));
+                                  acc.push(fetchCategory(context, subCategory.id, maxDepth as 0 | 1 | 2));
                               }
                               return acc;
                           },

@@ -26,7 +26,7 @@ import type { AppConfig } from '@/types/config';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 
-import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
 import { getLogger } from '@/lib/logger.server';
 
 import hero01 from '/images/hero-01.webp';
@@ -61,7 +61,7 @@ import { useTranslation } from 'react-i18next';
 export class HomePageMetadata {}
 
 export type HomePageData = {
-    page: Promise<PageWithComponentData>;
+    page: ReturnType<typeof fetchPageWithComponentData>;
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     categories: Promise<ShopperProducts.schemas['Category'][]>;
     pageUrl: string;

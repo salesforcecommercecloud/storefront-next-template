@@ -228,6 +228,7 @@ export const WithDidYouMean: Story = {
                 {
                     name: 'shoes',
                     link: '/search?q=shoes',
+                    type: 'phrase',
                     exactMatch: false,
                 },
             ],

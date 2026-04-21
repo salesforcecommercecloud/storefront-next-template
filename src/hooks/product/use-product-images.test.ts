@@ -30,7 +30,7 @@ import { mockConfig } from '@/test-utils/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 const wrapper = ({ children }: { children: ReactNode }) =>
-    createElement(ConfigProvider, { config: mockConfig }, children);
+    createElement(ConfigProvider, { config: mockConfig, children } as never);
 
 const createMockProduct = (
     imageGroups?: ShopperProducts.schemas['ImageGroup'][]

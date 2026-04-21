@@ -310,10 +310,10 @@ describe('useWishlist', () => {
     });
 
     test('should handle missing productId gracefully', async () => {
-        const invalidProduct: ShopperSearch.schemas['ProductSearchHit'] = {
+        const invalidProduct = {
             productId: undefined,
             productName: 'Invalid Product',
-        };
+        } as unknown as ShopperSearch.schemas['ProductSearchHit'];
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 

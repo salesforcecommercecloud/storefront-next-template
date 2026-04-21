@@ -50,7 +50,7 @@ function isVertical(category?: ShopperProducts.schemas['Category']): category is
         return true;
     }
     // Only horizontal if explicitly set to "horizontal"
-    return category.c_headerMenuOrientation.toLowerCase() !== 'horizontal';
+    return String(category.c_headerMenuOrientation).toLowerCase() !== 'horizontal';
 }
 
 function CategoryBanner({
@@ -61,7 +61,7 @@ function CategoryBanner({
     const imageSrc = toImageUrl({ src: (category?.c_slotBannerImage as string) ?? '', config });
 
     // Transform any image URLs in the HTML banner to use DIS with WebP optimization
-    const transformedBannerHtml = transformHtmlImageUrls(category.c_headerMenuBanner || '', config);
+    const transformedBannerHtml = transformHtmlImageUrls((category.c_headerMenuBanner as string) || '', config);
 
     return (
         <NavigationMenuLink asChild>

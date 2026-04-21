@@ -796,7 +796,7 @@ export const AtStockLimit: Story = {
     render: () => (
         <MiniCartShell>
             <MiniCartItem
-                product={{ ...mockProduct, quantity: 4, inventory: { ats: 4 } }}
+                product={{ ...mockProduct, quantity: 4, inventory: { id: 'mock-inv', ats: 4 } }}
                 onRemove={action('remove-clicked')}
             />
         </MiniCartShell>

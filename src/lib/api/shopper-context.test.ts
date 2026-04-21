@@ -368,7 +368,7 @@ describe('shopper-context API', () => {
         test('should handle body with null couponCodes', async () => {
             const usid = 'test-usid';
             const body = {
-                couponCodes: null,
+                couponCodes: undefined,
                 sourceCode: 'email',
             };
 

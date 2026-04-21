@@ -378,7 +378,6 @@ export default function ShippingMultiAddress({
         <>
             <ToggleCard
                 id="shipping-multi-address"
-                // @ts-expect-error - ToggleCard title prop type issue
                 title={stepTitle}
                 editing={isEditing}
                 onEdit={onEdit}

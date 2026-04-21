@@ -92,7 +92,7 @@ const renderBanner = (initialPath = '/category/men') => {
 
 const idleNavigation = { state: 'idle' as const, location: undefined };
 
-const pendingNavigation = (currentSearch: string, nextSearch: string) => ({
+const pendingNavigation = (_currentSearch: string, nextSearch: string) => ({
     state: 'loading' as const,
     location: { pathname: '/category/men', search: nextSearch } as Location,
 });

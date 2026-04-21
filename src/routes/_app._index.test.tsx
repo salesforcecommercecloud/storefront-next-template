@@ -28,7 +28,7 @@ import type { AppConfig } from '@/types/config';
 const { t } = getTranslation();
 
 // Mock data
-const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
+const mockSearchResult = {
     hits: [
         {
             productId: 'product-1',
@@ -39,10 +39,6 @@ const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
             inventory: { ats: 10 },
             representedProduct: {
                 id: 'product-1',
-                name: 'Product 1',
-                imageGroups: [],
-                variants: [],
-                type: { master: true },
             },
         },
     ],
@@ -55,7 +51,7 @@ const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
     count: 1,
     offset: 0,
     limit: 10,
-};
+} as unknown as ShopperSearch.schemas['ProductSearchResult'];
 
 const mockCategories: ShopperProducts.schemas['Category'][] = [
     {

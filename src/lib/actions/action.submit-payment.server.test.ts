@@ -105,6 +105,7 @@ describe('action.submit-payment.server', () => {
         } as ReturnType<typeof getTranslation>);
 
         mockGetAuth.mockReturnValue({ customerId: 'cust-1' } as ReturnType<typeof getAuth>);
+
         mockGetCustomerProfileForCheckout.mockResolvedValue({
             paymentInstruments: [
                 {
@@ -117,7 +118,7 @@ describe('action.submit-payment.server', () => {
                     expirationYear: 2028,
                 },
             ],
-        } as ReturnType<Awaited<typeof getCustomerProfileForCheckout>>);
+        } as any);
 
         mockGetBasket.mockResolvedValue({
             current: createBasketWithPayment(),
@@ -142,7 +143,7 @@ describe('action.submit-payment.server', () => {
                     postalCode: '02101',
                     countryCode: 'US',
                 },
-            }) as Awaited<ReturnType<typeof updateBillingAddressForBasket>>
+            } as any) as Awaited<ReturnType<typeof updateBillingAddressForBasket>>
         );
     });
 

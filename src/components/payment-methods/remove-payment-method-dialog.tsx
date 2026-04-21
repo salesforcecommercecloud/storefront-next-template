@@ -43,7 +43,7 @@ export function RemovePaymentMethodDialog({
     paymentMethod,
     onConfirm,
     isLoading = false,
-}: RemovePaymentMethodDialogProps): ReactElement {
+}: RemovePaymentMethodDialogProps): ReactElement | null {
     const { t } = useTranslation('account');
 
     const handleClose = () => {

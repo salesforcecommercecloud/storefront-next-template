@@ -16,6 +16,7 @@
 
 import { createContext, type DataStrategyResult, type MiddlewareFunction } from 'react-router';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger();
@@ -385,7 +386,7 @@ export const performanceTimerContext = createContext<PerformanceTimer | undefine
  * - Server side middleware operations
  */
 export const performanceMetricsMiddlewareServer: MiddlewareFunction<Response> = async ({ request, context }, next) => {
-    const config = context.get(appConfigContext);
+    const config = context.get(appConfigContext) as AppConfig | undefined;
     const enabled = config?.performance?.metrics?.serverPerformanceMetricsEnabled ?? false;
     const serverTimingHeaderEnabled = config?.performance?.metrics?.serverTimingHeaderEnabled ?? false;
 
@@ -451,7 +452,7 @@ export const performanceMetricsMiddlewareClient: MiddlewareFunction<Record<strin
     { context },
     next
 ) => {
-    const config = context.get(appConfigContext);
+    const config = context.get(appConfigContext) as AppConfig | undefined;
     const enabled = config?.performance?.metrics?.clientPerformanceMetricsEnabled ?? false;
 
     // Create performance timer for client-side operations

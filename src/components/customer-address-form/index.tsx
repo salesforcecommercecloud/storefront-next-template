@@ -25,8 +25,9 @@ import { canadianPostalCodeRegex, usPostalCodeRegex } from './constants';
  *
  * @example const schema = createCustomerAddressFormSchema(t);
  */
-// eslint-disable-next-line react-refresh/only-export-components
-export const createCustomerAddressFormSchema = (t: TFunction<['errors', 'account']>) => {
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, react-refresh/only-export-components
+export const createCustomerAddressFormSchema = (t: TFunction<any, any>) => {
     return z
         .object({
             firstName: z

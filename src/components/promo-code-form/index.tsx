@@ -23,8 +23,9 @@ import type { TFunction } from 'i18next';
  *
  * @example const schema = createPromoCodeFormSchema(t);
  */
-// eslint-disable-next-line react-refresh/only-export-components
-export const createPromoCodeFormSchema = (t: TFunction) => {
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, react-refresh/only-export-components
+export const createPromoCodeFormSchema = (t: TFunction<any, any>) => {
     return z.object({
         code: z.string().min(2, {
             message: t('cart:promoCode.validation.minLength'),

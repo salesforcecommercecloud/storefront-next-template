@@ -15,6 +15,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { action } from 'storybook/actions';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
@@ -278,7 +279,9 @@ export const UsingWithCategoryNavigationMenu: Story = {
     args: {},
     render: () => {
         const rootCategoryPromise = Promise.resolve(mockRootCategory);
-        const subCategoriesPromise = Promise.resolve(mockCategoriesList.flatMap((cat) => cat.categories || []));
+        const subCategoriesPromise = Promise.resolve(
+            mockCategoriesList.flatMap((cat: ShopperProducts.schemas['Category']) => cat.categories || [])
+        );
 
         return (
             <WithCategoryNavigationMenu resolve={rootCategoryPromise} defer={subCategoriesPromise}>
