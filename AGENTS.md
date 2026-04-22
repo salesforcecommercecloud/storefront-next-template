@@ -200,7 +200,9 @@ See [docs/README-TESTS.md](./docs/README-TESTS.md) and [.storybook/README-STORYB
 - [docs/README-ESLINT.md](./docs/README-ESLINT.md) - Linting rules and configuration
 - [docs/README-AUTH.md](./docs/README-AUTH.md) - Authentication patterns
 - [docs/README-I18N.md](./docs/README-I18N.md) - Internationalization and localization
-- [docs/README-DATA.md](./docs/README-DATA.md) - Data fetching with adapters
+- [docs/README-DATA.md](./docs/README-DATA.md) - Data fetching: loaders, actions, fetchers, middlewares, cookies/sessions
+- [docs/README-SUSPENSE.md](./docs/README-SUSPENSE.md) - Loading states, Suspense patterns, visual feedback
+- [docs/README-STATE.md](./docs/README-STATE.md) - State management: server state, URL state, optimistic UI, React primitives
 - [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) - Performance optimization
 - [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) - UI and styling (Tailwind, shadcn, design tokens)
 - [docs/README-ADAPTER-PATTERN-GUIDE.md](./docs/README-ADAPTER-PATTERN-GUIDE.md) - Adapter pattern for API integration

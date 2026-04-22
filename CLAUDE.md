@@ -166,6 +166,37 @@ src/
 docs/                       # Documentation
 ```
 
+## Performance & Data Rules
+
+These rules take priority when designing routes, components, and state. Apply them as a checklist for every route module and every component that consumes async data. See [Data Fetching](./docs/README-DATA.md), [Loading States](./docs/README-SUSPENSE.md), and [State Management](./docs/README-STATE.md) for full context.
+
+### Data Loading
+
+1. **Server-load everything.** All initial data must come from server `loader` functions — never `useEffect`, `fetch`, or other client-side fetching for data needed on first render.
+2. **Classify every data field per route.** Critical data (SEO, LCP, CLS, HTTP status) is `await`ed in the loader. Non-critical data is returned as an unresolved Promise. Interaction-driven data is fetched via `useFetcher` on user action.
+3. **Never block the loader on non-critical data.** Return the Promise directly — don't `await` recommendations, reviews, or below-the-fold content.
+4. **Export `shouldRevalidate` on routes with URL-driven filtering.** Prevent redundant loader re-execution when only search params change and the loader already handles them on the next navigation.
+5. **No `clientLoader` or `clientAction`.** Only server `loader` and server `action` exports are permitted in route modules.
+
+### Rendering & Visual Stability
+
+6. **One `<Suspense>` boundary per async operation.** Never place multiple `use()` calls or `<Await>` components inside a single `<Suspense>` boundary — each deferred Promise gets its own boundary and its own skeleton. See [Suspense Boundary Granularity](./docs/README-SUSPENSE.md#suspense-boundary-granularity) for examples and anti-patterns.
+7. **Skeleton screens for known layouts, spinners for indeterminate operations.** If the shape of the resolved content is known, use a skeleton. Spinners are only for global or unknown-layout loading states.
+8. **Above the fold: avoid `fallback={null}` without reserving space.** Rendering nothing and then injecting content causes CLS. If no visual fallback is desired, the container must maintain explicit dimensions (`minHeight`, aspect ratio).
+9. **Below the fold: prefer `fallback={null}` or a simple placeholder.** Users don't perceive layout shift for content they can't see, and complex skeletons add hydration cost without visible benefit.
+
+### Mutations & Interactions
+
+10. **Navigating mutations: `action` + `<Form>`.** Non-navigating mutations: `useFetcher`. Never mix these — the choice determines whether React Router triggers a route transition.
+11. **Prefer optimistic UI when failure is unlikely and reversible.** Use `fetcher.formData` for simple optimistic reads, `useOptimistic` for complex state transformations (e.g., list insertions).
+
+### State Management
+
+12. **URL-worthy state goes in `useSearchParams`, not `useState`.** Filters, pagination, sort order, and modal visibility belong in the URL — they must survive refresh and be shareable.
+13. **Never store derived state in `useState`.** Compute inline or use `useMemo` for expensive derivations. A second source of truth is a bug waiting to happen.
+14. **Split React Contexts by concern.** One context per domain (theme, locale, user) — never a single large `AppContext`. Every value change re-renders all consumers of that context.
+15. **Persistent cross-request state via cookies/sessions, not `localStorage`.** Cookies are SSR-compatible, avoid hydration mismatches, and work before scripts load.
+
 ## Code Conventions
 
 ### Copyright Header
@@ -193,153 +224,12 @@ Enforced by ESLint via `eslint-plugin-header`.
 
 ### Component Patterns
 
-**Lazy Loading for Overlays (Modals, Drawers, Dialogs):**
+#### Lazy Loading for Overlays (Modals, Drawers, Dialogs)
 
-Overlay components that are hidden on initial render **must** use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction:
+Overlay components hidden on initial render **must** use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction. See [Lazy Loading for Overlays](./docs/README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs) for the pattern, anti-patterns, and rationale.
 
-```jsx
-const MyModal = lazy(() => import('@/components/my-modal').then((m) => ({ default: m.MyModal })));
+#### Component Exports
 
-function MyComponent() {
-    const [loaded, setLoaded] = useState(false);
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <Button onClick={() => { setLoaded(true); setOpen(true); }}>Open</Button>
-            {loaded && (
-                <Suspense fallback={null}>
-                    <MyModal open={open} onOpenChange={setOpen} />
-                </Suspense>
-            )}
-        </>
-    );
-}
-```
-
-- `loaded` flips once on first click → controls when the chunk is fetched and the component mounts
-- `open` toggles visibility → re-opening after first load is instant
-- **Anti-pattern:** Importing overlay components synchronously (non-lazy) bundles them into the main chunk, increasing page load size and Total Blocking Time (TBT)
-- **Discouraged:** `<Suspense><LazyComponent /></Suspense>` without a guard — the chunk is separate but still fetched and parsed on mount, adding to TBT during page startup
-
-**Suspense Boundary Granularity — One Boundary per Promise:**
-
-When a component consumes multiple asynchronous data sources (via `<Await>`, React's `use()`, or any other suspending mechanism), each promise **must** be wrapped in its own `<Suspense>` boundary. When multiple promises share a single boundary, resolution of the faster promise re-renders the subtree, only for the still-pending slower promise to suspend the boundary again — tearing down already-rendered content and re-showing the fallback. This causes visible layout thrashing and inflates interactivity metrics like INP.
-
-With separate boundaries each promise resolves independently — fast content streams in and stays visible while slower content continues loading with its own skeleton.
-
-> **References:**
-> - React documentation on Suspense: *"Revealing nested content as it loads"* — each [`<Suspense>`](https://react.dev/reference/react/Suspense) boundary creates an independent loading sequence
-> - React 18 [architecture discussion](https://github.com/reactwg/react-18/discussions/37):
->   - Suspense boundaries define the granularity of the loading UI; content outside a boundary is never affected by suspensions inside it
->   - A boundary acts like a `try/catch` for async — everything inside the boundary is treated as a single loading unit
-
-```jsx
-// ✅ Correct: each Await/use() has its own Suspense boundary
-<div>
-    <Suspense fallback={<BreadcrumbsSkeleton />}>
-        <Await resolve={categoryPromise}>
-            {(category) => <Breadcrumbs category={category} />}
-        </Await>
-    </Suspense>
-
-    <Suspense fallback={<ProductSkeleton />}>
-        <Await resolve={productPromise}>
-            {(product) => <ProductContent product={product} />}
-        </Await>
-    </Suspense>
-</div>
-```
-
-```jsx
-// ✅ Correct: use() wrapper components, each behind its own Suspense
-function ProductWrapper({ promise }: { promise: Promise<Product> }) {
-    const product = use(promise);
-    return <ProductContent product={product} />;
-}
-
-function ReviewsWrapper({ promise }: { promise: Promise<Reviews> }) {
-    const reviews = use(promise);
-    return <ReviewsSection reviews={reviews} />;
-}
-
-<div>
-    <Suspense fallback={<ProductSkeleton />}>
-        <ProductWrapper promise={productPromise} />
-    </Suspense>
-    <Suspense fallback={<ReviewsSkeleton />}>
-        <ReviewsWrapper promise={reviewsPromise} />
-    </Suspense>
-</div>
-```
-
-**Anti-pattern — Multiple promises sharing one boundary (`<Await>`):**
-```jsx
-// ❌ BAD: Both Await children share a single Suspense boundary.
-// When promise1 resolves first, Component1 renders briefly, then
-// promise2 (still pending) suspends the boundary again — tearing
-// down Component1 and showing <ComponentsSkeleton /> a second time.
-<Suspense fallback={<ComponentsSkeleton />}>
-    <div>
-        <Await resolve={promise1}>
-            {(resolved) => <Component1 resolved={resolved} />}
-        </Await>
-        <Await resolve={promise2}>
-            {(resolved) => <Component2 resolved={resolved} />}
-        </Await>
-    </div>
-</Suspense>
-```
-
-**Anti-pattern — Multiple `use()` calls in one component:**
-```jsx
-// ❌ BAD: Both use() calls suspend within the same component,
-// which means they share the nearest parent Suspense boundary.
-// Resolution of one promise triggers a re-render that re-suspends
-// for the other, causing the same fallback thrashing.
-function CombinedView({
-    promise1,
-    promise2,
-}: {
-    promise1: Promise<Component1Data>;
-    promise2: Promise<Component2Data>;
-}) {
-    const data1 = use(promise1);
-    const data2 = use(promise2);
-    return (
-        <>
-            <Component1 resolved={data1} />
-            <Component2 resolved={data2} />
-        </>
-    );
-}
-
-<Suspense fallback={<ComponentsSkeleton />}>
-    <CombinedView promise1={promise1} promise2={promise2} />
-</Suspense>
-```
-
-**Anti-pattern — Nested Await inside one boundary:**
-```jsx
-// ❌ BAD: promise2 cannot even begin to resolve until promise1 is done,
-// creating an artificial waterfall on top of the shared-boundary problem.
-<Suspense fallback={<ComponentsSkeleton />}>
-    <Await resolve={promise1}>
-        {(resolved1) => (
-            <>
-                <Component1 resolved={resolved1} />
-                <Await resolve={promise2}>
-                    {(resolved2) => <Component2 resolved={resolved2} />}
-                </Await>
-            </>
-        )}
-    </Await>
-</Suspense>
-```
-
-- **Exception:** Truly dependent promises (e.g., fetching details after a list) may share a boundary because they represent one logical loading unit
-
-**Component Exports:**
 ```typescript
 // ✅ Prefer default export for components
 export default function MyComponent() {}
@@ -353,6 +243,42 @@ export interface MyComponentProps {}
 - Use design tokens: `bg-foreground`, `text-muted-foreground` (not hard-coded colors)
 - Use `cn()` utility from `@/lib/utils` to merge class names
 - Responsive breakpoints: `sm`, `md`, `lg`, `xl`, `2xl`
+
+#### Site-context-aware navigation — use project wrappers, not React Router originals
+
+This project provides `Link`, `NavLink` (from `@/components/link`) and `useNavigate` (from `@/hooks/use-navigate`) that automatically apply site/locale URL prefixes via `buildUrl`. Always use these instead of the React Router originals:
+
+```typescript
+// ✅ Correct — site-context-aware
+import { Link, NavLink } from '@/components/link';
+import { useNavigate } from '@/hooks/use-navigate';
+
+// ❌ Wrong — bypasses site context, produces unprefixed URLs
+import { Link, NavLink, useNavigate } from 'react-router';
+```
+
+**Type-safe URL construction with `href()`:**
+
+Use React Router's `href()` for type-safe route param interpolation. Combine it with the project's `Link`/`NavLink` wrappers — `href()` gives type-safe params, the wrapper adds the site-context prefix:
+
+```typescript
+import { href } from 'react-router';
+import { Link } from '@/components/link';
+
+// ✅ Type-safe params + automatic site prefix → /global/en-GB/product/123
+<Link to={href('/product/:id', { id: product.id })}>Product</Link>
+
+// ✅ Also works with useNavigate
+import { useNavigate } from '@/hooks/use-navigate';
+const navigate = useNavigate();
+navigate(href('/product/:id', { id: product.id }));
+
+// ❌ Wrong — no type safety for params, typos not caught at compile time
+<Link to={`/product/${product.id}`}>Product</Link>
+```
+
+- `href()` is a pure function — it only interpolates params into the pattern, it does not add site/locale context
+- The site-context prefix is applied by the `Link`/`NavLink`/`useNavigate` wrappers at render time
 
 ### i18n
 ```typescript
@@ -428,7 +354,9 @@ See `src/extensions/README.md` for details.
 - [README.md](./README.md) — Main project documentation
 
 **Architecture & Patterns:**
-- [docs/README-DATA.md](./docs/README-DATA.md) — Data fetching with adapters
+- [docs/README-DATA.md](./docs/README-DATA.md) — Data fetching: loaders, actions, fetchers, middlewares, cookies/sessions
+- [docs/README-SUSPENSE.md](./docs/README-SUSPENSE.md) — Loading states, Suspense patterns, visual feedback
+- [docs/README-STATE.md](./docs/README-STATE.md) — State management: server state, URL state, optimistic UI, React primitives
 - [docs/README-ADAPTER-PATTERN-GUIDE.md](./docs/README-ADAPTER-PATTERN-GUIDE.md) — Adapter implementation guide
 - [docs/README-CUSTOM-APIS.md](./docs/README-CUSTOM-APIS.md) — Custom SCAPI clients
 - [docs/README-CONFIG.md](./docs/README-CONFIG.md) — Configuration system

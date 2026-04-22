@@ -1,302 +1,844 @@
-# Data Retrieval
+# Data Fetching
 
-This project implements a _composable Salesforce Commerce Cloud reference storefront_ in the form of a **server-rendered single-page application** (SPA). That means that only the first direct request to a route is processed and responded to by the server. All subsequent navigations are routed on the client and only trigger requests for data and/or additionally required assets.
+Storefront Next is built on [React Router](https://reactrouter.com/), leveraging its [Framework Mode](https://reactrouter.com/start/modes#framework) to provide a structured foundation for routing and data handling. As such, Storefront Next represents a **server-rendered single-page application** (SPA). This application model means that only the initial navigation request to a route is processed and responded to by the server. All subsequent client-side navigation requests are routed on the client and only trigger requests for data or additionally required assets, or both. Server-side rendering (SSR) ensures fast initial load times while client-side navigation and rendering (CSR) eliminates full page reloads after hydration, combining the strengths of SSR and CSR without their respective tradeoffs.
 
-One key to understanding our server-rendered SPA architecture lies in recognizing what actually constitutes _the server_ within our [composable storefront](https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime) architecture. In traditional Commerce Cloud storefronts, based on SiteGenesis or SFRA, the B2C Commerce platform itself acts as the server. In contrast, composable storefronts are rendered and delivered by the [Managed Runtime](https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/mrt-overview.html) (MRT), with the B2C Commerce platform acting solely as a data source (whereby the data is usually provided using SCAPI).
+Storefront Next uses these data loading components:
 
-## Server-Side API Fan-Out
+- **[Loaders](#loaders):** Server-side functions that fetch data before component rendering.
+- **[Actions](#actions):** Server-side functions that handle data mutations triggered by form submissions or programmatic calls.
+- **[Fetchers](#fetchers):** Client-side functions that enable loading data from or submitting data to routes without causing navigation. Fetchers can call loaders (for reads) or actions (for writes) on any route, making them ideal for in-page interactions.
+- **[Middlewares](#middlewares):** Functions that run in a pipeline before loaders and actions and allow intercepting navigation requests before a route renders.
+- **[Cookies and Sessions](#cookies-and-sessions):** Server-side mechanisms for persisting state across requests, such as user preferences, authentication tokens, and flash messages.
 
-This project is built on **[React Router v7](https://reactrouter.com/)**, leveraging its [framework mode](https://reactrouter.com/start/modes#framework) to provide a structured foundation for routing and data handling. The reason we deliberately use React Router in framework mode lies in its flexibility to implement complex data fetching patterns, such as the potential separation of server/client data flows.
+## Paradigms
+
+### Server-Load Everything
+
+One of the many strengths of React Router lies in its highly flexible mechanisms for controlling and calibrating data retrieval and data flows within an app. While it's technically possible to implement complex, server/client-segregated data flows, we made the deliberate architectural decision for Storefront Next to promote a **server-load everything** paradigm.
 
 > [!IMPORTANT]
-> **However, for our out-of-the-box implementation we made this fundamental architectural decision:** In our proposed architecture, the Managed Runtime is not only used as a simple proxy but as a **data orchestration layer**. Using React Router’s [server data loading](https://reactrouter.com/start/framework/data-loading#server-data-loading) functionality, we are able to **aggregate parallel and sequential SCAPI requests into a single request** to MRT and progressively stream the response to the client. This means that **all (actual) API requests are executed on the server** (i.e., MRT).
+> In our proposed architecture, Managed Runtime (MRT) isn't only used as a simple data proxy, but acts as **_the_ data orchestration layer**. Using React Router's [server data loading](https://reactrouter.com/start/framework/data-loading#server-data-loading) functionality, we're able to aggregate parallel and sequential SCAPI requests into a single request to MRT and progressively stream the response to the client. This ultimately means that all API requests are executed on the server (that is, MRT).
 
-A solid understanding of this architectural decision is essential, as it directly impacts both the structure and the bundling of the application code as well as cross-cutting concerns such as performance, security, and authentication.
+A solid understanding of this paradigm is suggested, as it directly impacts the structure and bundling of the app code, as well as overarching aspects such as performance, authentication, security, and SEO.
+
+### Route-Level Data Fetching
+
+In Storefront Next, we promote route-level data fetching via [loaders](#loaders), as they are the only mechanism that guarantees data is fetched before component rendering on the server.
 
 > [!NOTE]
-> This approach requires trade-offs for subsequent navigations (additional hop through the server, potential Lambda cold starts), but offers a pragmatic balance of various performance characteristics (initial load time, bundle size, network efficiency on weak connections). Additionally, a consistent server-loading approach aligns with React Router's server-side rendering patterns and enables full server-side rendering of subsequent navigations.
+> **Component-level data fetching** (for example, [`useEffect`](https://react.dev/reference/react/useEffect) or direct [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) calls within components) isn't recommended for initial page loads, as data is absent during SSR, resulting in degraded SEO and slower perceived performance. All of these client-side data fetching strategies should only be considered for [interaction-driven data](#interaction-driven-data) scenarios.
 
-## Framework Patterns
+## Data Classification
 
-In its framework mode, React Router not only supports our intended data retrieval flow. It also enables the use of advanced React techniques during server-side rendering, such as data streaming. This allows for fine-grained control over which data must be available at specific points in the markup generation process, and which data can instead be streamed from the server to the client to be seamlessly integrated during/after client-side hydration.
+Another pillar of an effective data fetching strategy is classifying data by its route-level relevance. This strategy requires answering three questions per route.
 
-React Router introduces standardized patterns for loading and managing data:
+1. What data must be available before the route renders? (**_Blocking_** data, critical for SEO, and typically desirable for above-the-fold content.)
+2. What data can be deferred? (**_Streamed_** data, below-the-fold content, but also negotiable for above-the-fold content in case of visually stable content/layouts.)
+3. What data is interaction-driven? (Outside the initial data fetching lifecycle; fetched on user action.)
 
-- **[Loaders](#loaders)** [🔗](https://reactrouter.com/start/framework/data-loading): Functions tied to routes that fetch data before rendering, ensuring views have the required state upfront.
-- **[Deferred Data](#deferred-data)** [🔗](https://reactrouter.com/how-to/suspense): Support for streaming data into components, enabling faster initial rendering with incremental updates.
-- **[Actions](#actions)** [🔗](https://reactrouter.com/start/framework/actions): Handle mutations (e.g., form submissions) and return updated state back into the routing context.
-- **Error Boundaries** [🔗](https://reactrouter.com/how-to/error-boundary): Route-level error handling for failed loaders or actions, isolating failures without breaking the full app.
-- **Revalidation**: Automatic or programmatic re-fetching of route data when navigation or mutations occur.
+### Critical Data
 
-These and other patterns enforce consistency across the codebase, reduce boilerplate, and align data lifecycles tightly with navigation.
+Critical data comprises all information required to produce a complete, semantically correct, and layout-stable initial HTML response. This data includes above-the-fold content that determines [Largest Contentful Paint (LCP)](https://web.dev/articles/lcp), layout-defining attributes such as image dimensions that affect [Cumulative Layout Shift (CLS)](https://web.dev/articles/cls), and all SEO-relevant artifacts such as accurate title, meta description, canonical links, structured data, and correct HTTP status codes (for example, 200, 301, 404), and so on. It also includes any data necessary to render the correct document state for crawlers and social previews. Data is considered critical if its absence delays meaningful paint, changes initial layout, misrepresents document semantics, or produces an incorrect status code.
 
-## Conventions
+### Non-Critical Data
 
-### Loaders
+Non-critical data comprises information that doesn't affect initial render completeness, layout stability, document semantics, or HTTP correctness. It doesn't negatively impact loading metrics like LCP, or the visual stability of the above-the-fold structure, and isn't required for accurate indexing or link previews. This category includes below-the-fold content, related items, recommendations, progressive personalization, analytics payloads, and enrichment UI elements. Such data can be deferred, streamed, or lazy-loaded without compromising performance metrics, crawlability, or document validity. [Learn more about visual stability here](README-SUSPENSE.md).
 
-> [!IMPORTANT]
-> **To enforce an exclusive [server data loading](https://reactrouter.com/start/framework/data-loading#server-data-loading) flow, our project _mandates_ a specific pattern:** every UI route **must only** export a [`loader`](https://reactrouter.com/start/framework/route-module#loader) function.
+### Interaction-Driven Data
 
-Only this absence of any [client data loading](https://reactrouter.com/start/framework/data-loading#client-data-loading) patterns (e.g., [`clientLoader`](https://reactrouter.com/start/framework/route-module#clientloader)) guarantees the intended behavior, where both initial requests and subsequent navigations resolve their data on the server.
+Interaction-driven data is fetched in response to user actions, such as clicking a button, submitting a form, or triggering other UI interactions. Unlike route-level data fetching that occurs during navigation, interaction-driven data is requested after the initial page render.
 
----
+> [!NOTE]
+> The React Router framework provides [loaders](#loaders) for data fetching and [actions](#actions) for interaction-driven data mutations, with [middlewares](#middlewares) handling cross-cutting concerns (for example, authentication, logging, caching), and [fetchers](#fetchers) enabling interaction-driven data updates without navigation.
 
-#### Example
+## Loaders
 
-In this simple example, data is loaded in a **not recommended** rendering-blocking / awaited manner.
+Loaders are exported functions in route modules that fetch data before (or during) the component tree renders.
 
-> [!CAUTION]
-> While this pattern makes accessing data easy — since the component ultimately receives the fully resolved data — this render-blocking approach can **severely impact your site’s performance**, especially when dealing with slow or large data requests. React Router provides patterns to better address this, e.g., through [deferred data](#deferred-data) loading, which allow parts of the UI to render before all data is available.
+The return value of a loader function is a record whose key–value pairs represent discrete data fragments that the route consumes. Alternatively, a `Promise` resolving to such a record can be returned. The framework transparently awaits such outer Promise.
 
-<details>
-<summary>❌ Render-blocking / awaited loader</summary>
+The individual values within the returned record can themselves be either concrete values or Promises. In React Router, unresolved Promises inside the returned object are handled natively and can be consumed in combination with React [`<Suspense/>`](https://react.dev/reference/react/Suspense).
 
-```typescript jsx
-import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperCustomers, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { createApiClients } from '@/lib/api-clients';
+This enables fine-grained control over rendering behavior by separating:
 
-type YourPageData = {
-    customer: ShopperCustomers.schemas['Customer'];
-    basket: ShopperBasketsV2.schemas['Basket'];
-};
+- **Critical Data:** values awaited within the loader before returning the object.
+- **Non-Critical Data:** Promises returned as values, resolved later and rendered within `<Suspense/>` boundaries.
 
-export async function loader({ params: { customerId }, context }: LoaderFunctionArgs): YourPageData {
-    const clients = createApiClients(context);
-    return {
-        customer: await clients.shopperCustomers
-            .getCustomer({
-                params: {
-                    path: {
-                        customerId,
-                    },
-                },
-            })
-            .then(({ data }) => data),
-        basket: await clients.shopperBasketsV2
-            .getBasket({
-                params: {
-                    path: { basketId }, // <-- `basketId` is required
-                },
-            })
-            .then(({ data }) => data),
-    };
-}
+### Loader Arguments
 
-export default function YourPage({ loaderData }: { loaderData: YourPageData }) {
-    return (
-        <div>
-            <h1>Customer: {customerData.firstName} {customerData.lastName}</h1>
-            <h2>Basket Items: {basketData.productItems?.length ?? 0}</h2>
-        </div>
-    );
+| Argument  | Type                  | Description                        |
+|-----------|-----------------------|------------------------------------|
+| `request` | Request               | Standard Fetch API Request object. |
+| `params`  | Object                | Route parameters from URL.         |
+| `context` | RouterContextProvider | Shared context from middleware.    |
+
+### Server Loaders
+
+While React Router also provides the concept of client loaders, we recommend the consistent use of server loaders in accordance with our server-load everything paradigm. Server loaders get invoked during server-side rendering (SSR), but also to fetch data during subsequent client-side navigation requests.
+
+Server loaders offer several advantages and enhancements:
+
+- **Security** can be enhanced by keeping API credentials and sensitive business logic server-side, never exposing them to the client bundle. Additionally, server loaders enable direct access to backend services, databases, and internal APIs without CORS concerns or public endpoint exposure.
+- Perceived **performance** can benefit from server-side rendering as Core Web Vitals metrics like LCP (Largest Contentful Paint) and TTI (Time to Interactive) can improve significantly by delivering pre-rendered HTML. CLS (Cumulative Layout Shift) improvements require explicit layout stability measures like reserved space for dynamic content (for example, via skeletons).
+- **Client bundle size** can remain minimal since data fetching code and dependencies don't have to get shipped to the browser if kept out of the client module graph.
+- **SEO** can benefit from fully-rendered HTML with data already present in the initial response, enabling bots to crawl complete content without having to execute JavaScript. Dynamic meta tags (title, description, Open Graph) can be populated with actual data, improving social sharing.
+
+#### Example: Critical Data - Block Initial Rendering
+
+This code example shows how to fetch all data for a specific route before the component for that route renders. It initiates two separate data fetches to external APIs using the standard fetch API. The function returns an object containing the two resolved data portions.
+
+```typescript
+// src/routes/product.$productId.tsx
+import type { LoaderFunctionArgs } from "react-router";
+
+export async function loader({ request, params, context }: LoaderFunctionArgs) {
+  const { productId } = params;
+
+  // Fetch data from two external APIs
+  const productPromise = fetch(`https://api.example.com/products/${productId}`).then((r) =>
+    r.json(),
+  );
+  const recommendationsPromise = fetch(
+    `https://api.example.com/recommendations/${productId}`,
+  ).then((r) => r.json());
+
+  // Parallelize data fetching
+  const [product, recommendations] = await Promise.all([productPromise, recommendationsPromise]);
+
+  return {
+    product,
+    recommendations,
+  };
 }
 ```
 
-</details>
+#### Example: Critical Data - Handling 404 Responses for SEO
 
----
+When a requested resource doesn't exist, returning a proper 404 HTTP status code is critical for SEO. Search engines distinguish between valid pages and missing content to maintain accurate indexes and avoid crawl budget waste.
 
-### Deferred Data
+This code example shows how to throw a 404 response when a product isn't found. The thrown `Response` is caught by the framework and returned with the correct HTTP status code, ensuring search engines and social media crawlers receive proper signals.
 
-One of the framework’s major strengths is its support for **data streaming** combined with [`<Suspense/>`](https://react.dev/reference/react/Suspense) boundaries. This combination enables highly fine-grained control points for rendering behavior and a wide range of performance optimizations.
+```typescript
+// src/routes/product.$productId.tsx
+import type { LoaderFunctionArgs } from "react-router";
 
-By flexibly mixing streamed (incrementally resolved) and awaited data — potentially with differing behavior between server and client even — developers gain access to a broad spectrum of approaches. However, this richness of options also introduces complexity, which can be both a blessing and a challenge.
+export async function loader({ request, params, context }: LoaderFunctionArgs) {
+  try {
+    const { productId } = params;
+    const product = await fetch(`https://api.example.com/products/${productId}`).then((r) =>
+      r.json(),
+    );
+    return {
+      product,
+    };
+  } catch {
+    // Throw 404 Response if product doesn't exist
+    throw new Response("Product not found", { status: 404 });
+  }
+}
+```
 
 > [!TIP]
-> The following examples illustrate possible approaches to handling deferred data. Anticipating the key takeaway: our general recommendation is to **stream as much data as possible from the server to the client** during server-side rendering, and to **consistently rely on non-blocking data retrieval** for all subsequent client-side navigations. Our few examples cannot be exhaustive given the wide variety of real-world requirements. The [official documentation for `<Suspense/>`](https://react.dev/reference/react/Suspense) highlights several other interesting optimization opportunities and is highly recommended reading for every developer.
+> Always throw a `Response` with a non-200 status code rather than returning error data with a 200 status code. Throwing this response ensures search engines correctly understand the page state and prevents indexing of non-existent content. The thrown `Response` will be caught and handled by the closest [`ErrorBoundary`](https://reactrouter.com/how-to/error-boundary) in your route hierarchy, enabling you to render custom 404 pages.
 
----
+#### Example: Non-Critical Data - Streaming and Progressive Loading
 
-#### Example #1
+React Router awaits route loaders before rendering route components. To unblock the loader for non-critical data, simply return a Promise instead of awaiting it in the loader.
 
-The following example builds on the case from before. Instead of fetching the data in a render-blocking manner and passing the resolved values to the component, two promises are passed into the component now. In the case of server-side rendering, this has the additional advantage that data fetching can begin in parallel with the rendering process. As a result, both data and the markup skeleton are streamed to the client simultaneously and can, in the best case, be processed almost at the same time.
+Non-critical data enables **progressive rendering** by prioritizing above-the-fold content while deferring below-the-fold elements. This improves **perceived performance** by showing users meaningful content faster, reducing time-to-interactive. For **SEO**, critical data like product titles and descriptions are immediately available in the initial HTML, while supplementary content like reviews or recommendations can stream in afterward. This pattern optimizes the balance between fast initial page loads and comprehensive content delivery.
 
-<details>
-<summary>⚠️ Streaming data without <code>Suspense</code> boundary</summary>
+This code example defines a loader that demonstrates both data deferral and Promise chaining. The goal is to maximize performance by initiating fast and independent fetches immediately, while organizing dependent fetches to run as soon as their prerequisite data is available.
 
-```typescript jsx
-import { use } from 'react';
-import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperCustomers, ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { createApiClients } from '@/lib/api-clients';
+```typescript
+// src/routes/product.$productId.tsx
+import type { LoaderFunctionArgs } from "react-router";
 
-type YourPageData = {
-    customer: Promise<ShopperCustomers.schemas['Customer']>;
-    basket: Promise<ShopperBasketsV2.schemas['Basket']>;
-};
+export async function loader({ request, params, context }: LoaderFunctionArgs) {
+  const { productId } = params;
 
-export function loader({ params: { customerId }, context }: LoaderFunctionArgs): YourPageData {
-    const clients = createApiClients(context);
-    return {
-        customer: clients.shopperCustomers
-            .getCustomer({
-                params: {
-                    path: {
-                        customerId,
-                    },
-                },
-            })
-            .then(({ data }) => data),
-        basket: clients.shopperBasketsV2
-            .getBasket({
-                params: {
-                    path: { basketId }, // <-- `basketId` is required
-                },
-            })
-            .then(({ data }) => data),
-    };
-}
+  // Needs to be fast as it will both block the initial rendering and
+  // is required for chained data fetching
+  const product = fetch(`https://api.example.com/products/${productId}`).then((r) => r.json());
 
-export default function YourPage({ loaderData }: { loaderData: YourPageData }) {
-    const customerData = use(loaderData.customer);
-    const basketData = use(loaderData.basket);
+  // Dependent data requires chaining
+  const category = product
+    .then((product) => fetch(`https://api.example.com/categories/${product.categoryId}`))
+    .then((r) => r.json());
 
-    return (
-        <div>
-            <h1>Customer: {customerData.firstName} {customerData.lastName}</h1>
-            <h2>Basket Items: {basketData.productItems?.length ?? 0}</h2>
-        </div>
-    );
+  // Independently resolvable data
+  const recommendations = fetch(`https://api.example.com/recommendations/${productId}`).then((r) =>
+    r.json(),
+  );
+
+  return {
+    product: await product, // <-- Critical: Await the Promise
+    category, // <-- Non-Critical: Return the Promise
+    recommendations, // <-- Non-Critical: Return the Promise
+  };
 }
 ```
 
-</details>
+#### Example: Consuming Loader Data
 
----
+Components receive loader data and can either use React 19's [`use()`](https://react.dev/reference/react/use) hook or React Router's [`<Await/>`](https://reactrouter.com/api/components/Await) component to unwrap promises. This code example shows how to consume critical and non-critical data loaded by the data loader from the previous example. The component waits for the critical data to resolve, then renders the main content, for example, product name and description. Secondary data is rendered within `<Suspense>` boundaries, enabling us to influence the loading state of any promises that suspend within it.
 
-The example above uses React 19’s [`use`](https://react.dev/reference/react/use) API to resolve two promises directly in the route component. While this works in React Router, every developer should be aware of the implications of this supposed solution:
+```jsx
+// src/routes/product.$productId.tsx
+import { Suspense } from "react";
+import Category, { CategorySkeleton } from "@/components/category";
+import Recommendations, { RecommendationsSkeleton } from "@/components/recommendations";
 
-1. The component calling `use` suspends while the `Promise` passed to it is pending.
-2. The presence of a [`<Suspense/>`](https://react.dev/reference/react/Suspense) boundary is **required** for `use` to actually work with pending promises. If the component that calls `use` is wrapped in a `<Suspense/>` boundary, a given fallback will be displayed until the `Promise` is resolved. Once the `Promise` is resolved, the fallback is replaced by the rendered components using the data returned by the `use` API.
-3. Likewise, handling any rejections strictly requires the presence of an [error boundary](https://reactrouter.com/how-to/error-boundary). If the `Promise` passed to `use` is rejected, the fallback of the nearest error boundary will be displayed.
-
-In React Router v7’s framework mode, both a default top-level `<Suspense/>` boundary and an error boundary are already provided, but a few additional tweaks are necessary for an actually good user experience:
-
-1. To prevent using `use` within a page from immediately suspending the entire page and thereby blocking its whole display, we introduced a `<Suspense/>` boundary at the root layout’s [`<Outlet/>`](https://reactrouter.com/api/components/Outlet) level. This allows, for example, the header and footer sections of our layout to be rendered independently of the page’s main content, which may be suspended.
-2. But that’s only the first step on the way to a truly meaningful/attractive user experience. We also offer a [`createPage`](https://github.com/SalesforceCommerceCloud/storefront-next/tree/main/packages/template-retail-rsc-app/src/components/create-page) HOC/helper for easily creating a page component, including suspense fallback.
-
----
-
-#### Example #2.1
-
-This slightly modified example compared to Example #1 uses the `createPage` helper mentioned above to create a `<Suspense/>` boundary that is active while the two promises are being resolved and displays a defined skeleton fallback during that time.
-
-<details>
-<summary>⚠️ Streaming data with a single (implicit) <code>Suspense</code> boundary</summary>
-
-```typescript jsx
-// Keep the imports and the loaders from Example #1
-// ...
-import { createPage } from '@/components/create-page';
-
-const YourPageView = ({ loaderData }: { loaderData: YourPageData }) => {
-    const customerData = use(loaderData.customer);
-    const basketData = use(loaderData.basket);
-
-    return (
-        <div>
-            <h1>Customer: {customerData.firstName} {customerData.lastName}</h1>
-            <h2>Basket Items: {basketData.productItems?.length ?? 0}</h2>
-        </div>
-    );
+type ProductPageData = {
+  product: Product;
+  category: Promise<Category>;
+  recommendations: Promise<Recommendation[]>;
 };
 
-export default createPage<YourPageData>({
-    component: YourPageView,
-    fallback: <YourPageSkeleton />,
+export default function ProductPage({
+  loaderData: { product, category, recommendations },
+}: {
+  loaderData: ProductPageData;
+}) {
+  return (
+    <>
+      <h1>{product.name}</h1>
+      <p>{product.description}</p>
+
+      <Suspense fallback={<CategorySkeleton />}>
+        <Category promise={category} />
+      </Suspense>
+
+      <Suspense fallback={<RecommendationsSkeleton />}>
+        <Recommendations promise={recommendations} />
+      </Suspense>
+    </>
+  );
+}
+```
+
+> [!TIP]
+> You can also use the [`useLoaderData`](https://reactrouter.com/api/hooks/useLoaderData) hook to retrieve the data.
+
+```typescript
+import { useLoaderData } from "react-router";
+
+export default function ProductPage() {
+  const loaderData = useLoaderData<ProductPageData>();
+  // ...
+}
+```
+
+For details on how loader data integrates with the broader state model, including `useLoaderData`, `useRouteLoaderData`, and middleware context as state, see [State Management](README-STATE.md). For visual feedback during data loading, see [Loading States](README-SUSPENSE.md).
+
+## Actions
+
+Action functions handle data mutations, such as form submissions, updates, or deletions, the counterpart to loaders. While loaders handle read operations, actions handle writes. A GET/POST/PUT/DELETE distinction is a useful mental model, though React Router routes requests by navigation intent rather than HTTP method alone.
+
+### Action Arguments
+
+| Argument  | Type                  | Description                        |
+|-----------|-----------------------|------------------------------------|
+| `request` | Request               | Standard Fetch API Request object. |
+| `params`  | Object                | Route parameters from URL.         |
+| `context` | RouterContextProvider | Shared context from middleware.    |
+
+### Server Actions
+
+Comparable to server loaders, React Router also provides the concept of client actions. In line with our server-load everything paradigm, we recommend server actions exclusively. Server actions are functions that execute solely on the server, ensuring sensitive mutation logic, such as database writes or authentication checks, never reaches the client.
+
+#### Example: Interaction-Driven Data - Newsletter Signup Action
+
+This example demonstrates interaction-driven form submission with validation and error handling via an action function.
+
+```jsx
+// src/routes/newsletter.tsx
+import { type ActionFunctionArgs, Form, useActionData } from 'react-router';
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const email = formData.get('email') as string;
+
+  // Validate email
+  if (!email || !email.includes('@')) {
+    return Response.json(
+      { error: 'Please enter a valid email address' },
+      { status: 400 },
+    );
+  }
+
+  // Call API/service
+  const response = await fetch('https://api.example.com/newsletter/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    return Response.json(
+      { error: 'Subscription failed. Please try again.' },
+      { status: 400 },
+    );
+  }
+  return Response.json({ success: true });
+}
+
+export default function NewsletterPage() {
+  const actionData = useActionData<typeof action>();
+
+  return (
+    <Form method="post">
+      <input type="email" name="email" required />
+      <button type="submit">Subscribe</button>
+      {actionData?.error && <p className="error">{actionData.error}</p>}
+      {actionData?.success && <p className="success">Subscribed!</p>}
+    </Form>
+  );
+}
+```
+
+For details on how action return values integrate with the state model (optimistic UI, `fetcher.data`, `useActionState`), see [State Management](README-STATE.md).
+
+## Fetchers
+
+Fetchers are React Router's mechanism for triggering loaders or actions outside of navigation, enabling data fetches and mutations without changing the current route or URL. Unlike standard navigation, multiple fetchers can run concurrently and independently, each tracking their own submission state. This makes them well-suited for use cases such as inline form submissions, optimistic UI updates, or background data refreshes.
+
+#### Example: Interaction-Driven Data - Newsletter Signup Fetcher
+
+This example demonstrates the same interaction-driven form processing as the previous example, but this time using a fetcher (via the [`useFetcher`](https://reactrouter.com/api/hooks/useFetcher) hook).
+
+```jsx
+// src/routes/newsletter.tsx
+import type { ActionFunctionArgs, useFetcher } from "react-router";
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const email = formData.get("email") as string;
+
+  // Validate email
+  if (!email || !email.includes("@")) {
+    return Response.json({ error: "Please enter a valid email address" }, { status: 400 });
+  }
+
+  // Call API/service
+  const response = await fetch("https://api.example.com/newsletter/subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    return Response.json({ error: "Subscription failed" }, { status: 400 });
+  }
+  return Response.json({ success: true });
+}
+
+export default function NewsletterPage() {
+  const fetcher = useFetcher();
+
+  return (
+    <fetcher.Form method="post">
+      <input type="email" name="email" required />
+      <button type="submit" disabled={fetcher.state === "submitting"}>
+        {fetcher.state === "submitting" ? "Subscribing..." : "Subscribe"}
+      </button>
+      {fetcher.data?.error && <p className="error">{fetcher.data.error}</p>}
+      {fetcher.data?.success && <p className="success">Subscribed!</p>}
+    </fetcher.Form>
+  );
+}
+```
+
+For details on how `fetcher.state` and `fetcher.data` integrate with the state model, see [State Management](README-STATE.md#component-local-mutations-via-usefetcher). For visual feedback patterns based on `fetcher.state`, see [Loading States](README-SUSPENSE.md#the-usefetcher-hook).
+
+## Resource Routes
+
+Resource routes are specialized routes that don't render UI components but instead function as API endpoints within your app. Unlike traditional UI routes that export both a loader/action and a component, resource routes typically export only loaders, actions, or both. This makes them ideal for encapsulating server-side business logic that can be called from anywhere in your app.
+
+Resource routes bridge the gap between loaders and actions by providing a dedicated location for reusable data operations. They leverage the same loader and action patterns you've learned, but organize them as callable endpoints rather than navigation destinations.
+
+### When to use Resource Routes
+
+Resource routes are particularly useful for:
+
+- **Encapsulated business logic:** Complex operations that benefit from being isolated in dedicated route modules, such as basket management, wishlist operations, or multi-step workflows
+- **Reusable endpoints:** Data operations that multiple components across different routes need to access without duplicating code
+- **Non-navigational mutations:** Actions that modify data but shouldn't trigger navigation, such as adding items to basket, toggling favorites, or updating preferences
+- **Direct SCAPI calls:** Generic API proxy routes (for example, `resource/api/client/*`) that forward requests to SCAPI without requiring SCAPI client libraries on the client
+
+### Defining Resource Routes
+
+Resource routes follow the same patterns as regular routes but typically don't export a default component. They can be prefixed with `resource/` to distinguish them from UI routes.
+
+#### Example: Interaction-Driven Data - Newsletter Signup Action and Fetcher
+
+In this example, we bring together the concepts of actions and fetchers alongside the previous form-processing examples. Using Resource Routes enables a more decoupled component architecture.
+
+```typescript
+// src/routes/resource.newsletter-signup.ts
+import type { ActionFunctionArgs } from "react-router";
+
+// Resource route action - no component exported
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const email = formData.get("email") as string;
+
+  // Validate email
+  if (!email || !email.includes("@")) {
+    return Response.json({ error: "Please enter a valid email address" }, { status: 400 });
+  }
+
+  // Call API/service
+  const response = await fetch("https://api.example.com/newsletter/subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    return Response.json({ error: "Subscription failed" }, { status: 400 });
+  }
+  return Response.json({ success: true });
+}
+```
+
+```jsx
+// src/components/newsletter-form.tsx
+import { useFetcher } from "react-router";
+
+export default function NewsletterForm() {
+  const fetcher = useFetcher();
+
+  return (
+    <fetcher.Form method="post" action="/resource/newsletter-signup">
+      <input type="email" name="email" required />
+      <button type="submit" disabled={fetcher.state === "submitting"}>
+        {fetcher.state === "submitting" ? "Subscribing..." : "Subscribe"}
+      </button>
+      {fetcher.data?.error && <p className="error">{fetcher.data.error}</p>}
+      {fetcher.data?.success && <p className="success">Subscribed!</p>}
+    </fetcher.Form>
+  );
+}
+```
+
+#### Example: Interaction-Driven Data - Basket Mutation Action
+
+This example shows a resource route that encapsulates complex business logic for adding items to a shopping basket.
+
+```typescript
+// src/routes/resource.basket.add.ts
+import type { ActionFunctionArgs } from "react-router";
+import { addToBasket } from "@/lib/basket";
+import { validateInventory } from "@/lib/inventory";
+
+export async function action({ request, context }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const productId = formData.get("productId") as string;
+  const quantity = parseInt(formData.get("quantity") as string, 10);
+
+  // Business logic: validate inventory
+  const available = await validateInventory(productId, quantity);
+  if (!available) {
+    return Response.json({ error: "Insufficient inventory" }, { status: 400 });
+  }
+
+  // Add to basket via API
+  const basket = await addToBasket(context, productId, quantity);
+
+  return Response.json({ basket });
+}
+```
+
+```jsx
+// src/components/add-to-basket-button.tsx
+import { useFetcher } from "react-router";
+
+export default function AddToBasketButton({
+  productId,
+  quantity,
+}: {
+  productId: string;
+  quantity: number;
+}) {
+  const fetcher = useFetcher();
+
+  const handleAddToBasket = () => {
+    fetcher.submit({ productId, quantity }, { method: "post", action: "/resource/basket/add" });
+  };
+
+  return (
+    <button onClick={handleAddToBasket} disabled={fetcher.state !== "idle"}>
+      {fetcher.state === "submitting" ? "Adding..." : "Add to Basket"}
+    </button>
+  );
+}
+```
+
+#### Example: Generic API Proxy Route
+
+For direct API calls without client-side API libraries, you can use a generic proxy route pattern.
+
+```typescript
+// src/routes/resource.api.$.ts
+import type { LoaderFunctionArgs } from "react-router";
+
+// Generic proxy for GET requests to your API
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const apiPath = params["*"]; // Captures the wildcard path
+  const url = new URL(request.url);
+
+  // Forward to API with credentials
+  const response = await fetch(`https://api.example.com/${apiPath}${url.search}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.API_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response;
+}
+
+// Generic proxy for POST/PUT/DELETE requests to your API
+export async function action({ request, params }: LoaderFunctionArgs) {
+  const apiPath = params["*"];
+  const body = await request.text();
+
+  const response = await fetch(`https://api.example.com/${apiPath}`, {
+    method: request.method,
+    headers: {
+      Authorization: `Bearer ${process.env.API_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body,
+  });
+
+  return response;
+}
+```
+
+```jsx
+// src/components/product-reviews.tsx
+import { useEffect } from "react";
+import { useFetcher } from "react-router";
+
+export default function ProductReviews({ productId }: { productId: string }) {
+  const fetcher = useFetcher();
+
+  useEffect(() => {
+    // Load reviews on mount via generic API proxy
+    fetcher.load(`/resource/api/products/${productId}/reviews`);
+  }, [productId]);
+
+  if (fetcher.state === "loading") {
+    return <div>Loading reviews...</div>;
+  }
+  if (!fetcher.data) {
+    return null;
+  }
+  return (
+    <div>
+      {fetcher.data.reviews.map((review) => (
+        <div key={review.id}>{review.text}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Middlewares
+
+React Router middleware consists of functions that intercept navigation requests before a route renders, enabling cross-cutting concerns, such as authentication, redirects, or logging, to be applied declaratively at the routing layer, upstream of loaders and actions.
+
+### Defining Middleware
+
+```typescript
+import type { MiddlewareFunction } from "react-router";
+
+export const middleware: MiddlewareFunction<Response>[] = [
+  loggingMiddleware,
+  appConfigMiddleware,
+  authMiddleware,
+];
+
+export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>>[] = [
+  appConfigMiddlewareClient,
+  authMiddlewareClient,
+  analyticsMiddlewareClient,
+];
+```
+
+### Writing Middleware
+
+This code example defines a logging middleware function named `loggingMiddleware`. It's designed to run before any route loaders or other middleware in the chain, specifically to log request information and measure response times.
+
+```typescript
+// src/middlewares/logging.server.ts
+import type { MiddlewareFunction } from "react-router";
+
+export const loggingMiddleware: MiddlewareFunction<Response> = async ({ request }, next) => {
+  // Before: Log incoming request
+  const startTime = Date.now();
+  const url = new URL(request.url);
+  console.log(`[${request.method}] ${url.pathname}${url.search}`);
+
+  // Execute next middleware / loader
+  const response = await next();
+
+  // After: Log response time and status
+  const duration = Date.now() - startTime;
+  console.log(`[${request.method}] ${url.pathname} - ${response.status} (${duration}ms)`);
+
+  return response;
+};
+```
+
+### Context System
+
+Middlewares can store data in a shared context, which loaders and actions can access. The following code example shows this fundamental pattern. It uses the [`createContext`](https://reactrouter.com/api/utils/createContext) utility provided by React Router to establish a communication channel that bypasses global state or complex dependency injection.
+
+```typescript
+// Creating a context key
+import { createContext, type LoaderFunctionArgs } from "react-router";
+export const requestMetricsContext = createContext<{ startTime: number }>();
+
+// In middleware: set context
+export const loggingMiddleware: MiddlewareFunction<Response> = async ({ request }, next) => {
+  context.set(requestMetricsContext, { startTime: Date.now() });
+  // ...
+};
+
+// In loader: read context
+export function loader({ context }: LoaderFunctionArgs) {
+  const metrics = context.get(requestMetricsContext);
+  // Use metrics data for performance tracking
+}
+```
+
+For details on how middleware context functions as a state concept (request-scoped dependency injection vs. React Context API), see [State Management](README-STATE.md#middleware-context).
+
+## Cookies and Sessions
+
+Cookies and sessions are React Router's built-in mechanism for state that must persist across requests. Examples include user preferences (theme, locale, dismissed banners), shopping cart identifiers, and authentication tokens. Cookies and sessions integrate directly with the `loader`/`action` lifecycle: cookies are read from the incoming `Cookie` header in loaders and actions, and written via `Set-Cookie` response headers. Because cookies travel with every HTTP request, they're available on the server during SSR without client-side synchronization, `localStorage` workarounds, or hydration mismatches.
+
+### Cookies
+
+[`createCookie`](https://reactrouter.com/explanation/sessions-and-cookies#cookies) defines a reusable, typed cookie object with sensible defaults for attributes like `httpOnly`, `sameSite`, and `maxAge`. The cookie is read in a `loader` and written in an `action`.
+
+```typescript
+// src/cookies.server.ts
+import { createCookie } from 'react-router';
+
+export const userPrefs = createCookie('user-prefs', {
+  path: '/',
+  sameSite: 'lax',
+  httpOnly: true,
+  secure: true,
+  maxAge: 604_800, // one week
 });
 ```
 
-</details>
+```jsx
+// src/routes/home.tsx
+import { type ActionFunctionArgs, data, Form, type LoaderFunctionArgs } from 'react-router';
+import { userPrefs } from '@/cookies.server';
 
----
+export async function loader({ request }: LoaderFunctionArgs) {
+  const cookieHeader = request.headers.get('Cookie');
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+  return { showBanner: cookie.showBanner ?? true };
+}
 
-#### Example #2.2
+export async function action({ request }: ActionFunctionArgs) {
+  const cookieHeader = request.headers.get('Cookie');
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+  const formData = await request.formData();
 
-To illustrate what exactly happens in Example #2.1, here’s a virtually identical example using React’s `<Suspense/>` and React Router’s `<Await/>` directly.
+  if (formData.get('bannerVisibility') === 'hidden') {
+    cookie.showBanner = false;
+  }
 
-<details>
-<summary>⚠️ Streaming data with a single (explicit) <code>Suspense</code> boundary</summary>
+  return data(
+    { ok: true },
+    { headers: { 'Set-Cookie': await userPrefs.serialize(cookie) } },
+  );
+}
 
-```typescript jsx
-// Keep the imports and the loaders from Example #1
-// ...
-import { Suspense } from 'react';
-import { Await } from 'react-router';
-
-const YourPageView = ({
-    customer: customerData,
-    basket: basketData,
-}: {
-    customer: ShopperCustomers.schemas['Customer'];
-    basket: ShopperBasketsV2.schemas['Basket'];
-}) => {
-    return (
+export default function Home({ loaderData }: { loaderData: { showBanner: boolean; } }) {
+  return (
+    <div>
+      {loaderData.showBanner && (
         <div>
-            <h1>Customer: {customerData.firstName} {customerData.lastName}</h1>
-            <h2>Basket Items: {basketData.productItems?.length ?? 0}</h2>
+          <p>Don't miss our sale!</p>
+          <Form method="post">
+            <input type="hidden" name="bannerVisibility" value="hidden" />
+            <button type="submit">Dismiss</button>
+          </Form>
         </div>
-    );
+      )}
+      <h1>Welcome!</h1>
+    </div>
+  );
+}
+```
+
+This pattern reads the cookie server-side in the `loader` (no `useEffect`, no SSR mismatch), writes it via the `action` with a `Set-Cookie` header, and triggers automatic revalidation so the UI reflects the new state immediately.
+
+### Sessions
+
+For structured, server-managed state, such as authentication tokens or multi-field user profiles, React Router provides [`createCookieSessionStorage`](https://reactrouter.com/explanation/sessions-and-cookies#sessions). A session storage object wraps cookie handling with `getSession`, `commitSession`, and `destroySession` helpers.
+
+```typescript
+// src/sessions.server.ts
+import { createCookieSessionStorage } from 'react-router';
+
+type SessionData = {
+  userId: string;
 };
 
-export default function YourPage({ loaderData: { customer, basket } }: { loaderData: YourPageData }) {
-    return (
-        <Suspense fallback={<YourPageSkeleton />}>
-            <Await resolve={Promise.all([customer, basket])}>
-                {([c, b]) => <YourPageView customer={c} basket={b} />}
-            </Await>
-        </Suspense>
-    );
+type SessionFlashData = {
+  error: string;
+};
+
+export const { getSession, commitSession, destroySession } =
+  createCookieSessionStorage<SessionData, SessionFlashData>({
+    cookie: {
+      name: '__session',
+      httpOnly: true,
+      maxAge: 60 * 60 * 24, // 1 day
+      path: '/',
+      sameSite: 'lax',
+      secrets: ['s3cret1'],
+      secure: true,
+    },
+  });
+```
+
+```typescript
+// In a loader or action
+import { getSession, commitSession } from '@/sessions.server';
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get('Cookie'));
+  const userId = session.get('userId');
+  // ...
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  const session = await getSession(request.headers.get('Cookie'));
+  session.set('userId', 'abc123');
+
+  return data(
+    { ok: true },
+    { headers: { 'Set-Cookie': await commitSession(session) } },
+  );
 }
 ```
 
-</details>
+Sessions support flash data, values that exist only until the next read. That's useful for one-time messages like "Login successful" or validation errors across redirects.
 
----
+### Middleware Integration
 
-#### Example #3
+Cookies and sessions combine naturally with [middleware context](#context-system). Rather than having every loader parse the session independently, a middleware can resolve the session once and inject it into the context. All downstream loaders and actions then access the pre-parsed session without repeating the boilerplate.
 
-This insight into the inner workings of `createPage` brings us to the most granular and therefore preferable solution:
+```typescript
+// src/contexts.ts
+import { createContext, type Session } from 'react-router';
 
-<details>
-<summary>✅️ Streaming data with multiple <code>Suspense</code> boundaries</summary>
+type SessionData = { userId: string };
+type SessionFlashData = { error: string };
 
-```typescript jsx
-// Keep the imports and the loaders from Example #1
-// ...
-import { Suspense } from 'react';
-import { Await } from 'react-router';
+export const sessionContext = createContext<Session<SessionData, SessionFlashData>>();
+```
 
-export default function YourPage({ loaderData: { customer, basket } }: { loaderData: YourPageData }) {
-    return (
-        <div>
-            <Suspense fallback={<YourPageCustomerSkeleton />}>
-                <Await resolve={customer}>
-                    {(customerData) => <h1>Customer: {customerData.firstName} {customerData.lastName}</h1>}
-                </Await>
-            </Suspense>
-            <Suspense fallback={<YourPageBasketSkeleton />}>
-                <Await resolve={basket}>
-                    {(basketData) => <h2>Basket Items: {basketData.productItems?.length ?? 0}</h2>}
-                </Await>
-            </Suspense>
-        </div>
-    );
+```typescript
+// src/middlewares/session.server.ts
+import type { MiddlewareFunction } from 'react-router';
+import { getSession, commitSession } from '@/sessions.server';
+import { sessionContext } from '@/contexts';
+
+export const sessionMiddleware: MiddlewareFunction<Response> = async (
+  { request, context },
+  next,
+) => {
+  const session = await getSession(request.headers.get('Cookie'));
+  context.set(sessionContext, session);
+
+  const response = await next();
+
+  // Persist any mutations made by loaders or actions
+  response.headers.append('Set-Cookie', await commitSession(session));
+  return response;
+};
+```
+
+```typescript
+// In any loader — no cookie parsing needed
+import { sessionContext } from '@/contexts';
+
+export function loader({ context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext);
+  const userId = session.get('userId');
+  // ...
 }
 ```
 
-</details>
+This eliminates duplicated session-parsing logic across routes and centralizes the `commitSession` call. The middleware owns the session lifecycle, loaders and actions simply read and write session data.
 
----
+For details on how cookies and sessions fit into the broader state model alongside URL state, middleware context, and React primitives, see [State Management](README-STATE.md#persistent-state-via-cookies-and-sessions).
 
-### Actions
+## Revalidation Control
 
-> [!IMPORTANT]
-> **To enforce an exclusive [server data loading](https://reactrouter.com/start/framework/data-loading#server-data-loading) flow, similar to [loaders](#loaders), our project _mandates_ a comparable pattern for actions as well:** only the definition of server [`action`](https://reactrouter.com/start/framework/actions#server-actions) exports/methods is permitted in route modules.
+By default, React Router automatically revalidates (re-executes) loaders after navigation events, form submissions, and actions to ensure data stays fresh. While this default behavior guarantees data consistency, it can lead to unnecessary network requests and degraded performance in scenarios where data hasn't actually changed.
 
-### SCAPI Clients
+A `shouldRevalidate` function exported at the route level gives you fine-grained control over when a route's loader should re-execute, enabling you to optimize performance by preventing redundant data fetching while maintaining data freshness where it matters.
 
-Developers who are already familiar with the predecessor framework [PWA Kit](https://github.com/SalesforceCommerceCloud/pwa-kit) will likely already be familiar with the RESTful [B2C Commerce APIs](https://developer.salesforce.com/docs/commerce/commerce-api) (SCAPI) and how they were accessed through various SDK layers.
+#### Example: Product List with Filtering
 
-For Storefront Next, we explicitly decided against a rather heavyweight additional layer such as `commerce-sdk-react`. Instead, we provide the lightweight SCAPI client from `@salesforce/storefront-next-runtime/scapi`. This client is generated from OpenAPI specifications and provides full type safety for all SCAPI operations.
+This example shows a product listing page where query parameters control filters. The example uses the category, price range, and sort order query parameters. Because the loader already uses these query parameters to fetch filtered results, we don't need to revalidate when only the URL search parameters change. The loader naturally fetches the correct data on the next navigation.
+
+```typescript
+// src/routes/products.tsx
+import type { LoaderFunctionArgs, ShouldRevalidateFunctionArgs } from "react-router";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  const category = url.searchParams.get("category") || "all";
+  const minPrice = url.searchParams.get("minPrice") || "0";
+  const maxPrice = url.searchParams.get("maxPrice") || "1000";
+  const sort = url.searchParams.get("sort") || "relevance";
+
+  // Loader naturally handles query params - no revalidation needed
+  const products = await fetch(
+    `https://api.example.com/products?category=${category}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sort}`,
+  ).then((r) => r.json());
+
+  return { products, filters: { category, minPrice, maxPrice, sort } };
+}
+
+export function shouldRevalidate({
+  currentUrl,
+  nextUrl,
+  actionStatus,
+  actionResult,
+}: ShouldRevalidateFunctionArgs): boolean {
+  const currentPath = new URL(currentUrl).pathname;
+  const nextPath = new URL(nextUrl).pathname;
+
+  // Revalidate if navigating to a different route
+  if (currentPath !== nextPath) {
+    return true;
+  }
+
+  // Revalidate if an action modified product data (e.g., inventory update)
+  if (actionStatus === 200 && actionResult?.productsModified) {
+    return true;
+  }
+
+  // Don't revalidate for query param changes - loader handles them naturally
+  // This prevents redundant fetches when filters change
+  return false;
+}
+```
+
+> [!TIP]
+> When your loader consumes URL search parameters to fetch data, returning `false` for query parameter changes prevents double-fetching. The loader executes with the new parameters on the next navigation anyway.
