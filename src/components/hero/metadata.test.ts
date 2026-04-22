@@ -68,4 +68,8 @@ describe('HeroMetadata - PD default alignment', () => {
     test('buttonStyle defaults to Primary', () => {
         expect(metadata.fields.buttonStyle?.defaultValue).toBe('Primary');
     });
+
+    test('styleOverride has no defaultValue (matches empty JSON metadata)', () => {
+        expect(metadata.fields.styleOverride?.defaultValue).toBeUndefined();
+    });
 });

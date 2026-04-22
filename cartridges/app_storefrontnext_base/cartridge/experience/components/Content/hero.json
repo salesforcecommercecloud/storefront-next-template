@@ -154,6 +154,13 @@
                     "description": "Height of the hero banner",
                     "values": ["sm", "md", "lg", "xl", "full"],
                     "default_value": "full"
+                },
+                {
+                    "id": "styleOverride",
+                    "name": "Style Override",
+                    "type": "text",
+                    "required": false,
+                    "description": "CSS fragment scoped to this hero instance. Use & as the root selector — it maps to this hero element via CSS nesting and is automatically scoped with a unique attribute at render time. Supports any valid CSS including pseudo-classes, descendant selectors, and CSS custom properties (e.g. var(--primary)). Example: & { border-radius: var(--radius-xl); } & [data-slot=\"button\"]:hover { transform: scale(1.05); }"
                 }
             ]
         }

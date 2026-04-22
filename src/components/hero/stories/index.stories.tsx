@@ -96,7 +96,7 @@ export const Default: Story = {
         <Hero
             title="Welcome to Our Store"
             subtitle="Discover amazing products for your everyday needs"
-            imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
+            imageUrl={{ url: '/images/hero-01.webp' }}
             imageAlt="Hero background"
             imageTitle="Welcome banner"
             ctaText="Shop Now"
@@ -130,7 +130,7 @@ export const WithImageTitle: Story = {
         <Hero
             title="Featured Collection"
             subtitle="Hover over the image to see the tooltip"
-            imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
+            imageUrl={{ url: '/images/hero-02.webp' }}
             imageAlt="Featured collection background"
             imageTitle="Spring 2026 Collection"
             ctaText="View Collection"
@@ -158,7 +158,7 @@ export const WithoutSubtitle: Story = {
     render: () => (
         <Hero
             title="Simple Hero"
-            imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
+            imageUrl={{ url: '/images/hero-03.webp' }}
             imageAlt="Hero background"
             ctaText="Explore"
             ctaLink="/explore"
@@ -191,7 +191,7 @@ export const PageDesignerStyling: Story = {
             subtitle="Subtitle with custom color and paragraph scale"
             subtitleTypography="Paragraph"
             subtitleColor="#E2E8F0"
-            imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
+            imageUrl={{ url: '/images/hero-04.webp' }}
             imageAlt="Hero background"
             ctaText="Shop"
             ctaLink="/category/all"
@@ -214,12 +214,78 @@ export const PageDesignerStyling: Story = {
     },
 };
 
+export const StyleOverrideRoundedCornersAndCTAZoom: Story = {
+    render: () => (
+        <Hero
+            title="Brand Experience Override"
+            subtitle="Rounded corners on the root element, zoom on CTA hover — both driven by a CSS fragment in styleOverride"
+            imageUrl={{ url: '/images/hero-02.webp' }}
+            imageAlt="Hero background"
+            ctaText="Shop Now"
+            ctaLink="/category/all"
+            styleOverride={
+                '& { border-radius: 1.5rem; overflow: hidden; }\n& [data-slot="button"] { transition: transform 0.2s ease; }\n& [data-slot="button"]:hover { transform: scale(1.08); }'
+            }
+        />
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'Demonstrates the styleOverride Page Designer property with a CSS nesting fragment. The & selector refers to the hero root element and is scoped at render time via a unique data-hero-id attribute — no class definition in app.css required.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const hero = canvasElement.querySelector('[data-hero-id]');
+        await expect(hero).toBeInTheDocument();
+        const styleTag = canvasElement.querySelector('style');
+        await expect(styleTag).toBeInTheDocument();
+        const button = canvasElement.querySelector('[data-slot="button"]');
+        await expect(button).toBeInTheDocument();
+    },
+};
+
+export const StyleOverrideWithDesignTokens: Story = {
+    render: () => (
+        <Hero
+            title="Design Token Override"
+            subtitle="Ghost button using var(--primary-foreground) — inverts to solid on hover using var(--primary). White inset frame via var(--ring)."
+            titleColor="#F8FAFC"
+            subtitleColor="#E2E8F0"
+            imageUrl={{ url: '/images/hero-04.webp' }}
+            imageAlt="Hero background"
+            ctaText="Shop Now"
+            ctaLink="/category/all"
+            styleOverride={
+                '& { outline: 3px solid var(--primary-foreground); outline-offset: -12px; }\n& [data-slot="button"] { background-color: transparent; color: var(--primary-foreground); border: 2px solid var(--primary-foreground); }\n& [data-slot="button"]:hover { background-color: var(--primary-foreground); color: var(--primary); transform: scale(1.03); }'
+            }
+        />
+    ),
+    parameters: {
+        docs: {
+            description: {
+                story: 'Demonstrates styleOverride using design system tokens that produce clearly visible changes in this theme: a white inset frame (var(--ring) / var(--primary-foreground)), a ghost CTA button (transparent background, white border and text via var(--primary-foreground)), and an inverted solid hover state (var(--primary-foreground) background, var(--primary) text). All token values automatically adapt if the theme changes.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const hero = canvasElement.querySelector('[data-hero-id]');
+        await expect(hero).toBeInTheDocument();
+        const styleTag = canvasElement.querySelector('style');
+        await expect(styleTag).toBeInTheDocument();
+        await expect(styleTag?.textContent).toContain('var(--primary-foreground)');
+        await expect(styleTag?.textContent).toContain('var(--primary)');
+    },
+};
+
 export const RightBlockCenteredText: Story = {
     render: () => (
         <Hero
             title="Right-aligned column"
             subtitle="Text stays centered inside the content block"
-            imageUrl={{ url: 'https://via.placeholder.com/1920x1080' }}
+            imageUrl={{ url: '/images/hero-03.webp' }}
             imageAlt="Hero background"
             ctaText="Shop Now"
             ctaLink="/category/all"

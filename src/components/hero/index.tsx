@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type CSSProperties, type ReactElement } from 'react';
+import { type CSSProperties, type ReactElement, useId } from 'react';
 import { Link } from '@/components/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Component } from '@/lib/decorators/component';
@@ -298,6 +298,16 @@ export class HeroMetadata {
         defaultValue: 'full',
     })
     height?: string;
+
+    @AttributeDefinition({
+        id: 'styleOverride',
+        name: 'Style Override',
+        description:
+            'CSS fragment scoped to this hero instance. Use & as the root selector — it maps to this hero element via CSS nesting and is automatically scoped with a unique attribute at render time. Supports any valid CSS including pseudo-classes, descendant selectors, and CSS custom properties (e.g. var(--primary)). Example: & { border-radius: var(--radius-xl); } & [data-slot="button"]:hover { transform: scale(1.05); }',
+        type: 'text',
+        required: false,
+    })
+    styleOverride?: string;
 }
 /* v8 ignore stop */
 
@@ -317,6 +327,7 @@ export default function Hero({
     overlayPosition,
     overlayAlignment,
     height,
+    styleOverride,
 }: {
     title?: string;
     titleTypography?: string;
@@ -333,7 +344,12 @@ export default function Hero({
     overlayPosition?: string;
     overlayAlignment?: string;
     height?: string;
+    styleOverride?: string;
 }): ReactElement {
+    const uid = useId();
+    const rawCss = styleOverride?.trim() || undefined;
+    const scopedCss = rawCss ? `[data-hero-id="${uid}"] { ${rawCss} }` : undefined;
+
     const renderImage = () => {
         if (!imageUrl?.url) return <div className="absolute inset-0 bg-muted" />;
 
@@ -394,49 +410,55 @@ export default function Hero({
     const showCta = ctaHref.length > 0;
 
     return (
-        <div className={cn('relative w-full overflow-hidden', heightClass)}>
-            {renderImage()}
+        <>
+            {scopedCss && (
+                // eslint-disable-next-line react/no-danger
+                <style dangerouslySetInnerHTML={{ __html: scopedCss }} />
+            )}
+            <div data-hero-id={uid} className={cn('relative w-full overflow-hidden', heightClass)}>
+                {renderImage()}
 
-            <div className={cn('absolute inset-0 z-10 flex', overlayRowClass, overlayEdgePaddingClass)}>
-                <div className="container mx-auto w-full px-4 sm:px-6 lg:px-8">
-                    <div className={cn(contentBlockClass, textAlignClass)}>
-                        {title && (
-                            <h1
-                                className={cn(
-                                    TITLE_TYPOGRAPHY_CLASS[titleTypo],
-                                    'mb-3 sm:mb-4 md:mb-6',
-                                    !titleHex && 'text-foreground'
-                                )}
-                                style={titleStyle}>
-                                {title}
-                            </h1>
-                        )}
+                <div className={cn('absolute inset-0 z-10 flex', overlayRowClass, overlayEdgePaddingClass)}>
+                    <div className="container mx-auto w-full px-4 sm:px-6 lg:px-8">
+                        <div className={cn(contentBlockClass, textAlignClass)}>
+                            {title && (
+                                <h1
+                                    className={cn(
+                                        TITLE_TYPOGRAPHY_CLASS[titleTypo],
+                                        'mb-3 sm:mb-4 md:mb-6',
+                                        !titleHex && 'text-foreground'
+                                    )}
+                                    style={titleStyle}>
+                                    {title}
+                                </h1>
+                            )}
 
-                        {subtitle && (
-                            <p
-                                className={cn(
-                                    SUBTITLE_TYPOGRAPHY_CLASS[subtitleTypo],
-                                    'mb-4 sm:mb-6 md:mb-8',
-                                    !subtitleHex && 'text-muted-foreground'
-                                )}
-                                style={subtitleStyle}>
-                                {subtitle}
-                            </p>
-                        )}
+                            {subtitle && (
+                                <p
+                                    className={cn(
+                                        SUBTITLE_TYPOGRAPHY_CLASS[subtitleTypo],
+                                        'mb-4 sm:mb-6 md:mb-8',
+                                        !subtitleHex && 'text-muted-foreground'
+                                    )}
+                                    style={subtitleStyle}>
+                                    {subtitle}
+                                </p>
+                            )}
 
-                        {showCta && (
-                            <div className={cn('flex', ctaJustifyClass)}>
-                                <Button
-                                    asChild
-                                    variant={buttonVariant}
-                                    className="text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6">
-                                    <Link to={ctaHref}>{getCtaLabel(ctaText, ctaHref)}</Link>
-                                </Button>
-                            </div>
-                        )}
+                            {showCta && (
+                                <div className={cn('flex', ctaJustifyClass)}>
+                                    <Button
+                                        asChild
+                                        variant={buttonVariant}
+                                        className="text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6">
+                                        <Link to={ctaHref}>{getCtaLabel(ctaText, ctaHref)}</Link>
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

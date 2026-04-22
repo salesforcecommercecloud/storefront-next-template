@@ -283,6 +283,65 @@ describe('Hero Component', () => {
         });
     });
 
+    describe('Style Override', () => {
+        test('injects a <style> tag when styleOverride is provided', () => {
+            const { container } = renderHero({ styleOverride: ':root-hero { border-radius: 1rem; }' });
+            expect(container.querySelector('style')).toBeInTheDocument();
+        });
+
+        test('does not inject a <style> tag when styleOverride is undefined', () => {
+            const { container } = renderHero({ styleOverride: undefined });
+            expect(container.querySelector('style')).not.toBeInTheDocument();
+        });
+
+        test('does not inject a <style> tag when styleOverride is whitespace only', () => {
+            const { container } = renderHero({ styleOverride: '   ' });
+            expect(container.querySelector('style')).not.toBeInTheDocument();
+        });
+
+        test('wraps the fragment in the scoped data-hero-id selector', () => {
+            const { container } = renderHero({ styleOverride: '& { color: red; }' });
+            const heroId = container.querySelector('[data-hero-id]')?.getAttribute('data-hero-id');
+            expect(heroId).toBeTruthy();
+            const styleContent = container.querySelector('style')?.textContent ?? '';
+            expect(styleContent).toMatch(new RegExp(`\\[data-hero-id="${heroId}"\\]\\s*\\{`));
+            expect(styleContent).toContain('color: red');
+        });
+
+        test('wraps the entire fragment — inner selectors are untouched', () => {
+            const { container } = renderHero({
+                styleOverride: '& { color: red; } & [data-slot="button"] { transform: scale(1.05); }',
+            });
+            const heroId = container.querySelector('[data-hero-id]')?.getAttribute('data-hero-id');
+            const styleContent = container.querySelector('style')?.textContent ?? '';
+            expect(styleContent).toContain(`[data-hero-id="${heroId}"]`);
+            expect(styleContent).toContain('& { color: red; }');
+            expect(styleContent).toContain('& [data-slot="button"]');
+        });
+
+        test('passes any CSS fragment through inside the wrapper', () => {
+            const css = '.custom-class { color: green; }';
+            const { container } = renderHero({ styleOverride: css });
+            const styleContent = container.querySelector('style')?.textContent ?? '';
+            expect(styleContent).toContain(css);
+        });
+
+        test('sets data-hero-id attribute on the root div', () => {
+            const { container } = renderHero({});
+            expect(container.querySelector('[data-hero-id]')).toBeInTheDocument();
+        });
+
+        test('preserves base classes on the root div when styleOverride is provided', () => {
+            const { container } = renderHero({ styleOverride: ':root-hero { color: red; }' });
+            expect(container.querySelector('[data-hero-id]')).toHaveClass('relative', 'w-full', 'overflow-hidden');
+        });
+
+        test('trims leading and trailing whitespace from the fragment', () => {
+            const { container } = renderHero({ styleOverride: '  & { color: red; }  ' });
+            expect(container.querySelector('style')).toBeInTheDocument();
+        });
+    });
+
     describe('Height', () => {
         test('applies full height class by default', () => {
             const { container } = renderHero();
