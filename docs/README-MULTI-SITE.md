@@ -1,10 +1,10 @@
 # Multi-Site & Locale URL Routing
 
-This project supports multiple Commerce Cloud sites and locales within a single storefront deployment. The homepage (`/`) is **cookie-driven** — it never has a URL prefix and never redirects. All subpages use `/:siteId/:localeId/...` prefixes and are fully shareable.
+This project supports multiple Commerce Cloud sites and locales within a single storefront deployment. All URLs — including the homepage — use `/:siteId/:localeId/...` prefixes and are fully shareable. Requests to bare `/` are redirected server-side to the default site and locale prefix (e.g., `/global/en-GB/`).
 
 ## Quick Start
 
-**In React components** — use `Link`, `NavLink`, or `useNavigate` from the template. They automatically prefix subpage URLs with the current site and locale. `/` is never prefixed:
+**In React components** — use `Link`, `NavLink`, or `useNavigate` from the template. They automatically prefix all URLs (including `/`) with the current site and locale:
 
 ```typescript
 import { Link } from '@/components/link';
@@ -12,11 +12,11 @@ import { Link } from '@/components/link';
 // Renders as /global/en-GB/product/123
 <Link to="/product/123">View Product</Link>
 
-// Renders as / (never prefixed)
+// Renders as /global/en-GB/ (prefixed with current site context)
 <Link to="/">Home</Link>
 ```
 
-**In server loaders/actions** — use `buildUrlFromContext` to prefix URLs. It also returns `/` bare:
+**In server loaders/actions** — use `buildUrlFromContext` to prefix URLs:
 
 ```typescript
 import { buildUrlFromContext } from '@/lib/url.server';
@@ -24,9 +24,6 @@ import { buildUrlFromContext } from '@/lib/url.server';
 export function loader({ context }: LoaderFunctionArgs) {
     throw redirect(buildUrlFromContext('/login', context));
     // → '/global/en-GB/login'
-
-    throw redirect(buildUrlFromContext('/', context));
-    // → '/' (always bare)
 }
 ```
 
@@ -41,25 +38,23 @@ The site context system consists of:
 5. **`useCurrentSiteAndLocaleRef`** hook: Client-side helper that resolves the current site/locale aliases for URL building
 6. **`Link`, `NavLink`, `useNavigate`**: Site-context-aware navigation primitives that call `buildUrl` internally
 
-### Homepage vs Subpages
+### Homepage & Root URL
 
-| | Homepage (`/`) | Subpages (`/product/123`, `/category/womens`, etc.) |
-|---|---|---|
-| **URL** | Always bare `/` | Prefixed: `/:siteId/:localeId/...` |
-| **Site resolution** | From `site_id` cookie | From URL path |
-| **First visit (no cookie)** | Default site used; SiteSwitcher in header allows switching | Site resolved from path |
-| **Shareable?** | No — content depends on viewer's cookie | Yes — deterministic from URL |
+The homepage lives at the prefixed path (e.g., `/global/en-GB/`). Bare `/` redirects server-side to the default site and locale prefix — this is handled in the homepage loader (`_app._index.tsx`), so customers can customize the redirect behavior.
+
+| Request | Behavior |
+|---|---|
+| `/global/en-GB/` | Renders homepage for RefArchGlobal, en-GB |
+| `/us/en-US/` | Renders homepage for RefArch, en-US |
+| `/` | Redirects to `/{defaultSiteAlias}/{defaultLocale}/` (e.g., `/global/en-GB/`) |
 
 ### Request Flow
 
-1. User requests `/global/en-GB/product/123` (or `/` for the homepage)
-2. Site context middleware resolves site and locale:
-   - **Subpages**: from the URL path (`global` → `RefArchGlobal`, `en-GB` → locale)
-   - **Homepage `/`**: from the `site_id` cookie (no path to parse)
+1. User requests `/global/en-GB/product/123`
+2. Site context middleware resolves site and locale from the URL path (`global` → `RefArchGlobal`, `en-GB` → locale)
 3. Site and locale objects are stored in router context for downstream consumers
 4. i18next middleware reads the resolved locale and initializes translations
 5. Loaders, actions, and components access the resolved site/locale from context
-6. No redirects — the middleware passes through to `next()` directly
 
 ## Configuration
 
@@ -99,7 +94,7 @@ url: {
 
 | Page | URL |
 |------|-----|
-| Homepage | `/` |
+| Homepage (RefArchGlobal, en-GB) | `/global/en-GB/` |
 | Product (RefArchGlobal, en-GB) | `/global/en-GB/product/123` |
 | Product (RefArch, en-US) | `/us/en-US/product/123` |
 | Category (RefArchGlobal, it-IT) | `/global/it-IT/category/womens` |
@@ -117,7 +112,7 @@ url: {
 
 | Page | URL |
 |------|-----|
-| Homepage | `/` |
+| Homepage (en-GB) | `/en-GB/` |
 | Product (en-GB) | `/en-GB/product/123` |
 | Product (en-US) | `/en-US/product/123` |
 | Category (it-IT) | `/it-IT/category/womens` |
@@ -136,7 +131,7 @@ url: {
 
 | Page | URL |
 |------|-----|
-| Homepage | `/` |
+| Homepage (RefArchGlobal, en-GB) | `/global/?lng=en-GB` |
 | Product (RefArchGlobal, en-GB) | `/global/product/123?lng=en-GB` |
 | Product (RefArch, en-US) | `/us/product/123?lng=en-US` |
 | Category (RefArchGlobal, it-IT) | `/global/category/womens?lng=it-IT` |
@@ -154,7 +149,7 @@ url: {
 
 | Page | URL |
 |------|-----|
-| Homepage | `/` |
+| Homepage | `/?site=global&lng=en-GB` |
 | Product | `/product/123?site=global&lng=en-GB` |
 | Category | `/category/womens?site=us&lng=en-US` |
 
@@ -171,7 +166,7 @@ url: {
 
 | Page | URL |
 |------|-----|
-| Homepage | `/` |
+| Homepage | `/?lng=en-GB` |
 | Product | `/product/123?lng=en-GB` |
 | Category | `/category/womens?lng=it-IT` |
 
@@ -337,14 +332,6 @@ commerce: {
 }
 ```
 
-## Homepage & Site Switching
-
-The homepage (`/`) is always cookie-driven:
-
-- **First visit (no `site_id` cookie)**: The homepage renders using the default site. The SiteSwitcher in the header allows the user to switch sites.
-- **Returning visit (cookie exists)**: The homepage renders the site stored in the cookie.
-- **Site switching**: The header SiteSwitcher posts to `/action/set-site-context` with `type: 'site'`, which sets the `site_id` cookie and redirects to `/`.
-
 ## Client-Side Navigation
 
 ### `useCurrentSiteAndLocaleRef` Hook
@@ -363,7 +350,7 @@ function MyComponent() {
 
 ### Link and NavLink
 
-Drop-in replacements for React Router's `Link` and `NavLink`. They automatically apply the site context URL prefix to subpages:
+Drop-in replacements for React Router's `Link` and `NavLink`. They automatically apply the site context URL prefix to all paths:
 
 ```typescript
 import { Link, NavLink } from '@/components/link';
@@ -372,12 +359,11 @@ import { Link, NavLink } from '@/components/link';
 <Link to="/product/123">Product</Link>
 <NavLink to="/product/123">Product</NavLink>
 
-// to="/" is never prefixed — always renders as bare "/"
+// Produces /global/en-GB/ (prefixed with current site context)
 <Link to="/">Home</Link>
 ```
 
 Special cases:
-- **`to="/"`** is passed through unchanged — the homepage is always bare
 - External URLs (`http://`, `//`) are passed through unchanged
 - Non-string `to` values (objects) are passed through unchanged
 
@@ -394,10 +380,10 @@ function MyComponent() {
     // String path — prefixed automatically
     navigate('/product/123');
 
-    // '/' — never prefixed
+    // '/' — prefixed to /global/en-GB/
     navigate('/');
 
-    // Object with pathname — pathname is prefixed (except '/')
+    // Object with pathname — pathname is prefixed
     navigate({ pathname: '/search', search: '?q=shoes' });
 
     // History navigation — passed through
@@ -435,9 +421,9 @@ function LogoutButton() {
 
 ## Server-Side Redirects
 
-All `redirect()` calls in loaders and actions must include the site context prefix for subpages. A bare `redirect('/login')` will produce a URL without the prefix, resulting in a 404.
+All `redirect()` calls in loaders and actions must include the site context prefix. A bare `redirect('/login')` will produce a URL without the prefix, resulting in a 404.
 
-Use `buildUrlFromContext` — a server-side helper that reads the resolved site and locale from router context and applies the URL prefix. It returns `/` bare (cookie-driven homepage):
+Use `buildUrlFromContext` — a server-side helper that reads the resolved site and locale from router context and applies the URL prefix:
 
 ```typescript
 import { redirect, type LoaderFunctionArgs } from 'react-router';
@@ -458,8 +444,7 @@ The site switcher (`src/components/site-switcher`) in the footer allows switchin
 1. User selects a new site from the dropdown
 2. Client-side `i18n.changeLanguage()` fires for immediate UX update
 3. Posts `type: 'site'` and `siteId` to `/action/set-site-context`
-4. The server action sets `site_id` and `lng` cookies, redirects to `/`
-5. Homepage renders with the new site's content (cookie-driven)
+4. The server action sets `site_id` and `lng` cookies, redirects to the new site's prefixed homepage (e.g., `/us/en-US/`)
 
 ## Locale Switcher
 
@@ -546,5 +531,5 @@ Engagement adapter config is defined once in `config.server.ts` under `app.engag
 4. **Prefix `<Form action>` values manually** — React Router's `<Form>` does not go through `buildUrl`
 5. **Use alias maps for clean URLs** — configure `siteAliasMap` and `localeAliasMap` to keep URLs short and readable
 6. **Don't hardcode site/locale values** — always resolve them from context or the `useCurrentSiteAndLocaleRef` hook
-7. **`/` is always bare** — never manually prefix the homepage. `Link`, `useNavigate`, and `buildUrlFromContext` all enforce this automatically
+7. **`/` is prefixed like any other path** — `Link`, `NavLink`, and `useNavigate` prefix `/` with the current site/locale (e.g., `/global/en-GB/`). Bare `/` is redirected server-side to the default site/locale by the homepage loader
 8. **Test with multiple sites and locales** — switch between sites and locales, verify all links, redirects, and form actions produce correct URLs
