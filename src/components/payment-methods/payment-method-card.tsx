@@ -52,7 +52,7 @@ export function PaymentMethodCard({ paymentMethod, onRemove, onSetDefault }: Pay
     const CardIcon = getCardIcon(displayName);
 
     return (
-        <Card className={`p-6 ${paymentMethod.isDefault ? 'border-primary' : ''}`}>
+        <Card className={`p-6 ${paymentMethod.isDefault ? 'border-primary' : ''} rounded-none shadow-none`}>
             <div className="flex items-start justify-between">
                 <div className="flex-1 pr-4">
                     {/* Card Title */}

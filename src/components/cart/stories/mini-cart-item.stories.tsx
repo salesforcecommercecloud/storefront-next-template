@@ -170,7 +170,7 @@ function CompleteTheLook(): ReactElement {
                 <CarouselContent className="-ml-4">
                     {completeTheLookProducts.map((product) => (
                         <CarouselItem key={product.id} className="pl-4 basis-[180px] min-w-0 shrink-0 grow-0">
-                            <div className="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                            <div className="border border-border overflow-hidden">
                                 <div className="relative aspect-square bg-muted">
                                     <img
                                         src={product.image}

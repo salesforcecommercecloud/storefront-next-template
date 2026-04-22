@@ -352,7 +352,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
         return (
             <div className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
                 <div className="max-w-md w-full space-y-8">
-                    <Card className="p-8">
+                    <Card className="p-8 rounded-none shadow-none">
                         <div className="text-center space-y-4">
                             <h2 className="text-2xl font-semibold">{t('checkEmailTitle')}</h2>
                             <p className="text-sm text-muted-foreground">{t('checkEmailDescription', { email })}</p>
@@ -406,7 +406,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                         <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                     </div>
 
-                    <Card className="p-8">
+                    <Card className="p-8 rounded-none shadow-none">
                         {renderForm()}
                         {isSocialLoginEnabled ? <SocialLoginButtons /> : null}
                     </Card>

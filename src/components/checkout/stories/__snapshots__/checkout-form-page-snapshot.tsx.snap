@@ -80,7 +80,7 @@ exports[`CheckoutFormPage stories snapshot > ContactInfoStep story renders and m
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -566,7 +566,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
             </div>
           </div>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -610,7 +610,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -728,7 +728,7 @@ exports[`CheckoutFormPage stories snapshot > EmptyCart story renders and matches
     class="min-h-screen bg-muted flex items-center justify-center"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm w-full max-w-md"
+      class="bg-card text-card-foreground flex flex-col gap-6 border py-6 w-full max-w-md rounded-none shadow-none"
       data-slot="card"
     >
       <div
@@ -1009,7 +1009,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -1353,7 +1353,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -1839,7 +1839,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
             </div>
           </div>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -1883,7 +1883,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -2397,7 +2397,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
             </div>
           </div>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -2441,7 +2441,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -2785,7 +2785,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -3100,7 +3100,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -3586,7 +3586,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
             </div>
           </div>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -3630,7 +3630,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -4010,7 +4010,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
             </div>
           </div>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -4054,7 +4054,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -4398,7 +4398,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -4985,7 +4985,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -5572,7 +5572,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -5952,7 +5952,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
             </div>
           </div>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -5997,7 +5997,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
             class="sticky top-8"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+              class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
               data-slot="card"
             >
               <div

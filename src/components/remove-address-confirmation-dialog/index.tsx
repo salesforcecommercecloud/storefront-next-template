@@ -133,7 +133,7 @@ export function RemoveAddressConfirmationDialog({
                 </DialogHeader>
 
                 {/* Address Card */}
-                <Card className="border-border">
+                <Card className="border-border rounded-none shadow-none">
                     <CardContent className="px-4">
                         <div className="flex items-center gap-2 mb-2">
                             <Typography variant="h6">{address.addressId}</Typography>

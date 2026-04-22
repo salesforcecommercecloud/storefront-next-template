@@ -206,7 +206,7 @@ function MockCheckoutFormPage({
     if (!cart || !cart.basketId || !cart.productItems || cart.productItems.length === 0) {
         return (
             <div className="min-h-screen bg-muted flex items-center justify-center">
-                <Card className="w-full max-w-md">
+                <Card className="w-full max-w-md rounded-none shadow-none">
                     <CardContent className="pt-6">
                         <Typography variant="muted" className="text-center">
                             {t('cart:empty.title')}
@@ -672,7 +672,7 @@ function MockCheckoutFormPage({
 
                         {/* Place Order */}
                         {(step === STEPS.PAYMENT || step >= STEPS.PLACE_ORDER) && (
-                            <Card>
+                            <Card className="rounded-none shadow-none">
                                 <CardHeader>
                                     <CardTitle>
                                         <Typography variant="h4" as="h2">
@@ -698,7 +698,7 @@ function MockCheckoutFormPage({
                     {/* Order Summary Sidebar */}
                     <div className="lg:col-span-1">
                         <div className="sticky top-8">
-                            <Card>
+                            <Card className="rounded-none shadow-none">
                                 <CardHeader>
                                     <CardTitle>
                                         <Typography variant="h4" as="h2">

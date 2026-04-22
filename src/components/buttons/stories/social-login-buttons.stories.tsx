@@ -409,7 +409,7 @@ This story shows SocialLoginButtons integrated into a complete login form:
         },
     },
     render: () => (
-        <div className="w-full max-w-md p-6 bg-background border rounded-lg shadow-sm">
+        <div className="w-full max-w-md p-6 bg-background border">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
                 <p className="text-sm text-muted-foreground mt-1">

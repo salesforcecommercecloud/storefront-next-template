@@ -510,7 +510,7 @@ export default function CheckoutFormPage({
     if (!cart.basketId || !cart.productItems || cart.productItems.length === 0) {
         return (
             <div className="min-h-screen bg-muted flex items-center justify-center">
-                <Card className="w-full max-w-md">
+                <Card className="w-full max-w-md rounded-none shadow-none">
                     <CardContent className="pt-6">
                         <Typography variant="muted" className="text-center">
                             {t('common.emptyCart')}
@@ -585,9 +585,7 @@ export default function CheckoutFormPage({
                 {/* Mobile Order Summary + My Cart */}
                 <div className="lg:hidden mb-6">
                     <Accordion type="single" collapsible defaultValue="order-summary">
-                        <AccordionItem
-                            value="order-summary"
-                            className="border rounded-2xl bg-card shadow-sm overflow-hidden">
+                        <AccordionItem value="order-summary" className="border bg-card overflow-hidden">
                             <AccordionTrigger className="px-4 py-4 text-lg font-semibold">
                                 {t('orderSummary.toggleLabel')}
                             </AccordionTrigger>

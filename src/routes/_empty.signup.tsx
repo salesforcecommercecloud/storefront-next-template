@@ -121,7 +121,7 @@ export default function Signup(): ReactElement {
                         <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                     </div>
 
-                    <Card className="p-8">
+                    <Card className="p-8 rounded-none shadow-none">
                         <Form method="POST">
                             <SignupForm error={error} />
 

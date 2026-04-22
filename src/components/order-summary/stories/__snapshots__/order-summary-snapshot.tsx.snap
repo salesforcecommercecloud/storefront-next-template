@@ -3,7 +3,7 @@
 exports[`OrderSummary stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -185,7 +185,7 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
 exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -365,7 +365,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
 exports[`OrderSummary stories snapshot > EstimateMode story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -547,7 +547,7 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
 exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -680,7 +680,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                             class="flex items-center justify-center"
                           >
                             <div
-                              class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+                              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
                             >
                               <img
                                 alt="Solid Silk Tie, Navy, small"
@@ -779,7 +779,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                             class="flex items-center justify-center"
                           >
                             <div
-                              class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+                              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
                             >
                               <img
                                 alt="Floral Ruffle Top, Cardinal Red Multi, small"
@@ -959,7 +959,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
 exports[`OrderSummary stories snapshot > Minimal story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -1041,7 +1041,7 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
 exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -1405,7 +1405,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
 exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -1706,7 +1706,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
 exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -1797,7 +1797,7 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
 exports[`OrderSummary stories snapshot > WithoutHeading story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div

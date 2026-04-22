@@ -5,7 +5,7 @@ exports[`RateRecentPurchasesCard stories snapshot > Default story renders and ma
   class="max-w-3xl"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -113,7 +113,7 @@ exports[`RateRecentPurchasesCard stories snapshot > SingleLineNoImage story rend
   class="max-w-3xl"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
     data-slot="card"
   >
     <div

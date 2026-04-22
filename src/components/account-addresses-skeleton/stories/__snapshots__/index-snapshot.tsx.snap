@@ -6,7 +6,7 @@ exports[`AccountAddressesSkeleton stories snapshot > Default story renders and m
     class="space-y-5"
   >
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+      class="text-card-foreground flex flex-col gap-6 border py-6 bg-card border-border rounded-none shadow-none"
       data-slot="card"
     >
       <div
@@ -39,7 +39,7 @@ exports[`AccountAddressesSkeleton stories snapshot > Default story renders and m
       class="flex flex-col gap-4"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm border-border gap-0 py-4"
+        class="bg-card text-card-foreground flex flex-col border border-border gap-0 py-4 rounded-none shadow-none"
         data-slot="card"
       >
         <div
@@ -96,7 +96,7 @@ exports[`AccountAddressesSkeleton stories snapshot > Default story renders and m
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm border-border gap-0 py-4"
+        class="bg-card text-card-foreground flex flex-col border border-border gap-0 py-4 rounded-none shadow-none"
         data-slot="card"
       >
         <div

@@ -70,7 +70,7 @@ export function loader({ context, request }: LoaderFunctionArgs): OrderListLoade
 function OrderListError(): ReactElement {
     const { t } = useTranslation('account');
     return (
-        <Card className="border-border">
+        <Card className="border-border rounded-none shadow-none">
             <CardContent className="p-12 text-center space-y-4">
                 <Typography variant="p" className="text-muted-foreground">
                     {t('orders.errorDescription')}

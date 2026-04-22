@@ -69,7 +69,7 @@ export function loader({ context, params }: LoaderFunctionArgs): OrderDetailsPag
 function OrderNotFoundCard() {
     const { t } = useTranslation('account');
     return (
-        <Card>
+        <Card className="rounded-none shadow-none">
             <CardHeader>
                 <CardTitle className="text-center">{t('orders.orderNotFound')}</CardTitle>
             </CardHeader>

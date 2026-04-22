@@ -46,7 +46,7 @@ export function RateRecentPurchasesCard({ order }: RateRecentPurchasesCardProps)
     const orderDetailsUrl = `/account/orders/${order.orderNo}`;
 
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <div className="space-y-4">
                     <div>

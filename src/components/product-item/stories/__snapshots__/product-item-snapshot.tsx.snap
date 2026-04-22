@@ -10,12 +10,10 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
       data-testid="sf-product-item-061492183589M"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
-        data-slot="card"
+        class="bg-card text-card-foreground border-0 shadow-none rounded-none"
       >
         <div
           class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
-          data-slot="card-content"
         >
           <div
             class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -24,7 +22,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
               class="flex-shrink-0 flex items-start justify-center"
             >
               <div
-                class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
               >
                 <img
                   alt="Men's Classic Deer Gloves, , small"
@@ -175,12 +173,10 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
       data-testid="sf-product-item-choice-bonus-product-1"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
-        data-slot="card"
+        class="bg-card text-card-foreground border-0 shadow-none rounded-none"
       >
         <div
           class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
-          data-slot="card-content"
         >
           <div
             class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -189,7 +185,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
               class="flex-shrink-0 flex items-start justify-center"
             >
               <div
-                class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
               >
                 <img
                   alt="Men's Classic Deer Gloves, , small"
@@ -353,12 +349,10 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
       data-testid="sf-product-item-061492183589M"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
-        data-slot="card"
+        class="bg-card text-card-foreground border-0 shadow-none rounded-none"
       >
         <div
           class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
-          data-slot="card-content"
         >
           <div
             class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -367,7 +361,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
               class="flex-shrink-0 flex items-start justify-center"
             >
               <div
-                class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
               >
                 <img
                   alt="Men's Classic Deer Gloves, , small"
@@ -526,7 +520,7 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
         class="flex items-center justify-center"
       >
         <div
-          class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+          class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
         >
           <img
             alt="Men's Classic Deer Gloves, , small"
@@ -608,12 +602,10 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
       data-testid="sf-product-item-061492183589M"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
-        data-slot="card"
+        class="bg-card text-card-foreground border-0 shadow-none rounded-none"
       >
         <div
           class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
-          data-slot="card-content"
         >
           <div
             class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -622,7 +614,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
               class="flex-shrink-0 flex items-start justify-center"
             >
               <div
-                class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
               >
                 <img
                   alt="Men's Classic Deer Gloves, , small"

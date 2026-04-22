@@ -396,7 +396,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -448,7 +448,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -495,7 +495,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -997,7 +997,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -1049,7 +1049,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -1096,7 +1096,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -1836,7 +1836,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -1888,7 +1888,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -1935,7 +1935,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -2438,7 +2438,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -2490,7 +2490,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -2537,7 +2537,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -3040,7 +3040,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -3092,7 +3092,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -3139,7 +3139,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -3631,7 +3631,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -3683,7 +3683,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -3730,7 +3730,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -4222,7 +4222,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -4274,7 +4274,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -4321,7 +4321,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -4865,7 +4865,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -4917,7 +4917,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -4964,7 +4964,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -5504,7 +5504,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -5556,7 +5556,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -5603,7 +5603,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -6106,7 +6106,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -6158,7 +6158,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -6205,7 +6205,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -6703,7 +6703,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -6755,7 +6755,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -6802,7 +6802,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -7231,7 +7231,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -7283,7 +7283,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"
@@ -7330,7 +7330,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                     role="group"
                   >
                     <div
-                      class="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      class="border border-border overflow-hidden"
                     >
                       <div
                         class="relative aspect-square bg-muted"

@@ -35,7 +35,7 @@ export function AppDownloadSection(): ReactElement {
     const { t } = useTranslation('account');
 
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     {/* Left side: Text and buttons */}

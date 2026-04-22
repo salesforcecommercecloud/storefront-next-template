@@ -85,7 +85,7 @@ export default function ForgotPassword(): ReactElement {
                         </p>
                     </div>
 
-                    <Card className="p-8">
+                    <Card className="p-8 rounded-none shadow-none">
                         <div className="space-y-6">
                             <Link to="/login">
                                 <Button className="w-full cursor-pointer">{t('backToSignIn')}</Button>
@@ -106,7 +106,7 @@ export default function ForgotPassword(): ReactElement {
                     <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                 </div>
 
-                <Card className="p-8">
+                <Card className="p-8 rounded-none shadow-none">
                     <ForgotPasswordForm error={actionData?.error} />
                 </Card>
             </div>

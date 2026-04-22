@@ -160,7 +160,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                     <div className="w-full lg:w-fit">
                         {/* Mobile Navigation Accordion */}
                         <div className="lg:hidden">
-                            <Card className="bg-muted/30">
+                            <Card className="bg-muted/30 rounded-none shadow-none">
                                 <CardContent className="p-4">
                                     <h2 className="text-lg font-semibold text-foreground mb-4">{t('myAccount')}</h2>
                                     <nav className="space-y-1">

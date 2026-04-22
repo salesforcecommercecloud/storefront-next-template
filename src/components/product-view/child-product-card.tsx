@@ -212,7 +212,7 @@ export default function ChildProductCard({
     }, [canAddChildToCart, product.id, onOrderabilityChange, t]);
 
     return (
-        <Card className="h-full" data-testid="child-product">
+        <Card className="h-full rounded-none shadow-none" data-testid="child-product">
             <CardHeader className="pb-4">
                 <CardTitle className="text-lg">{product?.name}</CardTitle>
                 <ProductPrice

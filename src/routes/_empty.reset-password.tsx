@@ -109,7 +109,7 @@ export default function ResetPassword({ loaderData }: { loaderData: ResetPasswor
                     <p className="mt-2 text-center text-sm text-muted-foreground">{t('enterNewPassword')}</p>
                 </div>
 
-                <Card className="p-8">
+                <Card className="p-8 rounded-none shadow-none">
                     <ResetPasswordForm error={actionData?.error} token={token} email={email} />
                 </Card>
             </div>

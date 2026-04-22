@@ -214,7 +214,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
 
     return (
         <>
-            <Card>
+            <Card className="rounded-none shadow-none">
                 <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <CardTitle className="text-lg-xl">

@@ -320,7 +320,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -705,7 +705,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -921,7 +921,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
                           >
                             <div
-                              class="w-full h-full bg-muted rounded"
+                              class="w-full h-full bg-muted rounded-none"
                             />
                           </div>
                         </a>
@@ -1078,7 +1078,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
                           >
                             <div
-                              class="w-full h-full bg-muted rounded"
+                              class="w-full h-full bg-muted rounded-none"
                             />
                           </div>
                         </a>
@@ -1213,7 +1213,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -1616,7 +1616,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -2001,7 +2001,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -2420,7 +2420,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div

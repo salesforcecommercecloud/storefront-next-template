@@ -203,7 +203,7 @@ function AccountAddressesContent({
     return (
         <div className="space-y-5">
             {/* Page Header */}
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
                     <div className="flex items-start justify-between">
                         <div>
@@ -224,7 +224,7 @@ function AccountAddressesContent({
 
             {/* Empty State */}
             {!hasAddresses && (
-                <Card className="p-8 text-center">
+                <Card className="p-8 text-center rounded-none shadow-none">
                     <div className="flex flex-col items-center gap-4">
                         <div className="text-muted-foreground">
                             <p className="text-lg font-medium">{t('addresses.noSavedAddresses')}</p>

@@ -206,7 +206,7 @@ export function OrderListBody({
                                 className={buttonVariants({
                                     variant: 'outline',
                                     size: 'default',
-                                    className: 'gap-1.5 px-4 py-2 rounded-lg shadow-sm',
+                                    className: 'gap-1.5 px-4 py-2',
                                 })}>
                                 <ChevronLeftIcon />
                                 <span className="hidden sm:inline">{t('orders.paginationPrevious')}</span>
@@ -217,8 +217,7 @@ export function OrderListBody({
                                 className={buttonVariants({
                                     variant: 'outline',
                                     size: 'default',
-                                    className:
-                                        'gap-1.5 px-4 py-2 rounded-lg shadow-sm pointer-events-none opacity-50 cursor-not-allowed',
+                                    className: 'gap-1.5 px-4 py-2 pointer-events-none opacity-50 cursor-not-allowed',
                                 })}>
                                 <ChevronLeftIcon />
                                 <span className="hidden sm:inline">{t('orders.paginationPrevious')}</span>
@@ -232,7 +231,7 @@ export function OrderListBody({
                                 className={buttonVariants({
                                     variant: 'outline',
                                     size: 'default',
-                                    className: 'gap-1.5 px-4 py-2 rounded-lg shadow-sm',
+                                    className: 'gap-1.5 px-4 py-2',
                                 })}>
                                 <span className="hidden sm:inline">{t('orders.paginationNext')}</span>
                                 <ChevronRightIcon />
@@ -243,8 +242,7 @@ export function OrderListBody({
                                 className={buttonVariants({
                                     variant: 'outline',
                                     size: 'default',
-                                    className:
-                                        'gap-1.5 px-4 py-2 rounded-lg shadow-sm pointer-events-none opacity-50 cursor-not-allowed',
+                                    className: 'gap-1.5 px-4 py-2 pointer-events-none opacity-50 cursor-not-allowed',
                                 })}>
                                 <span className="hidden sm:inline">{t('orders.paginationNext')}</span>
                                 <ChevronRightIcon />

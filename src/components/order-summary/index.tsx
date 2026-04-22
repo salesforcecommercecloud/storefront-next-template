@@ -203,7 +203,7 @@ export default function OrderSummary({
     };
 
     return (
-        <Card className={cn('!py-4', className)}>
+        <Card className={cn('!py-4', className, 'rounded-none shadow-none')}>
             <CardContent className="px-[var(--cart-summary-px)]">
                 <div className="space-y-4" data-testid="sf-order-summary">
                     {showHeading && (

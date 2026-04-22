@@ -154,7 +154,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
     return (
         <div className="space-y-5">
             {/* Page Header */}
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
                     <h1
                         className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
@@ -167,7 +167,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
 
             {/* Payment Methods Section */}
             <UITarget targetId="sfcc.accountPaymentOptions.payments.savedPaymentMethods">
-                <Card className="p-6">
+                <Card className="p-6 rounded-none shadow-none">
                     <div className="flex items-center justify-between pb-6 border-b">
                         <div>
                             <h2 className="text-base font-semibold text-foreground mb-1">

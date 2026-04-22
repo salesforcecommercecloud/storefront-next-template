@@ -283,7 +283,7 @@ function AccountDetailsContent({
     return (
         <div className="space-y-5">
             {/* Page Header Card */}
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
                     <h1
                         className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
@@ -295,7 +295,7 @@ function AccountDetailsContent({
             </Card>
 
             {/* Personal Information – same layout as Interests & Preferences (header actions top right) */}
-            <Card data-testid="profile-card" className="bg-card border-border">
+            <Card data-testid="profile-card" className="bg-card border-border rounded-none shadow-none">
                 <CardHeader className="flex flex-row items-start justify-between border-b border-border pb-4">
                     <div className="space-y-1.5">
                         <CardTitle className="text-base font-semibold text-foreground">{t('profile.title')}</CardTitle>

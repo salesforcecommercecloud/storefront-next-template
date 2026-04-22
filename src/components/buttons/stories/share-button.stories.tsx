@@ -500,7 +500,7 @@ This story shows the ShareButton with custom styling:
 
 export const InProductCard: Story = {
     render: () => (
-        <div className="w-64 p-4 border rounded-lg shadow-sm">
+        <div className="w-64 p-4 border">
             <div className="mb-4">
                 <div className="w-full h-48 bg-muted rounded mb-2" />
                 <h3 className="font-semibold text-lg">Premium Cotton T-Shirt</h3>

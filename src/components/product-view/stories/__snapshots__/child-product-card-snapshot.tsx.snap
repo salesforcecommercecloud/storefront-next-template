@@ -6,7 +6,7 @@ exports[`ChildProductCard stories snapshot > Controlled story renders and matche
     class="w-80"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full"
+      class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
       data-slot="card"
       data-testid="child-product"
     >
@@ -148,7 +148,7 @@ exports[`ChildProductCard stories snapshot > Default story renders and matches s
     class="w-80"
   >
     <div
-      class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full"
+      class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
       data-slot="card"
       data-testid="child-product"
     >

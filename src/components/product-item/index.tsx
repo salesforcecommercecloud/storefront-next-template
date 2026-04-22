@@ -25,7 +25,6 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 
 // Components
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
 import { Typography } from '@/components/typography';
 import CartQuantityPicker from '@/components/cart/cart-quantity-picker';
@@ -74,8 +73,8 @@ export function ProductItemVariantImage({
 
     if (!productItem) {
         return (
-            <div className={cn('bg-muted rounded flex-shrink-0 w-16', className)}>
-                <div className="w-full h-full bg-muted rounded" />
+            <div className={cn('bg-muted rounded-none flex-shrink-0 w-16', className)}>
+                <div className="w-full h-full bg-muted rounded-none" />
             </div>
         );
     }
@@ -92,7 +91,7 @@ export function ProductItemVariantImage({
     return (
         <div
             className={cn(
-                'bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden',
+                'bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden',
                 className
             )}>
             {image && optimizedImageUrl ? (
@@ -102,7 +101,7 @@ export function ProductItemVariantImage({
                     className="h-full w-full object-contain"
                 />
             ) : (
-                <div className="w-full h-full bg-muted rounded" />
+                <div className="w-full h-full bg-muted rounded-none" />
             )}
         </div>
     );
@@ -354,8 +353,8 @@ function ProductItem({
     // Default variant - full product item with card styling
     return (
         <div className="relative" data-testid={`sf-product-item-${productItem?.productId || productItem?.id}`}>
-            <Card className="p-0 border border-none shadow-none">
-                <CardContent className="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden">
+            <div className="bg-card text-card-foreground border-0 shadow-none rounded-none">
+                <div className="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden">
                     <div className="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0">
                         <div className="flex-shrink-0 flex items-start justify-center">
                             {/* Product Image */}
@@ -485,8 +484,8 @@ function ProductItem({
                             <Spinner size="lg" />
                         </div>
                     )}
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }

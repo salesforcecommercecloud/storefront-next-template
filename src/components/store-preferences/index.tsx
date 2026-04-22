@@ -30,7 +30,7 @@ export default function StorePreferences(): ReactElement {
     return (
         <div className="space-y-5">
             {/* Store Preferences Header */}
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
                     <h1 className="text-lg-xl font-semibold text-foreground mb-1" tabIndex={0}>
                         {t('storePreferences.title')}

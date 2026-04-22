@@ -73,7 +73,8 @@ export default function AddressCard({
     const isLoading = isRemoving || isSettingDefault;
 
     return (
-        <Card className={`gap-0 py-4 relative ${isPreferred ? 'border-primary border-2' : 'border-border'}`}>
+        <Card
+            className={`gap-0 py-4 relative ${isPreferred ? 'border-primary border-2' : 'border-border'} rounded-none shadow-none`}>
             <CardContent className="px-6 pt-4">
                 <AddressDisplay address={address} showName={true} isPreferred={isPreferred} />
             </CardContent>

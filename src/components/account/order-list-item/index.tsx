@@ -177,7 +177,7 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
     const fullAddress = `${location.address}, ${location.city}, ${location.state} ${location.postalCode}`;
 
     return (
-        <Card className="bg-muted border-border p-0">
+        <Card className="bg-muted border-border p-0 rounded-none shadow-none">
             <CardContent className="p-4 space-y-2">
                 <div className="flex items-center gap-2">
                     <MapPin className="size-4 text-muted-foreground" aria-hidden />

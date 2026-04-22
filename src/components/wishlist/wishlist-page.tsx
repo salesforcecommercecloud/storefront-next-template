@@ -81,7 +81,7 @@ export function WishlistSkeleton(): ReactElement {
     return (
         <div className="space-y-6">
             {/* Header card skeleton */}
-            <Card className="px-6 py-3 gap-0 bg-card border-border">
+            <Card className="px-6 py-3 gap-0 bg-card border-border rounded-none shadow-none">
                 <h1
                     className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
                     tabIndex={0}>
@@ -91,7 +91,7 @@ export function WishlistSkeleton(): ReactElement {
             </Card>
 
             {/* Items card skeleton */}
-            <Card className="py-0 gap-0">
+            <Card className="py-0 gap-0 rounded-none shadow-none">
                 <div className="p-4 border-b border-border">
                     <Skeleton className="h-6 w-36" />
                 </div>
@@ -197,7 +197,7 @@ export function WishlistPageContent({ items, productsByProductId }: WishlistPage
     return (
         <div className="space-y-5">
             {/* Page Header Card */}
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
                     <h1
                         className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
@@ -209,7 +209,7 @@ export function WishlistPageContent({ items, productsByProductId }: WishlistPage
             </Card>
 
             {/* Saved Items Card */}
-            <Card className="py-0 gap-0">
+            <Card className="py-0 gap-0 rounded-none shadow-none">
                 {/* Header: title + item count + sort/filter — separator (border-b) sits below */}
                 <div className="p-4 space-y-3 border-b border-border">
                     <div className="space-y-1">

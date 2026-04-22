@@ -50,7 +50,7 @@ export function AccountHelp(): ReactElement | null {
     };
 
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <h2 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-2">
                     {t('shopperAgentEntry.title')}

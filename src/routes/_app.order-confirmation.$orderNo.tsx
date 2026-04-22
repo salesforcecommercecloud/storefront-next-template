@@ -145,7 +145,7 @@ export function ErrorBoundary() {
     return (
         <div className="min-h-screen bg-background">
             <div className="max-w-4xl mx-auto section-container py-8">
-                <Card>
+                <Card className="rounded-none shadow-none">
                     <CardHeader>
                         <CardTitle className="text-center">{t('confirmation.orderNotFound')}</CardTitle>
                     </CardHeader>
@@ -246,7 +246,7 @@ function OrderConfirmationContent({
         <div data-testid="order-confirmation-container" className="min-h-screen bg-muted/30">
             <div className="max-w-5xl mx-auto section-container py-10 space-y-6">
                 {/* Thank You and Order Confirmation section */}
-                <Card className="border border-border/70 shadow-sm">
+                <Card className="border border-border/70 rounded-none shadow-none">
                     <CardContent className="p-8 space-y-6">
                         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                             <div className="space-y-2">
@@ -295,7 +295,7 @@ function OrderConfirmationContent({
                 {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                 {/* Pickup Details */}
                 {store && (
-                    <Card className="mb-8">
+                    <Card className="mb-8 rounded-none shadow-none">
                         <CardHeader>
                             <CardTitle>{tBopis('storePickup.title')}</CardTitle>
                         </CardHeader>
@@ -323,7 +323,7 @@ function OrderConfirmationContent({
                         shipment.shippingMethod?.description ||
                         t('confirmation.summaryLabels.estimatedDatePlaceholder');
                     return (
-                        <Card key={shipment.shipmentId} className="border border-border/70 shadow-sm">
+                        <Card key={shipment.shipmentId} className="border border-border/70 rounded-none shadow-none">
                             <CardContent className="grid gap-6 p-6 md:grid-cols-3">
                                 <div>
                                     <p className="text-md font-semibold tracking-wide text-foreground">
@@ -362,7 +362,7 @@ function OrderConfirmationContent({
                 })}
 
                 {/* Product Items Summary section */}
-                <Card className="border border-border/70 shadow-sm">
+                <Card className="border border-border/70 rounded-none shadow-none">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-xl font-medium">{t('confirmation.summaryTitle')}</CardTitle>
                     </CardHeader>
@@ -400,7 +400,7 @@ function OrderConfirmationContent({
                                     return (
                                         <div
                                             key={productKey}
-                                            className="rounded-2xl border border-border/70 bg-card shadow-sm p-4 sm:p-7 flex flex-col gap-4 sm:flex-row sm:items-center">
+                                            className="border border-border/70 bg-card p-4 sm:p-7 flex flex-col gap-4 sm:flex-row sm:items-center">
                                             <div className="flex items-center justify-center">
                                                 <div className="h-24 w-24 rounded-xl bg-muted overflow-hidden flex items-center justify-center text-muted-foreground text-lg font-semibold">
                                                     {imageSrc ? (
@@ -487,7 +487,7 @@ function OrderConfirmationContent({
                 </Card>
 
                 {/* Credit Card Details section */}
-                <Card className="border border-border/70 shadow-sm">
+                <Card className="border border-border/70 rounded-none shadow-none">
                     <CardContent className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
                         <div className="flex items-center gap-4">
                             <span className="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -506,7 +506,7 @@ function OrderConfirmationContent({
                 </Card>
 
                 {/* Newsletter subscription section */}
-                <Card className="border border-border/70 shadow-sm">
+                <Card className="border border-border/70 rounded-none shadow-none">
                     <CardContent className="space-y-4 p-6">
                         <div>
                             <p className="font-medium text-foreground">{t('confirmation.newsletter.title')}</p>

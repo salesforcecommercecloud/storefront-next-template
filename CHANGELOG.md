@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 15, 2026)
 
+- Flatten default `Card` styling (drop default radius/shadow) ([#1489](https://github.com/commerce-emu/storefront-next/pull/1489))
 - Standardize layout with `section-container` utility: consolidate responsive padding, max-width, and centering into a single reusable class ([#1483](https://github.com/commerce-emu/storefront-next/pull/1483))
 - Update checkout CTA text ([#1480](https://github.com/commerce-emu/storefront-next/pull/1480))
 - Update performance-related documentation ([#1485](https://github.com/commerce-emu/storefront-next/pull/1485), [#1486](https://github.com/commerce-emu/storefront-next/pull/1486))

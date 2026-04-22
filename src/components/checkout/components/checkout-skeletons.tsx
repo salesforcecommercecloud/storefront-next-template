@@ -21,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export function ExpressPaymentsSkeleton(): ReactElement {
     return (
         <div className="space-y-6" data-testid="express-payments-skeleton">
-            <Card className="flex flex-col items-center gap-3 p-6">
+            <Card className="flex flex-col items-center gap-3 p-6 rounded-none shadow-none">
                 <Skeleton className="h-5 w-32" />
                 <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full">
                     {[1, 2, 3, 4, 5].map((i) => (
@@ -40,7 +40,7 @@ export function ExpressPaymentsSkeleton(): ReactElement {
 
 export function ContactInfoSkeleton(): ReactElement {
     return (
-        <Card className="relative gap-4">
+        <Card className="relative gap-4 rounded-none shadow-none">
             <CardHeader>
                 <Skeleton className="h-6 w-40" />
             </CardHeader>
@@ -63,7 +63,7 @@ export function ContactInfoSkeleton(): ReactElement {
 
 export function ShippingAddressSkeleton(): ReactElement {
     return (
-        <Card className="relative gap-4">
+        <Card className="relative gap-4 rounded-none shadow-none">
             <CardHeader>
                 <Skeleton className="h-6 w-48" />
             </CardHeader>
@@ -108,7 +108,7 @@ export function ShippingAddressSkeleton(): ReactElement {
 
 export function ShippingOptionsSkeleton(): ReactElement {
     return (
-        <Card className="relative gap-4">
+        <Card className="relative gap-4 rounded-none shadow-none">
             <CardHeader>
                 <Skeleton className="h-6 w-44" />
             </CardHeader>
@@ -135,7 +135,7 @@ export function ShippingOptionsSkeleton(): ReactElement {
 
 export function PaymentSkeleton(): ReactElement {
     return (
-        <Card className="relative gap-4">
+        <Card className="relative gap-4 rounded-none shadow-none">
             <CardHeader>
                 <Skeleton className="h-6 w-32" />
             </CardHeader>
@@ -175,7 +175,7 @@ export function PaymentSkeleton(): ReactElement {
 
 export function PickupSkeleton(): ReactElement {
     return (
-        <Card className="relative gap-4">
+        <Card className="relative gap-4 rounded-none shadow-none">
             <CardHeader>
                 <Skeleton className="h-6 w-40" />
             </CardHeader>
@@ -195,7 +195,7 @@ export function PickupSkeleton(): ReactElement {
 
 export function OrderSummarySkeleton(): ReactElement {
     return (
-        <Card>
+        <Card className="rounded-none shadow-none">
             <CardContent className="p-6">
                 <div className="space-y-5" data-testid="order-summary-skeleton">
                     <div className="space-y-4" role="presentation">

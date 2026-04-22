@@ -214,7 +214,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
               </div>
             </div>
             <div
-              class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-muted border-border p-0"
+              class="text-card-foreground flex flex-col gap-6 border bg-muted border-border p-0 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -1337,7 +1337,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               </div>
             </div>
             <div
-              class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-muted border-border p-0"
+              class="text-card-foreground flex flex-col gap-6 border bg-muted border-border p-0 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -2955,7 +2955,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
               </div>
             </div>
             <div
-              class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-muted border-border p-0"
+              class="text-card-foreground flex flex-col gap-6 border bg-muted border-border p-0 rounded-none shadow-none"
               data-slot="card"
             >
               <div

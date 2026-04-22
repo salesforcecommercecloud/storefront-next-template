@@ -62,7 +62,7 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
     const firstName = customer?.firstName || t('overview.defaultName');
 
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <h1 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1">
                     {t('overview.welcomeBack', { name: firstName })}
@@ -78,7 +78,7 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
  */
 export function WelcomeSectionSkeleton(): ReactElement {
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <Skeleton className="h-6 w-64 mb-1" />
                 <Skeleton className="h-4 w-96 max-w-full" />
@@ -117,7 +117,7 @@ export function QuickLinksSection(): ReactElement {
     ];
 
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <h2 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4">
                     {t('overview.quickLinks.title')}
@@ -147,7 +147,7 @@ export function QuickLinksSection(): ReactElement {
  */
 export function QuickLinksSectionSkeleton(): ReactElement {
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <Skeleton className="h-7 w-32 mb-4" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -181,7 +181,7 @@ export function CuratedForYouSection(): ReactElement {
     );
 
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <Suspense
                     fallback={
@@ -207,7 +207,7 @@ export function CuratedForYouSection(): ReactElement {
  */
 export function CuratedForYouSectionSkeleton(): ReactElement {
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <ProductRecommendationSkeleton className="max-w-none -mx-6 md:py-0" />
             </CardContent>
@@ -294,7 +294,7 @@ export function RecentOrdersSectionSkeleton(): ReactElement {
                 </Card>
                 <OrderListSkeleton />
             </div>
-            <Card className="py-0">
+            <Card className="py-0 rounded-none shadow-none">
                 <CardContent className="p-6 space-y-4">
                     <Skeleton className="h-7 w-72 max-w-full" />
                     <Skeleton className="h-4 w-full max-w-lg" />
@@ -350,7 +350,7 @@ export function AccountOverview({ customer, ordersPromise }: AccountOverviewProp
  */
 export function AppDownloadSectionSkeleton(): ReactElement {
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     <div className="flex-1">
@@ -376,7 +376,7 @@ export function AppDownloadSectionSkeleton(): ReactElement {
  */
 export function AccountHelpSkeleton(): ReactElement {
     return (
-        <Card className="py-0">
+        <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
                 <Skeleton className="h-7 w-48 mb-2" />
                 <Skeleton className="h-4 w-full max-w-xl mb-4" />
