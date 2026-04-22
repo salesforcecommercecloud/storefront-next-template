@@ -183,7 +183,7 @@ export default function CartContent({
 
     return (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6">
                     <BreadcrumbList>
                         <BreadcrumbItem>

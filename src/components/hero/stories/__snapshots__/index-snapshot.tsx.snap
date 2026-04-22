@@ -18,7 +18,7 @@ exports[`Hero stories snapshot > Default story renders and matches snapshot 1`] 
       class="absolute inset-0 z-10 flex items-center"
     >
       <div
-        class="container mx-auto w-full px-4 sm:px-6 lg:px-8"
+        class="container mx-auto w-full section-container"
       >
         <div
           class="max-w-2xl mx-auto text-center"
@@ -70,7 +70,7 @@ exports[`Hero stories snapshot > PageDesignerStyling story renders and matches s
       class="absolute inset-0 z-10 flex items-center"
     >
       <div
-        class="container mx-auto w-full px-4 sm:px-6 lg:px-8"
+        class="container mx-auto w-full section-container"
       >
         <div
           class="max-w-2xl mx-auto text-center"
@@ -124,7 +124,7 @@ exports[`Hero stories snapshot > RightBlockCenteredText story renders and matche
       class="absolute inset-0 z-10 flex items-center"
     >
       <div
-        class="container mx-auto w-full px-4 sm:px-6 lg:px-8"
+        class="container mx-auto w-full section-container"
       >
         <div
           class="max-w-2xl ml-auto text-center"
@@ -181,7 +181,7 @@ exports[`Hero stories snapshot > StyleOverrideRoundedCornersAndCTAZoom story ren
       class="absolute inset-0 z-10 flex items-center"
     >
       <div
-        class="container mx-auto w-full px-4 sm:px-6 lg:px-8"
+        class="container mx-auto w-full section-container"
       >
         <div
           class="max-w-2xl mx-auto text-center"
@@ -238,7 +238,7 @@ exports[`Hero stories snapshot > StyleOverrideWithDesignTokens story renders and
       class="absolute inset-0 z-10 flex items-center"
     >
       <div
-        class="container mx-auto w-full px-4 sm:px-6 lg:px-8"
+        class="container mx-auto w-full section-container"
       >
         <div
           class="max-w-2xl mx-auto text-center"
@@ -293,7 +293,7 @@ exports[`Hero stories snapshot > WithImageTitle story renders and matches snapsh
       class="absolute inset-0 z-10 flex items-center"
     >
       <div
-        class="container mx-auto w-full px-4 sm:px-6 lg:px-8"
+        class="container mx-auto w-full section-container"
       >
         <div
           class="max-w-2xl mx-auto text-center"
@@ -345,7 +345,7 @@ exports[`Hero stories snapshot > WithoutSubtitle story renders and matches snaps
       class="absolute inset-0 z-10 flex items-center"
     >
       <div
-        class="container mx-auto w-full px-4 sm:px-6 lg:px-8"
+        class="container mx-auto w-full section-container"
       >
         <div
           class="max-w-2xl mx-auto text-center"

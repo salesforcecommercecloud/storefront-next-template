@@ -18,55 +18,51 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
         class="mt-auto"
       >
         <div
-          class="bg-primary text-primary-foreground py-12 md:py-16"
+          class="bg-primary text-primary-foreground py-12 md:py-16 section-container"
         >
           <div
-            class="container mx-auto px-4"
+            class="max-w-2xl mx-auto text-center"
           >
-            <div
-              class="max-w-2xl mx-auto text-center"
+            <h2
+              class="text-2xl md:text-3xl font-bold mb-3"
             >
-              <h2
-                class="text-2xl md:text-3xl font-bold mb-3"
+              Join Our Community
+            </h2>
+            <p
+              class="text-base md:text-lg mb-6 opacity-90"
+            >
+              Be the first to discover new arrivals, exclusive offers, and style inspiration.
+            </p>
+            <div
+              class="flex justify-center"
+            >
+              <form
+                class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
               >
-                Join Our Community
-              </h2>
-              <p
-                class="text-base md:text-lg mb-6 opacity-90"
-              >
-                Be the first to discover new arrivals, exclusive offers, and style inspiration.
-              </p>
-              <div
-                class="flex justify-center"
-              >
-                <form
-                  class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
+                <input
+                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
+                  data-slot="input"
+                  placeholder="Your email"
+                  type="email"
+                />
+                <button
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
+                  data-size="lg"
+                  data-slot="button"
+                  data-variant="secondary"
+                  type="submit"
                 >
-                  <input
-                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
-                    data-slot="input"
-                    placeholder="Your email"
-                    type="email"
-                  />
-                  <button
-                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
-                    data-size="lg"
-                    data-slot="button"
-                    data-variant="secondary"
-                    type="submit"
-                  >
-                    Subscribe
-                  </button>
-                </form>
-              </div>
+                  Subscribe
+                </button>
+              </form>
             </div>
           </div>
         </div>
         <div
-          class="bg-footer-background py-12"
+          class="bg-footer-background py-12 section-container"
         >
           <div
-            class="container mx-auto px-4 text-footer-foreground"
+            class="text-footer-foreground"
           >
             <div
               class="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12"
@@ -420,55 +416,51 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
       class="mt-auto"
     >
       <div
-        class="bg-primary text-primary-foreground py-12 md:py-16"
+        class="bg-primary text-primary-foreground py-12 md:py-16 section-container"
       >
         <div
-          class="container mx-auto px-4"
+          class="max-w-2xl mx-auto text-center"
         >
-          <div
-            class="max-w-2xl mx-auto text-center"
+          <h2
+            class="text-2xl md:text-3xl font-bold mb-3"
           >
-            <h2
-              class="text-2xl md:text-3xl font-bold mb-3"
+            Join Our Community
+          </h2>
+          <p
+            class="text-base md:text-lg mb-6 opacity-90"
+          >
+            Be the first to discover new arrivals, exclusive offers, and style inspiration.
+          </p>
+          <div
+            class="flex justify-center"
+          >
+            <form
+              class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
             >
-              Join Our Community
-            </h2>
-            <p
-              class="text-base md:text-lg mb-6 opacity-90"
-            >
-              Be the first to discover new arrivals, exclusive offers, and style inspiration.
-            </p>
-            <div
-              class="flex justify-center"
-            >
-              <form
-                class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
+              <input
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
+                data-slot="input"
+                placeholder="Your email"
+                type="email"
+              />
+              <button
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
+                data-size="lg"
+                data-slot="button"
+                data-variant="secondary"
+                type="submit"
               >
-                <input
-                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
-                  data-slot="input"
-                  placeholder="Your email"
-                  type="email"
-                />
-                <button
-                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
-                  data-size="lg"
-                  data-slot="button"
-                  data-variant="secondary"
-                  type="submit"
-                >
-                  Subscribe
-                </button>
-              </form>
-            </div>
+                Subscribe
+              </button>
+            </form>
           </div>
         </div>
       </div>
       <div
-        class="bg-footer-background py-12"
+        class="bg-footer-background py-12 section-container"
       >
         <div
-          class="container mx-auto px-4 text-footer-foreground"
+          class="text-footer-foreground"
         >
           <div
             class="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12"
@@ -908,55 +900,51 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
         class="mt-auto"
       >
         <div
-          class="bg-primary text-primary-foreground py-12 md:py-16"
+          class="bg-primary text-primary-foreground py-12 md:py-16 section-container"
         >
           <div
-            class="container mx-auto px-4"
+            class="max-w-2xl mx-auto text-center"
           >
-            <div
-              class="max-w-2xl mx-auto text-center"
+            <h2
+              class="text-2xl md:text-3xl font-bold mb-3"
             >
-              <h2
-                class="text-2xl md:text-3xl font-bold mb-3"
+              Join Our Community
+            </h2>
+            <p
+              class="text-base md:text-lg mb-6 opacity-90"
+            >
+              Be the first to discover new arrivals, exclusive offers, and style inspiration.
+            </p>
+            <div
+              class="flex justify-center"
+            >
+              <form
+                class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
               >
-                Join Our Community
-              </h2>
-              <p
-                class="text-base md:text-lg mb-6 opacity-90"
-              >
-                Be the first to discover new arrivals, exclusive offers, and style inspiration.
-              </p>
-              <div
-                class="flex justify-center"
-              >
-                <form
-                  class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
+                <input
+                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
+                  data-slot="input"
+                  placeholder="Your email"
+                  type="email"
+                />
+                <button
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
+                  data-size="lg"
+                  data-slot="button"
+                  data-variant="secondary"
+                  type="submit"
                 >
-                  <input
-                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
-                    data-slot="input"
-                    placeholder="Your email"
-                    type="email"
-                  />
-                  <button
-                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
-                    data-size="lg"
-                    data-slot="button"
-                    data-variant="secondary"
-                    type="submit"
-                  >
-                    Subscribe
-                  </button>
-                </form>
-              </div>
+                  Subscribe
+                </button>
+              </form>
             </div>
           </div>
         </div>
         <div
-          class="bg-footer-background py-12"
+          class="bg-footer-background py-12 section-container"
         >
           <div
-            class="container mx-auto px-4 text-footer-foreground"
+            class="text-footer-foreground"
           >
             <div
               class="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12"
@@ -1310,55 +1298,51 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
       class="mt-auto"
     >
       <div
-        class="bg-primary text-primary-foreground py-12 md:py-16"
+        class="bg-primary text-primary-foreground py-12 md:py-16 section-container"
       >
         <div
-          class="container mx-auto px-4"
+          class="max-w-2xl mx-auto text-center"
         >
-          <div
-            class="max-w-2xl mx-auto text-center"
+          <h2
+            class="text-2xl md:text-3xl font-bold mb-3"
           >
-            <h2
-              class="text-2xl md:text-3xl font-bold mb-3"
+            Join Our Community
+          </h2>
+          <p
+            class="text-base md:text-lg mb-6 opacity-90"
+          >
+            Be the first to discover new arrivals, exclusive offers, and style inspiration.
+          </p>
+          <div
+            class="flex justify-center"
+          >
+            <form
+              class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
             >
-              Join Our Community
-            </h2>
-            <p
-              class="text-base md:text-lg mb-6 opacity-90"
-            >
-              Be the first to discover new arrivals, exclusive offers, and style inspiration.
-            </p>
-            <div
-              class="flex justify-center"
-            >
-              <form
-                class="flex flex-col sm:flex-row gap-3 w-full max-w-md"
+              <input
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
+                data-slot="input"
+                placeholder="Your email"
+                type="email"
+              />
+              <button
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
+                data-size="lg"
+                data-slot="button"
+                data-variant="secondary"
+                type="submit"
               >
-                <input
-                  class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1 h-10 bg-background text-foreground"
-                  data-slot="input"
-                  placeholder="Your email"
-                  type="email"
-                />
-                <button
-                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4"
-                  data-size="lg"
-                  data-slot="button"
-                  data-variant="secondary"
-                  type="submit"
-                >
-                  Subscribe
-                </button>
-              </form>
-            </div>
+                Subscribe
+              </button>
+            </form>
           </div>
         </div>
       </div>
       <div
-        class="bg-footer-background py-12"
+        class="bg-footer-background py-12 section-container"
       >
         <div
-          class="container mx-auto px-4 text-footer-foreground"
+          class="text-footer-foreground"
         >
           <div
             class="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12"

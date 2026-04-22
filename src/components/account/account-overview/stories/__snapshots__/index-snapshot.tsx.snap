@@ -1246,7 +1246,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
       data-slot="card-content"
     >
       <div
-        class="w-full px-4 sm:px-8 lg:px-16 py-6 animate-pulse max-w-none -mx-6 md:py-0"
+        class="w-full section-container py-6 animate-pulse max-w-none -mx-6 md:py-0"
       >
         <div
           class="py-6"

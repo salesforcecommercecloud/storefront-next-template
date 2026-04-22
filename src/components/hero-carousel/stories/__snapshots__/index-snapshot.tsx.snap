@@ -45,7 +45,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -99,7 +99,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -153,7 +153,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -323,7 +323,7 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -377,7 +377,7 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -431,7 +431,7 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -601,7 +601,7 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -655,7 +655,7 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -709,7 +709,7 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -852,7 +852,7 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -906,7 +906,7 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"
@@ -960,7 +960,7 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                 class="relative h-full flex items-center z-20 overflow-hidden"
               >
                 <div
-                  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+                  class="section-container w-full"
                 >
                   <div
                     class="max-w-xl"

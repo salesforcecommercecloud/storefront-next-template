@@ -6,7 +6,7 @@ exports[`CheckoutFormPage stories snapshot > ContactInfoStep story renders and m
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -198,7 +198,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -752,7 +752,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -1127,7 +1127,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -1471,7 +1471,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -2029,7 +2029,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -2559,7 +2559,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -2903,7 +2903,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -3218,7 +3218,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -3748,7 +3748,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -4172,7 +4172,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -4516,7 +4516,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -5103,7 +5103,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"
@@ -5690,7 +5690,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
     class="min-h-screen bg-muted"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="section-container py-8"
     >
       <div
         class="grid grid-cols-1 lg:grid-cols-3 gap-8"

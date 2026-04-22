@@ -88,7 +88,7 @@ function OrderNotFoundCard() {
 export function ErrorBoundary() {
     return (
         <div className="min-h-screen bg-background">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-4xl mx-auto section-container py-8">
                 <OrderNotFoundCard />
             </div>
         </div>
@@ -102,7 +102,7 @@ export default function OrderDetailsPage(): ReactElement {
     const loaderData = useLoaderData<OrderDetailsPageLoaderData>();
 
     return (
-        <div className="w-full px-4 sm:px-6 lg:px-8 pt-0 pb-8">
+        <div className="w-full section-container pt-0 pb-8">
             <SeoMeta title={t('meta.orderDetailsTitle', { defaultValue: 'Order Details' })} noIndex />
             <Breadcrumb className="mb-5">
                 <BreadcrumbList>

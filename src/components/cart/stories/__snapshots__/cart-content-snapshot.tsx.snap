@@ -7,7 +7,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
     data-testid="sf-cart-container"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <nav
         aria-label="breadcrumb"
@@ -902,7 +902,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
     data-testid="sf-cart-container"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <nav
         aria-label="breadcrumb"
@@ -2568,7 +2568,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
     data-testid="sf-cart-container"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <nav
         aria-label="breadcrumb"
@@ -3823,7 +3823,7 @@ exports[`CartContent stories snapshot > EmptyCart story renders and matches snap
     data-testid="sf-cart-empty"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
+      class="section-container py-8 lg:py-14"
     >
       <div
         class="bg-background rounded-lg shadow-md p-8 md:p-16 text-center"
@@ -3874,7 +3874,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
     data-testid="sf-cart-container"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <nav
         aria-label="breadcrumb"
@@ -4776,7 +4776,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
     data-testid="sf-cart-container"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <nav
         aria-label="breadcrumb"
@@ -6759,7 +6759,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
     data-testid="sf-cart-container"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <nav
         aria-label="breadcrumb"
@@ -7654,7 +7654,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
     data-testid="sf-cart-container"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <nav
         aria-label="breadcrumb"
@@ -8514,7 +8514,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
     data-testid="sf-cart-container"
   >
     <div
-      class="max-w-7xl mx-auto px-4"
+      class="section-container"
     >
       <nav
         aria-label="breadcrumb"

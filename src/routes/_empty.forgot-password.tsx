@@ -76,7 +76,7 @@ export default function ForgotPassword(): ReactElement {
 
     if (actionData?.success && actionData?.email) {
         return (
-            <div className="flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center bg-background py-12 section-container">
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
                         <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('checkEmailTitle')}</h2>
@@ -99,7 +99,7 @@ export default function ForgotPassword(): ReactElement {
 
     // Initial form state
     return (
-        <div className="flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-center bg-background py-12 section-container">
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>

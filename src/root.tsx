@@ -330,7 +330,7 @@ function ErrorPageContent({
         <>
             {/* Simple Header */}
             <header className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
-                <div className="px-4 lg:px-9">
+                <div className="section-container">
                     <div className="flex items-center gap-x-4 lg:gap-x-6 h-16">
                         <a href="/" className="flex-shrink-0 flex items-center">
                             <img
@@ -428,7 +428,7 @@ function ErrorPageContent({
 
             {/* Simple Footer */}
             <footer className="mt-auto bg-background border-t border-border">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+                <div className="mx-auto max-w-7xl section-container py-8">
                     <p className="text-center text-sm text-muted-foreground">
                         © {new Date().getFullYear()} {t('allRightsReserved')}
                     </p>

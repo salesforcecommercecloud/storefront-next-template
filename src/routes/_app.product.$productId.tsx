@@ -375,7 +375,7 @@ function ProductContent({ product, url }: { product: ShopperProducts.schemas['Pr
 function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
     const content = (
         <div className="min-h-screen bg-background">
-            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 lg:pb-8">
+            <div className="section-container pb-4 lg:pb-8">
                 {/* Promo Content Region - Promotional content above main product */}
                 <Region className="mb-8" page={loaderData.page} regionId="promoContent" />
 

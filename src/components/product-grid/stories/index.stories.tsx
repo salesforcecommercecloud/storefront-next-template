@@ -153,7 +153,7 @@ Features:
         (Story) => (
             <ActionLogger>
                 <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-background">
+                    <div className="section-container py-8 bg-background">
                         <Story />
                     </div>
                 </SiteProvider>

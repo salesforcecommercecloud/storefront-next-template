@@ -17,7 +17,7 @@ import type { ReactElement } from 'react';
 
 export default function Features(): ReactElement {
     return (
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="section-container">
             <div className="text-center">
                 <h2 className="text-3xl font-bold text-foreground sm:text-4xl">Features</h2>
                 <p className="mt-4 text-lg text-muted-foreground">

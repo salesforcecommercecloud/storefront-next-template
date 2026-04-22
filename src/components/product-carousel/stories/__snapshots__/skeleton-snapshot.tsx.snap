@@ -6,7 +6,7 @@ exports[`ProductCarouselSkeleton stories snapshot > CustomItemCount story render
     class="p-8"
   >
     <div
-      class="w-full px-4 sm:px-8 lg:px-16 py-6 animate-pulse"
+      class="w-full section-container py-6 animate-pulse"
     >
       <div
         class="py-6"
@@ -423,7 +423,7 @@ exports[`ProductCarouselSkeleton stories snapshot > Default story renders and ma
     class="p-8"
   >
     <div
-      class="w-full px-4 sm:px-8 lg:px-16 py-6 animate-pulse"
+      class="w-full section-container py-6 animate-pulse"
     >
       <div
         class="py-6"
@@ -716,7 +716,7 @@ exports[`ProductCarouselSkeleton stories snapshot > WithTitle story renders and 
     class="p-8"
   >
     <div
-      class="w-full px-4 sm:px-8 lg:px-16 py-6 animate-pulse"
+      class="w-full section-container py-6 animate-pulse"
     >
       <div
         class="flex items-center justify-between"

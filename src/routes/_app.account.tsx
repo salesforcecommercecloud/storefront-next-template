@@ -154,7 +154,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+            <div className="w-full section-container py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 w-full">
                     {/* Nav column: mobile accordion + desktop sidebar (one cell so sidebar stays left of content) */}
                     <div className="w-full lg:w-fit">

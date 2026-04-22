@@ -20,7 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 function CartEmptySkeleton({ isRegistered = false }: { isRegistered?: boolean }): ReactElement {
     return (
         <div className="bg-muted flex-1 min-w-full w-full" data-testid="sf-cart-empty-skeleton">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
+            <div className="section-container py-8 lg:py-14">
                 <Card className="max-w-md mx-auto">
                     <CardContent className="p-8 text-center">
                         <div className="space-y-6">
@@ -67,7 +67,7 @@ export default function CartSkeleton({
 
     return (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-skeleton">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <div className="my-6">
                     <Skeleton className="h-8 w-48" />
                 </div>

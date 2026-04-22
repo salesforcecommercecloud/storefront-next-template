@@ -128,7 +128,7 @@ export function CarouselSection({
         );
 
     return (
-        <div className={cn('px-4 sm:px-8 lg:px-16 py-6', className)}>
+        <div className={cn('section-container py-6', className)}>
             {(title !== undefined || subtitle) && titleSection}
             <Carousel className="w-full py-6" opts={{ align: 'start' }} aria-label={ariaLabel}>
                 <CarouselContent className="-ml-4 items-stretch flex-nowrap">{children}</CarouselContent>

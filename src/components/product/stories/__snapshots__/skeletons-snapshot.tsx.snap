@@ -199,7 +199,7 @@ exports[`Product Skeletons stories snapshot > RecommendationSkeleton story rende
     class="p-4"
   >
     <div
-      class="w-full px-4 sm:px-8 lg:px-16 py-6 animate-pulse"
+      class="w-full section-container py-6 animate-pulse"
     >
       <div
         class="flex items-center justify-between"
@@ -500,7 +500,7 @@ exports[`Product Skeletons stories snapshot > RecommendationsSkeleton story rend
     class="p-4"
   >
     <div
-      class="w-full px-4 sm:px-8 lg:px-16 py-6 animate-pulse"
+      class="w-full section-container py-6 animate-pulse"
     >
       <div
         class="py-6"
@@ -784,7 +784,7 @@ exports[`Product Skeletons stories snapshot > RecommendationsSkeleton story rend
       </div>
     </div>
     <div
-      class="w-full px-4 sm:px-8 lg:px-16 py-6 animate-pulse"
+      class="w-full section-container py-6 animate-pulse"
     >
       <div
         class="py-6"

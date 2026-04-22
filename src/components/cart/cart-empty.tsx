@@ -49,7 +49,7 @@ export default function EmptyCart({ isRegistered = false }: EmptyCartProps): Rea
 
     return (
         <div className="bg-muted flex-1 min-w-full w-full" data-testid="sf-cart-empty">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
+            <div className="section-container py-8 lg:py-14">
                 <div className="bg-background rounded-lg shadow-md p-8 md:p-16 text-center">
                     {/* Empty Cart Icon */}
                     <svg

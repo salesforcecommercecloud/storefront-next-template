@@ -9,7 +9,7 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
       class="bg-muted/50"
     >
       <div
-        class="px-4 sm:px-8 lg:px-16 py-6"
+        class="section-container py-6"
       >
         <div
           class="text-center"
@@ -471,7 +471,7 @@ exports[`PopularCategories stories snapshot > Default story renders and matches 
       class="bg-muted/50"
     >
       <div
-        class="px-4 sm:px-8 lg:px-16 py-6"
+        class="section-container py-6"
       >
         <div
           class="text-center"
@@ -596,7 +596,7 @@ exports[`PopularCategories stories snapshot > Loading story renders and matches 
       class="bg-muted/50"
     >
       <div
-        class="px-4 sm:px-8 lg:px-16 py-6"
+        class="section-container py-6"
       >
         <div
           class="text-center"
@@ -709,7 +709,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
       class="bg-muted/50"
     >
       <div
-        class="px-4 sm:px-8 lg:px-16 py-6"
+        class="section-container py-6"
       >
         <div
           class="text-center"
@@ -1357,7 +1357,7 @@ exports[`PopularCategories stories snapshot > WithCustomSubtitle story renders a
       class="bg-muted/50"
     >
       <div
-        class="px-4 sm:px-8 lg:px-16 py-6"
+        class="section-container py-6"
       >
         <div
           class="text-center"
@@ -1819,7 +1819,7 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
       class="bg-muted/50"
     >
       <div
-        class="px-4 sm:px-8 lg:px-16 py-6"
+        class="section-container py-6"
       >
         <div
           class="text-center"
@@ -2281,7 +2281,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
       class="bg-muted/50"
     >
       <div
-        class="px-4 sm:px-8 lg:px-16 py-6"
+        class="section-container py-6"
       >
         <div
           class="text-center"

@@ -578,7 +578,7 @@ export default function CheckoutFormPage({
     return (
         <div className="min-h-screen bg-background pb-20 lg:pb-0">
             <UITarget targetId="checkout.page.before" />
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="section-container py-8">
                 <Typography variant="h2" as="h1" className="mb-8">
                     {t('pageTitle')}
                 </Typography>

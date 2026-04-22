@@ -104,7 +104,7 @@ export default function ProductCarousel({
             return null;
         }
         return (
-            <div className={cn('px-4 sm:px-8 lg:px-16 py-6', className)}>
+            <div className={cn('section-container py-6', className)}>
                 <div role="status" aria-live="polite">
                     {t('selectProduct')}
                 </div>

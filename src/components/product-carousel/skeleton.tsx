@@ -62,7 +62,7 @@ export default function ProductCarouselSkeleton({
     const config = useConfig<AppConfig>();
     const finalItemCount = itemCount ?? config.global.carousel.defaultItemCount;
     return (
-        <div className={cn('w-full px-4 sm:px-8 lg:px-16 py-6 animate-pulse', className)}>
+        <div className={cn('w-full section-container py-6 animate-pulse', className)}>
             {title && (
                 <div className="flex items-center justify-between">
                     <Skeleton className="h-8 md:h-9 w-64" />

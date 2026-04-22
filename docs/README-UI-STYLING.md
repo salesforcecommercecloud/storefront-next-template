@@ -62,6 +62,49 @@ Keeping `src/components/ui/` limited to ejected shadcn components makes upgrades
 
 See [src/components/ui/README.md](../src/components/ui/README.md) for more detail.
 
+### Reusing Styles: When to Extract
+
+Tailwind's utility-first approach means most styling lives inline in JSX. Before extracting a reusable abstraction, read the official guide on [managing reuse](https://tailwindcss.com/docs/styling-with-utility-classes#managing-duplication) — it covers multi-cursor editing, loops, and component extraction as the **preferred** strategies before reaching for CSS abstractions.
+
+**Use a React component** (the default choice) when:
+- The pattern involves **markup structure** — multiple elements, slots, children
+- There is **logic, state, or event handling**
+- It accepts **props** that change behavior or content
+- It composes other components (shadcn, Radix, etc.)
+
+**Use a CSS component class** (`@layer components` in `src/theme/base.css`) only when:
+- The pattern is **pure layout/styling** — padding, max-width, centering, typography presets
+- There is **no logic, state, or props** — just a bag of CSS properties
+- It needs to be applied to **many different HTML elements** across the codebase (divs, sections, wrappers)
+- Utilities need to **override** it in specific contexts (the components layer is lower specificity than utilities)
+
+Example: `section-container` — consolidates `px-4 sm:px-8 lg:px-16 max-w-screen-2xl mx-auto` into one class, used by 30+ files. A page can add `max-w-4xl` alongside it and the utility wins.
+
+**Rule of thumb**: if you can express it as a single `className` string with no JSX children, it's a CSS class. If it renders elements or accepts props, it's a React component.
+
+```css
+/* src/theme/base.css — CSS component class */
+@layer components {
+    .section-container {
+        @apply px-4 sm:px-8 lg:px-16 max-w-screen-2xl mx-auto;
+    }
+}
+```
+
+```tsx
+/* React component — has structure, props, and children */
+function CategoryBanner({ title, image }: CategoryBannerProps) {
+    return (
+        <div className="section-container">
+            <img src={image} alt="" />
+            <h1>{title}</h1>
+        </div>
+    );
+}
+```
+
+> **Do not use `@utility`** for multi-property compositions that need to be overridable. The utility layer has the highest specificity, so any override attempt (e.g., adding `max-w-4xl` alongside a `@utility` class) would lose. Use `@layer components` instead.
+
 ---
 
 ## Component Library and Icons

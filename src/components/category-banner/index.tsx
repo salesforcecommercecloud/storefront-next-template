@@ -87,7 +87,7 @@ export default function CategoryBanner() {
             </div>
 
             <div className="relative h-full flex items-end">
-                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-8 md:pb-10">
+                <div className="section-container w-full pb-8 md:pb-10">
                     <div className="max-w-2xl">
                         {rootCategoryName && (
                             <div className="inline-block mb-4" aria-hidden="true">

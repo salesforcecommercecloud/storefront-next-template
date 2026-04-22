@@ -36,7 +36,7 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
     if (variant === 'checkout') {
         return (
             <footer className="mt-auto border-t border-border">
-                <div className="container mx-auto px-4 lg:px-9 py-4">
+                <div className="section-container py-4">
                     <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm text-muted-foreground">
                         <div>
                             © {t('logoAlt')} {t('address')}
@@ -58,21 +58,19 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
     return (
         <footer className="mt-auto">
             {/* Prominent Newsletter Section (Black Background) */}
-            <div className="bg-primary text-primary-foreground py-12 md:py-16">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-2xl mx-auto text-center">
-                        <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('newsletter.title')}</h2>
-                        <p className="text-base md:text-lg mb-6 opacity-90">{t('newsletter.description')}</p>
-                        <div className="flex justify-center">
-                            <Signup />
-                        </div>
+            <div className="bg-primary text-primary-foreground py-12 md:py-16 section-container">
+                <div className="max-w-2xl mx-auto text-center">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('newsletter.title')}</h2>
+                    <p className="text-base md:text-lg mb-6 opacity-90">{t('newsletter.description')}</p>
+                    <div className="flex justify-center">
+                        <Signup />
                     </div>
                 </div>
             </div>
 
             {/* Footer Links Section (Light Background) */}
-            <div className="bg-footer-background py-12">
-                <div className="container mx-auto px-4 text-footer-foreground">
+            <div className="bg-footer-background py-12 section-container">
+                <div className="text-footer-foreground">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
                         {/* Column 1: Shop - Dynamic Categories */}
                         <div>

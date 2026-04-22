@@ -6,7 +6,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
     class="p-8"
   >
     <div
-      class="px-4 sm:px-8 lg:px-16 py-6"
+      class="section-container py-6"
     >
       <div
         class="flex items-center justify-between"
@@ -2359,7 +2359,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
     class="p-8"
   >
     <div
-      class="px-4 sm:px-8 lg:px-16 py-6"
+      class="section-container py-6"
     >
       <div
         class="flex items-center justify-between"
@@ -4698,7 +4698,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
     class="p-8"
   >
     <div
-      class="px-4 sm:px-8 lg:px-16 py-6"
+      class="section-container py-6"
     >
       <div
         class="flex items-center justify-between"
@@ -7043,7 +7043,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
     class="p-8"
   >
     <div
-      class="px-4 sm:px-8 lg:px-16 py-6"
+      class="section-container py-6"
     >
       <div
         class="flex items-center justify-between"

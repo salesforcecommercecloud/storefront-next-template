@@ -19,7 +19,7 @@ exports[`HeroCarouselSkeleton stories snapshot > Default story renders and match
         class="absolute inset-0 z-10 flex items-center"
       >
         <div
-          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+          class="section-container w-full"
         >
           <div
             class="max-w-xl flex flex-col"

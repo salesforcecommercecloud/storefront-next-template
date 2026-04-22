@@ -7,7 +7,7 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
     data-testid="sf-cart-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <div
         class="my-6"
@@ -281,7 +281,7 @@ exports[`CartSkeleton stories snapshot > EmptyCartGuest story renders and matche
     data-testid="sf-cart-empty-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
+      class="section-container py-8 lg:py-14"
     >
       <div
         class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm max-w-md mx-auto"
@@ -345,7 +345,7 @@ exports[`CartSkeleton stories snapshot > EmptyCartRegistered story renders and m
     data-testid="sf-cart-empty-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
+      class="section-container py-8 lg:py-14"
     >
       <div
         class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm max-w-md mx-auto"
@@ -405,7 +405,7 @@ exports[`CartSkeleton stories snapshot > GuestUser story renders and matches sna
     data-testid="sf-cart-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <div
         class="my-6"
@@ -679,7 +679,7 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
     data-testid="sf-cart-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <div
         class="my-6"
@@ -1165,7 +1165,7 @@ exports[`CartSkeleton stories snapshot > RegisteredUser story renders and matche
     data-testid="sf-cart-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <div
         class="my-6"

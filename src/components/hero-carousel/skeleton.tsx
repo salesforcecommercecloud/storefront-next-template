@@ -69,7 +69,7 @@ export default function HeroCarouselSkeleton({
 
                 {/* Content overlay skeleton */}
                 <div className="absolute inset-0 z-10 flex items-center">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                    <div className="section-container w-full">
                         <div className="max-w-xl flex flex-col">
                             {/* Title skeleton - matches h1 with mb-3 sm:mb-4 md:mb-6 */}
                             <Skeleton className="h-6 sm:h-8 md:h-9 lg:h-10 w-3/4 bg-white/20 mb-3 sm:mb-4 md:mb-6" />

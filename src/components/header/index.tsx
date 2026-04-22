@@ -72,7 +72,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
             <header
                 ref={headerRef}
                 className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
-                <div className="px-4 lg:px-9">
+                <div className="section-container">
                     <div className="flex items-center h-16">
                         <Link to="/" className="flex-shrink-0 flex items-center" data-testid="header-logo">
                             <img
@@ -93,10 +93,10 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
         <header
             ref={headerRef}
             className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
-            <div className="flex justify-end px-4 lg:px-9">{beforeHeader}</div>
-            <div className="px-4 lg:px-9">
+            <div className="flex justify-end section-container">{beforeHeader}</div>
+            <div className="section-container py-6">
                 {/* Top row: Logo left, Icons right */}
-                <div className="flex items-center gap-x-4 lg:gap-x-6 h-16">
+                <div className="flex items-center gap-x-4 lg:gap-x-6">
                     {/* Logo - color swapped by theme via --header-logo-filter in app.css */}
                     <Link to="/" className="flex-shrink-0 flex items-center" data-testid="header-logo">
                         <img
@@ -118,7 +118,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
                     </div>
 
                     {/* Icons group - includes mobile hamburger */}
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center">
                         <UITarget targetId="header.before.cart" />
                         {showChat && (
                             <Button

@@ -494,7 +494,7 @@ Cart with items composing ProductItemsList and OrderSummary (DesktopWithItems co
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -587,7 +587,7 @@ Cart with 2 items and a qualified promotion. Shows:
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -678,7 +678,7 @@ Cart layout optimized for mobile devices. Shows:
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-4">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -809,7 +809,7 @@ Cart with 4 items. Demonstrates:
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -921,7 +921,7 @@ This demonstrates how the component handles items with high quantities.
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -999,7 +999,7 @@ This demonstrates the component's resilience to missing data.
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -1108,7 +1108,7 @@ This verifies the component handles long product names gracefully.
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -1237,7 +1237,7 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>

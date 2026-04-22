@@ -213,7 +213,7 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
 
                         {/* Featured Content Cards - Static content */}
                         <div className="pt-16">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="section-container">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <ContentCard
                                         title={t('featuredContent.women.title')}

@@ -86,7 +86,7 @@ const itemClassName = 'w-[348px] md:w-[256px] 2xl:w-[288px] basis-auto py-1 flex
  */
 function CategoryCardsSkeleton() {
     return (
-        <div className="px-4 sm:px-8 lg:px-16 py-6">
+        <div className="section-container py-6">
             <div className="flex -ml-4 overflow-hidden py-6">
                 {Array.from({ length: 4 }, (_, i) => (
                     <div key={i} className={cn(itemClassName, 'shrink-0 grow-0')}>

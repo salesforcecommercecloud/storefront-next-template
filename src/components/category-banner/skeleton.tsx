@@ -37,7 +37,7 @@ export default function CategoryBannerSkeleton() {
 
             {/* Content skeletons anchored to the bottom */}
             <div className="absolute inset-0 flex items-end">
-                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-8 md:pb-10">
+                <div className="section-container w-full pb-8 md:pb-10">
                     <div className="max-w-2xl flex flex-col gap-4">
                         {/* Root category label */}
                         <Skeleton className="h-3 w-20 bg-white/20" />

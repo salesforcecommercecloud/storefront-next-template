@@ -419,7 +419,7 @@ export default function Hero({
                 {renderImage()}
 
                 <div className={cn('absolute inset-0 z-10 flex', overlayRowClass, overlayEdgePaddingClass)}>
-                    <div className="container mx-auto w-full px-4 sm:px-6 lg:px-8">
+                    <div className="container mx-auto w-full section-container">
                         <div className={cn(contentBlockClass, textAlignClass)}>
                             {title && (
                                 <h1

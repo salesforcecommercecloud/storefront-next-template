@@ -384,7 +384,7 @@ export default function CategoryPage({
                     fallbackOnEmpty
                 />
 
-                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+                <div className="section-container pt-8">
                     <div className="mb-4">
                         <CategoryBreadcrumbs category={category} />
                     </div>

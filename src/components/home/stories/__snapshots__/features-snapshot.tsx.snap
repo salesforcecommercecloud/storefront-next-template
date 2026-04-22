@@ -6,7 +6,7 @@ exports[`Features stories snapshot > Default story renders and matches snapshot 
     class="py-16 bg-background"
   >
     <div
-      class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"
+      class="section-container"
     >
       <div
         class="text-center"

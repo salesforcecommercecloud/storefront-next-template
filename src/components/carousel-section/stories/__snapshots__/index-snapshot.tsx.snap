@@ -2,7 +2,7 @@
 
 exports[`CarouselSection stories snapshot > CarouselOnly story renders and matches snapshot 1`] = `
 <div
-  class="px-4 sm:px-8 lg:px-16 py-6"
+  class="section-container py-6"
 >
   <div
     aria-label="Demo carousel"
@@ -144,7 +144,7 @@ exports[`CarouselSection stories snapshot > CarouselOnly story renders and match
 
 exports[`CarouselSection stories snapshot > CenterTitleWithSubtitle story renders and matches snapshot 1`] = `
 <div
-  class="px-4 sm:px-8 lg:px-16 py-6"
+  class="section-container py-6"
 >
   <div
     class="text-center"
@@ -300,7 +300,7 @@ exports[`CarouselSection stories snapshot > CenterTitleWithSubtitle story render
 
 exports[`CarouselSection stories snapshot > LeftTitleWithShopAll story renders and matches snapshot 1`] = `
 <div
-  class="px-4 sm:px-8 lg:px-16 py-6"
+  class="section-container py-6"
 >
   <div
     class="flex items-center justify-between"
@@ -467,7 +467,7 @@ exports[`CarouselSection stories snapshot > LeftTitleWithShopAll story renders a
 
 exports[`CarouselSection stories snapshot > ShopAllLabelWithoutLink story renders and matches snapshot 1`] = `
 <div
-  class="px-4 sm:px-8 lg:px-16 py-6"
+  class="section-container py-6"
 >
   <div
     class="flex items-center justify-between"

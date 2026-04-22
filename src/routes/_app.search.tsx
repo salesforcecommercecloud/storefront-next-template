@@ -281,7 +281,7 @@ export default function SearchPage({
                 openGraph={{ type: 'website', url: pageUrl }}
             />
             <div className="pb-16">
-                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="section-container">
                     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
                             <p>{t('results')}</p>
