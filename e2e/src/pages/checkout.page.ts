@@ -1071,26 +1071,50 @@ class CheckoutPage {
     }
 
     /**
-     * Validate that all billing address fields are empty/blank
+     * Validate that billing address fields are pre-filled with the shipping address.
+     * After toggling "Use a different billing address", the form pre-fills with the
+     * shipping address as a starting point for the user to edit.
      */
-    async validateBillingAddressFieldsAreBlank(): Promise<void> {
+    async validateBillingAddressMatchesShipping(shippingAddress: {
+        firstName: string;
+        lastName: string;
+        address1: string;
+        city: string;
+        stateCode: string;
+        postalCode: string;
+    }): Promise<void> {
         const values = await this.getBillingAddressFieldValues();
         const errors: string[] = [];
 
-        if (values.firstName !== '') errors.push(`firstName: "${values.firstName}"`);
-        if (values.lastName !== '') errors.push(`lastName: "${values.lastName}"`);
-        if (values.address1 !== '') errors.push(`address1: "${values.address1}"`);
-        if (values.address2 !== '') errors.push(`address2: "${values.address2}"`);
-        if (values.city !== '') errors.push(`city: "${values.city}"`);
-        if (values.stateCode !== '') errors.push(`stateCode: "${values.stateCode}"`);
-        if (values.postalCode !== '') errors.push(`postalCode: "${values.postalCode}"`);
-        // Note: phone field not included - billing form has showPhone={false}
-        // countryCode defaults to 'US', so we expect it to have that value
-        if (values.countryCode !== 'US') errors.push(`countryCode: "${values.countryCode}" (expected: "US")`);
+        if (values.firstName !== shippingAddress.firstName)
+            errors.push(`firstName: "${values.firstName}" (expected: "${shippingAddress.firstName}")`);
+        if (values.lastName !== shippingAddress.lastName)
+            errors.push(`lastName: "${values.lastName}" (expected: "${shippingAddress.lastName}")`);
+        if (values.address1 !== shippingAddress.address1)
+            errors.push(`address1: "${values.address1}" (expected: "${shippingAddress.address1}")`);
+        if (values.city !== shippingAddress.city)
+            errors.push(`city: "${values.city}" (expected: "${shippingAddress.city}")`);
+        if (values.stateCode !== shippingAddress.stateCode)
+            errors.push(`stateCode: "${values.stateCode}" (expected: "${shippingAddress.stateCode}")`);
+        if (values.postalCode !== shippingAddress.postalCode)
+            errors.push(`postalCode: "${values.postalCode}" (expected: "${shippingAddress.postalCode}")`);
 
         if (errors.length > 0) {
-            throw new Error(`Billing address fields are not blank:\n  ${errors.join('\n  ')}`);
+            throw new Error(`Billing address fields do not match shipping address:\n  ${errors.join('\n  ')}`);
         }
+    }
+
+    /**
+     * Clear all billing address fields so validation can be tested.
+     */
+    clearBillingAddressFields(): void {
+        I.clearField(this.locators.billingFirstNameInput);
+        I.clearField(this.locators.billingLastNameInput);
+        I.clearField(this.locators.billingAddress1Input);
+        I.clearField(this.locators.billingAddress2Input);
+        I.clearField(this.locators.billingCityInput);
+        I.selectOption(this.locators.billingStateSelect, '');
+        I.clearField(this.locators.billingPostalCodeInput);
     }
 
     /**

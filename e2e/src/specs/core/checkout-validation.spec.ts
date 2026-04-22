@@ -138,6 +138,9 @@ Scenario('Payment rejects empty custom billing address', async () => {
     const billingFieldsVisible = await checkoutPage.areBillingAddressFieldsVisible();
     expect(billingFieldsVisible, 'Billing address fields should be visible').to.be.true;
 
+    // Billing fields are pre-filled with shipping address — clear them to test validation
+    await checkoutPage.clearBillingAddressFields();
+
     checkoutPage.clickPlaceOrder();
 
     await checkoutPage.waitForValidationErrors('sf-toggle-card-payment', 3);

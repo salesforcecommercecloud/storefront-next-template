@@ -232,6 +232,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -284,6 +285,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -349,6 +351,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -783,6 +786,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -1157,6 +1161,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -1500,6 +1505,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -1552,6 +1558,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -1617,6 +1624,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -2055,6 +2063,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -2107,6 +2116,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -2172,6 +2182,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -2582,6 +2593,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -2925,6 +2937,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -2977,6 +2990,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -3238,6 +3252,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -3290,6 +3305,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -3355,6 +3371,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -3765,6 +3782,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -3817,6 +3835,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -3882,6 +3901,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -3941,6 +3961,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -4185,6 +4206,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -4528,6 +4550,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -4580,6 +4603,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -5113,6 +5137,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -5165,6 +5190,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -5698,6 +5724,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -5750,6 +5777,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -5815,6 +5843,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>
@@ -5874,6 +5903,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
                   data-size="sm"
                   data-slot="button"
                   data-variant="link"
+                  type="button"
                 >
                   Edit
                 </button>

@@ -102,6 +102,7 @@ export function ToggleCard({
                     <CardAction className={cn(!description && 'row-span-1 self-center')}>
                         {!editing && !disabled && onEdit && !disableEdit ? (
                             <Button
+                                type="button"
                                 variant={editVariant}
                                 size="sm"
                                 className={cn(
@@ -121,6 +122,7 @@ export function ToggleCard({
 
                         {editing && editAction && onEditActionClick ? (
                             <Button
+                                type="button"
                                 className={cn(
                                     'cursor-pointer',
                                     !editActionClassName && editVariant === 'link' && 'font-bold',

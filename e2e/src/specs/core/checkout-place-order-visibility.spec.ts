@@ -96,4 +96,28 @@ Scenario('Place Order button is hidden when editing shipping method', async () =
     ).to.be.true;
 }).tag('@shipping-method-edit');
 
+Scenario('Clicking Edit on a checkout section does not accidentally place the order', async () => {
+    await registeredShopperSetupFlow.execute();
+
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+
+    checkoutPage.validatePageLoaded();
+    await checkoutPage.validateAllCheckoutSectionsPrefilled();
+
+    const placeOrderBefore = await checkoutPage.isPlaceOrderButtonVisible();
+    expect(placeOrderBefore, 'Place Order button should be visible before editing').to.be.true;
+
+    // Click Edit on Shipping Address — Place Order should disappear
+    checkoutPage.expandShippingAddressStep();
+    checkoutPage.waitForUiSettle(1);
+
+    const placeOrderDuringEdit = await checkoutPage.isPlaceOrderButtonVisible();
+    expect(placeOrderDuringEdit, 'Place Order button should be hidden while editing shipping address').to.be.false;
+
+    // Verify order was NOT placed by clicking Edit
+    const orderConfirmed = await checkoutPage.isOrderConfirmationShown();
+    expect(orderConfirmed, 'Order should NOT have been placed by clicking Edit').to.be.false;
+}).tag('@edit-safety');
+
 export {};

@@ -358,6 +358,14 @@ export default function CheckoutFormPage({
 
     const handlePlaceOrderSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        // Block submission while a non-payment section is being edited. The Place Order button
+        // is hidden via the render condition, but this guard handles edge cases (e.g. mobile
+        // fixed bar overlap, stale UI state, or buttons without explicit type="button").
+        if (editingStep !== null && editingStep !== STEPS.PAYMENT) {
+            return;
+        }
+
         setPlaceOrderClientError(null);
 
         // Validate that all non-empty shipments have a shipping method selected.
@@ -701,77 +709,74 @@ export default function CheckoutFormPage({
                             <UITarget targetId="checkout.payment.after" />
                         </Suspense>
 
-                        {/* Place Order Section */}
-                        {step >= STEPS.PAYMENT &&
-                            editingStep !== STEPS.SHIPPING_ADDRESS &&
-                            editingStep !== STEPS.SHIPPING_OPTIONS && (
-                                <div className="flex flex-col items-end gap-4 w-full lg:-mt-4">
-                                    {/* Create Account Option - Show for guest users when Place Order is visible (step >= PAYMENT) */}
-                                    {step >= STEPS.PAYMENT && (
-                                        <div className="w-full">
-                                            <UITarget targetId="checkout.createAccount.before" />
-                                            <UITarget targetId="checkout.createAccount">
-                                                <GuestAccountCreation
-                                                    cart={cart}
-                                                    customerProfile={customerProfile}
-                                                    onSaved={handleCreateAccountPreferenceChange}
-                                                    savePaymentToProfile={
-                                                        paymentSubmissionRef.current.options?.savePaymentToProfile
-                                                    }
-                                                    showToast={showToast}
-                                                    hideCreateAccountOption={
-                                                        hideCreateAccountAfterSkippedPasswordlessOtp
-                                                    }
-                                                />
-                                            </UITarget>
-                                            <UITarget targetId="checkout.createAccount.after" />
-                                        </div>
-                                    )}
-                                    {placeOrderClientError && (
+                        {/* Place Order Section — hide when editing any step except Payment
+                           (Payment has no separate Save button; Place Order acts as its submit) */}
+                        {step >= STEPS.PAYMENT && (editingStep === null || editingStep === STEPS.PAYMENT) && (
+                            <div className="flex flex-col items-end gap-4 w-full lg:-mt-4">
+                                {/* Create Account Option - Show for guest users when Place Order is visible (step >= PAYMENT) */}
+                                {step >= STEPS.PAYMENT && (
+                                    <div className="w-full">
+                                        <UITarget targetId="checkout.createAccount.before" />
+                                        <UITarget targetId="checkout.createAccount">
+                                            <GuestAccountCreation
+                                                cart={cart}
+                                                customerProfile={customerProfile}
+                                                onSaved={handleCreateAccountPreferenceChange}
+                                                savePaymentToProfile={
+                                                    paymentSubmissionRef.current.options?.savePaymentToProfile
+                                                }
+                                                showToast={showToast}
+                                                hideCreateAccountOption={hideCreateAccountAfterSkippedPasswordlessOtp}
+                                            />
+                                        </UITarget>
+                                        <UITarget targetId="checkout.createAccount.after" />
+                                    </div>
+                                )}
+                                {placeOrderClientError && (
+                                    <CheckoutErrorBanner
+                                        message={placeOrderClientError}
+                                        className="w-full text-sm font-medium"
+                                    />
+                                )}
+                                {placeOrderFetcher.data &&
+                                    !placeOrderFetcher.data.success &&
+                                    placeOrderFetcher.data.error && (
                                         <CheckoutErrorBanner
-                                            message={placeOrderClientError}
-                                            className="w-full text-sm font-medium"
+                                            message={placeOrderFetcher.data.error}
+                                            className="w-full"
                                         />
                                     )}
-                                    {placeOrderFetcher.data &&
-                                        !placeOrderFetcher.data.success &&
-                                        placeOrderFetcher.data.error && (
-                                            <CheckoutErrorBanner
-                                                message={placeOrderFetcher.data.error}
-                                                className="w-full"
-                                            />
-                                        )}
-                                    <UITarget targetId="checkout.placeOrder.before" />
-                                    <UITarget targetId="checkout.placeOrder">
-                                        <form
-                                            onSubmit={handlePlaceOrderSubmit}
-                                            className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
-                                            <Button
-                                                type="submit"
-                                                disabled={
-                                                    isPlacingOrder ||
-                                                    isPlaceOrderPending ||
-                                                    isSubmitting('payment') ||
-                                                    paymentFetcher.state === 'submitting'
-                                                }
-                                                className="w-full shadow-2xs"
-                                                size="lg">
-                                                <Lock className="size-4" />
-                                                {isPlacingOrder || isPlaceOrderPending || isSubmitting('payment')
-                                                    ? t('placeOrder.processing')
-                                                    : t('placeOrder.button', {
-                                                          total: formatCurrency(
-                                                              cart?.orderTotal ?? cart?.productTotal ?? 0,
-                                                              i18n.language,
-                                                              currency
-                                                          ),
-                                                      })}
-                                            </Button>
-                                        </form>
-                                    </UITarget>
-                                    <UITarget targetId="checkout.placeOrder.after" />
-                                </div>
-                            )}
+                                <UITarget targetId="checkout.placeOrder.before" />
+                                <UITarget targetId="checkout.placeOrder">
+                                    <form
+                                        onSubmit={handlePlaceOrderSubmit}
+                                        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
+                                        <Button
+                                            type="submit"
+                                            disabled={
+                                                isPlacingOrder ||
+                                                isPlaceOrderPending ||
+                                                isSubmitting('payment') ||
+                                                paymentFetcher.state === 'submitting'
+                                            }
+                                            className="w-full shadow-2xs"
+                                            size="lg">
+                                            <Lock className="size-4" />
+                                            {isPlacingOrder || isPlaceOrderPending || isSubmitting('payment')
+                                                ? t('placeOrder.processing')
+                                                : t('placeOrder.button', {
+                                                      total: formatCurrency(
+                                                          cart?.orderTotal ?? cart?.productTotal ?? 0,
+                                                          i18n.language,
+                                                          currency
+                                                      ),
+                                                  })}
+                                        </Button>
+                                    </form>
+                                </UITarget>
+                                <UITarget targetId="checkout.placeOrder.after" />
+                            </div>
+                        )}
                         <UITarget targetId="checkout.mainContent.after" />
                     </div>
 

@@ -41,6 +41,9 @@ Scenario('Billing address validation — required fields show errors', async () 
     const billingFieldsVisible = await checkoutPage.areBillingAddressFieldsVisible();
     expect(billingFieldsVisible).to.be.true;
 
+    // Billing fields are pre-filled with shipping address — clear them to test validation
+    await checkoutPage.clearBillingAddressFields();
+
     checkoutPage.fillPaymentFieldsOnly(TEST_PAYMENT);
     checkoutPage.clickPlaceOrder();
 

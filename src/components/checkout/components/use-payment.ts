@@ -324,14 +324,19 @@ export function usePayment({
                 form.setValue('billingPostalCode', firstOption.postalCode ?? '');
                 form.setValue('billingCountryCode', firstOption.countryCode ?? 'US');
             } else {
-                form.setValue('billingFirstName', '');
-                form.setValue('billingLastName', '');
-                form.setValue('billingAddress1', '');
-                form.setValue('billingAddress2', '');
-                form.setValue('billingCity', '');
-                form.setValue('billingStateCode', '');
-                form.setValue('billingPostalCode', '');
-                form.setValue('billingCountryCode', 'US');
+                // Case when user just toggles the button without providing any new address:
+                // No saved addresses differ from shipping — pre-fill billing with the
+                // shipping address so the form is valid and ready for the user to edit.
+                // Clearing the fields here would cause place-order validation to fail
+                // if the user doesn't manually fill in every required billing field.
+                form.setValue('billingFirstName', shippingAddress.firstName ?? '');
+                form.setValue('billingLastName', shippingAddress.lastName ?? '');
+                form.setValue('billingAddress1', shippingAddress.address1 ?? '');
+                form.setValue('billingAddress2', shippingAddress.address2 ?? '');
+                form.setValue('billingCity', shippingAddress.city ?? '');
+                form.setValue('billingStateCode', shippingAddress.stateCode ?? '');
+                form.setValue('billingPostalCode', shippingAddress.postalCode ?? '');
+                form.setValue('billingCountryCode', shippingAddress.countryCode ?? 'US');
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps -- billingAddressOptions excluded: derived from savedAddresses (unstable ref) and shippingAddress (already covered by shippingAddressSyncKey). Including it causes infinite re-renders. The value is read synchronously when the toggle fires.

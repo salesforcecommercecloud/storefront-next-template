@@ -33,6 +33,7 @@ exports[`Payment stories snapshot > CompletedState story renders and matches sna
             data-size="sm"
             data-slot="button"
             data-variant="link"
+            type="button"
           >
             Edit
           </button>
@@ -485,6 +486,7 @@ exports[`Payment stories snapshot > DesktopView story renders and matches snapsh
             data-size="sm"
             data-slot="button"
             data-variant="link"
+            type="button"
           >
             Edit
           </button>
@@ -543,6 +545,7 @@ exports[`Payment stories snapshot > DisabledState story renders and matches snap
             data-size="sm"
             data-slot="button"
             data-variant="link"
+            type="button"
           >
             Edit
           </button>

@@ -32,6 +32,7 @@ exports[`ShippingAddress stories snapshot > CompletedState story renders and mat
           data-size="sm"
           data-slot="button"
           data-variant="link"
+          type="button"
         >
           Edit
         </button>

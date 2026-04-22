@@ -35,6 +35,7 @@ exports[`ContactInfo stories snapshot > CompletedState story renders and matches
             data-size="sm"
             data-slot="button"
             data-variant="link"
+            type="button"
           >
             Edit
           </button>
@@ -311,6 +312,7 @@ exports[`ContactInfo stories snapshot > DisabledState story renders and matches 
             data-size="sm"
             data-slot="button"
             data-variant="link"
+            type="button"
           >
             Edit
           </button>
