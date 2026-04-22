@@ -91,7 +91,8 @@ const baseConfig = defineConfig([
         '**/src/components/ui/**',
         '**/src/dashboard/components/ui/**',
         '.claude/**',
-        '**/lighthouserc.cjs'
+        '**/lighthouserc.cjs',
+        '**/generate-config.cjs'
       ]
     },
     {

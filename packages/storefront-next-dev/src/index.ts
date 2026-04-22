@@ -16,8 +16,11 @@
 // Default export: Vite plugin (for tree-shaking, consumers won't bundle CLI code)
 export { storefrontNextTargets as default, type StorefrontNextTargetsConfig } from './storefront-next-targets';
 
-// Named export: Transform target placeholder components (UITarget & TargetProviders)
+// Named export: Transform target placeholder components (UITarget & UITargetProviders)
 export { transformTargetPlaceholderPlugin } from './plugins/transformTargets';
+
+// Named export: Target dev mode plugin for visual debugging of UITargets (dev only)
+export { uiTargetDevModePlugin, type UITargetDevModeConfig } from './plugins/uiTargetDevMode';
 
 // Named export: Hybrid proxy plugin for local development against legacy SFRA
 export { hybridProxyPlugin, type HybridProxyPluginOptions } from './plugins/hybridProxy';

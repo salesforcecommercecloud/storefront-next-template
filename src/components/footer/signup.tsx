@@ -17,6 +17,7 @@ import { type FormEvent, type ReactElement, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { UITarget } from '@/targets/ui-target';
 
 export default function Signup(): ReactElement {
     const { t } = useTranslation('footer');
@@ -35,16 +36,19 @@ export default function Signup(): ReactElement {
     );
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-            <Input
-                ref={inputRef}
-                type="email"
-                placeholder={t('newsletter.emailPlaceholder')}
-                className="flex-1 h-10 bg-background text-foreground"
-            />
-            <Button type="submit" variant="secondary" size="lg">
-                {t('newsletter.subscribeButton')}
-            </Button>
-        </form>
+        <UITarget targetId="emailSignUp.consent.marketing">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                <Input
+                    ref={inputRef}
+                    type="email"
+                    placeholder={t('newsletter.emailPlaceholder')}
+                    className="flex-1 h-10 bg-background text-foreground"
+                />
+                <UITarget targetId="emailSignUp.consent.tos" />
+                <Button type="submit" variant="secondary" size="lg">
+                    {t('newsletter.subscribeButton')}
+                </Button>
+            </form>
+        </UITarget>
     );
 }

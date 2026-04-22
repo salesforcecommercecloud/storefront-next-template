@@ -19,7 +19,7 @@ import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
 import { mockConfig, mockBuildConfig } from './config';
-import { TargetProviders } from '@/targets/target-providers';
+import { UITargetProviders } from '@/targets/ui-target-providers';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 
@@ -84,7 +84,7 @@ export function AllProvidersWrapper({
                 currency={currency}>
                 {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
                 <StoreLocatorProvider>
-                    <TargetProviders>{children}</TargetProviders>
+                    <UITargetProviders>{children}</UITargetProviders>
                     {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
                 </StoreLocatorProvider>
             </SiteProvider>

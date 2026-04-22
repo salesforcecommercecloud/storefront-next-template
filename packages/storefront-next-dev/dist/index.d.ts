@@ -138,6 +138,50 @@ declare function transformTargetPlaceholderPlugin(): {
   } | null;
 };
 //#endregion
+//#region src/plugins/uiTargetDevMode.d.ts
+interface UITargetDevModeConfig {
+  /**
+   * Enable dev mode visual markers. Defaults to false.
+   * Set via VITE_UI_TARGET_DEV_MODE=true environment variable.
+   */
+  enabled?: boolean;
+  /**
+   * Build-time filter: only show targets matching a category prefix.
+   * Set via VITE_TARGET_FILTER_CATEGORY=pdp environment variable.
+   * @example filterCategory: 'pdp' — only shows targets whose id starts with "pdp."
+   */
+  filterCategory?: string;
+  /**
+   * Map of targetId → hint label for overlay grouping/filtering.
+   * Built from target-config.json at config time and injected into each dev marker
+   * as a __hint__ prop, which is emitted as a data-ui-target-hint DOM attribute.
+   * Example: { 'emailSignUp.consent.marketing': 't/my-branch/W-123', 'checkout.contactInfo': 'pr:1384' }
+   */
+  hintMap?: Record<string, string>;
+}
+/**
+ * Vite plugin that adds visual markers to UITarget components in development.
+ *
+ * PRODUCTION: This plugin is completely inactive - zero overhead.
+ * DEVELOPMENT: Transforms UITarget JSX to add visual debugging markers.
+ *
+ * @example
+ * // Source code:
+ * <UITarget targetId="pdp.loyalty.badge">
+ *   <Widget />
+ * </UITarget>
+ *
+ * // Transformed in DEV mode:
+ * <UITargetDevMarker
+ *   targetId="pdp.loyalty.badge"
+ *   __file__="/src/components/product.tsx"
+ *   __hasChildren__={true}
+ * >
+ *   <Widget />
+ * </UITargetDevMarker>
+ */
+declare function uiTargetDevModePlugin(config?: UITargetDevModeConfig): Plugin;
+//#endregion
 //#region src/plugins/hybridProxy.d.ts
 
 interface HybridProxyPluginOptions {
@@ -417,5 +461,5 @@ interface GenerateMetadataResult {
 }
 declare function generateMetadata(projectDirectory: string, metadataDirectory: string, options?: GenerateMetadataOptions): Promise<GenerateMetadataResult>;
 //#endregion
-export { type GenerateMetadataOptions, type GenerateMetadataResult, type HybridProxyPluginOptions, type StorefrontNextTargetsConfig, clearCache, createServer, storefrontNextTargets as default, extractPatterns, generateMetadata, hybridProxyPlugin, loadConfigFromEnv, loadProjectConfig, shouldRouteToNext, testPatterns, transformTargetPlaceholderPlugin, trimExtensions };
+export { type GenerateMetadataOptions, type GenerateMetadataResult, type HybridProxyPluginOptions, type StorefrontNextTargetsConfig, type UITargetDevModeConfig, clearCache, createServer, storefrontNextTargets as default, extractPatterns, generateMetadata, hybridProxyPlugin, loadConfigFromEnv, loadProjectConfig, shouldRouteToNext, testPatterns, transformTargetPlaceholderPlugin, trimExtensions, uiTargetDevModePlugin };
 //# sourceMappingURL=index.d.ts.map

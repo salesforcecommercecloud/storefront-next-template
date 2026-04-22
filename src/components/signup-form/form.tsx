@@ -19,6 +19,7 @@ import { PasswordRequirement } from '@/components/password-requirements';
 import { usePasswordValidation } from '@/hooks/use-password-validation';
 import { type SignupFormProps } from './types';
 import { useTranslation } from 'react-i18next';
+import { UITarget } from '@/targets/ui-target';
 
 export function SignupForm({ error }: SignupFormProps) {
     const {
@@ -124,6 +125,12 @@ export function SignupForm({ error }: SignupFormProps) {
                         <p className="mt-1 text-sm text-destructive">{t('passwordsDoNotMatch')}</p>
                     )}
                 </div>
+
+                <UITarget targetId="userRegistration.consent.marketing" />
+                <UITarget targetId="userRegistration.consent.tos" />
+                <UITarget targetId="userRegistration.loyalty.enrollment" />
+                <UITarget targetId="userRegistration.identity.verification" />
+                <UITarget targetId="userRegistration.address.autocomplete" />
 
                 <div>
                     <Button

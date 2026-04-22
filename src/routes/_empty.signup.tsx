@@ -22,6 +22,7 @@ import { registerCustomer } from '@/lib/api/auth/register';
 
 // components
 import { SignupForm } from '@/components/signup-form';
+import { UITarget } from '@/targets/ui-target';
 import { SeoMeta } from '@/components/seo-meta';
 
 // utils
@@ -134,6 +135,7 @@ export default function Signup(): ReactElement {
                             </div>
                         </Form>
                     </Card>
+                    <UITarget targetId="userRegistration.address.validation" />
                 </div>
             </div>
         </>

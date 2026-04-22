@@ -113,7 +113,7 @@ import { PageDesignerInit } from '@/page-designer-init';
 import appStylesHref from './theme/index.css?url';
 
 // Extensions
-import { TargetProviders } from '@/targets/target-providers';
+import { UITargetProviders } from '@/targets/ui-target-providers';
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
@@ -305,6 +305,8 @@ export function Layout({ children }: PropsWithChildren) {
                 <ToasterTheme />
                 <ScrollRestoration />
                 <Scripts />
+                {/* Dev-only overlay: mounts outside the React tree to avoid interfering with app state/context. Zero production overhead — tree-shaken by Vite when PROD=true. */}
+                <UITargetDevModeInit />
             </body>
         </html>
     );
@@ -569,7 +571,7 @@ export default function App({
 
     return (
         <ComposeProviders providers={providers}>
-            <TargetProviders>
+            <UITargetProviders>
                 <AuthActionExecutor />
                 {hybridEnabled && <BackNavigationRevalidator />}
                 <PageDesignerProvider
@@ -582,7 +584,7 @@ export default function App({
                 </PageDesignerProvider>
                 <TrackingConsentBanner />
                 {typeof window !== 'undefined' && <PageViewTracker />}
-            </TargetProviders>
+            </UITargetProviders>
             {(appConfig.commerceAgent?.enabled === 'true' || appConfig.commerceAgent?.enabled === true) && (
                 <ShopperAgent
                     commerceAgentConfiguration={appConfig.commerceAgent}
@@ -620,5 +622,29 @@ function BackNavigationRevalidator() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    return null;
+}
+
+/**
+ * Initialize UITarget dev mode overlay (DEV ONLY - zero production overhead)
+ * Lazy-loads the overlay when VITE_UI_TARGET_DEV_MODE=true
+ */
+function UITargetDevModeInit() {
+    useEffect(() => {
+        // Only runs in browser
+        if (typeof window === 'undefined') return;
+
+        // Only in development
+        if (import.meta.env.PROD) return;
+
+        // Only if enabled
+        if (import.meta.env.VITE_UI_TARGET_DEV_MODE !== 'true') return;
+
+        // Lazy load the overlay
+        void import('@/lib/ui-target-dev-mode').then(({ initUITargetDevMode }) => {
+            void initUITargetDevMode();
+        });
+    }, []);
+
     return null;
 }

@@ -140,6 +140,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
                 <div className="pb-4 lg:hidden" data-testid="header-search-mobile">
                     <LocationKeyedSearch />
                 </div>
+                <UITarget targetId="header.bnpl.banner" />
             </div>
         </header>
     );

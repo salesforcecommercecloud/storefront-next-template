@@ -15,6 +15,6 @@
  */
 import type { ReactNode } from 'react';
 
-export function TargetProviders({ children }: { children: ReactNode }) {
+export function UITargetProviders({ children }: { children: ReactNode }) {
     return <>{children}</>;
 }

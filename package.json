@@ -11,6 +11,8 @@
         "dev": "pnpm locales:aggregate-extensions && sfnext dev",
         "dev:debug": "cross-env NODE_OPTIONS=--inspect sfnext dev",
         "dev:log": "cross-env SFCC_LOG_LEVEL=debug sfnext dev",
+        "dev:ui-targets": "cross-env VITE_UI_TARGET_DEV_MODE=true pnpm dev",
+        "smoke-test:generate": "node src/lib/ui-target-dev-mode/smoke-test/generate-config.cjs",
         "deploy:cartridge": "sfnext deploy-cartridge",
         "deploy:cartridge:clean": "sfnext deploy-cartridge --delete",
         "generate:cartridge": "sfnext generate-cartridge",

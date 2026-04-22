@@ -238,20 +238,20 @@ describe('target-utils', () => {
     describe('injectTargetContextProviders', () => {
         const code = `
       import React from "react";
-      import { TargetProviders } from '@/targets/target-providers';
+      import { UITargetProviders } from '@/targets/ui-target-providers';
       export default function Root({ children }) { 
         const test = () => {
           return 'test';
         }
-        return <TargetProviders>{children}</TargetProviders>
+        return <UITargetProviders>{children}</UITargetProviders>
       }
     `;
 
         const codeWithVariableDeclaration = `
             import React from "react";
-            import { TargetProviders } from '@/targets/target-providers';
+            import { UITargetProviders } from '@/targets/ui-target-providers';
             export default function Root({ children }) { 
-                const test = <TargetProviders>{children}</TargetProviders>;
+                const test = <UITargetProviders>{children}</UITargetProviders>;
                 return {test}
             }
         `;
@@ -277,21 +277,21 @@ describe('target-utils', () => {
             expect(result).toContain('<Bar_BazProvider>');
             // All providers and children are nested
             expect(result?.indexOf('<Foo_BarProvider>') ?? -1).toBeLessThan(result?.indexOf('<Bar_BazProvider>') ?? -1);
-            expect(result).not.toContain('TargetProviders');
+            expect(result).not.toContain('UITargetProviders');
         });
 
-        it('should wrap TargetProviders children in context providers in variable declaration', () => {
+        it('should wrap UITargetProviders children in context providers in variable declaration', () => {
             const result = transformTargets(codeWithVariableDeclaration, {}, contextProviders);
             expect(result).toContain('<Foo_BarProvider>');
             expect(result).toContain('<Bar_BazProvider>');
             // All providers and children are nested
             expect(result?.indexOf('<Foo_BarProvider>') ?? -1).toBeLessThan(result?.indexOf('<Bar_BazProvider>') ?? -1);
-            expect(result).not.toContain('TargetProviders');
+            expect(result).not.toContain('UITargetProviders');
         });
 
-        it('should remove TargetProviders without ComposeProviders', () => {
+        it('should remove UITargetProviders without ComposeProviders', () => {
             const result = transformTargets(code, {}, []);
-            expect(result).not.toContain('TargetProviders');
+            expect(result).not.toContain('UITargetProviders');
             expect(result).toContain('<>{children}</>');
         });
     });
@@ -371,6 +371,27 @@ describe('target-utils', () => {
             expect(contextProviders[0].path).toContain('zzz-provider.tsx');
             expect(contextProviders[1].path).toContain('store-locator.tsx');
             expect(contextProviders[2].path).toContain('yyy-provider.tsx');
+        });
+
+        it('should include a devOnly extension in non-production builds', () => {
+            const extensionConfig = fs.readJsonSync(extensionConfigPath);
+            extensionConfig.devOnly = true;
+            fs.writeJsonSync(extensionConfigPath, extensionConfig);
+
+            const { componentRegistry } = buildTargetRegistry(join(extensionsRoot, 'src'), { isProduction: false });
+            expect(componentRegistry['footer.ourcompany.start']).toHaveLength(2);
+        });
+
+        it('should exclude a devOnly extension in production builds', () => {
+            const extensionConfig = fs.readJsonSync(extensionConfigPath);
+            extensionConfig.devOnly = true;
+            fs.writeJsonSync(extensionConfigPath, extensionConfig);
+
+            const { componentRegistry, contextProviders } = buildTargetRegistry(join(extensionsRoot, 'src'), {
+                isProduction: true,
+            });
+            expect(componentRegistry['footer.ourcompany.start']).toBeUndefined();
+            expect(contextProviders).toHaveLength(0);
         });
     });
 });

@@ -30,6 +30,7 @@ export function transformTargetPlaceholderPlugin() {
     let componentRegistry: TargetComponentRegistry;
     let contextProviders: TargetContextProviderConfig[];
     let sourceDir: string;
+    let isProduction = false;
 
     return {
         name: 'storefront-next:transform-target-placeholder',
@@ -39,13 +40,20 @@ export function transformTargetPlaceholderPlugin() {
             sourceDir =
                 config.resolve.alias.find((alias) => alias.find === '@')?.replacement ||
                 path.resolve(__dirname, './src');
+            isProduction = config.mode === 'production';
         },
         buildStart() {
             // Build the registry once at the start of the build
-            ({ componentRegistry, contextProviders } = buildTargetRegistry(sourceDir));
+            ({ componentRegistry, contextProviders } = buildTargetRegistry(sourceDir, { isProduction }));
         },
 
         transform(code: string, id: string) {
+            // Skip UITarget transformation if dev mode is active
+            // Let targetDevModePlugin handle it instead (adds visual markers)
+            if (process.env.VITE_UI_TARGET_DEV_MODE === 'true') {
+                return null;
+            }
+
             try {
                 const transformedCode = transformTargets(code, componentRegistry, contextProviders);
                 if (transformedCode) {

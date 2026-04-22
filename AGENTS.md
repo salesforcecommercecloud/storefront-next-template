@@ -117,6 +117,16 @@ pnpm bundlesize:test
 pnpm lighthouse:ci
 ```
 
+## UITarget Dev Mode
+
+```bash
+# Start dev server with visual UITarget overlay (filter panel groups targets by branch/PR)
+pnpm --filter template-retail-rsc-app dev:ui-targets
+
+# Sync target-config.json after adding new UITargets (additive — preserves existing hints)
+pnpm --filter template-retail-rsc-app smoke-test:generate
+```
+
 ## Storybook
 
 ```bash

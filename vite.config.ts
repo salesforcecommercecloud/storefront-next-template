@@ -24,12 +24,33 @@ import coverageConfigThresholds from './vitest.thresholds';
 import tailwindcss from '@tailwindcss/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import devtoolsJson from 'vite-plugin-devtools-json';
-import storefrontNextTargets, { hybridProxyPlugin, shouldRouteToNext } from '@salesforce/storefront-next-dev';
+import storefrontNextTargets, {
+    hybridProxyPlugin,
+    shouldRouteToNext,
+    uiTargetDevModePlugin,
+} from '@salesforce/storefront-next-dev';
 import bundlesize from 'vite-plugin-bundlesize';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'));
+
+/**
+ * Load the hintMap from target-config.json for UITarget dev mode overlay filtering.
+ * hintMap is defined in the uiTargetDevModePlugin source but is omitted from the compiled
+ * .d.ts by rollup-plugin-dts, so we cast at the call site to avoid a type error.
+ */
+function loadUiTargetHintMap(): Record<string, string> {
+    try {
+        const configPath = resolve(__dirname, 'src/extensions/ui-target-smoke-test/target-config.json');
+        const raw = JSON.parse(readFileSync(configPath, 'utf-8')) as {
+            components: { targetId: string; hint?: string }[];
+        };
+        return Object.fromEntries(raw.components.filter((c) => c.hint).map((c) => [c.targetId, c.hint as string]));
+    } catch {
+        return {};
+    }
+}
 const enableBundlesizeCheck = !!process.env.BUNDLES_SIZE_CHECK;
 const enableBundlesizeAnalyze = !!process.env.BUNDLES_SIZE_ANALYZE;
 const enableReadableChunkNames = enableBundlesizeCheck || enableBundlesizeAnalyze;
@@ -108,6 +129,13 @@ export default defineConfig(({ mode }) => {
             tailwindcss(),
             tsconfigPaths(),
             devtoolsJson(),
+            // UITarget dev mode - visual markers (runs BEFORE storefrontNextTargets)
+            uiTargetDevModePlugin({
+                enabled: process.env.VITE_UI_TARGET_DEV_MODE === 'true',
+                filterCategory: process.env.VITE_TARGET_FILTER_CATEGORY,
+                hintMap: loadUiTargetHintMap(),
+            } as Parameters<typeof uiTargetDevModePlugin>[0]),
+            // Target system - extension transforms (always needed)
             storefrontNextTargets({
                 readableChunkNames: enableReadableChunkNames,
                 staticRegistry: {

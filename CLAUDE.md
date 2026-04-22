@@ -424,6 +424,39 @@ See `src/extensions/README.md` for details.
 
 See `docs/README-ADAPTER-PATTERN-GUIDE.md` for complete implementation guide.
 
+### Adding a UITarget
+
+UITargets are extension points that allow extensions to inject or wrap UI in the storefront.
+
+1. Add the target in your component:
+   ```tsx
+   // Insertion point — extension adds new UI here
+   <UITarget targetId="my.feature.slot" />
+
+   // Wrapper point — extension can enhance existing UI
+   <UITarget targetId="my.feature.slot">
+       <ExistingContent />
+   </UITarget>
+   ```
+
+2. Sync the smoke test config (adds new entries, never overwrites existing hints):
+   ```bash
+   pnpm --filter template-retail-rsc-app smoke-test:generate
+   ```
+   New targets are tagged with the current branch name as their hint. Existing entries are preserved exactly as-is.
+
+3. Visually inspect UITargets during development:
+   ```bash
+   pnpm --filter template-retail-rsc-app dev:ui-targets
+   ```
+   A floating overlay appears on every page with a live count and filter buttons grouping targets by branch/PR hint.
+
+4. Verify via smoke test (works in any environment, no env var needed):
+   ```
+   http://localhost:5173/any-page?uiTargetSmoke=1
+   ```
+   Red markers appear for every registered UITarget slot.
+
 ### Running Tests for a Single Component
 
 ```bash

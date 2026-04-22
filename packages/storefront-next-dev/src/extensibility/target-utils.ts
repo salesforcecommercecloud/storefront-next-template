@@ -45,6 +45,8 @@ export interface TargetComponentConfig {
     namespace: string;
     componentName: string;
     order: number;
+    /** Optional label used by UITarget dev mode overlay for grouping/filtering (e.g. "t/my-branch/W-123", "pr:1384"). */
+    hint?: string;
 }
 
 export interface TargetContextProviderConfig {
@@ -59,7 +61,7 @@ export type TargetComponentRegistry = Record<string, TargetComponentConfig[]>;
 const traverse = (traverseModule as unknown as { default: typeof traverseModule }).default || traverseModule;
 
 const TARGET_COMPONENT_TAG = 'UITarget';
-const TARGET_PROVIDERS_TAG = 'TargetProviders';
+const TARGET_PROVIDERS_TAG = 'UITargetProviders';
 const TARGET_ID_ATTRIBUTE = 'targetId';
 
 /**
@@ -300,7 +302,7 @@ export function transformTargets(
         traverse(ast, {
             ImportDeclaration(nodePath: NodePath<BabelImportDeclaration>) {
                 const source = nodePath.node.source.value;
-                if (source.includes('@/targets/target-providers')) {
+                if (source.includes('@/targets/ui-target-providers')) {
                     nodePath.replaceWith(jsxText(replacementImportStatements));
                 }
             },
@@ -316,7 +318,10 @@ export function transformTargets(
  * @param sourceDir - the source directory of the project
  * @returns the target registry
  */
-export function buildTargetRegistry(rootDir: string): {
+export function buildTargetRegistry(
+    rootDir: string,
+    options: { isProduction?: boolean } = {}
+): {
     componentRegistry: TargetComponentRegistry;
     contextProviders: TargetContextProviderConfig[];
 } {
@@ -345,6 +350,10 @@ export function buildTargetRegistry(rootDir: string): {
             const configPath = path.join(extensionDirPath, dir.name, TARGET_CONFIG_FILENAME);
             if (fs.existsSync(configPath)) {
                 const extensionConfig = fs.readJsonSync(configPath);
+                // Skip dev-only extensions in production builds
+                if (options.isProduction && extensionConfig.devOnly === true) {
+                    continue;
+                }
                 if (extensionConfig && extensionConfig.components) {
                     for (const component of extensionConfig.components) {
                         const { targetId, path: componentPath, order = 0 } = component;

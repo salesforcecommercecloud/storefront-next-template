@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense, useEffect } from 'react';
+import { UITarget } from '@/targets/ui-target';
 import AddressDisplay from '@/components/address-display';
 import { Await, type LoaderFunctionArgs } from 'react-router';
 import { Link } from '@/components/link';
@@ -354,6 +355,7 @@ function OrderConfirmationContent({
                                         {shippingMethodName}
                                     </p>
                                 </div>
+                                <UITarget targetId="orderConfirmation.shipping.tracking" />
                             </CardContent>
                         </Card>
                     );
@@ -450,7 +452,7 @@ function OrderConfirmationContent({
                         <div className="space-y-2 border-t pt-4">
                             {summaryRows.map((row) => {
                                 const isPromotion = row.key === 'promotions' && row.value !== 0;
-                                return (
+                                const rowEl = (
                                     <div key={row.key} className="flex items-center justify-between text-sm">
                                         <span
                                             className={
@@ -471,6 +473,13 @@ function OrderConfirmationContent({
                                                 : formatCurrency(row.value, i18n.language, currency)}
                                         </span>
                                     </div>
+                                );
+                                return row.key === 'tax' ? (
+                                    <UITarget key={row.key} targetId="orderConfirmation.tax.summary">
+                                        {rowEl}
+                                    </UITarget>
+                                ) : (
+                                    rowEl
                                 );
                             })}
                         </div>

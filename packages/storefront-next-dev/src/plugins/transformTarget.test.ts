@@ -99,7 +99,17 @@ describe('transformTargetPlaceholderPlugin', () => {
 
     it('should build registry at buildStart()', () => {
         vitePlugin.buildStart();
-        expect(buildTargetRegistryMock).toHaveBeenCalledWith('src');
+        expect(buildTargetRegistryMock).toHaveBeenCalledWith('src', { isProduction: false });
+    });
+
+    it('should pass isProduction: true when config.mode is production', () => {
+        const productionConfig = {
+            ...viteConfig,
+            mode: 'production',
+        } as unknown as ResolvedConfig;
+        vitePlugin.configResolved(productionConfig);
+        vitePlugin.buildStart();
+        expect(buildTargetRegistryMock).toHaveBeenCalledWith('src', { isProduction: true });
     });
 
     it('should transform root.tsx with injectTargetContextProviders', () => {
