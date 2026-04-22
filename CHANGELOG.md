@@ -1,6 +1,6 @@
 ## v0.4.0-dev (Apr 15, 2026)
 
-- Update performance-related documentation ([#1485](https://github.com/commerce-emu/storefront-next/pull/1485))
+- Update performance-related documentation ([#1485](https://github.com/commerce-emu/storefront-next/pull/1485), [#1486](https://github.com/commerce-emu/storefront-next/pull/1486))
 - Ensure `<Link/>`, `<NavLink/>`, and `<useNavigate/>` also rewrite index routes ([#1470](https://github.com/commerce-emu/storefront-next/pull/1470))
 - Prevent unnecessary navigation menu re-renders ([#1446](https://github.com/commerce-emu/storefront-next/pull/1446))
 - My Account: overview “rate recent purchases” card (below recent orders) linking to order details; order details per-line Rate & Review using the PDP write-review modal, with “Review submitted” state after submit (@W-20873965)

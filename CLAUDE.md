@@ -369,7 +369,8 @@ See `src/extensions/README.md` for details.
 - [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) — UI and styling (Tailwind, shadcn, design tokens)
 - [docs/README-IMAGES.md](./docs/README-IMAGES.md) — Image rendering and alt text strategy
 - [docs/README-SEO.md](./docs/README-SEO.md) — SEO: page titles, meta tags, canonical URLs
-- [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) — Performance monitoring and optimization
+- [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) — Performance best practices: web fonts, third-party scripts, bundle optimization
+- [docs/README-PERFORMANCE-METRICS.md](./docs/README-PERFORMANCE-METRICS.md) — Performance monitoring (metrics, Server-Timing, timeline)
 - [README-PAGE-DESIGNER.md](./README-PAGE-DESIGNER.md) — Page Designer component development
 
 **Testing & Quality:**
