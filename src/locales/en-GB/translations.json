@@ -370,7 +370,7 @@
             "editCart": "Edit cart"
         },
         "checkout": {
-            "proceedToCheckout": "Proceed to Checkout",
+            "continueToCheckout": "Continue to Checkout",
             "secure": "Secure"
         },
         "attributes": {

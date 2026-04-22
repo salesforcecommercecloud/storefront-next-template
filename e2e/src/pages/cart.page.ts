@@ -182,9 +182,9 @@ class CartPage {
     }
 
     /**
-     * Proceed to checkout
+     * Continue to checkout
      */
-    proceedToCheckout(): void {
+    continueToCheckout(): void {
         I.click(this.locators.checkoutButton);
     }
 

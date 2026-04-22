@@ -44,7 +44,7 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
         const logSubmit = action('cart-summary-submit');
 
         const STOP_PROPAGATION_LABELS = new Set<string>([
-            t('cart:checkout.proceedToCheckout'),
+            t('cart:checkout.continueToCheckout'),
             t('cart:items.editCart'),
         ]);
 

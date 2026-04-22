@@ -16,7 +16,7 @@
 import { type ReactElement } from 'react';
 
 // Third-party
-import { ShoppingCart, Lock } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Link } from '@/components/link';
 
 // Commerce SDK
@@ -341,10 +341,7 @@ export default function OrderSummary({
                             <>
                                 <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />
                                 <Button asChild className="w-full text-sm mt-2">
-                                    <Link to="/checkout">
-                                        {t('checkout.proceedToCheckout')}
-                                        <Lock className="ml-2 w-4 h-4" aria-label={t('checkout.secure')} />
-                                    </Link>
+                                    <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
                                 </Button>
                                 <UITarget targetId="sfcc.cart.payments.expressCheckout" />
 

@@ -434,7 +434,7 @@ Scenario('Interactive test development demo', async () => {
     
     // Try these in the pause console:
     // > "Search for winter jackets and filter by size Large"
-    // > "Add the first product to cart and proceed to checkout"
+    // > "Add the first product to cart and continue to checkout"
     // > I.askForPageObject("checkout")
     
     storefrontPage.validatePageLoaded();

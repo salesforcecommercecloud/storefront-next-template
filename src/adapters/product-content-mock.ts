@@ -214,7 +214,7 @@ const MOCK_ESTIMATED_DELIVERY_DATA: EstimatedDeliveryData = {
             'We ship to over 50 countries worldwide. International shipping rates and delivery times vary by destination.',
             'Customs & Duties: International orders may be subject to customs fees and import duties, which are the responsibility of the customer.',
         ],
-        note: 'For specific international shipping rates, please proceed to checkout and enter your shipping address.',
+        note: 'For specific international shipping rates, please continue to checkout and enter your shipping address.',
     },
     orderTracking: {
         heading: 'Order Tracking',

@@ -385,7 +385,7 @@ export default function Cart(): ReactElement {
             <SeoMeta
                 title={t('meta.title', { defaultValue: 'Cart' })}
                 description={t('meta.description', {
-                    defaultValue: 'Review the items in your shopping cart and proceed to checkout.',
+                    defaultValue: 'Review the items in your shopping cart and continue to checkout.',
                 })}
                 openGraph={{ type: 'website', url: pageData.pageUrl }}
             />

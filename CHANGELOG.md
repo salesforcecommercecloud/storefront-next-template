@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 15, 2026)
 
+- Update checkout CTA text ([#1480](https://github.com/commerce-emu/storefront-next/pull/1480))
 - Update performance-related documentation ([#1485](https://github.com/commerce-emu/storefront-next/pull/1485), [#1486](https://github.com/commerce-emu/storefront-next/pull/1486))
 - Ensure `<Link/>`, `<NavLink/>`, and `<useNavigate/>` also rewrite index routes ([#1470](https://github.com/commerce-emu/storefront-next/pull/1470))
 - Prevent unnecessary navigation menu re-renders ([#1446](https://github.com/commerce-emu/storefront-next/pull/1446))
