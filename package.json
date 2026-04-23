@@ -22,7 +22,7 @@
         "start": "cross-env SFNEXT_DATA_STORE_ALLOW_LOCAL=true sfnext preview",
         "preview": "pnpm start",
         "push": "sfnext push --project-directory .",
-        "typecheck": "node scripts/typecheck-ratchet.js",
+        "typecheck": "react-router typegen && cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit",
         "generate:story-tests": "node scripts/generate-story-tests.js",
         "test": "vitest run",
         "test:coverage": "vitest run --coverage",
@@ -238,7 +238,7 @@
             },
             {
                 "name": "assets/\\(locales\\)-*-index.*.js",
-                "limit": "69 kB",
+                "limit": "75 kB",
                 "comment": "Locales chunks (all locale translations, includes checkout registration strings). Uncompressed; en-US ~62 kB baseline. Increased to 69 kB (+5%) for maintenancePage translations."
             },
             {

@@ -19,6 +19,13 @@
         "productGeneric": "Prodotto",
         "noProductsFound": "Nessun prodotto trovato",
         "productCarousel": "Carosello prodotti",
+        "productImageAlt": "Immagine prodotto",
+        "suggestionImageAlt": "Immagine suggerimento",
+        "hero": {
+            "defaultTitle": "Acquista ora",
+            "defaultImageAlt": "Immagine hero",
+            "defaultCtaText": "Acquista ora"
+        },
         "previousImage": "Immagine precedente",
         "nextImage": "Immagine successiva"
     },
@@ -85,7 +92,18 @@
         "closeMenu": "Chiudi menu",
         "mobileNavigation": "Menu di navigazione mobile",
         "expandCategory": "Espandi {{category}}",
-        "collapseCategory": "Comprimi {{category}}"
+        "collapseCategory": "Comprimi {{category}}",
+        "menu": {
+            "yourLists": "Le tue liste",
+            "yourAccount": "Il tuo account",
+            "savedItems": "Articoli salvati",
+            "overview": "Panoramica",
+            "addressBook": "Rubrica indirizzi",
+            "paymentMethods": "Metodi di pagamento",
+            "signInForBestExperience": "Accedi per la migliore esperienza",
+            "newCustomer": "Sei un nuovo cliente?",
+            "createAccount": "Crea account"
+        }
     },
     "login": {
         "title": "Accedi al Suo account",
@@ -146,7 +164,8 @@
         "resettingPassword": "Reimpostazione password in corso...",
         "invalidToken": "Link di reimpostazione non valido o scaduto. Ne richieda uno nuovo.",
         "resetSuccess": "Password reimpostata con successo! Accesso in corso...",
-        "resetSuccessToast": "Password reimpostata con successo! Acceda con la Sua nuova password."
+        "resetSuccessToast": "Password reimpostata con successo! Acceda con la Sua nuova password.",
+        "enterNewPassword": "Inserisca la Sua nuova password qui sotto"
     },
     "signup": {
         "title": "Crei il Suo account",
@@ -538,11 +557,18 @@
             "billingSummaryTitle": "Indirizzo di fatturazione",
             "viewAllMore": "Visualizza tutto (altri {{count}})",
             "viewLess": "Mostra meno",
-            "savePaymentToProfile": "Salva questo metodo di pagamento nel mio account"
+            "savePaymentToProfile": "Salva questo metodo di pagamento nel mio account",
+            "selectAnAddress": "Seleziona un indirizzo"
         },
         "expressPayments": {
             "title": "Pagamento Rapido",
-            "separator": "o continua qui sotto"
+            "separator": "o continua qui sotto",
+            "venmoUnavailable": "Venmo non è disponibile su questo dispositivo.",
+            "applePayLabel": "Apple Pay",
+            "googlePayLabel": "Google Pay",
+            "amazonPayLabel": "Amazon Pay",
+            "payPalLabel": "PayPal",
+            "venmoLabel": "Venmo"
         },
         "common": {
             "edit": "Modifica",
@@ -762,10 +788,12 @@
                 "accountDetailsDesc": "Visualizza e modifica il tuo profilo",
                 "orderHistoryDesc": "Monitora i tuoi ordini",
                 "wishlistDesc": "Articoli che hai salvato",
-                "addressesDesc": "Gestisci i tuoi indirizzi"
+                "addressesDesc": "Gestisci i tuoi indirizzi",
+                "paymentMethodsDesc": "Gestisci i tuoi metodi di pagamento"
             },
             "curatedForYou": {
-                "title": "Selezionato per te"
+                "title": "Selezionato per te",
+                "subtitle": "Selezionato per te in base alla tua attività"
             },
             "appDownload": {
                 "title": "Scarica la nostra app",
@@ -878,7 +906,14 @@
             "trackingNumber": "Numero di tracking",
             "shippingAddress": "Indirizzo di spedizione",
             "paymentMethod": "Metodo di pagamento",
-            "paymentMethodEndingIn": "{{cardType}} che termina con {{lastDigits}}"
+            "paymentMethodEndingIn": "{{cardType}} che termina con {{lastDigits}}",
+            "orderDate": "Data ordine",
+            "total": "Totale",
+            "items": "Articoli",
+            "pickupLocation": "Punto di ritiro",
+            "location": "Posizione",
+            "address": "Indirizzo",
+            "viewOrderDetails": "Visualizza dettagli ordine"
         },
         "addresses": {
             "empty": "Nessun indirizzo salvato. Aggiunga un indirizzo per rendere il checkout più veloce!",
@@ -897,7 +932,17 @@
             "removeConfirmTitle": "Conferma rimozione indirizzo",
             "removeConfirmDescription": "È sicuro di voler rimuovere l'indirizzo \"{{addressName}}\"?",
             "removeCancelButton": "Annulla",
-            "removeConfirmButton": "Sì, rimuovi indirizzo"
+            "removeConfirmButton": "Sì, rimuovi indirizzo",
+            "subtitle": "Gestisci i tuoi indirizzi di spedizione",
+            "addNewAddress": "Aggiungi nuovo indirizzo",
+            "default": "Predefinito",
+            "setDefault": "Imposta come predefinito",
+            "setDefaultSuccess": "Indirizzo impostato come predefinito.",
+            "setDefaultError": "Impossibile impostare l'indirizzo come predefinito. Riprova.",
+            "removeDialogTitle": "Rimuovi indirizzo",
+            "removeDialogDescription": "Sei sicuro di voler rimuovere questo indirizzo?",
+            "removeDefaultWarning": "Questo è il tuo indirizzo predefinito. La rimozione imposterà automaticamente un altro indirizzo come predefinito, se disponibile.",
+            "removeButton": "Rimuovi"
         },
         "addressForm": {
             "addressTitleLabel": "Titolo indirizzo",
@@ -922,8 +967,13 @@
             "successMessage": "Indirizzo salvato con successo",
             "errorMessage": "Impossibile salvare l'indirizzo. Riprovi.",
             "validation": {
-                "stateRequired": "Stato/Provincia è obbligatorio"
-            }
+                "stateRequired": "Stato/Provincia è obbligatorio",
+                "addressTitleRequired": "Il titolo dell'indirizzo è obbligatorio",
+                "addressTitleMaxLength": "Il titolo dell'indirizzo deve contenere al massimo 256 caratteri",
+                "phoneRequired": "Il numero di telefono è obbligatorio"
+            },
+            "addressTitlePlaceholder": "es. Casa, Lavoro, Casa della mamma",
+            "phonePlaceholder": "(000) 123-4567"
         },
         "paymentMethods": {
             "pageSubtitle": "Gestisca i Suoi metodi di pagamento, carte regalo e credito del negozio",
@@ -985,8 +1035,18 @@
                 "lastNameRequired": "Il cognome è obbligatorio",
                 "emailRequired": "L'email è obbligatoria",
                 "emailInvalid": "Inserisca un indirizzo email valido",
-                "phoneInvalid": "Inserisca un numero di telefono valido"
-            }
+                "phoneInvalid": "Inserisca un numero di telefono valido",
+                "birthdayFuture": "La data di nascita non può essere nel futuro"
+            },
+            "description": "Gestisci le tue informazioni personali",
+            "gender": "Sesso",
+            "genderPlaceholder": "Seleziona sesso",
+            "genderOptions": {
+                "male": "Maschio",
+                "female": "Femmina"
+            },
+            "dateOfBirth": "Data di nascita",
+            "dateOfBirthPlaceholder": "Seleziona data di nascita"
         },
         "password": {
             "title": "Password",
@@ -1018,7 +1078,8 @@
                 "hasLowercase": "Almeno una lettera minuscola",
                 "hasNumber": "Almeno un numero",
                 "hasSpecial": "Almeno un carattere speciale"
-            }
+            },
+            "description": "Gestisci la tua password e le impostazioni di sicurezza"
         },
         "common": {
             "save": "Salva",
@@ -1040,6 +1101,39 @@
             "disclaimer": "Abilitando queste preferenze di comunicazione, accetti di ricevere comunicazioni di marketing da noi, inclusi offerte esclusive, ultime informazioni sui prodotti e novità sulle prossime collezioni. Consulta i nostri Termini e condizioni e l'Informativa sulla privacy per maggiori dettagli.",
             "updateError": "Impossibile aggiornare la preferenza di marketing. Riprova.",
             "partialSuccess": "Alcune preferenze sono state salvate. Aggiorna la pagina per vedere le impostazioni attuali."
+        },
+        "subtitle": "Gestisci le tue informazioni personali",
+        "interests": {
+            "title": "I tuoi interessi",
+            "description": "Aggiungi i tuoi interessi di design per ottenere contenuti, consigli e offerte personalizzati",
+            "selectedLabel": "I tuoi interessi selezionati",
+            "noneSelected": "Nessun interesse selezionato",
+            "noneInCategory": "Nessuno selezionato",
+            "addMore": "Aggiungi altri",
+            "addInterestsTitle": "Aggiungi i tuoi interessi",
+            "dialogTitle": "Seleziona i tuoi interessi",
+            "dialogDescription": "Scegli tra le categorie qui sotto per personalizzare la tua esperienza",
+            "selectCategory": "Seleziona {{category}}",
+            "selectCategoryDescription": "Scegli le opzioni che ti interessano",
+            "successMessage": "I tuoi interessi sono stati aggiornati.",
+            "errorMessage": "Impossibile aggiornare gli interessi. Riprova."
+        },
+        "interestsPreferences": {
+            "title": "Interessi e preferenze",
+            "description": "Aggiungi i tuoi interessi di design e gestisci le tue preferenze di acquisto",
+            "successMessage": "I tuoi interessi e preferenze sono stati aggiornati.",
+            "errorMessage": "Impossibile aggiornare. Riprova."
+        },
+        "preferences": {
+            "title": "Le tue preferenze",
+            "description": "Gestisci le tue preferenze di acquisto e l'iscrizione alla newsletter",
+            "noneSelected": "Nessuna selezionata",
+            "addMore": "Aggiungi altre",
+            "dialogTitle": "Seleziona opzioni",
+            "selectCategory": "Seleziona {{category}}",
+            "selectCategoryDescription": "Scegli le opzioni che si applicano a te",
+            "successMessage": "Le tue preferenze sono state aggiornate.",
+            "errorMessage": "Impossibile aggiornare le preferenze. Riprova."
         }
     },
     "home": {
@@ -1246,7 +1340,11 @@
         "viewCart": "Visualizza carrello",
         "delivery": "Consegna",
         "saved": "Risparmiato {{amount}}",
-        "free": "Gratuito"
+        "free": "Gratuito",
+        "productAltFallback": "Prodotto",
+        "emptyTitle": "Il tuo carrello è vuoto",
+        "emptyMessage": "Sembra che tu non abbia ancora aggiunto nulla al tuo carrello. Inizia a fare shopping per riempirlo di prodotti straordinari!",
+        "startShopping": "Inizia a fare shopping"
     },
     "trackingConsent": {
         "title": "Consenso al tracciamento",
@@ -1288,7 +1386,8 @@
     "addressSuggestionDropdown": {
         "suggested": "SUGGERITO",
         "closeSuggestions": "Chiudi suggerimenti",
-        "loading": "Caricamento suggerimenti..."
+        "loading": "Caricamento suggerimenti...",
+        "googleMapsLogoAlt": "Google Maps"
     },
     "infoModal": {
         "paymentScheduleDescription": "Dettagli piano di pagamento",
@@ -1364,6 +1463,22 @@
         "tryAgain": "Riprova"
     },
     "error": {
+        "403": {
+            "title": "Accesso limitato",
+            "message": "Non hai il permesso di visualizzare questa pagina. Se ritieni che questo sia un errore, contatta il nostro team di supporto.",
+            "secondaryMessage": "Nel frattempo, sentiti libero di sfogliare la nostra collezione."
+        },
+        "404": {
+            "title": "Pagina non trovata",
+            "message": "Non siamo riusciti a trovare la pagina che stai cercando. Potrebbe essere stata spostata o il link potrebbe essere errato.",
+            "secondaryMessage": "Non preoccuparti—puoi ancora esplorare la nostra collezione o tornare alla home.",
+            "details": "La pagina richiesta non è stata trovata."
+        },
+        "500": {
+            "title": "Si è verificato un errore",
+            "message": "Ci scusiamo, ma si è verificato un problema imprevisto da parte nostra. Il nostro team è stato notificato e sta lavorando per risolverlo.",
+            "secondaryMessage": "Riprova tra qualche istante o sfoglia il nostro negozio mentre risolviamo il problema."
+        },
         "defaultTitle": "Si è verificato un errore",
         "defaultDescription": "Si è verificato un errore",
         "defaultDetails": "Si è verificato un errore imprevisto.",
@@ -1375,22 +1490,63 @@
         "allRightsReserved": "Tutti i diritti riservati.",
         "recommendations": {
             "title": "Potrebbero interessarti anche"
+        }
+    },
+    "aboutUs": {
+        "breadcrumb": {
+            "home": "Home",
+            "aboutUs": "Chi siamo"
         },
-        "404": {
-            "title": "Pagina non trovata",
-            "message": "Non siamo riusciti a trovare la pagina che stai cercando. Potrebbe essere stata spostata o il link potrebbe essere errato.",
-            "secondaryMessage": "Non preoccuparti—puoi ancora esplorare la nostra collezione o tornare alla home.",
-            "details": "La pagina richiesta non è stata trovata."
+        "title": "Chi siamo",
+        "subtitle": "Scopri di più sulla nostra azienda e la nostra missione",
+        "section": {
+            "ourGoal": {
+                "title": "Costruito per il movimento. Progettato per la vita quotidiana.",
+                "content": "Ispirato dalla cultura urbana e dall'energia del movimento, Market Street è stato creato per unire performance, stile ed essenziali quotidiani in un'esperienza fluida. Crediamo che i grandi prodotti debbano muoversi con te—dalle strade allo studio, dal lavoro al weekend."
+            },
+            "ourVision": {
+                "title": "La nostra visione",
+                "content": "Ridefinire il retail moderno attraverso tecnologia, design ed esperienza del cliente—creando un ambiente commerciale che sembri semplice, ispirante e umano."
+            },
+            "ourValue": {
+                "title": "Perché esistiamo",
+                "content": "Esistiamo per rimuovere l'attrito tra le persone e ciò che amano. Per rendere lo shopping intuitivo, veloce e significativo."
+            },
+            "ourMission": {
+                "title": "I nostri valori",
+                "content": "Design con scopo—ogni prodotto, ogni interazione, ogni dettaglio è intenzionale.\nTecnologia che scompare—usiamo l'innovazione per semplificare, non per complicare.\nMentalità incentrata sul cliente—dalla scoperta alla consegna, il tuo percorso viene prima.\nSostenibilità in movimento—diamo priorità a materiali, fornitori e logistica responsabili."
+            },
+            "ourTeam": {
+                "title": "Un brand globale, un'anima di strada",
+                "content": "Market Street è nato dall'idea che il grande stile non debba sembrare irraggiungibile. Combiniamo ispirazione globale con una mentalità di strada, unendo cultura, performance e stile di vita in un'espressione fluida."
+            }
         },
-        "403": {
-            "title": "Accesso limitato",
-            "message": "Non hai il permesso di visualizzare questa pagina. Se ritieni che questo sia un errore, contatta il nostro team di supporto.",
-            "secondaryMessage": "Nel frattempo, sentiti libero di sfogliare la nostra collezione."
-        },
-        "500": {
-            "title": "Si è verificato un errore",
-            "message": "Ci scusiamo, ma si è verificato un problema imprevisto da parte nostra. Il nostro team è stato notificato e sta lavorando per risolverlo.",
-            "secondaryMessage": "Riprova tra qualche istante o sfoglia il nostro negozio mentre risolviamo il problema."
+        "contact": {
+            "title": "Siamo qui per aiutarti",
+            "intro": "Hai una domanda, un feedback o hai bisogno di supporto? Il nostro team è pronto ad assisterti.",
+            "phoneDisplay": "1-800-8060-6453",
+            "phoneHref": "tel:180080606453",
+            "hours": {
+                "weekdays": "Lunedì – Venerdì: 9:00 – 22:00 EST",
+                "weekends": "Sabato e domenica: 10:00 – 19:00 EST"
+            },
+            "cta": "Oppure inviaci un messaggio tramite il modulo — ti risponderemo il prima possibile.",
+            "form": {
+                "label": "Etichetta",
+                "nameLabel": "Nome",
+                "emailLabel": "Email",
+                "messageLabel": "Messaggio",
+                "placeholders": {
+                    "fullName": "Inserisci il tuo nome completo",
+                    "email": "tu@esempio.com",
+                    "topic": "Informazioni generali",
+                    "message": "Lasciaci un messaggio"
+                },
+                "submit": "Invia messaggio"
+            },
+            "toast": {
+                "success": "Messaggio inviato con successo."
+            }
         }
     }
 }

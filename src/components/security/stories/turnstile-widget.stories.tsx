@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useLayoutEffect, type ComponentType } from 'react';
+import { useLayoutEffect, type ComponentType, type ReactElement } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { action } from 'storybook/actions';
 import { expect } from 'storybook/test';
@@ -26,14 +26,16 @@ type TurnstileRenderOptions = {
     callback?: (token: string) => void;
     'error-callback'?: () => void;
     'expired-callback'?: () => void;
-    appearance?: string;
-    theme?: string;
-    size?: string;
+    appearance?: 'always' | 'execute' | 'interaction-only';
+    theme?: 'light' | 'dark' | 'auto';
+    size?: 'normal' | 'compact';
 };
 
 type TurnstileApi = {
-    render: (container: HTMLElement, options: TurnstileRenderOptions) => string;
+    render: (container: string | HTMLElement, options: TurnstileRenderOptions) => string;
+    reset: (widgetId: string) => void;
     remove: (widgetId: string) => void;
+    getResponse: (widgetId: string) => string;
 };
 
 function installTurnstileMock() {
@@ -50,7 +52,11 @@ function installTurnstileMock() {
             });
             return 'mock-widget-id';
         },
+        reset() {},
         remove() {},
+        getResponse() {
+            return '';
+        },
     };
     return () => {
         w.turnstile = previous;
@@ -58,20 +64,17 @@ function installTurnstileMock() {
     };
 }
 
-function withTurnstileMock(Story: ComponentType) {
-    function Decorated() {
-        useLayoutEffect(() => {
-            return installTurnstileMock();
-        }, []);
-        return <Story />;
-    }
-    return Decorated;
+function WithTurnstileMock({ Story }: { Story: ComponentType }): ReactElement {
+    useLayoutEffect(() => {
+        return installTurnstileMock();
+    }, []);
+    return <Story />;
 }
 
 const meta: Meta<typeof TurnstileWidget> = {
     title: 'SECURITY/TurnstileWidget',
     component: TurnstileWidget,
-    decorators: [withTurnstileMock],
+    decorators: [(Story) => <WithTurnstileMock Story={Story} />],
     parameters: {
         layout: 'centered',
         docs: {

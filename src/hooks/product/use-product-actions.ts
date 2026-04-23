@@ -716,7 +716,16 @@ export function useProductActions({
 
                 // Track cart item add
                 void analytics.trackCartItemAdd({
-                    cartItems: [bundleItem, ...childProductSelections],
+                    cartItems: [
+                        bundleItem as ShopperBasketsV2.schemas['ProductItem'],
+                        ...childProductSelections.map(
+                            (sel) =>
+                                ({
+                                    product: sel.product as ShopperBasketsV2.schemas['ProductItem']['product'],
+                                    quantity: sel.quantity,
+                                }) as ShopperBasketsV2.schemas['ProductItem']
+                        ),
+                    ],
                 });
             } catch {
                 setIsAddingToOrUpdatingCart(false);

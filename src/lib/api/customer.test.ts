@@ -564,6 +564,7 @@ describe('Customer API', () => {
                     }),
                     password: expect.any(String),
                 }),
+                params: {},
             });
 
             // Verify loginRegisteredUser was called with correct args

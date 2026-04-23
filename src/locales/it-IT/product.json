@@ -30,6 +30,7 @@
     "askAssistant": "Chiedi all'assistente",
     "faqQuestionSendToAssistantAriaLabel": "Apri lo Shopper Agent e chiedi: {{question}}",
     "description": "Descrizione",
+    "imageAlt": "Immagine prodotto",
     "addingToCart": "Aggiunta al carrello in corso...",
     "addToCart": "Aggiungi al carrello",
     "moreOptions": "Altre opzioni",
@@ -43,7 +44,8 @@
     "updatingWishlist": "Aggiornamento lista desideri",
     "share": "Condividi",
     "expressPayments": {
-        "separatorBuyWith": "Oppure acquista con"
+        "separatorBuyWith": "Oppure acquista con",
+        "venmoUnavailable": "Venmo non è disponibile su questo dispositivo."
     },
     "productSetNotice": "Questo è un set di prodotti. Selezioni gli articoli singoli qui sotto per aggiungerli al carrello.",
     "productBundleNotice": "Questo è un bundle di prodotti. Tutti gli articoli verranno aggiunti insieme.",
@@ -76,6 +78,8 @@
     "report": "Segnala",
     "readMore": "Leggi di più",
     "readLess": "Mostra meno",
+    "reviewImageAlt": "Immagine recensione",
+    "viewProductAriaLabel": "Visualizza {{productName}}",
     "showingReviews": "Recensioni da {{from}} a {{to}} di {{total}}",
     "filterBy": "Filtra per:",
     "withPhotos": "Con foto",

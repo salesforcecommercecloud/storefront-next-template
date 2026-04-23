@@ -390,10 +390,15 @@ export async function registerGuestUser(
 
         // Extract name with priority: shipping address > customer info > email extraction
         const nameFromEmail = extractNameFromEmail(email);
+        const toStr = (val: unknown): string | undefined => (typeof val === 'string' && val ? val : undefined);
         const firstName =
-            orderInfo?.shippingAddress?.firstName || orderInfo?.customerInfo?.firstName || nameFromEmail.firstName;
+            toStr(orderInfo?.shippingAddress?.firstName) ??
+            toStr(orderInfo?.customerInfo?.firstName) ??
+            nameFromEmail.firstName;
         const lastName =
-            orderInfo?.shippingAddress?.lastName || orderInfo?.customerInfo?.lastName || nameFromEmail.lastName;
+            toStr(orderInfo?.shippingAddress?.lastName) ??
+            toStr(orderInfo?.customerInfo?.lastName) ??
+            nameFromEmail.lastName;
 
         // Generate a random password for the account
         const password = generateRandomPassword();
@@ -414,6 +419,7 @@ export async function registerGuestUser(
 
         // Register the customer
         await clients.shopperCustomers.registerCustomer({
+            params: {},
             body: registrationData,
         });
 

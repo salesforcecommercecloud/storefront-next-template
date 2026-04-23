@@ -30,6 +30,7 @@ import { canadianPostalCodeRegex, usPostalCodeRegex } from './constants';
 export const createCustomerAddressFormSchema = (t: TFunction<any, any>) => {
     return z
         .object({
+            addressId: z.string().optional(),
             firstName: z
                 .string()
                 .min(1, {

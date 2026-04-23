@@ -37,11 +37,13 @@ interface ShippingFormData {
     firstName: string;
     lastName: string;
     address1: string;
-    address2: string;
+    address2?: string;
     city: string;
     stateCode: string;
     postalCode: string;
-    phone: string;
+    countryCode?: string;
+    phoneCountryCode?: string;
+    phone?: string;
 }
 
 interface BillingFormData {

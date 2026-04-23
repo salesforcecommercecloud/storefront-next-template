@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { RouterContextProvider } from 'react-router';
+import type { ActionFunctionArgs } from 'react-router';
 import { ensureBasketId, getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients';
@@ -33,7 +33,7 @@ import { getLogger } from '@/lib/logger.server';
 /**
  * Server action for submitting checkout shipping address information.
  */
-export async function action(formData: FormData, context: RouterContextProvider) {
+export async function action(formData: FormData, context: ActionFunctionArgs['context']) {
     const logger = getLogger(context);
     const { t } = getTranslation();
     logger.debug('SubmitShippingAddress: starting');

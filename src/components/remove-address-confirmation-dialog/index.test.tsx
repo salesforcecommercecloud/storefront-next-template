@@ -207,7 +207,7 @@ describe('RemoveAddressConfirmationDialog', () => {
         await user.click(confirmButton);
 
         expect(mockSubmit).toHaveBeenCalledTimes(1);
-        expect(mockSubmit).toHaveBeenCalledWith({});
+        expect(mockSubmit).toHaveBeenCalledWith();
     });
 
     test('disables confirm button when loading', () => {

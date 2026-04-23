@@ -64,9 +64,16 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
         : undefined;
 
     // Determine the current variant to pass to useProductActions:
-    // - If product IS a variant, use the product itself (cast to Variant type)
+    // - If product IS a variant, build a minimal Variant object from the product's fields
     // - If product is a master, use the matched variant (or undefined if not found)
-    const currentVariant = isProductVariant ? (product as ShopperProducts.schemas['Variant']) : matchedVariant;
+    const currentVariant: ShopperProducts.schemas['Variant'] | undefined = isProductVariant
+        ? {
+              productId: product.id ?? '',
+              price: product.price,
+              orderable: product.inventory?.orderable,
+              variationValues: product.variationValues as Record<string, string> | undefined,
+          }
+        : matchedVariant;
 
     // Use the product actions hook for cart operations
     // Skip inventory validation for wishlist - users should be able to attempt adding

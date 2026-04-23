@@ -322,7 +322,7 @@ export function isProductBundle(product: ShopperProducts.schemas['Product']): bo
  * @param product - The product to check
  * @returns true if the product is a standard product, false otherwise
  */
-export function isStandardProduct(product: ShopperProducts.schemas['Product']): boolean {
+export function isStandardProduct(product: Partial<ShopperProducts.schemas['Product']>): boolean {
     return Boolean(product?.type?.item);
 }
 

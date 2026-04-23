@@ -19,24 +19,27 @@ import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi
 
 // Type for the form data (inferred from schema in index.tsx)
 export type CustomerAddressFormData = {
-    addressId: string;
+    addressId?: string;
     firstName: string;
     lastName: string;
-    phone?: string;
+    phone: string;
     countryCode: 'US' | 'CA';
     address1: string;
     address2?: string;
     city: string;
-    stateCode?: string;
+    stateCode: string;
     postalCode: string;
-    preferred?: boolean;
+    preferred: boolean;
 };
 
 // Props interface for CustomerAddressForm component
 export interface CustomerAddressFormProps {
     initialData?: Partial<CustomerAddressFormData>;
     // The fetcher returns CustomerAddress directly (unwrapped by ScapiFetcher)
-    updateFetcher: ScapiFetcher<ShopperCustomers.schemas['CustomerAddress']>;
+    updateFetcher: ScapiFetcher<
+        ShopperCustomers.schemas['CustomerAddress'],
+        ShopperCustomers.schemas['CustomerAddress']
+    >;
     onSuccess?: (formData: CustomerAddressFormData) => void;
     onError?: (error: string) => void;
     onCancel?: () => void;
@@ -46,5 +49,6 @@ export interface CustomerAddressFormProps {
 
 // Props interface for CustomerAddressFields component
 export interface CustomerAddressFieldsProps {
-    form: UseFormReturn<CustomerAddressFormData>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    form: UseFormReturn<CustomerAddressFormData, any, any>;
 }

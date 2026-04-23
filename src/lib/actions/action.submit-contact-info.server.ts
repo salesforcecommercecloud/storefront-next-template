@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { RouterContextProvider } from 'react-router';
+import type { ActionFunctionArgs } from 'react-router';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 import { authorizePasswordless } from '@/middlewares/auth.server';
@@ -29,7 +29,7 @@ import { getLogger } from '@/lib/logger.server';
 /**
  * Server action for submitting checkout contact information.
  */
-export async function action(formData: FormData, context: RouterContextProvider) {
+export async function action(formData: FormData, context: ActionFunctionArgs['context']) {
     const logger = getLogger(context);
     const { t } = getTranslation();
     logger.debug('SubmitContactInfo: starting');

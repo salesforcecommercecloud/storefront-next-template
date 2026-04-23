@@ -272,7 +272,7 @@ export function usePayment({
         billingAddress,
     ]);
 
-    const schema = useMemo(() => createPaymentSchema(t as (key: string) => string), [t]);
+    const schema = useMemo(() => createPaymentSchema(t), [t]);
 
     const form = useForm<PaymentData>({
         resolver: zodResolver(schema),

@@ -466,6 +466,35 @@ describe('WishlistListItem', () => {
             });
         });
 
+        test('useProductActions receives a defined currentVariant with correct price and variationValues for a variant-type product (type.variant = true)', () => {
+            // When SCAPI returns a variant product directly (product.type.variant = true),
+            // currentVariant must be defined (so the skipInventoryValidation branch allows
+            // add-to-cart) and carry the correct price and variationValues from the product.
+            // We use objectContaining so the assertion covers the fields that drive observable
+            // behavior without being sensitive to the exact shape of the currentVariant object.
+            const wishlistItem: ShopperCustomers.schemas['CustomerProductListItem'] = {
+                id: 'item-variant-product',
+                productId: variantProduct.id, // '640188017041M', type.variant = true
+                priority: 0,
+                public: false,
+                quantity: 1,
+            };
+
+            renderWithRouter(
+                <WishlistListItem product={variantProduct} wishlistItem={wishlistItem} onRemove={vi.fn()} />
+            );
+
+            expect(useProductActions).toHaveBeenCalledWith({
+                product: variantProduct,
+                currentVariant: expect.objectContaining({
+                    price: variantProduct.price,
+                    variationValues: variantProduct.variationValues,
+                }),
+                initialQuantity: 1,
+                skipInventoryValidation: true,
+            });
+        });
+
         test('"Add to Cart" button is disabled while adding to cart', () => {
             vi.mocked(useProductActions).mockReturnValue({
                 handleAddToCart: mockHandleAddToCart,

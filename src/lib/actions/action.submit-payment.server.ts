@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { RouterContextProvider } from 'react-router';
+import type { ActionFunctionArgs } from 'react-router';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createPaymentSchema, parsePaymentFromFormData } from '@/lib/checkout-schemas';
@@ -73,7 +73,7 @@ const isSameAddress = (
 /**
  * Server action for submitting checkout payment information.
  */
-export async function action(formData: FormData, context: RouterContextProvider) {
+export async function action(formData: FormData, context: ActionFunctionArgs['context']) {
     const logger = getLogger(context);
     const { t } = getTranslation();
     logger.debug('SubmitPayment: starting');
@@ -122,14 +122,11 @@ export async function action(formData: FormData, context: RouterContextProvider)
         // The v2 basket API does not support customerPaymentInstrumentId; when sent, SFCC
         // resolves the stored customer instrument which may have paymentMethodId
         // "CREDIT_CARD (visa)" causing a 400 "Invalid Payment Method Id".
-        const auth = getAuth(context as Parameters<typeof getAuth>[0]);
+        const auth = getAuth(context);
         const customerId = auth?.customerId;
         if (customerId) {
             try {
-                const customerProfile = await getCustomerProfileForCheckout(
-                    context as Parameters<typeof getCustomerProfileForCheckout>[0],
-                    customerId
-                );
+                const customerProfile = await getCustomerProfileForCheckout(context, customerId);
                 const savedMethods = getPaymentMethodsFromCustomer(customerProfile ?? undefined);
                 const savedMethod = savedMethods.find((m) => m.id === selectedSavedPaymentMethod) || savedMethods[0];
                 if (savedMethod) {
@@ -358,21 +355,14 @@ export async function action(formData: FormData, context: RouterContextProvider)
 
     // Existing registered customers: if they explicitly choose a different billing
     // address and enter a new one, persist it to their address book.
-    const auth = getAuth(context as Parameters<typeof getAuth>[0]);
+    const auth = getAuth(context);
     if (auth.customerId && useDifferentBilling) {
         try {
-            const customerProfile = await getCustomerProfileForCheckout(
-                context as Parameters<typeof getCustomerProfileForCheckout>[0],
-                auth.customerId
-            );
+            const customerProfile = await getCustomerProfileForCheckout(context, auth.customerId);
             const savedAddresses = getAddressBookFromCustomer(customerProfile ?? undefined);
             const alreadySaved = savedAddresses.some((address) => isSameAddress(address, billingAddress));
             if (!alreadySaved) {
-                await saveBillingAddressToCustomer(
-                    context as Parameters<typeof saveBillingAddressToCustomer>[0],
-                    auth.customerId,
-                    billingAddress
-                );
+                await saveBillingAddressToCustomer(context, auth.customerId, billingAddress);
                 logger.info('SubmitPayment: saved new billing address to customer profile', {
                     customerId: auth.customerId,
                 });

@@ -43,9 +43,9 @@ type CommerceSdkMethodArgs<
     M extends CommerceSdkMethodName<C>,
 > = CommerceSdkMethodParameters<C, M>[0];
 
-/** Extracts the request body type from a Commerce SDK method, or falls back to args */
+/** Extracts the request body type from a Commerce SDK method, or undefined for no-body operations */
 type CommerceSdkMethodBody<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> =
-    CommerceSdkMethodArgs<C, M> extends { body: infer B } ? B : CommerceSdkMethodArgs<C, M>;
+    CommerceSdkMethodArgs<C, M> extends { body: infer B } ? B : undefined;
 
 /** Resolves the return payload type for a given Commerce SDK client and method */
 type CommerceSdkMethodPayload<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> = UnwrapApiResponse<
@@ -55,9 +55,9 @@ type CommerceSdkMethodPayload<C extends CommerceSdkKeyMap, M extends CommerceSdk
 /** Infers the first argument type for a helper method */
 type HelperMethodArgs<H extends HelperNamespaceKeyMap, M extends HelperMethodName<H>> = HelperMethodParameters<H, M>[0];
 
-/** Extracts the request body type from a helper method, or falls back to args */
+/** Extracts the request body type from a helper method, or undefined for no-body operations */
 type HelperMethodBody<H extends HelperNamespaceKeyMap, M extends HelperMethodName<H>> =
-    HelperMethodArgs<H, M> extends { body: infer B } ? B : HelperMethodArgs<H, M>;
+    HelperMethodArgs<H, M> extends { body: infer B } ? B : undefined;
 
 /** Resolves the return payload type for a helper method */
 type HelperMethodPayload<H extends HelperNamespaceKeyMap, M extends HelperMethodName<H>> = Awaited<
@@ -203,8 +203,8 @@ export function useScapiFetcher<
 export function useScapiFetcher(
     clientOrHelpers: string,
     methodOrNamespace: string,
-    optionsOrMethod?: Record<string, unknown> | string,
-    helperOptions?: Record<string, unknown>
+    optionsOrMethod?: unknown,
+    helperOptions?: unknown
 ): ScapiFetcher<unknown, unknown> {
     const isHelper = clientOrHelpers === 'helpers';
     const options = isHelper ? (helperOptions ?? {}) : optionsOrMethod;

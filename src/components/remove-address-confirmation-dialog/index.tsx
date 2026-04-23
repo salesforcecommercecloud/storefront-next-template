@@ -120,7 +120,7 @@ export function RemoveAddressConfirmationDialog({
         }
 
         if (removeFetcher.state === 'idle') {
-            void removeFetcher.submit({});
+            void removeFetcher.submit();
         }
     }, [addressId, customerId, removeFetcher, addToast, t]);
 
