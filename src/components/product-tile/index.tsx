@@ -78,7 +78,7 @@ export class ProductTileMetadata {
         name: 'Border Radius',
         description: 'Corner roundness of the tile card',
         type: 'enum',
-        values: ['none', 'sm', 'md', 'lg', 'xl', '2xl'],
+        values: ['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', 'full'],
         defaultValue: 'xl',
     })
     borderRadius?: string;
@@ -169,15 +169,19 @@ const getPageDesignerStyleClasses = ({
     }
 
     if (borderRadius) {
-        const radiusMap = {
+        const radiusMap: Record<string, string> = {
             none: '!rounded-none',
+            xs: '!rounded-xs',
             sm: '!rounded-sm',
             md: '!rounded-md',
             lg: '!rounded-lg',
             xl: '!rounded-xl',
             '2xl': '!rounded-2xl',
+            '3xl': '!rounded-3xl',
+            '4xl': '!rounded-4xl',
+            full: '!rounded-full',
         };
-        classes.push(radiusMap[borderRadius]);
+        classes.push(radiusMap[borderRadius] || '!rounded-none');
     }
 
     if (boxShadow === 'none') {
@@ -254,7 +258,7 @@ export interface ProductTileProps extends ComponentProps<'div'> {
 
     // Page Designer styling props
     objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
-    borderRadius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+    borderRadius?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'full';
     boxShadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
     padding?: '0' | '2' | '4' | '6' | '8';
     margin?: '0' | '2' | '4' | '6' | '8';
@@ -430,10 +434,10 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             </div>
                         )}
 
-                        {/* Action icons — top-right. Keep children out of tab order with tabIndex={-1}. */}
+                        {/* Action icons — top-right */}
                         <div className="absolute top-2 right-2 flex flex-col items-end gap-2 z-20">
                             {showPickupAvailable && (
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div>
                                     <div className="group/pickup relative" data-testid="pickup-available-indicator">
                                         <div className="w-9 h-9 p-2 bg-muted text-muted-foreground flex items-center justify-center">
                                             <PickupIcon className="w-4 h-4" />
@@ -493,7 +497,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                     )}
 
                     {/* Store name */}
-                    <p className="text-xs text-muted-foreground mb-1 uppercase">{config.global.branding.name}</p>
+                    <p className="text-xs text-muted-foreground mb-1">{config.global.branding.name}</p>
 
                     {/* Top category */}
                     {topCategoryName && (
@@ -504,7 +508,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                     <h3 className="text-sm font-medium text-card-foreground mb-2">
                         <Link
                             to={productUrl}
-                            className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                            className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                             onClick={handleClick}>
                             {productName}
                         </Link>

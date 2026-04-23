@@ -401,7 +401,7 @@ function MockCheckoutFormPage({
                                 <ToggleCardSummary>
                                     <div className="space-y-3">
                                         {cart.shipments?.[0]?.shippingAddress && (
-                                            <div className="rounded-lg p-3 space-y-2 bg-muted/50">
+                                            <div className="rounded-none p-3 space-y-2 bg-muted/50">
                                                 <Typography variant="p" className="font-medium">
                                                     {cart.shipments[0].shippingAddress.firstName}{' '}
                                                     {cart.shipments[0].shippingAddress.lastName}
@@ -459,7 +459,7 @@ function MockCheckoutFormPage({
                                                 {shippingMethodsList.map((method) => (
                                                     <div
                                                         key={method.id}
-                                                        className="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
+                                                        className="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
                                                         <RadioGroupItem
                                                             value={method.id}
                                                             id={method.id}
@@ -614,7 +614,7 @@ function MockCheckoutFormPage({
 
                                         {/* Billing Address Section */}
                                         <div className="space-y-4">
-                                            <div className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50">
+                                            <div className="rounded-none border border-border bg-card p-4 transition-colors hover:bg-accent/50">
                                                 <div className="flex items-start space-x-3">
                                                     <Checkbox
                                                         checked={true}

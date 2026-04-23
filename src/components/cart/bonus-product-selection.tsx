@@ -191,7 +191,7 @@ export default function BonusProductSelection({
     return (
         <section
             aria-label="Bonus Product Bundle"
-            className="w-full overflow-hidden border border-border bg-[var(--bg-input-30)] p-4">
+            className="w-full overflow-hidden rounded-none border border-border bg-[var(--bg-input-30)] p-4">
             <h3 className="text-base leading-6 text-card-foreground font-sans pb-3">
                 <span className="font-semibold">{titleText}</span>
                 <span className="font-normal">{titleSuffix}</span>
@@ -202,12 +202,12 @@ export default function BonusProductSelection({
                         {bonusProducts.map((item) => (
                             <CarouselItem key={item.productId} className="basis-[220px] pl-3">
                                 <article
-                                    className="flex h-[329px] flex-col justify-between items-start border border-border bg-background"
+                                    className="flex h-[329px] flex-col justify-between items-start rounded-none border border-border bg-background"
                                     aria-label="Bonus bundle product card">
                                     {/* Image */}
                                     <div className="flex flex-col items-start self-stretch">
                                         <div className="px-4 py-3 self-stretch">
-                                            <div className="bg-muted/30 border border-border overflow-hidden">
+                                            <div className="bg-muted/30 border border-border rounded-none overflow-hidden">
                                                 <div className="h-36 w-full relative">
                                                     {item.imageUrl ? (
                                                         <img
@@ -244,7 +244,7 @@ export default function BonusProductSelection({
                                                 {item.productName}
                                             </p>
                                             <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                                                <Badge className="bg-primary text-primary-foreground font-semibold text-xs rounded-pill">
+                                                <Badge className="bg-primary text-primary-foreground font-semibold text-xs rounded-none">
                                                     {t('cart:bonusProducts.freeBadge')}
                                                 </Badge>
                                                 {(() => {

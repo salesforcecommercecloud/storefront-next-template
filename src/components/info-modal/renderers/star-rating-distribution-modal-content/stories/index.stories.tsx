@@ -48,7 +48,7 @@ function StarRatingDistributionModalContentWrapper({
     onSeeReviewsClick?: () => void;
 }) {
     return (
-        <div className="w-64 p-6 bg-background rounded-lg border">
+        <div className="w-64 p-6 bg-background rounded-none border">
             <StarRatingDistributionModalContent
                 rating={rating}
                 reviewCount={reviewCount}

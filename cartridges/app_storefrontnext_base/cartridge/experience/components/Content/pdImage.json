@@ -46,7 +46,7 @@
                     "type": "enum",
                     "required": false,
                     "description": "Corner roundness of the image",
-                    "values": ["none", "sm", "md", "lg", "xl", "2xl", "full"],
+                    "values": ["none", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "full"],
                     "default_value": "none"
                 },
                 {

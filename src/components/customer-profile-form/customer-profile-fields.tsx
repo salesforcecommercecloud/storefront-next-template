@@ -70,7 +70,7 @@ export function CustomerProfileFields({
                                     type="text"
                                     autoComplete="given-name"
                                     placeholder={t('profile.firstNamePlaceholder')}
-                                    className="rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -93,7 +93,7 @@ export function CustomerProfileFields({
                                     type="text"
                                     autoComplete="family-name"
                                     placeholder={t('profile.lastNamePlaceholder')}
-                                    className="rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -118,7 +118,7 @@ export function CustomerProfileFields({
                                     autoComplete="email"
                                     readOnly
                                     tabIndex={-1}
-                                    className="rounded-sm bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
+                                    className="rounded-none bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
                                     {...field}
                                 />
                             </FormControl>
@@ -140,7 +140,7 @@ export function CustomerProfileFields({
                                     type="tel"
                                     autoComplete="tel"
                                     placeholder={t('profile.phonePlaceholder')}
-                                    className="rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>
@@ -161,7 +161,7 @@ export function CustomerProfileFields({
                             <FormLabel className="text-sm font-medium text-foreground">{t('profile.gender')}</FormLabel>
                             <FormControl>
                                 <NativeSelect
-                                    className="w-full rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="w-full rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                                     value={field.value || ''}
                                     onChange={field.onChange}
                                     onBlur={field.onBlur}
@@ -193,7 +193,7 @@ export function CustomerProfileFields({
                                 <Input
                                     type="date"
                                     autoComplete="bday"
-                                    className="rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                                     aria-label={t('profile.dateOfBirth')}
                                     {...field}
                                 />
@@ -207,7 +207,7 @@ export function CustomerProfileFields({
             {/* Action Buttons (omit when hideActions for header placement) */}
             {!hideActions && (
                 <div className="flex gap-2 pt-2">
-                    <Button type="submit" disabled={isSubmitting} className="rounded-sm">
+                    <Button type="submit" disabled={isSubmitting} className="rounded-none">
                         {isSubmitting ? t('profile.savingButton') : t('profile.saveButton')}
                     </Button>
                     {onCancel && (
@@ -216,7 +216,7 @@ export function CustomerProfileFields({
                             variant="outline"
                             onClick={onCancel}
                             disabled={isSubmitting}
-                            className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('profile.cancelButton')}
                         </Button>
                     )}

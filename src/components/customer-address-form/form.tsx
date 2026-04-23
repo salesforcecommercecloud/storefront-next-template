@@ -237,12 +237,12 @@ export const CustomerAddressForm = ({
             <Form {...form}>
                 <form onSubmit={(e) => void handleSubmit(e)} data-testid="customer-address-form">
                     {inlineSuccessMessage && (
-                        <div className="mb-4 p-3 bg-success/10 border border-success/20 rounded-md">
+                        <div className="mb-4 p-3 bg-success/10 border border-success/20 rounded-none">
                             <p className="text-sm text-success">{inlineSuccessMessage}</p>
                         </div>
                     )}
                     {inlineErrorMessage && (
-                        <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                        <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-none">
                             <p className="text-sm text-destructive">{inlineErrorMessage}</p>
                         </div>
                     )}
@@ -258,14 +258,14 @@ export const CustomerAddressForm = ({
                                 variant="outline"
                                 onClick={handleCancel}
                                 disabled={isSubmitting}
-                                className="rounded-md px-6">
+                                className="rounded-none px-6">
                                 {t('addressForm.cancelButton')}
                             </Button>
                         )}
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground px-6">
+                            className="rounded-none bg-primary hover:bg-primary/90 text-primary-foreground px-6">
                             {isSubmitting ? t('addressForm.savingButton') : t('addressForm.saveButton')}
                         </Button>
                     </div>
@@ -274,7 +274,7 @@ export const CustomerAddressForm = ({
             {/* Spinner Overlay */}
             {isSubmitting && (
                 <div
-                    className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 pointer-events-none flex items-center justify-center rounded-md"
+                    className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 pointer-events-none flex items-center justify-center rounded-none"
                     data-testid="customer-address-form-loading">
                     <Spinner size="lg" />
                 </div>

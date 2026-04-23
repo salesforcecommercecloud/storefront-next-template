@@ -47,7 +47,7 @@ export function ProductImage({ src, alt, className, ...dynamicImageProps }: Prod
         return (
             <div
                 className={cn(
-                    'rounded-lg flex items-center justify-center w-full h-full aspect-square bg-secondary/20',
+                    'rounded-none flex items-center justify-center w-full h-full aspect-square bg-secondary/20',
                     className
                 )}>
                 <div className="text-center text-muted-foreground">

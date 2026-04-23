@@ -73,7 +73,7 @@ export default function CartSkeleton({
                 </div>
 
                 <div className="md:hidden mb-3">
-                    <div className="border bg-card px-5 py-3">
+                    <div className="border rounded-none bg-card px-5 py-3">
                         <div className="flex items-center justify-between">
                             <Skeleton className="h-6 w-48" />
                             <Skeleton className="h-4 w-4" />
@@ -83,7 +83,7 @@ export default function CartSkeleton({
 
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             {productItemSkeletonIds.map((id) => (
                                 <div className="bg-card text-card-foreground border-0 rounded-none" key={id}>
                                     <div className="px-3 py-4 md:px-6 md:py-7">

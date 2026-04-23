@@ -8,7 +8,7 @@ exports[`RefineDefault stories snapshot > Default story renders and matches snap
     class="space-y-1 mt-2"
   >
     <label
-      class="flex items-center p-2 rounded-md hover:bg-muted/30 cursor-pointer"
+      class="flex items-center p-2 rounded-none hover:bg-muted/30 cursor-pointer"
       for="refine-c_isNew-0"
     >
       <button
@@ -58,7 +58,7 @@ exports[`RefineDefault stories snapshot > Default story renders and matches snap
       </span>
     </label>
     <label
-      class="flex items-center p-2 rounded-md hover:bg-muted/30 cursor-pointer"
+      class="flex items-center p-2 rounded-none hover:bg-muted/30 cursor-pointer"
       for="refine-c_isNew-1"
     >
       <button
@@ -83,7 +83,7 @@ exports[`RefineDefault stories snapshot > Default story renders and matches snap
       </span>
     </label>
     <label
-      class="flex items-center p-2 rounded-md hover:bg-muted/30 cursor-pointer"
+      class="flex items-center p-2 rounded-none hover:bg-muted/30 cursor-pointer"
       for="refine-c_isNew-2"
     >
       <button
@@ -119,7 +119,7 @@ exports[`RefineDefault stories snapshot > NoSelectedOptions story renders and ma
     class="space-y-1 mt-2"
   >
     <label
-      class="flex items-center p-2 rounded-md hover:bg-muted/30 cursor-pointer"
+      class="flex items-center p-2 rounded-none hover:bg-muted/30 cursor-pointer"
       for="refine-c_isNew-0"
     >
       <button
@@ -144,7 +144,7 @@ exports[`RefineDefault stories snapshot > NoSelectedOptions story renders and ma
       </span>
     </label>
     <label
-      class="flex items-center p-2 rounded-md hover:bg-muted/30 cursor-pointer"
+      class="flex items-center p-2 rounded-none hover:bg-muted/30 cursor-pointer"
       for="refine-c_isNew-1"
     >
       <button
@@ -169,7 +169,7 @@ exports[`RefineDefault stories snapshot > NoSelectedOptions story renders and ma
       </span>
     </label>
     <label
-      class="flex items-center p-2 rounded-md hover:bg-muted/30 cursor-pointer"
+      class="flex items-center p-2 rounded-none hover:bg-muted/30 cursor-pointer"
       for="refine-c_isNew-2"
     >
       <button

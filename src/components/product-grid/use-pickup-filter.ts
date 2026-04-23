@@ -22,5 +22,5 @@ import { useSearchParams } from 'react-router';
  */
 export function useShowPickupAvailable(): boolean {
     const [searchParams] = useSearchParams();
-    return searchParams.has('ilids');
+    return searchParams.has('ilids') || searchParams.getAll('refine').some((value) => value.startsWith('ilids'));
 }

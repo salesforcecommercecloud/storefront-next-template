@@ -1,7 +1,5 @@
 :root {
     /* core */
-    --radius: 0rem;
-    --pill-radius: 0px;
     --background: #ffffff;
     --foreground: #000000;
 
@@ -82,8 +80,6 @@
 
 .dark {
     /* core */
-    --radius: 0rem;
-    --pill-radius: 0px;
     --background: #121212;
     --foreground: #fafafa;
 

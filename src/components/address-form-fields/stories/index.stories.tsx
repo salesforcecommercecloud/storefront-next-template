@@ -512,12 +512,12 @@ export const FieldErrorValidation: Story = {
  * Form with custom className
  */
 export const WithCustomClassName: Story = {
-    render: () => <ShippingAddressFormWrapper className="bg-muted p-4 rounded-lg" />,
+    render: () => <ShippingAddressFormWrapper className="bg-muted p-4 rounded-none" />,
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
 
         // Verify custom class is applied
-        const container = canvasElement.querySelector('.bg-muted.p-4.rounded-lg');
+        const container = canvasElement.querySelector('.bg-muted.p-4.rounded-none');
         await expect(container).toBeInTheDocument();
     },
 };

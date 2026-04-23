@@ -40,7 +40,7 @@ const meta: Meta<typeof SeoMeta> = {
     },
     decorators: [
         (Story) => (
-            <div className="p-4 border rounded-md">
+            <div className="p-4 border rounded-none">
                 <p className="text-sm text-muted-foreground mb-2">
                     Meta tags are rendered in the document head (not visible here)
                 </p>

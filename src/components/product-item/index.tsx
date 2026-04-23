@@ -130,7 +130,7 @@ export function ProductItemVariantName({ productItem }: { productItem: EnrichedP
             {isBonusProduct && (
                 <Badge
                     variant="default"
-                    className="rounded-pill"
+                    className="rounded-none"
                     role="status"
                     aria-label={tProduct('bonusProductAriaLabel')}>
                     {tProduct('bonusProduct')}
@@ -215,7 +215,7 @@ export function ProductItemPromotions({ productItem }: { productItem: EnrichedPr
     if (discount <= 0) return null;
 
     return (
-        <Badge className="bg-muted text-foreground border-0 text-xs font-medium rounded-pill">
+        <Badge className="bg-muted text-foreground border-0 text-xs font-medium rounded-none">
             {tMiniCart('saved', {
                 amount: formatCurrency(discount, i18n.language, currency),
             })}
@@ -414,7 +414,7 @@ function ProductItem({
                                                         }}
                                                         promoCalloutProps={{
                                                             className:
-                                                                'bg-muted text-foreground border-0 text-xs font-medium rounded-pill inline-block mt-3 mx-0',
+                                                                'bg-muted text-foreground border-0 text-xs font-medium rounded-none inline-block mt-3 mx-0',
                                                         }}
                                                         afterPriceContent={
                                                             <UITarget targetId="sfcc.cart.shipping.deliveryEstimate" />

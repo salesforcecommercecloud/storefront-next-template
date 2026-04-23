@@ -47,14 +47,14 @@ export function ContactInfoSkeleton(): ReactElement {
             <CardContent className="space-y-6">
                 <div className="space-y-2">
                     <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-12 w-full rounded-md" />
+                    <Skeleton className="h-12 w-full rounded-none" />
                 </div>
                 <div className="flex gap-2">
-                    <Skeleton className="h-12 w-24 rounded-md" />
-                    <Skeleton className="h-12 flex-1 rounded-md" />
+                    <Skeleton className="h-12 w-24 rounded-none" />
+                    <Skeleton className="h-12 flex-1 rounded-none" />
                 </div>
                 <div className="flex justify-end pt-4">
-                    <Skeleton className="h-12 w-56 rounded-md" />
+                    <Skeleton className="h-12 w-56 rounded-none" />
                 </div>
             </CardContent>
         </Card>
@@ -71,35 +71,35 @@ export function ShippingAddressSkeleton(): ReactElement {
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Skeleton className="h-4 w-20" />
-                        <Skeleton className="h-12 w-full rounded-md" />
+                        <Skeleton className="h-12 w-full rounded-none" />
                     </div>
                     <div className="space-y-2">
                         <Skeleton className="h-4 w-20" />
-                        <Skeleton className="h-12 w-full rounded-md" />
+                        <Skeleton className="h-12 w-full rounded-none" />
                     </div>
                 </div>
                 <div className="space-y-2">
                     <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-12 w-full rounded-md" />
+                    <Skeleton className="h-12 w-full rounded-none" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Skeleton className="h-4 w-16" />
-                        <Skeleton className="h-12 w-full rounded-md" />
+                        <Skeleton className="h-12 w-full rounded-none" />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <div className="space-y-2">
                             <Skeleton className="h-4 w-16" />
-                            <Skeleton className="h-12 w-full rounded-md" />
+                            <Skeleton className="h-12 w-full rounded-none" />
                         </div>
                         <div className="space-y-2">
                             <Skeleton className="h-4 w-16" />
-                            <Skeleton className="h-12 w-full rounded-md" />
+                            <Skeleton className="h-12 w-full rounded-none" />
                         </div>
                     </div>
                 </div>
                 <div className="flex justify-end pt-4">
-                    <Skeleton className="h-12 w-56 rounded-md" />
+                    <Skeleton className="h-12 w-56 rounded-none" />
                 </div>
             </CardContent>
         </Card>
@@ -116,7 +116,7 @@ export function ShippingOptionsSkeleton(): ReactElement {
                 <div className="space-y-4">
                     <Skeleton className="h-4 w-32" />
                     {[1, 2].map((i) => (
-                        <div key={i} className="flex items-center space-x-4 p-4 border-2 border-border rounded-lg">
+                        <div key={i} className="flex items-center space-x-4 p-4 border-2 border-border rounded-none">
                             <Skeleton className="h-5 w-5 rounded-full" />
                             <div className="flex-1 space-y-1">
                                 <Skeleton className="h-4 w-full max-w-xs" />
@@ -126,7 +126,7 @@ export function ShippingOptionsSkeleton(): ReactElement {
                     ))}
                 </div>
                 <div className="flex justify-end pt-4">
-                    <Skeleton className="h-12 w-56 rounded-md" />
+                    <Skeleton className="h-12 w-56 rounded-none" />
                 </div>
             </CardContent>
         </Card>
@@ -142,7 +142,7 @@ export function PaymentSkeleton(): ReactElement {
             <CardContent className="space-y-6">
                 <div className="space-y-4">
                     <Skeleton className="h-4 w-48" />
-                    <div className="space-x-4 p-4 border-2 border-border rounded-lg flex items-center">
+                    <div className="space-x-4 p-4 border-2 border-border rounded-none flex items-center">
                         <Skeleton className="h-5 w-5 rounded-full" />
                         <div className="flex-1 flex justify-between items-center">
                             <Skeleton className="h-5 w-40" />
@@ -152,16 +152,16 @@ export function PaymentSkeleton(): ReactElement {
                 </div>
                 <div className="space-y-2">
                     <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-12 w-full rounded-md" />
+                    <Skeleton className="h-12 w-full rounded-none" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Skeleton className="h-4 w-20" />
-                        <Skeleton className="h-12 w-full rounded-md" />
+                        <Skeleton className="h-12 w-full rounded-none" />
                     </div>
                     <div className="space-y-2">
                         <Skeleton className="h-4 w-16" />
-                        <Skeleton className="h-12 w-full rounded-md" />
+                        <Skeleton className="h-12 w-full rounded-none" />
                     </div>
                 </div>
                 <div className="flex items-center gap-2 py-2">
@@ -180,13 +180,13 @@ export function PickupSkeleton(): ReactElement {
                 <Skeleton className="h-6 w-40" />
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="border border-border rounded-lg p-4 space-y-3">
+                <div className="border border-border rounded-none p-4 space-y-3">
                     <Skeleton className="h-5 w-48" />
                     <Skeleton className="h-4 w-full" />
                     <Skeleton className="h-4 w-3/4" />
                 </div>
                 <div className="flex justify-end pt-4">
-                    <Skeleton className="h-12 w-56 rounded-md" />
+                    <Skeleton className="h-12 w-56 rounded-none" />
                 </div>
             </CardContent>
         </Card>
@@ -212,7 +212,7 @@ export function OrderSummarySkeleton(): ReactElement {
                             <Skeleton className="h-5 w-20" />
                         </div>
                     </div>
-                    <div className="border border-border rounded-lg p-4">
+                    <div className="border border-border rounded-none p-4">
                         <div className="flex items-center justify-between">
                             <Skeleton className="h-5 w-36" />
                             <Skeleton className="h-4 w-4" />
@@ -278,7 +278,7 @@ export function CheckoutSkeleton(): ReactElement {
 
             <div className="space-y-6">
                 {Array.from({ length: 3 }, (_, index) => (
-                    <div key={`form-section-item-${index}`} className="rounded-lg border p-6">
+                    <div key={`form-section-item-${index}`} className="rounded-none border p-6">
                         <Skeleton className="h-6 w-32 mb-4" />
                         <div className="space-y-3">
                             <Skeleton className="h-10 w-full" />

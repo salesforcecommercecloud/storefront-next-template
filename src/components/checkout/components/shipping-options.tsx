@@ -98,7 +98,7 @@ export default function ShippingOptions({
                                     <label
                                         key={method.id}
                                         htmlFor={method.id}
-                                        className="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground">
+                                        className="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground">
                                         <div className="flex items-center gap-2">
                                             <RadioGroupItem
                                                 value={method.id}
@@ -139,7 +139,7 @@ export default function ShippingOptions({
                                 ))}
                             </RadioGroup>
                         ) : (
-                            <div className="flex justify-center rounded-lg border-2 border-dashed border-muted p-8">
+                            <div className="flex justify-center rounded-none border-2 border-dashed border-muted p-8">
                                 <div className="space-y-2 text-center">
                                     <Typography variant="p" className="text-muted-foreground">
                                         {t('shippingOptions.noMethodsAvailable')}

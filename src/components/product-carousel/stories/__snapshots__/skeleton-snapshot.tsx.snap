@@ -398,7 +398,7 @@ exports[`ProductCarouselSkeleton stories snapshot > CustomItemCount story render
             class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2"
           >
             <div
-              class="bg-accent animate-pulse h-9 w-9 rounded-lg"
+              class="bg-accent animate-pulse h-9 w-9 rounded-none"
               data-slot="skeleton"
             />
           </div>
@@ -406,7 +406,7 @@ exports[`ProductCarouselSkeleton stories snapshot > CustomItemCount story render
             class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2"
           >
             <div
-              class="bg-accent animate-pulse h-9 w-9 rounded-lg"
+              class="bg-accent animate-pulse h-9 w-9 rounded-none"
               data-slot="skeleton"
             />
           </div>
@@ -691,7 +691,7 @@ exports[`ProductCarouselSkeleton stories snapshot > Default story renders and ma
             class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2"
           >
             <div
-              class="bg-accent animate-pulse h-9 w-9 rounded-lg"
+              class="bg-accent animate-pulse h-9 w-9 rounded-none"
               data-slot="skeleton"
             />
           </div>
@@ -699,7 +699,7 @@ exports[`ProductCarouselSkeleton stories snapshot > Default story renders and ma
             class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2"
           >
             <div
-              class="bg-accent animate-pulse h-9 w-9 rounded-lg"
+              class="bg-accent animate-pulse h-9 w-9 rounded-none"
               data-slot="skeleton"
             />
           </div>
@@ -992,7 +992,7 @@ exports[`ProductCarouselSkeleton stories snapshot > WithTitle story renders and 
             class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2"
           >
             <div
-              class="bg-accent animate-pulse h-9 w-9 rounded-lg"
+              class="bg-accent animate-pulse h-9 w-9 rounded-none"
               data-slot="skeleton"
             />
           </div>
@@ -1000,7 +1000,7 @@ exports[`ProductCarouselSkeleton stories snapshot > WithTitle story renders and 
             class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2"
           >
             <div
-              class="bg-accent animate-pulse h-9 w-9 rounded-lg"
+              class="bg-accent animate-pulse h-9 w-9 rounded-none"
               data-slot="skeleton"
             />
           </div>

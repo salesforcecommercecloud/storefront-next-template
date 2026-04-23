@@ -82,7 +82,7 @@ exports[`ShippingOptions stories snapshot > Default story renders and matches sn
           class="flex flex-col gap-4"
         >
           <div
-            class="flex justify-center rounded-lg border-2 border-dashed border-muted p-8"
+            class="flex justify-center rounded-none border-2 border-dashed border-muted p-8"
           >
             <div
               class="space-y-2 text-center"
@@ -242,7 +242,7 @@ exports[`ShippingOptions stories snapshot > LoadingState story renders and match
           class="flex flex-col gap-4"
         >
           <div
-            class="flex justify-center rounded-lg border-2 border-dashed border-muted p-8"
+            class="flex justify-center rounded-none border-2 border-dashed border-muted p-8"
           >
             <div
               class="space-y-2 text-center"
@@ -341,7 +341,7 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
             tabindex="0"
           >
             <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
               for="standard"
             >
               <div
@@ -417,7 +417,7 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
               </span>
             </label>
             <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
               for="express"
             >
               <div
@@ -526,7 +526,7 @@ exports[`ShippingOptions stories snapshot > NoShippingMethods story renders and 
           class="flex flex-col gap-4"
         >
           <div
-            class="flex justify-center rounded-lg border-2 border-dashed border-muted p-8"
+            class="flex justify-center rounded-none border-2 border-dashed border-muted p-8"
           >
             <div
               class="space-y-2 text-center"
@@ -614,7 +614,7 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
             tabindex="0"
           >
             <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
               for="standard"
             >
               <div
@@ -690,7 +690,7 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
               </span>
             </label>
             <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
               for="express"
             >
               <div
@@ -816,7 +816,7 @@ exports[`ShippingOptions stories snapshot > WithFormError story renders and matc
             tabindex="0"
           >
             <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
               for="standard"
             >
               <div
@@ -962,7 +962,7 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
             tabindex="0"
           >
             <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
               for="free"
             >
               <div
@@ -1038,7 +1038,7 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
               </span>
             </label>
             <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
               for="express"
             >
               <div
@@ -1157,7 +1157,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
             tabindex="0"
           >
             <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
               for="standard"
             >
               <div
@@ -1233,7 +1233,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
               </span>
             </label>
             <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
               for="express"
             >
               <div
@@ -1282,7 +1282,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
               </span>
             </label>
             <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-lg border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
               for="overnight"
             >
               <div

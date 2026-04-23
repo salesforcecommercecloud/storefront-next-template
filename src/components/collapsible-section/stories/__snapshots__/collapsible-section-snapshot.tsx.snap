@@ -120,7 +120,7 @@ exports[`CollapsibleSection stories snapshot > ToggleInteraction story renders a
 
 exports[`CollapsibleSection stories snapshot > WithCustomClass story renders and matches snapshot 1`] = `
 <details
-  class="group border-border mt-6 border rounded-md px-4"
+  class="group border-border mt-6 border rounded-none px-4"
 >
   <summary
     class="flex items-center justify-between gap-4 py-4 text-base font-medium text-foreground cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors"

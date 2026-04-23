@@ -50,7 +50,7 @@ export function AccountAddressesSkeleton() {
                         <CardHeader className="px-6 pb-2">
                             <CardTitle className="flex items-center gap-2">
                                 <Skeleton className="h-5 w-32" />
-                                {index === 0 && <Skeleton className="h-5 w-14 rounded-md" />}
+                                {index === 0 && <Skeleton className="h-5 w-14 rounded-none" />}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 py-2">

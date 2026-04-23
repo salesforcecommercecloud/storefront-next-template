@@ -77,7 +77,7 @@ export function ProductTileSwatches({
                         aria-current={isSelected ? 'true' : undefined}
                         tabIndex={-1}
                         className={cn(
-                            'w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0',
+                            'w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0',
                             isSelected
                                 ? 'ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground'
                                 : 'hover:ring-[3px] hover:ring-muted-hover'
@@ -88,7 +88,7 @@ export function ProductTileSwatches({
                                 src={toImageUrl({ image: swatch, config })}
                                 alt=""
                                 loading="lazy"
-                                className="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+                                className="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
                                 onLoad={(e) => {
                                     (e.currentTarget as HTMLImageElement).style.opacity = '1';
                                 }}
@@ -103,7 +103,7 @@ export function ProductTileSwatches({
                     to={productHref}
                     onClick={onSwatchClick}
                     tabIndex={-1}
-                    className="w-4 h-4 rounded-none bg-primary-foreground border border-border-subtle flex items-center justify-center shrink-0 cursor-pointer hover:ring-[3px] hover:ring-muted-hover transition-all"
+                    className="w-4 h-4 rounded-full bg-primary-foreground border border-border-subtle flex items-center justify-center shrink-0 cursor-pointer hover:ring-[3px] hover:ring-muted-hover transition-all"
                     title={`+${Math.min(overflowCount, MAX_VISIBLE_INDICATOR_COUNT)} more`}
                     aria-label={`View all ${totalColorCount} colors for ${productName}`}>
                     <svg width="7" height="7" viewBox="0 0 7 7" fill="none" className="shrink-0">

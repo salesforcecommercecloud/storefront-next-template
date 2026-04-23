@@ -216,7 +216,7 @@ export default function CartContent({
                         {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                         {/* Group store info cards with their product items */}
                         {pickupItems.length > 0 && store && (
-                            <div key={store.id} className="md:p-8 p-3 border border-border mb-3">
+                            <div key={store.id} className="md:p-8 p-3 border border-border rounded-none mb-3">
                                 <CartPickup store={store} />
                                 <div className="mt-4">
                                     <ProductItemsList
@@ -234,7 +234,7 @@ export default function CartContent({
                         {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
                         {/* Show delivery items if any exist */}
                         {deliveryItems.length > 0 && (
-                            <div className="md:p-8 p-3 border border-muted-foreground/10 mb-3">
+                            <div className="md:p-8 p-3 border border-muted-foreground/10 rounded-none mb-3">
                                 <CartTitle basket={basket} deliveryCount={deliveryItems.length} />
                                 {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                                 {pickupItems.length > 0 && (

@@ -130,7 +130,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
             href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
@@ -138,7 +138,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -146,14 +146,14 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           <a
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
             href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -161,7 +161,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -169,7 +169,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
           href="/RefArchGlobal/en-GB/product/25686571M"
           to="/RefArchGlobal/en-GB/product/25686571M"
         >
@@ -391,9 +391,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         <div
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
-          <div
-            class="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          >
+          <div>
             <div
               class="group/pickup relative"
               data-testid="pickup-available-indicator"
@@ -480,14 +478,14 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         >
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
             href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70"
             />
@@ -495,14 +493,14 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
           <a
             aria-current="true"
             aria-label="View Long Sleeve Embellished Boat Neck Top in Grey Heather"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
             href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70"
             />
@@ -510,7 +508,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -523,7 +521,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
           href="/RefArchGlobal/en-GB/product/25518101M"
           to="/RefArchGlobal/en-GB/product/25518101M"
         >
@@ -817,7 +815,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
             href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
@@ -825,7 +823,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -833,14 +831,14 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           <a
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
             href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -848,7 +846,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -856,7 +854,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
           href="/RefArchGlobal/en-GB/product/25686571M"
           to="/RefArchGlobal/en-GB/product/25686571M"
         >
@@ -1069,9 +1067,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         <div
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
-          <div
-            class="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          >
+          <div>
             <div
               class="group/pickup relative"
               data-testid="pickup-available-indicator"
@@ -1158,7 +1154,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
             href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
@@ -1166,7 +1162,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -1174,14 +1170,14 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
           <a
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
             href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -1189,7 +1185,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -1197,7 +1193,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
           href="/RefArchGlobal/en-GB/product/25686571M"
           to="/RefArchGlobal/en-GB/product/25686571M"
         >
@@ -1463,7 +1459,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
             href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
@@ -1471,7 +1467,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -1479,14 +1475,14 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
           <a
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
             href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -1494,7 +1490,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -1502,7 +1498,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
           href="/RefArchGlobal/en-GB/product/25686571M"
           to="/RefArchGlobal/en-GB/product/25686571M"
         >
@@ -1768,7 +1764,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
             href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
@@ -1776,7 +1772,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -1784,14 +1780,14 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
           <a
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
             href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -1799,7 +1795,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -1807,7 +1803,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
           href="/RefArchGlobal/en-GB/product/25686571M"
           to="/RefArchGlobal/en-GB/product/25686571M"
         >
@@ -2073,21 +2069,21 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
         >
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
             href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70"
             />
           </a>
           <a
             aria-label="View all 2 colors for Long Sleeve Embellished Boat Neck Top"
-            class="w-4 h-4 rounded-none bg-primary-foreground border border-border-subtle flex items-center justify-center shrink-0 cursor-pointer hover:ring-[3px] hover:ring-muted-hover transition-all"
+            class="w-4 h-4 rounded-full bg-primary-foreground border border-border-subtle flex items-center justify-center shrink-0 cursor-pointer hover:ring-[3px] hover:ring-muted-hover transition-all"
             href="/RefArchGlobal/en-GB/product/25518101M"
             tabindex="-1"
             title="+1 more"
@@ -2109,7 +2105,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -2117,7 +2113,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
           href="/RefArchGlobal/en-GB/product/25518101M"
           to="/RefArchGlobal/en-GB/product/25518101M"
         >
@@ -2397,14 +2393,14 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
         >
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
             href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw2b23d065/images/swatch/PG.10217069.JJ5QZXX.CP.webp?sfrm=jpg&q=70"
             />
@@ -2412,14 +2408,14 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
           <a
             aria-current="true"
             aria-label="View Long Sleeve Embellished Boat Neck Top in Grey Heather"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
             href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw747c5f3e/images/swatch/PG.10217069.JJ908XX.CP.webp?sfrm=jpg&q=70"
             />
@@ -2427,7 +2423,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -2435,7 +2431,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
           href="/RefArchGlobal/en-GB/product/25518101M"
           to="/RefArchGlobal/en-GB/product/25518101M"
         >
@@ -2715,7 +2711,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
             href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
@@ -2723,7 +2719,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -2731,14 +2727,14 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
           <a
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
             href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -2746,7 +2742,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -2759,7 +2755,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
           href="/RefArchGlobal/en-GB/product/25686571M"
           to="/RefArchGlobal/en-GB/product/25686571M"
         >
@@ -3025,7 +3021,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
             href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
@@ -3033,7 +3029,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -3041,14 +3037,14 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
           <a
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
-            class="w-4 h-4 rounded-none transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
+            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
             href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
             to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
-              class="absolute inset-0 w-full h-full rounded-none object-cover opacity-0 transition-opacity duration-150"
+              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
               loading="lazy"
               src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
             />
@@ -3056,7 +3052,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -3064,7 +3060,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
           href="/RefArchGlobal/en-GB/product/25686571M"
           to="/RefArchGlobal/en-GB/product/25686571M"
         >

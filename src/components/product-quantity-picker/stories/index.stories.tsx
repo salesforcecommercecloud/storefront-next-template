@@ -347,7 +347,7 @@ export const CustomStyling: Story = {
         isOutOfStock: false,
         disabled: false,
         isBundle: false,
-        className: 'border-2 border-primary rounded-lg p-4',
+        className: 'border-2 border-primary rounded-none p-4',
         onChange: (_quantity: number) => {
             // Intentionally empty for story testing
         },

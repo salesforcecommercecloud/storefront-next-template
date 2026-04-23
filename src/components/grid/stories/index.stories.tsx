@@ -304,7 +304,7 @@ Grid with vertical center alignment.
 
 export const WithBackgroundGradient: Story = {
     render: () => (
-        <Grid columns="2" backgroundGradient="blue" columnGap="6" className="p-8 rounded-lg">
+        <Grid columns="2" backgroundGradient="blue" columnGap="6" className="p-8 rounded-none">
             <div className="bg-white p-4 rounded shadow">Item 1</div>
             <div className="bg-white p-4 rounded shadow">Item 2</div>
         </Grid>
@@ -334,8 +334,8 @@ Grid with blue gradient background.
 export const WithBackgroundBlur: Story = {
     render: () => (
         <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg" />
-            <Grid columns="2" backgroundBlur="md" columnGap="4" className="relative p-6 rounded-lg bg-white/30">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-none" />
+            <Grid columns="2" backgroundBlur="md" columnGap="4" className="relative p-6 rounded-none bg-white/30">
                 <div className="bg-white/80 p-4 rounded">Blurred Background</div>
                 <div className="bg-white/80 p-4 rounded">Glassmorphism Effect</div>
             </Grid>
@@ -371,7 +371,7 @@ export const FullFeatured: Story = {
             columnGap="6"
             verticalAlignment="stretch"
             backgroundGradient="purple"
-            className="mx-auto p-8 rounded-xl">
+            className="mx-auto p-8 rounded-none">
             <div className="bg-white p-4 rounded shadow">Feature 1</div>
             <div className="bg-white p-4 rounded shadow">Feature 2</div>
             <div className="bg-white p-4 rounded shadow">Feature 3</div>

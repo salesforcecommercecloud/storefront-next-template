@@ -107,7 +107,7 @@ export function ToggleCard({
                                 size="sm"
                                 className={cn(
                                     editVariant === 'outline' &&
-                                        'rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium',
+                                        'rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium',
                                     editVariant === 'link' && 'font-bold'
                                 )}
                                 onClick={() => {

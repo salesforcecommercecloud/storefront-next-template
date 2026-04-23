@@ -132,8 +132,8 @@ export function CarouselSection({
             {(title !== undefined || subtitle) && titleSection}
             <Carousel className="w-full py-6" opts={{ align: 'start' }} aria-label={ariaLabel}>
                 <CarouselContent className="-ml-4 items-stretch flex-nowrap">{children}</CarouselContent>
-                <CarouselPrevious className="flex left-0 -translate-x-1/2 size-9 rounded-lg shadow-md" />
-                <CarouselNext className="flex right-0 translate-x-1/2 size-9 rounded-lg shadow-md" />
+                <CarouselPrevious className="flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md" />
+                <CarouselNext className="flex right-0 translate-x-1/2 size-9 rounded-none shadow-md" />
             </Carousel>
         </div>
     );

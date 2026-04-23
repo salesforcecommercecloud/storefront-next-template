@@ -26,7 +26,7 @@ import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { cn } from '@/lib/utils';
 import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order-status';
 
-const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-md w-fit';
+const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-none w-fit';
 const ON_MUTED_CAPTION_CLASS = 'text-xs font-normal text-muted-foreground';
 const ORDER_HEADER_LABEL_CLASS = 'text-xs font-medium text-muted-foreground';
 
@@ -133,7 +133,7 @@ function OrderStatusBadge({ status, label }: { status: string; label?: string })
 function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
     return (
         <div className="relative">
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border">
+            <div className="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border">
                 {item.imageUrl ? (
                     <img
                         src={item.imageUrl}
@@ -161,7 +161,7 @@ function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
  */
 function OverflowIndicator({ count }: { count: number }): ReactElement {
     return (
-        <div className="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center">
+        <div className="w-16 h-16 rounded-none bg-muted border border-border flex items-center justify-center">
             <Typography variant="small" as="span" className="text-muted-foreground">
                 +{count}
             </Typography>

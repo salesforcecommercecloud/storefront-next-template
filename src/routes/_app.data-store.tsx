@@ -47,14 +47,14 @@ export default function DataStoreRoute(): ReactElement {
 
             <section className="space-y-3">
                 <Typography variant="h4">Custom Site Preferences</Typography>
-                <pre className="rounded-md border border-border bg-muted/30 p-4 text-sm overflow-auto">
+                <pre className="rounded-none border border-border bg-muted/30 p-4 text-sm overflow-auto">
                     {JSON.stringify(data.sitePreferences, null, 2)}
                 </pre>
             </section>
 
             <section className="space-y-3">
                 <Typography variant="h4">Custom Global Preferences</Typography>
-                <pre className="rounded-md border border-border bg-muted/30 p-4 text-sm overflow-auto">
+                <pre className="rounded-none border border-border bg-muted/30 p-4 text-sm overflow-auto">
                     {JSON.stringify(data.customGlobalPreferences, null, 2)}
                 </pre>
             </section>

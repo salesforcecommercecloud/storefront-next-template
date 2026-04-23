@@ -28,7 +28,7 @@ import { UITarget } from '@/targets/ui-target';
 
 export type { ProductDataById };
 
-const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-md w-fit';
+const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-none w-fit';
 
 export type OrderDetailsProps = {
     order: ShopperOrders.schemas['Order'];

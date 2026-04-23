@@ -110,9 +110,9 @@ function MockedTrackingConsentBanner({
             role="dialog"
             aria-labelledby="tracking-consent-banner-title"
             aria-describedby="tracking-consent-banner-description">
-            <div className="relative shadow-lg border rounded-lg bg-card text-card-foreground">
+            <div className="relative shadow-lg border rounded-none bg-card text-card-foreground">
                 <button
-                    className="absolute right-4 top-4 h-8 w-8 shrink-0 opacity-70 transition-opacity hover:opacity-100 inline-flex items-center justify-center rounded-md"
+                    className="absolute right-4 top-4 h-8 w-8 shrink-0 opacity-70 transition-opacity hover:opacity-100 inline-flex items-center justify-center rounded-none"
                     onClick={handleClose}
                     disabled={isProcessing}
                     aria-label={mockT('closeAriaLabel')}>
@@ -147,7 +147,7 @@ function MockedTrackingConsentBanner({
                 </div>
                 <div className="flex gap-2 p-6 pt-0">
                     <button
-                        className="flex-1 inline-flex items-center justify-center rounded-md border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-sm font-medium disabled:pointer-events-none disabled:opacity-50"
+                        className="flex-1 inline-flex items-center justify-center rounded-none border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-sm font-medium disabled:pointer-events-none disabled:opacity-50"
                         onClick={handleDecline}
                         disabled={isProcessing}>
                         {processingAction === 'decline' && (
@@ -156,7 +156,7 @@ function MockedTrackingConsentBanner({
                         {mockT('decline')}
                     </button>
                     <button
-                        className="flex-1 inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3 text-sm font-medium disabled:pointer-events-none disabled:opacity-50"
+                        className="flex-1 inline-flex items-center justify-center rounded-none bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3 text-sm font-medium disabled:pointer-events-none disabled:opacity-50"
                         onClick={handleAccept}
                         disabled={isProcessing}>
                         {processingAction === 'accept' && (

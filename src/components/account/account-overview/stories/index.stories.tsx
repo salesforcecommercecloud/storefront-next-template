@@ -349,7 +349,7 @@ export const QuickLinksSectionLoading: StoryObj<typeof QuickLinksSectionSkeleton
 
         // Verify 4 quick link skeletons (items inside the grid)
         const grid = canvasElement.querySelector('.grid');
-        const linkSkeletons = grid?.querySelectorAll('.rounded-lg.border');
+        const linkSkeletons = grid?.querySelectorAll('.rounded-none.border');
         await expect(linkSkeletons?.length).toBe(4);
     },
 };

@@ -33,7 +33,7 @@ exports[`HeroCarouselSkeleton stories snapshot > Default story renders and match
               data-slot="skeleton"
             />
             <div
-              class="animate-pulse h-10 sm:h-12 md:h-14 lg:h-16 w-32 sm:w-36 md:w-40 lg:w-44 bg-white/25 rounded-md"
+              class="animate-pulse h-10 sm:h-12 md:h-14 lg:h-16 w-32 sm:w-36 md:w-40 lg:w-44 bg-white/25 rounded-none"
               data-slot="skeleton"
             />
           </div>

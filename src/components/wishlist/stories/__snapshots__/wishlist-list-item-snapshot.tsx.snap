@@ -5,7 +5,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
   data-testid="wishlist-item-item-variant-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border rounded-lg bg-card"
+    class="flex gap-4 p-4 border border-border rounded-none bg-card"
   >
     <a
       aria-label="Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit"
@@ -60,7 +60,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
         >
           <span
             aria-hidden="true"
-            class="h-2 w-2 shrink-0 rounded-[var(--radius)] bg-current text-status-positive"
+            class="h-2 w-2 shrink-0 rounded-none bg-current text-status-positive"
           />
           <p
             class="text-sm font-medium text-status-positive"
@@ -139,7 +139,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
   data-testid="wishlist-item-item-master-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border rounded-lg bg-card"
+    class="flex gap-4 p-4 border border-border rounded-none bg-card"
   >
     <a
       aria-label="Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit"
@@ -200,7 +200,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
         >
           <span
             aria-hidden="true"
-            class="h-2 w-2 shrink-0 rounded-[var(--radius)] bg-current text-status-positive"
+            class="h-2 w-2 shrink-0 rounded-none bg-current text-status-positive"
           />
           <p
             class="text-sm font-medium text-status-positive"
@@ -281,7 +281,7 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
   data-testid="wishlist-item-item-minimal-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border rounded-lg bg-card"
+    class="flex gap-4 p-4 border border-border rounded-none bg-card"
   >
     <a
       aria-label="Simple Product"
@@ -315,7 +315,7 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
         >
           <span
             aria-hidden="true"
-            class="h-2 w-2 shrink-0 rounded-[var(--radius)] bg-current text-status-positive"
+            class="h-2 w-2 shrink-0 rounded-none bg-current text-status-positive"
           />
           <p
             class="text-sm font-medium text-status-positive"
@@ -372,7 +372,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
   data-testid="wishlist-item-item-standard-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border rounded-lg bg-card"
+    class="flex gap-4 p-4 border border-border rounded-none bg-card"
   >
     <a
       aria-label="Laptop Briefcase with wheels (37L)"
@@ -408,7 +408,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
         >
           <span
             aria-hidden="true"
-            class="h-2 w-2 shrink-0 rounded-[var(--radius)] bg-current text-status-warning"
+            class="h-2 w-2 shrink-0 rounded-none bg-current text-status-warning"
           />
           <p
             class="text-sm font-medium text-status-warning"
@@ -487,7 +487,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
   data-testid="wishlist-item-item-standard-1"
 >
   <div
-    class="flex gap-4 p-4 border border-border rounded-lg bg-card"
+    class="flex gap-4 p-4 border border-border rounded-none bg-card"
   >
     <a
       aria-label="Laptop Briefcase with wheels (37L)"
@@ -523,7 +523,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
         >
           <span
             aria-hidden="true"
-            class="h-2 w-2 shrink-0 rounded-[var(--radius)] bg-current text-status-critical"
+            class="h-2 w-2 shrink-0 rounded-none bg-current text-status-critical"
           />
           <p
             class="text-sm font-medium text-status-critical"

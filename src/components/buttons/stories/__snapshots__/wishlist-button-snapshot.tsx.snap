@@ -82,7 +82,7 @@ exports[`WishlistButton stories snapshot > DifferentProducts story renders and m
         class="grid grid-cols-2 gap-4"
       >
         <div
-          class="p-4 border rounded-lg relative"
+          class="p-4 border rounded-none relative"
         >
           <h4
             class="font-medium mb-2"
@@ -124,7 +124,7 @@ exports[`WishlistButton stories snapshot > DifferentProducts story renders and m
           </div>
         </div>
         <div
-          class="p-4 border rounded-lg relative"
+          class="p-4 border rounded-none relative"
         >
           <h4
             class="font-medium mb-2"

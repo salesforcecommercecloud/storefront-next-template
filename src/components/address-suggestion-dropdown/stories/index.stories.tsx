@@ -84,7 +84,7 @@ It requires integration with Google Places API for fetching suggestions.
                     <input
                         type="text"
                         placeholder="Enter an address..."
-                        className="w-full px-4 py-2 border border-border rounded-md"
+                        className="w-full px-4 py-2 border border-border rounded-none"
                         readOnly
                     />
                     <Story />

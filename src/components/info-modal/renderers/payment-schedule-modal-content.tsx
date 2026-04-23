@@ -157,7 +157,7 @@ export function PaymentScheduleModalContent({
             )}
 
             {disclaimer != null && disclaimer !== '' && (
-                <div className="rounded-lg bg-muted p-4">
+                <div className="rounded-none bg-muted p-4">
                     <Typography variant="muted" className="text-xs leading-relaxed">
                         {disclaimer}
                     </Typography>

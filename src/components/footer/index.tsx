@@ -71,12 +71,14 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
         <footer className="mt-auto">
             {/* Prominent Newsletter Section (Black Background) - Homepage Only */}
             {isHomepage && (
-                <div className="bg-primary text-primary-foreground py-12 md:py-16 section-container">
-                    <div className="max-w-2xl mx-auto text-center">
-                        <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('newsletter.title')}</h2>
-                        <p className="text-base md:text-lg mb-6 opacity-90">{t('newsletter.description')}</p>
-                        <div className="flex justify-center">
-                            <Signup />
+                <div className="section-container">
+                    <div className="bg-primary text-primary-foreground py-12 md:py-16">
+                        <div className="max-w-2xl mx-auto text-center">
+                            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('newsletter.title')}</h2>
+                            <p className="text-base md:text-lg mb-6 opacity-90">{t('newsletter.description')}</p>
+                            <div className="flex justify-center">
+                                <Signup />
+                            </div>
                         </div>
                     </div>
                 </div>

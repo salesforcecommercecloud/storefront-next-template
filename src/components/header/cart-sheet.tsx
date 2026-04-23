@@ -301,7 +301,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     {isCartUpdating && <p className="text-xs text-muted-foreground">{tMiniCart('loading')}</p>}
                     <Button
                         asChild
-                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 bg-primary text-sm font-semibold leading-5 font-sans rounded-lg shadow-2xs"
+                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 bg-primary text-sm font-semibold leading-5 font-sans rounded-none shadow-2xs"
                         size="lg">
                         <Link
                             to="/checkout"
@@ -326,7 +326,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     <UITarget targetId="sfcc.miniCart.bnpl.message" />
                     <Button
                         variant="secondary"
-                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 border border-input bg-secondary text-secondary-foreground text-sm font-semibold leading-5 font-sans rounded-md shadow-2xs"
+                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 border border-input bg-secondary text-secondary-foreground text-sm font-semibold leading-5 font-sans rounded-none shadow-2xs"
                         size="lg"
                         onClick={onClose}>
                         {t('continueShopping')}
@@ -335,7 +335,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                         <Button
                             asChild
                             variant="ghost"
-                            className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 text-sm font-normal rounded-md"
+                            className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 text-sm font-normal rounded-none"
                             size="lg">
                             <Link to="/cart" onClick={onClose}>
                                 {tMiniCart('viewCart')}

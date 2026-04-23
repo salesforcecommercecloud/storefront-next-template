@@ -83,7 +83,7 @@ export default function ImageGallery({
 
     if (!images || images.length === 0) {
         return (
-            <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
+            <div className="aspect-square bg-muted rounded-none flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
                     <div className="text-4xl mb-2">📷</div>
                     <p>{tCommon('noImageAvailable')}</p>
@@ -98,7 +98,7 @@ export default function ImageGallery({
         <UITarget targetId="pdp.products.gallery">
             <div className="space-y-4">
                 {/* Main Image */}
-                <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
+                <div className="relative aspect-square overflow-hidden rounded-none bg-muted">
                     <DynamicImage
                         src={`${selectedImage.src}[?sw={width}]`}
                         alt={selectedImage.alt || imageAltFallback}
@@ -125,7 +125,7 @@ export default function ImageGallery({
                                 onClick={handleThumbnailClick}
                                 data-index={index}
                                 className={`
-                                aspect-square overflow-hidden rounded-lg bg-muted
+                                aspect-square overflow-hidden rounded-none bg-muted
                                 border-2 transition-colors cursor-pointer
                                 ${
                                     selectedImageIndex === index
@@ -152,7 +152,7 @@ export default function ImageGallery({
                                 type="button"
                                 onClick={handleScrollThumbnailsLeft}
                                 className={cn(
-                                    'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-background shadow-md',
+                                    'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-none border border-border bg-background shadow-md',
                                     'hover:bg-muted transition-colors',
                                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                                 )}
@@ -169,7 +169,7 @@ export default function ImageGallery({
                                     onClick={handleThumbnailClick}
                                     data-index={index}
                                     className={cn(
-                                        'flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-lg bg-muted',
+                                        'flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-none bg-muted',
                                         'border-2 transition-colors cursor-pointer',
                                         selectedImageIndex === index
                                             ? 'border-primary'
@@ -189,7 +189,7 @@ export default function ImageGallery({
                                 type="button"
                                 onClick={handleScrollThumbnailsRight}
                                 className={cn(
-                                    'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-background shadow-md',
+                                    'hidden sm:flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-none border border-border bg-background shadow-md',
                                     'hover:bg-muted transition-colors',
                                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                                 )}

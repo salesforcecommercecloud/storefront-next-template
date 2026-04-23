@@ -98,12 +98,12 @@ export function WishlistSkeleton(): ReactElement {
                 <div className="p-4 space-y-4">
                     <Skeleton className="h-5 w-36" />
                     {(['skeleton-1', 'skeleton-2', 'skeleton-3'] as const).map((key) => (
-                        <div key={key} className="flex gap-4 p-4 border border-border rounded-lg">
+                        <div key={key} className="flex gap-4 p-4 border border-border rounded-none">
                             <Skeleton className="w-20 h-20 md:w-28 md:h-28 flex-shrink-0 rounded" />
                             <div className="flex-1 space-y-2">
                                 <Skeleton className="h-4 w-3/4" />
                                 <Skeleton className="h-3 w-1/2" />
-                                <Skeleton className="h-5 w-16 rounded-md" />
+                                <Skeleton className="h-5 w-16 rounded-none" />
                             </div>
                             <Skeleton className="w-20 h-6 flex-shrink-0" />
                         </div>

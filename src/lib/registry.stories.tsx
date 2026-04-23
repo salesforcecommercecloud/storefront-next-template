@@ -145,7 +145,7 @@ function LoadingPlaceholder() {
  */
 function ErrorDisplay({ message }: { message: string }) {
     return (
-        <div className="p-8 border-2 border-destructive rounded-lg bg-destructive/10">
+        <div className="p-8 border-2 border-destructive rounded-none bg-destructive/10">
             <h3 className="text-lg font-semibold text-destructive mb-2">Error Loading Component</h3>
             <p className="text-muted-foreground">{message}</p>
         </div>
@@ -165,7 +165,7 @@ function RegistryInfoBanner({
     hasFallback: boolean;
 }) {
     return (
-        <div className="mb-6 p-4 bg-muted rounded-lg border">
+        <div className="mb-6 p-4 bg-muted rounded-none border">
             <h3 className="font-semibold mb-2">Registry Component Info</h3>
             <dl className="grid grid-cols-2 gap-2 text-sm">
                 <dt className="text-muted-foreground">Component ID:</dt>
@@ -203,7 +203,7 @@ function RegistryComponentStory({
                 <RegistryInfoBanner componentId={componentId} hasLoader={hasLoader} hasFallback={hasFallback} />
             )}
 
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-none overflow-hidden">
                 {loading && <LoadingPlaceholder />}
                 {error && <ErrorDisplay message={error} />}
                 {!loading && !error && Component && (
@@ -236,14 +236,14 @@ function RegistryFallbackStory({
                 <RegistryInfoBanner componentId={componentId} hasLoader={hasLoader} hasFallback={hasFallback} />
             )}
 
-            <div className="mb-4 p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg border border-amber-300 dark:border-amber-700">
+            <div className="mb-4 p-3 bg-amber-100 dark:bg-amber-900/30 rounded-none border border-amber-300 dark:border-amber-700">
                 <p className="text-sm text-amber-800 dark:text-amber-200">
                     <strong>Fallback Component:</strong> This is the skeleton/placeholder component shown while the main
                     component is loading.
                 </p>
             </div>
 
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-none overflow-hidden">
                 {loading && <LoadingPlaceholder />}
                 {error && <ErrorDisplay message={error} />}
                 {!loading && !error && Fallback && <Fallback title="Loading Products..." />}
@@ -269,7 +269,7 @@ function RegistryOverviewStory() {
             </div>
 
             <div className="grid gap-4">
-                <div className="p-4 bg-muted rounded-lg">
+                <div className="p-4 bg-muted rounded-none">
                     <h3 className="font-semibold mb-3">Registered Components ({registeredIds.length})</h3>
                     <div className="grid gap-2">
                         {registeredIds.map((id) => {

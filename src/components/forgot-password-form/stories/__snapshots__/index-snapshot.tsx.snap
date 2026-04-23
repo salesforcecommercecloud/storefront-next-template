@@ -122,7 +122,7 @@ exports[`ForgotPasswordForm stories snapshot > WithError story renders and match
       method="post"
     >
       <div
-        class="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md"
+        class="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-none"
       >
         <p
           class="text-sm text-destructive"

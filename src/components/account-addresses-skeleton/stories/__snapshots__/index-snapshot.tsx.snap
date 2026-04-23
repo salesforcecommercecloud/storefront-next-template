@@ -55,7 +55,7 @@ exports[`AccountAddressesSkeleton stories snapshot > Default story renders and m
               data-slot="skeleton"
             />
             <div
-              class="bg-accent animate-pulse h-5 w-14 rounded-md"
+              class="bg-accent animate-pulse h-5 w-14 rounded-none"
               data-slot="skeleton"
             />
           </div>

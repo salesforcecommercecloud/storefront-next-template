@@ -81,7 +81,7 @@ export default function WriteReviewButton(): ReactElement {
                 type="button"
                 variant="default"
                 size="lg"
-                className="w-full rounded-lg sm:w-auto"
+                className="w-full rounded-none sm:w-auto"
                 onClick={() => void handleWriteReviewClick()}
                 data-testid="write-review-button"
                 aria-label={formConfig?.title ?? t('writeReviewButton')}>

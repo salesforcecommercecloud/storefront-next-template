@@ -87,7 +87,7 @@ export const ToggleInteraction: Story = {
 export const WithCustomClass: Story = {
     args: {
         label: 'Specifications:',
-        className: 'mt-6 border rounded-md px-4',
+        className: 'mt-6 border rounded-none px-4',
         children: <p>Custom-styled collapsible content.</p>,
     },
     play: async ({ canvasElement }) => {

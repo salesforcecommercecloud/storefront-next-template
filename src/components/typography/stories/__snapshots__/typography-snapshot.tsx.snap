@@ -176,7 +176,7 @@ exports[`Typography stories snapshot > CustomStyling story renders and matches s
     data-typography="root"
   >
     <h2
-      class="text-3xl font-semibold tracking-tight text-left text-primary bg-primary/10 p-4 rounded-lg"
+      class="text-3xl font-semibold tracking-tight text-left text-primary bg-primary/10 p-4 rounded-none"
     >
       Custom Styled Heading
     </h2>

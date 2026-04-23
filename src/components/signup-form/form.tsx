@@ -35,7 +35,7 @@ export function SignupForm({ error }: SignupFormProps) {
     return (
         <>
             {error && (
-                <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-none">
                     <p className="text-sm text-destructive">{error}</p>
                 </div>
             )}

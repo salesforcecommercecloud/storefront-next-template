@@ -508,7 +508,7 @@ Cart with items composing ProductItemsList and OrderSummary (DesktopWithItems co
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             {/* Delivery header */}
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -601,7 +601,7 @@ Cart with 2 items and a qualified promotion. Shows:
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             {/* Delivery header */}
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -699,7 +699,7 @@ Cart layout optimized for mobile devices. Shows:
                         showPromoCodeForm={true}
                         showCheckoutAction={true}
                     />
-                    <div className="p-3 border border-border">
+                    <div className="p-3 border border-border rounded-none">
                         {/* Delivery header */}
                         <div className="flex items-start gap-2 mb-4">
                             <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -823,7 +823,7 @@ Cart with 4 items. Demonstrates:
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                                 <div>
@@ -935,7 +935,7 @@ This demonstrates how the component handles items with high quantities.
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                                 <div>
@@ -1013,7 +1013,7 @@ This demonstrates the component's resilience to missing data.
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             {/* Delivery header */}
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -1122,7 +1122,7 @@ This verifies the component handles long product names gracefully.
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                                 <div>
@@ -1252,7 +1252,7 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1 space-y-3">
                         {/* Pickup card */}
-                        <div className="md:p-8 p-3 border border-border">
+                        <div className="md:p-8 p-3 border border-border rounded-none">
                             <div className="flex items-start justify-between gap-2 mb-4">
                                 <div className="flex items-start gap-2">
                                     <MapPin className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -1278,7 +1278,7 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                             />
                         </div>
                         {/* Delivery card */}
-                        <div className="md:p-8 p-3 border border-border">
+                        <div className="md:p-8 p-3 border border-border rounded-none">
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                                 <div>

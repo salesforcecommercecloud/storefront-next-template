@@ -65,7 +65,7 @@ const ActionCard = ({
     return (
         <Card className={cn('relative', className)} {...props}>
             {showLoading && (
-                <div className="absolute inset-0 z-10 rounded-xl bg-background/60" data-testid="loading-spinner">
+                <div className="absolute inset-0 z-10 rounded-none bg-background/60" data-testid="loading-spinner">
                     <div className="flex h-full w-full items-center justify-center">
                         <Spinner size="md" />
                     </div>

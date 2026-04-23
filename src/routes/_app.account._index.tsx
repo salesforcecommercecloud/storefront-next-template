@@ -308,7 +308,7 @@ function AccountDetailsContent({
                                 form="customer-profile-form"
                                 size="sm"
                                 disabled={updateProfileFetcher.state === FETCHER_STATES.SUBMITTING}
-                                className="rounded-sm">
+                                className="rounded-none">
                                 {updateProfileFetcher.state === FETCHER_STATES.SUBMITTING
                                     ? t('common.saving')
                                     : t('common.save')}
@@ -319,7 +319,7 @@ function AccountDetailsContent({
                                 size="sm"
                                 onClick={handleCustomerProfileCancel}
                                 disabled={updateProfileFetcher.state === FETCHER_STATES.SUBMITTING}
-                                className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                                className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                                 {t('common.cancel')}
                             </Button>
                         </div>
@@ -328,7 +328,7 @@ function AccountDetailsContent({
                             variant="outline"
                             size="sm"
                             onClick={handleProfileEdit}
-                            className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('common.edit')}
                         </Button>
                     )}
@@ -430,7 +430,7 @@ function AccountDetailsContent({
                             variant="outline"
                             size="sm"
                             onClick={handlePasswordEdit}
-                            className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('password.changePassword')}
                         </Button>
                     </div>

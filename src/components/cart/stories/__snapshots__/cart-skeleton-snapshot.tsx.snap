@@ -21,7 +21,7 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
         class="md:hidden mb-3"
       >
         <div
-          class="border bg-card px-5 py-3"
+          class="border rounded-none bg-card px-5 py-3"
         >
           <div
             class="flex items-center justify-between"
@@ -44,7 +44,7 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
               class="bg-card text-card-foreground border-0 rounded-none"
@@ -417,7 +417,7 @@ exports[`CartSkeleton stories snapshot > GuestUser story renders and matches sna
         class="md:hidden mb-3"
       >
         <div
-          class="border bg-card px-5 py-3"
+          class="border rounded-none bg-card px-5 py-3"
         >
           <div
             class="flex items-center justify-between"
@@ -440,7 +440,7 @@ exports[`CartSkeleton stories snapshot > GuestUser story renders and matches sna
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
               class="bg-card text-card-foreground border-0 rounded-none"
@@ -689,7 +689,7 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
         class="md:hidden mb-3"
       >
         <div
-          class="border bg-card px-5 py-3"
+          class="border rounded-none bg-card px-5 py-3"
         >
           <div
             class="flex items-center justify-between"
@@ -712,7 +712,7 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
               class="bg-card text-card-foreground border-0 rounded-none"
@@ -1169,7 +1169,7 @@ exports[`CartSkeleton stories snapshot > RegisteredUser story renders and matche
         class="md:hidden mb-3"
       >
         <div
-          class="border bg-card px-5 py-3"
+          class="border rounded-none bg-card px-5 py-3"
         >
           <div
             class="flex items-center justify-between"
@@ -1192,7 +1192,7 @@ exports[`CartSkeleton stories snapshot > RegisteredUser story renders and matche
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
               class="bg-card text-card-foreground border-0 rounded-none"

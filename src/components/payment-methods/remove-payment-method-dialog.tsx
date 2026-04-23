@@ -105,7 +105,7 @@ export function RemovePaymentMethodDialog({
                     </Card>
 
                     {paymentMethod.isDefault && (
-                        <div className="mt-4 flex gap-3 p-3 rounded-lg bg-warning-bg border border-warning-border">
+                        <div className="mt-4 flex gap-3 p-3 rounded-none bg-warning-bg border border-warning-border">
                             <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" aria-hidden />
                             <p className="text-xs text-warning-foreground">
                                 {t('paymentMethods.defaultRemovalWarning')}

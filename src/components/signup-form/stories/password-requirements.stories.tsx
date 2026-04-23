@@ -167,7 +167,7 @@ The component uses the \`validatePassword\` utility function which returns an ob
     decorators: [
         (Story: React.ComponentType) => (
             <ActionLogger>
-                <div className="w-full max-w-md p-6 bg-background border">
+                <div className="w-full max-w-md p-6 bg-background border rounded-none">
                     <div className="mb-6">
                         <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
                         <h2 className="text-lg font-semibold text-foreground mt-2">Security Settings</h2>

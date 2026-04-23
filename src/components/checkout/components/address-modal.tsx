@@ -222,7 +222,7 @@ export function AddressModal({
         <Dialog open={open} onOpenChange={onOpenChange}>
             {/* Radix Content uses an internal titleId for aria-labelledby; setting id on DialogTitle overrides the DOM id only, so we align labelledby for E2E and AT. */}
             <DialogContent
-                className="w-full max-w-[calc(100%-2rem)] sm:min-w-[32rem] sm:max-w-2xl border border-border rounded-lg bg-card shadow-lg gap-0 p-0 overflow-hidden"
+                className="w-full max-w-[calc(100%-2rem)] sm:min-w-[32rem] sm:max-w-2xl border border-border rounded-none bg-card shadow-lg gap-0 p-0 overflow-hidden"
                 showCloseButton
                 aria-labelledby="address-modal-title"
                 aria-describedby="address-modal-desc">
@@ -282,7 +282,7 @@ export function AddressModal({
                                 type="button"
                                 variant="outline"
                                 size="default"
-                                className="h-9 px-4 py-2 text-sm font-medium text-foreground rounded-md border border-input bg-background shadow-sm"
+                                className="h-9 px-4 py-2 text-sm font-medium text-foreground rounded-none border border-input bg-background shadow-sm"
                                 disabled={isLoading}
                                 onClick={handleCancel}>
                                 {t('addressModal.cancel')}
@@ -292,7 +292,7 @@ export function AddressModal({
                                 form="address-modal-form"
                                 size="default"
                                 disabled={isLoading}
-                                className="h-9 px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md shadow-sm">
+                                className="h-9 px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-none shadow-sm">
                                 {isLoading ? t('addressModal.saving') : t('addressModal.save')}
                             </Button>
                         </DialogFooter>

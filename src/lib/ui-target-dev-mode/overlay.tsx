@@ -152,7 +152,7 @@ export function UITargetDevOverlay() {
 
     return (
         <div
-            className="fixed z-[99999] w-56 rounded-lg shadow-2xl backdrop-blur-sm"
+            className="fixed z-[99999] w-56 rounded-none shadow-2xl backdrop-blur-sm"
             style={{
                 left: `${position.x}px`,
                 top: `${position.y}px`,
@@ -161,7 +161,7 @@ export function UITargetDevOverlay() {
             }}>
             {/* Header - draggable */}
             <div
-                className="flex cursor-move items-center justify-between rounded-t-md px-3 py-2"
+                className="flex cursor-move items-center justify-between rounded-none px-3 py-2"
                 style={{ background: C.accent, color: C.white }}
                 onMouseDown={handleMouseDown}>
                 <span className="text-sm font-semibold">🎯 UITarget Dev Mode</span>

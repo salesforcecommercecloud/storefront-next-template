@@ -30,7 +30,7 @@ function DemoSlides(): ReactElement {
         <>
             {[1, 2, 3, 4].map((i) => (
                 <CarouselItem key={i} className="basis-1/2 pl-4 sm:basis-1/3 md:basis-1/4">
-                    <div className="flex h-28 min-w-0 items-center justify-center rounded-lg border border-border bg-muted text-sm">
+                    <div className="flex h-28 min-w-0 items-center justify-center rounded-none border border-border bg-muted text-sm">
                         Slide {i}
                     </div>
                 </CarouselItem>

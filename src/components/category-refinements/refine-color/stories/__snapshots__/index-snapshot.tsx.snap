@@ -8,11 +8,11 @@ exports[`RefineColor stories snapshot > Default story renders and matches snapsh
     class="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-3"
   >
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background"
+        class="size-8 shrink-0 rounded-none border border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background"
         style="background-color: rgb(0, 0, 0);"
       />
       <div
@@ -33,11 +33,11 @@ exports[`RefineColor stories snapshot > Default story renders and matches snapsh
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(37, 99, 235);"
       />
       <div
@@ -58,11 +58,11 @@ exports[`RefineColor stories snapshot > Default story renders and matches snapsh
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(220, 38, 38);"
       />
       <div
@@ -83,11 +83,11 @@ exports[`RefineColor stories snapshot > Default story renders and matches snapsh
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(22, 163, 74);"
       />
       <div
@@ -108,11 +108,11 @@ exports[`RefineColor stories snapshot > Default story renders and matches snapsh
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(255, 255, 255);"
       />
       <div
@@ -133,11 +133,11 @@ exports[`RefineColor stories snapshot > Default story renders and matches snapsh
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(161, 98, 7);"
       />
       <div
@@ -169,11 +169,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
     class="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-3"
   >
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background"
+        class="size-8 shrink-0 rounded-none border border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background"
         style="background-color: rgb(0, 0, 0);"
       />
       <div
@@ -194,11 +194,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(37, 99, 235);"
       />
       <div
@@ -219,11 +219,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(220, 38, 38);"
       />
       <div
@@ -244,11 +244,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(22, 163, 74);"
       />
       <div
@@ -269,11 +269,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(255, 255, 255);"
       />
       <div
@@ -294,11 +294,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(161, 98, 7);"
       />
       <div
@@ -319,11 +319,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(219, 39, 119);"
       />
       <div
@@ -344,11 +344,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(147, 51, 234);"
       />
       <div
@@ -369,11 +369,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(202, 138, 4);"
       />
       <div
@@ -394,11 +394,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(234, 88, 12);"
       />
       <div
@@ -419,11 +419,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(107, 114, 128);"
       />
       <div
@@ -444,11 +444,11 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(30, 58, 138);"
       />
       <div
@@ -480,11 +480,11 @@ exports[`RefineColor stories snapshot > NoSelectedColors story renders and match
     class="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-3"
   >
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(0, 0, 0);"
       />
       <div
@@ -505,11 +505,11 @@ exports[`RefineColor stories snapshot > NoSelectedColors story renders and match
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(37, 99, 235);"
       />
       <div
@@ -530,11 +530,11 @@ exports[`RefineColor stories snapshot > NoSelectedColors story renders and match
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(220, 38, 38);"
       />
       <div
@@ -555,11 +555,11 @@ exports[`RefineColor stories snapshot > NoSelectedColors story renders and match
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(22, 163, 74);"
       />
       <div
@@ -580,11 +580,11 @@ exports[`RefineColor stories snapshot > NoSelectedColors story renders and match
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(255, 255, 255);"
       />
       <div
@@ -605,11 +605,11 @@ exports[`RefineColor stories snapshot > NoSelectedColors story renders and match
       </div>
     </button>
     <button
-      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-md border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       type="button"
     >
       <div
-        class="size-8 shrink-0 rounded-sm border border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(161, 98, 7);"
       />
       <div

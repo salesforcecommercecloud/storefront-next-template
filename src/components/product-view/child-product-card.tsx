@@ -239,7 +239,7 @@ export default function ChildProductCard({
                         const { href, name: valueName, image, value: swatchValue, orderable } = value;
                         const content = image ? (
                             <div
-                                className="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
+                                className="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
                                 style={{ backgroundImage: `url(${image.link})` }}
                                 aria-label={image.alt || valueName}
                             />

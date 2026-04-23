@@ -48,7 +48,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                   >
                     <span
                       aria-label="This item is a free bonus product"
-                      class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 rounded-pill"
+                      class="inline-flex items-center justify-center border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 rounded-none"
                       data-slot="badge"
                       role="status"
                     >
@@ -119,11 +119,11 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                       Quantity:
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-lg"
+                      class="inline-flex items-center border border-input rounded-none"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -141,7 +141,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                         disabled=""
                       >
@@ -211,7 +211,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                   >
                     <span
                       aria-label="This item is a free bonus product"
-                      class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 rounded-pill"
+                      class="inline-flex items-center justify-center border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 rounded-none"
                       data-slot="badge"
                       role="status"
                     >
@@ -282,11 +282,11 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       Quantity:
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-lg"
+                      class="inline-flex items-center border border-input rounded-none"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -303,7 +303,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -465,11 +465,11 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       Quantity:
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-lg"
+                      class="inline-flex items-center border border-input rounded-none"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -486,7 +486,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -718,11 +718,11 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       Quantity:
                     </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-lg"
+                      class="inline-flex items-center border border-input rounded-none"
                     >
                       <button
                         aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -739,7 +739,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       />
                       <button
                         aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +

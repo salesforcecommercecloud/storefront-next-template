@@ -197,7 +197,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           data-slot="skeleton"
         />
         <div
-          class="rounded-lg border border-border p-4 sm:p-5"
+          class="rounded-none border border-border p-4 sm:p-5"
         >
           <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -209,11 +209,11 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
                 class="flex shrink-0 gap-2"
               >
                 <div
-                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                   data-slot="skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                   data-slot="skeleton"
                 />
               </div>
@@ -293,7 +293,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -337,7 +337,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           class="flex flex-col items-center gap-2 lg:flex-shrink-0"
         >
           <div
-            class="w-32 h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border"
+            class="w-32 h-32 bg-muted rounded-none flex items-center justify-center border-2 border-dashed border-border"
           >
             <svg
               class="w-16 h-16 text-muted-foreground"
@@ -384,7 +384,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/RefArchGlobal/en-GB/account"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -421,7 +421,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/RefArchGlobal/en-GB/account/addresses"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -458,7 +458,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/RefArchGlobal/en-GB/account/payment-methods"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -500,7 +500,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
           href="/RefArchGlobal/en-GB/account/orders"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -735,7 +735,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
           data-slot="skeleton"
         />
         <div
-          class="rounded-lg border border-border p-4 sm:p-5"
+          class="rounded-none border border-border p-4 sm:p-5"
         >
           <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -747,11 +747,11 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
                 class="flex shrink-0 gap-2"
               >
                 <div
-                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                   data-slot="skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                   data-slot="skeleton"
                 />
               </div>
@@ -831,7 +831,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -875,7 +875,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
           class="flex flex-col items-center gap-2 lg:flex-shrink-0"
         >
           <div
-            class="w-32 h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border"
+            class="w-32 h-32 bg-muted rounded-none flex items-center justify-center border-2 border-dashed border-border"
           >
             <svg
               class="w-16 h-16 text-muted-foreground"
@@ -922,7 +922,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
           href="/RefArchGlobal/en-GB/account"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -959,7 +959,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
           href="/RefArchGlobal/en-GB/account/addresses"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -996,7 +996,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
           href="/RefArchGlobal/en-GB/account/payment-methods"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1038,7 +1038,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
           href="/RefArchGlobal/en-GB/account/orders"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -1271,7 +1271,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           data-slot="skeleton"
         />
         <div
-          class="rounded-lg border border-border p-4 sm:p-5"
+          class="rounded-none border border-border p-4 sm:p-5"
         >
           <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -1283,11 +1283,11 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
                 class="flex shrink-0 gap-2"
               >
                 <div
-                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                   data-slot="skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                  class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                   data-slot="skeleton"
                 />
               </div>
@@ -1594,7 +1594,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
               class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2"
             >
               <div
-                class="bg-accent animate-pulse h-9 w-9 rounded-lg"
+                class="bg-accent animate-pulse h-9 w-9 rounded-none"
                 data-slot="skeleton"
               />
             </div>
@@ -1602,7 +1602,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
               class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2"
             >
               <div
-                class="bg-accent animate-pulse h-9 w-9 rounded-lg"
+                class="bg-accent animate-pulse h-9 w-9 rounded-none"
                 data-slot="skeleton"
               />
             </div>
@@ -1684,7 +1684,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           class="flex flex-col items-center gap-2 lg:flex-shrink-0"
         >
           <div
-            class="bg-accent animate-pulse w-40 h-40 rounded-lg"
+            class="bg-accent animate-pulse w-40 h-40 rounded-none"
             data-slot="skeleton"
           />
           <div
@@ -1711,7 +1711,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
         >
           <div
             class="bg-accent animate-pulse rounded-md w-4 h-4"
@@ -1723,7 +1723,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           />
         </div>
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
         >
           <div
             class="bg-accent animate-pulse rounded-md w-4 h-4"
@@ -1735,7 +1735,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           />
         </div>
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
         >
           <div
             class="bg-accent animate-pulse rounded-md w-4 h-4"
@@ -1747,7 +1747,7 @@ exports[`AccountOverview stories snapshot > LoadingSkeleton story renders and ma
           />
         </div>
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
         >
           <div
             class="bg-accent animate-pulse rounded-md w-4 h-4"
@@ -1787,7 +1787,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
         href="/RefArchGlobal/en-GB/account"
       >
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
         >
           <svg
             aria-hidden="true"
@@ -1824,7 +1824,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
         href="/RefArchGlobal/en-GB/account/addresses"
       >
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
         >
           <svg
             aria-hidden="true"
@@ -1861,7 +1861,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
         href="/RefArchGlobal/en-GB/account/payment-methods"
       >
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
         >
           <svg
             aria-hidden="true"
@@ -1903,7 +1903,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
         href="/RefArchGlobal/en-GB/account/orders"
       >
         <div
-          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+          class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
         >
           <svg
             aria-hidden="true"
@@ -1957,7 +1957,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionLoading story rende
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
     >
       <div
-        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
+        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
       >
         <div
           class="bg-accent animate-pulse rounded-md w-4 h-4"
@@ -1969,7 +1969,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionLoading story rende
         />
       </div>
       <div
-        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
+        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
       >
         <div
           class="bg-accent animate-pulse rounded-md w-4 h-4"
@@ -1981,7 +1981,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionLoading story rende
         />
       </div>
       <div
-        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
+        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
       >
         <div
           class="bg-accent animate-pulse rounded-md w-4 h-4"
@@ -1993,7 +1993,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionLoading story rende
         />
       </div>
       <div
-        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border"
+        class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border"
       >
         <div
           class="bg-accent animate-pulse rounded-md w-4 h-4"
@@ -2183,7 +2183,7 @@ exports[`AccountOverview stories snapshot > RecentOrdersDefault story renders an
         data-slot="skeleton"
       />
       <div
-        class="rounded-lg border border-border p-4 sm:p-5"
+        class="rounded-none border border-border p-4 sm:p-5"
       >
         <div
           class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -2195,11 +2195,11 @@ exports[`AccountOverview stories snapshot > RecentOrdersDefault story renders an
               class="flex shrink-0 gap-2"
             >
               <div
-                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                 data-slot="skeleton"
               />
               <div
-                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                 data-slot="skeleton"
               />
             </div>
@@ -2405,7 +2405,7 @@ exports[`AccountOverview stories snapshot > RecentOrdersEmpty story renders and 
         data-slot="skeleton"
       />
       <div
-        class="rounded-lg border border-border p-4 sm:p-5"
+        class="rounded-none border border-border p-4 sm:p-5"
       >
         <div
           class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -2417,11 +2417,11 @@ exports[`AccountOverview stories snapshot > RecentOrdersEmpty story renders and 
               class="flex shrink-0 gap-2"
             >
               <div
-                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                 data-slot="skeleton"
               />
               <div
-                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                 data-slot="skeleton"
               />
             </div>
@@ -2627,7 +2627,7 @@ exports[`AccountOverview stories snapshot > RecentOrdersLoading story renders an
         data-slot="skeleton"
       />
       <div
-        class="rounded-lg border border-border p-4 sm:p-5"
+        class="rounded-none border border-border p-4 sm:p-5"
       >
         <div
           class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
@@ -2639,11 +2639,11 @@ exports[`AccountOverview stories snapshot > RecentOrdersLoading story renders an
               class="flex shrink-0 gap-2"
             >
               <div
-                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                 data-slot="skeleton"
               />
               <div
-                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-lg"
+                class="bg-accent animate-pulse h-16 w-16 shrink-0 rounded-none"
                 data-slot="skeleton"
               />
             </div>
@@ -2793,7 +2793,7 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
     </div>
   </div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -2837,7 +2837,7 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
           class="flex flex-col items-center gap-2 lg:flex-shrink-0"
         >
           <div
-            class="w-32 h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border"
+            class="w-32 h-32 bg-muted rounded-none flex items-center justify-center border-2 border-dashed border-border"
           >
             <svg
               class="w-16 h-16 text-muted-foreground"
@@ -2884,7 +2884,7 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
           href="/RefArchGlobal/en-GB/account"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -2921,7 +2921,7 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
           href="/RefArchGlobal/en-GB/account/addresses"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -2958,7 +2958,7 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
           href="/RefArchGlobal/en-GB/account/payment-methods"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"
@@ -3000,7 +3000,7 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
           href="/RefArchGlobal/en-GB/account/orders"
         >
           <div
-            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
+            class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
           >
             <svg
               aria-hidden="true"

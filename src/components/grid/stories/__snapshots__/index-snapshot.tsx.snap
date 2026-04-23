@@ -28,7 +28,7 @@ exports[`Grid stories snapshot > Default story renders and matches snapshot 1`] 
 exports[`Grid stories snapshot > FullFeatured story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="grid grid-cols-4 grid-flow-row max-w-screen-2xl gap-6 items-stretch bg-gradient-to-br from-purple-500 to-purple-700 mx-auto p-8 rounded-xl"
+    class="grid grid-cols-4 grid-flow-row max-w-screen-2xl gap-6 items-stretch bg-gradient-to-br from-purple-500 to-purple-700 mx-auto p-8 rounded-none"
     data-slot="grid"
   >
     <div
@@ -101,10 +101,10 @@ exports[`Grid stories snapshot > WithBackgroundBlur story renders and matches sn
     class="relative"
   >
     <div
-      class="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg"
+      class="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-none"
     />
     <div
-      class="grid grid-cols-2 grid-flow-row max-w-full mx-0 gap-4 items-stretch backdrop-blur-md relative p-6 rounded-lg bg-white/30"
+      class="grid grid-cols-2 grid-flow-row max-w-full mx-0 gap-4 items-stretch backdrop-blur-md relative p-6 rounded-none bg-white/30"
       data-slot="grid"
     >
       <div
@@ -125,7 +125,7 @@ exports[`Grid stories snapshot > WithBackgroundBlur story renders and matches sn
 exports[`Grid stories snapshot > WithBackgroundGradient story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="grid grid-cols-2 grid-flow-row max-w-full mx-0 gap-6 items-stretch bg-gradient-to-br from-blue-500 to-blue-700 p-8 rounded-lg"
+    class="grid grid-cols-2 grid-flow-row max-w-full mx-0 gap-6 items-stretch bg-gradient-to-br from-blue-500 to-blue-700 p-8 rounded-none"
     data-slot="grid"
   >
     <div

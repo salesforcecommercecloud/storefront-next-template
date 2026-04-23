@@ -15,7 +15,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
           class="space-y-4"
         >
           <div
-            class="relative aspect-square overflow-hidden rounded-lg bg-muted"
+            class="relative aspect-square overflow-hidden rounded-none bg-muted"
           >
             <div
               class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
@@ -299,7 +299,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
           >
             <span
               aria-hidden="true"
-              class="h-2 w-2 shrink-0 rounded-[var(--radius)] bg-current text-status-positive"
+              class="h-2 w-2 shrink-0 rounded-none bg-current text-status-positive"
             />
             <p
               class="text-sm font-medium text-status-positive"
@@ -329,12 +329,12 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   data-labeled="true"
                   href="/RefArchGlobal/en-GB/?accessorySize=050"
                   position="relative"
@@ -354,7 +354,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 <a
                   aria-checked="true"
                   aria-label="L"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-sm"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-sm"
                   data-labeled="true"
                   href="/RefArchGlobal/en-GB/?accessorySize=060"
                   position="relative"
@@ -374,7 +374,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                 <a
                   aria-checked="false"
                   aria-label="XL"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer !w-auto !h-auto !min-w-[var(--swatch-labeled-min-size)] !min-h-[var(--swatch-labeled-min-size)] !p-[var(--swatch-labeled-padding)] bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
                   data-labeled="true"
                   href="/RefArchGlobal/en-GB/?accessorySize=080"
                   position="relative"
@@ -414,7 +414,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                   tabindex="0"
                 >
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="delivery-option-061492183589M"
                   >
@@ -434,7 +434,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -457,7 +457,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                     </div>
                   </label>
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="pickup-option-061492183589M"
                   >
@@ -477,7 +477,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -522,11 +522,11 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
               Quantity:
             </label>
             <div
-              class="inline-flex items-center border border-input rounded-lg"
+              class="inline-flex items-center border border-input rounded-none"
             >
               <button
                 aria-label="Decrement Quantity for Men's Classic Deer Gloves"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
                 disabled=""
               >
@@ -542,7 +542,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
               />
               <button
                 aria-label="Increment Quantity for Men's Classic Deer Gloves"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
               >
                 +

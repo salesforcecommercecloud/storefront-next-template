@@ -77,7 +77,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
               class="flex items-start gap-2 mb-4"
@@ -355,7 +355,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $57.99
@@ -371,11 +371,11 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                     disabled=""
                                   >
@@ -392,7 +392,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -670,7 +670,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
                                       data-variant="outline"
@@ -970,7 +970,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
           class="md:order-2 lg:order-1 space-y-3"
         >
           <div
-            class="md:p-8 p-3 border border-border"
+            class="md:p-8 p-3 border border-border rounded-none"
           >
             <div
               class="flex items-start justify-between gap-2 mb-4"
@@ -1241,7 +1241,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $64.99
@@ -1257,11 +1257,11 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                     disabled=""
                                   >
@@ -1278,7 +1278,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -1373,7 +1373,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
             </div>
           </div>
           <div
-            class="md:p-8 p-3 border border-border"
+            class="md:p-8 p-3 border border-border rounded-none"
           >
             <div
               class="flex items-start gap-2 mb-4"
@@ -1651,7 +1651,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $54.99
@@ -1667,11 +1667,11 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                     disabled=""
                                   >
@@ -1688,7 +1688,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -2014,7 +2014,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $139.98
@@ -2030,11 +2030,11 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                   >
                                     −
@@ -2050,7 +2050,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -2330,7 +2330,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
                                       data-variant="outline"
@@ -2630,7 +2630,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
               class="flex items-start gap-2 mb-4"
@@ -2908,7 +2908,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $54.99
@@ -2924,11 +2924,11 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                     disabled=""
                                   >
@@ -2945,7 +2945,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -3264,7 +3264,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $69.99
@@ -3280,11 +3280,11 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                     disabled=""
                                   >
@@ -3301,7 +3301,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -3581,7 +3581,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
                                       data-variant="outline"
@@ -3814,7 +3814,7 @@ exports[`CartContent stories snapshot > EmptyCart story renders and matches snap
       class="section-container py-8 lg:py-14"
     >
       <div
-        class="bg-background p-8 md:p-16 text-center"
+        class="bg-background rounded-none p-8 md:p-16 text-center"
       >
         <svg
           aria-hidden="true"
@@ -3932,7 +3932,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
               class="flex items-start gap-2 mb-4"
@@ -4216,7 +4216,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $579.90
@@ -4232,11 +4232,11 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                   >
                                     −
@@ -4252,7 +4252,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -4532,7 +4532,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
                                       data-variant="outline"
@@ -4832,7 +4832,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
               class="flex items-start gap-2 mb-4"
@@ -5117,7 +5117,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $109.98
@@ -5133,11 +5133,11 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                   >
                                     −
@@ -5153,7 +5153,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -5472,7 +5472,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $69.99
@@ -5488,11 +5488,11 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                     disabled=""
                                   >
@@ -5509,7 +5509,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -5835,7 +5835,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $224.97
@@ -5851,11 +5851,11 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                   >
                                     −
@@ -5871,7 +5871,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -6190,7 +6190,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $39.99
@@ -6206,11 +6206,11 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                     disabled=""
                                   >
@@ -6227,7 +6227,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -6507,7 +6507,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
                                       data-variant="outline"
@@ -6807,7 +6807,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
               class="flex items-start gap-2 mb-4"
@@ -7085,7 +7085,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved $57.99
@@ -7101,11 +7101,11 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                     disabled=""
                                   >
@@ -7122,7 +7122,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -7400,7 +7400,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
                                       data-variant="outline"
@@ -7700,7 +7700,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
               class="flex items-start gap-2 mb-4"
@@ -7960,11 +7960,11 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                   Quantity:
                                 </label>
                                 <div
-                                  class="inline-flex items-center border border-input rounded-lg"
+                                  class="inline-flex items-center border border-input rounded-none"
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                     disabled=""
                                   >
@@ -7980,7 +7980,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +
@@ -8258,7 +8258,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
                                       data-variant="outline"
@@ -8734,7 +8734,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                     value=""
                                   />
                                   <button
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-md cursor-pointer px-4"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                     data-size="default"
                                     data-slot="button"
                                     data-variant="outline"
@@ -8951,7 +8951,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
           </div>
         </div>
         <div
-          class="p-3 border border-border"
+          class="p-3 border border-border rounded-none"
         >
           <div
             class="flex items-start gap-2 mb-4"
@@ -9229,7 +9229,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                               </div>
                             </div>
                             <span
-                              class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                              class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                               data-slot="badge"
                             >
                               Saved $57.99
@@ -9245,11 +9245,11 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 Quantity:
                               </label>
                               <div
-                                class="inline-flex items-center border border-input rounded-lg"
+                                class="inline-flex items-center border border-input rounded-none"
                               >
                                 <button
                                   aria-label="Decrement Quantity for the product"
-                                  class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                  class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                   data-testid="quantity-decrement"
                                   disabled=""
                                 >
@@ -9266,7 +9266,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 />
                                 <button
                                   aria-label="Increment Quantity for the product"
-                                  class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                  class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                   data-testid="quantity-increment"
                                 >
                                   +

@@ -214,7 +214,7 @@ function AccountAddressesContent({
                             </h1>
                             <p className="text-sm text-muted-foreground">{t('addresses.subtitle')}</p>
                         </div>
-                        <Button onClick={handleAdd} className="rounded-sm">
+                        <Button onClick={handleAdd} className="rounded-none">
                             <Plus className="w-4 h-4" />
                             {t('addresses.addNewAddress')}
                         </Button>

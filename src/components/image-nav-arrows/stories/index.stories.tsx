@@ -22,7 +22,7 @@ import ImageNavArrows from '../index';
 function ImageNavArrowsWrapper({ imageCount = 5, size = 'sm' }: { imageCount?: number; size?: 'sm' | 'lg' }) {
     const [index, setIndex] = useState(0);
     return (
-        <div className="relative w-80 h-60 bg-muted flex items-center justify-center rounded-lg">
+        <div className="relative w-80 h-60 bg-muted flex items-center justify-center rounded-none">
             <span className="text-muted-foreground text-sm">
                 Image {index + 1} of {imageCount}
             </span>

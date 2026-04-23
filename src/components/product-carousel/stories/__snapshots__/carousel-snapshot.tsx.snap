@@ -163,7 +163,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -171,7 +171,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-0"
                         to="/RefArchGlobal/en-GB/product/P0048M-0"
                       >
@@ -443,7 +443,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -451,7 +451,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-1"
                         to="/RefArchGlobal/en-GB/product/P0048M-1"
                       >
@@ -723,7 +723,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -731,7 +731,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-2"
                         to="/RefArchGlobal/en-GB/product/P0048M-2"
                       >
@@ -1003,7 +1003,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -1011,7 +1011,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-3"
                         to="/RefArchGlobal/en-GB/product/P0048M-3"
                       >
@@ -1283,7 +1283,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -1291,7 +1291,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-4"
                         to="/RefArchGlobal/en-GB/product/P0048M-4"
                       >
@@ -1563,7 +1563,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -1571,7 +1571,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-5"
                         to="/RefArchGlobal/en-GB/product/P0048M-5"
                       >
@@ -1843,7 +1843,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -1851,7 +1851,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-6"
                         to="/RefArchGlobal/en-GB/product/P0048M-6"
                       >
@@ -2123,7 +2123,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -2131,7 +2131,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-7"
                         to="/RefArchGlobal/en-GB/product/P0048M-7"
                       >
@@ -2274,7 +2274,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
           </div>
         </div>
         <button
-          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-lg shadow-md"
+          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
           data-size="icon"
           data-slot="carousel-previous"
           data-variant="outline"
@@ -2307,7 +2307,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
           </span>
         </button>
         <button
-          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-lg shadow-md"
+          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
           data-size="icon"
           data-slot="carousel-next"
           data-variant="outline"
@@ -2510,7 +2510,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -2518,7 +2518,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-0"
                         to="/RefArchGlobal/en-GB/product/P0048M-0"
                       >
@@ -2790,7 +2790,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -2798,7 +2798,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-1"
                         to="/RefArchGlobal/en-GB/product/P0048M-1"
                       >
@@ -3070,7 +3070,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -3078,7 +3078,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-2"
                         to="/RefArchGlobal/en-GB/product/P0048M-2"
                       >
@@ -3350,7 +3350,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -3358,7 +3358,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-3"
                         to="/RefArchGlobal/en-GB/product/P0048M-3"
                       >
@@ -3630,7 +3630,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -3638,7 +3638,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-4"
                         to="/RefArchGlobal/en-GB/product/P0048M-4"
                       >
@@ -3910,7 +3910,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -3918,7 +3918,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-5"
                         to="/RefArchGlobal/en-GB/product/P0048M-5"
                       >
@@ -4190,7 +4190,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -4198,7 +4198,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-6"
                         to="/RefArchGlobal/en-GB/product/P0048M-6"
                       >
@@ -4470,7 +4470,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -4478,7 +4478,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-7"
                         to="/RefArchGlobal/en-GB/product/P0048M-7"
                       >
@@ -4621,7 +4621,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
           </div>
         </div>
         <button
-          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-lg shadow-md"
+          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
           data-size="icon"
           data-slot="carousel-previous"
           data-variant="outline"
@@ -4654,7 +4654,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
           </span>
         </button>
         <button
-          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-lg shadow-md"
+          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
           data-size="icon"
           data-slot="carousel-next"
           data-variant="outline"
@@ -4855,7 +4855,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -4863,7 +4863,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-0"
                         to="/RefArchGlobal/en-GB/product/P0048M-0"
                       >
@@ -5135,7 +5135,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -5143,7 +5143,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-1"
                         to="/RefArchGlobal/en-GB/product/P0048M-1"
                       >
@@ -5415,7 +5415,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -5423,7 +5423,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-2"
                         to="/RefArchGlobal/en-GB/product/P0048M-2"
                       >
@@ -5695,7 +5695,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -5703,7 +5703,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-3"
                         to="/RefArchGlobal/en-GB/product/P0048M-3"
                       >
@@ -5975,7 +5975,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -5983,7 +5983,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-4"
                         to="/RefArchGlobal/en-GB/product/P0048M-4"
                       >
@@ -6255,7 +6255,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -6263,7 +6263,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-5"
                         to="/RefArchGlobal/en-GB/product/P0048M-5"
                       >
@@ -6535,7 +6535,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -6543,7 +6543,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-6"
                         to="/RefArchGlobal/en-GB/product/P0048M-6"
                       >
@@ -6815,7 +6815,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -6823,7 +6823,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-7"
                         to="/RefArchGlobal/en-GB/product/P0048M-7"
                       >
@@ -6966,7 +6966,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
           </div>
         </div>
         <button
-          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-lg shadow-md"
+          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
           data-size="icon"
           data-slot="carousel-previous"
           data-variant="outline"
@@ -6999,7 +6999,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
           </span>
         </button>
         <button
-          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-lg shadow-md"
+          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
           data-size="icon"
           data-slot="carousel-next"
           data-variant="outline"
@@ -7200,7 +7200,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -7208,7 +7208,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-0"
                         to="/RefArchGlobal/en-GB/product/P0048M-0"
                       >
@@ -7480,7 +7480,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -7488,7 +7488,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-1"
                         to="/RefArchGlobal/en-GB/product/P0048M-1"
                       >
@@ -7760,7 +7760,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -7768,7 +7768,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-2"
                         to="/RefArchGlobal/en-GB/product/P0048M-2"
                       >
@@ -8040,7 +8040,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -8048,7 +8048,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-3"
                         to="/RefArchGlobal/en-GB/product/P0048M-3"
                       >
@@ -8320,7 +8320,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -8328,7 +8328,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-4"
                         to="/RefArchGlobal/en-GB/product/P0048M-4"
                       >
@@ -8600,7 +8600,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -8608,7 +8608,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-5"
                         to="/RefArchGlobal/en-GB/product/P0048M-5"
                       >
@@ -8880,7 +8880,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -8888,7 +8888,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-6"
                         to="/RefArchGlobal/en-GB/product/P0048M-6"
                       >
@@ -9160,7 +9160,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1 uppercase"
+                      class="text-xs text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
@@ -9168,7 +9168,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       class="text-sm font-medium text-card-foreground mb-2"
                     >
                       <a
-                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
+                        class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
                         href="/RefArchGlobal/en-GB/product/P0048M-7"
                         to="/RefArchGlobal/en-GB/product/P0048M-7"
                       >
@@ -9311,7 +9311,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
           </div>
         </div>
         <button
-          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-lg shadow-md"
+          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex left-0 -translate-x-1/2 size-9 rounded-none shadow-md"
           data-size="icon"
           data-slot="carousel-previous"
           data-variant="outline"
@@ -9344,7 +9344,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
           </span>
         </button>
         <button
-          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-lg shadow-md"
+          class="items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 absolute top-1/2 -translate-y-1/2 flex right-0 translate-x-1/2 size-9 rounded-none shadow-md"
           data-size="icon"
           data-slot="carousel-next"
           data-variant="outline"

@@ -45,7 +45,7 @@ export function PromoCodeFields({ form, applyFetcher }: PromoCodeFieldsProps) {
                                 type="submit"
                                 variant="outline"
                                 disabled={applyFetcher.state === FETCHER_STATES.SUBMITTING}
-                                className="rounded-md cursor-pointer px-4">
+                                className="rounded-none cursor-pointer px-4">
                                 {applyFetcher.state === FETCHER_STATES.SUBMITTING
                                     ? t('promoCode.applying')
                                     : t('promoCode.apply')}

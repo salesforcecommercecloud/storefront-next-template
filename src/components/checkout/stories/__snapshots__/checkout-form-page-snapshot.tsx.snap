@@ -300,7 +300,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                 class="space-y-3"
               >
                 <div
-                  class="rounded-lg p-3 space-y-2 bg-muted/50"
+                  class="rounded-none p-3 space-y-2 bg-muted/50"
                 >
                   <p
                     class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
@@ -505,7 +505,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                   class="space-y-4"
                 >
                   <div
-                    class="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50"
+                    class="rounded-none border border-border bg-card p-4 transition-colors hover:bg-accent/50"
                   >
                     <div
                       class="flex items-start space-x-3"
@@ -1573,7 +1573,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                 class="space-y-3"
               >
                 <div
-                  class="rounded-lg p-3 space-y-2 bg-muted/50"
+                  class="rounded-none p-3 space-y-2 bg-muted/50"
                 >
                   <p
                     class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
@@ -1778,7 +1778,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                   class="space-y-4"
                 >
                   <div
-                    class="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50"
+                    class="rounded-none border border-border bg-card p-4 transition-colors hover:bg-accent/50"
                   >
                     <div
                       class="flex items-start space-x-3"
@@ -2131,7 +2131,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                 class="space-y-3"
               >
                 <div
-                  class="rounded-lg p-3 space-y-2 bg-muted/50"
+                  class="rounded-none p-3 space-y-2 bg-muted/50"
                 >
                   <p
                     class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
@@ -2336,7 +2336,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                   class="space-y-4"
                 >
                   <div
-                    class="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50"
+                    class="rounded-none border border-border bg-card p-4 transition-colors hover:bg-accent/50"
                   >
                     <div
                       class="flex items-start space-x-3"
@@ -3005,7 +3005,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
                 class="space-y-3"
               >
                 <div
-                  class="rounded-lg p-3 space-y-2 bg-muted/50"
+                  class="rounded-none p-3 space-y-2 bg-muted/50"
                 >
                   <p
                     class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
@@ -3320,7 +3320,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                 class="space-y-3"
               >
                 <div
-                  class="rounded-lg p-3 space-y-2 bg-muted/50"
+                  class="rounded-none p-3 space-y-2 bg-muted/50"
                 >
                   <p
                     class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
@@ -3525,7 +3525,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                   class="space-y-4"
                 >
                   <div
-                    class="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50"
+                    class="rounded-none border border-border bg-card p-4 transition-colors hover:bg-accent/50"
                   >
                     <div
                       class="flex items-start space-x-3"
@@ -3850,7 +3850,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
                 class="space-y-3"
               >
                 <div
-                  class="rounded-lg p-3 space-y-2 bg-muted/50"
+                  class="rounded-none p-3 space-y-2 bg-muted/50"
                 >
                   <p
                     class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
@@ -4618,7 +4618,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                 class="space-y-3"
               >
                 <div
-                  class="rounded-lg p-3 space-y-2 bg-muted/50"
+                  class="rounded-none p-3 space-y-2 bg-muted/50"
                 >
                   <p
                     class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
@@ -4690,7 +4690,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                     tabindex="0"
                   >
                     <div
-                      class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                      class="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
                     >
                       <button
                         aria-checked="false"
@@ -4739,7 +4739,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                       </label>
                     </div>
                     <div
-                      class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                      class="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
                     >
                       <button
                         aria-checked="false"
@@ -4788,7 +4788,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                       </label>
                     </div>
                     <div
-                      class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                      class="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
                     >
                       <button
                         aria-checked="true"
@@ -4863,7 +4863,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                       </label>
                     </div>
                     <div
-                      class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                      class="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
                     >
                       <button
                         aria-checked="false"
@@ -4912,7 +4912,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                       </label>
                     </div>
                     <div
-                      class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                      class="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
                     >
                       <button
                         aria-checked="false"
@@ -5205,7 +5205,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                 class="space-y-3"
               >
                 <div
-                  class="rounded-lg p-3 space-y-2 bg-muted/50"
+                  class="rounded-none p-3 space-y-2 bg-muted/50"
                 >
                   <p
                     class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"
@@ -5277,7 +5277,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                     tabindex="0"
                   >
                     <div
-                      class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                      class="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
                     >
                       <button
                         aria-checked="false"
@@ -5326,7 +5326,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                       </label>
                     </div>
                     <div
-                      class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                      class="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
                     >
                       <button
                         aria-checked="false"
@@ -5375,7 +5375,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                       </label>
                     </div>
                     <div
-                      class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                      class="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
                     >
                       <button
                         aria-checked="false"
@@ -5424,7 +5424,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                       </label>
                     </div>
                     <div
-                      class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                      class="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
                     >
                       <button
                         aria-checked="false"
@@ -5473,7 +5473,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                       </label>
                     </div>
                     <div
-                      class="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
+                      class="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md"
                     >
                       <button
                         aria-checked="true"
@@ -5792,7 +5792,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
                 class="space-y-3"
               >
                 <div
-                  class="rounded-lg p-3 space-y-2 bg-muted/50"
+                  class="rounded-none p-3 space-y-2 bg-muted/50"
                 >
                   <p
                     class="leading-7 [&:not(:first-child)]:mt-6 text-left font-medium"

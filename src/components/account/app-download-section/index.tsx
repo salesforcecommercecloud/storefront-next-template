@@ -68,7 +68,7 @@ export function AppDownloadSection(): ReactElement {
 
                     {/* Right side: QR code */}
                     <div className="flex flex-col items-center gap-2 lg:flex-shrink-0">
-                        <div className="w-32 h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border">
+                        <div className="w-32 h-32 bg-muted rounded-none flex items-center justify-center border-2 border-dashed border-border">
                             <svg
                                 className="w-16 h-16 text-muted-foreground"
                                 fill="none"

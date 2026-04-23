@@ -549,7 +549,7 @@ export const Interactive: Story = {
 
         return (
             <div className="space-y-4">
-                <div className="space-y-2 p-3 bg-muted rounded-md">
+                <div className="space-y-2 p-3 bg-muted rounded-none">
                     <div className="flex items-center gap-2">
                         <label htmlFor="error-toggle" className="text-sm font-medium">
                             Simulate Error:

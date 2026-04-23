@@ -172,7 +172,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                 <div className="space-y-1">
                     {basket.couponItems?.map((item) => (
                         <div key={item.couponItemId} className="flex items-center justify-between py-1">
-                            <Badge variant="secondary" className="gap-1 rounded-sm text-xs font-semibold">
+                            <Badge variant="secondary" className="gap-1 rounded-none text-xs font-semibold">
                                 <Check className="size-3" />
                                 {item.code}
                                 <CloseIcon

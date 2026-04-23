@@ -146,7 +146,7 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
 
     return (
         <div data-testid={`wishlist-item-${wishlistItem.id}`}>
-            <div className="flex gap-4 p-4 border border-border rounded-lg bg-card">
+            <div className="flex gap-4 p-4 border border-border rounded-none bg-card">
                 {/* Product Image */}
                 <Link to={pdpUrl} className="flex-shrink-0 self-start" aria-label={product.name}>
                     <div className="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center">

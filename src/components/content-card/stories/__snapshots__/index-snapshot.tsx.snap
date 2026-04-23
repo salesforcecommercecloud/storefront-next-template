@@ -11,7 +11,7 @@ exports[`ContentCard stories snapshot > CustomClassNames story renders and match
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
       >
         <img
           alt="Custom class names"
@@ -71,7 +71,7 @@ exports[`ContentCard stories snapshot > Default story renders and matches snapsh
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
       >
         <img
           alt="Featured Product"
@@ -131,7 +131,7 @@ exports[`ContentCard stories snapshot > Minimal story renders and matches snapsh
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
       >
         <img
           alt="Minimal card"
@@ -182,7 +182,7 @@ exports[`ContentCard stories snapshot > NoBackground story renders and matches s
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
       >
         <img
           alt="Transparent card"
@@ -242,7 +242,7 @@ exports[`ContentCard stories snapshot > WithoutButton story renders and matches 
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
       >
         <img
           alt="Text only card"

@@ -409,7 +409,7 @@ function ErrorPageContent({
 
                         {/* Stack trace (only in dev mode with stack) */}
                         {stack && (
-                            <div className="mt-16 border border-border rounded-lg bg-muted/30 text-left">
+                            <div className="mt-16 border border-border rounded-none bg-muted/30 text-left">
                                 <div className="flex items-center px-4 py-3 border-b border-border">
                                     <h2 className="text-sm font-semibold text-foreground">Stack Trace</h2>
                                 </div>

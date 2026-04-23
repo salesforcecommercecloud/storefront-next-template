@@ -89,10 +89,10 @@ export default function ProductCarouselSkeleton({
 
                     {/* Navigation controls skeleton */}
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2">
-                        <Skeleton className="h-9 w-9 rounded-lg" />
+                        <Skeleton className="h-9 w-9 rounded-none" />
                     </div>
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2">
-                        <Skeleton className="h-9 w-9 rounded-lg" />
+                        <Skeleton className="h-9 w-9 rounded-none" />
                     </div>
                 </div>
             </div>

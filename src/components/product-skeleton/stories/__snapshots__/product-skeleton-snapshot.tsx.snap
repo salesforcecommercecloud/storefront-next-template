@@ -17,7 +17,7 @@ exports[`ProductContentSkeleton stories snapshot > Default story renders and mat
           data-testid="image-gallery-skeleton"
         >
           <div
-            class="bg-accent animate-pulse aspect-square w-full rounded-lg"
+            class="bg-accent animate-pulse aspect-square w-full rounded-none"
             data-slot="skeleton"
             data-testid="main-image-skeleton"
           />
@@ -26,23 +26,23 @@ exports[`ProductContentSkeleton stories snapshot > Default story renders and mat
             data-testid="thumbnails-skeleton"
           >
             <div
-              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
+              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-none"
               data-slot="skeleton"
             />
             <div
-              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
+              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-none"
               data-slot="skeleton"
             />
             <div
-              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
+              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-none"
               data-slot="skeleton"
             />
             <div
-              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
+              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-none"
               data-slot="skeleton"
             />
             <div
-              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-md"
+              class="bg-accent animate-pulse h-16 w-16 flex-shrink-0 rounded-none"
               data-slot="skeleton"
             />
           </div>
@@ -122,15 +122,15 @@ exports[`ProductContentSkeleton stories snapshot > Default story renders and mat
                 class="flex space-x-2"
               >
                 <div
-                  class="bg-accent animate-pulse h-10 w-14 rounded-md"
+                  class="bg-accent animate-pulse h-10 w-14 rounded-none"
                   data-slot="skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse h-10 w-14 rounded-md"
+                  class="bg-accent animate-pulse h-10 w-14 rounded-none"
                   data-slot="skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse h-10 w-14 rounded-md"
+                  class="bg-accent animate-pulse h-10 w-14 rounded-none"
                   data-slot="skeleton"
                 />
               </div>
@@ -144,7 +144,7 @@ exports[`ProductContentSkeleton stories snapshot > Default story renders and mat
               data-slot="skeleton"
             />
             <div
-              class="bg-accent animate-pulse h-10 w-24 rounded-md"
+              class="bg-accent animate-pulse h-10 w-24 rounded-none"
               data-slot="skeleton"
             />
           </div>
@@ -160,11 +160,11 @@ exports[`ProductContentSkeleton stories snapshot > Default story renders and mat
               class="space-y-2"
             >
               <div
-                class="bg-accent animate-pulse h-12 w-full rounded-md"
+                class="bg-accent animate-pulse h-12 w-full rounded-none"
                 data-slot="skeleton"
               />
               <div
-                class="bg-accent animate-pulse h-12 w-full rounded-md"
+                class="bg-accent animate-pulse h-12 w-full rounded-none"
                 data-slot="skeleton"
               />
             </div>
@@ -194,7 +194,7 @@ exports[`ProductContentSkeleton stories snapshot > Default story renders and mat
               class="flex flex-col gap-3"
             >
               <div
-                class="bg-accent animate-pulse h-12 w-full rounded-md"
+                class="bg-accent animate-pulse h-12 w-full rounded-none"
                 data-slot="skeleton"
                 data-testid="add-to-cart-skeleton"
               />
@@ -202,12 +202,12 @@ exports[`ProductContentSkeleton stories snapshot > Default story renders and mat
                 class="grid grid-cols-2 gap-3"
               >
                 <div
-                  class="bg-accent animate-pulse h-12 w-full rounded-md"
+                  class="bg-accent animate-pulse h-12 w-full rounded-none"
                   data-slot="skeleton"
                   data-testid="wishlist-skeleton"
                 />
                 <div
-                  class="bg-accent animate-pulse h-12 w-full rounded-md"
+                  class="bg-accent animate-pulse h-12 w-full rounded-none"
                   data-slot="skeleton"
                   data-testid="share-skeleton"
                 />

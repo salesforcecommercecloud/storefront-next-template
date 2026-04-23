@@ -18,13 +18,6 @@
     /* Error page tokens */
     --text-error-status: 12rem;  /* Large status code display for error pages */
 
-    /* Radius tokens */
-    --radius-sm: calc(var(--radius) - 4px);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) + 4px);
-    --radius-pill: var(--pill-radius);
-
     /* -- core colors -- */
     --color-background: var(--background);
     --color-foreground: var(--foreground);

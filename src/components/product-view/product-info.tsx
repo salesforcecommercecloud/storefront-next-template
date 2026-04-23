@@ -382,7 +382,7 @@ export default function ProductInfo({
                     const content = image ? (
                         <>
                             <span
-                                className="rounded-pill bg-cover bg-center bg-no-repeat"
+                                className="rounded-none bg-cover bg-center bg-no-repeat"
                                 style={{
                                     width: 'var(--swatch-color-dot, 100%)',
                                     height: 'var(--swatch-color-dot, 100%)',
@@ -463,7 +463,7 @@ export default function ProductInfo({
 
             {/* Product Bundle/Set Notice */}
             {(isProductASet || isProductABundle) && (
-                <div className="bg-primary/10 border border-primary rounded-lg p-4">
+                <div className="bg-primary/10 border border-primary rounded-none p-4">
                     <p className="text-sm text-primary">
                         {isProductASet ? t('productSetNotice') : t('productBundleNotice')}
                     </p>

@@ -51,7 +51,7 @@ interface DynamicImageProps {
     priority?: HTMLImageElement['fetchPriority'];
     // Page Designer styling props
     objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
-    borderRadius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
+    borderRadius?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'full';
     boxShadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
     padding?: '0' | '1' | '2' | '3' | '4' | '6' | '8';
     margin?: '0' | '1' | '2' | '3' | '4' | '6' | '8';
@@ -112,7 +112,7 @@ export class DynamicImageMetadata {
         name: 'Border Radius',
         description: 'Corner roundness of the image',
         type: 'enum',
-        values: ['none', 'sm', 'md', 'lg', 'xl', '2xl', 'full'],
+        values: ['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', 'full'],
         defaultValue: 'none',
     })
     borderRadius?: string;
@@ -179,18 +179,20 @@ const getImageStyleClasses = ({
 }: Partial<DynamicImageProps>) => {
     const classes: string[] = [];
 
-    // Border radius (with overflow-hidden for proper clipping)
     if (borderRadius && borderRadius !== 'none') {
-        const radiusMap = {
+        const radiusMap: Record<string, string> = {
+            xs: 'rounded-xs',
             sm: 'rounded-sm',
             md: 'rounded-md',
             lg: 'rounded-lg',
             xl: 'rounded-xl',
             '2xl': 'rounded-2xl',
+            '3xl': 'rounded-3xl',
+            '4xl': 'rounded-4xl',
             full: 'rounded-full',
         };
-        classes.push(radiusMap[borderRadius]);
-        classes.push('overflow-hidden'); // Only add when border radius is applied
+        classes.push(radiusMap[borderRadius] || 'rounded-none');
+        classes.push('overflow-hidden');
     }
 
     // Box shadow
