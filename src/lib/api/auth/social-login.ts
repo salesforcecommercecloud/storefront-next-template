@@ -50,17 +50,16 @@ export const authorizeIDP = async (
     const logger = getLogger(context);
     logger.debug('SocialLogin: authorizing IDP');
 
+    if (!parameters.redirectURI) {
+        logger.error('SocialLogin: redirectURI is required for authorization');
+        return { success: false, error: 'redirectURI is required for social login authorization' };
+    }
+
     try {
-        const config = getConfig<AppConfig>(context);
         const session = getAuth(context);
         const clients = createApiClients(context);
 
-        // SLAS will redirect to this URL after processing the social login
-        // Use absolute URL if provided, otherwise construct from app origin
-        const callbackUri = config.commerce.api.callback;
-        const redirectUri =
-            parameters.redirectURI ||
-            (callbackUri && isAbsoluteURL(callbackUri) ? callbackUri : `${getAppOrigin()}${callbackUri || ''}`);
+        const redirectUri = parameters.redirectURI;
         const usid = parameters.usid || session.usid;
 
         const { url, codeVerifier } = await clients.auth.social.getAuthorizationUrl({

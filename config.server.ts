@@ -118,6 +118,8 @@ export default defineConfig<Config>(
                     shortCode: '',
                     // Optional API settings
                     proxy: '/mobify/proxy/api',
+                    // OAuth2 redirect_uri sent to SLAS — must match what's registered in SLAS Admin.
+                    // Not a storefront route; token exchange happens server-side with redirect: 'manual'.
                     callback: '/callback',
                     privateKeyEnabled: false,
                     registeredRefreshTokenExpirySeconds: undefined,
@@ -405,13 +407,12 @@ export default defineConfig<Config>(
                     // Do not send viewPage events for the following paths
                     // We omit /action because we don't want to trigger viewPage events for actions
                     // like modifying the quanity of an item in the cart
-                    // We omit /callback, /oauth2, and /resource because these do not correspond to pages
+                    // We omit /oauth2 and /resource because these do not correspond to pages
                     // We omit /search, /category, /product, and /checkout because they are tracked with
                     // different events (viewSearch, viewCategory, viewProduct, and beginCheckout) triggered
                     // on the search, category, product, and checkout pages respectively
                     pageViewsBlocklist: [
                         '/action',
-                        '/callback',
                         '/oauth2',
                         '/resource',
                         '/search',

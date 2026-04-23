@@ -122,13 +122,13 @@ describe('Social Login', () => {
 
             const result = await authorizeIDP(mockContext, {
                 hint: 'Google',
-                // omit redirectURI to ensure fallback to config
+                redirectURI: 'https://example.com/social-callback',
             });
 
             // helper called with composed args
             expect(mockAuthSocial.getAuthorizationUrl).toHaveBeenCalledWith({
                 hint: 'Google',
-                redirectUri: 'https://example.com/callback',
+                redirectUri: 'https://example.com/social-callback',
                 usid: 'session-usid',
             });
 
@@ -136,6 +136,16 @@ describe('Social Login', () => {
             expect(auth.updateAuth).toHaveBeenCalledWith(mockContext, expect.any(Function));
 
             expect(result).toEqual({ success: true, redirectUrl: expectedUrl });
+        });
+
+        it('returns error when redirectURI is missing', async () => {
+            const result = await authorizeIDP(mockContext, { hint: 'Google' });
+
+            expect(result).toEqual({
+                success: false,
+                error: 'redirectURI is required for social login authorization',
+            });
+            expect(mockAuthSocial.getAuthorizationUrl).not.toHaveBeenCalled();
         });
 
         it('passes explicit redirectURI and privateClient=true when configured', async () => {
@@ -164,7 +174,10 @@ describe('Social Login', () => {
             const err = new Error('boom');
             mockAuthSocial.getAuthorizationUrl.mockRejectedValue(err);
 
-            const result = await authorizeIDP(mockContext, { hint: 'Google' });
+            const result = await authorizeIDP(mockContext, {
+                hint: 'Google',
+                redirectURI: 'https://example.com/social-callback',
+            });
 
             expect(result).toEqual({ success: false, error: 'boom' });
         });

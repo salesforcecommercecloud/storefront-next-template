@@ -169,11 +169,6 @@ export const testRoutes = [
                         file: 'routes/_empty.oauth2.jwks.ts',
                     },
                     {
-                        id: 'routes/_empty.callback',
-                        path: 'callback',
-                        file: 'routes/_empty.callback.tsx',
-                    },
-                    {
                         id: 'routes/_empty.logout',
                         path: 'logout',
                         file: 'routes/_empty.logout.ts',

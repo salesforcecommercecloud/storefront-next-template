@@ -16,6 +16,7 @@
 - Bug fix to allow Canadian saved shipping address (@W-21915532)
 - My Account: Hide auto-generated address IDs and remove Address Title field; show customer name with Default badge instead (@W-21565912)
 - Add `config:inspect`, `config:push-env`, and `b2c` npm scripts; add `@salesforce/b2c-cli` dev dependency for MRT environment variable management
+- Remove unused /callback route
 
 ## v0.4.0-dev (Apr 10, 2026)
 

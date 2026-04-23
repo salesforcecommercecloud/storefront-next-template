@@ -4,6 +4,7 @@
 - Add `dw.json` to `.gitignore` to prevent credentials from being accidentally committed
 - Replace `dotenv` dependency with Node built-in `util.parseEnv` and `process.loadEnvFile`; consolidate `.env` loading into the oclif `init` hook
 - Add `sfnext config inspect` command: shows a `config.server.ts` override summary — which values are overridden by `.env` and MRT `PUBLIC__` vars
+- Remove unused /callback route
 
 ## v0.4.0-dev (Apr 07, 2026)
 
