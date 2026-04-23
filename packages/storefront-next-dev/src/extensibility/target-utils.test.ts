@@ -294,6 +294,24 @@ describe('target-utils', () => {
             expect(result).not.toContain('UITargetProviders');
             expect(result).toContain('<>{children}</>');
         });
+
+        it('should emit import statements for context providers', () => {
+            const result = transformTargets(code, {}, contextProviders);
+            expect(result).toContain("import Foo_BarProvider from '@/extensions/foo/providers/foo-provider';");
+            expect(result).toContain("import Bar_BazProvider from '@/extensions/bar/providers/bar-provider';");
+        });
+
+        it('should not replace the ui-target-providers import via the UITarget block', () => {
+            // Regression: 'UITargetProviders'.includes('UITarget') === true, and
+            // '@/targets/ui-target-providers'.includes('@/targets/ui-target') === true.
+            // The UITarget replacement block must not fire on a file that only uses UITargetProviders.
+            const result = transformTargets(code, {}, contextProviders);
+            // The providers import should be rewritten to context provider imports (correct path)
+            expect(result).toContain('Foo_BarProvider');
+            // It must NOT contain a bare ui-target import or ui-target-providers import — both replaced correctly
+            expect(result).not.toContain("from '@/targets/ui-target-providers'");
+            expect(result).not.toContain("from '@/targets/ui-target'");
+        });
     });
 
     describe('buildTargetRegistry', () => {
@@ -392,6 +410,65 @@ describe('target-utils', () => {
             });
             expect(componentRegistry['footer.ourcompany.start']).toBeUndefined();
             expect(contextProviders).toHaveLength(0);
+        });
+    });
+
+    describe('UITarget and UITargetProviders coexistence', () => {
+        const codeWithBoth = `
+            import React from "react";
+            import { UITarget } from '@/targets/ui-target';
+            import { UITargetProviders } from '@/targets/ui-target-providers';
+            export default function Root({ children }) {
+                return (
+                    <UITargetProviders>
+                        <div><UITarget targetId="test.target" /></div>
+                        {children}
+                    </UITargetProviders>
+                );
+            }
+        `;
+
+        const singleTargetRegistry = {
+            'test.target': [
+                {
+                    targetId: 'test.target',
+                    path: 'extensions/store-locator/components/single-comp.tsx',
+                    namespace: 'Bar',
+                    componentName: 'Bar_FooSingle',
+                    order: 0,
+                },
+            ],
+        };
+
+        const contextProviders = [
+            {
+                path: 'extensions/foo/providers/foo-provider.tsx',
+                namespace: 'Foo',
+                componentName: 'Foo_BarProvider',
+                order: 0,
+            },
+            {
+                path: 'extensions/bar/providers/bar-provider.tsx',
+                namespace: 'Bar',
+                componentName: 'Bar_BazProvider',
+                order: 1,
+            },
+        ];
+
+        it('should emit both target-component and provider imports when both tags coexist', () => {
+            // Regression: under the old .includes() logic, the UITarget block would match
+            // '@/targets/ui-target-providers' as a substring of '@/targets/ui-target' and
+            // clobber the providers import before the providers block could run.
+            const result = transformTargets(codeWithBoth, singleTargetRegistry, contextProviders);
+
+            // UITarget branch: extension component import injected
+            expect(result).toContain("import Bar_FooSingle from '@/extensions/store-locator/components/single-comp';");
+            // Providers branch: context provider imports injected (not clobbered)
+            expect(result).toContain("import Foo_BarProvider from '@/extensions/foo/providers/foo-provider';");
+            expect(result).toContain("import Bar_BazProvider from '@/extensions/bar/providers/bar-provider';");
+
+            expect(result).not.toContain('UITarget');
+            expect(result).not.toContain('UITargetProviders');
         });
     });
 });

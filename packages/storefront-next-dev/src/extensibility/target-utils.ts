@@ -64,6 +64,11 @@ const TARGET_COMPONENT_TAG = 'UITarget';
 const TARGET_PROVIDERS_TAG = 'UITargetProviders';
 const TARGET_ID_ATTRIBUTE = 'targetId';
 
+// Pre-compiled regex for JSX element detection — avoids false substring matches
+// (e.g. 'UITargetProviders'.includes('UITarget') === true).
+// Matches only when the tag is followed by whitespace, '/', or '>' as in valid JSX.
+const TARGET_COMPONENT_JSX_RE = new RegExp(`<${TARGET_COMPONENT_TAG}[\\s/>]`);
+
 /**
  * Find and replace the TargetProviders tags with the corresponding context providers
  * @param element - the AST element to replace
@@ -265,7 +270,7 @@ export function transformTargets(
     targetRegistry: TargetComponentRegistry,
     contextProviders: TargetContextProviderConfig[]
 ): string | null {
-    if (!code.includes(TARGET_COMPONENT_TAG) && !code.includes(TARGET_PROVIDERS_TAG)) {
+    if (!TARGET_COMPONENT_JSX_RE.test(code) && !code.includes(TARGET_PROVIDERS_TAG)) {
         return null;
     }
     const ast = parse(code, {
@@ -274,14 +279,14 @@ export function transformTargets(
     });
 
     // replace UITarget tags with the corresponding components
-    if (code.includes(TARGET_COMPONENT_TAG)) {
+    if (TARGET_COMPONENT_JSX_RE.test(code)) {
         const targetIdsReplaced = runReplacementPass(ast, TARGET_COMPONENT_TAG, targetRegistry, null);
         const replacementImportStatements = buildReplacementImportStatements(targetIdsReplaced, targetRegistry);
-        // Single import rewrite pass
+        // Single import rewrite pass — use exact equality to avoid matching '@/targets/ui-target-providers'
         traverse(ast, {
             ImportDeclaration(nodePath: NodePath<BabelImportDeclaration>) {
                 const source = nodePath.node.source.value;
-                if (source.includes('@/targets/ui-target')) {
+                if (source === '@/targets/ui-target') {
                     nodePath.replaceWith(jsxText(replacementImportStatements));
                 }
             },
@@ -302,7 +307,7 @@ export function transformTargets(
         traverse(ast, {
             ImportDeclaration(nodePath: NodePath<BabelImportDeclaration>) {
                 const source = nodePath.node.source.value;
-                if (source.includes('@/targets/ui-target-providers')) {
+                if (source === '@/targets/ui-target-providers') {
                     nodePath.replaceWith(jsxText(replacementImportStatements));
                 }
             },

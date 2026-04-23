@@ -432,6 +432,7 @@ const traverse$2 = traverseModule.default || traverseModule;
 const TARGET_COMPONENT_TAG = "UITarget";
 const TARGET_PROVIDERS_TAG = "UITargetProviders";
 const TARGET_ID_ATTRIBUTE = "targetId";
+const TARGET_COMPONENT_JSX_RE = /* @__PURE__ */ new RegExp(`<${TARGET_COMPONENT_TAG}[\\s/>]`);
 /**
 * Find and replace the TargetProviders tags with the corresponding context providers
 * @param element - the AST element to replace
@@ -544,7 +545,7 @@ function buildReplacementImportStatements(targetIds, targetRegistry) {
 	return Array.from(importStatements).join("\n");
 }
 function transformTargets(code, targetRegistry, contextProviders) {
-	if (!code.includes(TARGET_COMPONENT_TAG) && !code.includes(TARGET_PROVIDERS_TAG)) return null;
+	if (!TARGET_COMPONENT_JSX_RE.test(code) && !code.includes(TARGET_PROVIDERS_TAG)) return null;
 	const ast = parse(code, {
 		sourceType: "module",
 		plugins: [
@@ -553,10 +554,10 @@ function transformTargets(code, targetRegistry, contextProviders) {
 			"decorators-legacy"
 		]
 	});
-	if (code.includes(TARGET_COMPONENT_TAG)) {
+	if (TARGET_COMPONENT_JSX_RE.test(code)) {
 		const replacementImportStatements = buildReplacementImportStatements(runReplacementPass(ast, TARGET_COMPONENT_TAG, targetRegistry, null), targetRegistry);
 		traverse$2(ast, { ImportDeclaration(nodePath) {
-			if (nodePath.node.source.value.includes("@/targets/ui-target")) nodePath.replaceWith(jsxText(replacementImportStatements));
+			if (nodePath.node.source.value === "@/targets/ui-target") nodePath.replaceWith(jsxText(replacementImportStatements));
 		} });
 	}
 	if (code.includes(TARGET_PROVIDERS_TAG)) {
@@ -564,7 +565,7 @@ function transformTargets(code, targetRegistry, contextProviders) {
 		for (const contextProvider of contextProviders) importStatements.add(`import ${contextProvider.componentName} from '@/${contextProvider.path.replace(".tsx", "")}';`);
 		const replacementImportStatements = Array.from(importStatements).join("\n");
 		traverse$2(ast, { ImportDeclaration(nodePath) {
-			if (nodePath.node.source.value.includes("@/targets/ui-target-providers")) nodePath.replaceWith(jsxText(replacementImportStatements));
+			if (nodePath.node.source.value === "@/targets/ui-target-providers") nodePath.replaceWith(jsxText(replacementImportStatements));
 		} });
 		runReplacementPass(ast, TARGET_PROVIDERS_TAG, null, contextProviders);
 	}
@@ -1734,6 +1735,7 @@ function storefrontNextTargets(config = {}) {
 //#endregion
 //#region src/plugins/uiTargetDevMode.ts
 const traverse = traverseModule.default || traverseModule;
+const UI_TARGET_JSX_RE = /<UITarget[\s/>]/;
 /**
 * Vite plugin that adds visual markers to UITarget components in development.
 *
@@ -1767,7 +1769,7 @@ function uiTargetDevModePlugin(config = {}) {
 			if (!id.match(/\.(tsx|jsx)$/)) return null;
 			if (id.includes("node_modules")) return null;
 			if (id.includes("/targets/ui-target.tsx")) return null;
-			if (!code.includes("UITarget") || !code.includes("from '@/targets/ui-target'")) return null;
+			if (!UI_TARGET_JSX_RE.test(code) || !code.includes("from '@/targets/ui-target'")) return null;
 			try {
 				const ast = parse(code, {
 					sourceType: "module",

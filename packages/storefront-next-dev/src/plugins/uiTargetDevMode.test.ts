@@ -153,6 +153,18 @@ describe('uiTargetDevModePlugin', () => {
             expect(transform(CODE_WITHOUT_UITARGET, TSX_FILE)).toBeNull();
         });
 
+        it('skips files that only contain UITargetProviders (not UITarget)', () => {
+            // Regression: 'UITargetProviders'.includes('UITarget') === true, so a naive
+            // string check would incorrectly process files that only use UITargetProviders.
+            const code = `
+                import { UITargetProviders } from '@/targets/ui-target-providers';
+                export default function Root({ children }) {
+                    return <UITargetProviders>{children}</UITargetProviders>;
+                }
+            `;
+            expect(transform(code, TSX_FILE)).toBeNull();
+        });
+
         it('skips files with UITarget but missing the expected import', () => {
             expect(transform(CODE_WITH_UITARGET_NO_IMPORT, TSX_FILE)).toBeNull();
         });

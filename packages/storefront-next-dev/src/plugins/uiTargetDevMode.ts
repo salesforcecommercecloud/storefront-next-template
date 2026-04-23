@@ -36,6 +36,10 @@ import {
 const traverse = (traverseModule as unknown as { default: typeof traverseModule }).default || traverseModule;
 import { logger } from '../logger';
 
+// Pre-compiled regex — avoids false substring matches on 'UITargetProviders'.
+// Mirrors TARGET_COMPONENT_JSX_RE in target-utils.ts.
+const UI_TARGET_JSX_RE = /<UITarget[\s/>]/;
+
 export interface UITargetDevModeConfig {
     /**
      * Enable dev mode visual markers. Defaults to false.
@@ -124,9 +128,10 @@ export function uiTargetDevModePlugin(config: UITargetDevModeConfig = {}): Plugi
                 return null;
             }
 
-            // Quick check: does this file contain UITarget?
-            // Must have both the JSX usage AND the import
-            if (!code.includes('UITarget') || !code.includes("from '@/targets/ui-target'")) {
+            // Quick check: does this file contain UITarget JSX?
+            // UI_TARGET_JSX_RE avoids false matches on 'UITargetProviders' (which contains 'UITarget').
+            // Also verify the import is present to avoid processing files that just reference the string.
+            if (!UI_TARGET_JSX_RE.test(code) || !code.includes("from '@/targets/ui-target'")) {
                 return null;
             }
 
