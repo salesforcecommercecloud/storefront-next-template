@@ -168,7 +168,7 @@ docs/                       # Documentation
 
 ## Performance & Data Rules
 
-These rules take priority when designing routes, components, and state. Apply them as a checklist for every route module and every component that consumes async data. See [Data Fetching](./docs/README-DATA.md), [Loading States](./docs/README-SUSPENSE.md), and [State Management](./docs/README-STATE.md) for full context.
+These rules take priority when designing routes, components, and state. Apply them as a checklist for every route module and every component that consumes async data. See [Data Fetching](./docs/README-DATA.md), [Loading States](./docs/README-SUSPENSE.md), [State Management](./docs/README-STATE.md), and [Performance](./docs/README-PERFORMANCE.md) for full context.
 
 ### Data Loading
 
@@ -196,6 +196,14 @@ These rules take priority when designing routes, components, and state. Apply th
 13. **Never store derived state in `useState`.** Compute inline or use `useMemo` for expensive derivations. A second source of truth is a bug waiting to happen.
 14. **Split React Contexts by concern.** One context per domain (theme, locale, user) — never a single large `AppContext`. Every value change re-renders all consumers of that context.
 15. **Persistent cross-request state via cookies/sessions, not `localStorage`.** Cookies are SSR-compatible, avoid hydration mismatches, and work before scripts load.
+
+### Best Practices
+
+16. **Lazy-load overlays and heavy below-the-fold content.** Use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction. See [Lazy Loading for Overlays](./docs/README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs).
+17. **Self-host web fonts.** Use WOFF2 variable fonts, preload in `<head>`, inline the `@font-face` declaration, and set `font-display: swap` or `optional`. Never load fonts from third-party CDNs (cache partitioning, GDPR).
+18. **Never load third-party scripts synchronously.** Always use `async` or `defer`. Lazy-load interaction-driven widgets (chat, social) on scroll or click, not on page load.
+19. **Monitor bundle size.** Run `pnpm bundlesize:test` to verify against configured size limits — CI enforces these on every PR. Check bundle impact with `pnpm bundlesize:analyze` before adding large dependencies.
+20. **Configure resource hints via `config.server.ts`.** Use `preconnect` for origins contacted on every page (e.g., image CDN), `dns-prefetch` for optional origins. Don't preconnect to origins that aren't used on every page.
 
 ## Code Conventions
 

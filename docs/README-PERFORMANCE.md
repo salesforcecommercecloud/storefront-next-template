@@ -1,29 +1,38 @@
 # Performance Best Practices
 
-This guide outlines optimization strategies for building fast storefronts.
+Use optimization strategies to build fast storefronts. Follow performance best practices for web fonts, resource hints, bundle optimization, and third-party scripts.
 
 > [!NOTE]
-> Several performance-critical topics are covered in depth in dedicated documentation:
-> - **Data fetching**: Server-load everything, data classification, loaders, actions, fetchers — see [Data Fetching](README-DATA.md)
-> - **Loading states**: Suspense boundary granularity, lazy loading overlays, skeleton vs. spinner tradeoffs — see [Loading States](README-SUSPENSE.md)
-> - **State management**: URL state, optimistic UI, avoiding derived state — see [State Management](README-STATE.md)
-> - **Images**: DIS integration, responsive images, alt text — see [Images](README-IMAGES.md)
+> This document focuses on areas not covered elsewhere. For in-depth documentation about other performance-related topics, check out these links.
 >
-> This document focuses on areas not covered elsewhere: web fonts, third-party scripts, and bundle optimization.
+> - [Data Fetching](README-DATA.md): Server-load everything, data classification, loaders, actions, and fetchers.
+> - [Loading States](README-SUSPENSE.md): Suspense boundary granularity, lazy loading overlays, and skeleton vs. spinner tradeoffs.
+> - [State Management](README-STATE.md): URL state, optimistic UI, and avoiding derived state.
+> - [Images](README-IMAGES.md): DIS integration, responsive images, and alt text.
 
 ## Optimize Web Fonts
 
-To achieve optimal performance during page load, use system fonts or minimize the size of web fonts and improve their discovery. Large web font files take longer to download and negatively affect First Contentful Paint (FCP). An incorrect `font-display` value can cause layout shifts that contribute to Cumulative Layout Shift (CLS).
+To achieve optimal performance during page load, use system fonts or minimize the size of web fonts and improve their discovery. Large web font files take longer to download and negatively affect [First Contentful Paint](https://web.dev/articles/fcp) (FCP). An incorrect `font-display` value can cause layout shifts that contribute to [Cumulative Layout Shift](https://web.dev/articles/cls) (CLS).
 
-- **Font hosting:** Self-host web fonts instead of loading them from third-party CDNs like Google Fonts. Self-hosting eliminates cross-origin DNS lookups and connection setup, avoids browser cache partitioning (browsers isolate third-party CDN caches per site), and is required for GDPR compliance — loading fonts from external CDNs transmits the visitor's IP address to that third party on every page load. A [2022 ruling by the Munich Regional Court (LG München, case 3 O 17493/20)](https://gdprhub.eu/index.php?title=LG_M%C3%BCnchen_-_3_O_17493/20) established this as a GDPR violation applicable across the EU. The alternative — gating external font loading behind a consent manager — preserves CDN delivery but degrades the experience for users who haven't consented and adds implementation complexity. For details, see [Google Fonts and GDPR](https://www.cookieyes.com/documentation/google-fonts-and-gdpr/).
+### Font Hosting
 
-- **Font discovery:** Browsers use `@font-face` to find fonts. Help the browser discover fonts earlier by inlining the `@font-face` declaration in the `<head>` and adding a `<link rel="preload">` directive. Without preload, the browser doesn't request the font until it computes a style that references it, adding a waterfall delay.
+Self-host web fonts instead of loading them from third-party CDNs like Google Fonts. Self-hosting eliminates cross-origin DNS lookups and connection setup, avoids browser cache partitioning (browsers isolate third-party CDN caches per site), and is required for GDPR compliance, since loading fonts from external CDNs transmits the visitor's IP address to that third party on every page load. A [2022 ruling by the Munich Regional Court](https://gdprhub.eu/index.php?title=LG_M%C3%BCnchen_-_3_O_17493/20) established this as a GDPR violation applicable across the EU. The alternative of gating external font loading behind a consent manager preserves CDN delivery but degrades the experience for users who haven't consented and adds implementation complexity. For details, see [Google Fonts and GDPR](https://www.cookieyes.com/documentation/google-fonts-and-gdpr/).
 
-- **Font download:** Use the WOFF2 format for its superior compression. Prefer variable fonts — a single file covers multiple weights, reducing the number of requests and preload hints. Subset fonts to include only necessary characters when the full Unicode range isn't needed.
+### Font Discovery
 
-- **Font rendering:** The `font-display` CSS property controls how text is shown while a font loads. Use `swap` to immediately show a system fallback font and swap in the web font once loaded, avoiding Flash of Invisible Text (FOIT). Use `optional` to eliminate the swap-induced layout shift entirely — the web font is used only if it arrives before first render, otherwise the system font persists.
+Browsers use `@font-face` to find fonts. Help the browser discover fonts earlier by inlining the `@font-face` declaration in the `<head>` and adding a `<link rel="preload">` directive. Without preload, the browser doesn't request the font until it computes a style that references it, adding a waterfall delay.
 
-- **System fonts:** Using system fonts avoids the font download entirely and eliminates render-blocking. For examples of system fonts, see [Fonts for Apple platforms](https://developer.apple.com/fonts/) and [Windows 11 font list](https://learn.microsoft.com/en-us/typography/fonts/windows_11_font_list).
+### Font Download
+
+Use the WOFF2 format for its superior compression. Prefer variable fonts because a single file covers multiple weights, reducing the number of requests and preload hints. Subset fonts to include only necessary characters when the full Unicode range isn't needed.
+
+### Font Rendering
+
+The `font-display` CSS property controls how text is shown while a font loads. Use `swap` to immediately show a system fallback font and swap in the web font once loaded, avoiding Flash of Invisible Text (FOIT). Use `optional` to eliminate the swap-induced layout shift entirely. The web font is used only if it arrives before first render, otherwise the system font persists.
+
+### System Fonts
+
+Using system fonts avoids the font download entirely and eliminates render-blocking. For examples of system fonts, see [Fonts for Apple platforms](https://developer.apple.com/fonts/) and [Windows 11 font list](https://learn.microsoft.com/en-us/typography/fonts/windows_11_font_list).
 
 For more detail, see [Optimize web fonts](https://web.dev/learn/performance/optimize-web-fonts) on web.dev.
 
@@ -44,11 +53,11 @@ When replacing Sen with a different font, update the font file in `public/fonts/
 
 Resource hints tell the browser to start DNS lookups, TCP connections, or resource downloads before they're needed, reducing latency when those resources are eventually requested.
 
-The template renders resource hints in the `<head>` based on configuration values in `config.server.ts`, so they can be tuned per environment without code changes (`src/root.tsx`):
+The template renders resource hints in the `<head>` based on configuration values in `config.server.ts`, so they can be tuned per environment without code changes (`src/root.tsx`).
 
-- **`appConfig.links.preconnect`** — origins the browser should open early connections to (DNS + TCP + TLS). Use for services that will definitely be contacted on every page, such as the image CDN. The template preconnects to the DIS host by default.
-- **`appConfig.links.prefetchDns`** — origins for DNS-only prefetching. Lighter than `preconnect`, appropriate for services that may or may not be contacted (e.g., analytics, optional third-party APIs).
-- **`appConfig.links.prefetch`** — specific resources to fetch and cache in the background. Use sparingly — prefetched resources consume bandwidth regardless of whether the user navigates to them.
+- `appConfig.links.preconnect`: Origins the browser should open early connections to (DNS + TCP + TLS). Use for services that will definitely be contacted on every page, such as the image CDN. The template preconnects to the DIS host by default.
+- `appConfig.links.prefetchDns`: Origins for DNS-only prefetching. Lighter than `preconnect`, appropriate for services that may or may not be contacted (for example, analytics, optional third-party APIs).
+- `appConfig.links.prefetch`: Specific resources to fetch and cache in the background. Use sparingly, as prefetched resources consume bandwidth regardless of whether the user navigates to them.
 
 ```bash
 # Override via environment variables
@@ -57,32 +66,34 @@ PUBLIC__app__links__prefetchDns='["https://analytics.example.com"]'
 ```
 
 > [!WARNING]
-> Only preconnect to origins that are actually used on every page. Chrome warns in the console if a preconnected origin isn't contacted within a few seconds of page load, and Lighthouse flags it as "Avoid unnecessary preconnects". If an origin is only used on some pages (e.g., a payment provider on checkout), prefer `dns-prefetch` instead — DNS lookups are cheaper and don't trigger warnings when unused.
+> Only `preconnect` to origins that are actually used on every page. Each preconnect opens a TCP and TLS connection eagerly, so unused preconnects waste the browser's connection budget and can delay more important requests. Performance audits such as Lighthouse's "Avoid unnecessary preconnects" will flag this. If an origin is only used on some pages (for example, a payment provider on checkout), prefer `dns-prefetch` instead. DNS lookups are cheaper and don't trigger warnings when unused.
 
 ## Bundle Optimization
 
-Vite handles tree-shaking, minification, and chunk splitting automatically. These practices help keep bundles small:
+Vite handles tree-shaking, minification, and chunk splitting automatically. Follow these practices to help keep bundles small.
 
-- **Split your code.** Vite automatically splits each route into its own chunk, so users only download the JavaScript for the page they're visiting. For components that aren't needed on initial render — modals, drawers, rich editors, or heavy below-the-fold content — use `React.lazy()` with deferred mounting to split them into separate chunks loaded on demand. See [Lazy Loading for Overlays](README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs) for the pattern. For large route-specific component groups, use `manualChunks` in `vite.config.ts` to control how Rollup groups modules — the template uses this to split checkout components and per-locale translation files into dedicated chunks that are only loaded when needed.
-- **Analyze and monitor bundle size.** Run `pnpm bundlesize:analyze` to generate an interactive visualization of client and server bundles (opens `build/client-bundle-size.html` and `build/ssr-bundle-size.html`). Run `pnpm bundlesize:test` to verify against configured size limits — CI enforces these checks on every PR.
-- **Avoid large dependencies for small tasks.** Before adding a library, check its bundle size (e.g., via [bundlephobia](https://bundlephobia.com)). A 50 KB utility library for a function you could write in 10 lines is not a good tradeoff.
-- **Compression is handled automatically.** Managed Runtime (CloudFront) applies Gzip/Brotli compression to responses at the edge — no application-level configuration is needed.
+- Split your code. Vite automatically splits each route into its own chunk, so users only download the JavaScript for the page they're visiting. For components that aren't needed on initial render, for example modals, drawers, rich editors, or heavy below-the-fold content, use [`React.lazy()`](https://react.dev/reference/react/lazy) with deferred mounting to split them into separate chunks that are loaded on demand. See [Lazy Loading for Overlays](README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs) for the pattern. For large route-specific component groups, use `manualChunks` in `vite.config.ts` to control how Rollup groups modules. The template uses this to split checkout components and per-locale translation files into dedicated chunks that are only loaded when needed.
+- Analyze and monitor bundle size. Run `pnpm bundlesize:analyze` to generate an interactive visualization of client and server bundles (opens `build/client-bundle-size.html` and `build/ssr-bundle-size.html`). Run `pnpm bundlesize:test` to verify against configured size limits — CI enforces these checks on every PR.
+- Avoid large dependencies for small tasks. Before adding a library, check its bundle size (for example, via [bundlephobia](https://bundlephobia.com)). A 50 KB utility library for a function you could write in 10 lines is not a good tradeoff.
+- Compression is handled automatically. Managed Runtime (CloudFront) applies Gzip/Brotli compression to responses at the edge — no application-level configuration is needed.
 
 ## React Rendering
 
-Unnecessary re-renders inflate INP and degrade responsiveness. The most impactful optimizations:
+Unnecessary re-renders inflate [Interaction to Next Paint](https://web.dev/articles/inp) (INP) and degrade responsiveness. Here are the most impactful optimizations.
 
-- **Split React Contexts by concern.** One context per domain (theme, locale, user). A single large context re-renders all consumers on every value change — even consumers that don't use the changed value. See [State Management](README-STATE.md).
-- **Memoize expensive computations.** Use `useMemo` for derivations that are genuinely expensive. Don't memoize everything — the overhead of memoization exceeds the cost of cheap computations.
-- **Stabilize callback references.** When passing callbacks to memoized child components, wrap them in `useCallback` to prevent the child from re-rendering on every parent render.
-- **Use `React.memo` selectively.** Wrap components that re-render often with unchanged props. Don't apply it broadly — it adds comparison overhead and obscures the component tree.
+- Split React Contexts by concern. One context per domain (theme, locale, and user). A single large context re-renders all consumers on every value change — even consumers that don't use the changed value. See [State Management](README-STATE.md).
+- Memoize expensive computations. Use `useMemo` for derivations that are genuinely expensive. Don't memoize everything, since the overhead of memoization exceeds the cost of cheap computations.
+- Stabilize callback references. When passing callbacks to memoized child components, wrap them in `useCallback` to prevent the child from re-rendering on every parent render.
+- Use `React.memo` selectively. Wrap components that re-render often with unchanged props. Don't apply it broadly because it adds comparison overhead and obscures the component tree.
 
 ## Third-Party Scripts
 
-Third-party scripts (analytics, tag managers, A/B testing, chat widgets, consent banners) are a common source of performance degradation. Each script adds to Total Blocking Time (TBT) and can delay Interaction to Next Paint (INP).
+Third-party scripts, such as analytics, tag managers, A/B testing, chat widgets, and consent banners, are a common source of performance degradation. Each script adds to [Total Blocking Time](https://web.dev/articles/tbt) (TBT) and can delay [Interaction to Next Paint](https://web.dev/articles/inp) (INP).
 
-- **Audit regularly.** Every external script must justify its performance cost. Remove scripts that aren't actively used.
-- **Never load synchronously.** Always use `async` or `defer`. A synchronous `<script>` blocks HTML parsing entirely.
-- **Lazy-load interaction-driven widgets.** Chat widgets, social buttons, and similar components should load only when the user scrolls near them or clicks a placeholder — not on page load. See [Lazy Loading for Overlays](README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs) for the deferred mounting pattern.
-- **Use a Consent Management Platform (CMP).** Integrate with a tag manager to prevent marketing and analytics tags from loading before user consent. This both satisfies privacy regulations and improves performance for users who haven't consented.
-- **Measure impact.** Use the Chrome DevTools [Coverage tab](https://developer.chrome.com/docs/devtools/coverage) to identify unused JavaScript and CSS from third-party scripts.
+Keep these tips in mind for best performance results.
+
+- Audit regularly. Every external script must justify its performance cost. Remove scripts that aren't actively used.
+- Never load synchronously. Always use `async` or `defer`. A synchronous `<script>` blocks HTML parsing entirely.
+- Lazy-load interaction-driven widgets. Chat widgets, social buttons, and similar components should load only when the user scrolls near them or clicks a placeholder — not on page load. See [Lazy Loading for Overlays](README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs) for the deferred mounting pattern.
+- Use a Consent Management Platform (CMP). Integrate with a tag manager to prevent marketing and analytics tags from loading before user consent. This method satisfies privacy regulations and improves performance for users who haven't consented.
+- Measure impact. Use the Chrome DevTools [Coverage tab](https://developer.chrome.com/docs/devtools/coverage) to identify unused JavaScript and CSS from third-party scripts.

@@ -79,9 +79,11 @@ When a Promise passed to `Await` rejects, the error propagates to the nearest er
 
 ### Suspense Boundary Granularity
 
-When a component consumes multiple asynchronous data sources (via `<Await>`, React's `use()`, or any other suspending mechanism), each promise **must** be wrapped in its own [`<Suspense>`](https://react.dev/reference/react/Suspense) boundary. When multiple promises share a single boundary, resolution of the faster promise re-renders the subtree, only for the still-pending slower promise to suspend the boundary again, tearing down already-rendered content and re-showing the fallback. This causes visible layout thrashing and inflates interactivity metrics like INP.
+Multiple independent [`<Suspense>`](https://react.dev/reference/react/Suspense) boundaries can coexist within a single route, each encapsulating one async operation. Conceptually, each `<Suspense>` boundary acts like a `try/catch` for async. Everything inside the boundary is treated as a single loading unit, and content outside the boundary isn't affected by the suspensions within it.
 
-With separate boundaries each promise resolves independently, fast content streams in and stays visible while slower content continues loading with its own skeleton. Conceptually, each `<Suspense>` boundary acts like a `try/catch` for async: everything inside it is treated as a single loading unit, and content outside is never affected by suspensions inside it (see the React 18 [architecture discussion](https://github.com/reactwg/react-18/discussions/37) for the full rationale).
+This is why each promise **must** be wrapped in its own [`<Suspense>`](https://react.dev/reference/react/Suspense) boundary when a component consumes multiple asynchronous data sources. This applies to React Router's `<Await>`, React's `use()`, and any other suspending mechanism. If multiple promises share a single boundary, the faster promise resolves first and triggers a re-render. The still-pending slower promise then suspends the boundary again. Already-rendered content is torn down, and the fallback reappears. The result is visible content flicker and [layout shift](https://web.dev/articles/cls), which inflates interactivity metrics like [Interaction to Next Paint](https://web.dev/articles/inp) (INP).
+
+With separate boundaries, each promise resolves independently. Fast content streams in and stays visible. Slower content continues loading with its own skeleton. For more details, see the React 18 architecture discussion on GitHub: [New Suspense SSR Architecture in React 18](https://github.com/reactwg/react-18/discussions/37).
 
 #### Correct: each Await has its own Suspense boundary
 
@@ -192,7 +194,7 @@ function CombinedView({
 ```
 
 > [!TIP]
-> **Exception:** Truly dependent promises (e.g., fetching details after a list) may share a boundary because they represent one logical loading unit.
+> **Exception:** Truly dependent promises (for example, fetching details after a list) can share a boundary because they represent one logical loading unit.
 
 ## Imperative Loading States
 
@@ -401,7 +403,7 @@ Optimistic UI is appropriate when the probability of failure is low and the oper
 
 ## Lazy Loading for Overlays (Modals, Drawers, Dialogs)
 
-Overlay components that are hidden on initial render — modals, drawers, dialogs, and similar — **must** use `React.lazy()` with deferred mounting. The `<Suspense>` subtree should only be mounted after the first user interaction, not on page load. This keeps the overlay's code out of the main chunk entirely until it's actually needed, reducing page load size and Total Blocking Time (TBT).
+Overlay components that are hidden on initial render, such as modals, drawers, and dialogs, **must** use [`React.lazy()`](https://react.dev/reference/react/lazy) with deferred mounting. Mount the `<Suspense>` subtree only after the first user interaction, not on page load. This keeps the overlay's code out of the main chunk entirely until it's actually needed, reducing page load size and [Total Blocking Time](https://web.dev/articles/tbt) (TBT).
 
 ```jsx
 const MyModal = lazy(() => import('@/components/my-modal').then((m) => ({ default: m.MyModal })));
@@ -423,8 +425,8 @@ function MyComponent() {
 }
 ```
 
-- `loaded` flips once on first click — controls when the chunk is fetched and the component mounts
-- `open` toggles visibility — re-opening after first load is instant
+- `loaded` flips once on first click — controls when the chunk is fetched and the component mounts.
+- `open` toggles visibility — re-opening after first load is instant.
 
 > [!IMPORTANT]
 > **Anti-pattern:** Importing overlay components synchronously (non-lazy) bundles them into the main chunk, increasing page load size and TBT.
