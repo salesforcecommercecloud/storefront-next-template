@@ -15,6 +15,7 @@
 - UX changes on checkout page (@W-22015673)
 - Bug fix to allow Canadian saved shipping address (@W-21915532)
 - My Account: Hide auto-generated address IDs and remove Address Title field; show customer name with Default badge instead (@W-21565912)
+- Add `config:inspect`, `config:push-env`, and `b2c` npm scripts; add `@salesforce/b2c-cli` dev dependency for MRT environment variable management
 
 ## v0.4.0-dev (Apr 10, 2026)
 

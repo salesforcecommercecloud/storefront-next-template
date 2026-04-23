@@ -90,6 +90,9 @@
       },
       "scapi": {
         "description": "Manage custom SCAPI clients"
+      },
+      "config": {
+        "description": "Inspect and manage storefront configuration"
       }
     }
   },

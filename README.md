@@ -99,6 +99,14 @@ pnpm push
 
 See the [Deployment Guide](https://www.npmjs.com/package/@salesforce/storefront-next-dev?activeTab=readme) for all options and configuration.
 
+## B2C CLI
+
+The [Salesforce B2C CLI](https://www.npmjs.com/package/@salesforce/b2c-cli) is included as a dev dependency for managing Commerce Cloud resources — environments, code deployments, cartridges, and more.
+
+```bash
+pnpm b2c --help       # See all available commands
+```
+
 ## Available Scripts
 
 ```bash
@@ -106,6 +114,9 @@ See the [Deployment Guide](https://www.npmjs.com/package/@salesforce/storefront-
 pnpm dev              # Start dev server
 pnpm build            # Build for production
 pnpm start            # Run production build
+
+# Commerce Cloud
+pnpm b2c              # B2C CLI (environments, deployments, cartridges)
 
 # Testing & Quality
 pnpm test             # Run tests
