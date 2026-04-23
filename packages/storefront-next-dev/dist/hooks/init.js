@@ -1,3 +1,5 @@
+import { n as PROJECT_DIRECTORY_FLAG, t as PROJECT_DIRECTORY_CHAR } from "../flags.js";
+import { join, resolve } from "node:path";
 import { B2CPluginManager } from "@salesforce/b2c-tooling-sdk/plugins";
 import { getLogger } from "@salesforce/b2c-tooling-sdk/logging";
 
@@ -34,11 +36,34 @@ async function initializePlugins() {
 /**
 * Oclif init hook — runs before any command executes.
 *
-* Discovers b2c-cli plugins (installed via `b2c plugins:install`) and registers
-* their middleware and config sources with the global registries. This ensures
-* all sfnext commands automatically benefit from installed b2c-cli plugins.
+* Resolves the project directory from --project-directory / -d early — before
+* oclif parses flags — and loads the project's .env file into process.env.
+* Using the hook instead of bin/run.js keeps the flag name as a single source
+* of truth (imported from flags.ts) and keeps run.js minimal.
+*
+* Also discovers b2c-cli plugins (installed via `b2c plugins:install`) and
+* registers their middleware and config sources with the global registries.
+*
+* @env {string} [MRT_PROJECT] - Project name for MRT deployments
+* @env {string} [MRT_TARGET] - Target environment for MRT deployments
 */
-const hook = async function() {
+const hook = async function(opts) {
+	const args = opts.argv ?? [];
+	let projectDir = process.cwd();
+	for (let i = 0; i < args.length; i++) {
+		if ((args[i] === `--${PROJECT_DIRECTORY_FLAG}` || args[i] === `-${PROJECT_DIRECTORY_CHAR}`) && args[i + 1] && !args[i + 1].startsWith("-")) {
+			projectDir = resolve(args[i + 1]);
+			break;
+		}
+		const m = args[i].match(/* @__PURE__ */ new RegExp(`^--${PROJECT_DIRECTORY_FLAG}=(.+)$`));
+		if (m) {
+			projectDir = resolve(m[1]);
+			break;
+		}
+	}
+	try {
+		process.loadEnvFile(join(projectDir, ".env"));
+	} catch {}
 	await initializePlugins();
 };
 var init_default = hook;

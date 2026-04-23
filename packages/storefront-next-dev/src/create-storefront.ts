@@ -19,7 +19,7 @@ import { logger } from './logger';
 import prompts from 'prompts';
 import path from 'path';
 import fs from 'fs-extra';
-import dotenv from 'dotenv';
+import { parseEnv } from 'node:util';
 import trimExtensions from './extensibility/trim-extensions';
 import {
     resolveDependenciesForMultiple,
@@ -250,10 +250,9 @@ export const createStorefront = async (
     const configMeta = JSON.parse(fs.readFileSync(configMetaPath, 'utf8'));
     // Load default config values from .env.default if it exists
     const envDefaultPath = path.join(outputPath, '.env.default');
-    let envDefaultValues: Record<string, string> = {};
+    let envDefaultValues: Record<string, string | undefined> = {};
     if (fs.existsSync(envDefaultPath)) {
-        const result = dotenv.parse(fs.readFileSync(envDefaultPath, 'utf8'));
-        envDefaultValues = result;
+        envDefaultValues = parseEnv(fs.readFileSync(envDefaultPath, 'utf8'));
     }
     logger.info('\n⚙️ We will now configure your storefront before it will be ready to run.\n');
     const configOverrides: Record<string, string> = {};
@@ -264,7 +263,7 @@ export const createStorefront = async (
             const answer = await prompts({
                 type: 'text',
                 name: config.key,
-                message: `What is the value for ${config.name}? (default: ${envDefaultValues[config.key]})\n`,
+                message: `What is the value for ${config.name}? (default: ${envDefaultValues[config.key] ?? ''})\n`,
                 initial: envDefaultValues[config.key] ?? '',
             });
             configOverrides[config.key] = answer[config.key];

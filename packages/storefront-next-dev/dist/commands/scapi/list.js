@@ -1,4 +1,4 @@
-import { t as commonFlags } from "../../flags.js";
+import { r as commonFlags } from "../../flags.js";
 import { r as readAllSchemaMetadata } from "../../schema-utils.js";
 import { Command } from "@oclif/core";
 import { join } from "node:path";

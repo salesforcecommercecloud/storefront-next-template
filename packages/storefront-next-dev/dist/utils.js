@@ -3,7 +3,6 @@ import { execSync } from "child_process";
 import os from "os";
 import path from "path";
 import fs from "fs-extra";
-import dotenv from "dotenv";
 
 //#region src/utils.ts
 const getDefaultBuildDir = (targetDir) => path.join(targetDir, "build");
@@ -20,18 +19,11 @@ const getProjectPkg = (projectDir) => {
 	}
 };
 /**
-* Load .env file from project directory
-*/
-const loadEnvFile = (projectDir) => {
-	const envPath = path.join(projectDir, ".env");
-	if (fs.existsSync(envPath)) dotenv.config({ path: envPath });
-	else logger.warn("No .env file found");
-};
-/**
 * Get MRT configuration with priority logic: .env -> package.json -> defaults
+*
+* Note: .env loading is handled once at startup in the oclif init hook (src/hooks/init.ts) before any command runs.
 */
 const getMrtConfig = (projectDir) => {
-	loadEnvFile(projectDir);
 	const pkg = getProjectPkg(projectDir);
 	const defaultMrtProject = process.env.MRT_PROJECT ?? pkg.name;
 	if (!defaultMrtProject || defaultMrtProject.trim() === "") throw new Error("Project name couldn't be determined. Do one of these options:\n  1. Set MRT_PROJECT in your .env file, or\n  2. Ensure package.json has a valid \"name\" field.");
@@ -123,4 +115,4 @@ const generateEnvFile = (projectDir, configOverrides) => {
 };
 
 //#endregion
-export { getProjectDependencyTree as a, loadEnvFile as c, getMrtConfig as i, getDefaultBuildDir as n, getProjectPkg as o, getDefaultMessage as r, getPwaKitDependencies as s, generateEnvFile as t };
+export { getProjectDependencyTree as a, getMrtConfig as i, getDefaultBuildDir as n, getProjectPkg as o, getDefaultMessage as r, getPwaKitDependencies as s, generateEnvFile as t };

@@ -7,8 +7,8 @@ import { Command, Flags } from "@oclif/core";
 import { execFileSync, execSync } from "child_process";
 import path from "path";
 import fs from "fs-extra";
-import dotenv from "dotenv";
 import prompts from "prompts";
+import { parseEnv } from "node:util";
 
 //#region src/create-storefront.ts
 const DEFAULT_STOREFRONT = "sfcc-storefront";
@@ -156,7 +156,7 @@ const createStorefront = async (options = {}) => {
 	const configMeta = JSON.parse(fs.readFileSync(configMetaPath, "utf8"));
 	const envDefaultPath = path.join(outputPath, ".env.default");
 	let envDefaultValues = {};
-	if (fs.existsSync(envDefaultPath)) envDefaultValues = dotenv.parse(fs.readFileSync(envDefaultPath, "utf8"));
+	if (fs.existsSync(envDefaultPath)) envDefaultValues = parseEnv(fs.readFileSync(envDefaultPath, "utf8"));
 	logger.info("\n⚙️ We will now configure your storefront before it will be ready to run.\n");
 	const configOverrides = {};
 	for (const config of configMeta.configs) if (options.defaults) configOverrides[config.key] = envDefaultValues[config.key] ?? "";
@@ -164,7 +164,7 @@ const createStorefront = async (options = {}) => {
 		const answer = await prompts({
 			type: "text",
 			name: config.key,
-			message: `What is the value for ${config.name}? (default: ${envDefaultValues[config.key]})\n`,
+			message: `What is the value for ${config.name}? (default: ${envDefaultValues[config.key] ?? ""})\n`,
 			initial: envDefaultValues[config.key] ?? ""
 		});
 		configOverrides[config.key] = answer[config.key];

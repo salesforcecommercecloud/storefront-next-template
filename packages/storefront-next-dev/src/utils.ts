@@ -17,7 +17,6 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
 import { execSync } from 'child_process';
-import dotenv from 'dotenv';
 import { logger } from './logger';
 import type { ProjectPackage, DependencyTree, DependencyRecord } from './types';
 
@@ -54,27 +53,13 @@ export const getProjectPkg = (projectDir: string): ProjectPackage => {
 };
 
 /**
- * Load .env file from project directory
- */
-export const loadEnvFile = (projectDir: string): void => {
-    const envPath = path.join(projectDir, '.env');
-
-    if (fs.existsSync(envPath)) {
-        dotenv.config({ path: envPath });
-    } else {
-        logger.warn('No .env file found');
-    }
-};
-
-/**
  * Get MRT configuration with priority logic: .env -> package.json -> defaults
+ *
+ * Note: .env loading is handled once at startup in the oclif init hook (src/hooks/init.ts) before any command runs.
  */
 export const getMrtConfig = (
     projectDir: string
 ): { defaultMrtProject: string; defaultMrtTarget: string | undefined } => {
-    // Load .env file first
-    loadEnvFile(projectDir);
-
     const pkg = getProjectPkg(projectDir);
 
     // Priority: .env -> package.json name

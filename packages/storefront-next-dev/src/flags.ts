@@ -16,9 +16,12 @@
 
 import { Flags } from '@oclif/core';
 
+export const PROJECT_DIRECTORY_FLAG = 'project-directory' as const;
+export const PROJECT_DIRECTORY_CHAR = 'd' as const;
+
 export const commonFlags = {
-    'project-directory': Flags.string({
-        char: 'd',
+    [PROJECT_DIRECTORY_FLAG]: Flags.string({
+        char: PROJECT_DIRECTORY_CHAR,
         description: 'Project directory',
         default: process.cwd(),
     }),

@@ -93,12 +93,6 @@ vi.mock('../utils/logger', () => ({
     printShutdownMessage: mockPrintShutdownMessage,
 }));
 
-const mockLoadEnvFile = vi.fn();
-
-vi.mock('../utils', () => ({
-    loadEnvFile: mockLoadEnvFile,
-}));
-
 describe('dev command', () => {
     const originalEnv = process.env;
 
@@ -127,9 +121,6 @@ describe('dev command', () => {
                     middlewareMode: true,
                 },
             });
-
-            // Verify loadEnvFile was called
-            expect(mockLoadEnvFile).toHaveBeenCalledWith(expect.any(String));
 
             // Verify loadProjectConfig was called
             expect(mockLoadProjectConfig).toHaveBeenCalledWith(expect.any(String));
@@ -200,10 +191,6 @@ describe('dev command', () => {
             )[0];
             expect(pathsEqual(viteCall.root, customDir)).toBe(true);
             expect(viteCall.server).toEqual({ middlewareMode: true });
-
-            expect(mockLoadEnvFile).toHaveBeenCalled();
-            const envFileCall = mockLoadEnvFile.mock.calls[0] as unknown as [string];
-            expect(pathsEqual(envFileCall[0], customDir)).toBe(true);
 
             expect(mockLoadProjectConfig).toHaveBeenCalled();
             const configCall = mockLoadProjectConfig.mock.calls[0] as unknown as [string];
@@ -338,25 +325,6 @@ describe('dev command', () => {
             expect(pathsEqual(firstCall[0], '/mock/cwd')).toBe(true);
 
             cwdSpy.mockRestore();
-        });
-
-        it('should load env file before loading config', async () => {
-            const { dev } = await import('./dev');
-
-            const callOrder: string[] = [];
-
-            mockLoadEnvFile.mockImplementation(() => {
-                callOrder.push('loadEnvFile');
-            });
-
-            mockLoadProjectConfig.mockImplementation(() => {
-                callOrder.push('loadProjectConfig');
-                return Promise.resolve(mockConfig);
-            });
-
-            await dev();
-
-            expect(callOrder).toEqual(['loadEnvFile', 'loadProjectConfig']);
         });
     });
 });

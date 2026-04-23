@@ -1,7 +1,7 @@
 import "../../logger.js";
 import "../../logger2.js";
 import "../../dependency-utils.js";
-import { t as commonFlags } from "../../flags.js";
+import { r as commonFlags } from "../../flags.js";
 import { r as manageExtensions } from "../../manage-extensions.js";
 import { Command, Flags } from "@oclif/core";
 

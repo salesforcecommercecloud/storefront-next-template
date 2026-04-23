@@ -1,9 +1,8 @@
 import { i as printShutdownMessage, n as printServerConfig, r as printServerInfo } from "../logger.js";
 import "../logger2.js";
-import { c as loadEnvFile } from "../utils.js";
 import { i as loadProjectConfig, n as initBasePathEnv, r as getCommerceCloudApiUrl, t as createServer$2 } from "../server.js";
 import "../config.js";
-import { t as commonFlags } from "../flags.js";
+import { r as commonFlags } from "../flags.js";
 import { Command, Flags } from "@oclif/core";
 import path from "path";
 import { createServer } from "node:http";
@@ -49,7 +48,6 @@ async function dev(options = {}) {
 	const projectDir = path.resolve(options.projectDirectory || process.cwd());
 	const port = options.port || 5173;
 	process.env.NODE_ENV = process.env.NODE_ENV ?? "development";
-	loadEnvFile(projectDir);
 	await initBasePathEnv(projectDir);
 	process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;
 	const config = await loadProjectConfig(projectDir);

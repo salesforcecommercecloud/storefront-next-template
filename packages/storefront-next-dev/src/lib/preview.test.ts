@@ -84,12 +84,6 @@ vi.mock('../utils/logger', () => ({
     printShutdownMessage: mockPrintShutdownMessage,
 }));
 
-const mockLoadEnvFile = vi.fn();
-
-vi.mock('../utils', () => ({
-    loadEnvFile: mockLoadEnvFile,
-}));
-
 const mockExistsSync = vi.fn();
 const mockExecSync = vi.fn();
 
@@ -151,9 +145,6 @@ describe('preview command', () => {
             const { preview } = await import('./preview');
 
             await preview();
-
-            // Verify loadEnvFile was called
-            expect(mockLoadEnvFile).toHaveBeenCalledWith(expect.any(String));
 
             // Verify loadProjectConfig was called
             expect(mockLoadProjectConfig).toHaveBeenCalledWith(expect.any(String));
@@ -219,11 +210,6 @@ describe('preview command', () => {
 
             const customDir = '/custom/project/dir';
             await preview({ projectDirectory: customDir });
-
-            // Verify loadEnvFile was called with custom directory
-            expect(mockLoadEnvFile).toHaveBeenCalled();
-            const envFileCall = mockLoadEnvFile.mock.calls[0] as unknown as [string];
-            expect(pathsEqual(envFileCall[0], customDir)).toBe(true);
 
             // Verify loadProjectConfig was called with custom directory
             expect(mockLoadProjectConfig).toHaveBeenCalled();
@@ -439,25 +425,6 @@ describe('preview command', () => {
             expect(actualPath).toBe('/mock/cwd');
 
             cwdSpy.mockRestore();
-        });
-
-        it('should load env file before loading config', async () => {
-            const { preview } = await import('./preview');
-
-            const callOrder: string[] = [];
-
-            mockLoadEnvFile.mockImplementation(() => {
-                callOrder.push('loadEnvFile');
-            });
-
-            mockLoadProjectConfig.mockImplementation(() => {
-                callOrder.push('loadProjectConfig');
-                return Promise.resolve(mockConfig);
-            });
-
-            await preview();
-
-            expect(callOrder).toEqual(['loadEnvFile', 'loadProjectConfig']);
         });
 
         it('should log info message about loading production build', async () => {

@@ -19,7 +19,6 @@ import { createServer as createViteServer } from 'vite';
 import { createServer, initBasePathEnv } from '../server/index';
 import { loadProjectConfig } from '../server/config';
 import { printServerInfo, printServerConfig, printShutdownMessage } from '../utils/logger';
-import { loadEnvFile } from '../utils';
 import { getCommerceCloudApiUrl } from '../utils/paths';
 import { getWorkspaceHmrConfig } from '../plugins/workspace';
 
@@ -38,10 +37,6 @@ export async function dev(options: DevOptions = {}): Promise<void> {
 
     // Set NODE_ENV to development
     process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
-
-    // Load .env file before reading EXTERNAL_DOMAIN_NAME so values in .env take precedence
-    // over the localhost default set below.
-    loadEnvFile(projectDir);
 
     // Set MRT_ENV_BASE_PATH from config.server.ts before Vite starts, since the
     // React Router preset reads getBasePath() at config time to set the basename.

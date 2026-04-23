@@ -191,7 +191,6 @@
     "chalk": "^5.3.0",
     "compressible": "2.0.18",
     "compression": "^1.7.4",
-    "dotenv": "^16.4.7",
     "express": "5.1.0",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",

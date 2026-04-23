@@ -1,9 +1,8 @@
 import { i as printShutdownMessage, n as printServerConfig, r as printServerInfo, t as logger } from "../logger.js";
 import "../logger2.js";
-import { c as loadEnvFile } from "../utils.js";
 import { i as loadProjectConfig, n as initBasePathEnv, r as getCommerceCloudApiUrl, t as createServer } from "../server.js";
 import "../config.js";
-import { t as commonFlags } from "../flags.js";
+import { r as commonFlags } from "../flags.js";
 import { Command, Flags } from "@oclif/core";
 import { execSync } from "child_process";
 import path from "path";
@@ -22,7 +21,6 @@ async function preview(options = {}) {
 	const port = options.port || 3e3;
 	process.env.NODE_ENV = process.env.NODE_ENV ?? "production";
 	process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;
-	loadEnvFile(projectDir);
 	await initBasePathEnv(projectDir);
 	const buildPath = path.join(projectDir, "build", "server", "index.js");
 	if (!fs.existsSync(buildPath)) {

@@ -22,7 +22,6 @@ import { createServer, initBasePathEnv } from '../server/index';
 import { loadProjectConfig } from '../server/config';
 import { logger } from '../logger';
 import { printServerInfo, printServerConfig, printShutdownMessage } from '../utils/logger';
-import { loadEnvFile } from '../utils';
 import { getCommerceCloudApiUrl } from '../utils/paths';
 
 export interface ServeOptions {
@@ -47,8 +46,6 @@ export async function preview(options: ServeOptions = {}): Promise<void> {
     // Set NODE_ENV to production for preview mode
     process.env.NODE_ENV = process.env.NODE_ENV ?? 'production';
     process.env.EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME ?? `localhost:${port}`;
-
-    loadEnvFile(projectDir);
 
     // Set MRT_ENV_BASE_PATH from config.server.ts before importing the build module.
     // The server build contains renderBuiltUrl runtime code that evaluates

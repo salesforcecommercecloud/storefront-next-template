@@ -2,6 +2,7 @@
 
 - Fix HMR cascade in static registry plugin: skip unnecessary file writes and module reloads when registry content is unchanged
 - Add `dw.json` to `.gitignore` to prevent credentials from being accidentally committed
+- Replace `dotenv` dependency with Node built-in `util.parseEnv` and `process.loadEnvFile`; consolidate `.env` loading into the oclif `init` hook
 
 ## v0.4.0-dev (Apr 07, 2026)
 
