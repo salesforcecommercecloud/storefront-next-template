@@ -35,7 +35,6 @@ const makeManifest = (overrides: Partial<PageManifest> = {}): PageManifest => ({
     variations: {},
     defaultVariation: 'default',
     componentInfo: {},
-    regionInfo: {},
     ...overrides,
 });
 

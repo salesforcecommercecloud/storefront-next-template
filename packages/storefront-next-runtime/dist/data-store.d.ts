@@ -1,6 +1,7 @@
 import { a as sitePreferencesContext, i as getSitePreferences, n as SitePreferences, r as customSitePreferencesMiddleware, t as DEFAULT_SITE_PREFERENCES_KEY } from "./custom-site-preferences.js";
 import { a as getCustomGlobalPreferences, i as customGlobalPreferencesMiddleware, n as DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, r as customGlobalPreferencesContext, t as CustomGlobalPreferences } from "./custom-global-preferences.js";
 import { MiddlewareFunction, RouterContextProvider, createContext } from "react-router";
+import { DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from "@salesforce/mrt-utilities";
 
 //#region src/data-store/provider.d.ts
 
@@ -19,13 +20,29 @@ import { MiddlewareFunction, RouterContextProvider, createContext } from "react-
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-type DataStoreEntry = {
-  value?: unknown;
+type DataStoreEntry<TValue = unknown> = {
+  value?: TValue;
 };
 type DataStoreProvider = {
   kind: 'mrt' | 'local';
-  getEntry: (key: string) => Promise<DataStoreEntry | null>;
+  getEntry: <TValue = unknown>(key: string) => Promise<DataStoreEntry<TValue> | null>;
 };
+/**
+ * Resolve the default data-store provider based on MRT environment variables.
+ *
+ * Environment variables:
+ * - `AWS_REGION` (required for MRT): AWS region for the data store table (e.g., "us-east-1")
+ * - `MOBIFY_PROPERTY_ID` (required for MRT): MRT property identifier (e.g., "abcd1234")
+ * - `DEPLOY_TARGET` (required for MRT): MRT deploy target (e.g., "production")
+ * - `SFNEXT_DATA_STORE_ALLOW_LOCAL` (optional): allow local provider outside development ("true")
+ * - `CI` (optional): allow local provider when set to "true"
+ *
+ * @returns Provider promise resolved for the current environment.
+ * @example
+ * const provider = await getDefaultDataStoreProvider();
+ * const entry = await provider.getEntry('custom-global-preferences');
+ */
+declare function getDefaultDataStoreProvider(): Promise<DataStoreProvider>;
 //#endregion
 //#region src/data-store/utils.d.ts
 
@@ -59,5 +76,5 @@ declare function createDataStoreContext<T>(): DataStoreContextKey<T>;
  */
 declare function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions<T>): MiddlewareFunction<Response>;
 //#endregion
-export { type CustomGlobalPreferences, DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreMiddlewareOptions, type DataStoreProvider, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, customGlobalPreferencesContext, customGlobalPreferencesMiddleware, customSitePreferencesMiddleware, getCustomGlobalPreferences, getSitePreferences, sitePreferencesContext };
+export { type CustomGlobalPreferences, DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreMiddlewareOptions, DataStoreNotFoundError, type DataStoreProvider, DataStoreServiceError, DataStoreUnavailableError, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, customGlobalPreferencesContext, customGlobalPreferencesMiddleware, customSitePreferencesMiddleware, getCustomGlobalPreferences, getDefaultDataStoreProvider, getSitePreferences, sitePreferencesContext };
 //# sourceMappingURL=data-store.d.ts.map

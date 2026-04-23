@@ -180,6 +180,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/organizations/{organizationId}/qualifiers/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resolve qualifiers for customer groups, campaign promotions, and data binding contexts.
+         * @description Resolves a list of customer groups, campaigns, promotions, and data bindings for the given user.
+         *
+         *     The endpoint takes each value and determines whether the user is active for the item:
+         *     - Customer groups are verified against the user's qualification via the EffectiveContext.
+         *     - Campaign qualifiers are checked to determine if the user is applicable for each campaign and promotion.
+         *     - Data bindings are resolved by fetching the requested records from their respective data providers.
+         *
+         *     Returns a boolean result for each provided qualifier and resolved data binding objects grouped by provider type and record identifier. If a qualifier cannot be validated, `false` is returned for that item. If a data binding cannot be resolved, it is omitted from the response.
+         */
+        post: operations["resolveQualifiers"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -679,6 +706,115 @@ export interface components {
              */
             data: components["schemas"]["ContentFolder"][];
         } & components["schemas"]["ResultBase"];
+        /** @description A data binding requirement specifying a provider type and record identifier to resolve. */
+        DataBindingRequirement: {
+            /**
+             * Type
+             * @description The data provider type identifier.
+             * @example content_asset
+             */
+            type: string;
+            /**
+             * ID
+             * @description The record identifier to resolve from the data provider.
+             * @example homepage-banner
+             */
+            id: string;
+        };
+        /**
+         * @description A resolved data binding object containing arbitrary key-value pairs returned by the data provider for a specific record. The shape of the object is determined by the data provider and may include any user-defined fields.
+         * @example {
+         *       "title": "Winter Sale",
+         *       "body": "<div>Shop our winter collection</div>",
+         *       "c_showCountdown": true,
+         *       "c_endDate": "2026-03-31T23:59:59Z"
+         *     }
+         */
+        ResolvedDataBinding: {
+            [key: string]: unknown;
+        };
+        /** @description A campaign and promotion pair to resolve qualification for. */
+        CampaignQualifier: {
+            /**
+             * Campaign ID
+             * @description The identifier of the campaign.
+             * @example my-campaign
+             */
+            campaignId: string;
+            /**
+             * Promotion ID
+             * @description The identifier of the promotion within the campaign.
+             * @example my-promotion
+             */
+            promotionId: string;
+        };
+        /** @description Request body for resolving customer group qualifications, campaign promotion eligibility, and data bindings. All fields are optional. An empty body is valid and returns an empty response. */
+        QualifierResolveRequest: {
+            /**
+             * Customer Groups
+             * @description List of customer group identifiers to resolve qualification for.
+             * @example [
+             *       "VIP"
+             *     ]
+             */
+            customerGroups?: string[];
+            /**
+             * Campaign Qualifiers
+             * @description List of campaign and promotion pairs to resolve qualification for.
+             */
+            campaignQualifiers?: components["schemas"]["CampaignQualifier"][];
+            /**
+             * Data Bindings
+             * @description List of data binding requirements to resolve, each specifying a provider type and record identifier.
+             */
+            dataBindings?: components["schemas"]["DataBindingRequirement"][];
+        };
+        /** @description Response containing the resolved qualification results for customer groups, campaign qualifiers, and data bindings. */
+        QualifierResolveResponse: {
+            /**
+             * Customer Groups
+             * @description Map of customer group identifiers to their qualification status. True if the user is qualified, false otherwise.
+             * @example {
+             *       "VIP": true
+             *     }
+             */
+            customerGroups?: {
+                [key: string]: boolean;
+            };
+            /**
+             * Campaign Qualifiers
+             * @description Map of campaign identifiers to a map of promotion identifiers and their qualification status. True if the user is applicable, false otherwise.
+             * @example {
+             *       "my-campaign": {
+             *         "my-promotion": false
+             *       }
+             *     }
+             */
+            campaignQualifiers?: {
+                [key: string]: {
+                    [key: string]: boolean;
+                };
+            };
+            /**
+             * Data Bindings
+             * @description Resolved data binding objects grouped by provider type, then by record identifier. Used by the expression resolver to evaluate attribute expressions.
+             * @example {
+             *       "content_asset": {
+             *         "homepage-banner": {
+             *           "title": "Winter Sale",
+             *           "body": "<div>Shop our winter collection</div>",
+             *           "c_showCountdown": true,
+             *           "c_endDate": "2026-03-31T23:59:59Z"
+             *         }
+             *       }
+             *     }
+             */
+            dataBindings?: {
+                [key: string]: {
+                    [key: string]: components["schemas"]["ResolvedDataBinding"];
+                };
+            };
+        };
     };
     responses: {
         /** @description Your access token is invalid or expired and can’t be used to identify a user. */
@@ -1133,6 +1269,50 @@ export interface operations {
             };
             401: components["responses"]["401unauthorized"];
             403: components["responses"]["403forbidden"];
+        };
+    };
+    resolveQualifiers: {
+        parameters: {
+            query: {
+                /** @description The identifier of the site that a request is being made in the context of. Attributes might have site specific values, and some objects may only be assigned to specific sites. */
+                siteId: components["parameters"]["siteId"];
+                /** @description A descriptor for a geographical region by both a language and country code. By combining these two, regional differences in a language can be addressed, such as with the request header parameter `Accept-Language` following [RFC 2616](https://tools.ietf.org/html/rfc2616) & [RFC 1766](https://tools.ietf.org/html/rfc1766). This can also just refer to a language code, also RFC 2616/1766 compliant, as a default if there is no specific match for a country. Finally, can also be used to define default behavior if there is no locale specified. */
+                locale?: components["parameters"]["locale"];
+            };
+            header?: never;
+            path: {
+                /**
+                 * @description An identifier for the organization the request is being made by
+                 * @example f_ecom_zzxy_prd
+                 */
+                organizationId: components["parameters"]["organizationId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QualifierResolveRequest"];
+            };
+        };
+        responses: {
+            /** @description Success. All qualifiers have been resolved. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QualifierResolveResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
 }

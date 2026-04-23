@@ -26,6 +26,18 @@ export type PageDesignerPageParams = {
     productId?: string;
 };
 
+/**
+ * Fetches a Page Designer page from SCAPI's Shopper Experience API.
+ *
+ * When the MRT-based page resolution middleware is active, `getPage` calls are
+ * transparently intercepted and resolved from the Data Store. If resolution
+ * fails or the middleware is not active, the request falls through to SCAPI.
+ *
+ * @param context - The loader function context from React Router.
+ * @param parameters - Page Designer page parameters including the page ID,
+ *   optional preview mode/token, and aspect attributes (product, category).
+ * @returns The resolved Page Designer page data.
+ */
 export const fetchPage = async (
     context: LoaderFunctionArgs['context'],
     parameters: PageDesignerPageParams

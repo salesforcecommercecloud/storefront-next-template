@@ -74,7 +74,7 @@ export function resolveDynamicPageId<TIdentifier extends IdentifierType = Identi
     id: string;
     identifierType: TIdentifier;
     aspectType: string;
-    siteManifest?: SiteManifest;
+    siteManifest?: SiteManifest | null;
 }): string | null {
     const resolvedContentAssignmentLookup = ContentAssignmentResolvers.get(identifierType)?.(id, siteManifest);
 

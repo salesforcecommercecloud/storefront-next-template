@@ -38,13 +38,19 @@ interface PageManifest {
       };
       /** Data binding metadata for this component, or `null` if not bound. */
       dataBinding?: ComponentDataBinding | null;
-    };
-  };
-  /** Region-level configuration extracted from the page layout, keyed by region ID. */
-  regionInfo: {
-    [regionId: string]: {
-      /** Maximum number of visible components to render in this region, or `null` for no limit. */
-      maxComponents: number | null;
+      /** Region-level configuration (e.g. maxComponents limits), keyed by region ID. */
+      regions: {
+        [regionId: string]: {
+          /** The name of the region. */
+          name: string;
+          /** The component type exclusions for the region. */
+          componentTypeExclusions: string[] | null;
+          /** The component type inclusions for the region. */
+          componentTypeInclusions: string[] | null;
+          /** Maximum number of visible components to render in this region, or `null` for no limit. */
+          maxComponents: number | null;
+        };
+      };
     };
   };
 }
@@ -101,12 +107,7 @@ interface ComponentDataBinding {
  * the specific promotion within it must be active in the shopper's context for
  * the qualifier to match.
  */
-interface CampaignQualifier {
-  /** The campaign identifier. */
-  campaignId: string;
-  /** The promotion identifier within the campaign. */
-  promotionId: string;
-}
+type CampaignQualifier = ShopperExperience.schemas['CampaignQualifier'];
 /**
  * Metadata extracted from all variation rules in a {@link PageManifest}. Lists
  * every campaign qualifier and customer group referenced, so the runtime knows
@@ -128,12 +129,7 @@ interface PageManifestContext {
  * These requirements are hoisted into {@link PageManifestContext} so MRT can
  * request all required external data in a single batch during context resolution.
  */
-interface DataBindingRequirement {
-  /** The data provider type (e.g. `"content_asset"`, `"product"`, `"personalization"`). */
-  type: string;
-  /** The UUID or identifier of the specific record. */
-  id: string;
-}
+type DataBindingRequirement = ShopperExperience.schemas['DataBindingRequirement'];
 /**
  * A single page variation within a {@link PageManifest}. Each variation holds
  * the full page data and flags indicating whether qualifier context is needed
@@ -182,42 +178,13 @@ interface VisibilityRuleDef {
  * Passed to {@link validateRule} to evaluate visibility rules. This context
  * is typically resolved lazily — only fetched when a rule actually needs it.
  */
-interface QualifierContext {
-  /**
-   * Active campaign qualifiers. Outer key is campaign ID, inner key is
-   * promotion ID. A value of `true` means the qualifier is active.
-   */
-  campaignQualifiers: {
-    [campaignId: string]: {
-      [promotionId: string]: boolean;
-    };
-  };
-  /**
-   * Customer group memberships. Key is the customer group ID, value of
-   * `true` means the shopper belongs to that group.
-   */
-  customerGroups: {
-    [customerGroupId: string]: boolean;
-  };
-  /**
-   * Resolved data binding objects returned from context resolution. Grouped
-   * by provider type, then by record ID. The `ExpressionResolver` uses this
-   * to evaluate attribute expressions like `content_asset.body`.
-   */
-  dataBindings?: {
-    [type: string]: {
-      [id: string]: ResolvedDataBinding;
-    };
-  };
-}
+type QualifierContext = ShopperExperience.schemas['QualifierResolveResponse'];
 /**
  * A resolved data binding object containing the fields returned by the data
  * provider for a specific record. For example, a resolved `content_asset`
  * might contain `{ title: "Winter Sale", body: "<div>…</div>" }`.
  */
-interface ResolvedDataBinding {
-  [field: string]: unknown;
-}
+type ResolvedDataBinding = ShopperExperience.schemas['ResolvedDataBinding'];
 /**
  * The type of identifier used to look up a page. Determines how the ID is
  * resolved to a page manifest:
@@ -232,12 +199,12 @@ type IdentifierType = 'page' | 'category' | 'product';
  * filesystem, CDN, database).
  */
 interface ManifestStorage {
-  /** Fetch the page manifest for a given page ID and locale. */
-  getPageManifest(id: string, locale: string): Promise<PageManifest>;
+  /** Fetch the page manifest for a given page ID. */
+  getPageManifest(id: string): Promise<PageManifest | null>;
   /** Fetch the site-wide manifest for a given locale. */
-  getSiteManifest(locale: string): Promise<SiteManifest>;
+  getSiteManifest(): Promise<SiteManifest | null>;
 }
-type ContextResolver = (context: PageManifest['context']) => Promise<QualifierContext>;
+type ContextResolver = (context: PageManifest['context']) => Promise<QualifierContext | null>;
 type VisitorContextType = 'page' | 'region' | 'component' | 'root';
 type InferNodeFromType<TType extends VisitorContextType> = TType extends 'page' ? ShopperExperience.schemas['Page'] : TType extends 'region' ? ShopperExperience.schemas['Region'] : ShopperExperience.schemas['Component'];
 //#endregion
@@ -252,8 +219,6 @@ interface PageProcessorContext {
   qualifiers: QualifierContext | null;
   /** Component visibility rule definitions extracted from the page layout. */
   componentInfo: PageManifest['componentInfo'];
-  /** Region-level configuration (e.g. maxComponents limits), keyed by region ID. */
-  regionInfo: PageManifest['regionInfo'];
   /** The locale to use when resolving locale-specific component content (e.g. `"en_US"`). */
   locale: string;
   /**
@@ -712,12 +677,12 @@ declare function resolveComponentDataBindings(component: ShopperExperience.schem
  *     aspectType: 'pdp',
  *     locale: 'en-US',
  *     manifestStorage: {
- *         async getPageManifest(id, locale) {
+ *         async getPageManifest(id) {
  *             // Fetch from CDN, filesystem, or database
- *             return fetchManifest(`/manifests/${locale}/${id}.json`);
+ *             return fetchManifest(`/manifests/${id}.json`);
  *         },
- *         async getSiteManifest(locale) {
- *             return fetchManifest(`/manifests/${locale}/site.json`);
+ *         async getSiteManifest() {
+ *             return fetchManifest('/manifests/site.json');
  *         },
  *     },
  *     contextResolver: async () => ({
@@ -812,7 +777,7 @@ declare function resolveDynamicPageId<TIdentifier extends IdentifierType = Ident
   id: string;
   identifierType: TIdentifier;
   aspectType: string;
-  siteManifest?: SiteManifest;
+  siteManifest?: SiteManifest | null;
 }): string | null;
 //#endregion
 //#region src/design/data/manifest/get-page.d.ts
@@ -917,7 +882,7 @@ interface ResolvedContentAssignmentLookup {
  * into a {@link ResolvedContentAssignmentLookup} describing where to search
  * in the site manifest for the assigned page ID.
  */
-type ContentAssignmentResolver = (key: string, manifest?: SiteManifest) => ResolvedContentAssignmentLookup;
+type ContentAssignmentResolver = (key: string, manifest?: SiteManifest | null) => ResolvedContentAssignmentLookup;
 /**
  * Registry of content assignment resolvers keyed by {@link IdentifierType}.
  * Each resolver knows how to convert its identifier type into a set of lookup

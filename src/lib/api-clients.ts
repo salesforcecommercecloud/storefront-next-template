@@ -33,6 +33,7 @@ import type { AppConfig } from '@/types/config';
 import { getAppOrigin, getScapiBaseUrl, isAbsoluteURL } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 import { customClients, type AppClients } from '@/scapi/custom-clients';
+import { scapiMiddlewareContext } from '@/lib/scapi-middleware';
 
 type CustomClientConfigEntry = {
     key: string;
@@ -298,6 +299,22 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
     // Client calls to SCAPI should be rare (basket?), and often shadowed by server calls regarding maintenance
     if (typeof window === 'undefined') {
         applyToAllClients(maintenanceMiddleware);
+    }
+
+    // Apply context-registered SCAPI middleware factories
+    const scapiMiddlewares = context.get(scapiMiddlewareContext);
+
+    for (const entry of scapiMiddlewares) {
+        const middleware = entry.factory(context);
+        if (!middleware) continue;
+
+        if (entry.clients) {
+            for (const clientName of entry.clients) {
+                clients[clientName].use(middleware);
+            }
+        } else {
+            applyToAllClients(middleware);
+        }
     }
 
     return { ...clients, ...customClientEntries, use: applyToAllClients } as AppClients;

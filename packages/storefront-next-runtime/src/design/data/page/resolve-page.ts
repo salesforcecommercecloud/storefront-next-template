@@ -55,12 +55,12 @@ import { RequiredError } from '../errors/required';
  *     aspectType: 'pdp',
  *     locale: 'en-US',
  *     manifestStorage: {
- *         async getPageManifest(id, locale) {
+ *         async getPageManifest(id) {
  *             // Fetch from CDN, filesystem, or database
- *             return fetchManifest(`/manifests/${locale}/${id}.json`);
+ *             return fetchManifest(`/manifests/${id}.json`);
  *         },
- *         async getSiteManifest(locale) {
- *             return fetchManifest(`/manifests/${locale}/site.json`);
+ *         async getSiteManifest() {
+ *             return fetchManifest('/manifests/site.json');
  *         },
  *     },
  *     contextResolver: async () => ({
@@ -98,7 +98,7 @@ export async function resolvePage({
     let resolvedId: string | null = null;
 
     if (ContentAssignmentResolvers.has(identifierType)) {
-        const siteManifest = await manifestStorage.getSiteManifest(locale);
+        const siteManifest = await manifestStorage.getSiteManifest();
 
         RequiredError.assert(aspectType, `Aspect type is required for identifier type ${identifierType}`, (v) => !v);
 
@@ -111,7 +111,7 @@ export async function resolvePage({
         return null;
     }
 
-    const pageManifest = await manifestStorage.getPageManifest(resolvedId, locale);
+    const pageManifest = await manifestStorage.getPageManifest(resolvedId);
 
     if (!pageManifest) {
         return null;
@@ -135,7 +135,6 @@ export async function resolvePage({
     return processPage(pageResults.entry.page, {
         qualifiers: context,
         componentInfo: pageManifest.componentInfo,
-        regionInfo: pageManifest.regionInfo,
         locale,
         pruneInvisible,
     });

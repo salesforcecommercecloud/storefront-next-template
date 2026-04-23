@@ -27,7 +27,7 @@ export type PageWithComponentData = Page & {
 };
 
 type PageParams = Omit<PageDesignerPageParams, 'mode' | 'pdToken'>;
-export function fetchPageFromLoader(
+export async function fetchPageFromLoader(
     { context, request }: LoaderFunctionArgs,
     params: PageParams
 ): Promise<ShopperExperience.schemas['Page']> {

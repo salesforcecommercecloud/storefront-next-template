@@ -191,7 +191,7 @@
         "server": [
             {
                 "name": "**/*",
-                "limit": "5.2 mB"
+                "limit": "5.3 mB"
             }
         ],
         "client": [

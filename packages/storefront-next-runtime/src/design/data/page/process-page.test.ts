@@ -38,6 +38,13 @@ const makePage = (regions: ShopperExperience.schemas['Region'][] = []): Page => 
     regions,
 });
 
+const regionConfig = (maxComponents: number | null) => ({
+    name: '',
+    componentTypeExclusions: null,
+    componentTypeInclusions: null,
+    maxComponents,
+});
+
 describe('processPage', () => {
     describe('visibility rules', () => {
         test('keeps components without visibility rules', () => {
@@ -48,9 +55,9 @@ describe('processPage', () => {
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -67,12 +74,13 @@ describe('processPage', () => {
                 componentInfo: {
                     'public-banner': {
                         visibilityRules: [],
+                        regions: {},
                     },
                     'vip-offer': {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -88,9 +96,9 @@ describe('processPage', () => {
                 componentInfo: {
                     'vip-offer': {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -115,9 +123,9 @@ describe('processPage', () => {
                                 campaignQualifiers: [{ campaignId: 'sale', promotionId: 'discount' }],
                             },
                         ],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -143,9 +151,9 @@ describe('processPage', () => {
                                 campaignQualifiers: [{ campaignId: 'sale', promotionId: 'discount' }],
                             },
                         ],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -169,12 +177,13 @@ describe('processPage', () => {
                 componentInfo: {
                     container: {
                         visibilityRules: [],
+                        regions: {},
                     },
                     'nested-vip': {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -211,6 +220,7 @@ describe('processPage', () => {
                     container: {
                         visibilityRules: [],
                         dataBinding: null,
+                        regions: {},
                     },
                     'bound-child': {
                         visibilityRules: [],
@@ -218,9 +228,9 @@ describe('processPage', () => {
                             expressions: { heading: 'content_asset.title' },
                             contexts: [{ type: 'content_asset', id: 'asset-1' }],
                         },
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -243,9 +253,9 @@ describe('processPage', () => {
                 componentInfo: {
                     'nested-vip': {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -269,12 +279,13 @@ describe('processPage', () => {
                 componentInfo: {
                     container: {
                         visibilityRules: [],
+                        regions: {},
                     },
                     child: {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -310,9 +321,9 @@ describe('processPage', () => {
                             expressions: { heading: 'content_asset.title' },
                             contexts: [{ type: 'content_asset', id: 'asset-1' }],
                         },
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -335,9 +346,9 @@ describe('processPage', () => {
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -366,9 +377,9 @@ describe('processPage', () => {
                             en_US: { heading: 'English Heading', subtitle: 'English Subtitle' },
                             fr_FR: { heading: 'Titre Français', subtitle: 'Sous-titre Français' },
                         },
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -390,9 +401,9 @@ describe('processPage', () => {
                             en_US: { heading: 'English' },
                             fr_FR: { heading: 'Français' },
                         },
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -418,9 +429,9 @@ describe('processPage', () => {
                         content: {
                             en_US: { heading: 'English' },
                         },
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -443,9 +454,9 @@ describe('processPage', () => {
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -466,9 +477,9 @@ describe('processPage', () => {
                             default: { heading: 'Default Heading', subtitle: 'Default Subtitle' },
                             en_US: { heading: 'English' },
                         },
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -490,9 +501,9 @@ describe('processPage', () => {
                             default: { heading: 'Default Heading', subtitle: 'Default Subtitle' },
                             en_US: { heading: 'English Heading' },
                         },
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -531,9 +542,9 @@ describe('processPage', () => {
                             expressions: { heading: 'content_asset.title' },
                             contexts: [{ type: 'content_asset', id: 'asset-1' }],
                         },
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -559,9 +570,9 @@ describe('processPage', () => {
                             default: { heading: 'Default' },
                             en_US: { heading: 'English' },
                         },
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -582,9 +593,9 @@ describe('processPage', () => {
                             default: { heading: 'Default' },
                             en_US: { heading: 'English' },
                         },
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -601,9 +612,9 @@ describe('processPage', () => {
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -620,10 +631,9 @@ describe('processPage', () => {
                 qualifiers: null,
                 locale: 'en_US',
                 componentInfo: {
-                    banner: { visibilityRules: [] },
-                    promo: { visibilityRules: [] },
+                    banner: { visibilityRules: [], regions: {} },
+                    promo: { visibilityRules: [], regions: {} },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -645,10 +655,9 @@ describe('processPage', () => {
                 qualifiers: null,
                 locale: 'en_US',
                 componentInfo: {
-                    container: { visibilityRules: [] },
-                    child: { visibilityRules: [] },
+                    container: { visibilityRules: [], regions: {} },
+                    child: { visibilityRules: [], regions: {} },
                 },
-                regionInfo: {},
             };
 
             const result = processPage(page, context);
@@ -661,58 +670,90 @@ describe('processPage', () => {
 
     describe('region maxComponents', () => {
         test('truncates components to maxComponents limit', () => {
-            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b'), makeComponent('c')])]);
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('container', {
+                        regions: [makeRegion('inner', [makeComponent('a'), makeComponent('b'), makeComponent('c')])],
+                    }),
+                ]),
+            ]);
 
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
-                componentInfo: {},
-                regionInfo: {
-                    main: { maxComponents: 2 },
+                componentInfo: {
+                    container: {
+                        visibilityRules: [],
+                        regions: { inner: regionConfig(2) },
+                    },
                 },
             };
 
             const result = processPage(page, context);
-            expect(result.regions?.[0].components?.map((c) => c.id)).toEqual(['a', 'b']);
+            expect(result.regions?.[0].components?.[0].regions?.[0].components?.map((c) => c.id)).toEqual(['a', 'b']);
         });
 
         test('keeps all components when maxComponents is null', () => {
-            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b'), makeComponent('c')])]);
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('container', {
+                        regions: [makeRegion('inner', [makeComponent('a'), makeComponent('b'), makeComponent('c')])],
+                    }),
+                ]),
+            ]);
 
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
-                componentInfo: {},
-                regionInfo: {
-                    main: { maxComponents: null },
+                componentInfo: {
+                    container: {
+                        visibilityRules: [],
+                        regions: { inner: regionConfig(null) },
+                    },
                 },
             };
 
             const result = processPage(page, context);
-            expect(result.regions?.[0].components).toHaveLength(3);
+            expect(result.regions?.[0].components?.[0].regions?.[0].components).toHaveLength(3);
         });
 
-        test('keeps all components when region is not in regionInfo', () => {
-            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b'), makeComponent('c')])]);
+        test('keeps all components when region is not in componentInfo regions', () => {
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('container', {
+                        regions: [makeRegion('inner', [makeComponent('a'), makeComponent('b'), makeComponent('c')])],
+                    }),
+                ]),
+            ]);
 
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
-                componentInfo: {},
-                regionInfo: {},
+                componentInfo: {
+                    container: {
+                        visibilityRules: [],
+                        regions: {},
+                    },
+                },
             };
 
             const result = processPage(page, context);
-            expect(result.regions?.[0].components).toHaveLength(3);
+            expect(result.regions?.[0].components?.[0].regions?.[0].components).toHaveLength(3);
         });
 
         test('applies maxComponents after visibility filtering', () => {
             const page = makePage([
                 makeRegion('main', [
-                    makeComponent('visible-1'),
-                    makeComponent('hidden'),
-                    makeComponent('visible-2'),
-                    makeComponent('visible-3'),
+                    makeComponent('container', {
+                        regions: [
+                            makeRegion('inner', [
+                                makeComponent('visible-1'),
+                                makeComponent('hidden'),
+                                makeComponent('visible-2'),
+                                makeComponent('visible-3'),
+                            ]),
+                        ],
+                    }),
                 ]),
             ]);
 
@@ -720,74 +761,106 @@ describe('processPage', () => {
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
                 componentInfo: {
-                    'visible-1': { visibilityRules: [] },
+                    container: {
+                        visibilityRules: [],
+                        regions: { inner: regionConfig(2) },
+                    },
+                    'visible-1': { visibilityRules: [], regions: {} },
                     hidden: {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
+                        regions: {},
                     },
-                    'visible-2': { visibilityRules: [] },
-                    'visible-3': { visibilityRules: [] },
-                },
-                regionInfo: {
-                    main: { maxComponents: 2 },
+                    'visible-2': { visibilityRules: [], regions: {} },
+                    'visible-3': { visibilityRules: [], regions: {} },
                 },
             };
 
             const result = processPage(page, context);
             // 'hidden' is removed by visibility rules first, then maxComponents=2 keeps only the first 2 visible
-            expect(result.regions?.[0].components?.map((c) => c.id)).toEqual(['visible-1', 'visible-2']);
+            expect(result.regions?.[0].components?.[0].regions?.[0].components?.map((c) => c.id)).toEqual([
+                'visible-1',
+                'visible-2',
+            ]);
         });
 
         test('handles maxComponents greater than component count', () => {
-            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b')])]);
-
-            const context: PageProcessorContext = {
-                qualifiers: null,
-                locale: 'en_US',
-                componentInfo: {},
-                regionInfo: {
-                    main: { maxComponents: 10 },
-                },
-            };
-
-            const result = processPage(page, context);
-            expect(result.regions?.[0].components).toHaveLength(2);
-        });
-
-        test('handles maxComponents of zero', () => {
-            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b')])]);
-
-            const context: PageProcessorContext = {
-                qualifiers: null,
-                locale: 'en_US',
-                componentInfo: {},
-                regionInfo: {
-                    main: { maxComponents: 0 },
-                },
-            };
-
-            const result = processPage(page, context);
-            expect(result.regions?.[0].components).toHaveLength(0);
-        });
-
-        test('applies maxComponents independently per region', () => {
             const page = makePage([
-                makeRegion('header', [makeComponent('h1'), makeComponent('h2'), makeComponent('h3')]),
-                makeRegion('footer', [makeComponent('f1'), makeComponent('f2'), makeComponent('f3')]),
+                makeRegion('main', [
+                    makeComponent('container', {
+                        regions: [makeRegion('inner', [makeComponent('a'), makeComponent('b')])],
+                    }),
+                ]),
             ]);
 
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
-                componentInfo: {},
-                regionInfo: {
-                    header: { maxComponents: 1 },
-                    footer: { maxComponents: 2 },
+                componentInfo: {
+                    container: {
+                        visibilityRules: [],
+                        regions: { inner: regionConfig(10) },
+                    },
                 },
             };
 
             const result = processPage(page, context);
-            expect(result.regions?.[0].components?.map((c) => c.id)).toEqual(['h1']);
-            expect(result.regions?.[1].components?.map((c) => c.id)).toEqual(['f1', 'f2']);
+            expect(result.regions?.[0].components?.[0].regions?.[0].components).toHaveLength(2);
+        });
+
+        test('handles maxComponents of zero', () => {
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('container', {
+                        regions: [makeRegion('inner', [makeComponent('a'), makeComponent('b')])],
+                    }),
+                ]),
+            ]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {
+                    container: {
+                        visibilityRules: [],
+                        regions: { inner: regionConfig(0) },
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            expect(result.regions?.[0].components?.[0].regions?.[0].components).toHaveLength(0);
+        });
+
+        test('applies maxComponents independently per region', () => {
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('container', {
+                        regions: [
+                            makeRegion('header', [makeComponent('h1'), makeComponent('h2'), makeComponent('h3')]),
+                            makeRegion('footer', [makeComponent('f1'), makeComponent('f2'), makeComponent('f3')]),
+                        ],
+                    }),
+                ]),
+            ]);
+
+            const context: PageProcessorContext = {
+                qualifiers: null,
+                locale: 'en_US',
+                componentInfo: {
+                    container: {
+                        visibilityRules: [],
+                        regions: {
+                            header: regionConfig(1),
+                            footer: regionConfig(2),
+                        },
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const containerRegions = result.regions?.[0].components?.[0].regions;
+            expect(containerRegions?.[0].components?.map((c) => c.id)).toEqual(['h1']);
+            expect(containerRegions?.[1].components?.map((c) => c.id)).toEqual(['f1', 'f2']);
         });
 
         test('applies maxComponents to nested regions', () => {
@@ -803,10 +876,10 @@ describe('processPage', () => {
                 qualifiers: null,
                 locale: 'en_US',
                 componentInfo: {
-                    container: { visibilityRules: [] },
-                },
-                regionInfo: {
-                    inner: { maxComponents: 1 },
+                    container: {
+                        visibilityRules: [],
+                        regions: { inner: regionConfig(1) },
+                    },
                 },
             };
 
@@ -824,12 +897,12 @@ describe('processPage', () => {
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
                 componentInfo: {
-                    public: { visibilityRules: [] },
+                    public: { visibilityRules: [], regions: {} },
                     'vip-only': {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
+                        regions: {},
                     },
                 },
-                regionInfo: {},
                 pruneInvisible: false,
             };
 
@@ -841,20 +914,28 @@ describe('processPage', () => {
         });
 
         test('marks overflow components as visible: false instead of truncating', () => {
-            const page = makePage([makeRegion('main', [makeComponent('a'), makeComponent('b'), makeComponent('c')])]);
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('container', {
+                        regions: [makeRegion('inner', [makeComponent('a'), makeComponent('b'), makeComponent('c')])],
+                    }),
+                ]),
+            ]);
 
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
-                componentInfo: {},
-                regionInfo: {
-                    main: { maxComponents: 1 },
+                componentInfo: {
+                    container: {
+                        visibilityRules: [],
+                        regions: { inner: regionConfig(1) },
+                    },
                 },
                 pruneInvisible: false,
             };
 
             const result = processPage(page, context);
-            const components = result.regions?.[0].components as Record<string, unknown>[];
+            const components = result.regions?.[0].components?.[0].regions?.[0].components as Record<string, unknown>[];
             expect(components).toHaveLength(3);
             expect(components[0].visible).toBe(true);
             expect(components[1].visible).toBe(false);
@@ -885,31 +966,41 @@ describe('processPage', () => {
         ])('maxComponents only counts visible components ($name)', ({ ids, expected }) => {
             const hiddenRule = [{ activeLocales: ['en_US'], customerGroups: ['vip'] }];
             const page = makePage([
-                makeRegion(
-                    'main',
-                    ids.map((id) => makeComponent(id))
-                ),
+                makeRegion('main', [
+                    makeComponent('container', {
+                        regions: [
+                            makeRegion(
+                                'inner',
+                                ids.map((id) => makeComponent(id))
+                            ),
+                        ],
+                    }),
+                ]),
             ]);
 
             const context: PageProcessorContext = {
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
-                componentInfo: Object.fromEntries(
-                    ids.map((id) => [
-                        id,
-                        {
-                            visibilityRules: id.startsWith('hidden') ? hiddenRule : [],
-                        },
-                    ])
-                ),
-                regionInfo: {
-                    main: { maxComponents: 2 },
+                componentInfo: {
+                    container: {
+                        visibilityRules: [],
+                        regions: { inner: regionConfig(2) },
+                    },
+                    ...Object.fromEntries(
+                        ids.map((id) => [
+                            id,
+                            {
+                                visibilityRules: id.startsWith('hidden') ? hiddenRule : [],
+                                regions: {},
+                            },
+                        ])
+                    ),
                 },
                 pruneInvisible: false,
             };
 
             const result = processPage(page, context);
-            const components = result.regions?.[0].components as Record<string, unknown>[];
+            const components = result.regions?.[0].components?.[0].regions?.[0].components as Record<string, unknown>[];
             expect(components).toHaveLength(ids.length);
             expect(components.map((c) => c.visible)).toEqual(expected);
         });
@@ -921,7 +1012,6 @@ describe('processPage', () => {
             qualifiers: null,
             locale: 'en_US',
             componentInfo: {},
-            regionInfo: {},
         };
 
         const result = processPage(page, context);
@@ -934,7 +1024,6 @@ describe('processPage', () => {
             qualifiers: null,
             locale: 'en_US',
             componentInfo: {},
-            regionInfo: {},
         };
 
         const result = processPage(page, context);
@@ -954,12 +1043,13 @@ describe('processPage', () => {
             componentInfo: {
                 container: {
                     visibilityRules: [],
+                    regions: {},
                 },
                 'nested-vip': {
                     visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
+                    regions: {},
                 },
             },
-            regionInfo: {},
         };
 
         const result = processPage(page, context);

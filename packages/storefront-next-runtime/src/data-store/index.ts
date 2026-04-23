@@ -16,6 +16,7 @@
 
 export { createDataStoreMiddleware } from './utils';
 export { createDataStoreContext } from './utils';
+export { getDefaultDataStoreProvider } from './provider';
 export {
     customSitePreferencesMiddleware,
     DEFAULT_SITE_PREFERENCES_KEY,
@@ -33,3 +34,4 @@ export type { SitePreferences } from './middleware/custom-site-preferences';
 export type { DataStoreContextKey, DataStoreEntryKey } from './utils';
 export type { DataStoreEntry, DataStoreProvider } from './provider';
 export type { CustomGlobalPreferences } from './middleware/custom-global-preferences';
+export { DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from '@salesforce/mrt-utilities';

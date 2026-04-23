@@ -207,6 +207,13 @@ export default defineConfig(({ mode }) => {
                 // public/fonts/. Using resolve(__dirname, './public/fonts') would trigger Vite
                 // warnings about importing from the public directory.
                 '@fonts': '/fonts',
+                // The mrt-utilities package's "development" export condition points to
+                // ./src/index.ts which doesn't exist in the published package. Alias to
+                // the ESM dist to fix module resolution in tests and dev.
+                '@salesforce/mrt-utilities': resolve(
+                    __dirname,
+                    '../storefront-next-runtime/node_modules/@salesforce/mrt-utilities/dist/esm/index.js'
+                ),
             },
             // Prevent duplicate React instances in the monorepo. hooks break if multiple copies are loaded
             dedupe: ['react', 'react-dom', 'react-router'],

@@ -489,7 +489,7 @@ function resolveComponentDataBindings(component, binding, dataBindings) {
 */
 function validateRule(rule, locale, context) {
 	if (rule.campaignQualifiers) {
-		for (const campaignQualifier of rule.campaignQualifiers) if (!context?.campaignQualifiers[campaignQualifier.campaignId]?.[campaignQualifier.promotionId]) return false;
+		for (const campaignQualifier of rule.campaignQualifiers) if (!context?.campaignQualifiers?.[campaignQualifier.campaignId]?.[campaignQualifier.promotionId]) return false;
 	} else {
 		if (rule.activeLocales && !rule.activeLocales.includes(locale)) return false;
 		if (rule.schedule) {
@@ -504,7 +504,7 @@ function validateRule(rule, locale, context) {
 			}
 		}
 		if (rule.customerGroups) {
-			for (const customerGroup of rule.customerGroups) if (!context?.customerGroups[customerGroup]) return false;
+			for (const customerGroup of rule.customerGroups) if (!context?.customerGroups?.[customerGroup]) return false;
 		}
 	}
 	return true;
@@ -566,7 +566,7 @@ function validateRule(rule, locale, context) {
 function processPage(page, processorContext) {
 	return transformPage(page, {
 		visitRegion(ctx) {
-			const regionInfo = processorContext.regionInfo[ctx.node.id];
+			const regionInfo = (ctx.parentComponent ? processorContext.componentInfo[ctx.parentComponent.id] : null)?.regions?.[ctx.node.id];
 			const pruneInvisible = processorContext.pruneInvisible ?? true;
 			let components = ctx.visitComponents(ctx.node.components);
 			if (regionInfo?.maxComponents != null) if (pruneInvisible) components = components.slice(0, regionInfo.maxComponents);
@@ -897,12 +897,12 @@ async function getPageFromManifest(manifest, { contextResolver, locale }) {
 *     aspectType: 'pdp',
 *     locale: 'en-US',
 *     manifestStorage: {
-*         async getPageManifest(id, locale) {
+*         async getPageManifest(id) {
 *             // Fetch from CDN, filesystem, or database
-*             return fetchManifest(`/manifests/${locale}/${id}.json`);
+*             return fetchManifest(`/manifests/${id}.json`);
 *         },
-*         async getSiteManifest(locale) {
-*             return fetchManifest(`/manifests/${locale}/site.json`);
+*         async getSiteManifest() {
+*             return fetchManifest('/manifests/site.json');
 *         },
 *     },
 *     contextResolver: async () => ({
@@ -923,7 +923,7 @@ async function getPageFromManifest(manifest, { contextResolver, locale }) {
 async function resolvePage({ id, identifierType, aspectType, locale, manifestStorage, contextResolver, pruneInvisible = true }) {
 	let resolvedId = null;
 	if (ContentAssignmentResolvers.has(identifierType)) {
-		const siteManifest = await manifestStorage.getSiteManifest(locale);
+		const siteManifest = await manifestStorage.getSiteManifest();
 		RequiredError.assert(aspectType, `Aspect type is required for identifier type ${identifierType}`, (v) => !v);
 		resolvedId = resolveDynamicPageId({
 			id,
@@ -933,7 +933,7 @@ async function resolvePage({ id, identifierType, aspectType, locale, manifestSto
 		});
 	} else resolvedId = id;
 	if (!resolvedId) return null;
-	const pageManifest = await manifestStorage.getPageManifest(resolvedId, locale);
+	const pageManifest = await manifestStorage.getPageManifest(resolvedId);
 	if (!pageManifest) return null;
 	const pageResults = await getPageFromManifest(pageManifest, {
 		contextResolver,
@@ -945,7 +945,6 @@ async function resolvePage({ id, identifierType, aspectType, locale, manifestSto
 	return processPage(pageResults.entry.page, {
 		qualifiers: context,
 		componentInfo: pageManifest.componentInfo,
-		regionInfo: pageManifest.regionInfo,
 		locale,
 		pruneInvisible
 	});

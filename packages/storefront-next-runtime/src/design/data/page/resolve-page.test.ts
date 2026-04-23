@@ -37,7 +37,6 @@ const makePageManifest = (overrides: Partial<PageManifest> = {}): PageManifest =
     },
     defaultVariation: 'default',
     componentInfo: {},
-    regionInfo: {},
     ...overrides,
 });
 
@@ -96,9 +95,9 @@ describe('resolvePage', () => {
 
         expect(result).not.toBeNull();
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        expect(storage.getSiteManifest).toHaveBeenCalledWith('en-US');
+        expect(storage.getSiteManifest).toHaveBeenCalled();
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        expect(storage.getPageManifest).toHaveBeenCalledWith('page-prod-1', 'en-US');
+        expect(storage.getPageManifest).toHaveBeenCalledWith('page-prod-1');
     });
 
     test('returns null when product ID has no content assignment', async () => {
@@ -293,9 +292,11 @@ describe('resolvePage', () => {
             componentInfo: {
                 'public-banner': {
                     visibilityRules: [],
+                    regions: {},
                 },
                 'vip-offer': {
                     visibilityRules: [{ activeLocales: ['en-US'], customerGroups: ['vip'] }],
+                    regions: {},
                 },
             },
         });

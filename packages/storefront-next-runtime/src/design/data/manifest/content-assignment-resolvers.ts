@@ -32,7 +32,10 @@ export interface ResolvedContentAssignmentLookup {
  * into a {@link ResolvedContentAssignmentLookup} describing where to search
  * in the site manifest for the assigned page ID.
  */
-export type ContentAssignmentResolver = (key: string, manifest?: SiteManifest) => ResolvedContentAssignmentLookup;
+export type ContentAssignmentResolver = (
+    key: string,
+    manifest?: SiteManifest | null
+) => ResolvedContentAssignmentLookup;
 
 /**
  * Registry of content assignment resolvers keyed by {@link IdentifierType}.

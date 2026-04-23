@@ -158,6 +158,33 @@ describe('pageLoader', () => {
                 'API Error'
             );
         });
+
+        describe('Page Designer mode handling', () => {
+            test('calls fetchPage directly when not in design or preview mode', async () => {
+                const args = createLoaderArgs(BASE_URL);
+                await fetchPageFromLoader(args, { pageId: MOCK_PAGE_ID });
+
+                expect(fetchPage).toHaveBeenCalledWith(TEST_CONTEXT, { pageId: MOCK_PAGE_ID });
+            });
+
+            test('does not call fetchPage with design params in Page Designer edit mode', async () => {
+                mockedIsDesignModeActive.mockReturnValue(true);
+                const args = createLoaderArgs(`${BASE_URL}?mode=EDIT&pdToken=${MOCK_PD_TOKEN}`);
+
+                await fetchPageFromLoader(args, { pageId: MOCK_PAGE_ID });
+
+                expect(fetchPage).toHaveBeenCalled();
+            });
+
+            test('does not call fetchPage with design params in Page Designer preview mode', async () => {
+                mockedIsPreviewModeActive.mockReturnValue(true);
+                const args = createLoaderArgs(`${BASE_URL}?mode=PREVIEW&pdToken=preview-token`);
+
+                await fetchPageFromLoader(args, { pageId: MOCK_PAGE_ID });
+
+                expect(fetchPage).toHaveBeenCalled();
+            });
+        });
     });
 
     describe('fetchPageWithComponentData', () => {

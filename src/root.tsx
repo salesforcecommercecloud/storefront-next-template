@@ -72,6 +72,7 @@ import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { correlationMiddleware } from '@/middlewares/correlation.server';
 import { loggingMiddleware } from '@/middlewares/logging.server';
+import { pageDesignerResolutionMiddleware } from '@/middlewares/page-designer-page-resolution.server';
 import { modeDetectionMiddlewareServer, modeDetectionMiddlewareClient } from '@/middlewares/mode-detection';
 import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 
@@ -144,6 +145,7 @@ export const middleware: MiddlewareFunction<Response>[] = [
     customSitePreferencesMiddleware,
     customGlobalPreferencesMiddleware,
     i18nextMiddleware,
+    pageDesignerResolutionMiddleware,
     selectedStoreMiddleware /** @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */,
     performanceMetricsMiddlewareServer,
     maintenanceMiddleware,

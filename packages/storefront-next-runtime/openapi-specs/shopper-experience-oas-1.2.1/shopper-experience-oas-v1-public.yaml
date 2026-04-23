@@ -3,7 +3,7 @@ info:
   x-api-type: Shopper
   x-api-family: Experience
   title: Shopper Experience
-  version: 1.1.2
+  version: 1.2.1
   description: |-
     [Download API specification](https://developer.salesforce.com/static/commercecloud/commerce-api/shopper-experience/shopper-experience-oas-v1-public.yaml)
 
@@ -363,6 +363,63 @@ paths:
       security:
         - ShopperToken:
             - sfcc.shopper-experience.folders
+  /organizations/{organizationId}/qualifiers/resolve:
+    post:
+      summary: Resolve qualifiers for customer groups, campaign promotions, and data binding contexts.
+      description: |-
+        Resolves a list of customer groups, campaigns, promotions, and data bindings for the given user.
+
+        The endpoint takes each value and determines whether the user is active for the item:
+        - Customer groups are verified against the user's qualification via the EffectiveContext.
+        - Campaign qualifiers are checked to determine if the user is applicable for each campaign and promotion.
+        - Data bindings are resolved by fetching the requested records from their respective data providers.
+
+        Returns a boolean result for each provided qualifier and resolved data binding objects grouped by provider type and record identifier. If a qualifier cannot be validated, `false` is returned for that item. If a data binding cannot be resolved, it is omitted from the response.
+      operationId: resolveQualifiers
+      parameters:
+        - $ref: '#/components/parameters/organizationId'
+        - $ref: '#/components/parameters/siteId'
+        - $ref: '#/components/parameters/locale'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QualifierResolveRequest'
+            examples:
+              QualifierResolveRequest:
+                $ref: '#/components/examples/QualifierResolveRequest'
+      responses:
+        '200':
+          description: Success. All qualifiers have been resolved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QualifierResolveResponse'
+              examples:
+                QualifierResolveResponse:
+                  $ref: '#/components/examples/QualifierResolveResponse'
+        '400':
+          description: |
+            Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                QualifierResolveBadRequest:
+                  $ref: '#/components/examples/QualifierResolveBadRequest'
+                QualifierResolveTooManyItems:
+                  $ref: '#/components/examples/QualifierResolveTooManyItems'
+                QualifierResolveInvalidIdentifier:
+                  $ref: '#/components/examples/QualifierResolveInvalidIdentifier'
+                QualifierResolveInvalidDataBindingType:
+                  $ref: '#/components/examples/QualifierResolveInvalidDataBindingType'
+                QualifierResolveInvalidDataBindingId:
+                  $ref: '#/components/examples/QualifierResolveInvalidDataBindingId'
+      security:
+        - ShopperToken:
+            - sfcc.shopper-experience.qualifiers
 components:
   securitySchemes:
     ShopperToken:
@@ -376,6 +433,7 @@ components:
             sfcc.shopper-experience.pages: Shopper Experience scope READONLY for pages
             sfcc.shopper-experience.contents: Shopper Experience scope READONLY for contents
             sfcc.shopper-experience.folders: Shopper Experience scope READONLY for folders
+            sfcc.shopper-experience.qualifiers: Shopper Experience scope for resolving qualifiers
         authorizationCode:
           authorizationUrl: https://{short-code}.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/{organizationId}/oauth2/authorize
           tokenUrl: https://{short-code}.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/{organizationId}/oauth2/token
@@ -384,6 +442,7 @@ components:
             sfcc.shopper-experience.pages: Shopper Experience scope READONLY for pages
             sfcc.shopper-experience.contents: Shopper Experience scope READONLY for contents
             sfcc.shopper-experience.folders: Shopper Experience scope READONLY for folders
+            sfcc.shopper-experience.qualifiers: Shopper Experience scope for resolving qualifiers
   schemas:
     OrganizationId:
       description: An identifier for the organization the request is being made by
@@ -915,6 +974,127 @@ components:
       required:
         - data
       type: object
+    DataBindingRequirement:
+      description: A data binding requirement specifying a provider type and record identifier to resolve.
+      properties:
+        type:
+          title: Type
+          description: The data provider type identifier.
+          type: string
+          minLength: 1
+          maxLength: 256
+          example: content_asset
+        id:
+          title: ID
+          description: The record identifier to resolve from the data provider.
+          type: string
+          minLength: 1
+          maxLength: 256
+          example: homepage-banner
+      required:
+        - type
+        - id
+      type: object
+    ResolvedDataBinding:
+      description: A resolved data binding object containing arbitrary key-value pairs returned by the data provider for a specific record. The shape of the object is determined by the data provider and may include any user-defined fields.
+      type: object
+      additionalProperties: true
+      example:
+        title: Winter Sale
+        body: <div>Shop our winter collection</div>
+        c_showCountdown: true
+        c_endDate: "2026-03-31T23:59:59Z"
+    CampaignQualifier:
+      description: A campaign and promotion pair to resolve qualification for.
+      properties:
+        campaignId:
+          title: Campaign ID
+          description: The identifier of the campaign.
+          type: string
+          minLength: 1
+          maxLength: 256
+          example: my-campaign
+        promotionId:
+          title: Promotion ID
+          description: The identifier of the promotion within the campaign.
+          type: string
+          minLength: 1
+          maxLength: 256
+          example: my-promotion
+      required:
+        - campaignId
+        - promotionId
+      type: object
+    QualifierResolveRequest:
+      description: Request body for resolving customer group qualifications, campaign promotion eligibility, and data bindings. All fields are optional. An empty body is valid and returns an empty response.
+      properties:
+        customerGroups:
+          title: Customer Groups
+          description: List of customer group identifiers to resolve qualification for.
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 256
+            example: VIP
+          maxItems: 50
+          example:
+            - VIP
+        campaignQualifiers:
+          title: Campaign Qualifiers
+          description: List of campaign and promotion pairs to resolve qualification for.
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignQualifier'
+          maxItems: 50
+        dataBindings:
+          title: Data Bindings
+          description: List of data binding requirements to resolve, each specifying a provider type and record identifier.
+          type: array
+          items:
+            $ref: '#/components/schemas/DataBindingRequirement'
+          maxItems: 50
+      type: object
+    QualifierResolveResponse:
+      description: Response containing the resolved qualification results for customer groups, campaign qualifiers, and data bindings.
+      properties:
+        customerGroups:
+          title: Customer Groups
+          description: Map of customer group identifiers to their qualification status. True if the user is qualified, false otherwise.
+          type: object
+          additionalProperties:
+            type: boolean
+            example: true
+          example:
+            VIP: true
+        campaignQualifiers:
+          title: Campaign Qualifiers
+          description: Map of campaign identifiers to a map of promotion identifiers and their qualification status. True if the user is applicable, false otherwise.
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: boolean
+              example: false
+          example:
+            my-campaign:
+              my-promotion: false
+        dataBindings:
+          title: Data Bindings
+          description: Resolved data binding objects grouped by provider type, then by record identifier. Used by the expression resolver to evaluate attribute expressions.
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/ResolvedDataBinding'
+          example:
+            content_asset:
+              homepage-banner:
+                title: Winter Sale
+                body: <div>Shop our winter collection</div>
+                c_showCountdown: true
+                c_endDate: "2026-03-31T23:59:59Z"
+      type: object
   parameters:
     organizationId:
       description: An identifier for the organization the request is being made by
@@ -1376,6 +1556,55 @@ components:
             pageDescription: SEO description for category folder
             pageKeywords: category, products, listing
             folders: []
+    QualifierResolveRequest:
+      value:
+        customerGroups:
+          - VIP
+        campaignQualifiers:
+          - campaignId: my-campaign
+            promotionId: my-promotion
+        dataBindings:
+          - type: content_asset
+            id: homepage-banner
+    QualifierResolveResponse:
+      value:
+        customerGroups:
+          VIP: true
+        campaignQualifiers:
+          my-campaign:
+            my-promotion: false
+        dataBindings:
+          content_asset:
+            homepage-banner:
+              title: Winter Sale
+              body: <div>Shop our winter collection</div>
+              c_showCountdown: true
+              c_endDate: "2026-03-31T23:59:59Z"
+    QualifierResolveBadRequest:
+      value:
+        title: Bad Request
+        type: https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request
+        detail: Invalid request body. The 'campaignQualifiers' array contains entries missing required fields 'campaignId' or 'promotionId'.
+    QualifierResolveTooManyItems:
+      value:
+        title: Bad Request
+        type: https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request
+        detail: '''campaignQualifiers'' violates the value constraint. The expected value is between ''(0..50)''.'
+    QualifierResolveInvalidIdentifier:
+      value:
+        title: Bad Request
+        type: https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request
+        detail: Invalid request body. The 'customerGroups' array contains empty or invalid identifiers.
+    QualifierResolveInvalidDataBindingType:
+      value:
+        title: Bad Request
+        type: https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request
+        detail: Invalid request body. The 'dataBindings' array contains entries missing the required 'type' field.
+    QualifierResolveInvalidDataBindingId:
+      value:
+        title: Bad Request
+        type: https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request
+        detail: Invalid request body. The 'dataBindings' array contains entries missing the required 'id' field.
   responses:
     401unauthorized:
       description: Your access token is invalid or expired and can’t be used to identify a user.

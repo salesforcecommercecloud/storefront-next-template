@@ -17,13 +17,13 @@
 import { DataStore } from '@salesforce/mrt-utilities/middleware';
 import { hasMrtEnvironment, isDevelopmentEnvironment, tryImportLocalProvider } from './utils';
 
-export type DataStoreEntry = {
-    value?: unknown;
+export type DataStoreEntry<TValue = unknown> = {
+    value?: TValue;
 };
 
 export type DataStoreProvider = {
     kind: 'mrt' | 'local';
-    getEntry: (key: string) => Promise<DataStoreEntry | null>;
+    getEntry: <TValue = unknown>(key: string) => Promise<DataStoreEntry<TValue> | null>;
 };
 
 let providerPromise: Promise<DataStoreProvider> | null = null;
@@ -73,7 +73,8 @@ export function getDefaultDataStoreProvider(): Promise<DataStoreProvider> {
 function createMrtDataStoreProvider(): DataStoreProvider {
     return {
         kind: 'mrt',
-        getEntry: async (key) => (await DataStore.getDataStore().getEntry(key)) as DataStoreEntry | null,
+        getEntry: async <TValue = unknown>(key: string) =>
+            (await DataStore.getDataStore().getEntry(key)) as DataStoreEntry<TValue> | null,
     };
 }
 

@@ -110,6 +110,7 @@ export type AppConfig = {
         googleCloudAPI: {
             apiKey: string;
         };
+        mrtBasedPageDesignerResolution: boolean;
     };
     global: {
         branding: {

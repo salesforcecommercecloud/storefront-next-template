@@ -51,13 +51,19 @@ export interface PageManifest {
             };
             /** Data binding metadata for this component, or `null` if not bound. */
             dataBinding?: ComponentDataBinding | null;
-        };
-    };
-    /** Region-level configuration extracted from the page layout, keyed by region ID. */
-    regionInfo: {
-        [regionId: string]: {
-            /** Maximum number of visible components to render in this region, or `null` for no limit. */
-            maxComponents: number | null;
+            /** Region-level configuration (e.g. maxComponents limits), keyed by region ID. */
+            regions: {
+                [regionId: string]: {
+                    /** The name of the region. */
+                    name: string;
+                    /** The component type exclusions for the region. */
+                    componentTypeExclusions: string[] | null;
+                    /** The component type inclusions for the region. */
+                    componentTypeInclusions: string[] | null;
+                    /** Maximum number of visible components to render in this region, or `null` for no limit. */
+                    maxComponents: number | null;
+                };
+            };
         };
     };
 }
@@ -117,12 +123,7 @@ export interface ComponentDataBinding {
  * the specific promotion within it must be active in the shopper's context for
  * the qualifier to match.
  */
-export interface CampaignQualifier {
-    /** The campaign identifier. */
-    campaignId: string;
-    /** The promotion identifier within the campaign. */
-    promotionId: string;
-}
+export type CampaignQualifier = ShopperExperience.schemas['CampaignQualifier'];
 
 /**
  * Metadata extracted from all variation rules in a {@link PageManifest}. Lists
@@ -146,12 +147,7 @@ export interface PageManifestContext {
  * These requirements are hoisted into {@link PageManifestContext} so MRT can
  * request all required external data in a single batch during context resolution.
  */
-export interface DataBindingRequirement {
-    /** The data provider type (e.g. `"content_asset"`, `"product"`, `"personalization"`). */
-    type: string;
-    /** The UUID or identifier of the specific record. */
-    id: string;
-}
+export type DataBindingRequirement = ShopperExperience.schemas['DataBindingRequirement'];
 
 /**
  * A single page variation within a {@link PageManifest}. Each variation holds
@@ -203,43 +199,14 @@ export interface VisibilityRuleDef {
  * Passed to {@link validateRule} to evaluate visibility rules. This context
  * is typically resolved lazily — only fetched when a rule actually needs it.
  */
-export interface QualifierContext {
-    /**
-     * Active campaign qualifiers. Outer key is campaign ID, inner key is
-     * promotion ID. A value of `true` means the qualifier is active.
-     */
-    campaignQualifiers: {
-        [campaignId: string]: {
-            [promotionId: string]: boolean;
-        };
-    };
-    /**
-     * Customer group memberships. Key is the customer group ID, value of
-     * `true` means the shopper belongs to that group.
-     */
-    customerGroups: {
-        [customerGroupId: string]: boolean;
-    };
-    /**
-     * Resolved data binding objects returned from context resolution. Grouped
-     * by provider type, then by record ID. The `ExpressionResolver` uses this
-     * to evaluate attribute expressions like `content_asset.body`.
-     */
-    dataBindings?: {
-        [type: string]: {
-            [id: string]: ResolvedDataBinding;
-        };
-    };
-}
+export type QualifierContext = ShopperExperience.schemas['QualifierResolveResponse'];
 
 /**
  * A resolved data binding object containing the fields returned by the data
  * provider for a specific record. For example, a resolved `content_asset`
  * might contain `{ title: "Winter Sale", body: "<div>…</div>" }`.
  */
-export interface ResolvedDataBinding {
-    [field: string]: unknown;
-}
+export type ResolvedDataBinding = ShopperExperience.schemas['ResolvedDataBinding'];
 
 /**
  * The type of identifier used to look up a page. Determines how the ID is
@@ -256,13 +223,13 @@ export type IdentifierType = 'page' | 'category' | 'product';
  * filesystem, CDN, database).
  */
 export interface ManifestStorage {
-    /** Fetch the page manifest for a given page ID and locale. */
-    getPageManifest(id: string, locale: string): Promise<PageManifest>;
+    /** Fetch the page manifest for a given page ID. */
+    getPageManifest(id: string): Promise<PageManifest | null>;
     /** Fetch the site-wide manifest for a given locale. */
-    getSiteManifest(locale: string): Promise<SiteManifest>;
+    getSiteManifest(): Promise<SiteManifest | null>;
 }
 
-export type ContextResolver = (context: PageManifest['context']) => Promise<QualifierContext>;
+export type ContextResolver = (context: PageManifest['context']) => Promise<QualifierContext | null>;
 
 export type VisitorContextType = 'page' | 'region' | 'component' | 'root';
 

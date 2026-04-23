@@ -161,5 +161,5 @@ async function tryImportLocalProvider() {
 }
 
 //#endregion
-export { createDataStoreMiddleware as n, createDataStoreContext as t };
+export { createDataStoreMiddleware as n, getDefaultDataStoreProvider as r, createDataStoreContext as t };
 //# sourceMappingURL=utils.js.map

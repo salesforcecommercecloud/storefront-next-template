@@ -19,6 +19,7 @@ import { createApiClients } from './api-clients';
 import { authContext } from '@/middlewares/auth.utils';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { SessionData } from '@/lib/api/types';
+import { scapiMiddlewareContext } from './scapi-middleware';
 
 const scapiMocks = vi.hoisted(() => {
     const mockUse = vi.fn();
@@ -155,6 +156,8 @@ describe('createApiClients', () => {
             },
             locale: { id: 'en-US', preferredCurrency: 'USD' },
         } as never);
+
+        mockContextProvider.set(scapiMiddlewareContext, []);
 
         // Get mocked functions
         const configModule = await import('@salesforce/storefront-next-runtime/config');

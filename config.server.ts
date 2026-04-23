@@ -218,6 +218,7 @@ export default defineConfig<Config>(
                 googleCloudAPI: {
                     apiKey: '',
                 },
+                mrtBasedPageDesignerResolution: false,
             },
             // Internationalization configuration
             // See CONFIG-OPTIONS.md#i18n for detailed documentation

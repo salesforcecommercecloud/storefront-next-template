@@ -63,7 +63,7 @@ export function validateRule(rule: VisibilityRuleDef, locale: string, context?: 
     // paths, mirroring the server's if/else-if branching.
     if (rule.campaignQualifiers) {
         for (const campaignQualifier of rule.campaignQualifiers) {
-            if (!context?.campaignQualifiers[campaignQualifier.campaignId]?.[campaignQualifier.promotionId]) {
+            if (!context?.campaignQualifiers?.[campaignQualifier.campaignId]?.[campaignQualifier.promotionId]) {
                 return false;
             }
         }
@@ -97,7 +97,7 @@ export function validateRule(rule: VisibilityRuleDef, locale: string, context?: 
 
         if (rule.customerGroups) {
             for (const customerGroup of rule.customerGroups) {
-                if (!context?.customerGroups[customerGroup]) {
+                if (!context?.customerGroups?.[customerGroup]) {
                     return false;
                 }
             }

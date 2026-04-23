@@ -29,8 +29,6 @@ export interface PageProcessorContext {
     qualifiers: QualifierContext | null;
     /** Component visibility rule definitions extracted from the page layout. */
     componentInfo: PageManifest['componentInfo'];
-    /** Region-level configuration (e.g. maxComponents limits), keyed by region ID. */
-    regionInfo: PageManifest['regionInfo'];
     /** The locale to use when resolving locale-specific component content (e.g. `"en_US"`). */
     locale: string;
     /**
@@ -99,7 +97,8 @@ export function processPage(
 ): ShopperExperience.schemas['Page'] {
     return transformPage(page, {
         visitRegion(ctx) {
-            const regionInfo = processorContext.regionInfo[ctx.node.id];
+            const componentInfo = ctx.parentComponent ? processorContext.componentInfo[ctx.parentComponent.id] : null;
+            const regionInfo = componentInfo?.regions?.[ctx.node.id];
             const pruneInvisible = processorContext.pruneInvisible ?? true;
 
             // Visit each component first — this runs visitComponent which

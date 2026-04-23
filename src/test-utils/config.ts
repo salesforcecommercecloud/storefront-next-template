@@ -127,6 +127,7 @@ export const mockBuildConfig: Config = {
             shopperContext: {
                 enabled: false,
             },
+            mrtBasedPageDesignerResolution: false,
         },
         hybrid: {
             enabled: false,
