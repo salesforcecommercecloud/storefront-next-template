@@ -155,36 +155,6 @@ describe('AddressModal', () => {
         expect(screen.queryByPlaceholderText(/e\.g\., Home, Work/i)).not.toBeInTheDocument();
     });
 
-    test('generates addressId via callback when not shown', async () => {
-        const user = userEvent.setup();
-        const onSave = vi.fn();
-        const generateAddressId = vi.fn((first: string, last: string) => `Delivery ${first} ${last}`);
-
-        render(
-            <AddressModal
-                open={true}
-                onOpenChange={vi.fn()}
-                onSave={onSave}
-                generateAddressId={generateAddressId}
-                countryCode="US"
-            />
-        );
-
-        await user.type(screen.getByPlaceholderText(/first name/i), 'John');
-        await user.type(screen.getByPlaceholderText(/last name/i), 'Doe');
-        await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '123 Main St');
-        await user.type(screen.getByRole('textbox', { name: /city/i }), 'Seattle');
-        await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'WA');
-        await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '98101');
-
-        await user.click(screen.getByRole('button', { name: /^save$/i }));
-
-        await waitFor(() => {
-            expect(onSave).toHaveBeenCalledTimes(1);
-        });
-        expect(onSave.mock.calls[0][0].addressId).toBe('Delivery John Doe');
-    });
-
     test('populates form fields from defaultValues', () => {
         render(
             <AddressModal

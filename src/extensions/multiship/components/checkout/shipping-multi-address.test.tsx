@@ -877,6 +877,60 @@ describe('ShippingMultiAddress', () => {
             }
         });
 
+        test('assigns auto-generated addressId when saving address without customerId', async () => {
+            const user = userEvent.setup();
+            const mockProductItems: ShopperBasketsV2.schemas['ProductItem'][] = [
+                {
+                    itemId: 'item-1',
+                    productId: 'product-1',
+                    productName: 'Test Product',
+                    quantity: 1,
+                    price: 29.99,
+                },
+            ];
+
+            useBasket.mockReturnValue({
+                basketId: 'test-basket',
+                currency: 'USD',
+                productItems: mockProductItems,
+            });
+
+            // No customerId — showAddressId will be false, addressId field is hidden
+            useCustomerProfile.mockReturnValue({
+                addresses: [],
+                paymentInstruments: [],
+            });
+
+            render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
+
+            const addAddressButton = screen.getAllByText('+ Add New Address');
+            await user.click(addAddressButton[0]);
+
+            // addressId field should NOT be visible
+            expect(screen.queryByPlaceholderText(/e\.g\., Home, Work/i)).not.toBeInTheDocument();
+
+            await user.type(screen.getByPlaceholderText(/first name/i), 'Jane');
+            await user.type(screen.getByPlaceholderText(/last name/i), 'Doe');
+            await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '789 New St');
+            await user.type(screen.getByPlaceholderText(/city/i), 'Seattle');
+            await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'WA');
+            await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '98101');
+            await user.type(screen.getByRole('textbox', { name: /phone/i }), '2065551234');
+
+            await user.click(screen.getByRole('button', { name: 'Save' }));
+
+            await waitFor(() => {
+                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
+            });
+
+            // The address should appear in the dropdown with an auto-generated addr_ id
+            const select = screen.getByTestId('delivery-address-select-item-1');
+            const options = within(select).getAllByRole('option');
+            const newAddressOption = options.find((opt) => opt.textContent?.includes('Jane Doe'));
+            expect(newAddressOption).toBeTruthy();
+            expect(newAddressOption?.getAttribute('value')).toMatch(/^addr_/);
+        });
+
         test('resets form when dialog is closed and reopened', async () => {
             const user = userEvent.setup();
             const mockProductItems: ShopperBasketsV2.schemas['ProductItem'][] = [

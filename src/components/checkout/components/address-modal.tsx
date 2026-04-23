@@ -104,8 +104,6 @@ export interface AddressModalProps {
      * and country-specific postal code format is validated.
      */
     strictValidation?: boolean;
-    /** Optional fallback generator for addressId when it's empty or not shown */
-    generateAddressId?: (firstName: string, lastName: string) => string;
     /**
      * When provided, the modal delegates close-on-save to the parent.
      * Buttons are disabled and the save button shows "Saving..." while true.
@@ -132,7 +130,6 @@ export function AddressModal({
     showCountry = true,
     labelsAsPlaceholders = false,
     strictValidation = false,
-    generateAddressId,
     isLoading,
 }: AddressModalProps) {
     const { t } = useTranslation('checkout');
@@ -202,11 +199,6 @@ export function AddressModal({
 
     const handleSave = (formData: Partial<ShopperCustomers.schemas['CustomerAddress']>) => {
         const data = formData as ShopperCustomers.schemas['CustomerAddress'] & { phoneCountryCode?: string };
-        let addressId = data.addressId.trim();
-        if (!addressId && generateAddressId) {
-            addressId = generateAddressId(data.firstName ?? '', data.lastName ?? '');
-        }
-
         // Combine phoneCountryCode and phone into a single phone field
         const phone =
             data.phone && data.phoneCountryCode ? `${data.phoneCountryCode} ${data.phone}`.trim() : data.phone || '';
@@ -217,7 +209,6 @@ export function AddressModal({
 
         const result: ShopperCustomers.schemas['CustomerAddress'] = {
             ...addressData,
-            addressId,
             phone,
         };
 

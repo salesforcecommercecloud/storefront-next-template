@@ -58,6 +58,7 @@ import {
     initializeItemAddresses,
 } from '@/extensions/multiship/lib/multi-address';
 import { getAddressKey, formatAddress } from '@/lib/address-utils';
+import { generateAddressId } from '@/lib/address-id-utils';
 import { AddressModal } from '@/components/checkout/components/address-modal';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import type { CheckoutActionData } from '@/components/checkout/types';
@@ -324,15 +325,17 @@ export default function ShippingMultiAddress({
 
     // Handle adding new address to each product item
     const handleAddAddress = (newAddress: ShopperCustomers.schemas['CustomerAddress']) => {
+        const address = newAddress.addressId?.trim() ? newAddress : { ...newAddress, addressId: generateAddressId() };
+
         // Remember the new address
-        const addressKey = getAddressKey(newAddress);
-        rememberedAddresses.current.set(addressKey, newAddress);
+        const addressKey = getAddressKey(address);
+        rememberedAddresses.current.set(addressKey, address);
 
         // If currentItemId is set, assign the address to that item
         if (currentItemId) {
             setItemAddresses((prev) => {
                 const newMap = new Map(prev);
-                newMap.set(currentItemId, newAddress);
+                newMap.set(currentItemId, address);
                 return newMap;
             });
 
@@ -342,7 +345,7 @@ export default function ShippingMultiAddress({
                 if (itemId && !itemAddresses.has(itemId)) {
                     setItemAddresses((prev) => {
                         const newMap = new Map(prev);
-                        newMap.set(itemId, newAddress);
+                        newMap.set(itemId, address);
                         return newMap;
                     });
                 }
@@ -514,12 +517,6 @@ export default function ShippingMultiAddress({
                 showAddressId={!!customerProfile?.customer?.customerId}
                 showPhone={true}
                 strictValidation={true}
-                generateAddressId={(firstName, lastName) =>
-                    tMultiship('checkout.addressForm.deliveryAddressIdFallback', {
-                        firstName: firstName.trim(),
-                        lastName: lastName.trim(),
-                    }).trim()
-                }
             />
         </>
     );
