@@ -57,7 +57,6 @@ const enableReadableChunkNames = enableBundlesizeCheck || enableBundlesizeAnalyz
 
 /**
  * @see {@link https://vite.dev/config/}
- * @see {@link https://github.com/http-party/node-http-proxy?tab=readme-ov-file#modify-response}
  */
 export default defineConfig(({ mode }) => {
     // Load environment variables with PUBLIC_ prefix for client-side config
@@ -66,17 +65,15 @@ export default defineConfig(({ mode }) => {
     const shortCode = environment.PUBLIC__app__commerce__api__shortCode;
     const scapiProxyHost = process.env.SCAPI_PROXY_HOST;
 
-    // Only validate shortCode in development mode (when dev proxy is used) and no proxyHost override
+    // Only validate shortCode in development mode and no proxyHost override
     if (!shortCode && !scapiProxyHost && mode === 'development') {
         throw new Error(
-            'Missing required Commerce API short code for Vite dev proxy.\n\n' +
+            'Missing required Commerce API short code.\n\n' +
                 'Set PUBLIC__app__commerce__api__shortCode in your .env file:\n' +
                 '  PUBLIC__app__commerce__api__shortCode=your-short-code\n\n' +
                 'See .env.default for a complete example.'
         );
     }
-
-    const target = scapiProxyHost || (shortCode && `https://${shortCode}.api.commercecloud.salesforce.com`);
 
     const localProviderPath = resolve(__dirname, '../storefront-next-dev/dist/data-store/local-provider.js');
     const mrtUtilitiesPath = resolve(
@@ -256,61 +253,6 @@ export default defineConfig(({ mode }) => {
                 ],
                 reportOnFailure: true,
                 thresholds: coverageConfigThresholds,
-            },
-        },
-        server: {
-            proxy: {
-                // Development-only: Page proxy with local fallback
-                ...(mode === 'development' && {
-                    '^/mobify/proxy/api/experience/shopper-experience/.*/pages': {
-                        target,
-                        changeOrigin: true,
-                        secure: !scapiProxyHost,
-                        rewrite: (path) => path.replace(/^\/mobify\/proxy/, ''),
-                        selfHandleResponse: true,
-                        configure: (proxy, _options) => {
-                            proxy.on('proxyReq', (proxyReq, req) => {
-                                console.log(
-                                    '🔄 Proxying request:',
-                                    req.method,
-                                    req.url,
-                                    '→',
-                                    `${String(proxyReq.getHeader('host'))}${proxyReq.path}`
-                                );
-                            });
-                            proxy.on('proxyRes', (proxyRes, req, res) => {
-                                const chunks: Buffer[] = [];
-                                proxyRes.on('data', (chunk) => chunks.push(chunk));
-                                proxyRes.on('end', () => {
-                                    const body = Buffer.concat(chunks);
-
-                                    if (
-                                        typeof proxyRes.statusCode === 'number' &&
-                                        proxyRes.statusCode >= 200 &&
-                                        proxyRes.statusCode <= 399
-                                    ) {
-                                        console.log('✅ Proxy response:', proxyRes.statusCode, req.url);
-                                        // Pass through successful response
-                                        res.statusCode = proxyRes.statusCode;
-                                        Object.entries(proxyRes.headers).forEach(([k, v]) => v && res.setHeader(k, v));
-                                        res.end(body);
-                                    } else {
-                                        const bodyStr = body.toString();
-                                        console.log('❌ Fetch page error:', proxyRes.statusCode, req.url, bodyStr);
-
-                                        // No fallback available, return original error
-                                        res.statusCode = proxyRes.statusCode || 404;
-                                        Object.entries(proxyRes.headers).forEach(([k, v]) => v && res.setHeader(k, v));
-                                        res.end(body);
-                                    }
-                                });
-                            });
-                            proxy.on('error', (err, req) => {
-                                console.error('❌ Fetch Page error:', err.message, req.url);
-                            });
-                        },
-                    },
-                }),
             },
         },
     };
