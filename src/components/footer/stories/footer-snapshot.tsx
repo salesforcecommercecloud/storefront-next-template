@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
-
-type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
-type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
-
-const fetcherMock = {
-    data: null,
-    state: 'idle',
-
-    submit: () => {},
-    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
-};
+import React from 'react';
 
 vi.mock('react-router', () => ({
     createContext: vi.fn().mockImplementation(() => ({})),
-    useFetcher: () => fetcherMock,
+    useFetcher: () => ({
+        data: null,
+        state: 'idle',
+        submit: () => {},
+        Form: (props: React.PropsWithChildren<Record<string, unknown>>) => <form {...props}>{props.children}</form>,
+    }),
     useFetchers: () => [],
-
     useNavigate: () => () => {},
     useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
     useNavigation: () => ({
@@ -38,7 +32,7 @@ vi.mock('react-router', () => ({
         location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
     }),
     useSearchParams: () => [new URLSearchParams(), vi.fn()],
-    Link: (props: MockLinkProps) => {
+    Link: (props: React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>) => {
         const { to, href, children, ...rest } = props ?? {};
         return (
             <a href={to ?? href} {...rest}>
@@ -46,21 +40,29 @@ vi.mock('react-router', () => ({
             </a>
         );
     },
+    createMemoryRouter: vi.fn(),
+    RouterProvider: ({ router }: { router: { routes: Array<{ element?: React.ReactNode }> } }) => (
+        <div>{router.routes[0]?.element ?? null}</div>
+    ),
 }));
 vi.mock('react-router-dom', async (importOriginal) => {
     const actual = await importOriginal<object>();
     return {
         ...actual,
-        useFetcher: () => fetcherMock,
+        useFetcher: () => ({
+            data: null,
+            state: 'idle',
+            submit: () => {},
+            Form: (props: React.PropsWithChildren<Record<string, unknown>>) => <form {...props}>{props.children}</form>,
+        }),
         useFetchers: () => [],
-
         useNavigate: () => () => {},
         useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
         useNavigation: () => ({
             state: 'idle',
             location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
         }),
-        Link: (props: MockLinkProps) => {
+        Link: (props: React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>) => {
             const { to, href, children, ...rest } = props ?? {};
             return (
                 <a href={to ?? href} {...rest}>
@@ -78,18 +80,18 @@ vi.mock('@/components/toast', () => ({
 
 
 vi.mock('@/components/link', () => ({
-    Link: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
-        const { to, children, ...rest } = props ?? {};
+    Link: (props: React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>) => {
+        const { to, href, children, ...rest } = props ?? {};
         return (
-            <a href={typeof to === 'string' ? to : undefined} {...rest}>
+            <a href={to ?? href} {...rest}>
                 {children}
             </a>
         );
     },
-    NavLink: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
-        const { to, children, ...rest } = props ?? {};
+    NavLink: (props: React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>) => {
+        const { to, href, children, ...rest } = props ?? {};
         return (
-            <a href={typeof to === 'string' ? to : undefined} {...rest}>
+            <a href={to ?? href} {...rest}>
                 {children}
             </a>
         );
@@ -117,6 +119,14 @@ vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
     useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
 }));
 
+vi.mock('@/components/locale-switcher', () => ({
+    default: () => <select aria-label="Select locale"><option>English (UK)</option></select>,
+}));
+
+vi.mock('@/components/currency-switcher', () => ({
+    default: () => <select aria-label="Select currency"><option>GBP</option></select>,
+}));
+
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
     const actual = await importOriginal<object>();
     return {
@@ -142,6 +152,10 @@ afterEach(() => {
 
 describe('Footer stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
+        // Skip stories that have snapshot: false in their parameters
+        if (Story.parameters?.snapshot === false) {
+            continue;
+        }
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);
             expect(container.firstChild).toMatchSnapshot();

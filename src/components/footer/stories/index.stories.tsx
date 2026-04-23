@@ -359,6 +359,18 @@ export const MobileView: Story = {
     },
 };
 
+export const NonHomepage: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'Footer on non-homepage routes (product, cart, category pages). Newsletter section should be hidden on actual routes, but Storybook always renders in homepage context. See unit tests in footer.test.tsx for non-homepage behavior verification.',
+            },
+        },
+        snapshot: false, // Skip snapshot test - not representative of actual non-homepage behavior
+    },
+    tags: [], // Remove 'interaction' tag to skip interaction tests in CI
+};
+
 export const DarkBackground: Story = {
     render: () => (
         <ConfigProvider config={mockConfig}>

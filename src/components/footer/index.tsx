@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Suspense, type ReactElement } from 'react';
-import { Await } from 'react-router';
+import { Await, useLocation } from 'react-router';
 import { Link } from '@/components/link';
 import { SiFacebook, SiInstagram, SiX, SiYoutube } from '@icons-pack/react-simple-icons';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
@@ -24,6 +24,9 @@ import { useTranslation } from 'react-i18next';
 import LocaleSwitcher from '@/components/locale-switcher';
 import CurrencySwitcher from '@/components/currency-switcher';
 import logo from '/images/logo.svg';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-context';
+import type { AppConfig } from '@/types/config';
 
 interface FooterProps {
     categories?: Promise<ShopperProducts.schemas['Category']>;
@@ -32,6 +35,15 @@ interface FooterProps {
 
 export default function Footer({ categories, variant = 'full' }: FooterProps): ReactElement {
     const { t } = useTranslation('footer');
+    const location = useLocation();
+    const config = useConfig<AppConfig>();
+
+    // Check if we're on the homepage by stripping the site context prefix pattern
+    // stripPathPrefix works directly with URL patterns - no need to resolve them first
+    const pathWithoutPrefix = stripPathPrefix(location.pathname, config.url?.prefix || '');
+
+    // Homepage is when the path (after removing prefix) is empty or just "/"
+    const isHomepage = pathWithoutPrefix === '/';
 
     if (variant === 'checkout') {
         return (
@@ -57,16 +69,18 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
 
     return (
         <footer className="mt-auto">
-            {/* Prominent Newsletter Section (Black Background) */}
-            <div className="bg-primary text-primary-foreground py-12 md:py-16 section-container">
-                <div className="max-w-2xl mx-auto text-center">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('newsletter.title')}</h2>
-                    <p className="text-base md:text-lg mb-6 opacity-90">{t('newsletter.description')}</p>
-                    <div className="flex justify-center">
-                        <Signup />
+            {/* Prominent Newsletter Section (Black Background) - Homepage Only */}
+            {isHomepage && (
+                <div className="bg-primary text-primary-foreground py-12 md:py-16 section-container">
+                    <div className="max-w-2xl mx-auto text-center">
+                        <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('newsletter.title')}</h2>
+                        <p className="text-base md:text-lg mb-6 opacity-90">{t('newsletter.description')}</p>
+                        <div className="flex justify-center">
+                            <Signup />
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Footer Links Section (Light Background) */}
             <div className="bg-footer-background py-12 section-container">
