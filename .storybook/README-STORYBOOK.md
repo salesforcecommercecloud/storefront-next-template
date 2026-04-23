@@ -76,8 +76,23 @@ src/
 │       └── ...
 └── .storybook/
     ├── main.ts
-    └── preview.ts
+    ├── vite.config.ts
+    ├── shims/
+    │   └── shopper-agent-context-ui.ts   # Storybook-only (see below)
+    └── preview.tsx
 ```
+
+### Production vs Storybook: `shopper-agent-context-ui` shim
+
+PDP FAQ and the account Need Help **Ask a question** action are gated in production by `src/lib/shopper-agent-context-ui.ts`. Storybook still needs those UIs to show up in stories without changing production defaults.
+
+**What we do:** `.storybook/vite.config.ts` adds a resolve alias so `@/lib/shopper-agent-context-ui` points at `.storybook/shims/shopper-agent-context-ui.ts` when Storybook builds. That shim implements `isShopperAgentContextUiEnabled()` as `true` while the production file returns the real `SHOPPER_AGENT_CONTEXT_UI_ENABLED` constant. The storefront `vite build` and Vitest unit tests resolve the normal `src/lib/` module — no Storybook branching in shipped code.
+
+**Why not `globalThis` in production utilities?** Putting Storybook detection in shared runtime code mixes concerns, invites duplicated magic strings (`preview.tsx`, tests, utils), and adds an unnecessary branch on every call.
+
+**Why not environment variables for “am I Storybook?”** An `import.meta.env.STORYBOOK`-style flag would still require production modules to depend on Storybook-specific keys or strip them carefully in prod builds. Env is also easier to get wrong across CI, Managed Runtime, and local dev. A **build-time module alias** limits the override to the Storybook bundle only.
+
+**Unit tests:** Mock `@/lib/shopper-agent-context-ui` when you need context UI enabled; otherwise imports use the real module (`false` until you change the constant).
 
 ## Creating Stories
 

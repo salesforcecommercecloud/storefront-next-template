@@ -260,6 +260,46 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
       class="p-6"
       data-slot="card-content"
     >
+      <h2
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-2"
+      >
+        Need Help?
+      </h2>
+      <p
+        class="text-sm text-muted-foreground mb-4"
+      >
+        We're here to assist you with any questions or concerns
+      </p>
+      <div
+        class="flex flex-wrap gap-3"
+      >
+        <button
+          class="justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
+          data-size="default"
+          data-slot="button"
+          data-variant="outline"
+        >
+          Contact info
+        </button>
+        <button
+          class="justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
+          data-size="default"
+          data-slot="button"
+          data-variant="outline"
+        >
+          Browse FAQ
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
       <div
         class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
       >
@@ -752,6 +792,46 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
   </div>
   <div
     class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
+      <h2
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-2"
+      >
+        Need Help?
+      </h2>
+      <p
+        class="text-sm text-muted-foreground mb-4"
+      >
+        We're here to assist you with any questions or concerns
+      </p>
+      <div
+        class="flex flex-wrap gap-3"
+      >
+        <button
+          class="justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
+          data-size="default"
+          data-slot="button"
+          data-variant="outline"
+        >
+          Contact info
+        </button>
+        <button
+          class="justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
+          data-size="default"
+          data-slot="button"
+          data-variant="outline"
+        >
+          Browse FAQ
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div
@@ -2674,6 +2754,46 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
   </div>
   <div
     class="bg-card text-card-foreground flex flex-col gap-6 border py-0 rounded-none shadow-none"
+    data-slot="card"
+  >
+    <div
+      class="p-6"
+      data-slot="card-content"
+    >
+      <h2
+        class="text-[length:var(--account-section-header)] font-semibold text-foreground mb-2"
+      >
+        Need Help?
+      </h2>
+      <p
+        class="text-sm text-muted-foreground mb-4"
+      >
+        We're here to assist you with any questions or concerns
+      </p>
+      <div
+        class="flex flex-wrap gap-3"
+      >
+        <button
+          class="justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
+          data-size="default"
+          data-slot="button"
+          data-variant="outline"
+        >
+          Contact info
+        </button>
+        <button
+          class="justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex items-center gap-2 cursor-pointer"
+          data-size="default"
+          data-slot="button"
+          data-variant="outline"
+        >
+          Browse FAQ
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm py-0"
     data-slot="card"
   >
     <div

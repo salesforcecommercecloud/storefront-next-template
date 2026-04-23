@@ -21,29 +21,25 @@ import { SparklesIcon } from '@/components/icons';
 import { openShopperAgent } from '@/components/shopper-agent';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { isShopperAgentContextUiEnabled } from '@/lib/shopper-agent-context-ui';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 
 /**
  * Account Help component
  *
- * Provides quick access to customer support through the shopper agent.
- * Displays three action buttons:
- * - Ask a question: Opens the shopper agent chat window
- * - Contact Info: Label only (non-functional in 262 release)
- * - Browse FAQ: Label only (non-functional in 262 release)
+ * Always shows the Need Help card with Contact info and Browse FAQ. The primary **Ask a question**
+ * control (opens Embedded Messaging) only renders when shopper agent config is valid and
+ * {@link isShopperAgentContextUiEnabled} is true — hidden if config is invalid or the context UI gate is off.
  */
-export function AccountHelp(): ReactElement | null {
+export function AccountHelp(): ReactElement {
     const { t } = useTranslation('account');
     const config = useConfig<AppConfig>();
 
-    // Check if shopper agent is enabled and configured
     const isShopperAgentEnabled =
         (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
         validateShopperAgentConfig(config.commerceAgent);
 
-    if (!isShopperAgentEnabled) {
-        return null;
-    }
+    const showAskQuestionButton = isShopperAgentEnabled && isShopperAgentContextUiEnabled();
 
     const handleAskQuestion = () => {
         openShopperAgent();
@@ -57,13 +53,15 @@ export function AccountHelp(): ReactElement | null {
                 </h2>
                 <p className="text-sm text-muted-foreground mb-4">{t('shopperAgentEntry.description')}</p>
                 <div className="flex flex-wrap gap-3">
-                    <Button
-                        onClick={handleAskQuestion}
-                        variant="default"
-                        className="flex items-center gap-2 cursor-pointer">
-                        <SparklesIcon className="h-4 w-4" />
-                        {t('shopperAgentEntry.askQuestion')}
-                    </Button>
+                    {showAskQuestionButton ? (
+                        <Button
+                            onClick={handleAskQuestion}
+                            variant="default"
+                            className="flex items-center gap-2 cursor-pointer">
+                            <SparklesIcon className="h-4 w-4" />
+                            {t('shopperAgentEntry.askQuestion')}
+                        </Button>
+                    ) : null}
                     <Button variant="outline" className="flex items-center gap-2 cursor-pointer">
                         {t('shopperAgentEntry.contactInfo')}
                     </Button>
