@@ -208,7 +208,7 @@ export default function OrderSummary({
                 <div className="space-y-4" data-testid="sf-order-summary">
                     {showHeading && (
                         <>
-                            <UITarget targetId="checkout.myCart.header.before" />
+                            <UITarget targetId="sfcc.checkout.myCart.header.before" />
                             <Typography
                                 variant="h2"
                                 as="h2"

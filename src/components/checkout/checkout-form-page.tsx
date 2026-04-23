@@ -577,7 +577,7 @@ export default function CheckoutFormPage({
 
     return (
         <div className="min-h-screen bg-background pb-20 lg:pb-0">
-            <UITarget targetId="checkout.page.before" />
+            <UITarget targetId="sfcc.checkout.page.before" />
             <div className="section-container py-8">
                 <Typography variant="h2" as="h1" className="mb-8">
                     {t('pageTitle')}
@@ -621,21 +621,21 @@ export default function CheckoutFormPage({
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Checkout Content - Single Page Layout */}
                     <div className="lg:col-span-2 space-y-6">
-                        <UITarget targetId="checkout.mainContent.before" />
+                        <UITarget targetId="sfcc.checkout.mainContent.before" />
                         {/* Express Payments - Apple Pay, Google Pay, Amazon Pay, PayPal & Venmo (mobile only) */}
-                        <UITarget targetId="checkout.expressPayments.header.before" />
+                        <UITarget targetId="sfcc.checkout.expressPayments.header.before" />
                         <Suspense fallback={<ExpressPaymentsSkeleton />}>
-                            <UITarget targetId="checkout.expressPayments.before" />
-                            <UITarget targetId="checkout.expressPayments">
+                            <UITarget targetId="sfcc.checkout.expressPayments.before" />
+                            <UITarget targetId="sfcc.checkout.expressPayments">
                                 <ExpressPayments separatorText={t('expressPayments.separator')} />
                             </UITarget>
-                            <UITarget targetId="checkout.expressPayments.after" />
+                            <UITarget targetId="sfcc.checkout.expressPayments.after" />
                         </Suspense>
 
-                        <UITarget targetId="checkout.contactInfo.header.before" />
+                        <UITarget targetId="sfcc.checkout.contactInfo.header.before" />
                         <Suspense fallback={<ContactInfoSkeleton />}>
-                            <UITarget targetId="checkout.contactInfo.before" />
-                            <UITarget targetId="checkout.contactInfo">
+                            <UITarget targetId="sfcc.checkout.contactInfo.before" />
+                            <UITarget targetId="sfcc.checkout.contactInfo">
                                 {!cart ? (
                                     <ContactInfoSkeleton />
                                 ) : (
@@ -651,7 +651,7 @@ export default function CheckoutFormPage({
                                     />
                                 )}
                             </UITarget>
-                            <UITarget targetId="checkout.contactInfo.after" />
+                            <UITarget targetId="sfcc.checkout.contactInfo.after" />
                         </Suspense>
 
                         {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
@@ -674,26 +674,30 @@ export default function CheckoutFormPage({
                         {/* Shipping Address & Options */}
                         {showAddressAndOptions && (
                             <>
-                                <UITarget targetId="checkout.shippingAddress.header.before" />
+                                <UITarget targetId="sfcc.checkout.shippingAddress.header.before" />
                                 <Suspense fallback={<ShippingAddressSkeleton />}>
-                                    <UITarget targetId="checkout.shippingAddress.before" />
-                                    <UITarget targetId="checkout.shippingAddress">{shippingAddressComponent}</UITarget>
-                                    <UITarget targetId="checkout.shippingAddress.after" />
+                                    <UITarget targetId="sfcc.checkout.shippingAddress.before" />
+                                    <UITarget targetId="sfcc.checkout.shippingAddress">
+                                        {shippingAddressComponent}
+                                    </UITarget>
+                                    <UITarget targetId="sfcc.checkout.shippingAddress.after" />
                                 </Suspense>
 
-                                <UITarget targetId="checkout.shippingOptions.header.before" />
+                                <UITarget targetId="sfcc.checkout.shippingOptions.header.before" />
                                 <Suspense fallback={<ShippingOptionsSkeleton />}>
-                                    <UITarget targetId="checkout.shippingOptions.before" />
-                                    <UITarget targetId="checkout.shippingOptions">{shippingOptionsComponent}</UITarget>
-                                    <UITarget targetId="checkout.shippingOptions.after" />
+                                    <UITarget targetId="sfcc.checkout.shippingOptions.before" />
+                                    <UITarget targetId="sfcc.checkout.shippingOptions">
+                                        {shippingOptionsComponent}
+                                    </UITarget>
+                                    <UITarget targetId="sfcc.checkout.shippingOptions.after" />
                                 </Suspense>
                             </>
                         )}
 
-                        <UITarget targetId="checkout.payment.header.before" />
+                        <UITarget targetId="sfcc.checkout.payment.header.before" />
                         <Suspense fallback={<PaymentSkeleton />}>
-                            <UITarget targetId="checkout.payment.before" />
-                            <UITarget targetId="checkout.payment">
+                            <UITarget targetId="sfcc.checkout.payment.before" />
+                            <UITarget targetId="sfcc.checkout.payment">
                                 <Payment
                                     onSubmit={handlePaymentSubmit}
                                     isLoading={isSubmitting('payment')}
@@ -704,7 +708,7 @@ export default function CheckoutFormPage({
                                     {...paymentState}
                                 />
                             </UITarget>
-                            <UITarget targetId="checkout.payment.after" />
+                            <UITarget targetId="sfcc.checkout.payment.after" />
                         </Suspense>
 
                         {/* Place Order Section — hide when editing any step except Payment
@@ -714,8 +718,8 @@ export default function CheckoutFormPage({
                                 {/* Create Account Option - Show for guest users when Place Order is visible (step >= PAYMENT) */}
                                 {step >= STEPS.PAYMENT && (
                                     <div className="w-full">
-                                        <UITarget targetId="checkout.createAccount.before" />
-                                        <UITarget targetId="checkout.createAccount">
+                                        <UITarget targetId="sfcc.checkout.createAccount.before" />
+                                        <UITarget targetId="sfcc.checkout.createAccount">
                                             <GuestAccountCreation
                                                 cart={cart}
                                                 customerProfile={customerProfile}
@@ -727,7 +731,7 @@ export default function CheckoutFormPage({
                                                 hideCreateAccountOption={hideCreateAccountAfterSkippedPasswordlessOtp}
                                             />
                                         </UITarget>
-                                        <UITarget targetId="checkout.createAccount.after" />
+                                        <UITarget targetId="sfcc.checkout.createAccount.after" />
                                     </div>
                                 )}
                                 {placeOrderClientError && (
@@ -744,8 +748,8 @@ export default function CheckoutFormPage({
                                             className="w-full"
                                         />
                                     )}
-                                <UITarget targetId="checkout.placeOrder.before" />
-                                <UITarget targetId="checkout.placeOrder">
+                                <UITarget targetId="sfcc.checkout.placeOrder.before" />
+                                <UITarget targetId="sfcc.checkout.placeOrder">
                                     <form
                                         onSubmit={handlePlaceOrderSubmit}
                                         className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
@@ -772,10 +776,10 @@ export default function CheckoutFormPage({
                                         </Button>
                                     </form>
                                 </UITarget>
-                                <UITarget targetId="checkout.placeOrder.after" />
+                                <UITarget targetId="sfcc.checkout.placeOrder.after" />
                             </div>
                         )}
-                        <UITarget targetId="checkout.mainContent.after" />
+                        <UITarget targetId="sfcc.checkout.mainContent.after" />
                     </div>
 
                     {/* Order Summary Sidebar - scrolls independently when content exceeds viewport */}
@@ -783,7 +787,7 @@ export default function CheckoutFormPage({
                         className="hidden lg:block lg:col-span-1 lg:relative"
                         data-testid="checkout-order-summary-sidebar">
                         <div className="lg:absolute lg:inset-0 lg:overflow-y-auto">
-                            <UITarget targetId="checkout.sidebar.before" />
+                            <UITarget targetId="sfcc.checkout.sidebar.before" />
                             <div className="space-y-6">
                                 {/* Order Summary + Cart Items */}
                                 <Card className="rounded-none shadow-none [--cart-divider-extend:1.5rem]">
@@ -795,8 +799,8 @@ export default function CheckoutFormPage({
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <UITarget targetId="checkout.orderSummary.before" />
-                                        <UITarget targetId="checkout.orderSummary">
+                                        <UITarget targetId="sfcc.checkout.orderSummary.before" />
+                                        <UITarget targetId="sfcc.checkout.orderSummary">
                                             <Suspense fallback={<OrderSummarySkeleton />}>
                                                 <OrderSummary
                                                     basket={cart}
@@ -808,12 +812,12 @@ export default function CheckoutFormPage({
                                                 />
                                             </Suspense>
                                         </UITarget>
-                                        <UITarget targetId="checkout.orderSummary.after" />
+                                        <UITarget targetId="sfcc.checkout.orderSummary.after" />
 
                                         <hr className="border-border -mx-6" />
 
-                                        <UITarget targetId="checkout.myCart.before" />
-                                        <UITarget targetId="checkout.myCart">
+                                        <UITarget targetId="sfcc.checkout.myCart.before" />
+                                        <UITarget targetId="sfcc.checkout.myCart">
                                             <Suspense
                                                 fallback={
                                                     <MyCartSkeleton itemCount={cart?.productItems?.length || 2} />
@@ -825,16 +829,16 @@ export default function CheckoutFormPage({
                                                 />
                                             </Suspense>
                                         </UITarget>
-                                        <UITarget targetId="checkout.myCart.after" />
+                                        <UITarget targetId="sfcc.checkout.myCart.after" />
                                     </CardContent>
                                 </Card>
                             </div>
-                            <UITarget targetId="checkout.sidebar.after" />
+                            <UITarget targetId="sfcc.checkout.sidebar.after" />
                         </div>
                     </div>
                 </div>
             </div>
-            <UITarget targetId="checkout.page.after" />
+            <UITarget targetId="sfcc.checkout.page.after" />
             {isRegistrationInProgress && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60">
                     <Spinner size="lg" />

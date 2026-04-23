@@ -124,8 +124,8 @@ export default function Payment({
                             {paymentFormError && <CheckoutErrorBanner message={paymentFormError} />}
 
                             <div className="space-y-4">
-                                <UITarget targetId="checkout.payment.paymentMethods.before" />
-                                <UITarget targetId="checkout.payment.paymentMethods">
+                                <UITarget targetId="sfcc.checkout.payment.paymentMethods.before" />
+                                <UITarget targetId="sfcc.checkout.payment.paymentMethods">
                                     {savedPaymentMethods.length > 0 && (
                                         <div className="space-y-4">
                                             <RadioGroup
@@ -310,11 +310,11 @@ export default function Payment({
                                         </div>
                                     )}
                                 </UITarget>
-                                <UITarget targetId="checkout.payment.paymentMethods.after" />
+                                <UITarget targetId="sfcc.checkout.payment.paymentMethods.after" />
                             </div>
                             <div className="space-y-4">
-                                <UITarget targetId="checkout.payment.billingAddress.before" />
-                                <UITarget targetId="checkout.payment.billingAddress">
+                                <UITarget targetId="sfcc.checkout.payment.billingAddress.before" />
+                                <UITarget targetId="sfcc.checkout.payment.billingAddress">
                                     <div className="border-t border-input pt-4 space-y-4">
                                         {showUseDifferentBilling && (
                                             <FormField
@@ -439,7 +439,7 @@ export default function Payment({
                                         )}
                                     </div>
                                 </UITarget>
-                                <UITarget targetId="checkout.payment.billingAddress.after" />
+                                <UITarget targetId="sfcc.checkout.payment.billingAddress.after" />
                             </div>
                         </form>
                     </Form>

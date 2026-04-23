@@ -247,7 +247,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
         if (fieldPrefix === 'billing') {
             return (
                 <div>
-                    <UITarget targetId="checkout.payment.billingAddress.autocomplete">{dropdown}</UITarget>
+                    <UITarget targetId="sfcc.checkout.payment.billingAddress.autocomplete">{dropdown}</UITarget>
                 </div>
             );
         }
@@ -255,7 +255,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
         // Default: shipping address (no fieldPrefix)
         return (
             <div>
-                <UITarget targetId="checkout.shippingAddress.autocomplete">{dropdown}</UITarget>
+                <UITarget targetId="sfcc.checkout.shippingAddress.autocomplete">{dropdown}</UITarget>
             </div>
         );
     };

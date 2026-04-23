@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 15, 2026)
 
+- Prefix all checkout UITarget targetIds with `sfcc.` (@W-21550346) ([#1500](https://github.com/commerce-emu/storefront-next/pull/1500))
 - Flatten default `Card` styling (drop default radius/shadow) ([#1489](https://github.com/commerce-emu/storefront-next/pull/1489))
 - Multiship Guest Add Address now supports different addresseses with same name (@W-22187309)
 - Standardize layout with `section-container` utility: consolidate responsive padding, max-width, and centering into a single reusable class ([#1483](https://github.com/commerce-emu/storefront-next/pull/1483))
