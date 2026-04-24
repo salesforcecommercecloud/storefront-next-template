@@ -21,7 +21,7 @@ import type { AppConfig } from '@/types/config';
 import { cn, isServer } from '@/lib/utils';
 import {
     defaultImageFormats,
-    type DynamicImageWidths,
+    type DynamicImageDimensions,
     getResponsivePictureAttributes,
     replaceImageFormat,
     toImageUrl,
@@ -43,7 +43,14 @@ interface DynamicImageProps {
      * - Object with breakpoint keys and units: {base: '100vw', sm: '50vw', md: '500px'}
      * - String (for Page Designer): comma-separated widths (e.g., "400,800,1200")
      */
-    widths?: DynamicImageWidths | string;
+    widths?: DynamicImageDimensions | string;
+    /**
+     * Image heights relative to the breakpoints, used for DIS server-side cropping via the `sh`
+     * parameter. Supports the same formats as `widths`. When provided alongside `widths`, defines
+     * the exact crop box on the DIS server. When omitted, DIS preserves the original aspect ratio.
+     * - String (for Page Designer): comma-separated heights (e.g., "300,600,900")
+     */
+    heights?: DynamicImageDimensions | string;
     imageProps?: ImgHTMLAttributes<HTMLImageElement>;
     as?: ElementType;
     className?: string;
@@ -96,6 +103,15 @@ export class DynamicImageMetadata {
         type: 'string',
     })
     widths?: string;
+
+    @AttributeDefinition({
+        id: 'heights',
+        name: 'Responsive Heights',
+        description:
+            'Comma-separated heights in pixels (e.g., "300,600,900") for DIS server-side cropping alongside widths',
+        type: 'string',
+    })
+    heights?: string;
 
     @AttributeDefinition({
         id: 'objectFit',
@@ -244,15 +260,19 @@ const getObjectFitClass = (objectFit?: string) => {
     return objectFitMap[objectFit] || 'object-cover';
 };
 
-// Helper function to parse widths string to array for Page Designer
-const parseWidthsString = (widths?: string | DynamicImageWidths): DynamicImageWidths | undefined => {
-    if (!widths || typeof widths !== 'string') return widths as DynamicImageWidths | undefined;
-    if (widths.trim() === '') return undefined;
+// Helper function to parse a comma-separated dimension string to an array for Page Designer
+const parseDimensionsString = (value?: string | DynamicImageDimensions): DynamicImageDimensions | undefined => {
+    if (!value || typeof value !== 'string') {
+        return value as DynamicImageDimensions | undefined;
+    }
+    if (value.trim() === '') {
+        return undefined;
+    }
 
-    const parsed = widths
+    const parsed = value
         .split(',')
-        .map((w) => parseInt(w.trim(), 10))
-        .filter((w) => !isNaN(w));
+        .map((v) => parseInt(v.trim(), 10))
+        .filter((v) => !isNaN(v));
     return parsed.length > 0 ? parsed : undefined;
 };
 
@@ -296,6 +316,7 @@ const DynamicImage = ({
     src,
     alt = '',
     widths,
+    heights,
     imageProps = {},
     as: ImageComponent = 'img',
     className,
@@ -335,8 +356,9 @@ const DynamicImage = ({
               ''
             : (src ?? '');
 
-    // Parse widths if it's a string (from Page Designer)
-    const parsedWidths = useMemo(() => parseWidthsString(widths), [widths]);
+    // Parse widths/heights if they're strings (from Page Designer)
+    const parsedWidths = useMemo(() => parseDimensionsString(widths), [widths]);
+    const parsedHeights = useMemo(() => parseDimensionsString(heights), [heights]);
 
     // When DIS is disabled, transform the source URL to relative static paths
     // and skip all DIS-dependent behavior (format conversion, responsive <source> generation).
@@ -353,10 +375,11 @@ const DynamicImage = ({
         return getResponsivePictureAttributes({
             src: transformedSrc,
             widths: parsedWidths,
+            heights: parsedHeights,
             quality: enableDis ? defaultQuality : undefined,
             formats: effectiveFormats,
         });
-    }, [transformedSrc, parsedWidths, defaultQuality, effectiveFormats, enableDis]);
+    }, [transformedSrc, parsedWidths, parsedHeights, defaultQuality, effectiveFormats, enableDis]);
     const imageContext = useDynamicImageContext();
 
     const effectivePriority = priority ?? (imageContext?.hasSource(transformedSrc) ? 'high' : 'auto');

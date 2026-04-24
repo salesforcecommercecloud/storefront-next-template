@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 15, 2026)
 
+- Add support for optional `sh` parameter to dynamic images ([#1503](https://github.com/commerce-emu/storefront-next/pull/1503))
 - [UX Fix] Fix broken radius overriding system, and minor UX changes according to design ([#1495](https://github.com/commerce-emu/storefront-next/pull/1495))
 - Prefix all checkout UITarget targetIds with `sfcc.` (@W-21550346) ([#1500](https://github.com/commerce-emu/storefront-next/pull/1500))
 - Flatten default `Card` styling (drop default radius/shadow) ([#1489](https://github.com/commerce-emu/storefront-next/pull/1489))

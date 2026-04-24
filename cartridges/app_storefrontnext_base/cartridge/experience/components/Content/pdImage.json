@@ -32,6 +32,13 @@
                     "description": "Comma-separated widths in pixels (e.g., \"400,800,1200\")"
                 },
                 {
+                    "id": "heights",
+                    "name": "Responsive Heights",
+                    "type": "string",
+                    "required": false,
+                    "description": "Comma-separated heights in pixels (e.g., \"300,600,900\") for DIS server-side cropping alongside widths"
+                },
+                {
                     "id": "objectFit",
                     "name": "Object Fit",
                     "type": "enum",

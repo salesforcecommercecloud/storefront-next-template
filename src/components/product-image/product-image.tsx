@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useCallback } from 'react';
-import { cn } from '@/lib/utils';
-import type { DynamicImageWidths } from '@/lib/dynamic-image';
-import { DynamicImage } from '@/components/dynamic-image';
+import { type ElementType, type ImgHTMLAttributes, type SyntheticEvent, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
+import type { DynamicImageDimensions } from '@/lib/dynamic-image';
+import { DynamicImage } from '@/components/dynamic-image';
 
 interface ProductImageProps {
     src: string;
     alt: string;
     className?: string;
     // Pass through all DynamicImage props
-    widths?: DynamicImageWidths;
-    imageProps?: React.ImgHTMLAttributes<HTMLImageElement>;
-    as?: React.ElementType;
+    widths?: DynamicImageDimensions;
+    heights?: DynamicImageDimensions;
+    imageProps?: ImgHTMLAttributes<HTMLImageElement>;
+    as?: ElementType;
     loading?: 'lazy' | 'eager';
     priority?: 'high' | 'low';
 }
@@ -34,12 +35,17 @@ interface ProductImageProps {
 /**
  * ProductImage component that shows a broken image icon when image fails to load.
  */
-export function ProductImage({ src, alt, className, ...dynamicImageProps }: ProductImageProps) {
+export function ProductImage({ src, alt, className, imageProps, ...dynamicImageProps }: ProductImageProps) {
     const [hasError, setHasError] = useState(false);
+    const { onError: customOnError, ...restImageProps } = imageProps ?? {};
 
-    const handleError = useCallback(() => {
-        setHasError(true);
-    }, []);
+    const handleError = useCallback(
+        (event: SyntheticEvent<HTMLImageElement, Event>) => {
+            setHasError(true);
+            customOnError?.(event);
+        },
+        [customOnError]
+    );
     const { t } = useTranslation('common');
 
     // If there's an error, show simple fallback (centered vertically in expanded header)
@@ -65,8 +71,8 @@ export function ProductImage({ src, alt, className, ...dynamicImageProps }: Prod
             alt={alt}
             className={className}
             imageProps={{
+                ...restImageProps,
                 onError: handleError,
-                ...dynamicImageProps.imageProps,
             }}
             {...dynamicImageProps}
         />

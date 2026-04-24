@@ -18,13 +18,19 @@ import { describe, it, expect, vi } from 'vitest';
 import ProductImage from './product-image';
 
 // Mock the DynamicImage component
+const DynamicImageMock = vi.fn(({ src, alt, imageProps, ...props }: any) => (
+    <img src={src} alt={alt} onError={imageProps?.onError} {...props} />
+));
+
 vi.mock('@/components/dynamic-image', () => ({
-    DynamicImage: ({ src, alt, imageProps, ...props }: any) => (
-        <img src={src} alt={alt} onError={imageProps?.onError} {...props} />
-    ),
+    DynamicImage: (props: any) => DynamicImageMock(props),
 }));
 
 describe('ProductImage', () => {
+    beforeEach(() => {
+        DynamicImageMock.mockClear();
+    });
+
     it('renders image when src is valid', () => {
         render(<ProductImage src="https://valid-image.jpg" alt="Valid image" className="test-class" />);
 
@@ -46,12 +52,46 @@ describe('ProductImage', () => {
         expect(screen.getByText('📷')).toBeInTheDocument();
     });
 
-    it('passes through DynamicImage props', () => {
+    it('calls both internal and custom onError handlers when image fails', () => {
+        const customOnError = vi.fn();
+
         render(
-            <ProductImage src="https://valid-image.jpg" alt="Valid image" loading="lazy" widths={['50vw', '100vw']} />
+            <ProductImage src="https://invalid-image.jpg" alt="Invalid image" imageProps={{ onError: customOnError }} />
         );
 
-        const img = screen.getByAltText('Valid image');
-        expect(img).toHaveAttribute('loading', 'lazy');
+        const img = screen.getByAltText('Invalid image');
+        fireEvent.error(img);
+
+        // Internal handler should show fallback
+        expect(screen.getByText('No image available')).toBeInTheDocument();
+        // Custom handler should also have been called
+        expect(customOnError).toHaveBeenCalledTimes(1);
+    });
+
+    it('passes through DynamicImage props', () => {
+        render(
+            <ProductImage
+                src="https://valid-image.jpg"
+                alt="Valid image"
+                loading="lazy"
+                widths={['50vw', '100vw']}
+                heights={[300, 600]}
+                imageProps={{ decoding: 'async' }}
+            />
+        );
+
+        expect(DynamicImageMock).toHaveBeenCalledWith(
+            expect.objectContaining({
+                src: 'https://valid-image.jpg',
+                alt: 'Valid image',
+                loading: 'lazy',
+                widths: ['50vw', '100vw'],
+                heights: [300, 600],
+                imageProps: {
+                    decoding: 'async',
+                    onError: expect.any(Function),
+                },
+            })
+        );
     });
 });

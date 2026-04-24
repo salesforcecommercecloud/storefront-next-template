@@ -364,6 +364,62 @@ describe('DynamicImageProvider', () => {
             });
         });
 
+        describe('heights', () => {
+            test('returns undefined when heights is not provided', () => {
+                const wrapper = ({ children }: { children: ReactNode }) => (
+                    <DynamicImageProvider
+                        value={{
+                            addSource: vi.fn(),
+                            hasSource: vi.fn(),
+                        }}>
+                        {children}
+                    </DynamicImageProvider>
+                );
+
+                const { result } = renderHook(() => useDynamicImageContext(), { wrapper });
+
+                expect(result.current?.heights).toBeUndefined();
+            });
+
+            test('exposes heights as a frozen array of numbers', () => {
+                const heights = [75, 180, 360];
+                const wrapper = ({ children }: { children: ReactNode }) => (
+                    <DynamicImageProvider
+                        value={{
+                            addSource: vi.fn(),
+                            hasSource: vi.fn(),
+                            heights,
+                        }}>
+                        {children}
+                    </DynamicImageProvider>
+                );
+
+                const { result } = renderHook(() => useDynamicImageContext(), { wrapper });
+
+                expect(result.current?.heights).toEqual([75, 180, 360]);
+                expect(Object.isFrozen(result.current?.heights)).toBe(true);
+            });
+
+            test('exposes heights as a frozen record with breakpoint keys', () => {
+                const heights = { base: 75, sm: 180, md: 360 };
+                const wrapper = ({ children }: { children: ReactNode }) => (
+                    <DynamicImageProvider
+                        value={{
+                            addSource: vi.fn(),
+                            hasSource: vi.fn(),
+                            heights,
+                        }}>
+                        {children}
+                    </DynamicImageProvider>
+                );
+
+                const { result } = renderHook(() => useDynamicImageContext(), { wrapper });
+
+                expect(result.current?.heights).toEqual({ base: 75, sm: 180, md: 360 });
+                expect(Object.isFrozen(result.current?.heights)).toBe(true);
+            });
+        });
+
         describe('sources Set initialization', () => {
             test('uses provided sources Set when passed via value', () => {
                 const existingSources = new Set(['https://example.com/existing.jpg']);
