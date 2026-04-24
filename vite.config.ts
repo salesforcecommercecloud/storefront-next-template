@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="vitest" />
-
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync, readFileSync } from 'node:fs';
 import { defineConfig, perEnvironmentPlugin, loadEnv } from 'vite';
-import { configDefaults, coverageConfigDefaults } from 'vitest/config';
-import coverageConfigThresholds from './vitest.thresholds';
 import tailwindcss from '@tailwindcss/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import devtoolsJson from 'vite-plugin-devtools-json';
@@ -222,38 +218,6 @@ export default defineConfig(({ mode }) => {
             // Ensure Vite compiles the SDK for SSR so Node doesn't attempt to run its ESM as CJS
             noExternal: ['@salesforce/storefront-next-runtime'],
             target: 'node',
-        },
-        test: {
-            // Test environment variables loaded from .env.test automatically
-            globals: true,
-            environment: 'jsdom',
-            setupFiles: ['./vitest.setup.ts'],
-            include: ['**/*.{test,spec}.{ts,tsx}'],
-            exclude: [
-                ...configDefaults.exclude, // Extend Vitest's default excludes (node_modules, .git, etc.)
-                '.storybook/**/*', // Exclude entire Storybook folder (story tests use Storybook config)
-                'e2e/**/*', // Exclude E2E tests (CodeceptJS, not Vitest)
-            ],
-            coverage: {
-                reporter: [...new Set([...coverageConfigDefaults.reporter, 'json', 'json-summary'])], // `json-summary` and `json` are required for the CI
-                include: ['src/**/*.{ts,tsx}'],
-                exclude: [
-                    'src/**/*.d.ts',
-                    'src/components/ui/**/*',
-                    'src/**/*.stories.{ts,tsx}',
-                    'src/**/*-snapshot.tsx',
-                    'src/**/mocks/**/*',
-                    'src/**/__mocks__/**/*',
-                    'src/**/__snapshots__/**/*',
-                    'src/**/*.test.{ts,tsx}',
-                    'src/test-utils/*',
-                    'src/lib/test-utils/*',
-                    'src/**/__tests__/*',
-                    'src/lib/static-registry.ts',
-                ],
-                reportOnFailure: true,
-                thresholds: coverageConfigThresholds,
-            },
         },
     };
 });
