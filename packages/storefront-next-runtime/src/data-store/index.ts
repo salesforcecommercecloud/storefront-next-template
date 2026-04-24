@@ -18,21 +18,18 @@ export { createDataStoreMiddleware } from './utils';
 export { createDataStoreContext } from './utils';
 export { getDefaultDataStoreProvider } from './provider';
 export {
-    customSitePreferencesMiddleware,
     DEFAULT_SITE_PREFERENCES_KEY,
     getSitePreferences,
     sitePreferencesContext,
 } from './middleware/custom-site-preferences';
 export {
     customGlobalPreferencesContext,
-    customGlobalPreferencesMiddleware,
     DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY,
     getCustomGlobalPreferences,
 } from './middleware/custom-global-preferences';
 export {
     DEFAULT_GCP_PREFERENCES_KEY,
     gcpPreferencesContext,
-    gcpPreferencesMiddleware,
     getGcpApiKey,
     getGcpPreferences,
 } from './middleware/gcp-preferences';
@@ -41,5 +38,19 @@ export type { SitePreferences } from './middleware/custom-site-preferences';
 export type { DataStoreContextKey, DataStoreEntryKey } from './utils';
 export type { DataStoreEntry, DataStoreProvider } from './provider';
 export type { CustomGlobalPreferences } from './middleware/custom-global-preferences';
+export { getLoginPreferences, loginPreferencesContext } from './middleware/login-preferences';
+export type { LoginPreferences } from './middleware/login-preferences';
 export type { GcpPreferences } from './middleware/gcp-preferences';
 export { DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from '@salesforce/mrt-utilities';
+
+import { customSitePreferencesMiddleware } from './middleware/custom-site-preferences';
+import { customGlobalPreferencesMiddleware } from './middleware/custom-global-preferences';
+import { gcpPreferencesMiddleware } from './middleware/gcp-preferences';
+import { loginPreferencesMiddleware } from './middleware/login-preferences';
+
+export const dataStoreMiddleware = [
+    customSitePreferencesMiddleware,
+    customGlobalPreferencesMiddleware,
+    gcpPreferencesMiddleware,
+    loginPreferencesMiddleware,
+];

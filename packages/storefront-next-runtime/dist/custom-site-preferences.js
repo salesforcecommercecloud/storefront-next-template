@@ -1,5 +1,4 @@
-import { n as createDataStoreMiddleware, t as createDataStoreContext } from "./utils.js";
-import { i as siteContext } from "./site-context2.js";
+import { n as createDataStoreMiddleware, r as prefixWithSiteId, t as createDataStoreContext } from "./utils.js";
 
 //#region src/data-store/middleware/custom-site-preferences.ts
 const DEFAULT_SITE_PREFERENCES_KEY = "site-preferences";
@@ -20,11 +19,7 @@ function getSitePreferences(context) {
 	return data;
 }
 const customSitePreferencesMiddleware = createDataStoreMiddleware({
-	entryKey: (context) => {
-		const siteId = context.get(siteContext)?.site?.id;
-		if (!siteId) throw new Error("Site id not found. Ensure site context middleware runs before data-store middleware.");
-		return `${siteId}-custom-site-preferences`;
-	},
+	entryKey: prefixWithSiteId("custom-site-preferences"),
 	context: sitePreferencesContext
 });
 

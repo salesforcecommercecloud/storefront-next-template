@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 24, 2026)
 
+- Add login preferences middleware and context for managing email verification preferences (@W-22051487) ([#1453](https://github.com/commerce-emu/storefront-next/pull/1453))
 - Remove manual `contentLinkUuid` type extensions in favor of SCAPI types (@W-21280780)
   - `ComponentType` now uses `contentLinkUuid`, `fragment`, `localized`, `visible` from Shopper Experience API v1.3.0
 

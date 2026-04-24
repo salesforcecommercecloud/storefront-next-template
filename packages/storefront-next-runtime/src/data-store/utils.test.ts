@@ -20,11 +20,13 @@ import { DataStore } from '@salesforce/mrt-utilities/middleware';
 import {
     createDataStoreContext,
     createDataStoreMiddleware,
+    prefixWithSiteId,
     hasMrtEnvironment,
     isDevelopmentEnvironment,
 } from './utils';
 import { resetDataStoreProviderCache } from './provider';
 import { getSitePreferences, sitePreferencesContext } from './middleware/custom-site-preferences';
+import { siteContext } from '../site-context';
 
 type MiddlewareNext = Parameters<MiddlewareFunction<Response>>[1];
 
@@ -187,6 +189,31 @@ describe('createDataStoreMiddleware', () => {
         } else {
             process.env.SFNEXT_DATA_STORE_ALLOW_LOCAL = originalAllowLocal;
         }
+    });
+});
+
+describe('prefixWithSiteId', () => {
+    function createContext(siteId?: string): Readonly<RouterContextProvider> {
+        const store = new Map<unknown, unknown>();
+        if (siteId) {
+            store.set(siteContext, { site: { id: siteId } });
+        }
+        return {
+            set: (ctx: unknown, value: unknown) => store.set(ctx, value),
+            get: (ctx: unknown) => store.get(ctx),
+        } as unknown as RouterContextProvider;
+    }
+
+    it('returns a key prefixed with the site id', () => {
+        const entryKey = prefixWithSiteId('login-preferences');
+        expect(entryKey(createContext('site-1'))).toBe('site-1-login-preferences');
+    });
+
+    it('throws when site id is not available', () => {
+        const entryKey = prefixWithSiteId('login-preferences');
+        expect(() => entryKey(createContext())).toThrow(
+            'Site id not found. Ensure site context middleware runs before data-store middleware.'
+        );
     });
 });
 

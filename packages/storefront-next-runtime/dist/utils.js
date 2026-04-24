@@ -1,3 +1,4 @@
+import { i as siteContext } from "./site-context2.js";
 import { createContext } from "react-router";
 import { DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from "@salesforce/mrt-utilities/middleware";
 
@@ -159,7 +160,20 @@ async function tryImportLocalProvider() {
 		throw new Error("Failed to load local data-store provider. Ensure @salesforce/storefront-next-dev is installed.", { cause: error });
 	}
 }
+/**
+* Creates an entryKey function that prefixes the given suffix with the current site ID.
+*
+* @param suffix - The entry key suffix (e.g., "custom-site-preferences")
+* @returns A function compatible with `DataStoreMiddlewareOptions.entryKey`
+*/
+function prefixWithSiteId(suffix) {
+	return (context) => {
+		const siteId = context.get(siteContext)?.site?.id;
+		if (!siteId) throw new Error("Site id not found. Ensure site context middleware runs before data-store middleware.");
+		return `${siteId}-${suffix}`;
+	};
+}
 
 //#endregion
-export { createDataStoreMiddleware as n, getDefaultDataStoreProvider as r, createDataStoreContext as t };
+export { getDefaultDataStoreProvider as i, createDataStoreMiddleware as n, prefixWithSiteId as r, createDataStoreContext as t };
 //# sourceMappingURL=utils.js.map

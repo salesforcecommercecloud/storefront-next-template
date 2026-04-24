@@ -21,6 +21,7 @@ import {
     DataStoreUnavailableError,
 } from '@salesforce/mrt-utilities/middleware';
 import { getDefaultDataStoreProvider, type DataStoreProvider } from './provider';
+import { siteContext } from '../site-context';
 
 export type DataStoreContextKey<T> = ReturnType<typeof createContext<T | null>>;
 
@@ -141,4 +142,19 @@ export async function tryImportLocalProvider() {
             { cause: error }
         );
     }
+}
+
+/**
+ * Creates an entryKey function that prefixes the given suffix with the current site ID.
+ *
+ * @param suffix - The entry key suffix (e.g., "custom-site-preferences")
+ * @returns A function compatible with `DataStoreMiddlewareOptions.entryKey`
+ */
+export function prefixWithSiteId(suffix: string): (context: Readonly<RouterContextProvider>) => string {
+    return (context) => {
+        const siteId = context.get(siteContext)?.site?.id;
+        if (!siteId)
+            throw new Error('Site id not found. Ensure site context middleware runs before data-store middleware.');
+        return `${siteId}-${suffix}`;
+    };
 }

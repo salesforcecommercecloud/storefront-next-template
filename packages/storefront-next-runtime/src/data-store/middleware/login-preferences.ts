@@ -17,31 +17,32 @@
 import type { RouterContextProvider } from 'react-router';
 import { createDataStoreContext, createDataStoreMiddleware, prefixWithSiteId } from '../utils';
 
-export type SitePreferences = Record<string, unknown>;
+export type LoginPreferences = {
+    emailVerificationEnabled?: boolean;
+};
 
-export const DEFAULT_SITE_PREFERENCES_KEY = 'site-preferences';
-export const sitePreferencesContext = createDataStoreContext<SitePreferences>();
+export const loginPreferencesContext = createDataStoreContext<LoginPreferences>();
 
 /**
- * Read site preferences from router context.
+ * Read login preferences from router context.
  *
  * @param context - Router context provider
- * @returns Site preferences data stored by data-store middleware
- * @throws Error when the data-store context is not available
+ * @returns Login preferences data stored by data-store middleware
  */
-export function getSitePreferences(context: Readonly<RouterContextProvider>): SitePreferences {
-    const data = context.get(sitePreferencesContext);
+export function getLoginPreferences(context: Readonly<RouterContextProvider>): LoginPreferences {
+    const data = context.get(loginPreferencesContext);
     if (!data) {
         // eslint-disable-next-line no-console
         console.warn(
-            'Data store context not found. Ensure data-store middleware runs before loaders and the required env vars are set.'
+            'Login preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.'
         );
         return {};
     }
     return data;
 }
 
-export const customSitePreferencesMiddleware = createDataStoreMiddleware({
-    entryKey: prefixWithSiteId('custom-site-preferences'),
-    context: sitePreferencesContext,
+export const loginPreferencesMiddleware = createDataStoreMiddleware<LoginPreferences>({
+    entryKey: prefixWithSiteId('login-preferences'),
+    context: loginPreferencesContext,
+    transform: (value) => value.data as LoginPreferences,
 });

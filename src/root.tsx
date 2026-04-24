@@ -41,12 +41,7 @@ import { I18nextProvider, useTranslation, initReactI18next } from 'react-i18next
 import resources from '@/locales'; // Server-side translations
 import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
-import {
-    customGlobalPreferencesMiddleware,
-    customSitePreferencesMiddleware,
-    gcpPreferencesMiddleware,
-    getGcpApiKey,
-} from '@salesforce/storefront-next-runtime/data-store';
+import { dataStoreMiddleware, getGcpApiKey } from '@salesforce/storefront-next-runtime/data-store';
 import { SiteProvider, siteContext, type Site, type Locale } from '@salesforce/storefront-next-runtime/site-context';
 
 // Middlewares
@@ -144,9 +139,7 @@ export const middleware: MiddlewareFunction<Response>[] = [
     modeDetectionMiddlewareServer,
     appConfigMiddlewareServer,
     siteContextMiddleware, // Must run after appConfig, before i18next and currency
-    customSitePreferencesMiddleware,
-    customGlobalPreferencesMiddleware,
-    gcpPreferencesMiddleware,
+    ...dataStoreMiddleware,
     i18nextMiddleware,
     pageDesignerResolutionMiddleware,
     selectedStoreMiddleware /** @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */,
