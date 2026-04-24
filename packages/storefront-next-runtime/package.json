@@ -80,6 +80,12 @@
         "default": "./dist/data-store-custom-global-preferences.js"
       }
     },
+    "./data-store/gcp-preferences": {
+      "import": {
+        "types": "./dist/data-store-gcp-preferences.d.ts",
+        "default": "./dist/data-store-gcp-preferences.js"
+      }
+    },
     "./site-context": {
       "import": {
         "types": "./dist/site-context.d.ts",

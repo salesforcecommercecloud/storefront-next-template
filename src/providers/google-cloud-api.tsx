@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 import type { PropsWithChildren } from 'react';
+import { useRouteLoaderData } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import type { loader as rootLoader } from '@/root';
 
 /**
- * Resolve the Google Cloud API key from the configuration
+ * Resolve the Google Cloud API key.
  *
- * The API key is loaded from the environment variable:
- * PUBLIC__app__site__features__googleCloudAPI__apiKey
+ * Priority:
+ * 1. Merchant-provided key from PUBLIC__app__features__googleCloudAPI__apiKey
+ *    (surfaced via `useConfig()`).
+ * 2. OOTB key sourced from the MRT data store (`gcp` / `api-key` entry), only
+ *    populated for storefronts connecting to production ECOM instances.
+ *    Surfaced via the root loader's `gcpApiKeyFromDAL` field.
  *
- * @returns The Google Cloud API key if configured, undefined otherwise
+ * @returns The resolved Google Cloud API key, or an empty string when neither source is available.
  */
 function useGoogleCloudAPIKey(): string {
     const config = useConfig<AppConfig>();
-    const apiKey = config.features.googleCloudAPI.apiKey;
+    const rootData = useRouteLoaderData<typeof rootLoader>('root');
 
-    return apiKey;
+    return config.features.googleCloudAPI.apiKey || rootData?.gcpApiKeyFromDAL || '';
 }
 
 /**

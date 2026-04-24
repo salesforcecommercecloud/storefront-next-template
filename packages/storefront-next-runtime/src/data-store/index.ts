@@ -29,9 +29,17 @@ export {
     DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY,
     getCustomGlobalPreferences,
 } from './middleware/custom-global-preferences';
+export {
+    DEFAULT_GCP_PREFERENCES_KEY,
+    gcpPreferencesContext,
+    gcpPreferencesMiddleware,
+    getGcpApiKey,
+    getGcpPreferences,
+} from './middleware/gcp-preferences';
 export type { DataStoreMiddlewareOptions } from './utils';
 export type { SitePreferences } from './middleware/custom-site-preferences';
 export type { DataStoreContextKey, DataStoreEntryKey } from './utils';
 export type { DataStoreEntry, DataStoreProvider } from './provider';
 export type { CustomGlobalPreferences } from './middleware/custom-global-preferences';
+export type { GcpPreferences } from './middleware/gcp-preferences';
 export { DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from '@salesforce/mrt-utilities';

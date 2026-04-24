@@ -1,0 +1,207 @@
+/**
+ * Copyright 2026 Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { MiddlewareFunction, RouterContextProvider } from 'react-router';
+import { createDataStoreMiddleware } from '../utils';
+import type { DataStoreEntry, DataStoreProvider } from '../provider';
+import {
+    DEFAULT_GCP_PREFERENCES_KEY,
+    gcpPreferencesContext,
+    getGcpApiKey,
+    getGcpPreferences,
+    type GcpPreferences,
+} from './gcp-preferences';
+
+type MiddlewareNext = Parameters<MiddlewareFunction<Response>>[1];
+
+// Rebuild the transform the same way the shipped middleware does, so we can wire
+// a deterministic provider without depending on the module-level instance (which
+// resolves its provider at import time before env vars are set in tests).
+function buildTestMiddleware(getEntry: (key: string) => Promise<DataStoreEntry<unknown> | null>) {
+    const provider: DataStoreProvider = {
+        kind: 'local',
+        getEntry: (<TValue = unknown>(key: string) =>
+            getEntry(key) as Promise<DataStoreEntry<TValue> | null>) as DataStoreProvider['getEntry'],
+    };
+    return createDataStoreMiddleware<GcpPreferences>({
+        entryKey: DEFAULT_GCP_PREFERENCES_KEY,
+        context: gcpPreferencesContext,
+        transform: (value) => ({
+            apiKey: typeof value['api-key'] === 'string' ? value['api-key'] : '',
+        }),
+        provider,
+    });
+}
+
+describe('gcpPreferencesMiddleware', () => {
+    let context: RouterContextProvider;
+    let next: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        const store = new Map<unknown, unknown>();
+        context = {
+            set: (ctx: unknown, value: unknown) => store.set(ctx, value),
+            get: (ctx: unknown) => store.get(ctx),
+        } as unknown as RouterContextProvider;
+
+        next = vi.fn().mockResolvedValue(new Response('ok'));
+    });
+
+    it('stores preferences in context when the entry is valid', async () => {
+        const getEntry = vi.fn().mockResolvedValue({ value: { 'api-key': 'gcp-ootb-key' } });
+        const middleware = buildTestMiddleware(getEntry);
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(getEntry).toHaveBeenCalledWith(DEFAULT_GCP_PREFERENCES_KEY);
+        expect(getGcpPreferences(context)).toEqual({ apiKey: 'gcp-ootb-key' });
+        expect(getGcpApiKey(context)).toBe('gcp-ootb-key');
+        expect(context.get(gcpPreferencesContext)).toEqual({ apiKey: 'gcp-ootb-key' });
+        expect(next).toHaveBeenCalledOnce();
+    });
+
+    it('coerces non-string api-key values to an empty string', async () => {
+        const middleware = buildTestMiddleware(() => Promise.resolve({ value: { 'api-key': 12345 } }));
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(getGcpPreferences(context)).toEqual({ apiKey: '' });
+        expect(getGcpApiKey(context)).toBe('');
+        expect(next).toHaveBeenCalledOnce();
+    });
+
+    it('coerces a missing api-key map key to an empty string', async () => {
+        const middleware = buildTestMiddleware(() => Promise.resolve({ value: {} }));
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(getGcpPreferences(context)).toEqual({ apiKey: '' });
+        expect(getGcpApiKey(context)).toBe('');
+        expect(next).toHaveBeenCalledOnce();
+    });
+
+    it('calls next without populating the context when the entry value is missing or non-object', async () => {
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const middleware = buildTestMiddleware(() => Promise.resolve({ value: undefined }));
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(context.get(gcpPreferencesContext)).toBeUndefined();
+        expect(next).toHaveBeenCalledOnce();
+
+        warnSpy.mockRestore();
+    });
+
+    it('calls next without populating the context when the entry itself is null', async () => {
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const middleware = buildTestMiddleware(() => Promise.resolve(null));
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(context.get(gcpPreferencesContext)).toBeUndefined();
+        expect(next).toHaveBeenCalledOnce();
+
+        warnSpy.mockRestore();
+    });
+
+    it('calls next without populating the context when the entry value is not an object', async () => {
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+        // The factory guards `typeof entry.value !== 'object'` — exercise that path.
+        const middleware = buildTestMiddleware(() =>
+            Promise.resolve({ value: 'not-an-object' } as unknown as { value?: unknown })
+        );
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(context.get(gcpPreferencesContext)).toBeUndefined();
+        expect(next).toHaveBeenCalledOnce();
+
+        warnSpy.mockRestore();
+    });
+});
+
+describe('getGcpPreferences', () => {
+    it('warns and returns empty preferences when the context is not populated', () => {
+        const emptyContext = {
+            set: vi.fn(),
+            get: vi.fn().mockReturnValue(null),
+        } as unknown as RouterContextProvider;
+
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        expect(getGcpPreferences(emptyContext)).toEqual({ apiKey: '' });
+        expect(warnSpy).toHaveBeenCalledWith(
+            'GCP preferences context not found. Ensure gcpPreferencesMiddleware runs before loaders, or expect empty values in environments without the MRT data store entry.'
+        );
+
+        warnSpy.mockRestore();
+    });
+
+    it('returns preferences without warning when the middleware populated the context with empty values', () => {
+        const ctx = {
+            set: vi.fn(),
+            get: vi.fn().mockReturnValue({ apiKey: '' }),
+        } as unknown as RouterContextProvider;
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        expect(getGcpPreferences(ctx)).toEqual({ apiKey: '' });
+        expect(warnSpy).not.toHaveBeenCalled();
+
+        warnSpy.mockRestore();
+    });
+});
+
+describe('getGcpApiKey (convenience getter)', () => {
+    it('returns the apiKey field from preferences when populated', () => {
+        const ctx = {
+            set: vi.fn(),
+            get: vi.fn().mockReturnValue({ apiKey: 'gcp-ootb-key' }),
+        } as unknown as RouterContextProvider;
+
+        expect(getGcpApiKey(ctx)).toBe('gcp-ootb-key');
+    });
+
+    it('returns an empty string when preferences context is not populated', () => {
+        const emptyContext = {
+            set: vi.fn(),
+            get: vi.fn().mockReturnValue(null),
+        } as unknown as RouterContextProvider;
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        expect(getGcpApiKey(emptyContext)).toBe('');
+
+        warnSpy.mockRestore();
+    });
+});

@@ -23,6 +23,7 @@ export default defineConfig([
             'data-store': 'src/data-store/index.ts',
             'data-store-custom-site-preferences': 'src/data-store/middleware/custom-site-preferences.ts',
             'data-store-custom-global-preferences': 'src/data-store/middleware/custom-global-preferences.ts',
+            'data-store-gcp-preferences': 'src/data-store/middleware/gcp-preferences.ts',
             'site-context': 'src/site-context/index.ts',
             routing: 'src/routing/index.ts',
             'routing-app-wrapper': 'src/routing/app-wrapper.tsx',

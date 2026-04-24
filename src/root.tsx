@@ -44,6 +44,8 @@ import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-
 import {
     customGlobalPreferencesMiddleware,
     customSitePreferencesMiddleware,
+    gcpPreferencesMiddleware,
+    getGcpApiKey,
 } from '@salesforce/storefront-next-runtime/data-store';
 import { SiteProvider, siteContext, type Site, type Locale } from '@salesforce/storefront-next-runtime/site-context';
 
@@ -144,6 +146,7 @@ export const middleware: MiddlewareFunction<Response>[] = [
     siteContextMiddleware, // Must run after appConfig, before i18next and currency
     customSitePreferencesMiddleware,
     customGlobalPreferencesMiddleware,
+    gcpPreferencesMiddleware,
     i18nextMiddleware,
     pageDesignerResolutionMiddleware,
     selectedStoreMiddleware /** @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */,
@@ -186,6 +189,8 @@ export const loader = ({
     pageDesignerMode: 'EDIT' | 'PREVIEW' | undefined;
     // Pre-computed in the loader (server-only) so seo.ts stays out of the client bundle
     seoMeta: MetaDescriptor[];
+    // OOTB GCP Address Autocomplete API key sourced from the MRT data store
+    gcpApiKeyFromDAL: string;
     // Return as function to prevent i18next instance serialization
     getI18next: () => i18n;
 } => {
@@ -251,6 +256,7 @@ export const loader = ({
         maintenance,
         clientAuth,
         seoMeta,
+        gcpApiKeyFromDAL: getGcpApiKey(context),
         getI18next: () => i18next,
         pageDesignerMode: isDesignModeActive(request) ? 'EDIT' : isPreviewModeActive(request) ? 'PREVIEW' : undefined,
     };
