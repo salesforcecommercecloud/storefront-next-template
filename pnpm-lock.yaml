@@ -185,7 +185,7 @@ importers:
         version: 7.12.0(@react-router/dev@7.12.0(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.30.1)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(tsx@4.21.0)(typescript@5.9.3)(vite@7.1.7(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.21.0)(yaml@2.8.3))(yaml@2.8.3))(typescript@5.9.3)
       '@salesforce/b2c-cli':
         specifier: ^1.4.0
-        version: 1.7.1(@types/node@24.3.0)(typescript@5.9.3)
+        version: 1.8.0(@types/node@24.3.0)(typescript@5.9.3)
       '@storybook/addon-a11y':
         specifier: 10.0.6
         version: 10.0.6(storybook@10.0.6(@testing-library/dom@10.4.1)(msw@2.11.3(@types/node@24.3.0)(typescript@5.9.3))(prettier@3.6.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.1.7(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.21.0)(yaml@2.8.3)))
@@ -413,7 +413,7 @@ importers:
         version: 7.12.0(express@5.1.0)(react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)
       '@salesforce/b2c-tooling-sdk':
         specifier: ^1.0.0
-        version: 1.6.1(@oclif/core@4.10.5)(typescript@5.9.3)
+        version: 1.7.0(@oclif/core@4.10.5)(typescript@5.9.3)
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
@@ -3486,13 +3486,13 @@ packages:
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
 
-  '@salesforce/b2c-cli@1.7.1':
-    resolution: {integrity: sha512-v9Un+dmxXzRk5cw/tfV0t9iAEcM0h8cfrksxvtNOtWZzD4BXpRYTHiQy7YPWaH4bzp8+1/gcwnulhXYtnHa+sQ==}
+  '@salesforce/b2c-cli@1.8.0':
+    resolution: {integrity: sha512-qx2XV/5eIPl08NCqxhH5+i0s9Nxn8Ui4tjLkBCN4i8V2qDUXn+uDrn41d0CwZxqBHJrHQWM4LvFjGVMylZ+DGQ==}
     engines: {node: '>=22.16.0'}
     hasBin: true
 
-  '@salesforce/b2c-tooling-sdk@1.6.1':
-    resolution: {integrity: sha512-ZXBPpZAyc3oNnY6vWn4J73NGys0o7aTBQi7ABnNdYXEDqvxDPwX3FABO/UkiD2qgdrgExQhI2BMZitvkK3cuqQ==}
+  '@salesforce/b2c-tooling-sdk@1.7.0':
+    resolution: {integrity: sha512-negcbnLKqxoiY2deYFMxP4rr1Bgwd5nQwow4GcSq17uHaaOJGU1cFO2pAkI7RgrNUmHezf2YiDdtdMsg4zDGqA==}
     engines: {node: '>=22.16.0'}
     peerDependencies:
       '@oclif/core': ^4
@@ -13152,7 +13152,7 @@ snapshots:
 
   '@rtsao/scc@1.1.0': {}
 
-  '@salesforce/b2c-cli@1.7.1(@types/node@24.3.0)(typescript@5.9.3)':
+  '@salesforce/b2c-cli@1.8.0(@types/node@24.3.0)(typescript@5.9.3)':
     dependencies:
       '@inquirer/prompts': 8.2.0(@types/node@24.3.0)
       '@oclif/core': 4.8.0
@@ -13162,7 +13162,7 @@ snapshots:
       '@oclif/plugin-plugins': 5.4.53
       '@oclif/plugin-version': 2.2.36
       '@oclif/plugin-warn-if-update-available': 3.1.52
-      '@salesforce/b2c-tooling-sdk': 1.6.1(@oclif/core@4.8.0)(typescript@5.9.3)
+      '@salesforce/b2c-tooling-sdk': 1.7.0(@oclif/core@4.8.0)(typescript@5.9.3)
       cliui: 9.0.1
       glob: 13.0.0
       marked: 15.0.12
@@ -13177,7 +13177,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@salesforce/b2c-tooling-sdk@1.6.1(@oclif/core@4.10.5)(typescript@5.9.3)':
+  '@salesforce/b2c-tooling-sdk@1.7.0(@oclif/core@4.10.5)(typescript@5.9.3)':
     dependencies:
       '@vscode/debugadapter': 1.68.0
       applicationinsights: 2.9.8
@@ -13209,7 +13209,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@salesforce/b2c-tooling-sdk@1.6.1(@oclif/core@4.8.0)(typescript@5.9.3)':
+  '@salesforce/b2c-tooling-sdk@1.7.0(@oclif/core@4.8.0)(typescript@5.9.3)':
     dependencies:
       '@vscode/debugadapter': 1.68.0
       applicationinsights: 2.9.8

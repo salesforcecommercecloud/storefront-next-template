@@ -334,4 +334,116 @@ describe('MyCart', () => {
         // The translation mock returns "Saved <amount>"
         expect(screen.getByText(/Saved/)).toBeInTheDocument();
     });
+
+    it('multiplies savings by quantity for multi-quantity items', () => {
+        vi.mocked(getPriceData).mockReturnValue({
+            currentPrice: 29.99,
+            listPrice: 39.5,
+            isOnSale: true,
+            isASet: false,
+            isMaster: false,
+            isRange: false,
+            pricePerUnit: 29.99,
+            tieredPrice: undefined,
+            maxPrice: undefined,
+        });
+
+        render(
+            <MyCart
+                basket={{
+                    basketId: 'b1',
+                    productItems: [{ itemId: 'item-1', productId: 'prod-1', quantity: 3 }],
+                }}
+                productMap={{ 'item-1': { id: 'prod-1', name: 'Sale Product' } }}
+            />
+        );
+
+        // savings = (39.50 - 29.99) * 3 = 28.53
+        // The translation mock returns "Saved <amount>" where amount is formatted currency
+        const badge = screen.getByText(/Saved/);
+        expect(badge).toBeInTheDocument();
+        expect(badge.textContent).toContain('28.53');
+    });
+
+    it('shows per-unit "each" price when quantity is greater than 1', () => {
+        vi.mocked(getPriceData).mockReturnValue({
+            currentPrice: 29.99,
+            listPrice: undefined,
+            isOnSale: false,
+            isASet: false,
+            isMaster: false,
+            isRange: false,
+            pricePerUnit: 29.99,
+            tieredPrice: undefined,
+            maxPrice: undefined,
+        });
+
+        render(
+            <MyCart
+                basket={{
+                    basketId: 'b1',
+                    productItems: [
+                        {
+                            itemId: 'item-1',
+                            productId: 'prod-1',
+                            quantity: 2,
+                            priceAfterItemDiscount: 59.98,
+                        },
+                    ],
+                }}
+                productMap={{ 'item-1': { id: 'prod-1', name: 'Product 1' } }}
+            />
+        );
+
+        // priceAfterItemDiscount / quantity = 59.98 / 2 = 29.99
+        expect(screen.getByText(/each/)).toBeInTheDocument();
+        expect(screen.getByText(/\$29\.99/)).toBeInTheDocument();
+    });
+
+    it('does not show "each" price when quantity is 1', () => {
+        vi.mocked(getPriceData).mockReturnValue({
+            currentPrice: 29.99,
+            listPrice: undefined,
+            isOnSale: false,
+            isASet: false,
+            isMaster: false,
+            isRange: false,
+            pricePerUnit: 29.99,
+            tieredPrice: undefined,
+            maxPrice: undefined,
+        });
+
+        render(
+            <MyCart
+                basket={{
+                    basketId: 'b1',
+                    productItems: [
+                        {
+                            itemId: 'item-1',
+                            productId: 'prod-1',
+                            quantity: 1,
+                            priceAfterItemDiscount: 29.99,
+                        },
+                    ],
+                }}
+                productMap={{ 'item-1': { id: 'prod-1', name: 'Product 1' } }}
+            />
+        );
+
+        expect(screen.queryByText(/each/)).not.toBeInTheDocument();
+    });
+
+    it('calls getPriceData with actual item quantity', () => {
+        render(
+            <MyCart
+                basket={{
+                    basketId: 'b1',
+                    productItems: [{ itemId: 'item-1', productId: 'prod-1', quantity: 5 }],
+                }}
+                productMap={{ 'item-1': { id: 'prod-1', name: 'Product 1' } }}
+            />
+        );
+
+        expect(getPriceData).toHaveBeenCalledWith(expect.anything(), { quantity: 5 });
+    });
 });

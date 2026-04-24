@@ -97,10 +97,14 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                 productData?.variationValues
             );
 
+            const quantity = item.quantity ?? 1;
+
             // Calculate savings using getPriceData (same logic as ProductPrice component)
-            const priceData = getPriceData(enrichedProduct, { quantity: 1 });
+            const priceData = getPriceData(enrichedProduct, { quantity });
             const savings =
-                priceData.isOnSale && priceData.listPrice ? priceData.listPrice - priceData.currentPrice : 0;
+                priceData.isOnSale && priceData.listPrice
+                    ? (priceData.listPrice - priceData.currentPrice) * quantity
+                    : 0;
             const hasSavings = savings > 0;
 
             return (
@@ -133,12 +137,12 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                                     {productName}
                                 </Link>
                                 <div className="flex flex-col items-end gap-1 shrink-0">
-                                    <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 flex items-center gap-1">
+                                    <span className="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1">
                                         <Truck className="size-3" />
                                         {t('myCart.delivery')}
                                     </span>
                                     {hasSavings && (
-                                        <span className="text-xs font-medium text-muted-foreground bg-muted px-1.5 py-0.5">
+                                        <span className="text-xs font-medium bg-muted px-1.5 py-0.5">
                                             {t('myCart.saved', {
                                                 amount: formatCurrency(savings, i18n.language, currency),
                                             })}
@@ -148,7 +152,7 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                             </div>
 
                             {/* Variation Attributes */}
-                            <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+                            <div className="mt-1 space-y-0.5 text-xs">
                                 {Object.entries(displayVariationValues).map(([name, value]) => (
                                     <div key={name}>
                                         {name}: {value}
@@ -161,7 +165,8 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                                 <ProductPrice
                                     product={enrichedProduct}
                                     currency={currency}
-                                    type="unit"
+                                    type="total"
+                                    quantity={quantity}
                                     labelForA11y={productName}
                                     currentPriceProps={{
                                         className: 'text-sm font-semibold text-foreground',
@@ -171,11 +176,21 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                                     }}
                                     hidePromo
                                 />
+                                {quantity > 1 && (
+                                    <div className="text-xs">
+                                        {formatCurrency(
+                                            (item.priceAfterItemDiscount ?? item.price ?? 0) / quantity,
+                                            i18n.language,
+                                            currency
+                                        )}{' '}
+                                        each
+                                    </div>
+                                )}
                             </div>
 
                             {/* Quantity */}
-                            <div className="mt-0.5 text-xs text-muted-foreground">
-                                {tCart('attributes.quantity')} {item.quantity}
+                            <div className="mt-0.5 text-xs">
+                                {tCart('attributes.quantity')} {quantity}
                             </div>
                         </div>
                     </div>

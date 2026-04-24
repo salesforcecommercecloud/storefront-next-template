@@ -43,7 +43,7 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
                 class="flex flex-col items-end gap-1 shrink-0"
               >
                 <span
-                  class="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 flex items-center gap-1"
+                  class="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1"
                 >
                   <svg
                     aria-hidden="true"
@@ -83,7 +83,7 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
               </div>
             </div>
             <div
-              class="mt-1 space-y-0.5 text-xs text-muted-foreground"
+              class="mt-1 space-y-0.5 text-xs"
             />
             <div
               class="mt-1"
@@ -110,7 +110,7 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
               </div>
             </div>
             <div
-              class="mt-0.5 text-xs text-muted-foreground"
+              class="mt-0.5 text-xs"
             >
               Qty:
                
@@ -153,7 +153,7 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
                 class="flex flex-col items-end gap-1 shrink-0"
               >
                 <span
-                  class="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 flex items-center gap-1"
+                  class="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1"
                 >
                   <svg
                     aria-hidden="true"
@@ -193,7 +193,7 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
               </div>
             </div>
             <div
-              class="mt-1 space-y-0.5 text-xs text-muted-foreground"
+              class="mt-1 space-y-0.5 text-xs"
             />
             <div
               class="mt-1"
@@ -202,11 +202,11 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
                 class="items-center gap-2"
               >
                 <span
-                  aria-label="Current price: £124.80"
+                  aria-label="Current price: £374.40"
                   aria-live="polite"
                   class="[&:not(:first-child)]:mt-6 text-left text-sm font-semibold text-foreground"
                 >
-                  £124.80
+                  £374.40
                 </span>
                 <span
                   aria-atomic="true"
@@ -214,13 +214,20 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
                   class="sr-only"
                 >
                   Casual To Dressy Trousers
-                  Current price: £124.80
+                  Current price: £374.40
                 </span>
                  
               </div>
+              <div
+                class="text-xs"
+              >
+                £124.80
+                 
+                each
+              </div>
             </div>
             <div
-              class="mt-0.5 text-xs text-muted-foreground"
+              class="mt-0.5 text-xs"
             >
               Qty:
                
@@ -277,7 +284,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                 class="flex flex-col items-end gap-1 shrink-0"
               >
                 <span
-                  class="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 flex items-center gap-1"
+                  class="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1"
                 >
                   <svg
                     aria-hidden="true"
@@ -317,7 +324,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
               </div>
             </div>
             <div
-              class="mt-1 space-y-0.5 text-xs text-muted-foreground"
+              class="mt-1 space-y-0.5 text-xs"
             />
             <div
               class="mt-1"
@@ -344,7 +351,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
               </div>
             </div>
             <div
-              class="mt-0.5 text-xs text-muted-foreground"
+              class="mt-0.5 text-xs"
             >
               Qty:
                
@@ -387,7 +394,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                 class="flex flex-col items-end gap-1 shrink-0"
               >
                 <span
-                  class="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 flex items-center gap-1"
+                  class="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1"
                 >
                   <svg
                     aria-hidden="true"
@@ -427,7 +434,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
               </div>
             </div>
             <div
-              class="mt-1 space-y-0.5 text-xs text-muted-foreground"
+              class="mt-1 space-y-0.5 text-xs"
             />
             <div
               class="mt-1"
@@ -436,11 +443,11 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                 class="items-center gap-2"
               >
                 <span
-                  aria-label="Current price: £124.80"
+                  aria-label="Current price: £374.40"
                   aria-live="polite"
                   class="[&:not(:first-child)]:mt-6 text-left text-sm font-semibold text-foreground"
                 >
-                  £124.80
+                  £374.40
                 </span>
                 <span
                   aria-atomic="true"
@@ -448,13 +455,20 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                   class="sr-only"
                 >
                   Casual To Dressy Trousers
-                  Current price: £124.80
+                  Current price: £374.40
                 </span>
                  
               </div>
+              <div
+                class="text-xs"
+              >
+                £124.80
+                 
+                each
+              </div>
             </div>
             <div
-              class="mt-0.5 text-xs text-muted-foreground"
+              class="mt-0.5 text-xs"
             >
               Qty:
                
@@ -511,7 +525,7 @@ exports[`MyCart stories snapshot > SingleItem story renders and matches snapshot
                 class="flex flex-col items-end gap-1 shrink-0"
               >
                 <span
-                  class="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 flex items-center gap-1"
+                  class="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1"
                 >
                   <svg
                     aria-hidden="true"
@@ -551,7 +565,7 @@ exports[`MyCart stories snapshot > SingleItem story renders and matches snapshot
               </div>
             </div>
             <div
-              class="mt-1 space-y-0.5 text-xs text-muted-foreground"
+              class="mt-1 space-y-0.5 text-xs"
             />
             <div
               class="mt-1"
@@ -578,7 +592,7 @@ exports[`MyCart stories snapshot > SingleItem story renders and matches snapshot
               </div>
             </div>
             <div
-              class="mt-0.5 text-xs text-muted-foreground"
+              class="mt-0.5 text-xs"
             >
               Qty:
                
