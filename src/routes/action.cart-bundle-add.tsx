@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { data, type ActionFunctionArgs } from 'react-router';
-import { ApiError, type ShopperBasketsV2, type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ActionFunctionArgs } from 'react-router';
+import { type ShopperBasketsV2, type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
-import { getTranslation } from '@/lib/i18next';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -38,13 +39,8 @@ async function addBundleToCart(
         storeId?: string | null;
     },
     childSelections: ProductSelectionValues[]
-): Promise<{
-    success: boolean;
-    basket?: ShopperBasketsV2.schemas['Basket'];
-    error?: string;
-}> {
+) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
     logger.debug('CartBundleAdd: starting addBundleToCart', {
         productId: bundleItem.productId,
         quantity: bundleItem.quantity,
@@ -54,11 +50,10 @@ async function addBundleToCart(
     const basket = basketResource.current;
 
     if (!basket) {
-        // This state should never happen as it would indicate that the basket middleware is broken
         logger.warn('CartBundleAdd: no basket found');
         return {
             success: false,
-            error: t('errors:noBasketFound'),
+            error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }),
         };
     }
 
@@ -154,18 +149,8 @@ async function addBundleToCart(
             basket: updatedBasket,
         };
     } catch (error) {
-        if (error instanceof ApiError) {
-            logger.error('CartBundleAdd: API error adding bundle', { error });
-            return {
-                success: false,
-                error: error.body?.detail || error.statusText,
-            };
-        }
         logger.error('CartBundleAdd: failed', { error });
-        return {
-            success: false,
-            error: error instanceof Error ? error.message : 'An unexpected error occurred',
-        };
+        return { success: false, error: createActionError({ error }) };
     }
 }
 
@@ -174,11 +159,19 @@ async function addBundleToCart(
  */
 export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
     logger.debug('CartBundleAdd: action starting');
 
     if (request.method !== 'POST') {
-        throw new Response(t('product:methodNotAllowed'), { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.METHOD_NOT_ALLOWED,
+                    message: `Expected POST, got ${request.method}`,
+                }),
+            },
+            { status: 405 }
+        );
     }
 
     try {
@@ -188,7 +181,16 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         if (!bundleItemJson || !childSelectionsJson) {
             logger.warn('CartBundleAdd: missing bundle data in form data');
-            throw new Error(t('product:bundleDataRequired'));
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'Bundle data missing from form data',
+                    }),
+                },
+                { status: 400 }
+            );
         }
 
         const bundleItem = JSON.parse(bundleItemJson);
@@ -196,26 +198,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         const result = await addBundleToCart(context, bundleItem, childSelections);
 
-        logger.info('CartBundleAdd: action succeeded');
+        if (!result.success) {
+            const status = result.error?.code === ErrorCode.NOT_FOUND ? 404 : 500;
+            return Response.json(result, { status });
+        }
         return Response.json(result);
     } catch (error) {
-        if (error instanceof ApiError) {
-            logger.error('CartBundleAdd: action API error', { error });
-            return data(
-                {
-                    success: false,
-                    error: error.body?.detail || error.statusText,
-                },
-                { status: error.status }
-            );
-        }
         logger.error('CartBundleAdd: action failed', { error });
-        return data(
-            {
-                success: false,
-                error: error instanceof Error ? error.message : 'An unexpected error occurred',
-            },
-            { status: 500 }
-        );
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

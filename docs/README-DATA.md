@@ -246,54 +246,58 @@ Action functions handle data mutations, such as form submissions, updates, or de
 
 Comparable to server loaders, React Router also provides the concept of client actions. In line with our server-load everything paradigm, we recommend server actions exclusively. Server actions are functions that execute solely on the server, ensuring sensitive mutation logic, such as database writes or authentication checks, never reaches the client.
 
-#### Example: Interaction-Driven Data - Newsletter Signup Action
+#### Action Error Handling
 
-This example demonstrates interaction-driven form submission with validation and error handling via an action function.
+Actions return structured error objects with a semantic `code` and a human-readable `message`. Use `createActionError` from `@/lib/action-error-helpers.server` to construct these consistently:
 
-```jsx
-// src/routes/newsletter.tsx
-import { type ActionFunctionArgs, Form, useActionData } from 'react-router';
+```typescript
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const email = formData.get('email') as string;
+// Known validation error — provide code + message explicitly
+return Response.json(
+  {
+    success: false,
+    error: createActionError({
+      code: ErrorCode.REQUIRED_FIELD,
+      message: 'Email is required',
+    }),
+  },
+  { status: 400 },
+);
 
-  // Validate email
-  if (!email || !email.includes('@')) {
-    return Response.json(
-      { error: 'Please enter a valid email address' },
-      { status: 400 },
-    );
-  }
-
-  // Call API/service
-  const response = await fetch('https://api.example.com/newsletter/subscribe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email }),
-  });
-
-  if (!response.ok) {
-    return Response.json(
-      { error: 'Subscription failed. Please try again.' },
-      { status: 400 },
-    );
-  }
-  return Response.json({ success: true });
-}
-
-export default function NewsletterPage() {
-  const actionData = useActionData<typeof action>();
-
-  return (
-    <Form method="post">
-      <input type="email" name="email" required />
-      <button type="submit">Subscribe</button>
-      {actionData?.error && <p className="error">{actionData.error}</p>}
-      {actionData?.success && <p className="success">Subscribed!</p>}
-    </Form>
+// Caught exception — pass the error object directly.
+// If it's an SCAPI ApiError, the code is inferred from the HTTP status
+// and the message is extracted from the RFC 7807 response body.
+catch (error) {
+  return Response.json(
+    { success: false, error: createActionError({ error }) },
+    { status: 500 },
   );
 }
+```
+
+The error shape returned to consumers:
+
+```typescript
+interface ActionError {
+  code: string;    // Semantic error code (e.g., "NOT_FOUND", "OUT_OF_STOCK")
+  message: string; // Human-readable message (English, not localized)
+}
+```
+
+Available error codes are defined in `src/lib/error-codes.ts`: `NOT_FOUND`, `NOT_AUTHENTICATED`, `NOT_AUTHORIZED`, `INVALID_INPUT`, `REQUIRED_FIELD`, `CONFLICT`, `EXPIRED`, `OPERATION_FAILED`, `OUT_OF_STOCK`, `RATE_LIMITED`, `METHOD_NOT_ALLOWED`, `UNKNOWN`.
+
+**Consumer-side handling:** The `message` field is always in English. Components should use translated strings for user-facing display and treat `code` as the dispatch mechanism:
+
+```typescript
+// Use a translated fallback for the toast — don't show error.message to users
+const errorMsg = t('product:failedToAddToCart');
+addToast(errorMsg, 'error');
+
+// Or interpolate error.message into a translated wrapper (for developer context)
+const errorMsg = t('product:failedToAddToCart', { error: data.error?.message });
+addToast(errorMsg, 'error');
 ```
 
 For details on how action return values integrate with the state model (optimistic UI, `fetcher.data`, `useActionState`), see [State Management](README-STATE.md).
@@ -301,52 +305,6 @@ For details on how action return values integrate with the state model (optimist
 ## Fetchers
 
 Fetchers are React Router's mechanism for triggering loaders or actions outside of navigation, enabling data fetches and mutations without changing the current route or URL. Unlike standard navigation, multiple fetchers can run concurrently and independently, each tracking their own submission state. This makes them well-suited for use cases such as inline form submissions, optimistic UI updates, or background data refreshes.
-
-#### Example: Interaction-Driven Data - Newsletter Signup Fetcher
-
-This example demonstrates the same interaction-driven form processing as the previous example, but this time using a fetcher (via the [`useFetcher`](https://reactrouter.com/api/hooks/useFetcher) hook).
-
-```jsx
-// src/routes/newsletter.tsx
-import type { ActionFunctionArgs, useFetcher } from "react-router";
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const email = formData.get("email") as string;
-
-  // Validate email
-  if (!email || !email.includes("@")) {
-    return Response.json({ error: "Please enter a valid email address" }, { status: 400 });
-  }
-
-  // Call API/service
-  const response = await fetch("https://api.example.com/newsletter/subscribe", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
-
-  if (!response.ok) {
-    return Response.json({ error: "Subscription failed" }, { status: 400 });
-  }
-  return Response.json({ success: true });
-}
-
-export default function NewsletterPage() {
-  const fetcher = useFetcher();
-
-  return (
-    <fetcher.Form method="post">
-      <input type="email" name="email" required />
-      <button type="submit" disabled={fetcher.state === "submitting"}>
-        {fetcher.state === "submitting" ? "Subscribing..." : "Subscribe"}
-      </button>
-      {fetcher.data?.error && <p className="error">{fetcher.data.error}</p>}
-      {fetcher.data?.success && <p className="success">Subscribed!</p>}
-    </fetcher.Form>
-  );
-}
-```
 
 For details on how `fetcher.state` and `fetcher.data` integrate with the state model, see [State Management](README-STATE.md#component-local-mutations-via-usefetcher). For visual feedback patterns based on `fetcher.state`, see [Loading States](README-SUSPENSE.md#the-usefetcher-hook).
 
@@ -369,58 +327,6 @@ Resource routes are particularly useful for:
 
 Resource routes follow the same patterns as regular routes but typically don't export a default component. They can be prefixed with `resource/` to distinguish them from UI routes.
 
-#### Example: Interaction-Driven Data - Newsletter Signup Action and Fetcher
-
-In this example, we bring together the concepts of actions and fetchers alongside the previous form-processing examples. Using Resource Routes enables a more decoupled component architecture.
-
-```typescript
-// src/routes/resource.newsletter-signup.ts
-import type { ActionFunctionArgs } from "react-router";
-
-// Resource route action - no component exported
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const email = formData.get("email") as string;
-
-  // Validate email
-  if (!email || !email.includes("@")) {
-    return Response.json({ error: "Please enter a valid email address" }, { status: 400 });
-  }
-
-  // Call API/service
-  const response = await fetch("https://api.example.com/newsletter/subscribe", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
-
-  if (!response.ok) {
-    return Response.json({ error: "Subscription failed" }, { status: 400 });
-  }
-  return Response.json({ success: true });
-}
-```
-
-```jsx
-// src/components/newsletter-form.tsx
-import { useFetcher } from "react-router";
-
-export default function NewsletterForm() {
-  const fetcher = useFetcher();
-
-  return (
-    <fetcher.Form method="post" action="/resource/newsletter-signup">
-      <input type="email" name="email" required />
-      <button type="submit" disabled={fetcher.state === "submitting"}>
-        {fetcher.state === "submitting" ? "Subscribing..." : "Subscribe"}
-      </button>
-      {fetcher.data?.error && <p className="error">{fetcher.data.error}</p>}
-      {fetcher.data?.success && <p className="success">Subscribed!</p>}
-    </fetcher.Form>
-  );
-}
-```
-
 #### Example: Interaction-Driven Data - Basket Mutation Action
 
 This example shows a resource route that encapsulates complex business logic for adding items to a shopping basket.
@@ -430,6 +336,8 @@ This example shows a resource route that encapsulates complex business logic for
 import type { ActionFunctionArgs } from "react-router";
 import { addToBasket } from "@/lib/basket";
 import { validateInventory } from "@/lib/inventory";
+import { createActionError } from "@/lib/action-error-helpers.server";
+import { ErrorCode } from "@/lib/error-codes";
 
 export async function action({ request, context }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -439,13 +347,28 @@ export async function action({ request, context }: ActionFunctionArgs) {
   // Business logic: validate inventory
   const available = await validateInventory(productId, quantity);
   if (!available) {
-    return Response.json({ error: "Insufficient inventory" }, { status: 400 });
+    return Response.json(
+      {
+        success: false,
+        error: createActionError({
+          code: ErrorCode.OUT_OF_STOCK,
+          message: "Insufficient inventory",
+        }),
+      },
+      { status: 400 },
+    );
   }
 
-  // Add to basket via API
-  const basket = await addToBasket(context, productId, quantity);
-
-  return Response.json({ basket });
+  try {
+    // Add to basket via API
+    const basket = await addToBasket(context, productId, quantity);
+    return Response.json({ success: true, basket });
+  } catch (error) {
+    return Response.json(
+      { success: false, error: createActionError({ error }) },
+      { status: 500 },
+    );
+  }
 }
 ```
 

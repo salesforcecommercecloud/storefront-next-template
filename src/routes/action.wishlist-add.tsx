@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ActionFunctionArgs, data } from 'react-router';
-import { type ShopperCustomers, ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { type ActionFunctionArgs } from 'react-router';
+import { type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.server';
-import { extractStatusCode } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer';
 import { getTranslation } from '@/lib/i18next';
 import { getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
@@ -113,13 +114,14 @@ async function addToWishlist(
     context: ActionFunctionArgs['context'],
     productId: string
 ): Promise<WishlistActionResponse & { productList?: CustomerProductList }> {
-    const { t } = getTranslation();
-
     // Check if user is authenticated as registered customer
     if (!isRegisteredCustomer(context)) {
         return {
             success: false,
-            error: t('errors:api.unauthorized'),
+            error: createActionError({
+                code: ErrorCode.NOT_AUTHENTICATED,
+                message: 'You must be logged in to add items to your wishlist',
+            }),
         };
     }
 
@@ -127,7 +129,7 @@ async function addToWishlist(
     if (!session.customerId) {
         return {
             success: false,
-            error: t('errors:customer.notAuthenticated'),
+            error: createActionError({ code: ErrorCode.NOT_AUTHENTICATED, message: 'Session expired' }),
         };
     }
 
@@ -183,29 +185,7 @@ async function addToWishlist(
             alreadyInWishlist: false,
         };
     } catch (error) {
-        let responseMessage: string | undefined;
-        let status_code: string | undefined;
-
-        if (error instanceof ApiError) {
-            responseMessage = (error.body?.message as string | undefined) || error.message;
-            status_code = String(error.status);
-        } else {
-            responseMessage = error instanceof Error ? error.message : String(error);
-            status_code = extractStatusCode(error);
-        }
-
-        // Handle authentication/authorization errors
-        if (status_code === '401' || status_code === '403') {
-            return {
-                success: false,
-                error: t('errors:api.unauthorized'),
-            };
-        }
-
-        return {
-            success: false,
-            error: responseMessage || t('product:failedToAddToWishlist'),
-        };
+        return { success: false, error: createActionError({ error }) };
     }
 }
 
@@ -214,11 +194,19 @@ async function addToWishlist(
  */
 export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
 
     if (request.method !== 'POST') {
         logger.warn('WishlistAdd: method not allowed', { method: request.method });
-        throw new Response(t('product:methodNotAllowed'), { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.METHOD_NOT_ALLOWED,
+                    message: `Expected POST, got ${request.method}`,
+                }),
+            },
+            { status: 405 }
+        );
     }
 
     try {
@@ -228,13 +216,25 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         if (!productId) {
             logger.warn('WishlistAdd: missing productId');
-            throw new Error(t('product:productIdRequired'));
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'productId is required' }),
+                },
+                { status: 400 }
+            );
         }
 
         // Basic validation: productId should be a non-empty string
         if (productId.length === 0 || productId.length > 100) {
             logger.warn('WishlistAdd: invalid productId', { productId });
-            throw new Error(t('product:productIdRequired'));
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'productId is required' }),
+                },
+                { status: 400 }
+            );
         }
 
         logger.debug('WishlistAdd: starting', { productId });
@@ -247,27 +247,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
             logger.warn('WishlistAdd: operation returned failure', { productId, error: result.error });
         }
 
-        return Response.json(result);
+        return result.success ? Response.json(result) : Response.json(result, { status: 500 });
     } catch (error) {
         logger.error('WishlistAdd: failed', { error });
-
-        let responseMessage: string | undefined;
-        let status_code: string | undefined;
-
-        if (error instanceof ApiError) {
-            responseMessage = (error.body?.message as string | undefined) || error.message;
-            status_code = String(error.status);
-        } else {
-            responseMessage = error instanceof Error ? error.message : String(error);
-            status_code = extractStatusCode(error);
-        }
-
-        return data(
-            {
-                success: false,
-                error: responseMessage || t('errors:api.unexpectedError'),
-            },
-            { status: status_code ? parseInt(status_code, 10) : 500 }
-        );
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

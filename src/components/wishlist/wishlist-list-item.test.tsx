@@ -361,11 +361,11 @@ describe('WishlistListItem', () => {
             });
         });
 
-        test('shows error toast with server message when remove fails with an error', async () => {
+        test('shows translated error toast when remove fails with an error', async () => {
             vi.spyOn(ReactRouter, 'useFetcher').mockReturnValue({
                 ...mockFetcher,
                 state: 'idle',
-                data: { success: false, error: 'Item not found' },
+                data: { success: false, error: { code: 'NOT_FOUND', message: 'Item not found' } },
             } as any);
 
             renderWithRouter(
@@ -373,7 +373,7 @@ describe('WishlistListItem', () => {
             );
 
             await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalledWith('Item not found', 'error');
+                expect(mockAddToast).toHaveBeenCalledWith(t('product:failedToRemoveFromWishlist'), 'error');
             });
         });
 

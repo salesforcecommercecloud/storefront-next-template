@@ -16,34 +16,39 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { createApiClients } from '@/lib/api-clients';
 import { getAuth } from '@/middlewares/auth.server';
-import { getTranslation, i18nextContext } from '@/lib/i18next';
+import { i18nextContext } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { getBasket } from '@/middlewares/basket.server';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
+import { extractErrorMessage } from '@/lib/auth-error-handler';
 import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
 
-type InitiateRegistrationResponse = {
-    success: boolean;
-    error?: string;
-    email?: string;
-};
-
 /**
  * Server action to initiate passwordless registration during checkout
  * This triggers the OTP email to be sent for account creation with email verification
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<InitiateRegistrationResponse> {
+export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
     const locale = context.get(i18nextContext)?.getLocale();
 
     logger.debug('InitiateCheckoutRegistration: starting');
 
     if (request.method !== 'POST') {
-        return { success: false, error: t('errors:api.methodNotAllowed') };
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.METHOD_NOT_ALLOWED,
+                    message: `Expected POST, got ${request.method}`,
+                }),
+            },
+            { status: 405 }
+        );
     }
 
     try {
@@ -62,7 +67,16 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             email,
         });
         if (!allowed) {
-            return { success: false, error: t('errors:api.forbidden') };
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.NOT_AUTHORIZED,
+                        message: 'Turnstile verification failed',
+                    }),
+                },
+                { status: 403 }
+            );
         }
 
         if (!email) {
@@ -73,10 +87,13 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
             if (!basketEmail) {
                 logger.warn('InitiateCheckoutRegistration: email not found in form or basket');
-                return {
-                    success: false,
-                    error: t('errors:customer.emailRequired'),
-                };
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
+                    },
+                    { status: 400 }
+                );
             }
 
             // Extract customer info from basket for registration
@@ -91,12 +108,16 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                     hasFirstName: !!firstName,
                     hasLastName: !!lastName,
                 });
-                return {
-                    success: false,
-                    error:
-                        t('errors:customer.nameRequired') ||
-                        'First name and last name are required for account creation',
-                };
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({
+                            code: ErrorCode.REQUIRED_FIELD,
+                            message: 'First name and last name are required for account creation',
+                        }),
+                    },
+                    { status: 400 }
+                );
             }
 
             const session = getAuth(context);
@@ -137,10 +158,10 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
             logger.info('InitiateCheckoutRegistration: succeeded with basket email');
 
-            return {
+            return Response.json({
                 success: true,
                 email: basketEmail,
-            };
+            });
         }
 
         logger.debug('InitiateCheckoutRegistration: email provided in form');
@@ -159,11 +180,16 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 hasFirstName: !!firstName,
                 hasLastName: !!lastName,
             });
-            return {
-                success: false,
-                error:
-                    t('errors:customer.nameRequired') || 'First name and last name are required for account creation',
-            };
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'First name and last name are required for account creation',
+                    }),
+                },
+                { status: 400 }
+            );
         }
 
         const session = getAuth(context);
@@ -194,42 +220,19 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         logger.info('InitiateCheckoutRegistration: succeeded with form email');
 
-        return {
+        return Response.json({
             success: true,
             email,
-        };
+        });
     } catch (error) {
         logger.error('InitiateCheckoutRegistration: failed', { error });
-        let errorMessage: string = String(t('checkout:registration.initiationFailed'));
-
-        // Try to extract the actual error message from the API response
-        if (error && typeof error === 'object') {
-            if ('rawBody' in error && typeof error.rawBody === 'string') {
-                try {
-                    const parsed = JSON.parse(error.rawBody);
-                    if (parsed.message && typeof parsed.message === 'string') {
-                        errorMessage = parsed.message;
-                    }
-                } catch {
-                    // Failed to parse rawBody
-                }
-            } else if ('message' in error && typeof error.message === 'string') {
-                const msg = error.message;
-                try {
-                    const parsed = JSON.parse(msg);
-                    if (parsed.message && typeof parsed.message === 'string') {
-                        errorMessage = parsed.message;
-                    }
-                } catch {
-                    // Not JSON, use the message as-is
-                    errorMessage = msg;
-                }
-            }
-        }
-
-        return {
-            success: false,
-            error: errorMessage,
-        };
+        const errorMessage = extractErrorMessage(error);
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
+            },
+            { status: 500 }
+        );
     }
 }

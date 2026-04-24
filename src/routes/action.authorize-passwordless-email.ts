@@ -15,8 +15,9 @@
  */
 import type { ActionFunctionArgs } from 'react-router';
 import { authorizePasswordless } from '@/middlewares/auth.server';
-import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
-import { getTranslation } from '@/lib/i18next';
+import { extractErrorMessage } from '@/lib/auth-error-handler';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
@@ -24,7 +25,7 @@ import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
 
 export type AuthorizePasswordlessEmailResponse = {
     success: boolean;
-    error?: string;
+    error?: { code: string; message: string };
     email?: string;
 };
 
@@ -33,12 +34,17 @@ export type AuthorizePasswordlessEmailResponse = {
  * Called when the shopper tabs or clicks out of the email field at checkout contact step.
  * Uses passwordless authorize with mode from config (email); does not register a customer.
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<AuthorizePasswordlessEmailResponse> {
+export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
 
     if (request.method !== 'POST') {
-        return { success: false, error: t('errors:api.methodNotAllowed') };
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
+            },
+            { status: 405 }
+        );
     }
 
     try {
@@ -47,10 +53,13 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const turnstileToken = formData.get('turnstileToken')?.toString();
 
         if (!email) {
-            return {
-                success: false,
-                error: t('errors:customer.emailRequired'),
-            };
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
+                },
+                { status: 400 }
+            );
         }
 
         const appConfig = getConfig<AppConfig>(context);
@@ -64,20 +73,31 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             email,
         });
         if (!allowed) {
-            return { success: false, error: t('errors:api.forbidden') };
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.NOT_AUTHORIZED,
+                        message: 'Turnstile verification failed',
+                    }),
+                },
+                { status: 403 }
+            );
         }
 
         await authorizePasswordless(context, { userid: email });
 
         logger.info('AuthorizePasswordlessEmail: OTP sent');
-        return { success: true, email };
+        return Response.json({ success: true, email });
     } catch (error) {
         logger.error('AuthorizePasswordlessEmail: failed', { error });
         const errorMessage = extractErrorMessage(error);
-        const errorKey = getPasswordlessErrorMessageKey(errorMessage);
-        return {
-            success: false,
-            error: t(errorKey),
-        };
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
+            },
+            { status: 500 }
+        );
     }
 }

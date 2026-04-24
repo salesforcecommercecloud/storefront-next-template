@@ -20,6 +20,7 @@ import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
+import type { ActionError } from '@/lib/error-codes';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -28,7 +29,7 @@ type Product = ShopperProducts.schemas['Product'];
 /** Shared response shape returned by wishlist action routes and consumed by the useWishlist hook. */
 export type WishlistActionResponse = {
     success: boolean;
-    error?: string;
+    error?: ActionError;
     alreadyInWishlist?: boolean;
 };
 

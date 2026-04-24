@@ -92,13 +92,17 @@ const wrapper = ({ children }: { children: React.ReactNode }) => {
  *   2. setWishlistItems() triggers a re-render
  *   3. useEffect sees the new addFetcher.data value and fires
  */
-const setAddFetcherResponse = (response: { success: boolean; error?: string; alreadyInWishlist?: boolean }) => {
+const setAddFetcherResponse = (response: {
+    success: boolean;
+    error?: { code: string; message: string };
+    alreadyInWishlist?: boolean;
+}) => {
     mockAddFetcher.submit.mockImplementation(() => {
         mockAddFetcher.data = response;
     });
 };
 
-const setRemoveFetcherResponse = (response: { success: boolean; error?: string }) => {
+const setRemoveFetcherResponse = (response: { success: boolean; error?: { code: string; message: string } }) => {
     mockRemoveFetcher.submit.mockImplementation(() => {
         mockRemoveFetcher.data = response;
     });
@@ -270,7 +274,7 @@ describe('useWishlist', () => {
     });
 
     test('should revert optimistic update on add error', async () => {
-        setAddFetcherResponse({ success: false, error: 'Failed to add' });
+        setAddFetcherResponse({ success: false, error: { code: 'OPERATION_FAILED', message: 'Failed to add' } });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
@@ -280,13 +284,13 @@ describe('useWishlist', () => {
 
         await waitFor(() => {
             expect(result.current.isItemInWishlist(mockProduct)).toBe(false);
-            expect(mockAddToast).toHaveBeenCalledWith('Failed to add', 'error');
+            expect(mockAddToast).toHaveBeenCalledWith('Failed to add item to wishlist.', 'error');
         });
     });
 
     test('should revert optimistic update on remove error', async () => {
         setAddFetcherResponse({ success: true });
-        setRemoveFetcherResponse({ success: false, error: 'Failed to remove' });
+        setRemoveFetcherResponse({ success: false, error: { code: 'OPERATION_FAILED', message: 'Failed to remove' } });
 
         const { result } = renderHook(() => useWishlist(), { wrapper });
 
@@ -305,7 +309,7 @@ describe('useWishlist', () => {
         await waitFor(() => {
             // Reverted back to in-wishlist after server error
             expect(result.current.isItemInWishlist(mockProduct)).toBe(true);
-            expect(mockAddToast).toHaveBeenCalledWith('Failed to remove', 'error');
+            expect(mockAddToast).toHaveBeenCalledWith('Failed to remove item from wishlist.', 'error');
         });
     });
 

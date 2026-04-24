@@ -137,7 +137,7 @@ export default function BonusProductSelection({
                 if (!addToCartFetcher.data.success) {
                     addToast(
                         t('product:bonusProducts.failedToAdd', {
-                            error: addToCartFetcher.data.error || t('product:unknownError'),
+                            error: addToCartFetcher.data.error?.message || t('product:unknownError'),
                         }),
                         'error'
                     );

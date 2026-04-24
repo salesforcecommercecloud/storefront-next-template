@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ActionFunctionArgs, data } from 'react-router';
-import { type ShopperCustomers, ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { type ActionFunctionArgs } from 'react-router';
+import { type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.server';
-import { extractStatusCode } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
 import { isRegisteredCustomer } from '@/lib/api/customer';
-import { getTranslation } from '@/lib/i18next';
 import { getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
@@ -43,17 +43,14 @@ async function removeFromWishlist(
     itemId?: string,
     productId?: string
 ): Promise<WishlistActionResponse & { productList?: CustomerProductList }> {
-    const { t } = getTranslation();
-
-    // TODO: revisit the error messages returned from this function
-    // Since they will be shown in a toast UI, make sure that the errors are appropriate for the end users.
-    // Some of them are meant for developers only, and some are API errors that should not be leaked for security concern.
-
     // Validate that at least one identifier is provided
     if (!itemId && !productId) {
         return {
             success: false,
-            error: t('product:productOrItemIdRequired'),
+            error: createActionError({
+                code: ErrorCode.REQUIRED_FIELD,
+                message: 'Either productId or itemId is required',
+            }),
         };
     }
 
@@ -61,8 +58,10 @@ async function removeFromWishlist(
     if (!isRegisteredCustomer(context)) {
         return {
             success: false,
-            error:
-                t('account:wishlist.mustLoginToRemove') || 'You must be logged in to remove items from your wishlist',
+            error: createActionError({
+                code: ErrorCode.NOT_AUTHENTICATED,
+                message: 'You must be logged in to remove items from your wishlist',
+            }),
         };
     }
 
@@ -70,7 +69,7 @@ async function removeFromWishlist(
     if (!session.customerId) {
         return {
             success: false,
-            error: t('errors:customer.notAuthenticated'),
+            error: createActionError({ code: ErrorCode.NOT_AUTHENTICATED, message: 'Session expired' }),
         };
     }
 
@@ -83,14 +82,14 @@ async function removeFromWishlist(
         if (!wishlist) {
             return {
                 success: false,
-                error: t('account:wishlist.notFound'),
+                error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'Wishlist not found' }),
             };
         }
 
         if (!listId) {
             return {
                 success: false,
-                error: t('account:wishlist.idNotFound'),
+                error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'Wishlist ID not found' }),
             };
         }
 
@@ -109,7 +108,7 @@ async function removeFromWishlist(
             if (!wishlistItem || !wishlistItem.id) {
                 return {
                     success: false,
-                    error: t('account:wishlist.itemNotFound'),
+                    error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'Item not found in wishlist' }),
                 };
             }
 
@@ -120,7 +119,7 @@ async function removeFromWishlist(
         if (!wishlistItemId) {
             return {
                 success: false,
-                error: t('account:wishlist.itemNotFound'),
+                error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'Item not found in wishlist' }),
             };
         }
 
@@ -145,29 +144,7 @@ async function removeFromWishlist(
             productList: updatedList ?? undefined,
         };
     } catch (error) {
-        let responseMessage: string | undefined;
-        let status_code: string | undefined;
-
-        if (error instanceof ApiError) {
-            responseMessage = (error.body?.message as string | undefined) || error.message;
-            status_code = String(error.status);
-        } else {
-            responseMessage = error instanceof Error ? error.message : String(error);
-            status_code = extractStatusCode(error);
-        }
-
-        // Handle authentication/authorization errors
-        if (status_code === '401' || status_code === '403') {
-            return {
-                success: false,
-                error: t('errors:api.unauthorized'),
-            };
-        }
-
-        return {
-            success: false,
-            error: responseMessage || t('product:failedToRemoveFromWishlist'),
-        };
+        return { success: false, error: createActionError({ error }) };
     }
 }
 
@@ -176,11 +153,19 @@ async function removeFromWishlist(
  */
 export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
 
     if (request.method !== 'POST') {
         logger.warn('WishlistRemove: method not allowed', { method: request.method });
-        throw new Response(t('product:methodNotAllowed'), { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.METHOD_NOT_ALLOWED,
+                    message: `Expected POST, got ${request.method}`,
+                }),
+            },
+            { status: 405 }
+        );
     }
 
     try {
@@ -196,7 +181,16 @@ export async function action({ request, context }: ActionFunctionArgs) {
         // Validate that at least one identifier is provided
         if (!itemId && !productId) {
             logger.warn('WishlistRemove: missing both itemId and productId');
-            throw new Error(t('product:productOrItemIdRequired'));
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'Either productId or itemId is required',
+                    }),
+                },
+                { status: 400 }
+            );
         }
 
         // Basic validation: IDs should be non-empty strings within reasonable length
@@ -205,7 +199,16 @@ export async function action({ request, context }: ActionFunctionArgs) {
             (productId && (productId.length === 0 || productId.length > 100))
         ) {
             logger.warn('WishlistRemove: invalid ID length', { itemId, productId });
-            throw new Error(t('product:productOrItemIdRequired'));
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'Either productId or itemId is required',
+                    }),
+                },
+                { status: 400 }
+            );
         }
 
         logger.debug('WishlistRemove: starting', { itemId, productId });
@@ -218,27 +221,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
             logger.warn('WishlistRemove: operation returned failure', { itemId, productId, error: result.error });
         }
 
-        return Response.json(result);
+        return result.success ? Response.json(result) : Response.json(result, { status: 500 });
     } catch (error) {
         logger.error('WishlistRemove: failed', { error });
-
-        let responseMessage: string | undefined;
-        let status_code: string | undefined;
-
-        if (error instanceof ApiError) {
-            responseMessage = (error.body?.message as string | undefined) || error.message;
-            status_code = String(error.status);
-        } else {
-            responseMessage = error instanceof Error ? error.message : String(error);
-            status_code = extractStatusCode(error);
-        }
-
-        return data(
-            {
-                success: false,
-                error: responseMessage || t('errors:api.unexpectedError'),
-            },
-            { status: status_code ? Number(status_code) : 500 }
-        );
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

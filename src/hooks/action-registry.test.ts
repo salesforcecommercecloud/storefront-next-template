@@ -74,7 +74,10 @@ describe('actionRegistry', () => {
         describe('handleError', () => {
             test('shows error toast with the error message', () => {
                 const addToast = vi.fn();
-                const result: ActionResponse = { success: false, error: 'Network error' };
+                const result: ActionResponse = {
+                    success: false,
+                    error: { code: 'OPERATION_FAILED', message: 'Network error' },
+                };
                 handler.handleError(result, {}, addToast);
                 expect(addToast).toHaveBeenCalledWith('Network error', 'error');
             });

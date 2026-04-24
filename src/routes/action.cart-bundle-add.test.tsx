@@ -130,7 +130,7 @@ describe('action.cart-bundle-add', () => {
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await (response as Response).json();
+            const result = await response.json();
             expect(result.success).toBe(true);
             expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalled();
         });
@@ -163,7 +163,7 @@ describe('action.cart-bundle-add', () => {
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await (response as Response).json();
+            const result = await response.json();
             expect(result.success).toBe(true);
         });
 
@@ -194,7 +194,7 @@ describe('action.cart-bundle-add', () => {
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await (response as Response).json();
+            const result = await response.json();
             expect(result.success).toBe(true);
             // The server action extracts productId and quantity from ProductSelectionValues
             expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalledWith({
@@ -222,7 +222,7 @@ describe('action.cart-bundle-add', () => {
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await (response as Response).json();
+            const result = await response.json();
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
         });
@@ -232,9 +232,16 @@ describe('action.cart-bundle-add', () => {
                 method: 'GET',
             });
 
-            await expect(
-                action(createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' }))
-            ).rejects.toThrow();
+            const response = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            );
+
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(405);
+            const result = await response.json();
+            expect(result.success).toBe(false);
+            expect(result.error).toBeDefined();
+            expect(result.error.code).toBe('METHOD_NOT_ALLOWED');
         });
     });
 });

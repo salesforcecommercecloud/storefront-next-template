@@ -39,7 +39,7 @@ interface RegisterCustomerSelectionProps {
 
 type InitiateRegistrationResponse = {
     success: boolean;
-    error?: string;
+    error?: { code: string; message: string };
     email?: string;
 };
 
@@ -143,7 +143,7 @@ export default function RegisterCustomerSelection({
             if (data.success) {
                 setIsOtpModalOpen(true);
             } else {
-                const errorMsg = data.error || t('registration.initiationFailed');
+                const errorMsg = t('registration.initiationFailed');
                 setError(errorMsg);
                 showToast?.(errorMsg, 'error');
                 setShouldCreateAccount(false);

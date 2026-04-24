@@ -144,7 +144,7 @@ export function BonusProductModal({
                 setIsAddingToCart(false);
                 // Show error toast with error details
                 const errorMessage = t('product:failedToAddToCart', {
-                    error: addToCartFetcher.data.error || 'Unknown error',
+                    error: addToCartFetcher.data.error?.message || 'Unknown error',
                 });
                 addToast(errorMessage, 'error');
                 // Note: Modal stays open on error so user can retry

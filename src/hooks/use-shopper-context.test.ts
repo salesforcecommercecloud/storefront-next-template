@@ -24,7 +24,7 @@ import * as ReactRouter from 'react-router';
 type UpdateShopperContextResponse = {
     success: boolean;
     message?: string;
-    error?: string;
+    error?: { code: string; message: string };
 };
 
 // Mock React Router's useFetcher
@@ -253,7 +253,7 @@ describe('useShopperContext', () => {
         it('should return success false when fetcher data has success: false', () => {
             mockFetcher.data = {
                 success: false,
-                error: 'Update failed',
+                error: { code: 'OPERATION_FAILED', message: 'Update failed' },
             };
 
             const { result } = renderHook(() => useShopperContext());
@@ -274,7 +274,7 @@ describe('useShopperContext', () => {
         it('should return error when fetcher data has success: false with error message', () => {
             mockFetcher.data = {
                 success: false,
-                error: 'USID is not available',
+                error: { code: 'OPERATION_FAILED', message: 'USID is not available' },
             };
 
             const { result } = renderHook(() => useShopperContext());
@@ -348,7 +348,7 @@ describe('useShopperContext', () => {
 
             mockFetcher.data = {
                 success: false,
-                error: 'Update failed',
+                error: { code: 'OPERATION_FAILED', message: 'Update failed' },
             };
             rerender();
 

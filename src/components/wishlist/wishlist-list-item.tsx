@@ -49,7 +49,7 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
     const config = useConfig<AppConfig>();
     const { currency } = useSite();
     const { addToast } = useToast();
-    const removeFetcher = useFetcher<{ success: boolean; error?: string }>();
+    const removeFetcher = useFetcher<{ success: boolean; error?: { code: string; message: string } }>();
     const hasHandledRemoveResponse = useRef(false);
 
     // When SCAPI returns the product by its variant ID, the product itself has type.variant = true
@@ -129,7 +129,7 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
                 }
             } else if (result?.success === false || result?.error) {
                 hasHandledRemoveResponse.current = true;
-                addToast(result.error ?? t('failedToRemoveFromWishlist'), 'error');
+                addToast(t('failedToRemoveFromWishlist'), 'error');
             }
         }
         if (removeFetcher.state === 'submitting') {

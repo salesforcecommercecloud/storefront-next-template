@@ -19,11 +19,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useFetcher } from 'react-router';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
-import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+import { getPasswordlessErrorMessageKey } from '@/lib/auth-error-handler';
 
 type VerifyOtpResponse = {
     success: boolean;
-    error?: string;
+    error?: { code: string; message: string };
     message?: string;
     tokenResponse?: ShopperLogin.schemas['TokenResponse'];
 };
@@ -164,8 +164,8 @@ export default function OtpModal({
         }
         // Failure
         else if (fetcher.state === 'idle' && fetcher.data?.success === false && fetcher.data?.error) {
-            const rawError = fetcher.data.error;
-            const errorMessageKey = getPasswordlessErrorMessageKey(extractErrorMessage(rawError));
+            const rawMessage = fetcher.data.error.message;
+            const errorMessageKey = getPasswordlessErrorMessageKey(rawMessage);
             const userFriendlyError = String(t(errorMessageKey as never));
             setError(userFriendlyError);
             setIsVerifying(false);

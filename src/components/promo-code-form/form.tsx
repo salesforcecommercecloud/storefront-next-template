@@ -69,7 +69,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
             if (removeFetcher.data.success) {
                 addToast(t('promoCode.removeSuccessMessage'), 'success');
             } else if (removeFetcher.data.error) {
-                addToast(removeFetcher.data.error, 'error');
+                addToast(t('promoCode.removeErrorMessage'), 'error');
             }
         }
         // we do not need `updateBasket` and `addToast` in the dependency array
@@ -103,7 +103,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                 addToast(t('promoCode.successMessage'), 'success');
             } else {
                 // Get the error message from the API response
-                const errorMessage = applyFetcher.data.error || t('promoCode.errorMessage');
+                const errorMessage = t('promoCode.errorMessage');
 
                 // Set the form error with the specific API error message
                 form.setError('code', {

@@ -324,8 +324,8 @@ export function useProductActions({
         } else if (cartFetcher.data?.success === false) {
             // Show error toast for both add and edit mode
             const errorMessage = itemId
-                ? t('product:failedToUpdateCart', { error: cartFetcher.data.error })
-                : t('product:failedToAddToCart', { error: cartFetcher.data.error });
+                ? t('product:failedToUpdateCart', { error: cartFetcher.data.error?.message })
+                : t('product:failedToAddToCart', { error: cartFetcher.data.error?.message });
             addToast(errorMessage, 'error');
             setIsAddingToOrUpdatingCart(false);
         }
@@ -344,7 +344,7 @@ export function useProductActions({
             setIsAddingToOrUpdatingCart(false);
             setMiniCartOpen(true);
         } else if (multipleItemsFetcher.data?.success === false) {
-            addToast(t('product:failedToAddItemsToCart', { error: multipleItemsFetcher.data.error }), 'error');
+            addToast(t('product:failedToAddItemsToCart', { error: multipleItemsFetcher.data.error?.message }), 'error');
             setIsAddingToOrUpdatingCart(false);
         }
         //As addToast, setIsAddingToOrUpdatingCart are unlikely to change, we don't need to include them in the dependency array
@@ -362,7 +362,7 @@ export function useProductActions({
             setIsAddingToOrUpdatingCart(false);
             setMiniCartOpen(true);
         } else if (bundleFetcher.data?.success === false) {
-            addToast(t('product:failedToAddBundleToCart', { error: bundleFetcher.data.error }), 'error');
+            addToast(t('product:failedToAddBundleToCart', { error: bundleFetcher.data.error?.message }), 'error');
             setIsAddingToOrUpdatingCart(false);
         }
         //As addToast, setIsAddingToOrUpdatingCart are unlikely to change, we don't need to include them in the dependency array
@@ -393,7 +393,7 @@ export function useProductActions({
         const result = wishlistFetcher.data as
             | {
                   success: boolean;
-                  error?: string;
+                  error?: { code: string; message: string };
                   alreadyInWishlist?: boolean;
               }
             | undefined;
@@ -427,7 +427,7 @@ export function useProductActions({
                 void navigate(location.pathname, { replace: true });
             }
 
-            addToast(result.error || t('product:failedToAddProductToWishlist'), 'error');
+            addToast(t('product:failedToAddProductToWishlist'), 'error');
         }
         //As addToast, navigate are unlikely to change, we don't need to include them in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -867,7 +867,7 @@ export function useProductActions({
                 });
                 // Check if remove succeeded
                 if (cartFetcher.data?.success === false) {
-                    throw new Error(cartFetcher.data.error || t('product:failedToRemoveItem'));
+                    throw new Error(t('product:failedToRemoveItem'));
                 }
 
                 // Then update the existing variant's quantity
@@ -897,7 +897,7 @@ export function useProductActions({
                         method: 'POST',
                         action: '/action/cart-item-add',
                     });
-                    throw new Error(cartFetcher.data.error || t('product:failedToUpdateItemQuantity'));
+                    throw new Error(t('product:failedToUpdateItemQuantity'));
                 }
             }
             // Case 3: User is selecting a different variant that doesn't exist in basket

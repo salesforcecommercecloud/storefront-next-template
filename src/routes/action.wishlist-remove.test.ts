@@ -184,7 +184,13 @@ describe('action.wishlist-remove', () => {
                 unstable_pattern: 'action/wishlist-remove',
             };
 
-            await expect(action(args)).rejects.toThrow();
+            const response = await action(args);
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(405);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error).toBeDefined();
+            expect(json.error.code).toBe('METHOD_NOT_ALLOWED');
         });
 
         test('should return error when both itemId and productId are missing', async () => {
@@ -543,8 +549,10 @@ describe('action.wishlist-remove', () => {
                 json = await extractResponseData(response);
             }
             expect(json.success).toBe(false);
+            // Error is now a structured ActionError object
             expect(json.error).toBeDefined();
-            expect(typeof json.error).toBe('string');
+            expect(json.error.code).toBeDefined();
+            expect(json.error.message).toBeDefined();
         });
 
         test('should find items in customerProductListItems field when items is empty', async () => {

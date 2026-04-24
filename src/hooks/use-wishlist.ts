@@ -73,7 +73,7 @@ export const useWishlist = () => {
                     next.delete(productId);
                     return next;
                 });
-                addToast(result.error || t('product:failedToAddToWishlist'), 'error');
+                addToast(t('product:failedToAddToWishlist'), 'error');
             }
         }
     }, [addFetcher.state, addFetcher.data, addToast, t]);
@@ -104,7 +104,7 @@ export const useWishlist = () => {
                     next.add(productId);
                     return next;
                 });
-                addToast(result.error || t('product:failedToAddToWishlist'), 'error');
+                addToast(t('product:failedToRemoveFromWishlist'), 'error');
             }
         }
     }, [removeFetcher.state, removeFetcher.data, addToast, t]);

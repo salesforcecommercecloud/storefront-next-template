@@ -5,6 +5,7 @@
 
 ## v0.4.0-dev (Apr 15, 2026)
 
+- Standardize action error handling with semantic error codes: actions return structured `{ code, message }` errors instead of plain strings (@W-21952674) ([#1508](https://github.com/commerce-emu/storefront-next/pull/1508))
 - Extract Vitest config into dedicated `vitest.config.ts`, inline coverage thresholds ([#1518](https://github.com/commerce-emu/storefront-next/pull/1518))
 - Add support for optional `sh` parameter to dynamic images ([#1503](https://github.com/commerce-emu/storefront-next/pull/1503))
 - [UX Fix] Fix broken radius overriding system, and minor UX changes according to design ([#1495](https://github.com/commerce-emu/storefront-next/pull/1495))

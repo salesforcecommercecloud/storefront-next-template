@@ -18,26 +18,19 @@ import { createApiClients } from '@/lib/api-clients';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
-import { getTranslation } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
-import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
+import { extractErrorMessage } from '@/lib/auth-error-handler';
 import { getLogger } from '@/lib/logger.server';
-
-type VerifyOtpResponse = {
-    success: boolean;
-    message?: string;
-    error?: string;
-    tokenResponse?: ShopperLogin.schemas['TokenResponse'];
-};
 
 /**
  * Server action to verify OTP code and authenticate the user
  * This is called when the user submits the OTP code from the modal
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<VerifyOtpResponse> {
+export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
 
     try {
         const formData = await request.formData();
@@ -45,17 +38,23 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const email = formData.get('email')?.toString();
 
         if (!otpCode) {
-            return {
-                success: false,
-                error: t('checkout:passwordlessLogin.otpRequired'),
-            };
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'OTP code is required' }),
+                },
+                { status: 400 }
+            );
         }
 
         if (!email) {
-            return {
-                success: false,
-                error: t('errors:customer.emailRequired'),
-            };
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
+                },
+                { status: 400 }
+            );
         }
 
         const clients = createApiClients(context);
@@ -109,49 +108,20 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         }
 
         logger.info('VerifyOtp: succeeded');
-        return {
+        return Response.json({
             success: true,
-            message: t('checkout:passwordlessLogin.loginSuccess'),
+            message: 'Login successful',
             tokenResponse,
-        };
+        });
     } catch (error: unknown) {
         logger.error('VerifyOtp: failed', { error });
-        let errorMessage: string = t('checkout:passwordlessLogin.invalidOtp');
-
-        // Try to extract the actual error message from the API response
-        if (error && typeof error === 'object') {
-            // Check if it's an ApiError with rawBody (priority check)
-            if ('rawBody' in error && typeof (error as { rawBody?: unknown }).rawBody === 'string') {
-                try {
-                    const rawBody = (error as { rawBody: string }).rawBody;
-                    const parsed = JSON.parse(rawBody) as { message?: unknown };
-                    if (typeof parsed.message === 'string') {
-                        errorMessage = parsed.message;
-                    }
-                } catch (parseError) {
-                    logger.error('VerifyOtp: failed to parse rawBody', { error: parseError });
-                }
-            }
-            // Only check message if we didn't find rawBody
-            else if ('message' in error && typeof (error as { message?: unknown }).message === 'string') {
-                const msg = (error as { message: string }).message;
-
-                // Try to parse message as JSON
-                try {
-                    const parsed = JSON.parse(msg) as { message?: unknown };
-                    if (typeof parsed.message === 'string') {
-                        errorMessage = parsed.message;
-                    }
-                } catch {
-                    // Not JSON, use the message as-is
-                    errorMessage = msg;
-                }
-            }
-        }
-
-        return {
-            success: false,
-            error: errorMessage,
-        };
+        const errorMessage = extractErrorMessage(error);
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
+            },
+            { status: 500 }
+        );
     }
 }

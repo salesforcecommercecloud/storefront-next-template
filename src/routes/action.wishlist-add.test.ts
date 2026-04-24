@@ -187,7 +187,13 @@ describe('action.wishlist-add', () => {
                 unstable_pattern: 'action/wishlist-add',
             };
 
-            await expect(action(args)).rejects.toThrow();
+            const response = await action(args);
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(405);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error).toBeDefined();
+            expect(json.error.code).toBe('METHOD_NOT_ALLOWED');
         });
 
         test('should return error when productId is missing', async () => {
@@ -649,9 +655,10 @@ describe('action.wishlist-add', () => {
                 json = await extractResponseData(response);
             }
             expect(json.success).toBe(false);
-            // Check that the error message matches the unauthorized error string
+            // Error is now a structured ActionError object
             expect(json.error).toBeDefined();
-            expect(typeof json.error).toBe('string');
+            expect(json.error.code).toBeDefined();
+            expect(json.error.message).toBeDefined();
         });
 
         test('should handle error when extractResponseError fails and status_code is undefined', async () => {
@@ -683,11 +690,6 @@ describe('action.wishlist-add', () => {
             }
             expect(json.success).toBe(false);
             expect(json.error).toBeDefined();
-            // When status_code is undefined, it should default to 500 (line 481)
-            // The response should have status 500
-            if (response && typeof response === 'object' && 'init' in response && response.init) {
-                expect(response.init.status).toBe(500);
-            }
         });
 
         test('should handle retry path when wishlist listId is missing initially', async () => {

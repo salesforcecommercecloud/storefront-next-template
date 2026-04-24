@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { data, type ActionFunctionArgs } from 'react-router';
-import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ActionFunctionArgs } from 'react-router';
+import { type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
-import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients';
-import { getTranslation } from '@/lib/i18next';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
@@ -32,23 +32,17 @@ async function addMultipleItemsToCart(
             storeId?: string | null;
         }
     >
-): Promise<{
-    success: boolean;
-    basket?: ShopperBasketsV2.schemas['Basket'];
-    error?: string;
-}> {
+) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
     logger.debug('CartSetAdd: starting addMultipleItemsToCart', { itemCount: productItems.length });
     const basketResource = await getBasket(context);
     const basket = basketResource.current;
 
     if (!basket) {
-        // This state should never happen as it would indicate that the basket middleware is broken
         logger.warn('CartSetAdd: no basket found');
         return {
             success: false,
-            error: t('errors:noBasketFound'),
+            error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }),
         };
     }
 
@@ -87,19 +81,8 @@ async function addMultipleItemsToCart(
             basket: updatedBasket,
         };
     } catch (error) {
-        if (error instanceof ApiError) {
-            logger.error('CartSetAdd: API error adding items', { error });
-            return {
-                success: false,
-                error: error.body?.detail || error.statusText,
-            };
-        }
         logger.error('CartSetAdd: failed', { error });
-        const { responseMessage } = await extractResponseError(error);
-        return {
-            success: false,
-            error: responseMessage,
-        };
+        return { success: false, error: createActionError({ error }) };
     }
 }
 
@@ -108,11 +91,19 @@ async function addMultipleItemsToCart(
  */
 export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
     logger.debug('CartSetAdd: action starting');
 
     if (request.method !== 'POST') {
-        throw new Response(t('product:methodNotAllowed'), { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.METHOD_NOT_ALLOWED,
+                    message: `Expected POST, got ${request.method}`,
+                }),
+            },
+            { status: 405 }
+        );
     }
 
     try {
@@ -121,23 +112,28 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         if (!productItemsJson) {
             logger.warn('CartSetAdd: missing productItems in form data');
-            throw new Error(t('product:productItemsRequired'));
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'productItems missing from form data',
+                    }),
+                },
+                { status: 400 }
+            );
         }
 
         const productItems = JSON.parse(productItemsJson);
         const result = await addMultipleItemsToCart(context, productItems);
 
-        logger.info('CartSetAdd: action succeeded');
+        if (!result.success) {
+            const status = result.error?.code === ErrorCode.NOT_FOUND ? 404 : 500;
+            return Response.json(result, { status });
+        }
         return Response.json(result);
     } catch (error) {
         logger.error('CartSetAdd: action failed', { error });
-        const { responseMessage, status_code } = await extractResponseError(error);
-        return data(
-            {
-                success: false,
-                error: responseMessage,
-            },
-            { status: Number(status_code) }
-        );
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

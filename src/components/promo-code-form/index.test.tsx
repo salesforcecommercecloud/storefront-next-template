@@ -186,7 +186,7 @@ describe('PromoCodeForm', () => {
 
         // Create a mock fetcher with error data
         const mockFetcher = createMockFetcher({
-            data: { success: false, error: errorMessage },
+            data: { success: false, error: { code: 'OPERATION_FAILED', message: errorMessage } },
         });
 
         // Mock the hook to return our fetcher with error data
@@ -205,8 +205,8 @@ describe('PromoCodeForm', () => {
         const submitButton = screen.getByRole('button', { name: t('cart:promoCode.apply') });
         await user.click(submitButton);
 
-        // Check if addToast was called with error message
-        expect(mockAddToast).toHaveBeenCalledWith(errorMessage, 'error');
+        // Check if addToast was called with translated error message (not raw server error)
+        expect(mockAddToast).toHaveBeenCalledWith(t('cart:promoCode.errorMessage'), 'error');
     });
 
     test('handles API error without specific message', async () => {

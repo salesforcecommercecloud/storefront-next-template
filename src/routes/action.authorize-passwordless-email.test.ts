@@ -47,9 +47,6 @@ describe('action.authorize-passwordless-email', () => {
         const { authorizePasswordless } = await import('@/middlewares/auth.server');
         vi.mocked(authorizePasswordless).mockImplementation(mockAuthorizePasswordless as typeof authorizePasswordless);
 
-        const { getTranslation } = await import('@/lib/i18next');
-        vi.mocked(getTranslation).mockReturnValue({ t: (key: string) => key } as ReturnType<typeof getTranslation>);
-
         const { extractErrorMessage, getPasswordlessErrorMessageKey } = await import('@/lib/auth-error-handler');
         vi.mocked(extractErrorMessage).mockReturnValue('error');
         vi.mocked(getPasswordlessErrorMessageKey).mockReturnValue('errors:genericTryAgain');
@@ -62,9 +59,12 @@ describe('action.authorize-passwordless-email', () => {
 
     it('rejects non-POST requests', async () => {
         const request = new Request('http://localhost/action/authorize-passwordless-email', { method: 'GET' });
-        const result = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
 
-        expect(result).toEqual({ success: false, error: 'errors:api.methodNotAllowed' });
+        expect(result.success).toBe(false);
+        expect(result.error).toBeTruthy();
+        expect(result.error.code).toBe('METHOD_NOT_ALLOWED');
     });
 
     it('rejects request when email is missing', async () => {
@@ -74,9 +74,12 @@ describe('action.authorize-passwordless-email', () => {
             body: formData,
         });
 
-        const result = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
 
-        expect(result).toEqual({ success: false, error: 'errors:customer.emailRequired' });
+        expect(result.success).toBe(false);
+        expect(result.error).toBeTruthy();
+        expect(result.error.code).toBe('REQUIRED_FIELD');
         expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
     });
 
@@ -90,9 +93,12 @@ describe('action.authorize-passwordless-email', () => {
             body: formData,
         });
 
-        const result = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
 
-        expect(result).toEqual({ success: false, error: 'errors:api.forbidden' });
+        expect(result.success).toBe(false);
+        expect(result.error).toBeTruthy();
+        expect(result.error.code).toBe('NOT_AUTHORIZED');
         expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
     });
 
@@ -107,7 +113,8 @@ describe('action.authorize-passwordless-email', () => {
             body: formData,
         });
 
-        const result = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
 
         expect(result).toEqual({ success: true, email: 'user@example.com' });
         expect(mockAuthorizePasswordless).toHaveBeenCalledWith(mockContext, { userid: 'user@example.com' });
@@ -143,7 +150,8 @@ describe('action.authorize-passwordless-email', () => {
             body: formData,
         });
 
-        const result = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
 
         expect(result.success).toBe(false);
         expect(result.error).toBeTruthy();

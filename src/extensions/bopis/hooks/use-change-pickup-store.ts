@@ -18,11 +18,12 @@ import { useTranslation } from 'react-i18next';
 import { useFetcher } from 'react-router';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import { useToast } from '@/components/toast';
+import type { ActionError } from '@/lib/error-codes';
 
 interface ChangePickupStoreResponse {
     success: boolean;
     basket?: unknown;
-    error?: string;
+    error?: ActionError;
 }
 
 /**
@@ -58,7 +59,7 @@ export function useChangePickupStore() {
             if (result.success) {
                 addToast(t('cart.pickupStoreInfo.storeChanged'), 'success');
             } else if (result.success === false || result.error) {
-                const errorMessage = result.error || t('cart.pickupStoreInfo.changeStoreError');
+                const errorMessage = result.error?.message || t('cart.pickupStoreInfo.changeStoreError');
                 addToast(errorMessage, 'error');
             }
         }

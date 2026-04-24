@@ -17,9 +17,10 @@ import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients';
 import { findOrCreateDeliveryShipment } from '@/extensions/multiship/lib/api/basket';
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
-import { createBasketSuccessResponse, createBasketErrorResponse } from '@/routes/types/action-responses';
+import { createBasketSuccessResponse } from '@/routes/types/action-responses';
 import type { ClientActionFunctionArgs } from 'react-router';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import type { CartItemUpdateData } from '@/lib/basket-schemas';
 
 /**
@@ -30,7 +31,7 @@ import type { CartItemUpdateData } from '@/lib/basket-schemas';
 export async function handleCartItemDeliveryOptionChange(
     data: CartItemUpdateData,
     context: ClientActionFunctionArgs['context']
-) {
+): Promise<Response | null> {
     const { itemId, productId, quantity, deliveryOption, storeId, inventoryId } = data;
 
     if (!deliveryOption) return null;
@@ -39,20 +40,44 @@ export async function handleCartItemDeliveryOptionChange(
         const basketResource = await getBasket(context);
         const freshBasket = basketResource.current;
         if (!freshBasket?.basketId) {
-            return createBasketErrorResponse('Basket ID is required.');
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'Basket ID is required.' }),
+                },
+                { status: 404 }
+            );
         }
         const clients = createApiClients(context);
         let targetShipment;
         if (deliveryOption === 'pickup') {
             if (!storeId || !inventoryId) {
-                return createBasketErrorResponse('Store and inventory ID required for pickup.');
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({
+                            code: ErrorCode.REQUIRED_FIELD,
+                            message: 'Store and inventory ID required for pickup.',
+                        }),
+                    },
+                    { status: 400 }
+                );
             }
             targetShipment = await findOrCreatePickupShipment(freshBasket, context, storeId);
         } else if (deliveryOption === 'delivery') {
             targetShipment = await findOrCreateDeliveryShipment(freshBasket, context);
         }
         if (!targetShipment) {
-            return createBasketErrorResponse('Could not find or create target shipment.');
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.OPERATION_FAILED,
+                        message: 'Could not find or create target shipment.',
+                    }),
+                },
+                { status: 500 }
+            );
         }
         await clients.shopperBasketsV2.updateItemInBasket({
             params: { path: { basketId: freshBasket.basketId, itemId } },
@@ -68,11 +93,8 @@ export async function handleCartItemDeliveryOptionChange(
             params: { path: { basketId: freshBasket.basketId } },
         });
         updateBasketResource(context, basket.data);
-        return createBasketSuccessResponse(basket.data);
+        return Response.json(createBasketSuccessResponse(basket.data));
     } catch (error) {
-        if (error instanceof ApiError) {
-            return createBasketErrorResponse(error.body?.detail || error.statusText);
-        }
-        return createBasketErrorResponse(error instanceof Error ? error.message : 'An unexpected error occurred');
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

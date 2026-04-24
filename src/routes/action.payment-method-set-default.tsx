@@ -16,6 +16,8 @@
 import { type ActionFunctionArgs } from 'react-router';
 import { setDefaultPaymentInstrument } from '@/lib/api/customer';
 import { getAuth } from '@/middlewares/auth.server';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -26,7 +28,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
     if (request.method !== 'POST') {
         logger.warn('PaymentMethodSetDefault: method not allowed', { method: request.method });
-        return Response.json({ success: false, error: 'Method not allowed' }, { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
+            },
+            { status: 405 }
+        );
     }
 
     const auth = getAuth(context);
@@ -34,7 +42,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
     if (!customerId) {
         logger.warn('PaymentMethodSetDefault: not authenticated');
-        return Response.json({ success: false, error: 'Not authenticated' }, { status: 401 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.NOT_AUTHENTICATED, message: 'Not authenticated' }),
+            },
+            { status: 401 }
+        );
     }
 
     logger.debug('PaymentMethodSetDefault: starting', { customerId });
@@ -45,23 +59,38 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         if (!paymentInstrumentId) {
             logger.warn('PaymentMethodSetDefault: missing payment instrument ID');
-            return Response.json({ success: false, error: 'Payment instrument ID is required' }, { status: 400 });
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'Payment instrument ID is required',
+                    }),
+                },
+                { status: 400 }
+            );
         }
 
         const success = await setDefaultPaymentInstrument(context, customerId, paymentInstrumentId);
 
         if (!success) {
             logger.error('PaymentMethodSetDefault: failed to set default', { customerId, paymentInstrumentId });
-            return Response.json({ success: false, error: 'Failed to set payment method as default' }, { status: 500 });
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.OPERATION_FAILED,
+                        message: 'Failed to set payment method as default',
+                    }),
+                },
+                { status: 500 }
+            );
         }
 
         logger.info('PaymentMethodSetDefault: succeeded', { customerId, paymentInstrumentId });
         return Response.json({ success: true });
     } catch (error) {
         logger.error('PaymentMethodSetDefault: failed', { error });
-        return Response.json(
-            { success: false, error: error instanceof Error ? error.message : 'Unknown error' },
-            { status: 500 }
-        );
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

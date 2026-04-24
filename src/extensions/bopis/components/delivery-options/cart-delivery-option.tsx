@@ -96,7 +96,7 @@ export default function CartDeliveryOption({ product }: CartDeliveryOptionProps)
                   interpolation: { escapeValue: false },
               })
             : tExtBopis('cart.deliveryOptionChangeError', {
-                  error: result.error || 'Unknown error',
+                  error: result.error?.message || 'Unknown error',
                   interpolation: { escapeValue: false },
               });
         addToast(errorMessage, 'error');

@@ -16,12 +16,13 @@
 
 import { getTranslation } from '@/lib/i18next';
 import type { useToast } from '@/components/toast';
+import type { ActionError } from '@/lib/error-codes';
 /**
  * Type definition for action response
  */
 export type ActionResponse = {
     success: boolean;
-    error?: string;
+    error?: ActionError;
     [key: string]: unknown;
 };
 
@@ -81,7 +82,7 @@ export const actionRegistry: Record<string, ActionHandler> = {
         },
         handleError: (result, _params, addToast) => {
             const { t } = getTranslation();
-            addToast(result.error || t('product:failedToAddToWishlist'), 'error');
+            addToast(result.error?.message || t('product:failedToAddToWishlist'), 'error');
         },
     },
 };
