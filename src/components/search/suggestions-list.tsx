@@ -57,15 +57,16 @@ const Suggestions: React.FC<SuggestionsProps> = ({ suggestions, searchPhrase, cl
 
     return (
         <div data-testid="sf-suggestion" className={cn('space-y-0', className)}>
-            <div className="-mx-4">
+            <div>
                 {suggestions.map((suggestion) => (
                     <button
                         key={suggestion.link}
+                        data-slot="suggestion"
                         onMouseDown={() => handleClick(suggestion)}
-                        className="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0">
+                        className="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0">
                         <div className="flex items-center">
-                            <div className="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0">
-                                {suggestion.image ? (
+                            {suggestion.image && (
+                                <div className="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0">
                                     <DynamicImage
                                         src={`${toImageUrl({ src: suggestion.image, config })}[?sw={width}]`}
                                         alt={suggestion.name || t('suggestionImageAlt')}
@@ -75,10 +76,10 @@ const Suggestions: React.FC<SuggestionsProps> = ({ suggestions, searchPhrase, cl
                                         }}
                                         loading="eager"
                                     />
-                                ) : null}
-                            </div>
+                                </div>
+                            )}
                             <div className="text-left">
-                                <span className="text-sm font-medium text-header-foreground">{suggestion.name}</span>
+                                <span className="text-sm font-medium">{suggestion.name}</span>
                             </div>
                         </div>
                     </button>

@@ -144,16 +144,17 @@ describe('SearchSuggestionsSection Component', () => {
             expect(screen.getByTestId('suggestions-grid')).toBeInTheDocument();
         });
 
-        it('should render container with correct classes', () => {
-            const { container } = renderWithRouter(
+        it('should render all suggestion sections', () => {
+            renderWithRouter(
                 <SearchSuggestionsSection
                     searchSuggestions={mockSearchSuggestions}
                     closeAndNavigate={mockCloseAndNavigate}
                 />
             );
 
-            const mainContainer = container.firstChild as HTMLElement;
-            expect(mainContainer).toHaveClass('p-6', 'space-y-0');
+            expect(screen.getAllByText('Categories').length).toBeGreaterThan(0);
+            expect(screen.getAllByTestId('suggestions-list').length).toBeGreaterThan(0);
+            expect(screen.getByTestId('suggestions-grid')).toBeInTheDocument();
         });
     });
 

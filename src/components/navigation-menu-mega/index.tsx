@@ -258,7 +258,7 @@ export default function ResponsiveNavigationMenu({
                                 })}
                                 propsContent={({ category }) => ({
                                     className: cn(
-                                        'px-9',
+                                        'section-container',
                                         hasBanner(category) &&
                                             (isVertical(category)
                                                 ? 'grid md:grid-cols-[1fr_.3fr] items-start'

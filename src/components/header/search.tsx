@@ -17,7 +17,7 @@ import { type FormEvent, type ReactElement, useCallback, useRef, useState, useEf
 import { useNavigate } from '@/hooks/use-navigate';
 import debounce from 'lodash.debounce';
 import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import { Search as SearchIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Suggestions from '@/components/search/suggestions';
@@ -33,7 +33,6 @@ import { UITarget } from '@/targets/ui-target';
 const RECENT_SEARCH_LIMIT = 5;
 const RECENT_SEARCH_KEY = 'recent-search-key';
 const RECENT_SEARCH_MIN_LENGTH = 3;
-const POPOVER_CONTENT_OFFSET = 12;
 
 export default function SearchBar(): ReactElement {
     const { t } = useTranslation('header');
@@ -194,23 +193,27 @@ export default function SearchBar(): ReactElement {
                         <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2" />
                     </div>
                 </form>
-                <PopoverContent
-                    className="w-screen p-0 border shadow-[0px_1px_12px_rgba(0,0,0,0.25)] max-h-[min(70vh,32rem)] overflow-y-auto"
-                    align="start"
-                    side="bottom"
-                    sideOffset={POPOVER_CONTENT_OFFSET}
-                    onOpenAutoFocus={(e) => e.preventDefault()}
-                    role="listbox"
-                    aria-label="Search suggestions">
-                    <Suggestions
-                        searchSuggestions={transformedSuggestions}
-                        recentSearches={getSessionJSONItem<string[]>(RECENT_SEARCH_KEY) || []}
-                        closeAndNavigate={closeAndNavigate}
-                        clearRecentSearches={clearRecentSearches}
-                        showShopperAgent={showShopperAgent}
-                        onShopperAgentClick={onShopperAgentClick}
-                    />
-                </PopoverContent>
+                {/* Note: Using a fixed div instead of PopoverContent because the search
+                    suggestions panel is designed to span the full page width while the trigger is input with limited width in the header.
+                    Using w-screen on Radix PopoverContent will include the scrollbar width, while the rest of page does not aware of scrollbar width
+                    this causing the content in Popover to completely miss aligned with the rest of the layout despite using the same section gutter class.
+                    Therefore, we go with traditional div to get control over styling for search result area*/}
+                {showSuggestions && (
+                    <div
+                        className="fixed left-0 right-0 z-50 border-b shadow-[0px_1px_12px_rgba(0,0,0,0.25)] max-h-[min(70vh,32rem)] overflow-y-auto bg-popover text-popover-foreground"
+                        style={{ top: 'var(--header-height)' }}
+                        role="listbox"
+                        aria-label={t('searchSuggestions')}>
+                        <Suggestions
+                            searchSuggestions={transformedSuggestions}
+                            recentSearches={getSessionJSONItem<string[]>(RECENT_SEARCH_KEY) || []}
+                            closeAndNavigate={closeAndNavigate}
+                            clearRecentSearches={clearRecentSearches}
+                            showShopperAgent={showShopperAgent}
+                            onShopperAgentClick={onShopperAgentClick}
+                        />
+                    </div>
+                )}
             </Popover>
         </UITarget>
     );

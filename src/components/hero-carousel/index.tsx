@@ -287,39 +287,41 @@ export function HeroCarouselPlain({
                 </CarouselContent>
             </Carousel>
 
-            {showDots && slides.length > 1 && (
-                <div
-                    className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2"
-                    role="tablist"
-                    aria-label="Slide navigation">
-                    {slides.map((slide, index) => (
-                        <DotButton
-                            key={`dot-${slide.id}`}
-                            index={index}
-                            isActive={currentSlide === index}
-                            totalSlides={slides.length}
-                            onClick={goToSlide}
-                        />
-                    ))}
-                </div>
-            )}
-
-            {showNavigation && slides.length > 1 && (
-                <div className="absolute bottom-6 right-6 z-30 flex gap-2">
-                    <NavigationButton
-                        direction="prev"
-                        onClick={() => api?.scrollPrev()}
-                        disabled={!canScrollPrev}
-                        currentSlide={currentSlide + 1}
-                        totalSlides={slides.length}
-                    />
-                    <NavigationButton
-                        direction="next"
-                        onClick={() => api?.scrollNext()}
-                        disabled={!canScrollNext}
-                        currentSlide={currentSlide + 1}
-                        totalSlides={slides.length}
-                    />
+            {slides.length > 1 && (
+                <div className="absolute bottom-6 inset-x-0 z-30 section-container">
+                    <div className="relative flex items-center justify-center">
+                        {showDots && (
+                            <div className="flex gap-2" role="tablist" aria-label="Slide navigation">
+                                {slides.map((slide, index) => (
+                                    <DotButton
+                                        key={`dot-${slide.id}`}
+                                        index={index}
+                                        isActive={currentSlide === index}
+                                        totalSlides={slides.length}
+                                        onClick={goToSlide}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                        {showNavigation && (
+                            <div className="absolute right-0 flex gap-2">
+                                <NavigationButton
+                                    direction="prev"
+                                    onClick={() => api?.scrollPrev()}
+                                    disabled={!canScrollPrev}
+                                    currentSlide={currentSlide + 1}
+                                    totalSlides={slides.length}
+                                />
+                                <NavigationButton
+                                    direction="next"
+                                    onClick={() => api?.scrollNext()}
+                                    disabled={!canScrollNext}
+                                    currentSlide={currentSlide + 1}
+                                    totalSlides={slides.length}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
 

@@ -32,7 +32,7 @@ describe('RecentSearches Component', () => {
     });
 
     it('should render empty wrapper when no recent searches', () => {
-        const { container } = renderWithRouter(
+        renderWithRouter(
             <RecentSearches
                 recentSearches={[]}
                 closeAndNavigate={mockCloseAndNavigate}
@@ -40,13 +40,12 @@ describe('RecentSearches Component', () => {
             />
         );
 
-        const wrapper = container.querySelector('.p-6');
-        expect(wrapper).toBeInTheDocument();
         expect(screen.queryByText('Recent Searches')).not.toBeInTheDocument();
+        expect(screen.queryByText('Clear recent searches')).not.toBeInTheDocument();
     });
 
     it('should render empty wrapper when recentSearches is undefined', () => {
-        const { container } = renderWithRouter(
+        renderWithRouter(
             <RecentSearches
                 recentSearches={undefined}
                 closeAndNavigate={mockCloseAndNavigate}
@@ -54,9 +53,8 @@ describe('RecentSearches Component', () => {
             />
         );
 
-        const wrapper = container.querySelector('.p-6');
-        expect(wrapper).toBeInTheDocument();
         expect(screen.queryByText('Recent Searches')).not.toBeInTheDocument();
+        expect(screen.queryByText('Clear recent searches')).not.toBeInTheDocument();
     });
 
     it('should render recent searches when provided', () => {
@@ -128,10 +126,10 @@ describe('RecentSearches Component', () => {
         expect(screen.getByText('Clear recent searches')).toBeInTheDocument();
     });
 
-    it('should render with proper styling classes', () => {
+    it('should render search items as interactive buttons', () => {
         const recentSearches = ['test'];
 
-        const { container } = renderWithRouter(
+        renderWithRouter(
             <RecentSearches
                 recentSearches={recentSearches}
                 closeAndNavigate={mockCloseAndNavigate}
@@ -139,7 +137,8 @@ describe('RecentSearches Component', () => {
             />
         );
 
-        const wrapper = container.querySelector('.p-6');
-        expect(wrapper).toBeInTheDocument();
+        const searchButton = screen.getByText('test');
+        expect(searchButton.tagName).toBe('BUTTON');
+        expect(searchButton).toHaveAttribute('type', 'button');
     });
 });

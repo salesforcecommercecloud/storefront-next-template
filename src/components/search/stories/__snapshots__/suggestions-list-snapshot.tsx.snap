@@ -6,11 +6,10 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
     class="space-y-0"
     data-testid="sf-suggestion"
   >
-    <div
-      class="-mx-4"
-    >
+    <div>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
+        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+        data-slot="suggestion"
       >
         <div
           class="flex items-center"
@@ -34,7 +33,7 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
             class="text-left"
           >
             <span
-              class="text-sm font-medium text-header-foreground"
+              class="text-sm font-medium"
             >
               Footwear
             </span>
@@ -42,7 +41,8 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
         </div>
       </button>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
+        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+        data-slot="suggestion"
       >
         <div
           class="flex items-center"
@@ -66,7 +66,7 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
             class="text-left"
           >
             <span
-              class="text-sm font-medium text-header-foreground"
+              class="text-sm font-medium"
             >
               Clothing
             </span>
@@ -74,19 +74,17 @@ exports[`SuggestionsList stories snapshot > Default story renders and matches sn
         </div>
       </button>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
+        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+        data-slot="suggestion"
       >
         <div
           class="flex items-center"
         >
           <div
-            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-          />
-          <div
             class="text-left"
           >
             <span
-              class="text-sm font-medium text-header-foreground"
+              class="text-sm font-medium"
             >
               Accessories
             </span>
@@ -106,11 +104,10 @@ exports[`SuggestionsList stories snapshot > SingleSuggestion story renders and m
     class="space-y-0"
     data-testid="sf-suggestion"
   >
-    <div
-      class="-mx-4"
-    >
+    <div>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
+        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+        data-slot="suggestion"
       >
         <div
           class="flex items-center"
@@ -134,7 +131,7 @@ exports[`SuggestionsList stories snapshot > SingleSuggestion story renders and m
             class="text-left"
           >
             <span
-              class="text-sm font-medium text-header-foreground"
+              class="text-sm font-medium"
             >
               Single Item
             </span>
@@ -152,11 +149,10 @@ exports[`SuggestionsList stories snapshot > WithProducts story renders and match
     class="space-y-0"
     data-testid="sf-suggestion"
   >
-    <div
-      class="-mx-4"
-    >
+    <div>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
+        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+        data-slot="suggestion"
       >
         <div
           class="flex items-center"
@@ -180,7 +176,7 @@ exports[`SuggestionsList stories snapshot > WithProducts story renders and match
             class="text-left"
           >
             <span
-              class="text-sm font-medium text-header-foreground"
+              class="text-sm font-medium"
             >
               Running Shoes
             </span>
@@ -188,7 +184,8 @@ exports[`SuggestionsList stories snapshot > WithProducts story renders and match
         </div>
       </button>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
+        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+        data-slot="suggestion"
       >
         <div
           class="flex items-center"
@@ -212,7 +209,7 @@ exports[`SuggestionsList stories snapshot > WithProducts story renders and match
             class="text-left"
           >
             <span
-              class="text-sm font-medium text-header-foreground"
+              class="text-sm font-medium"
             >
               Hiking Boots
             </span>
@@ -230,23 +227,19 @@ exports[`SuggestionsList stories snapshot > WithoutImages story renders and matc
     class="space-y-0"
     data-testid="sf-suggestion"
   >
-    <div
-      class="-mx-4"
-    >
+    <div>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
+        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+        data-slot="suggestion"
       >
         <div
           class="flex items-center"
         >
           <div
-            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-          />
-          <div
             class="text-left"
           >
             <span
-              class="text-sm font-medium text-header-foreground"
+              class="text-sm font-medium"
             >
               Category Without Image
             </span>
@@ -254,19 +247,17 @@ exports[`SuggestionsList stories snapshot > WithoutImages story renders and matc
         </div>
       </button>
       <button
-        class="w-full flex justify-start items-center px-4 py-0 hover:bg-accent hover:text-accent-foreground transition-colors text-sm mt-0"
+        class="w-full flex justify-start items-center pl-4 py-0 hover:bg-accent hover:text-foreground transition-colors text-sm mt-0"
+        data-slot="suggestion"
       >
         <div
           class="flex items-center"
         >
           <div
-            class="w-10 h-8 mr-4 rounded-full bg-transparent flex items-center justify-center overflow-hidden shrink-0"
-          />
-          <div
             class="text-left"
           >
             <span
-              class="text-sm font-medium text-header-foreground"
+              class="text-sm font-medium"
             >
               Another Category
             </span>
