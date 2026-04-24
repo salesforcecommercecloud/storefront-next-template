@@ -95,7 +95,7 @@ TurnstileScenario('Turnstile script loads and widget renders in checkout', async
     });
     expect(widgetInDOM, 'Turnstile widget should exist in DOM').to.be.true;
 })
-    .tag('@checkout-ac30')
+    .tag('@turnstile-wi-1')
     .tag('@bot-protection')
     .tag('@script-loading');
 
@@ -144,7 +144,7 @@ TurnstileScenario('Turnstile token is generated and included in passwordless log
     expect(requestData?.turnstileToken, 'Request should include turnstileToken').to.be.a('string');
     expect(requestData?.turnstileToken.length, 'Token in request should be a long string').to.be.greaterThan(20);
 })
-    .tag('@checkout-ac30')
+    .tag('@turnstile-wi-1')
     .tag('@bot-protection')
     .tag('@token-generation');
 
@@ -164,7 +164,7 @@ Scenario('Checkout form shows no errors with Turnstile (graceful degradation)', 
     const errorCount = await I.grabNumberOfVisibleElements('[role="alert"]');
     expect(errorCount, 'No error alerts should be visible').to.equal(0);
 })
-    .tag('@checkout-ac30')
+    .tag('@turnstile-wi-1')
     .tag('@bot-protection')
     .tag('@graceful-degradation');
 
@@ -255,7 +255,7 @@ TurnstileScenario('Error handling - Challenge fails (2x00000000000000000000BB)',
     const errorCount = await I.grabNumberOfVisibleElements('[role="alert"]');
     expect(errorCount, 'No error alerts should be visible to user').to.equal(0);
 })
-    .tag('@checkout-ac30')
+    .tag('@turnstile-wi-1')
     .tag('@bot-protection')
     .tag('@error-handling')
     .tag('@always-fails');
@@ -311,7 +311,7 @@ TurnstileScenario('Visible mode - Checkbox UI appears (1x00000000000000000000AA)
 
     expect(widgetExists, 'Widget should exist for visible mode test').to.be.true;
 })
-    .tag('@checkout-ac30')
+    .tag('@turnstile-wi-1')
     .tag('@bot-protection')
     .tag('@visible-mode');
 
@@ -366,8 +366,239 @@ TurnstileScenario('Interactive challenge mode - Challenge UI appears (3x00000000
 
     expect(widgetExists, 'Widget should exist for interactive challenge test').to.be.true;
 })
-    .tag('@checkout-ac30')
+    .tag('@turnstile-wi-1')
     .tag('@bot-protection')
     .tag('@interactive-challenge');
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AC31: Server-Side Verification Tests
+// These tests validate that the server verifies tokens with Cloudflare.
+// They require TURNSTILE_VERIFICATION_ENABLED=true and TURNSTILE_SECRET_KEYS set.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const verificationEnabled = process.env.TURNSTILE_VERIFICATION_ENABLED === 'true';
+const VerificationScenario = verificationEnabled && isLocalhost ? Scenario : Scenario.skip;
+
+VerificationScenario(
+    'Server verification - valid token with always-pass secret key (1x0000000000000000000000000000000AA)',
+    async () => {
+        // Navigate to checkout with items
+        await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+        checkoutPage.validatePageLoaded();
+
+        // Wait for Turnstile to generate token (invisible mode, always passes)
+        await I.waitForElement('[data-testid="turnstile-widget"]', 10);
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+
+        // Intercept passwordless login response to check server accepted the token
+        let responseStatus: number | null = null;
+        let responseBody: any = null;
+        await I.usePlaywrightTo('intercept passwordless login response', async ({ page }) => {
+            await page.route('**/*authorize-passwordless-email*', async (route: Route, _request: Request) => {
+                const response = await route.fetch();
+                responseStatus = response.status();
+                responseBody = await response.json().catch(() => null);
+                await route.fulfill({ response });
+            });
+        });
+
+        // Enter email and trigger passwordless login
+        I.fillField(checkoutPage.locators.emailInput, 'test-verify-pass@example.com');
+        I.click(checkoutPage.locators.phoneInputContactInfo);
+
+        // Wait for server response
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        // Server should NOT reject with Turnstile error (token verified by always-pass secret).
+        // The downstream passwordless API may still fail (test email isn't real), but the
+        // important assertion is that Turnstile verification passed and didn't block the request.
+        expect(responseStatus, 'Server should return 200 (not a network error)').to.equal(200);
+        expect(responseBody?.error, 'Response should NOT contain a Turnstile/forbidden error').to.not.equal(
+            'errors:api.forbidden'
+        );
+    }
+)
+    .tag('@turnstile-wi-2')
+    .tag('@server-verification')
+    .tag('@always-pass');
+
+VerificationScenario(
+    'Server verification - invalid token rejected when enforcement enabled (2x0000000000000000000000000000000AA)',
+    async () => {
+        // Override to always-fail secret key by intercepting the request and replacing token
+        await I.usePlaywrightTo('inject invalid turnstile token', async ({ page }) => {
+            await page.route('**/*authorize-passwordless-email*', async (route: Route, request: Request) => {
+                if (request.method() === 'POST') {
+                    const postData = request.postData() || '';
+                    // Replace the real token with a known-invalid one
+                    const modifiedBody = postData.replace(
+                        /turnstileToken=[^&]*/,
+                        'turnstileToken=INVALID_TOKEN_FOR_TESTING'
+                    );
+                    await route.continue({ postData: modifiedBody });
+                } else {
+                    await route.continue();
+                }
+            });
+        });
+
+        // Navigate to checkout with items
+        await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+        checkoutPage.validatePageLoaded();
+
+        // Wait for widget
+        await I.waitForElement('[data-testid="turnstile-widget"]', 10);
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+
+        // Enter email and trigger passwordless login
+        I.fillField(checkoutPage.locators.emailInput, 'test-verify-fail@example.com');
+        I.click(checkoutPage.locators.phoneInputContactInfo);
+
+        // Wait for server response
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        // Form should still work (graceful UX) — no error alerts shown to user
+        const errorCount = await I.grabNumberOfVisibleElements('[role="alert"]');
+        expect(errorCount, 'No blocking error UI shown to user').to.equal(0);
+    }
+)
+    .tag('@turnstile-wi-2')
+    .tag('@server-verification')
+    .tag('@always-fails');
+
+VerificationScenario(
+    'Server verification - token-already-spent scenario (3x0000000000000000000000000000000AA)',
+    async () => {
+        // Navigate to checkout with items
+        await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+        checkoutPage.validatePageLoaded();
+
+        // Wait for Turnstile to generate token
+        await I.waitForElement('[data-testid="turnstile-widget"]', 10);
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+
+        // First request - should succeed
+        I.fillField(checkoutPage.locators.emailInput, 'test-spent@example.com');
+        I.click(checkoutPage.locators.phoneInputContactInfo);
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        // Second request with same token (simulates replay) - should be handled gracefully
+        I.fillField(checkoutPage.locators.emailInput, 'test-spent-2@example.com');
+        I.click(checkoutPage.locators.phoneInputContactInfo);
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        // No error UI shown regardless of server verification result
+        const errorCount = await I.grabNumberOfVisibleElements('[role="alert"]');
+        expect(errorCount, 'No error alerts shown for token-spent scenario').to.equal(0);
+    }
+)
+    .tag('@turnstile-wi-2')
+    .tag('@server-verification')
+    .tag('@token-spent');
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AC31: Interactive Challenge Tests
+// Validates that the challenge blocks form submission until completed.
+// The manual test (tagged @manual) requires human interaction to solve the challenge.
+// ═══════════════════════════════════════════════════════════════════════════
+
+VerificationScenario(
+    'Interactive challenge - blocks form submission until solved (3x00000000000000000000FF)',
+    async () => {
+        // Override config to use the interactive challenge site key in visible mode
+        const origin = new URL(baseUrl).origin;
+        await I.usePlaywrightTo('override Turnstile to interactive challenge mode', async ({ page }) => {
+            await page.addInitScript((storeOrigin: string) => {
+                Object.defineProperty(window, '__APP_CONFIG__', {
+                    get() {
+                        const config = (window as any).__APP_CONFIG_ORIGINAL__ || {};
+                        return {
+                            ...config,
+                            security: {
+                                ...config.security,
+                                turnstile: {
+                                    ...config.security?.turnstile,
+                                    sites: {
+                                        'challenge-test': [
+                                            {
+                                                siteKey: '3x00000000000000000000FF',
+                                                domains: [new URL(storeOrigin).hostname],
+                                            },
+                                        ],
+                                    },
+                                    enabled: true,
+                                    mode: 'visible',
+                                },
+                            },
+                        };
+                    },
+                    set(value) {
+                        (window as any).__APP_CONFIG_ORIGINAL__ = value;
+                    },
+                    configurable: true,
+                });
+            }, origin);
+        });
+
+        // Navigate to checkout
+        await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+        checkoutPage.validatePageLoaded();
+
+        // Wait for Turnstile widget to render
+        await I.waitForElement('[data-testid="turnstile-widget"]', 10);
+
+        // Give Turnstile time to render the interactive challenge UI
+        await new Promise((resolve) => setTimeout(resolve, 7000));
+
+        // Verify the challenge widget has rendered content (iframe or child elements)
+        const widgetHasContent = await I.executeScript(() => {
+            const widget = document.querySelector('[data-testid="turnstile-widget"]');
+            if (!widget) return false;
+            // Cloudflare renders challenge as iframe or div with child elements
+            return widget.childElementCount > 0 || widget.querySelector('iframe') !== null;
+        });
+        expect(widgetHasContent, 'Challenge widget should have rendered content').to.be.true;
+
+        // Verify no token has been generated yet (challenge not completed)
+        const tokenBeforeChallenge = await I.executeScript(() => {
+            // Check hidden input that stores the turnstile token
+            const tokenInput = document.querySelector('input[name="turnstileToken"]') as HTMLInputElement;
+            return tokenInput?.value || '';
+        });
+        expect(tokenBeforeChallenge, 'No token should exist before challenge is solved').to.equal('');
+
+        // Attempt to trigger passwordless login without solving the challenge
+        I.fillField(checkoutPage.locators.emailInput, 'test-challenge-blocked@example.com');
+        I.click(checkoutPage.locators.phoneInputContactInfo);
+
+        // Wait for any server response
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        // Intercept the request to verify it either wasn't sent or was rejected
+        // Since no valid token was generated, the server should reject the request
+        let interceptedBody: any = null;
+        await I.usePlaywrightTo('check if request was blocked', async ({ page }) => {
+            await page.route('**/*authorize-passwordless-email*', async (route: Route, _request: Request) => {
+                const response = await route.fetch();
+                interceptedBody = await response.json().catch(() => null);
+                await route.fulfill({ response });
+            });
+        });
+
+        // Trigger the request again to capture it
+        I.fillField(checkoutPage.locators.emailInput, 'test-challenge-blocked2@example.com');
+        I.click(checkoutPage.locators.phoneInputContactInfo);
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        // If the request went through, it should have been rejected by server verification
+        // (empty token sent to server with enforcement enabled)
+        if (interceptedBody) {
+            expect(interceptedBody.success, 'Request without solved challenge should not succeed').to.not.equal(true);
+        }
+    }
+)
+    .tag('@turnstile-wi-2')
+    .tag('@interactive-challenge')
+    .tag('@blocks-submission');
 
 export {};

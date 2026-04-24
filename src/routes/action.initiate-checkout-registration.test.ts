@@ -32,6 +32,12 @@ vi.mock('@/lib/logger.server', () => ({
         debug: vi.fn(),
     })),
 }));
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
+    getConfig: vi.fn(() => ({})),
+}));
+vi.mock('@/lib/turnstile-enforce.server', () => ({
+    enforceTurnstile: vi.fn(),
+}));
 
 const mockCreateApiClients = vi.fn();
 const mockGetAuth = vi.fn();
@@ -44,9 +50,14 @@ describe('action.initiate-checkout-registration', () => {
     let mockRequest: Request;
     let mockContext: ActionFunctionArgs['context'];
     let mockPasswordlessAuthorize: ReturnType<typeof vi.fn>;
+    let mockEnforceTurnstile: ReturnType<typeof vi.fn>;
 
     beforeEach(async () => {
         vi.clearAllMocks();
+
+        const { enforceTurnstile } = await import('@/lib/turnstile-enforce.server');
+        mockEnforceTurnstile = vi.mocked(enforceTurnstile);
+        mockEnforceTurnstile.mockResolvedValue(true);
 
         // Setup default mocks
         mockPasswordlessAuthorize = vi.fn().mockResolvedValue({});
@@ -101,7 +112,9 @@ describe('action.initiate-checkout-registration', () => {
         const { getBasket } = await import('@/middlewares/basket.server');
         vi.mocked(getBasket).mockImplementation(mockGetBasket);
 
-        mockContext = {} as ActionFunctionArgs['context'];
+        mockContext = {
+            get: vi.fn(() => ({ getLocale: () => 'en-US' })),
+        } as unknown as ActionFunctionArgs['context'];
     });
 
     it('should successfully initiate registration with email from form data', async () => {
@@ -293,5 +306,60 @@ describe('action.initiate-checkout-registration', () => {
                 email: 'john@example.com',
             })
         );
+    });
+
+    it('should block request when enforceTurnstile returns false', async () => {
+        mockEnforceTurnstile.mockResolvedValue(false);
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+
+        mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+
+        expect(result).toEqual({ success: false, error: 'errors:api.forbidden' });
+        expect(mockPasswordlessAuthorize).not.toHaveBeenCalled();
+    });
+
+    it('should pass turnstileToken to enforceTurnstile', async () => {
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        formData.append('turnstileToken', 'test-token');
+
+        mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+            method: 'POST',
+            body: formData,
+        });
+
+        await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+
+        expect(mockEnforceTurnstile).toHaveBeenCalledWith(
+            expect.objectContaining({
+                turnstileToken: 'test-token',
+                actionName: 'initiate-checkout-registration',
+                email: 'user@example.com',
+            })
+        );
+    });
+
+    it('should not call SCAPI when Turnstile blocks the request', async () => {
+        mockEnforceTurnstile.mockResolvedValue(false);
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+
+        mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+            method: 'POST',
+            body: formData,
+        });
+
+        await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+
+        expect(mockPasswordlessAuthorize).not.toHaveBeenCalled();
+        expect(mockGetBasket).not.toHaveBeenCalled();
     });
 });

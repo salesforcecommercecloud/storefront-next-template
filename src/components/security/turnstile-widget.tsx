@@ -24,7 +24,9 @@ export interface TurnstileWidgetProps {
     onError?: (error: string) => void;
     onExpire?: () => void;
     enabled?: boolean;
-    mode?: 'invisible' | 'visible';
+    mode?: 'managed' | 'non-interactive' | 'invisible';
+    /** Mutable ref that receives a reset function. Call it to invalidate the current token and start a new challenge. */
+    resetRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export function TurnstileWidget({
@@ -33,12 +35,29 @@ export function TurnstileWidget({
     onError,
     onExpire,
     enabled = true,
-    mode = 'invisible',
+    mode = 'managed',
+    resetRef,
 }: TurnstileWidgetProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const widgetIdRef = useRef<string | null>(null);
     const isErrorRef = useRef<boolean>(false);
     const hasLoggedErrorRef = useRef<boolean>(false);
+
+    // Expose a reset function so the parent can request a fresh token
+    useEffect(() => {
+        if (resetRef) {
+            resetRef.current = () => {
+                if (widgetIdRef.current && window.turnstile) {
+                    window.turnstile.reset(widgetIdRef.current);
+                }
+            };
+        }
+        return () => {
+            if (resetRef) {
+                resetRef.current = null;
+            }
+        };
+    }, [resetRef]);
 
     useEffect(() => {
         if (!enabled || !siteKey || !containerRef.current) {
@@ -77,7 +96,8 @@ export function TurnstileWidget({
                             onExpire();
                         }
                     },
-                    appearance: mode === 'invisible' ? 'interaction-only' : 'always',
+                    appearance: 'interaction-only',
+                    execution: mode === 'non-interactive' ? 'execute' : 'render',
                     theme: 'auto',
                     size: 'normal',
                 });

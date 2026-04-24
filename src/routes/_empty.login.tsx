@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement } from 'react';
+import { type ReactElement, useState, useCallback, useMemo, useRef } from 'react';
 import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
@@ -25,11 +25,13 @@ import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import OtpModal from '@/components/login/otp-modal';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
 import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
-import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@/lib/i18next';
 import { updateBasketResource } from '@/middlewares/basket.server';
 import { buildUrlFromContext } from '@/lib/url.server';
+import { TurnstileWidget } from '@/components/security/turnstile-widget';
+import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
 
 // services
 import {
@@ -43,6 +45,7 @@ import { authorizeIDP } from '@/lib/api/auth/social-login';
 import { mergeBasket } from '@/lib/api/basket';
 import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
 import { getLogger } from '@/lib/logger.server';
+import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
 
 type LoginActionResponse = {
     success: boolean;
@@ -218,6 +221,19 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 return { success: false, error: genericError };
             }
 
+            const turnstileToken = formData.get('turnstileToken')?.toString();
+            const allowed = await enforceTurnstile({
+                request,
+                config,
+                turnstileToken,
+                logger,
+                actionName: 'login-passwordless',
+                email,
+            });
+            if (!allowed) {
+                return { success: false, error: t('errors:api.forbidden') };
+            }
+
             // Build redirectPath from returnUrl, action, and actionParams for passwordless flow
             const url = new URL(request.url);
             const returnUrl = url.searchParams.get('returnUrl');
@@ -323,6 +339,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 export default function Login({ loaderData }: { loaderData: LoginLoaderData }): ReactElement {
     const { t } = useTranslation('login');
     const actionData = useActionData<typeof action>();
+    const config = useConfig<AppConfig>();
 
     const {
         error: loaderError,
@@ -338,6 +355,30 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
         otpLength,
         pageUrl,
     } = loaderData;
+
+    // Turnstile for OTP resend — the PasswordlessLoginForm has its own widget for the
+    // initial submit, but once the OTP modal opens the resend needs a fresh token.
+    const [resendTurnstileToken, setResendTurnstileToken] = useState<string | null>(null);
+    const resendTurnstileResetRef = useRef<(() => void) | null>(null);
+    const turnstileEnabled = config ? isTurnstileEnabled(config) : false;
+    const turnstileSiteKey = useMemo(() => {
+        if (!config || !turnstileEnabled) return null;
+        if (typeof window !== 'undefined') {
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            return getTurnstileSiteKey(config, baseUrl);
+        }
+        return null;
+    }, [config, turnstileEnabled]);
+
+    const handleResendTurnstileSuccess = useCallback((token: string) => {
+        setResendTurnstileToken(token);
+    }, []);
+    const handleResendTurnstileError = useCallback(() => {
+        setResendTurnstileToken(null);
+    }, []);
+    const handleResendTurnstileExpire = useCallback(() => {
+        setResendTurnstileToken(null);
+    }, []);
 
     // Prefer actionData error (from form submission) over loaderData error (from URL params)
     const error = actionData?.error || loaderError || undefined;
@@ -413,6 +454,18 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                 </div>
             </div>
 
+            {/* Turnstile widget for OTP resend — hidden, generates tokens for the resend fetch */}
+            {showOTPModal && turnstileEnabled && turnstileSiteKey && (
+                <TurnstileWidget
+                    siteKey={turnstileSiteKey}
+                    onSuccess={handleResendTurnstileSuccess}
+                    onError={handleResendTurnstileError}
+                    onExpire={handleResendTurnstileExpire}
+                    enabled={turnstileEnabled}
+                    resetRef={resendTurnstileResetRef}
+                />
+            )}
+
             {/* OTP Modal - appears over the login page */}
             <OtpModal
                 isOpen={showOTPModal}
@@ -441,10 +494,18 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                     if (returnUrl) {
                         formData.append('redirectPath', returnUrl);
                     }
+                    if (resendTurnstileToken) {
+                        formData.append('turnstileToken', resendTurnstileToken);
+                    }
                     await fetch(window.location.pathname, {
                         method: 'POST',
                         body: formData,
                     });
+                    // Token is single-use — reset for the next resend
+                    if (turnstileEnabled) {
+                        setResendTurnstileToken(null);
+                        resendTurnstileResetRef.current?.();
+                    }
                 }}
             />
         </>

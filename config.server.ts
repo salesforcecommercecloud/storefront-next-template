@@ -447,13 +447,27 @@ export default defineConfig<Config>(
             },
             security: {
                 turnstile: {
-                    siteKeys: process.env.PUBLIC__security__turnstile__siteKeys
-                        ? JSON.parse(process.env.PUBLIC__security__turnstile__siteKeys)
-                        : {
-                              'http://localhost:5173': '1x00000000000000000000BB',
-                          },
+                    sites: (() => {
+                        if (!process.env.PUBLIC__security__turnstile__sites) return {};
+                        try {
+                            return JSON.parse(process.env.PUBLIC__security__turnstile__sites);
+                        } catch {
+                            // eslint-disable-next-line no-console
+                            console.error(
+                                '[Turnstile] Failed to parse PUBLIC__security__turnstile__sites — no sites configured (fail-closed)'
+                            );
+                            return {};
+                        }
+                    })(),
                     enabled: process.env.PUBLIC__security__turnstile__enabled !== 'false',
-                    mode: (process.env.PUBLIC__security__turnstile__mode as 'invisible' | 'visible') || 'invisible',
+                    mode:
+                        (process.env.PUBLIC__security__turnstile__mode as
+                            | 'managed'
+                            | 'non-interactive'
+                            | 'invisible') || 'managed',
+                    verification: {
+                        enabled: process.env.TURNSTILE_VERIFICATION_ENABLED === 'true',
+                    },
                 },
             },
         },

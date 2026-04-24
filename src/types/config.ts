@@ -257,9 +257,12 @@ export type AppConfig = {
     url?: Url;
     security?: {
         turnstile?: {
-            siteKeys: Record<string, string>;
+            sites: Record<string, Array<{ siteKey: string; domains: string[] }>>;
             enabled?: boolean;
-            mode?: 'invisible' | 'visible';
+            mode?: 'managed' | 'non-interactive' | 'invisible';
+            verification?: {
+                enabled: boolean;
+            };
         };
     };
 };

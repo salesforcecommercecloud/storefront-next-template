@@ -18,6 +18,9 @@ import { authorizePasswordless } from '@/middlewares/auth.server';
 import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
 import { getTranslation } from '@/lib/i18next';
 import { getLogger } from '@/lib/logger.server';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
 
 export type AuthorizePasswordlessEmailResponse = {
     success: boolean;
@@ -41,12 +44,27 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     try {
         const formData = await request.formData();
         const email = formData.get('email')?.toString()?.trim();
+        const turnstileToken = formData.get('turnstileToken')?.toString();
 
         if (!email) {
             return {
                 success: false,
                 error: t('errors:customer.emailRequired'),
             };
+        }
+
+        const appConfig = getConfig<AppConfig>(context);
+
+        const allowed = await enforceTurnstile({
+            request,
+            config: appConfig,
+            turnstileToken,
+            logger,
+            actionName: 'authorize-passwordless-email',
+            email,
+        });
+        if (!allowed) {
+            return { success: false, error: t('errors:api.forbidden') };
         }
 
         await authorizePasswordless(context, { userid: email });

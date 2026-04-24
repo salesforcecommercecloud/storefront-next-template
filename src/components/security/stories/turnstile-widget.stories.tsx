@@ -27,6 +27,7 @@ type TurnstileRenderOptions = {
     'error-callback'?: () => void;
     'expired-callback'?: () => void;
     appearance?: 'always' | 'execute' | 'interaction-only';
+    execution?: 'render' | 'execute';
     theme?: 'light' | 'dark' | 'auto';
     size?: 'normal' | 'compact';
 };
@@ -105,10 +106,10 @@ export const Default: Story = {
     },
 };
 
-export const VisibleMode: Story = {
+export const ManagedMode: Story = {
     args: {
         ...Default.args,
-        mode: 'visible',
+        mode: 'managed',
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);

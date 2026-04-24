@@ -15,58 +15,68 @@
  */
 
 /**
- * Turnstile Utility Functions
- * Feature Spec: e2e/feature-specs/checkout/turnstile-protection.spec.md
+ * Turnstile utility functions for site key lookup, secret key retrieval, and config helpers.
  */
 
 import type { AppConfig } from '@/types/config';
 
 /**
- * Get Turnstile site key for the current store URL
- *
- * Looks up the site key from config.security.turnstile.siteKeys using the provided base URL.
- * Tries exact match first, then falls back to protocol-agnostic match.
- *
- * @param config - Application configuration
- * @param baseUrl - Current store base URL (e.g., 'https://store1.example.com' or 'http://localhost:5173')
- * @returns Site key string if found, null otherwise
+ * Get Turnstile site key for the current store URL.
+ * Uses exact hostname matching (first-match across all groups).
  */
 export function getTurnstileSiteKey(config: AppConfig, baseUrl: string): string | null {
-    const siteKeys = config.security?.turnstile?.siteKeys || {};
-
-    // Try exact match first
-    if (siteKeys[baseUrl]) {
-        return siteKeys[baseUrl];
+    const sites = config.security?.turnstile?.sites;
+    if (!sites) {
+        return null;
     }
 
-    // Try without protocol (http:// or https://)
-    const urlWithoutProtocol = baseUrl.replace(/^https?:\/\//, '');
-    for (const [key, value] of Object.entries(siteKeys)) {
-        if (key.replace(/^https?:\/\//, '') === urlWithoutProtocol) {
-            return value;
+    const hostname = extractHostname(baseUrl);
+
+    for (const [, siteConfigs] of Object.entries(sites)) {
+        for (const siteConfig of siteConfigs) {
+            if (siteConfig.domains.includes(hostname)) {
+                return siteConfig.siteKey;
+            }
         }
     }
 
-    // No match found
     return null;
 }
 
-/**
- * Check if Turnstile is enabled in config
- *
- * @param config - Application configuration
- * @returns true if Turnstile is enabled, false otherwise
- */
+function extractHostname(urlString: string): string {
+    try {
+        return new URL(urlString).hostname;
+    } catch {
+        return urlString
+            .replace(/^https?:\/\//, '')
+            .split('/')[0]
+            .split(':')[0];
+    }
+}
+
+/** Get secret key for a given site key (server-side only). */
+export function getTurnstileSecretKey(siteKey: string): string | null {
+    if (typeof window !== 'undefined') {
+        return null;
+    }
+
+    try {
+        const secretKeys = process.env.TURNSTILE_SECRET_KEYS ? JSON.parse(process.env.TURNSTILE_SECRET_KEYS) : {};
+
+        return secretKeys[siteKey] || null;
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('[Turnstile] Failed to parse TURNSTILE_SECRET_KEYS:', error);
+        return null;
+    }
+}
+
+/** Check if Turnstile is enabled in config. */
 export function isTurnstileEnabled(config: AppConfig): boolean {
     return config.security?.turnstile?.enabled ?? true;
 }
 
-/**
- * Get Turnstile mode from config
- *
- * @param config - Application configuration
- * @returns 'invisible' or 'visible' mode
- */
-export function getTurnstileMode(config: AppConfig): 'invisible' | 'visible' {
-    return config.security?.turnstile?.mode || 'invisible';
+/** Get Turnstile mode from config. */
+export function getTurnstileMode(config: AppConfig): 'managed' | 'non-interactive' | 'invisible' {
+    return config.security?.turnstile?.mode || 'managed';
 }

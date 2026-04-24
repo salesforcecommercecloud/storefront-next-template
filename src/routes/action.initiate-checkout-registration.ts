@@ -16,11 +16,14 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { createApiClients } from '@/lib/api-clients';
 import { getAuth } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation, i18nextContext } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { getBasket } from '@/middlewares/basket.server';
 import { getLogger } from '@/lib/logger.server';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
 
 type InitiateRegistrationResponse = {
     success: boolean;
@@ -35,12 +38,32 @@ type InitiateRegistrationResponse = {
 export async function action({ request, context }: ActionFunctionArgs): Promise<InitiateRegistrationResponse> {
     const logger = getLogger(context);
     const { t } = getTranslation();
+    const locale = context.get(i18nextContext)?.getLocale();
 
     logger.debug('InitiateCheckoutRegistration: starting');
+
+    if (request.method !== 'POST') {
+        return { success: false, error: t('errors:api.methodNotAllowed') };
+    }
 
     try {
         const formData = await request.formData();
         const email = formData.get('email')?.toString();
+        const turnstileToken = formData.get('turnstileToken')?.toString();
+
+        const appConfig = getConfig<AppConfig>(context);
+
+        const allowed = await enforceTurnstile({
+            request,
+            config: appConfig,
+            turnstileToken,
+            logger,
+            actionName: 'initiate-checkout-registration',
+            email,
+        });
+        if (!allowed) {
+            return { success: false, error: t('errors:api.forbidden') };
+        }
 
         if (!email) {
             logger.debug('InitiateCheckoutRegistration: no email in form, checking basket');
@@ -103,7 +126,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             await clients.auth.passwordless.authorize({
                 userId: basketEmail,
                 mode: 'email',
-                locale: 'en-US',
+                ...(locale && { locale }),
                 usid: session.usid ? String(session.usid) : undefined,
                 registerCustomer: true,
                 firstName,
@@ -160,7 +183,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         await clients.auth.passwordless.authorize({
             userId: email,
             mode: 'email',
-            locale: 'en-US',
+            ...(locale && { locale }),
             usid: session.usid ? String(session.usid) : undefined,
             registerCustomer: true,
             firstName,

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
@@ -22,6 +22,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useBasket } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import { TurnstileWidget } from '@/components/security/turnstile-widget';
+import type { AppConfig } from '@/types/config';
+import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile-utils';
 
 interface RegisterCustomerSelectionProps {
     /** Callback when checkbox state changes - receives boolean value */
@@ -58,6 +61,36 @@ export default function RegisterCustomerSelection({
     const registrationFetcher = useFetcher<InitiateRegistrationResponse>({ key: 'checkout-registration' });
     const lastProcessedDataRef = useRef<InitiateRegistrationResponse | null>(null);
 
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const turnstileResetRef = useRef<(() => void) | null>(null);
+    const turnstileEnabled = config ? isTurnstileEnabled(config as AppConfig) : false;
+    const turnstileMode = config ? getTurnstileMode(config as AppConfig) : 'managed';
+    const turnstileSiteKey = useMemo(() => {
+        if (!config || !turnstileEnabled) return null;
+        if (typeof window !== 'undefined') {
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            return getTurnstileSiteKey(config as AppConfig, baseUrl);
+        }
+        return null;
+    }, [config, turnstileEnabled]);
+
+    const resetTurnstile = useCallback(() => {
+        setTurnstileToken(null);
+        turnstileResetRef.current?.();
+    }, []);
+
+    const handleTurnstileSuccess = useCallback((token: string) => {
+        setTurnstileToken(token);
+    }, []);
+
+    const handleTurnstileError = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
+
+    const handleTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
+
     const handleCheckboxChange = (checked: boolean) => {
         setShouldCreateAccount(checked);
         setError(null);
@@ -83,11 +116,16 @@ export default function RegisterCustomerSelection({
 
             const formData = new FormData();
             formData.append('email', email);
+            if (turnstileToken) {
+                formData.append('turnstileToken', turnstileToken);
+            }
 
             void registrationFetcher.submit(formData, {
                 method: 'POST',
                 action: '/action/initiate-checkout-registration',
             });
+            // Token is single-use — reset so resend gets a fresh one
+            if (turnstileEnabled) resetTurnstile();
         } else {
             if (typeof sessionStorage !== 'undefined') {
                 sessionStorage.removeItem('registeredViaCheckout');
@@ -141,12 +179,17 @@ export default function RegisterCustomerSelection({
     const handleResendCode = async () => {
         const formData = new FormData();
         formData.append('email', registrationEmail);
+        if (turnstileToken) {
+            formData.append('turnstileToken', turnstileToken);
+        }
 
         return new Promise<void>((resolve, _reject) => {
             void registrationFetcher.submit(formData, {
                 method: 'POST',
                 action: '/action/initiate-checkout-registration',
             });
+            // Token is single-use — reset so subsequent resends get a fresh one
+            if (turnstileEnabled) resetTurnstile();
 
             setTimeout(() => resolve(), 1000);
         });
@@ -181,6 +224,17 @@ export default function RegisterCustomerSelection({
 
     return (
         <div data-testid="register-customer-checkbox">
+            {turnstileEnabled && turnstileSiteKey && (
+                <TurnstileWidget
+                    siteKey={turnstileSiteKey}
+                    onSuccess={handleTurnstileSuccess}
+                    onError={handleTurnstileError}
+                    onExpire={handleTurnstileExpire}
+                    enabled={turnstileEnabled}
+                    mode={turnstileMode}
+                    resetRef={turnstileResetRef}
+                />
+            )}
             <label
                 htmlFor="create-account-checkbox"
                 className="flex cursor-pointer items-start gap-2 border border-input p-4">

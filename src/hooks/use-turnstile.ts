@@ -160,6 +160,7 @@ declare global {
                     'error-callback'?: () => void;
                     'expired-callback'?: () => void;
                     appearance?: 'always' | 'execute' | 'interaction-only';
+                    execution?: 'render' | 'execute';
                     theme?: 'light' | 'dark' | 'auto';
                     size?: 'normal' | 'compact';
                 }
