@@ -123,6 +123,7 @@ export function UITargetDevOverlay() {
                 next === null ? total : document.querySelectorAll(`[data-ui-target-hint="${next}"]`).length
             );
             applyHintFilter(next);
+            document.dispatchEvent(new CustomEvent('uitarget:collapse-all'));
         },
         [activeHint, total]
     );

@@ -20,7 +20,7 @@
  * It never exists in production (zero overhead).
  */
 
-import { useState, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { createLogger } from '@/lib/logger';
 import { DEV_COLORS as C } from './dev-colors';
 
@@ -45,6 +45,12 @@ export function UITargetDevMarker({ targetId, children, __file__, __hasChildren_
 
     const hasChildren = __hasChildren__ ?? false;
     const shortFile = __file__?.split('/').slice(-2).join('/') ?? 'unknown';
+
+    useEffect(() => {
+        const collapse = () => setExpanded(false);
+        document.addEventListener('uitarget:collapse-all', collapse);
+        return () => document.removeEventListener('uitarget:collapse-all', collapse);
+    }, []);
 
     const handleCopyId = () => {
         navigator.clipboard.writeText(targetId).then(
