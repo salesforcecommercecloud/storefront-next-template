@@ -113,13 +113,11 @@ export function processPage(
                     let visibleCount = 0;
 
                     for (const comp of components) {
-                        // @ts-expect-error - This isn't updated in the schema yet.
                         if (comp.visible) {
                             visibleCount++;
                         }
 
                         if (visibleCount > regionInfo.maxComponents) {
-                            // @ts-expect-error - This isn't updated in the schema yet.
                             result.push({ ...comp, visible: false });
                         } else {
                             result.push(comp);
@@ -169,7 +167,6 @@ export function processPage(
 
             let node: ShopperExperience.schemas['Component'] = {
                 ...ctx.node,
-                // @ts-expect-error - This isn't updated in the schema yet.
                 localized: isLocalized,
                 visible: isVisible,
                 data: {

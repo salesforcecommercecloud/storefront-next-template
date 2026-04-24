@@ -47,10 +47,7 @@ interface PageRegionProps extends HTMLAttributes<HTMLDivElement> {
     fallbackOnEmpty?: boolean;
 }
 
-export type ComponentType = ComponentDecoratorProps<ShopperExperience.schemas['Component']> & {
-    contentLinkUuid?: string;
-    fragment?: boolean;
-};
+export type ComponentType = ComponentDecoratorProps<ShopperExperience.schemas['Component']>;
 
 // Props when rendering a component-level region (nested)
 interface ComponentRegionProps extends HTMLAttributes<HTMLDivElement> {

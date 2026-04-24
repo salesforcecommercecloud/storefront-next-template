@@ -1,3 +1,8 @@
+## v0.4.0-dev (Apr 24, 2026)
+
+- Remove manual `contentLinkUuid` type extensions in favor of SCAPI types (@W-21280780)
+  - `ComponentType` now uses `contentLinkUuid`, `fragment`, `localized`, `visible` from Shopper Experience API v1.3.0
+
 ## v0.4.0-dev (Apr 15, 2026)
 
 - Extract Vitest config into dedicated `vitest.config.ts`, inline coverage thresholds ([#1518](https://github.com/commerce-emu/storefront-next/pull/1518))

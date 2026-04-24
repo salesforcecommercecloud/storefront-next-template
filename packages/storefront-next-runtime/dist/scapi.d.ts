@@ -16636,6 +16636,24 @@ interface components$9 {
        */
       typeId: string;
       /**
+       * Component Name
+       * @description Display name of the component.
+       * @example Topseller Carousel
+       */
+      name?: string;
+      /**
+       * Fragment
+       * @description Indicates whether the component is a fragment. True if the component is a fragment, otherwise false.
+       * @example false
+       */
+      fragment?: boolean;
+      /**
+       * Content Link UUID
+       * @description Represents a globally unique identifier for every instance of a content component (or fragment) rendered on a page.
+       * @example 0e1f329d4ac66ff2c3bbf70301
+       */
+      contentLinkUuid?: string;
+      /**
        * Component Data
        * @description The configuration data assigned to the component.
        * @example {
@@ -16644,6 +16662,18 @@ interface components$9 {
        *     }
        */
       data?: Record<string, never>;
+      /**
+       * Localized
+       * @description Whether the component has been localized with content in the current locale. If false, the components content will fallback to the default locale.
+       * @example true
+       */
+      localized?: boolean;
+      /**
+       * Visibility
+       * @description Whether the component is visible based on the current visiblity rules and context.
+       * @example true
+       */
+      visible?: boolean;
       /**
        * Custom Component Data
        * @description Any custom data added by the custom code for this component.

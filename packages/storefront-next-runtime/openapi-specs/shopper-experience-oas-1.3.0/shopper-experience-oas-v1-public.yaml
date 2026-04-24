@@ -3,7 +3,7 @@ info:
   x-api-type: Shopper
   x-api-family: Experience
   title: Shopper Experience
-  version: 1.2.1
+  version: 1.3.0
   description: |-
     [Download API specification](https://developer.salesforce.com/static/commercecloud/commerce-api/shopper-experience/shopper-experience-oas-v1-public.yaml)
 
@@ -517,6 +517,23 @@ components:
           description: Component type identifier.
           example: commerce_assets.carousel
           type: string
+        name:
+          maxLength: 256
+          title: Component Name
+          description: Display name of the component.
+          example: Topseller Carousel
+          type: string
+        fragment:
+          title: Fragment
+          description: Indicates whether the component is a fragment. True if the component is a fragment, otherwise false.
+          type: boolean
+          example: false
+        contentLinkUuid:
+          maxLength: 256
+          title: Content Link UUID
+          description: Represents a globally unique identifier for every instance of a content component (or fragment) rendered on a page.
+          type: string
+          example: 0e1f329d4ac66ff2c3bbf70301
         data:
           title: Component Data
           description: The configuration data assigned to the component.
@@ -525,6 +542,16 @@ components:
             category: topseller
           type: object
           additionalProperties: false
+        localized:
+          title: Localized
+          description: Whether the component has been localized with content in the current locale. If false, the components content will fallback to the default locale.
+          type: boolean
+          example: true
+        visible:
+          title: Visibility
+          description: Whether the component is visible based on the current visiblity rules and context.
+          type: boolean
+          example: true
         custom:
           title: Custom Component Data
           description: Any custom data added by the custom code for this component.
