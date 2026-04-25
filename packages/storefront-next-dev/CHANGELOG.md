@@ -1,3 +1,7 @@
+## v0.4.0-dev (Apr 24, 2026)
+
+- Extract i18n locale chunking into SDK Vite plugin (`i18nPlugin`): splits translation files into per-language chunks automatically
+
 ## v0.4.0-dev (Apr 10, 2026)
 
 - Fix HMR cascade in static registry plugin: skip unnecessary file writes and module reloads when registry content is unchanged

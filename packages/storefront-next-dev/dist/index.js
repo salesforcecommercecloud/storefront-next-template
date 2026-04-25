@@ -1683,6 +1683,39 @@ function ssrSourcemapFixPlugin() {
 }
 
 //#endregion
+//#region src/plugins/i18n.ts
+/**
+* Vite plugin that splits locale translation files into per-language chunks.
+*
+* Wraps any existing `manualChunks` configuration so that locale modules are
+* assigned to `locales-{lang}` chunks (e.g., `locales-en-GB`) while all other
+* module IDs are delegated to the user's original `manualChunks` function or object.
+*
+* @param config - Optional configuration for custom locale patterns
+* @returns A Vite plugin that configures locale-based code splitting
+*/
+function i18nPlugin(config) {
+	const pattern = config?.localePattern ?? /\/src\/locales\/([^/]+)\//;
+	return {
+		name: "storefront-next:i18n",
+		apply: "build",
+		config(viteConfig) {
+			const output = viteConfig.build?.rollupOptions?.output;
+			if (Array.isArray(output)) return;
+			const existingManualChunks = output?.manualChunks;
+			return { build: { rollupOptions: { output: { manualChunks(id, meta) {
+				const localeMatch = id.match(pattern);
+				if (localeMatch) return `locales-${localeMatch[1]}`;
+				if (typeof existingManualChunks === "function") return existingManualChunks.call(this, id, meta);
+				if (existingManualChunks && typeof existingManualChunks === "object") {
+					for (const [name, ids] of Object.entries(existingManualChunks)) if (ids.includes(id)) return name;
+				}
+			} } } } };
+		}
+	};
+}
+
+//#endregion
 //#region src/storefront-next-targets.ts
 /**
 * Storefront Next Vite plugin that powers the React Router app.
@@ -1714,6 +1747,7 @@ function storefrontNextTargets(config = {}) {
 	} } = config;
 	const plugins = [
 		...process.env.SCAPI_PROXY_HOST ? [workspacePlugin()] : [],
+		i18nPlugin(),
 		managedRuntimeBundlePlugin(),
 		fixReactRouterManifestUrlsPlugin(),
 		patchReactRouterPlugin(),

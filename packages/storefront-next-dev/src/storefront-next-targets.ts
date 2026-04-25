@@ -30,6 +30,7 @@ import { platformEntryPlugin } from './plugins/platformEntry';
 import { workspacePlugin } from './plugins/workspace';
 import { componentLoadersPlugin } from './plugins/componentLoaders';
 import { ssrSourcemapFixPlugin } from './plugins/ssrSourcemapFix';
+import { i18nPlugin } from './plugins/i18n';
 
 /**
  * Configuration options for the Storefront Next Vite plugin.
@@ -116,6 +117,7 @@ export function storefrontNextTargets(config: StorefrontNextTargetsConfig = {}):
 
     const plugins: Plugin[] = [
         ...(process.env.SCAPI_PROXY_HOST ? [workspacePlugin()] : []),
+        i18nPlugin(),
         managedRuntimeBundlePlugin(),
         fixReactRouterManifestUrlsPlugin(),
         patchReactRouterPlugin(),

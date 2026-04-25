@@ -22,10 +22,10 @@ describe('storefrontNextTargets', () => {
     // - Only testing order if plugin order actually matters for functionality
     // - Testing presence/absence of specific plugins rather than exact counts
     // Base plugin count without SCAPI_PROXY_HOST (workspace plugin excluded):
-    // managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter,
+    // i18n, managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter,
     // platformEntry, transformTargetPlaceholder, watchConfigFiles, buildMiddlewareRegistry,
     // ssrSourcemapFix, eventInstrumentationValidator
-    const BASE_PLUGIN_COUNT = 9;
+    const BASE_PLUGIN_COUNT = 10;
 
     it('should return an array of targets with default config', () => {
         const targets = storefrontNextTargets();
@@ -77,16 +77,17 @@ describe('storefrontNextTargets', () => {
         const targetNames = targets.map((t) => t.name);
 
         // Check order and presence (workspace plugin excluded without SCAPI_PROXY_HOST)
-        expect(targetNames[0]).toBe('storefront-next:managed-runtime-bundle');
-        expect(targetNames[1]).toBe('storefront-next:fix-react-router-manifest-urls');
-        expect(targetNames[2]).toBe('storefront-next:patch-react-router');
-        expect(targetNames[3]).toBe('storefront-next:platform-entry');
-        expect(targetNames[4]).toBe('storefront-next:transform-target-placeholder');
-        expect(targetNames[5]).toBe('storefront-next:watch-config-files');
-        expect(targetNames[6]).toBe('storefront-next:build-middleware-registry');
-        expect(targetNames[7]).toBe('storefront-next:ssr-sourcemap-fix');
-        expect(targetNames[8]).toBe('storefrontnext:event-instrumentation-validator');
-        expect(targetNames[9]).toBe('storefront-next:readable-chunk-file-names');
+        expect(targetNames[0]).toBe('storefront-next:i18n');
+        expect(targetNames[1]).toBe('storefront-next:managed-runtime-bundle');
+        expect(targetNames[2]).toBe('storefront-next:fix-react-router-manifest-urls');
+        expect(targetNames[3]).toBe('storefront-next:patch-react-router');
+        expect(targetNames[4]).toBe('storefront-next:platform-entry');
+        expect(targetNames[5]).toBe('storefront-next:transform-target-placeholder');
+        expect(targetNames[6]).toBe('storefront-next:watch-config-files');
+        expect(targetNames[7]).toBe('storefront-next:build-middleware-registry');
+        expect(targetNames[8]).toBe('storefront-next:ssr-sourcemap-fix');
+        expect(targetNames[9]).toBe('storefrontnext:event-instrumentation-validator');
+        expect(targetNames[10]).toBe('storefront-next:readable-chunk-file-names');
     });
 
     it('should accept StorefrontNextTargetsConfig type with readableChunkNames', () => {
