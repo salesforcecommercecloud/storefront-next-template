@@ -17,7 +17,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { AccountOverviewOrdersAwait } from './index';
-import type { CustomerOrdersResult } from '@/lib/api/order';
+import type { CustomerOrdersResult } from '@/lib/api/order.server';
 import type { Order } from '@/components/account/order-list';
 import { getTranslation } from '@/lib/i18next';
 import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';

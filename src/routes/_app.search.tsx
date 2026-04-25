@@ -16,7 +16,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
 import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { fetchSearchProducts } from '@/lib/api/search';
+import { fetchSearchProducts } from '@/lib/api/search.server';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
@@ -34,7 +34,7 @@ import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import {
     getInitialFiltersOpen,
     getSearchWithoutClientOnlyParams,

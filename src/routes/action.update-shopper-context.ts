@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { extractQualifiersFromInput, updateShopperContext } from '@/lib/shopper-context-utils';
+import { extractQualifiersFromInput, updateShopperContext } from '@/lib/shopper-context-utils.server';
 import { parseJsonToStringRecord } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
 import { createActionError } from '@/lib/action-error-helpers.server';

@@ -26,7 +26,7 @@ import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 const mockGetProduct = vi.hoisted(() => vi.fn());
 const mockGetCategory = vi.hoisted(() => vi.fn());
 
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
         shopperProducts: {
             getProduct: mockGetProduct,
@@ -49,7 +49,7 @@ const mockFetchPageWithComponentData = vi.hoisted(() =>
     )
 );
 
-vi.mock('@/lib/util/pageLoader', () => ({
+vi.mock('@/lib/util/pageLoader.server', () => ({
     fetchPageWithComponentData: mockFetchPageWithComponentData,
 }));
 

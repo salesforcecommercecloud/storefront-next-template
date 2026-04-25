@@ -35,7 +35,7 @@ const mockProductsById: Record<string, ShopperProducts.schemas['Product'] | unde
     } as ShopperProducts.schemas['Product'],
 };
 
-vi.mock('@/lib/api/order', () => ({
+vi.mock('@/lib/api/order.server', () => ({
     fetchOrderWithProducts: vi.fn(),
 }));
 
@@ -62,7 +62,7 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 import OrderDetailsPage, { loader, ErrorBoundary } from './_app.account.orders.$orderNo';
-import { fetchOrderWithProducts } from '@/lib/api/order';
+import { fetchOrderWithProducts } from '@/lib/api/order.server';
 
 function createOrderDetailsRouter(orderNo: string) {
     vi.mocked(fetchOrderWithProducts).mockImplementation((_context, orderNoParam) => ({

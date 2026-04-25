@@ -18,7 +18,7 @@ import { vi } from 'vitest';
 import { type ComponentType, Region, type RegionDesignMetadata } from './index';
 import type { RegionDefinitionConfig } from '@/lib/decorators';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
-import type { PageWithComponentData } from '@/lib/util/pageLoader';
+import type { PageWithComponentData } from '@/lib/util/pageLoader.server';
 import {
     useRegionContext,
     PageDesignerPageMetadataProvider,

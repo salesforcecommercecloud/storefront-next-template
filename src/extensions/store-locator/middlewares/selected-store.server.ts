@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type MiddlewareFunction, createContext as createRouterContext } from 'react-router';
-import { createCookie, getCookieConfig } from '@/lib/cookie-utils';
+import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 
 const COOKIE_SELECTED_STORE = 'selectedStoreInfo';

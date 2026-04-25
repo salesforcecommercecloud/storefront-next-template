@@ -23,8 +23,8 @@ import { type LoaderFunctionArgs, MemoryRouter } from 'react-router';
 import type { ShopperExperience, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import SearchPage, { loader, shouldRevalidate, type SearchPageData, SearchPageMetadata } from './_app.search';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
-import { fetchSearchProducts } from '@/lib/api/search';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchSearchProducts } from '@/lib/api/search.server';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
@@ -195,11 +195,11 @@ vi.mock('@/components/category-refinements/filters-button', () => ({
 vi.mock('@/components/category-sorting', () => ({
     default: () => <div data-testid="category-sorting" />,
 }));
-vi.mock('@/lib/api/search', () => ({
+vi.mock('@/lib/api/search.server', () => ({
     fetchSearchProducts: vi.fn(),
 }));
 
-vi.mock('@/lib/util/pageLoader', () => ({
+vi.mock('@/lib/util/pageLoader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
 }));
 

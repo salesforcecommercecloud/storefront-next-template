@@ -66,14 +66,14 @@ const mockAuth = {
     },
 };
 
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
         auth: mockAuth,
     })),
 }));
 
 // Mock cookie-utils
-vi.mock('@/lib/cookie-utils', () => ({
+vi.mock('@/lib/cookie-utils.server', () => ({
     createCookie: vi.fn(),
     getCookieConfig: vi.fn((overrides = {}) => ({
         httpOnly: false,
@@ -1239,7 +1239,7 @@ describe('auth middleware (server)', () => {
 
         beforeEach(async () => {
             // Get mocked modules
-            const cookieUtils = await import('@/lib/cookie-utils');
+            const cookieUtils = await import('@/lib/cookie-utils.server');
 
             mockParseAllCookies = cookieUtils.parseAllCookies;
             mockCreateCookie = cookieUtils.createCookie;

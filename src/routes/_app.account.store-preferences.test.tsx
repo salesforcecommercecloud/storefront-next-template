@@ -37,7 +37,7 @@ import { selectedStoreContext } from '@/extensions/store-locator/middlewares/sel
 
 const mockGetStores = vi.fn();
 
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: () => ({
         shopperStores: {
             getStores: mockGetStores,

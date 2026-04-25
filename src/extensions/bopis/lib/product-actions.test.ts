@@ -20,7 +20,7 @@ import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mock
 import { getTranslation } from '@/lib/i18next';
 import type { ToastType } from '@/components/toast';
 
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(),
 }));
 
@@ -28,7 +28,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     getConfig: vi.fn(),
 }));
 
-vi.mock('@/extensions/bopis/lib/api/shipment', () => ({
+vi.mock('@/extensions/bopis/lib/api/shipment.server', () => ({
     updateShipmentForPickup: vi.fn(),
 }));
 

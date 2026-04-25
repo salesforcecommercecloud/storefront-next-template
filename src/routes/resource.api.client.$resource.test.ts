@@ -50,7 +50,7 @@ const mockExtractResponseError = vi.mocked(extractResponseError);
 const mockGetErrorMessage = vi.mocked(getErrorMessage);
 
 // Mock the createApiClients function
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
         shopperCustomers: {
             getCustomer: mockShopperCustomersGetCustomer,

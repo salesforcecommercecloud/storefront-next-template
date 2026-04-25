@@ -15,7 +15,7 @@
  */
 import type { ActionFunctionArgs } from 'react-router';
 import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { createPromoCodeFormSchema } from '@/components/promo-code-form';
 import { getTranslation } from '@/lib/i18next';
 import { createActionError } from '@/lib/action-error-helpers.server';

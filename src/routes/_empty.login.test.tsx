@@ -21,9 +21,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import userEvent from '@testing-library/user-event';
 import { getAuth, authorizePasswordless, getPasswordLessAccessToken, updateAuth } from '@/middlewares/auth.server';
-import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
-import { authorizeIDP } from '@/lib/api/auth/social-login';
-import { mergeBasket } from '@/lib/api/basket';
+import { loginRegisteredUser } from '@/lib/api/auth/standard-login.server';
+import { authorizeIDP } from '@/lib/api/auth/social-login.server';
+import { mergeBasket } from '@/lib/api/basket.server';
 import { updateBasketResource } from '@/middlewares/basket.server';
 import { getAppOrigin, isAbsoluteURL, extractResponseError } from '@/lib/utils';
 
@@ -34,15 +34,15 @@ vi.mock('@/middlewares/auth.server', () => ({
     updateAuth: vi.fn(),
 }));
 
-vi.mock('@/lib/api/auth/standard-login', () => ({
+vi.mock('@/lib/api/auth/standard-login.server', () => ({
     loginRegisteredUser: vi.fn(),
 }));
 
-vi.mock('@/lib/api/auth/social-login', () => ({
+vi.mock('@/lib/api/auth/social-login.server', () => ({
     authorizeIDP: vi.fn(),
 }));
 
-vi.mock('@/lib/api/basket', () => ({
+vi.mock('@/lib/api/basket.server', () => ({
     mergeBasket: vi.fn(),
 }));
 

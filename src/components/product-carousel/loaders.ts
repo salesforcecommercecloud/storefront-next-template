@@ -16,7 +16,7 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperSearch, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
-import { fetchSearchProducts } from '@/lib/api/search';
+import { fetchSearchProducts } from '@/lib/api/search.server';
 
 /**
  * Fetches products for the carousel scoped to a category.

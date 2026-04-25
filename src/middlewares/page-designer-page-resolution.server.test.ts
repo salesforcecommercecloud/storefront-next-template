@@ -41,7 +41,7 @@ vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => mockLogger),
 }));
 
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
         shopperExperience: {
             resolveQualifiers: mockResolveQualifiers,

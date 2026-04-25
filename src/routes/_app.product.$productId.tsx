@@ -16,7 +16,7 @@
 import { use, useEffect, useRef, useMemo, Suspense, Fragment, lazy } from 'react';
 import { Await, type LoaderFunctionArgs } from 'react-router';
 import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import ProductContentSkeleton from '@/components/product-skeleton';
 import ProductView from '@/components/product-view';
@@ -39,7 +39,7 @@ import ProductContentProvider from '@/providers/product-content';
 import { ProductReviewsProvider } from '@/providers/product-reviews-context';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
 import { generateProductSchema } from '@/utils/product-schema';

@@ -32,7 +32,7 @@ import {
     AccountOverviewOrdersAwait,
     RecentOrdersSectionSkeleton,
 } from '../index';
-import type { CustomerOrdersResult } from '@/lib/api/order';
+import type { CustomerOrdersResult } from '@/lib/api/order.server';
 import heroNewArrivals from '/images/hero-02.webp';
 
 const mockCustomer = {

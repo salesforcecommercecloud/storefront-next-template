@@ -15,7 +15,7 @@
  */
 import { type ActionFunctionArgs, redirect } from 'react-router';
 import { destroyAuth as destroyAuthServer, getAuth } from '@/middlewares/auth.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { destroyBasket } from '@/middlewares/basket.server';
 import { getLogger } from '@/lib/logger.server';
 

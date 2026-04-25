@@ -27,9 +27,9 @@ import {
 } from '@salesforce/storefront-next-runtime/scapi';
 import CategoryPage, { loader, ProductListingPageMetadata, shouldRevalidate } from './_app.category.$categoryId';
 import { createTestContext } from '@/lib/test-utils';
-import { fetchCategory } from '@/lib/api/categories';
-import { fetchSearchProducts } from '@/lib/api/search';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchCategory } from '@/lib/api/categories.server';
+import { fetchSearchProducts } from '@/lib/api/search.server';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
@@ -189,15 +189,15 @@ vi.mock('@/components/json-ld', () => ({
 }));
 
 // Mock API functions
-vi.mock('@/lib/api/categories', () => ({
+vi.mock('@/lib/api/categories.server', () => ({
     fetchCategory: vi.fn(),
 }));
 
-vi.mock('@/lib/api/search', () => ({
+vi.mock('@/lib/api/search.server', () => ({
     fetchSearchProducts: vi.fn(),
 }));
 
-vi.mock('@/lib/util/pageLoader', () => ({
+vi.mock('@/lib/util/pageLoader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
 }));
 

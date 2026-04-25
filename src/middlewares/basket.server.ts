@@ -15,8 +15,8 @@
  */
 import { createContext, createCookie, type MiddlewareFunction, type RouterContextProvider } from 'react-router';
 import { type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { createApiClients } from '@/lib/api-clients';
-import { getCookieConfig } from '@/lib/cookie-utils';
+import { createApiClients } from '@/lib/api-clients.server';
+import { getCookieConfig } from '@/lib/cookie-utils.server';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
 

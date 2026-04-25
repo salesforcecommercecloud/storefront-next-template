@@ -17,7 +17,7 @@ import type { LoaderFunctionArgs } from 'react-router';
 import { ApiError, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
-import { fetchProductById } from '@/lib/api/products';
+import { fetchProductById } from '@/lib/api/products.server';
 import { getLogger } from '@/lib/logger.server';
 
 const dataLoader = async (args: { componentData: unknown; context: LoaderFunctionArgs['context'] }) => {

@@ -19,7 +19,7 @@ import { AccountOverview, AccountOverviewSkeleton } from '@/components/account/a
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
-import { fetchCustomerOrders, type CustomerOrdersResult } from '@/lib/api/order';
+import { fetchCustomerOrders, type CustomerOrdersResult } from '@/lib/api/order.server';
 import { getAuth } from '@/middlewares/auth.server';
 
 type Customer = ShopperCustomers.schemas['Customer'];

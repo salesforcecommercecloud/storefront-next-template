@@ -26,9 +26,9 @@ import {
     saveBillingAddressToCustomer,
     updateCustomerContactInfo,
     getCustomerProfileForCheckout,
-} from '@/lib/api/customer';
-import { getBasketCurrency, calculateBasket } from '@/lib/api/basket';
-import { createApiClients } from '@/lib/api-clients';
+} from '@/lib/api/customer.server';
+import { getBasketCurrency, calculateBasket } from '@/lib/api/basket.server';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 
 vi.mock('@/middlewares/basket.server', () => ({
@@ -49,13 +49,13 @@ vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
 }));
 
-vi.mock('@/extensions/multiship/lib/api/basket', () => ({
+vi.mock('@/extensions/multiship/lib/api/basket.server', () => ({
     resolveEmptyShipments: vi.fn(),
 }));
 
-vi.mock('@/lib/api-clients');
-vi.mock('@/lib/api/basket');
-vi.mock('@/lib/api/customer');
+vi.mock('@/lib/api-clients.server');
+vi.mock('@/lib/api/basket.server');
+vi.mock('@/lib/api/customer.server');
 vi.mock('@/lib/customer-profile-utils');
 vi.mock('@/lib/error-handler');
 vi.mock('@/lib/url.server', () => ({

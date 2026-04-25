@@ -16,7 +16,7 @@
 
 import { decodeBase64Url } from '@/lib/url';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import type { AppClients } from '@/scapi/custom-clients';
 import { ApiError, type OperationMethodsOnly } from '@salesforce/storefront-next-runtime/scapi';
 
@@ -286,7 +286,7 @@ export async function loader<
  * to handle the actual Commerce SDK method invocation.
  * @see {@link import('react-router').ActionFunction}
  * @see {@link import('@/hooks/use-scapi-fetcher.ts').useScapiFetcher}
- * @see {@link import('@/lib/api-clients').createApiClients}
+ * @see {@link import('@/lib/api-clients.server').createApiClients}
  */
 export async function action<
     R extends CommerceSdkMethodReturnType<C, M>,

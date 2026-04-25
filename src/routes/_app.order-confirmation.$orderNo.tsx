@@ -24,7 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/typography';
 import ProductImage from '@/components/product-image/product-image';
 import { formatCurrency } from '@/lib/currency';
-import { fetchOrderWithProducts } from '@/lib/api/order';
+import { fetchOrderWithProducts } from '@/lib/api/order.server';
 import { useBasketReset } from '@/providers/basket';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
@@ -43,7 +43,7 @@ import { useTranslation } from 'react-i18next';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores';
+import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores.server';
 import { getOrderDeliveryShipments, getOrderPickupShipment } from '@/extensions/bopis/lib/order-utils';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 import StoreDetails from '@/extensions/store-locator/components/store-locator/details';

@@ -15,7 +15,7 @@
  */
 import { type ActionFunctionArgs } from 'react-router';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
-import { savePaymentMethodToCustomer } from '@/lib/api/customer';
+import { savePaymentMethodToCustomer } from '@/lib/api/customer.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';

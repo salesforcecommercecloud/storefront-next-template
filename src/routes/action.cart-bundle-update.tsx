@@ -20,7 +20,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 
 // API
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 
 // Utils
 import { createBasketSuccessResponse } from './types/action-responses';

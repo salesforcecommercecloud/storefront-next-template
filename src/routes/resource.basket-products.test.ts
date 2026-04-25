@@ -24,7 +24,7 @@ vi.mock('@/middlewares/basket.server', () => ({
 }));
 
 // Mock createApiClients
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(),
 }));
 
@@ -56,7 +56,7 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 import { getBasket } from '@/middlewares/basket.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 
 describe('resource.basket-products', () => {
     let mockContext: ReturnType<typeof createTestContext>;

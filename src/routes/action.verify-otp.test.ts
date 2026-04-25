@@ -18,16 +18,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionFunctionArgs } from 'react-router';
 
 import { action } from './action.verify-otp';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
-import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket';
+import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getTranslation } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 
-vi.mock('@/lib/api-clients');
+vi.mock('@/lib/api-clients.server');
 vi.mock('@/middlewares/auth.server');
-vi.mock('@/lib/api/basket');
+vi.mock('@/lib/api/basket.server');
 vi.mock('@/middlewares/basket.server');
 vi.mock('@/lib/i18next');
 vi.mock('@/middlewares/auth.utils');

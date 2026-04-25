@@ -39,7 +39,7 @@ vi.mock('@/components/seo-meta', () => ({
 
 const mockFetchCustomerOrders = vi.fn();
 
-vi.mock('@/lib/api/order', () => ({
+vi.mock('@/lib/api/order.server', () => ({
     fetchCustomerOrders: (...args: any[]) => mockFetchCustomerOrders(...args),
 }));
 

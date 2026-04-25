@@ -15,7 +15,7 @@
  */
 import { use, useLayoutEffect } from 'react';
 import type { ActionFunctionArgs } from 'react-router';
-import { loader, type CheckoutPageData } from '@/lib/checkout-loaders';
+import { loader, type CheckoutPageData } from '@/lib/checkout-loaders.server';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';

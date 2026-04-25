@@ -18,7 +18,7 @@ import { redirect, Form, useActionData, type LoaderFunctionArgs, type ActionFunc
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
 // services
-import { registerCustomer } from '@/lib/api/auth/register';
+import { registerCustomer } from '@/lib/api/auth/register.server';
 
 // components
 import { SignupForm } from '@/components/signup-form';

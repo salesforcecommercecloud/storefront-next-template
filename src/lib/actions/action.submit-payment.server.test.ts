@@ -23,16 +23,16 @@ import {
     addPaymentInstrumentToBasket,
     removePaymentInstrumentFromBasket,
     updateBillingAddressForBasket,
-} from '@/lib/api/basket';
+} from '@/lib/api/basket.server';
 import { getTranslation } from '@/lib/i18next';
 import { getAuth } from '@/middlewares/auth.server';
-import { getCustomerProfileForCheckout } from '@/lib/api/customer';
+import { getCustomerProfileForCheckout } from '@/lib/api/customer.server';
 
 vi.mock('@/middlewares/basket.server');
-vi.mock('@/lib/api/basket');
+vi.mock('@/lib/api/basket.server');
 vi.mock('@/lib/i18next');
 vi.mock('@/middlewares/auth.server');
-vi.mock('@/lib/api/customer');
+vi.mock('@/lib/api/customer.server');
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
 }));

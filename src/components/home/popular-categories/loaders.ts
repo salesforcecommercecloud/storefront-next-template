@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { fetchCategories } from '@/lib/api/categories';
+import { fetchCategories } from '@/lib/api/categories.server';
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 

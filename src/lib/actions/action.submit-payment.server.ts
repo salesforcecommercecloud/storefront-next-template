@@ -21,11 +21,11 @@ import {
     addPaymentInstrumentToBasket,
     removePaymentInstrumentFromBasket,
     updateBillingAddressForBasket,
-} from '@/lib/api/basket';
+} from '@/lib/api/basket.server';
 import { detectCardType, normalizeCardType } from '@/lib/payment-utils';
 import { getTranslation } from '@/lib/i18next';
 import { getAuth } from '@/middlewares/auth.server';
-import { getCustomerProfileForCheckout, saveBillingAddressToCustomer } from '@/lib/api/customer';
+import { getCustomerProfileForCheckout, saveBillingAddressToCustomer } from '@/lib/api/customer.server';
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { getLogger } from '@/lib/logger.server';
 

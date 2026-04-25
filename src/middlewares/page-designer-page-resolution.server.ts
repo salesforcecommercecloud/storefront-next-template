@@ -35,7 +35,7 @@ import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@/lib/i18next';
 import { scapiMiddlewareContext } from '@/lib/scapi-middleware';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getLogger } from '@/lib/logger.server';
 import type { Logger } from '@/lib/logger';
 import { createInflate } from 'node:zlib';

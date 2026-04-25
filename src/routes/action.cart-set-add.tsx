@@ -16,12 +16,12 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
+import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment.server';
 import { assertAllProductItemsPickup } from '@/extensions/bopis/lib/product-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 

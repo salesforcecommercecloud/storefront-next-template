@@ -17,7 +17,7 @@ import { type ReactElement, Suspense } from 'react';
 import { Await, type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs } from 'react-router';
 import { type ShopperCustomers, type ShopperProducts, ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.server';
-import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist';
+import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist.server';
 import { WishlistPageContent, WishlistSkeleton } from '@/components/wishlist/wishlist-page';
 import { SeoMeta } from '@/components/seo-meta';
 import { getLogger } from '@/lib/logger.server';

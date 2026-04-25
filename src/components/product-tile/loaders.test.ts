@@ -16,10 +16,10 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { loader } from './loaders';
-import { fetchProductById } from '@/lib/api/products';
+import { fetchProductById } from '@/lib/api/products.server';
 import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 
-vi.mock('@/lib/api/products', () => ({
+vi.mock('@/lib/api/products.server', () => ({
     fetchProductById: vi.fn(),
 }));
 

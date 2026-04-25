@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { i18nextContext } from '@/lib/i18next';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';

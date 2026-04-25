@@ -20,13 +20,13 @@ import type { ActionFunctionArgs } from 'react-router';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 
 // Utils
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { createBasketSuccessResponse } from '@/routes/types/action-responses';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 
-import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
+import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment.server';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/lib/basket-schemas';

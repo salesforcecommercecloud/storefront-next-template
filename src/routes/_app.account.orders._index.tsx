@@ -24,7 +24,7 @@ import {
     DEFAULT_ORDERS_OFFSET,
     DEFAULT_ORDERS_LIMIT,
     type CustomerOrdersResult,
-} from '@/lib/api/order';
+} from '@/lib/api/order.server';
 import { Card, CardContent } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
 import { SeoMeta } from '@/components/seo-meta';

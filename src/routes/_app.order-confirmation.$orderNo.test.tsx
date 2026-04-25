@@ -95,7 +95,7 @@ vi.mock('react-router', () => ({
 
 const mockGetProducts = vi.fn().mockResolvedValue({ data: { data: [] } });
 
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
         shopperOrders: {
             getOrder: vi.fn(),
@@ -116,7 +116,7 @@ vi.mock('@/lib/payment-utils', () => ({
 }));
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-vi.mock('@/extensions/bopis/lib/api/stores', () => ({
+vi.mock('@/extensions/bopis/lib/api/stores.server', () => ({
     fetchStoresForOrder: vi.fn(),
 }));
 
@@ -142,9 +142,9 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 // Import the functions we want to test
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores';
+import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores.server';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 describe('Order Confirmation Route', () => {

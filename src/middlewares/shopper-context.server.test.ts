@@ -17,9 +17,9 @@ import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
 import shopperContextMiddleware from './shopper-context.server';
 import { createTestContext } from '@/lib/test-utils';
-import { createShopperContext } from '@/lib/api/shopper-context';
+import { createShopperContext } from '@/lib/api/shopper-context.server';
 import { getAuth } from './auth.server';
-import { createCookie, getCookieConfig } from '@/lib/cookie-utils';
+import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 
 vi.mock('@/lib/shopper-context-constants', async (importOriginal) => {
@@ -40,7 +40,7 @@ vi.mock('@/lib/shopper-context-constants', async (importOriginal) => {
     };
 });
 
-vi.mock('@/lib/api/shopper-context', () => ({
+vi.mock('@/lib/api/shopper-context.server', () => ({
     createShopperContext: vi.fn(),
 }));
 
@@ -48,8 +48,8 @@ vi.mock('./auth.server', () => ({
     getAuth: vi.fn(),
 }));
 
-vi.mock('@/lib/cookie-utils', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@/lib/cookie-utils')>();
+vi.mock('@/lib/cookie-utils.server', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/cookie-utils.server')>();
     return {
         ...actual,
         getCookieConfig: vi.fn(() => ({
@@ -307,7 +307,7 @@ describe('shopper-context.server', () => {
 
         test('should set context cookie when hasNewContext is true', async () => {
             // Mock extractQualifiersFromUrl to return qualifiers (not sourceCode) to trigger hasNewContext path
-            const shopperContextUtils = await import('@/lib/shopper-context-utils');
+            const shopperContextUtils = await import('@/lib/shopper-context-utils.server');
             const extractQualifiersFromUrlSpy = vi
                 .spyOn(shopperContextUtils, 'extractQualifiersFromUrl')
                 .mockReturnValue({
@@ -343,7 +343,7 @@ describe('shopper-context.server', () => {
 
         test('should set both sourceCode and context cookies when both are present', async () => {
             // Mock extractQualifiersFromUrl to return both sourceCode and qualifiers
-            const shopperContextUtils = await import('@/lib/shopper-context-utils');
+            const shopperContextUtils = await import('@/lib/shopper-context-utils.server');
             const extractQualifiersFromUrlSpy = vi
                 .spyOn(shopperContextUtils, 'extractQualifiersFromUrl')
                 .mockReturnValue({

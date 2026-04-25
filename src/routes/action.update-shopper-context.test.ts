@@ -17,12 +17,12 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import type { ActionFunctionArgs } from 'react-router';
 import { action } from './action.update-shopper-context';
 import { getAuth } from '@/middlewares/auth.server';
-import { updateShopperContext } from '@/lib/shopper-context-utils';
+import { updateShopperContext } from '@/lib/shopper-context-utils.server';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 
 vi.mock('@/middlewares/auth.server');
-vi.mock('@/lib/shopper-context-utils', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@/lib/shopper-context-utils')>();
+vi.mock('@/lib/shopper-context-utils.server', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/shopper-context-utils.server')>();
     return { ...actual, updateShopperContext: vi.fn() };
 });
 vi.mock('@/lib/logger.server', () => ({

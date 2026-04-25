@@ -28,7 +28,7 @@ const mockGetProducts = vi.fn();
 const mockGetPromotions = vi.fn();
 const mockGetStores = vi.fn();
 
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
         shopperProducts: { getProducts: mockGetProducts },
         shopperPromotions: { getPromotions: mockGetPromotions },

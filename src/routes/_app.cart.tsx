@@ -16,13 +16,7 @@
 import { type ReactElement, Suspense } from 'react';
 
 // React Router
-import {
-    Await,
-    useLoaderData,
-    type ClientLoaderFunctionArgs,
-    type LoaderFunction,
-    type LoaderFunctionArgs,
-} from 'react-router';
+import { Await, useLoaderData, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 
 // Commerce SDK
 import {
@@ -36,7 +30,7 @@ import {
 import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares/basket.server';
 
 // API
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 // Logging
@@ -50,7 +44,7 @@ import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
-import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores';
+import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores.server';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
@@ -78,7 +72,7 @@ type CartPageData = {
  * @returns Promise that resolves to a mapping of promotion IDs to promotion data
  */
 async function fetchPromotionsForBasket(
-    context: ClientLoaderFunctionArgs['context'],
+    context: LoaderFunctionArgs['context'],
     productItems: ShopperBasketsV2.schemas['ProductItem'][]
 ): Promise<Record<string, ShopperPromotions.schemas['Promotion']>> {
     const productIds = productItems?.map((item) => item.productId).filter(Boolean);
@@ -143,7 +137,7 @@ async function fetchPromotionsForBasket(
  * @returns Promise that resolves to a mapping of item IDs to product data.
  */
 async function fetchProductsInBasket(
-    context: ClientLoaderFunctionArgs['context'],
+    context: LoaderFunctionArgs['context'],
     basket: ShopperBasketsV2.schemas['Basket'] | null
 ): Promise<{
     productsByItemId: Record<string, ShopperProducts.schemas['Product']>;

@@ -106,7 +106,7 @@ The CategoryBreadcrumbs component is used on:
 
 \`\`\`tsx
 import CategoryBreadcrumbs from '../category-breadcrumbs';
-import { getCategory } from '@/lib/api/categories';
+import { getCategory } from '@/lib/api/categories.server';
 
 function CategoryPage({ categoryId }) {
   const category = await getCategory(categoryId);

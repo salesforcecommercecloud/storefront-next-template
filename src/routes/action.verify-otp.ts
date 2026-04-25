@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
-import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket';
+import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';

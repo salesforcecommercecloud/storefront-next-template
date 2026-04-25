@@ -21,7 +21,7 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket } from '@/middlewares/basket.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';

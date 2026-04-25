@@ -20,7 +20,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 
 // API
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 
 // Utils
 import { cartItemUpdateSchema, parseCartItemUpdateFromFormData } from '@/lib/basket-schemas';
@@ -30,7 +30,7 @@ import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 
 // @sfdc-extension-line SFDC_EXT_BOPIS
-import { handleCartItemDeliveryOptionChange } from '@/extensions/bopis/lib/actions/cart-item-delivery-option-handler';
+import { handleCartItemDeliveryOptionChange } from '@/extensions/bopis/lib/actions/cart-item-delivery-option-handler.server';
 
 /**
  * Server action for updating a cart item (variant and/or quantity)

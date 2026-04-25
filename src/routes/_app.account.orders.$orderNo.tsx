@@ -34,7 +34,7 @@ import ProductContentProvider from '@/providers/product-content';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
-import { fetchOrderWithProducts } from '@/lib/api/order';
+import { fetchOrderWithProducts } from '@/lib/api/order.server';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { getLogger } from '@/lib/logger.server';
 

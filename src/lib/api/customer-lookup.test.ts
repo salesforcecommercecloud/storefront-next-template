@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { customerLookup, getCustomerProfileForCheckout } from './customer';
+import { customerLookup, getCustomerProfileForCheckout } from './customer.server';
 import { getAuth } from '@/middlewares/auth.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { createTestContext } from '@/lib/test-utils';
 
 // Define proper types for the mock client
@@ -31,7 +31,7 @@ const mockClient: MockShopperCustomersClient = {
 
 // Mock the dependencies
 vi.mock('@/middlewares/auth.server');
-vi.mock('@/lib/api-clients');
+vi.mock('@/lib/api-clients.server');
 
 const mockContext = createTestContext();
 

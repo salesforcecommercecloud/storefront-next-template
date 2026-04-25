@@ -18,7 +18,7 @@ import { action } from './action.initiate-checkout-registration';
 import type { ActionFunctionArgs } from 'react-router';
 
 // Mock dependencies
-vi.mock('@/lib/api-clients');
+vi.mock('@/lib/api-clients.server');
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/i18next');
 vi.mock('@/middlewares/auth.utils');
@@ -97,7 +97,7 @@ describe('action.initiate-checkout-registration', () => {
             },
         });
 
-        const { createApiClients } = await import('@/lib/api-clients');
+        const { createApiClients } = await import('@/lib/api-clients.server');
         vi.mocked(createApiClients).mockImplementation(mockCreateApiClients);
 
         const { getAuth } = await import('@/middlewares/auth.server');

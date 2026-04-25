@@ -29,7 +29,7 @@ import { useNavigate } from '@/hooks/use-navigate';
 import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
 import { AppDownloadSection } from '@/components/account/app-download-section';
 import { AccountHelp } from '@/components/account/account-help';
-import type { CustomerOrdersResult } from '@/lib/api/order';
+import type { CustomerOrdersResult } from '@/lib/api/order.server';
 import { UITarget } from '@/targets/ui-target';
 import { RateRecentPurchasesCard } from '@/components/account/account-overview/rate-recent-purchases-card';
 

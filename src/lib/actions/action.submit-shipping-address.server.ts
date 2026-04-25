@@ -16,17 +16,17 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { ensureBasketId, getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { extractResponseError } from '@/lib/utils';
 import { createShippingAddressSchema, parseShippingAddressFromFormData } from '@/lib/checkout-schemas';
 import { getTranslation } from '@/lib/i18next';
-import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders';
-import { saveShippingAddressToCustomer, getCurrentCustomer } from '@/lib/api/customer';
+import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders.server';
+import { saveShippingAddressToCustomer, getCurrentCustomer } from '@/lib/api/customer.server';
 import { getAddressKey, isAddressEmpty, isAddressEqual, isOrderBillingAddressIncomplete } from '@/lib/address-utils';
 // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
-import { handleMultiShipShippingAddress } from '@/extensions/multiship/lib/actions/checkout-submit-multi-address';
-import { assignProductsToDefaultShipment } from '@/extensions/multiship/lib/api/basket';
+import { handleMultiShipShippingAddress } from '@/extensions/multiship/lib/actions/checkout-submit-multi-address.server';
+import { assignProductsToDefaultShipment } from '@/extensions/multiship/lib/api/basket.server';
 // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
 import { getLogger } from '@/lib/logger.server';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ActionFunctionArgs } from 'react-router';
-import { deleteCustomerPaymentInstrument } from '@/lib/api/customer';
+import { deleteCustomerPaymentInstrument } from '@/lib/api/customer.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';

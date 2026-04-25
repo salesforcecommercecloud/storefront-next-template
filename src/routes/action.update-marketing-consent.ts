@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { type UpdateSubscriptionBody, updateSubscriptionsBulk } from '@/lib/api/consent';
+import { type UpdateSubscriptionBody, updateSubscriptionsBulk } from '@/lib/api/consent.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';

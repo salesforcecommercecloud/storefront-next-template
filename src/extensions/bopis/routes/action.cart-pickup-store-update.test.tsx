@@ -19,18 +19,18 @@ import { action as actionImpl } from './action.cart-pickup-store-update';
 
 const action = actionImpl as unknown as (args: any) => ReturnType<typeof actionImpl>;
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
-import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
+import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment.server';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 vi.mock('@/middlewares/basket.server');
-vi.mock('@/extensions/bopis/lib/api/shipment');
+vi.mock('@/extensions/bopis/lib/api/shipment.server');
 vi.mock('@/lib/inventory-utils');
 vi.mock('@/extensions/bopis/lib/basket-utils');
-vi.mock('@/lib/api-clients');
+vi.mock('@/lib/api-clients.server');
 vi.mock('@/lib/utils', () => ({
     extractResponseError: vi.fn((error) => ({
         responseMessage: error instanceof Error ? error.message : 'Unknown error',

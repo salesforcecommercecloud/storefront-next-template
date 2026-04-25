@@ -30,6 +30,7 @@
 - Add support for OOTB API Key for Google Address Autocomplete feature in production instances (@W-22130944) ([#1509](https://github.com/commerce-emu/storefront-next/pull/1509))
 - Remove unused /callback route
 - Remove unused Page Designer dev proxy from vite.config.ts (@W-22154589@)
+- Rename server-only source files to `.server.ts` so the React Router build plugin enforces the server/client boundary at compile time
 
 ## v0.4.0-dev (Apr 10, 2026)
 

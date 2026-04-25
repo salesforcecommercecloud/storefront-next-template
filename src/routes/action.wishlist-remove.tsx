@@ -16,9 +16,9 @@
 import { type ActionFunctionArgs } from 'react-router';
 import { type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.server';
-import { createApiClients } from '@/lib/api-clients';
-import { isRegisteredCustomer } from '@/lib/api/customer';
-import { getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist';
+import { createApiClients } from '@/lib/api-clients.server';
+import { isRegisteredCustomer } from '@/lib/api/customer.server';
+import { getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';

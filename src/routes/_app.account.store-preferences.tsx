@@ -20,7 +20,7 @@ import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import { getTranslation } from '@/lib/i18next';
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { getLogger } from '@/lib/logger.server';

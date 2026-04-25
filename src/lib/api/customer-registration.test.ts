@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { extractNameFromEmail, generateRandomPassword } from './customer';
+import { extractNameFromEmail, generateRandomPassword } from './customer.server';
 
 describe('Guest User Registration', () => {
     beforeEach(() => {

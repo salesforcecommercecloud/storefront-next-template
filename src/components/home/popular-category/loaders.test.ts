@@ -15,12 +15,12 @@
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { loader } from './loaders';
-import { fetchCategory } from '@/lib/api/categories';
+import { fetchCategory } from '@/lib/api/categories.server';
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperExperience, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock the fetchCategory function
-vi.mock('@/lib/api/categories', () => ({
+vi.mock('@/lib/api/categories.server', () => ({
     fetchCategory: vi.fn(),
 }));
 

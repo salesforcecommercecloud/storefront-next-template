@@ -19,7 +19,7 @@ import { createActionArgs, createTestContext } from '@/lib/test-utils';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 const mockUpdateSubscriptionsBulk = vi.fn();
-vi.mock('@/lib/api/consent', () => ({
+vi.mock('@/lib/api/consent.server', () => ({
     updateSubscriptionsBulk: (...args: unknown[]) => mockUpdateSubscriptionsBulk(...args),
 }));
 

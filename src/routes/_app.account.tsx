@@ -26,8 +26,8 @@ import { AccountNavList, type AccountNavItemData } from '@/components/account-na
 import { Card, CardContent } from '@/components/ui/card';
 
 // Lib
-import { getSubscriptions } from '@/lib/api/consent';
-import { getCustomer } from '@/lib/api/customer';
+import { getSubscriptions } from '@/lib/api/consent.server';
+import { getCustomer } from '@/lib/api/customer.server';
 import { buildUrlFromContext } from '@/lib/url.server';
 
 // Logging

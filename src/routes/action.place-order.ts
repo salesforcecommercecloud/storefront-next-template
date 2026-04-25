@@ -16,13 +16,13 @@
 import { redirect, type ActionFunctionArgs } from 'react-router';
 import { getBasket, updateBasketResource, destroyBasket } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import {
     calculateBasket,
     getBasketCurrency,
     addPaymentInstrumentToBasket,
     updateBillingAddressForBasket,
-} from '@/lib/api/basket';
+} from '@/lib/api/basket.server';
 import {
     savePaymentMethodToCustomer,
     type PaymentInstrumentForSave,
@@ -30,14 +30,14 @@ import {
     saveBillingAddressToCustomer,
     updateCustomerContactInfo,
     getCustomerProfileForCheckout,
-} from '@/lib/api/customer';
+} from '@/lib/api/customer.server';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { createErrorResponse } from '@/lib/error-handler';
 import { getTranslation } from '@/lib/i18next';
 import { buildUrlFromContext } from '@/lib/url.server';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
-import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket';
+import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket.server';
 import { getLogger } from '@/lib/logger.server';
 
 function placeOrderErrorResponse(body: { success: false; error: string; step: string }) {

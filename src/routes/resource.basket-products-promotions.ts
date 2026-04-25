@@ -16,7 +16,7 @@
 
 import type { LoaderFunctionArgs } from 'react-router';
 import { getBasket } from '@/middlewares/basket.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';

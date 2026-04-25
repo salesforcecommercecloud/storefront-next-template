@@ -36,7 +36,7 @@ import type { TFunction } from 'i18next';
 import { getLogger } from '@/lib/logger.server';
 import visionImage from '/images/hero-02.webp';
 import { Region } from '@/components/region';
-import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader.server';
 
 @PageType({
     name: 'About Us Page',

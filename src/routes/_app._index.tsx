@@ -16,7 +16,7 @@
 import { type LoaderFunctionArgs, redirect } from 'react-router';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCarouselProducts } from '@/components/product-carousel/loaders';
-import { fetchCategories } from '@/lib/api/categories';
+import { fetchCategories } from '@/lib/api/categories.server';
 import { siteContext, resolvePrefix, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { Region } from '@/components/region';
 import PopularCategories from '@/components/home/popular-categories';
@@ -26,7 +26,7 @@ import type { AppConfig } from '@/types/config';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import { getLogger } from '@/lib/logger.server';
 
 import hero01 from '/images/hero-01.webp';

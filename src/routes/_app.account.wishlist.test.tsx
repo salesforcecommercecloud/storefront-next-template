@@ -18,7 +18,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { loader } from './_app.account.wishlist';
-import { fetchProductsForWishlist } from '@/lib/api/wishlist';
+import { fetchProductsForWishlist } from '@/lib/api/wishlist.server';
 import { createTestContext } from '@/lib/test-utils';
 import type { LoaderFunctionArgs } from 'react-router';
 import { getTranslation } from '@/lib/i18next';
@@ -44,7 +44,7 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 // Mock createApiClients
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: () => ({
         shopperProducts: {
             getProducts: mockGetProducts,

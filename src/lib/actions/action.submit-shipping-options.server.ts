@@ -16,12 +16,12 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createShippingOptionsSchema, parseShippingOptionsFromFormData } from '@/lib/checkout-schemas';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18next';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
-import { handleMultiShipShippingOptions } from '@/extensions/multiship/lib/actions/checkout-submit-multi-options';
+import { handleMultiShipShippingOptions } from '@/extensions/multiship/lib/actions/checkout-submit-multi-options.server';
 import { getLogger } from '@/lib/logger.server';
 
 /**

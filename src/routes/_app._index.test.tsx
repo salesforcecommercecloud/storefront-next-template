@@ -21,7 +21,7 @@ import type { ShopperExperience, ShopperProducts, ShopperSearch } from '@salesfo
 import { getTranslation } from '@/lib/i18next';
 import HomePage, { type HomePageData, loader } from './_app._index';
 import { createTestContext } from '@/lib/test-utils';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
@@ -200,15 +200,15 @@ vi.mock('@/lib/decorators/region-definition', () => ({
     getRegionDefinition: vi.fn(() => ({ id: 'headerbanner' })),
 }));
 
-vi.mock('@/lib/util/pageLoader', () => ({
+vi.mock('@/lib/util/pageLoader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
 }));
 
-vi.mock('@/lib/api/search', () => ({
+vi.mock('@/lib/api/search.server', () => ({
     fetchSearchProducts: vi.fn(() => Promise.resolve(mockSearchResult)),
 }));
 
-vi.mock('@/lib/api/categories', () => ({
+vi.mock('@/lib/api/categories.server', () => ({
     fetchCategories: vi.fn(() => Promise.resolve(mockCategories)),
 }));
 

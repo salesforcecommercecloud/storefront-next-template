@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useToast } from '@/components/toast';
 import { useRequireAuth } from '@/hooks/use-require-auth';
-import type { WishlistActionResponse } from '@/lib/api/wishlist';
+import type { WishlistActionResponse } from '@/lib/api/wishlist.server';
 
 /**
  * Hook for wishlist functionality using action routes for server-side state management.
