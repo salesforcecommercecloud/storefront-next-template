@@ -448,6 +448,29 @@ describe('useAnalytics', () => {
         });
     });
 
+    describe('trackCommerceAgentEngagement', () => {
+        it('should track commerce agent engagement with surface', async () => {
+            vi.mocked(useAuth).mockReturnValue(mockAuth);
+
+            const { result } = renderHook(() => useAnalytics());
+
+            await result.current.trackCommerceAgentEngagement({ surface: 'header' });
+
+            expect(mockAnalytics.track).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    eventType: 'commerce_agent_engagement',
+                    surface: 'header',
+                    payload: {
+                        userType: 'registered',
+                        usid: 'test-usid',
+                    },
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
+            );
+        });
+    });
+
     describe('trackClickProductInCategory', () => {
         it('should track product click in category with category and product', async () => {
             vi.mocked(useAuth).mockReturnValue(mockAuth);

@@ -88,6 +88,7 @@ const mockConfig: ActiveDataConfig = {
         checkout_step: false,
         view_search_suggestion: false,
         click_search_suggestion: false,
+        commerce_agent_engagement: false,
     },
 };
 
@@ -223,6 +224,12 @@ const mockRecommenderEvent: AnalyticsEvent = {
     payload: {},
 } as AnalyticsEvent;
 
+const mockCommerceAgentEngagementEvent: AnalyticsEvent = {
+    eventType: 'commerce_agent_engagement',
+    surface: 'header',
+    payload: {},
+} as AnalyticsEvent;
+
 describe('Active Data Adapter', () => {
     describe('createActiveDataAdapter', () => {
         it('should create adapter with valid config', () => {
@@ -276,6 +283,26 @@ describe('Active Data Adapter', () => {
             await adapter.sendEvent(unsupportedEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).not.toHaveBeenCalled();
+        });
+
+        it('should not send commerce_agent_engagement when event toggle is disabled', async () => {
+            const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
+            await adapter.sendEvent(mockCommerceAgentEngagementEvent, mockSiteInfo, defaultConsent);
+            expect(mockSendBeacon).not.toHaveBeenCalled();
+        });
+
+        it('should send commerce_agent_engagement through the analytics proxy with surface param when toggle enabled', async () => {
+            const config = {
+                ...mockConfig,
+                eventToggles: { ...mockConfig.eventToggles, commerce_agent_engagement: true },
+            };
+            const adapter = createActiveDataAdapter(config) as ActiveDataAdapter;
+            await adapter.sendEvent(mockCommerceAgentEngagementEvent, mockSiteInfo, defaultConsent);
+
+            expect(mockSendBeacon).toHaveBeenCalled();
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
+            expect(url).toContain('sfn-cagent-surface');
+            expect(url).toMatch(/[?&]sfn-cagent-surface=header(?:&|$)/);
         });
 
         it('should send view_page event through the analytics proxy', async () => {

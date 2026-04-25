@@ -149,6 +149,7 @@ export const useAnalytics = () => {
             trackClickProductInSearch: () => {},
             trackViewSearchSuggestions: () => {},
             trackClickSearchSuggestion: () => {},
+            trackCommerceAgentEngagement: () => {},
         };
         /* eslint-enable @typescript-eslint/no-empty-function */
     }
@@ -294,6 +295,22 @@ export const useAnalytics = () => {
         });
     };
 
+    /**
+     * Track shopper engagement with agentic commerce (header icon or search assistant card).
+     */
+    const trackCommerceAgentEngagement = async (data: { surface: 'header' | 'search' }) => {
+        return trackEvent(
+            authPromiseRef.current,
+            appConfig,
+            consentPreferences,
+            siteInfo,
+            'commerce_agent_engagement',
+            {
+                surface: data.surface,
+            }
+        );
+    };
+
     return {
         trackViewPage,
         trackViewProduct,
@@ -306,5 +323,6 @@ export const useAnalytics = () => {
         trackClickProductInSearch,
         trackViewSearchSuggestions,
         trackClickSearchSuggestion,
+        trackCommerceAgentEngagement,
     };
 };

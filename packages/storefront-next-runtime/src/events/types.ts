@@ -157,6 +157,12 @@ export interface ClickSearchSuggestionEvent extends BaseEvent {
     suggestion: string;
 }
 
+/** Shopper opened agentic commerce (e.g. header or search assistant entry point). */
+export interface CommerceAgentEngagementEvent extends BaseEvent {
+    eventType: 'commerce_agent_engagement';
+    surface: 'header' | 'search';
+}
+
 /**
  * Interface for custom analytics events.
  * Extend this interface via module augmentation.
@@ -194,6 +200,7 @@ export type AnalyticsEvent =
     | CheckoutStepEvent
     | ViewSearchSuggestionEvent
     | ClickSearchSuggestionEvent
+    | CommerceAgentEngagementEvent
     | AnalyticsEventExtensions[keyof AnalyticsEventExtensions];
 
 /**

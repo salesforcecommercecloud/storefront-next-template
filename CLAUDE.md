@@ -372,6 +372,7 @@ See `src/extensions/README.md` for details.
 - [docs/README-AUTH.md](./docs/README-AUTH.md) — Authentication patterns
 - [docs/README-I18N.md](./docs/README-I18N.md) — Internationalization
 - [docs/README-MULTI-SITE.md](./docs/README-MULTI-SITE.md) — Site context and locale URL routing
+- [docs/README-ENGAGEMENT-ANALYTICS.md](./docs/README-ENGAGEMENT-ANALYTICS.md) — Einstein / Active Data analytics event mapping
 
 **UI & Frontend:**
 - [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) — UI and styling (Tailwind, shadcn, design tokens)

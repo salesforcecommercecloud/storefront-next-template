@@ -28,6 +28,7 @@ import type { AppConfig } from '@/types/config';
 import { launchChat } from '@/components/shopper-agent';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import { UITarget } from '@/targets/ui-target';
+import { useAnalytics } from '@/hooks/use-analytics';
 
 interface HeaderProps extends PropsWithChildren {
     beforeHeader?: ReactNode;
@@ -46,6 +47,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
     const { t } = useTranslation('header');
     const headerRef = useRef<HTMLElement>(null);
     const config = useConfig<AppConfig>();
+    const { trackCommerceAgentEngagement } = useAnalytics();
     const showChat =
         variant === 'full' &&
         (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
@@ -125,7 +127,10 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
                                 variant="ghost"
                                 size="icon"
                                 className="cursor-pointer lg:px-4 px-1 text-header-foreground hover:bg-transparent hover:opacity-50 transition-opacity"
-                                onClick={() => launchChat()}
+                                onClick={() => {
+                                    void trackCommerceAgentEngagement({ surface: 'header' });
+                                    launchChat();
+                                }}
                                 aria-label={t('openChat')}>
                                 <SparklesIcon />
                             </Button>

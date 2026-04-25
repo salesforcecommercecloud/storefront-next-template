@@ -202,6 +202,10 @@ export function AiInsightCard({
         return (
             <button
                 type="button"
+                onMouseDown={(event) => {
+                    // Avoid search input blur closing the dropdown before `click` (see header SearchBar).
+                    event.preventDefault();
+                }}
                 onClick={onActionClick}
                 className={cn('group w-full text-left', wrapperClassName)}
                 data-testid={dataTestId}

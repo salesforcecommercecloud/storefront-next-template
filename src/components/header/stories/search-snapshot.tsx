@@ -69,6 +69,13 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
                 suggestionsDebounce: 300,
             },
         },
+        engagement: {
+            analytics: {
+                trackingConsent: {
+                    consentCategories: ['necessary', 'analytics', 'marketing', 'personalization'],
+                },
+            },
+        },
     }),
 }));
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
