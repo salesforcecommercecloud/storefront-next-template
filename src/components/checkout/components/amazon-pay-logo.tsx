@@ -19,8 +19,6 @@ import { useTranslation } from 'react-i18next';
 
 /**
  * Amazon Pay Logo Component
- * Official Amazon Pay logo matching the Figma design system
- * Uses the amazonpay-logo-rgb_clr asset from public/images
  */
 export default function AmazonPayLogo({
     className,

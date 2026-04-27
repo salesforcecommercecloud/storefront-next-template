@@ -28,7 +28,7 @@ const meta: Meta<typeof AmazonPayLogo> = {
         layout: 'centered',
         docs: {
             description: {
-                component: 'Official Amazon Pay logo component. Uses local SVG file from public/images.',
+                component: 'Amazon Pay logo component. Uses an optimized PNG from public/images.',
             },
         },
     },

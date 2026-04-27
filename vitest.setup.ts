@@ -62,17 +62,13 @@ vi.mock('/images/living-room.svg', () => ({
 vi.mock('/images/shelf-display.svg', () => ({
     default: '/images/shelf-display.svg',
 }));
-// Payment logo SVGs (added in PR #909) - return data URLs to match Vite's test environment behavior
+// Payment logos - return data URLs to match Vite's test environment behavior
+vi.mock('/images/amazon-pay-logo.png', () => ({
+    default: '/images/amazon-pay-logo.png',
+}));
 vi.mock('/images/apple-pay-logo.svg', () => ({
     default:
         'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
-}));
-vi.mock('/images/amazon-pay-logo.svg', () => ({
-    default:
-        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=',
-}));
-vi.mock('/images/amazon-pay-logo.png', () => ({
-    default: '/images/amazon-pay-logo.png',
 }));
 vi.mock('/images/google-pay-logo.svg', () => ({
     default:
