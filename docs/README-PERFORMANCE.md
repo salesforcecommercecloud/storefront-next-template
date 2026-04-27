@@ -8,7 +8,7 @@ Use optimization strategies to build fast storefronts. Follow performance best p
 > - [Data Fetching](README-DATA.md): Server-load everything, data classification, loaders, actions, and fetchers.
 > - [Loading States](README-SUSPENSE.md): Suspense boundary granularity, lazy loading overlays, and skeleton vs. spinner tradeoffs.
 > - [State Management](README-STATE.md): URL state, optimistic UI, and avoiding derived state.
-> - [Images](README-IMAGES.md): DIS integration, responsive images, and alt text.
+> - [Images](README-IMAGES.md): DIS integration, `<DynamicImage>` component, `DynamicImageProvider`, image utilities, performance checklist, and alt text strategy.
 
 ## Optimize Web Fonts
 

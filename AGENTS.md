@@ -213,6 +213,7 @@ See [docs/README-TESTS.md](./docs/README-TESTS.md) and [.storybook/README-STORYB
 - [docs/README-DATA.md](./docs/README-DATA.md) - Data fetching: loaders, actions, fetchers, middlewares, cookies/sessions
 - [docs/README-SUSPENSE.md](./docs/README-SUSPENSE.md) - Loading states, Suspense patterns, visual feedback
 - [docs/README-STATE.md](./docs/README-STATE.md) - State management: server state, URL state, optimistic UI, React primitives
+- [docs/README-IMAGES.md](./docs/README-IMAGES.md) - DIS integration, `<DynamicImage>` component, image utilities, alt text strategy
 - [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) - Performance best practices: web fonts, third-party scripts, bundles
 - [docs/README-PERFORMANCE-METRICS.md](./docs/README-PERFORMANCE-METRICS.md) - Performance monitoring (metrics, Server-Timing, timeline)
 - [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) - UI and styling (Tailwind, shadcn, design tokens)

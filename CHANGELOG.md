@@ -4,22 +4,16 @@
 - Add login preferences middleware and context for managing email verification preferences (@W-22051487) ([#1453](https://github.com/commerce-emu/storefront-next/pull/1453))
 - Remove manual `contentLinkUuid` type extensions in favor of SCAPI types (@W-21280780)
   - `ComponentType` now uses `contentLinkUuid`, `fragment`, `localized`, `visible` from Shopper Experience API v1.3.0
+- Document the use of dynamic images ([#1519](https://github.com/commerce-emu/storefront-next/pull/1519))
 
 ## v0.4.0-dev (Apr 15, 2026)
 
-<<<<<<< HEAD
-- Analytics: emit `commerce_agent_engagement` when shoppers open agentic commerce from the header or search assistant; add `useAnalytics().trackCommerceAgentEngagement`, Einstein (`viewPage` + synthetic `currentLocation`) and Active Data (`sfn-cagent-surface`) adapter handling, default `eventToggles` keys, and config docs
-=======
-<<<<<<< HEAD
->>>>>>> 1c66a61b6 (added changelog)
 - Standardize action error handling with semantic error codes: actions return structured `{ code, message }` errors instead of plain strings (@W-21952674) ([#1508](https://github.com/commerce-emu/storefront-next/pull/1508))
 - Extract Vitest config into dedicated `vitest.config.ts`, inline coverage thresholds ([#1518](https://github.com/commerce-emu/storefront-next/pull/1518))
 - Add support for optional `sh` parameter to dynamic images ([#1503](https://github.com/commerce-emu/storefront-next/pull/1503))
 - [UX Fix] Fix broken radius overriding system, and minor UX changes according to design ([#1495](https://github.com/commerce-emu/storefront-next/pull/1495))
 - Prefix all checkout UITarget targetIds with `sfcc.` (@W-21550346) ([#1500](https://github.com/commerce-emu/storefront-next/pull/1500))
-=======
 - Analytics: emit `commerce_agent_engagement` when shoppers open agentic commerce from the header or search assistant; add `useAnalytics().trackCommerceAgentEngagement`, Einstein (`viewPage` + synthetic `currentLocation`) and Active Data (`sfn-cagent-surface`) adapter handling, default `eventToggles` keys, and config docs
->>>>>>> 6ac94bf49 (added changelog)
 - Flatten default `Card` styling (drop default radius/shadow) ([#1489](https://github.com/commerce-emu/storefront-next/pull/1489))
 - Multiship Guest Add Address now supports different addresseses with same name (@W-22187309)
 - Standardize layout with `section-container` utility: consolidate responsive padding, max-width, and centering into a single reusable class ([#1483](https://github.com/commerce-emu/storefront-next/pull/1483))

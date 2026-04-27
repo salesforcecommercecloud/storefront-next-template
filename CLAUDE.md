@@ -197,13 +197,18 @@ These rules take priority when designing routes, components, and state. Apply th
 14. **Split React Contexts by concern.** One context per domain (theme, locale, user) — never a single large `AppContext`. Every value change re-renders all consumers of that context.
 15. **Persistent cross-request state via cookies/sessions, not `localStorage`.** Cookies are SSR-compatible, avoid hydration mismatches, and work before scripts load.
 
+### Images
+
+16. **Use `<DynamicImage>` with `widths` or `heights` for all product and content images.** Without either, the component renders a plain `<img>` with no responsive sources and no DIS resizing. Set `priority="high"` on LCP-candidate images (hero, first product image) to trigger React 19 SSR preloading. See [Images](./docs/README-IMAGES.md).
+17. **Use `DynamicImageProvider` for image grids.** Wrap product grids in a provider to control priority and responsive widths centrally rather than prop-drilling through every tile.
+
 ### Best Practices
 
-16. **Lazy-load overlays and heavy below-the-fold content.** Use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction. See [Lazy Loading for Overlays](./docs/README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs).
-17. **Self-host web fonts.** Use WOFF2 variable fonts, preload in `<head>`, inline the `@font-face` declaration, and set `font-display: swap` or `optional`. Never load fonts from third-party CDNs (cache partitioning, GDPR).
-18. **Never load third-party scripts synchronously.** Always use `async` or `defer`. Lazy-load interaction-driven widgets (chat, social) on scroll or click, not on page load.
-19. **Monitor bundle size.** Run `pnpm bundlesize:test` to verify against configured size limits — CI enforces these on every PR. Check bundle impact with `pnpm bundlesize:analyze` before adding large dependencies.
-20. **Configure resource hints via `config.server.ts`.** Use `preconnect` for origins contacted on every page (e.g., image CDN), `dns-prefetch` for optional origins. Don't preconnect to origins that aren't used on every page.
+18. **Lazy-load overlays and heavy below-the-fold content.** Use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction. See [Lazy Loading for Overlays](./docs/README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs).
+19. **Self-host web fonts.** Use WOFF2 variable fonts, preload in `<head>`, inline the `@font-face` declaration, and set `font-display: swap` or `optional`. Never load fonts from third-party CDNs (cache partitioning, GDPR).
+20. **Never load third-party scripts synchronously.** Always use `async` or `defer`. Lazy-load interaction-driven widgets (chat, social) on scroll or click, not on page load.
+21. **Monitor bundle size.** Run `pnpm bundlesize:test` to verify against configured size limits — CI enforces these on every PR. Check bundle impact with `pnpm bundlesize:analyze` before adding large dependencies.
+22. **Configure resource hints via `config.server.ts`.** Use `preconnect` for origins contacted on every page (e.g., image CDN), `dns-prefetch` for optional origins. Don't preconnect to origins that aren't used on every page.
 
 ## Code Conventions
 
@@ -376,7 +381,7 @@ See `src/extensions/README.md` for details.
 
 **UI & Frontend:**
 - [docs/README-UI-STYLING.md](./docs/README-UI-STYLING.md) — UI and styling (Tailwind, shadcn, design tokens)
-- [docs/README-IMAGES.md](./docs/README-IMAGES.md) — Image rendering and alt text strategy
+- [docs/README-IMAGES.md](./docs/README-IMAGES.md) — DIS integration, `<DynamicImage>` component, image utilities, alt text strategy
 - [docs/README-SEO.md](./docs/README-SEO.md) — SEO: page titles, meta tags, canonical URLs
 - [docs/README-PERFORMANCE.md](./docs/README-PERFORMANCE.md) — Performance best practices: web fonts, third-party scripts, bundle optimization
 - [docs/README-PERFORMANCE-METRICS.md](./docs/README-PERFORMANCE-METRICS.md) — Performance monitoring (metrics, Server-Timing, timeline)
