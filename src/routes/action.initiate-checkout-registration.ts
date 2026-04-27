@@ -27,6 +27,8 @@ import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
+import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
+import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile-constants';
 
 /**
  * Server action to initiate passwordless registration during checkout
@@ -58,21 +60,46 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         const appConfig = getConfig<AppConfig>(context);
 
-        const allowed = await enforceTurnstile({
-            request,
-            config: appConfig,
-            turnstileToken,
-            logger,
-            actionName: 'initiate-checkout-registration',
-            email,
-        });
-        if (!allowed) {
+        const tvCookie = createCookie<string>(
+            COOKIE_TURNSTILE_VERIFIED,
+            getCookieConfig({ httpOnly: true, maxAge: TURNSTILE_VERIFIED_MAX_AGE }, context),
+            context
+        );
+        const cookieHeader = request.headers.get('Cookie');
+        const turnstileVerifiedViaCookie = (await tvCookie.parse(cookieHeader)) === '1';
+
+        let shouldSetCookie = false;
+
+        if (turnstileToken) {
+            const allowed = await enforceTurnstile({
+                request,
+                config: appConfig,
+                turnstileToken,
+                logger,
+                actionName: 'initiate-checkout-registration',
+                email,
+            });
+            if (!allowed) {
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({
+                            code: ErrorCode.NOT_AUTHORIZED,
+                            message: 'Turnstile verification failed',
+                        }),
+                    },
+                    { status: 403 }
+                );
+            }
+            shouldSetCookie = !turnstileVerifiedViaCookie;
+        } else if (!turnstileVerifiedViaCookie) {
+            logger.warn('InitiateCheckoutRegistration: no turnstile token or verification cookie');
             return Response.json(
                 {
                     success: false,
                     error: createActionError({
                         code: ErrorCode.NOT_AUTHORIZED,
-                        message: 'Turnstile verification failed',
+                        message: 'Turnstile verification required',
                     }),
                 },
                 { status: 403 }
@@ -158,10 +185,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
             logger.info('InitiateCheckoutRegistration: succeeded with basket email');
 
-            return Response.json({
-                success: true,
-                email: basketEmail,
-            });
+            const responseBody = { success: true, email: basketEmail };
+            if (shouldSetCookie) {
+                const setCookieHeader = await tvCookie.serialize('1');
+                return Response.json(responseBody, { headers: { 'Set-Cookie': setCookieHeader } });
+            }
+            return Response.json(responseBody);
         }
 
         logger.debug('InitiateCheckoutRegistration: email provided in form');
@@ -220,10 +249,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         logger.info('InitiateCheckoutRegistration: succeeded with form email');
 
-        return Response.json({
-            success: true,
-            email,
-        });
+        const responseBody = { success: true, email };
+        if (shouldSetCookie) {
+            const setCookieHeader = await tvCookie.serialize('1');
+            return Response.json(responseBody, { headers: { 'Set-Cookie': setCookieHeader } });
+        }
+        return Response.json(responseBody);
     } catch (error) {
         logger.error('InitiateCheckoutRegistration: failed', { error });
         const errorMessage = extractErrorMessage(error);

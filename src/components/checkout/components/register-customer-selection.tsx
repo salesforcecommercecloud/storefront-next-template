@@ -63,7 +63,13 @@ export default function RegisterCustomerSelection({
 
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const turnstileResetRef = useRef<(() => void) | null>(null);
-    const turnstileEnabled = config ? isTurnstileEnabled(config as AppConfig) : false;
+    const [alreadyVerified, setAlreadyVerified] = useState(false);
+    useEffect(() => {
+        if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('turnstileVerified') === '1') {
+            setAlreadyVerified(true);
+        }
+    }, []);
+    const turnstileEnabled = config ? isTurnstileEnabled(config as AppConfig) && !alreadyVerified : false;
     const turnstileMode = config ? getTurnstileMode(config as AppConfig) : 'managed';
     const turnstileSiteKey = useMemo(() => {
         if (!config || !turnstileEnabled) return null;
@@ -124,7 +130,6 @@ export default function RegisterCustomerSelection({
                 method: 'POST',
                 action: '/action/initiate-checkout-registration',
             });
-            // Token is single-use — reset so resend gets a fresh one
             if (turnstileEnabled) resetTurnstile();
         } else {
             if (typeof sessionStorage !== 'undefined') {
@@ -188,7 +193,6 @@ export default function RegisterCustomerSelection({
                 method: 'POST',
                 action: '/action/initiate-checkout-registration',
             });
-            // Token is single-use — reset so subsequent resends get a fresh one
             if (turnstileEnabled) resetTurnstile();
 
             setTimeout(() => resolve(), 1000);
@@ -224,17 +228,6 @@ export default function RegisterCustomerSelection({
 
     return (
         <div data-testid="register-customer-checkbox">
-            {turnstileEnabled && turnstileSiteKey && (
-                <TurnstileWidget
-                    siteKey={turnstileSiteKey}
-                    onSuccess={handleTurnstileSuccess}
-                    onError={handleTurnstileError}
-                    onExpire={handleTurnstileExpire}
-                    enabled={turnstileEnabled}
-                    mode={turnstileMode}
-                    resetRef={turnstileResetRef}
-                />
-            )}
             <label
                 htmlFor="create-account-checkbox"
                 className="flex cursor-pointer items-start gap-2 border border-input p-4">
@@ -260,6 +253,17 @@ export default function RegisterCustomerSelection({
                     )}
                 </div>
             </label>
+            {turnstileEnabled && turnstileSiteKey && (
+                <TurnstileWidget
+                    siteKey={turnstileSiteKey}
+                    onSuccess={handleTurnstileSuccess}
+                    onError={handleTurnstileError}
+                    onExpire={handleTurnstileExpire}
+                    enabled={turnstileEnabled}
+                    mode={turnstileMode}
+                    resetRef={turnstileResetRef}
+                />
+            )}
 
             {isOtpModalOpen && (
                 <Suspense fallback={null}>

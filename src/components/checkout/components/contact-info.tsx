@@ -47,7 +47,7 @@ import { Spinner } from '@/components/spinner';
 import { ConfigContext } from '@salesforce/storefront-next-runtime/config';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
 import type { AppConfig } from '@/types/config';
-import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile-utils';
+import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
 
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
 
@@ -104,9 +104,10 @@ export default function ContactInfo({
 
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const turnstileResetRef = useRef<(() => void) | null>(null);
+    const turnstileExecuteRef = useRef<(() => void) | null>(null);
+    const tokenConsumedRef = useRef(false);
 
     const turnstileEnabled = appConfig ? isTurnstileEnabled(appConfig as AppConfig) : false;
-    const turnstileMode = appConfig ? getTurnstileMode(appConfig as AppConfig) : 'managed';
     const turnstileSiteKey = useMemo(() => {
         if (!appConfig || !turnstileEnabled) return null;
         if (typeof window !== 'undefined') {
@@ -116,16 +117,21 @@ export default function ContactInfo({
         return null;
     }, [appConfig, turnstileEnabled]);
 
+    const [showTurnstile, setShowTurnstile] = useState(false);
+
     const turnstilePending = !!(turnstileEnabled && turnstileSiteKey && !turnstileToken);
 
-    /** Clear the current token and ask the Turnstile widget for a fresh challenge. */
     const resetTurnstile = useCallback(() => {
         setTurnstileToken(null);
         turnstileResetRef.current?.();
     }, []);
 
     const handleTurnstileSuccess = useCallback((token: string) => {
+        tokenConsumedRef.current = false;
         setTurnstileToken(token);
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem('turnstileVerified', '1');
+        }
     }, []);
 
     const handleTurnstileError = useCallback(() => {
@@ -178,6 +184,12 @@ export default function ContactInfo({
 
     const pendingEmailRef = useRef<string | null>(null);
 
+    const handleEmailFocus = useCallback(() => {
+        if (turnstileEnabled && !showTurnstile) {
+            setShowTurnstile(true);
+        }
+    }, [turnstileEnabled, showTurnstile]);
+
     const handleEmailBlur = useCallback(
         (e: React.FocusEvent<HTMLInputElement>, fieldOnBlur: (e: React.FocusEvent<HTMLInputElement>) => void) => {
             fieldOnBlur(e);
@@ -185,11 +197,21 @@ export default function ContactInfo({
             if (!raw) return;
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) return;
             const normalized = raw.toLowerCase();
+
+            if (turnstileEnabled && !showTurnstile) {
+                setShowTurnstile(true);
+            }
+
             if (lastEmailSentRef.current === normalized) return;
             if (passwordlessEmailFetcher.state === 'submitting' || passwordlessEmailFetcher.state === 'loading') return;
 
-            if (turnstileEnabled && !turnstileToken) {
+            if (turnstileEnabled && (!turnstileToken || tokenConsumedRef.current)) {
                 pendingEmailRef.current = raw;
+                if (tokenConsumedRef.current) {
+                    resetTurnstile();
+                } else {
+                    turnstileExecuteRef.current?.();
+                }
                 return;
             }
 
@@ -198,13 +220,12 @@ export default function ContactInfo({
             formData.append('email', raw);
             if (turnstileToken) {
                 formData.append('turnstileToken', turnstileToken);
+                tokenConsumedRef.current = true;
             }
             void passwordlessEmailFetcher.submit(formData, {
                 method: 'POST',
                 action: authorizePasswordlessEmailPath,
             });
-            // Token is single-use — reset immediately so the next blur gets a fresh one
-            if (turnstileEnabled) resetTurnstile();
             // Set immediately so "Continue" submit that follows blur does not advance to shipping before OTP modal
             if (otpFlowActiveRef) otpFlowActiveRef.current = true;
         },
@@ -216,12 +237,19 @@ export default function ContactInfo({
             authorizePasswordlessEmailPath,
             turnstileToken,
             turnstileEnabled,
+            showTurnstile,
             resetTurnstile,
         ]
     );
 
     useEffect(() => {
-        if (!turnstileToken || !pendingEmailRef.current) return;
+        if (turnstileToken === null && pendingEmailRef.current && turnstileEnabled) {
+            turnstileExecuteRef.current?.();
+        }
+    }, [turnstileToken, turnstileEnabled]);
+
+    useEffect(() => {
+        if (!turnstileToken || !pendingEmailRef.current || tokenConsumedRef.current) return;
         const raw = pendingEmailRef.current;
         const normalized = raw.toLowerCase();
         if (lastEmailSentRef.current === normalized) return;
@@ -231,15 +259,14 @@ export default function ContactInfo({
         const formData = new FormData();
         formData.append('email', raw);
         formData.append('turnstileToken', turnstileToken);
+        tokenConsumedRef.current = true;
         void passwordlessEmailFetcher.submit(formData, {
             method: 'POST',
             action: authorizePasswordlessEmailPath,
         });
-        // Token is single-use — reset so the next submission gets a fresh one
-        resetTurnstile();
         if (otpFlowActiveRef) otpFlowActiveRef.current = true;
         // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef is a ref
-    }, [turnstileToken, passwordlessEmailFetcher, authorizePasswordlessEmailPath, resetTurnstile]);
+    }, [turnstileToken, passwordlessEmailFetcher, authorizePasswordlessEmailPath]);
 
     // When authorize (blur) succeeds, open OTP modal so user can enter the code
     useEffect(() => {
@@ -284,7 +311,6 @@ export default function ContactInfo({
             fd.append('turnstileToken', turnstileToken);
         }
         void passwordlessEmailFetcher.submit(fd, { method: 'POST', action: authorizePasswordlessEmailPath });
-        // Token is single-use — reset so subsequent resends get a fresh one
         if (turnstileEnabled) resetTurnstile();
         return Promise.resolve();
     }, [
@@ -373,6 +399,7 @@ export default function ContactInfo({
                                                     disabled={isSendingOtp}
                                                     className="pr-12"
                                                     {...field}
+                                                    onFocus={handleEmailFocus}
                                                     onBlur={(e) => handleEmailBlur(e, field.onBlur)}
                                                 />
                                             </FormControl>
@@ -389,15 +416,16 @@ export default function ContactInfo({
                                 )}
                             />
 
-                            {turnstileEnabled && turnstileSiteKey && (
+                            {turnstileEnabled && turnstileSiteKey && showTurnstile && (
                                 <TurnstileWidget
                                     siteKey={turnstileSiteKey}
                                     onSuccess={handleTurnstileSuccess}
                                     onError={handleTurnstileError}
                                     onExpire={handleTurnstileExpire}
                                     enabled={turnstileEnabled}
-                                    mode={turnstileMode}
+                                    mode="non-interactive"
                                     resetRef={turnstileResetRef}
+                                    executeRef={turnstileExecuteRef}
                                 />
                             )}
 

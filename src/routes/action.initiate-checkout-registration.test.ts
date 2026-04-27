@@ -38,6 +38,19 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 vi.mock('@/lib/turnstile-enforce.server', () => ({
     enforceTurnstile: vi.fn(),
 }));
+vi.mock('@/lib/cookie-utils.server', () => ({
+    createCookie: vi.fn(() => ({
+        parse: vi.fn().mockResolvedValue('1'),
+        serialize: vi.fn().mockResolvedValue('cc-tv=1'),
+    })),
+    getCookieConfig: vi.fn((overrides = {}) => ({
+        httpOnly: false,
+        secure: true,
+        sameSite: 'lax' as const,
+        path: '/',
+        ...overrides,
+    })),
+}));
 
 const mockCreateApiClients = vi.fn();
 const mockGetAuth = vi.fn();
@@ -321,6 +334,7 @@ describe('action.initiate-checkout-registration', () => {
 
         const formData = new FormData();
         formData.append('email', 'user@example.com');
+        formData.append('turnstileToken', 'bad-token');
 
         mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
             method: 'POST',
@@ -362,6 +376,7 @@ describe('action.initiate-checkout-registration', () => {
 
         const formData = new FormData();
         formData.append('email', 'user@example.com');
+        formData.append('turnstileToken', 'bad-token');
 
         mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
             method: 'POST',

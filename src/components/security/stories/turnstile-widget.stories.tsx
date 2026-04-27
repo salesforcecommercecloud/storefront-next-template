@@ -53,6 +53,7 @@ function installTurnstileMock() {
             });
             return 'mock-widget-id';
         },
+        execute() {},
         reset() {},
         remove() {},
         getResponse() {

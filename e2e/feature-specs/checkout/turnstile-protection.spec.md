@@ -2,11 +2,17 @@
 title: Turnstile Bot Protection for Passwordless Login
 domain: Checkout
 status: active
-version: 3
+version: 4
 created: 2026-04-08
-last_updated: 2026-04-23
+last_updated: 2026-04-27
 author: Avinash Kumar
 changelog:
+  - version: 4.0
+    date: 2026-04-27
+    change: >
+      WI-6: Skip redundant Turnstile challenge during registration if shopper already completed challenge during login
+      with server-side verification cookie (cc-tv), early widget mount on focus, executeRef prop
+    author: Avinash Kumar
   - version: 3.0
     date: 2026-04-23
     change: >
@@ -47,21 +53,24 @@ Protect all passwordless login and registration endpoints from bot abuse using C
 
 ## Implementation Status
 
-**Frontend:** Ready (2026-04-23)
+**Frontend:** Ready (2026-04-27)
 - Turnstile widget integrated in checkout contact info, checkout registration, and login page
-- Widget appears after email blur (checkout) or on mount (registration/login OTP)
+- Contact info: widget mounts on email focus (deferred execution), challenge triggered on blur
+- TurnstileWidget should be below the email text field on UI
+- Registration: widget skipped if shopper already verified at contact info (sessionStorage flag)
 - Token included in all passwordless login and registration requests
-- Token reset after each use (single-use tokens)
+- Token consumption tracked via ref to avoid double-verify bug
 - Graceful error handling (fails silently on client misconfiguration)
 - 9 E2E tests covering client + server scenarios
 
-**Backend:** Ready (2026-04-23)
+**Backend:** Ready (2026-04-27)
 - Shared server-side enforcement via `turnstile-enforce.server.ts`
 - Three protected endpoints: authorize-passwordless-email, initiate-checkout-registration, login page action
+- Server-side verification cookie (`cc-tv`, httpOnly, 30min TTL) set on successful turnstile at contact info
+- Registration endpoint accepts either a fresh token OR the `cc-tv` cookie as proof of prior verification
 - Missing Origin/Referer header detection with diagnostic logging
 - Fail-closed config: no site keys configured → requests blocked
-- JSON.parse with try/catch for `PUBLIC__security__turnstile__sites`
-- Missing token rejected, invalid/replayed tokens rejected, structured logging
+- No token and no cookie → 403 (prevents scripted abuse without browser)
 
 ## Acceptance Criteria
 
@@ -123,10 +132,10 @@ Protect all passwordless login and registration endpoints from bot abuse using C
 
 The `/action/initiate-checkout-registration` endpoint triggers OTP emails for guest users who opt to "save info for faster checkout next time." Without Turnstile protection, an attacker can script POST requests to this endpoint to trigger mass OTP emails (email bombing) or enumerate registered accounts.
 
-- [x] Add TurnstileWidget to `register-customer-selection.tsx` (mounted eagerly, invisible via `interaction-only`)
+- [x] Add TurnstileWidget to `register-customer-selection.tsx` (rendered below checkbox)
 - [x] Include `turnstileToken` in registration form submission and resend code flow
 - [x] Add server-side Turnstile verification to `action.initiate-checkout-registration.ts`
-- [x] Reject requests with missing or invalid tokens when verification is enabled
+- [x] Reject requests with no token AND no `cc-tv` verification cookie (see WI-6c)
 - [x] Add `POST` method check to the action
 - [x] Attack logging: missing token, failed verification, merchant misconfiguration (same pattern as WI-3)
 - [x] Update existing tests with Turnstile mocks
@@ -153,7 +162,7 @@ remove test credentials from production config, and make sure no hardcoded local
 - [x] Turnstile tokens are single-use (Cloudflare invalidates after first verification)
 - [x] `register-customer-selection.tsx`: reset token via `resetRef` after checkbox submission and resend
 - [x] `_empty.login.tsx`: reset token after OTP resend
-- [x] `contact-info.tsx`: widget re-renders per flow (no explicit reset needed)
+- [x] `contact-info.tsx`: token consumption tracked via `tokenConsumedRef`; reset on email change triggers fresh challenge (see WI-6a)
 
 #### WI-5d: Fail-closed configuration [done]
 - [x] Remove Cloudflare test key (`1x00000000000000000000BB`) from `config.server.ts`
@@ -165,6 +174,27 @@ remove test credentials from production config, and make sure no hardcoded local
 #### WI-5e: Locale fix [done]
 - [x] Replace hardcoded `locale: 'en-US'` in `action.initiate-checkout-registration.ts` with dynamic locale from `i18nextContext`
 - [x] Update test mock context to provide locale via `context.get(i18nextContext)`
+
+### Turnstile-WI-6: Deferred Execution & Session-Level Verification [done]
+
+Eliminate redundant registration challenge and harden server-side enforcement.
+
+#### WI-6a: Deferred execution to fix double-click [done]
+- [x] Change contact info widget from `execution: 'render'` to `execution: 'execute'` (non-interactive mode)
+- [x] Mount widget on email focus (gives Cloudflare time to gather browser signals)
+- [x] Explicitly call `turnstile.execute()` on email blur
+- [x] Add `executeRef` prop to `TurnstileWidget` component for parent-controlled execution
+- [x] Track token consumption via `tokenConsumedRef` to avoid resetting prematurely
+
+#### WI-6b: Skip redundant registration challenge [done]
+- [x] Set `sessionStorage('turnstileVerified', '1')` on successful contact info challenge (client-side UX optimization)
+- [x] Registration component checks `sessionStorage` — skips widget render if already verified
+- [x] TurnstileWidget should be below the checkbox in registration UI
+- [x] Create `turnstile-constants.ts` with `COOKIE_TURNSTILE_VERIFIED` (`cc-tv`) and `TURNSTILE_VERIFIED_MAX_AGE` (30min)
+- [x] `action.authorize-passwordless-email.ts`: set `cc-tv` httpOnly cookie on successful turnstile verification
+- [x] `action.initiate-checkout-registration.ts`: accept `cc-tv` cookie as proof of prior verification
+- [x] No token AND no cookie → 403 (blocks scripted abuse without a browser)
+- [x] Fresh token still accepted if provided (fallback for expired cookie or direct access)
 
 **Cloudflare Siteverify API:**
 ```
@@ -203,17 +233,22 @@ Source: [Cloudflare Turnstile Testing](https://developers.cloudflare.com/turnsti
 
 ## User Experience
 
-**Normal Flow (managed mode):**
-1. User enters email in checkout and blurs the field
-2. Turnstile widget mounts (Cloudflare decides: auto-pass or interactive challenge)
+**Normal Flow (checkout contact info):**
+1. User focuses email field → widget mounts in deferred mode (Cloudflare gathers browser signals)
+2. User types email and blurs → challenge executed (auto-solves or shows interactive widget)
 3. Token generated, passwordless login fires automatically
 4. Continue button becomes enabled
+5. Server-side `cc-tv` cookie set on success
 
-**Normal Flow (non-interactive mode):**
-1. User enters email in checkout and blurs the field
-2. Turnstile widget mounts (invisible, auto-solves in background)
-3. Token generated, passwordless login fires automatically
-4. Continue button becomes enabled (near-instant)
+**Normal Flow (checkout registration):**
+1. User checks "Save for faster checkout" checkbox
+2. If `cc-tv` cookie exists (verified at contact info) → no widget shown, request proceeds
+3. If cookie missing/expired → widget renders, Cloudflare evaluates, token sent with request
+
+**Email Change (re-verification):**
+1. User changes email after initial verification
+2. Old token marked as consumed, widget resets
+3. Fresh challenge triggered, new token generated before submission
 
 **Error Flow (merchant misconfiguration):**
 1. No secret key configured for site
@@ -221,9 +256,10 @@ Source: [Cloudflare Turnstile Testing](https://developers.cloudflare.com/turnsti
 3. Request blocked (fail-closed — `enforceTurnstile` returns `false`)
 
 **Attack Blocked:**
-1. Bot sends request without token → 403 rejected, logged
+1. Bot sends request without token and without `cc-tv` cookie → 403 rejected, logged
 2. Bot sends invalid/replayed token → 403 rejected, logged
 3. Bot sends request without Origin/Referer → blocked, diagnostic log
+4. Script hits registration endpoint directly (no browser session) → no cookie, no token → 403
 
 ## Implementation
 
@@ -231,12 +267,13 @@ Source: [Cloudflare Turnstile Testing](https://developers.cloudflare.com/turnsti
 - `turnstile-enforce.server.ts` — Shared server-side enforcement utility (used by all three protected endpoints)
 - `turnstile-verify.server.ts` — Cloudflare siteverify API call
 - `turnstile-utils.ts` — Site key lookup, mode, and config helpers
-- `TurnstileWidget` — Loads Cloudflare script, renders widget, manages token lifecycle, exposes `resetRef` for imperative reset
-- `contact-info.tsx` — Checkout email: deferred widget mount after email blur, gated form submission
-- `register-customer-selection.tsx` — Checkout registration: widget with token reset after each use
+- `turnstile-constants.ts` — Cookie name (`cc-tv`) and TTL constants
+- `TurnstileWidget` — Loads Cloudflare script, renders widget, manages token lifecycle, exposes `resetRef` and `executeRef`
+- `contact-info.tsx` — Checkout email: widget mounts on focus (deferred execution), challenge on blur, sets `cc-tv` cookie via server
+- `register-customer-selection.tsx` — Checkout registration: skips widget if `sessionStorage` flag set, renders below checkbox otherwise
 - `_empty.login.tsx` — Login page: server-side enforcement + widget for OTP resend flow
-- `action.authorize-passwordless-email.ts` — Server verification for checkout passwordless login
-- `action.initiate-checkout-registration.ts` — Server verification for checkout registration + dynamic locale
+- `action.authorize-passwordless-email.ts` — Server verification + sets `cc-tv` httpOnly cookie on success
+- `action.initiate-checkout-registration.ts` — Accepts fresh token OR `cc-tv` cookie; rejects if neither present
 
 **Configuration (`config.server.ts`):**
 ```typescript
@@ -262,18 +299,25 @@ PUBLIC__security__turnstile__sites={"local-dev":[{"siteKey":"1x00000000000000000
 **Protected Endpoints:**
 | Endpoint | Component | Enforcement |
 |----------|-----------|-------------|
-| `action.authorize-passwordless-email` | `contact-info.tsx` | Checkout email/OTP login |
-| `action.initiate-checkout-registration` | `register-customer-selection.tsx` | Checkout "save for faster checkout" |
-| `_empty.login.tsx` (server action) | `_empty.login.tsx` | Login page passwordless + OTP resend |
+| `action.authorize-passwordless-email` | `contact-info.tsx` | Token required; sets `cc-tv` cookie on success |
+| `action.initiate-checkout-registration` | `register-customer-selection.tsx` | Token OR `cc-tv` cookie required |
+| `_empty.login.tsx` (server action) | `_empty.login.tsx` | Token required (login page) |
 
-**Token Flow:**
-1. Shopper enters email (checkout) or views OTP modal (login/registration)
-2. Widget mounts (deferred in checkout, eager in registration/login)
-3. Challenge runs (managed: Cloudflare decides; non-interactive: auto-solves)
-4. Token stored in React state
-5. Token included in form submission to server action
-6. `enforceTurnstile()` verifies token with Cloudflare before proceeding
-7. Token reset after use (single-use tokens — Cloudflare invalidates after first verification)
+**Token Flow (contact info):**
+1. Shopper focuses email field → widget mounts with `execution: 'execute'` (deferred)
+2. Shopper blurs email → `turnstile.execute()` called, challenge runs
+3. Token stored in React state, `tokenConsumedRef` set to false
+4. Token included in passwordless email request
+5. `enforceTurnstile()` verifies token, `authorizePasswordless()` sends OTP
+6. Server sets `cc-tv` httpOnly cookie (30min TTL)
+7. `tokenConsumedRef` set to true (prevents reuse without reset)
+8. If email changes: `resetTurnstile()` called → effect calls `execute()` → fresh token generated
+
+**Token Flow (registration):**
+1. Shopper checks "Save for faster checkout" checkbox
+2. Client checks `sessionStorage('turnstileVerified')` — if set, no widget rendered
+3. Server checks `cc-tv` cookie — if present, request proceeds without token
+4. If neither: widget renders, token generated, sent with request, verified server-side
 
 **Request:**
 ```typescript

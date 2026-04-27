@@ -27,6 +27,8 @@ export interface TurnstileWidgetProps {
     mode?: 'managed' | 'non-interactive' | 'invisible';
     /** Mutable ref that receives a reset function. Call it to invalidate the current token and start a new challenge. */
     resetRef?: React.MutableRefObject<(() => void) | null>;
+    /** Mutable ref that receives an execute function. Call it to explicitly start the challenge (only used when execution='execute'). */
+    executeRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export function TurnstileWidget({
@@ -37,6 +39,7 @@ export function TurnstileWidget({
     enabled = true,
     mode = 'managed',
     resetRef,
+    executeRef,
 }: TurnstileWidgetProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const widgetIdRef = useRef<string | null>(null);
@@ -58,6 +61,21 @@ export function TurnstileWidget({
             }
         };
     }, [resetRef]);
+
+    useEffect(() => {
+        if (executeRef) {
+            executeRef.current = () => {
+                if (widgetIdRef.current && window.turnstile) {
+                    window.turnstile.execute(widgetIdRef.current);
+                }
+            };
+        }
+        return () => {
+            if (executeRef) {
+                executeRef.current = null;
+            }
+        };
+    }, [executeRef]);
 
     useEffect(() => {
         if (!enabled || !siteKey || !containerRef.current) {

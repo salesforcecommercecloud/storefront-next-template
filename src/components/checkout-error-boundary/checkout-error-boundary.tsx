@@ -57,7 +57,8 @@ class CheckoutErrorBoundaryClass extends Component<CheckoutErrorBoundaryProps, C
     }
 
     componentDidCatch(_error: Error, _errorInfo: ErrorInfo) {
-        // TODO: report error
+        // Customer integration point: add your APM's captureException() here
+        // (e.g., Sentry, Datadog RUM, New Relic Browser)
     }
 
     private handleRetry = () => {

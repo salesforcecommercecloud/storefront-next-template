@@ -34,6 +34,19 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 vi.mock('@/lib/turnstile-enforce.server', () => ({
     enforceTurnstile: vi.fn(),
 }));
+vi.mock('@/lib/cookie-utils.server', () => ({
+    createCookie: vi.fn(() => ({
+        parse: vi.fn().mockResolvedValue(null),
+        serialize: vi.fn().mockResolvedValue('cc-tv=1'),
+    })),
+    getCookieConfig: vi.fn((overrides = {}) => ({
+        httpOnly: false,
+        secure: true,
+        sameSite: 'lax' as const,
+        path: '/',
+        ...overrides,
+    })),
+}));
 
 describe('action.authorize-passwordless-email', () => {
     let mockContext: ActionFunctionArgs['context'];

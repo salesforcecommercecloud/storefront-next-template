@@ -22,6 +22,8 @@ import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
+import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
+import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile-constants';
 
 export type AuthorizePasswordlessEmailResponse = {
     success: boolean;
@@ -88,7 +90,15 @@ export async function action({ request, context }: ActionFunctionArgs) {
         await authorizePasswordless(context, { userid: email });
 
         logger.info('AuthorizePasswordlessEmail: OTP sent');
-        return Response.json({ success: true, email });
+
+        const tvCookie = createCookie<string>(
+            COOKIE_TURNSTILE_VERIFIED,
+            getCookieConfig({ httpOnly: true, maxAge: TURNSTILE_VERIFIED_MAX_AGE }, context),
+            context
+        );
+        const setCookieHeader = await tvCookie.serialize('1');
+
+        return Response.json({ success: true, email }, { headers: { 'Set-Cookie': setCookieHeader } });
     } catch (error) {
         logger.error('AuthorizePasswordlessEmail: failed', { error });
         const errorMessage = extractErrorMessage(error);
