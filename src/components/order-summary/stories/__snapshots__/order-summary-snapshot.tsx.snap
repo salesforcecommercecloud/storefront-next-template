@@ -747,6 +747,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 class="sr-only"
                               >
                                 Solid Silk Tie
+                                 
                                 Current price: £19.19
                               </span>
                                
@@ -762,6 +763,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 class="sr-only"
                               >
                                 Solid Silk Tie
+                                 
                                 List price: £39.50
                               </span>
                             </div>
@@ -851,6 +853,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 class="sr-only"
                               >
                                 Floral Ruffle Top
+                                 
                                 Current price: £35.19
                               </span>
                                
@@ -866,6 +869,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 class="sr-only"
                               >
                                 Floral Ruffle Top
+                                 
                                 List price: £79.00
                               </span>
                             </div>

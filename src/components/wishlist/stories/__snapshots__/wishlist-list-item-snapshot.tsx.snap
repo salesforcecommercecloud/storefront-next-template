@@ -94,12 +94,13 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
             aria-live="polite"
             class="sr-only"
           >
+             
             Current price: $299.99
           </span>
            
           <span
             aria-label="List price from $500.00"
-            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
           >
             $500.00
           </span>
@@ -108,6 +109,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
             aria-live="polite"
             class="sr-only"
           >
+             
             List price: $500.00
           </span>
         </div>
@@ -234,12 +236,13 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
             aria-live="polite"
             class="sr-only"
           >
+             
             Current price: $299.99
           </span>
            
           <span
             aria-label="List price from $500.00"
-            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
           >
             $500.00
           </span>
@@ -248,6 +251,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
             aria-live="polite"
             class="sr-only"
           >
+             
             List price: $500.00
           </span>
         </div>
@@ -349,6 +353,7 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
             aria-live="polite"
             class="sr-only"
           >
+             
             Current price: $19.99
           </span>
            
@@ -442,12 +447,13 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
             aria-live="polite"
             class="sr-only"
           >
+             
             Current price: $49.99
           </span>
            
           <span
             aria-label="List price: $99.99"
-            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
           >
             $99.99
           </span>
@@ -456,6 +462,7 @@ exports[`WishlistListItem stories snapshot > OnSale renders and matches snapshot
             aria-live="polite"
             class="sr-only"
           >
+             
             List price: $99.99
           </span>
         </div>
@@ -557,12 +564,13 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
             aria-live="polite"
             class="sr-only"
           >
+             
             Current price: $49.99
           </span>
            
           <span
             aria-label="List price: $99.99"
-            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
           >
             $99.99
           </span>
@@ -571,6 +579,7 @@ exports[`WishlistListItem stories snapshot > OutOfStock renders and matches snap
             aria-live="polite"
             class="sr-only"
           >
+             
             List price: $99.99
           </span>
         </div>

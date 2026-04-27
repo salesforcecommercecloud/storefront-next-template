@@ -15,6 +15,7 @@ exports[`CurrentPrice Snapshots > CustomElement snapshot 1`] = `
       aria-live="polite"
       class="sr-only"
     >
+       
       Current price: €1,234.56
     </span>
   </div>
@@ -36,6 +37,7 @@ exports[`CurrentPrice Snapshots > Default snapshot 1`] = `
       aria-live="polite"
       class="sr-only"
     >
+       
       Current price: $99.99
     </span>
   </div>
@@ -57,6 +59,7 @@ exports[`CurrentPrice Snapshots > Range snapshot 1`] = `
       aria-live="polite"
       class="sr-only"
     >
+       
       Current price: $49.99
     </span>
   </div>

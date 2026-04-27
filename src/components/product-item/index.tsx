@@ -202,7 +202,13 @@ export function ProductItemVariantAttributes({
 /**
  * ProductItemPromotions component that displays promotion info for a product item
  */
-export function ProductItemPromotions({ productItem }: { productItem: EnrichedProductItem }): ReactElement | null {
+export function ProductItemPromotions({
+    productItem,
+    className,
+}: {
+    productItem: EnrichedProductItem;
+    className?: string;
+}): ReactElement | null {
     const { t: tMiniCart, i18n } = useTranslation('miniCart');
     const { currency } = useSite();
 
@@ -215,7 +221,7 @@ export function ProductItemPromotions({ productItem }: { productItem: EnrichedPr
     if (discount <= 0) return null;
 
     return (
-        <Badge className="bg-muted text-foreground border-0 text-xs font-medium rounded-none">
+        <Badge className={cn('bg-muted text-foreground border-0 text-xs font-medium rounded-none', className)}>
             {tMiniCart('saved', {
                 amount: formatCurrency(discount, i18n.language, currency),
             })}

@@ -8,6 +8,7 @@
 
 ## v0.4.0-dev (Apr 15, 2026)
 
+- Mini cart item UX refresh: update product/price hierarchy, stack quantity controls, and improve long promotion wrapping behavior ([#1510](https://github.com/commerce-emu/storefront-next/pull/1510))
 - Standardize action error handling with semantic error codes: actions return structured `{ code, message }` errors instead of plain strings (@W-21952674) ([#1508](https://github.com/commerce-emu/storefront-next/pull/1508))
 - Extract Vitest config into dedicated `vitest.config.ts`, inline coverage thresholds ([#1518](https://github.com/commerce-emu/storefront-next/pull/1518))
 - Add support for optional `sh` parameter to dynamic images ([#1503](https://github.com/commerce-emu/storefront-next/pull/1503))

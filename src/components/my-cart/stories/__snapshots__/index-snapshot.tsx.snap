@@ -104,6 +104,7 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
                   class="sr-only"
                 >
                   Button Front Jacket
+                   
                   Current price: £39.67
                 </span>
                  
@@ -214,6 +215,7 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
                   class="sr-only"
                 >
                   Casual To Dressy Trousers
+                   
                   Current price: £374.40
                 </span>
                  
@@ -345,6 +347,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                   class="sr-only"
                 >
                   Button Front Jacket
+                   
                   Current price: £39.67
                 </span>
                  
@@ -455,6 +458,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
                   class="sr-only"
                 >
                   Casual To Dressy Trousers
+                   
                   Current price: £374.40
                 </span>
                  
@@ -586,6 +590,7 @@ exports[`MyCart stories snapshot > SingleItem story renders and matches snapshot
                   class="sr-only"
                 >
                   Button Front Jacket
+                   
                   Current price: £39.67
                 </span>
                  

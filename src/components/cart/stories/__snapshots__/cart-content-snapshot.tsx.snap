@@ -333,6 +333,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $42.00
                                       </span>
                                        
@@ -348,6 +349,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $99.99
                                       </span>
                                     </div>
@@ -1219,6 +1221,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $35.00
                                       </span>
                                        
@@ -1234,6 +1237,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $99.99
                                       </span>
                                     </div>
@@ -1629,6 +1633,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $45.00
                                       </span>
                                        
@@ -1644,6 +1649,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $99.99
                                       </span>
                                     </div>
@@ -1985,6 +1991,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $60.00
                                       </span>
                                        
@@ -2000,6 +2007,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $199.98
                                       </span>
                                     </div>
@@ -2886,6 +2894,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $45.00
                                       </span>
                                        
@@ -2901,6 +2910,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $99.99
                                       </span>
                                     </div>
@@ -3242,6 +3252,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $30.00
                                       </span>
                                        
@@ -3257,6 +3268,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $99.99
                                       </span>
                                     </div>
@@ -4187,6 +4199,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $420.00
                                       </span>
                                        
@@ -4202,6 +4215,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $999.90
                                       </span>
                                     </div>
@@ -5088,6 +5102,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $90.00
                                       </span>
                                        
@@ -5103,6 +5118,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $199.98
                                       </span>
                                     </div>
@@ -5450,6 +5466,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $30.00
                                       </span>
                                        
@@ -5465,6 +5482,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $99.99
                                       </span>
                                     </div>
@@ -5806,6 +5824,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $75.00
                                       </span>
                                        
@@ -5821,6 +5840,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $299.97
                                       </span>
                                     </div>
@@ -6168,6 +6188,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $60.00
                                       </span>
                                        
@@ -6183,6 +6204,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         List price: $99.99
                                       </span>
                                     </div>
@@ -7063,6 +7085,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                         class="sr-only"
                                       >
                                         Very Long Product Name That Should Wrap Properly In The Cart Display Area
+                                         
                                         Current price: $42.00
                                       </span>
                                        
@@ -7078,6 +7101,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                         class="sr-only"
                                       >
                                         Very Long Product Name That Should Wrap Properly In The Cart Display Area
+                                         
                                         List price: $99.99
                                       </span>
                                     </div>
@@ -7942,6 +7966,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                         class="sr-only"
                                       >
                                         Men's Classic Deer Gloves
+                                         
                                         Current price: $42.00
                                       </span>
                                        
@@ -9207,6 +9232,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                       class="sr-only"
                                     >
                                       Men's Classic Deer Gloves
+                                       
                                       Current price: $42.00
                                     </span>
                                      
@@ -9222,6 +9248,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                       class="sr-only"
                                     >
                                       Men's Classic Deer Gloves
+                                       
                                       List price: $99.99
                                     </span>
                                   </div>

@@ -114,6 +114,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £99.99
                               </span>
                                
@@ -277,6 +278,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £199.98
                               </span>
                                
@@ -459,6 +461,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £99.99
                               </span>
                                
@@ -640,6 +643,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £199.98
                               </span>
                                
@@ -807,6 +811,7 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
                 class="sr-only"
               >
                 Men's Classic Deer Gloves
+                 
                 Current price: £99.99
               </span>
                
@@ -887,6 +892,7 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
                 class="sr-only"
               >
                 Men's Classic Deer Gloves
+                 
                 Current price: £99.99
               </span>
                
@@ -1013,6 +1019,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £99.99
                               </span>
                                
@@ -1192,6 +1199,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £199.98
                               </span>
                                

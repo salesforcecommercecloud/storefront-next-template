@@ -215,7 +215,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                   class="flex-1 min-w-0 flex flex-col"
                 >
                   <div
-                    class="flex items-start justify-between gap-2 mb-1"
+                    class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                   >
                     <div
                       class="min-w-0"
@@ -225,7 +225,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -234,7 +234,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Color
@@ -245,7 +245,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                           </span>
                         </span>
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Size
@@ -257,56 +257,58 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="mb-2"
-                  >
                     <div
-                      class="items-center gap-2"
+                      class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                     >
-                      <span
-                        aria-label="Current price: £3.75"
-                        aria-live="polite"
-                        class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                      <div
+                        class="flex flex-col-reverse items-end gap-0 text-right"
                       >
-                        £3.75
-                      </span>
+                        <h5
+                          aria-label="Current price: £3.75"
+                          aria-live="polite"
+                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £3.75
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          Current price: £3.75
+                        </span>
+                         
+                        <h5
+                          aria-label="List price: £20.00"
+                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £20.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          List price: £20.00
+                        </span>
+                      </div>
                       <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
+                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        data-slot="badge"
                       >
-                        Product Name
-                        Current price: £3.75
-                      </span>
-                       
-                      <span
-                        aria-label="List price: £20.00"
-                        class="font-medium text-left text-muted-foreground line-through text-sm"
-                      >
-                        £20.00
-                      </span>
-                      <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
-                      >
-                        Product Name
-                        List price: £20.00
+                        Saved £65.00
                       </span>
                     </div>
-                    <span
-                      class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                      data-slot="badge"
-                    >
-                      Saved £65.00
-                    </span>
                   </div>
                   <div
-                    class="mb-2 flex items-center gap-2"
+                    class="mb-2 flex w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -825,7 +827,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                   class="flex-1 min-w-0 flex flex-col"
                 >
                   <div
-                    class="flex items-start justify-between gap-2 mb-1"
+                    class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                   >
                     <div
                       class="min-w-0"
@@ -835,7 +837,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -844,7 +846,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Color
@@ -855,7 +857,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                           </span>
                         </span>
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Size
@@ -867,56 +869,58 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="mb-2"
-                  >
                     <div
-                      class="items-center gap-2"
+                      class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                     >
-                      <span
-                        aria-label="Current price: £1.00"
-                        aria-live="polite"
-                        class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                      <div
+                        class="flex flex-col-reverse items-end gap-0 text-right"
                       >
-                        £1.00
-                      </span>
+                        <h5
+                          aria-label="Current price: £1.00"
+                          aria-live="polite"
+                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £1.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          Current price: £1.00
+                        </span>
+                         
+                        <h5
+                          aria-label="List price: £20.00"
+                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £20.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          List price: £20.00
+                        </span>
+                      </div>
                       <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
+                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        data-slot="badge"
                       >
-                        Product Name
-                        Current price: £1.00
-                      </span>
-                       
-                      <span
-                        aria-label="List price: £20.00"
-                        class="font-medium text-left text-muted-foreground line-through text-sm"
-                      >
-                        £20.00
-                      </span>
-                      <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
-                      >
-                        Product Name
-                        List price: £20.00
+                        Saved £285.00
                       </span>
                     </div>
-                    <span
-                      class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                      data-slot="badge"
-                    >
-                      Saved £285.00
-                    </span>
                   </div>
                   <div
-                    class="mb-2 flex items-center gap-2"
+                    class="mb-2 flex w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -1664,7 +1668,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                   class="flex-1 min-w-0 flex flex-col"
                 >
                   <div
-                    class="flex items-start justify-between gap-2 mb-1"
+                    class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                   >
                     <div
                       class="min-w-0"
@@ -1674,7 +1678,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -1683,7 +1687,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Color
@@ -1694,7 +1698,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                           </span>
                         </span>
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Size
@@ -1706,56 +1710,58 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="mb-2"
-                  >
                     <div
-                      class="items-center gap-2"
+                      class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                     >
-                      <span
-                        aria-label="Current price: £3.00"
-                        aria-live="polite"
-                        class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                      <div
+                        class="flex flex-col-reverse items-end gap-0 text-right"
                       >
-                        £3.00
-                      </span>
+                        <h5
+                          aria-label="Current price: £3.00"
+                          aria-live="polite"
+                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £3.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          Current price: £3.00
+                        </span>
+                         
+                        <h5
+                          aria-label="List price: £20.00"
+                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £20.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          List price: £20.00
+                        </span>
+                      </div>
                       <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
+                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        data-slot="badge"
                       >
-                        Product Name
-                        Current price: £3.00
-                      </span>
-                       
-                      <span
-                        aria-label="List price: £20.00"
-                        class="font-medium text-left text-muted-foreground line-through text-sm"
-                      >
-                        £20.00
-                      </span>
-                      <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
-                      >
-                        Product Name
-                        List price: £20.00
+                        Saved £85.00
                       </span>
                     </div>
-                    <span
-                      class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                      data-slot="badge"
-                    >
-                      Saved £85.00
-                    </span>
                   </div>
                   <div
-                    class="mb-2 flex items-center gap-2"
+                    class="mb-2 flex w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -2265,7 +2271,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                   class="flex-1 min-w-0 flex flex-col"
                 >
                   <div
-                    class="flex items-start justify-between gap-2 mb-1"
+                    class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                   >
                     <div
                       class="min-w-0"
@@ -2275,7 +2281,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -2284,7 +2290,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Color
@@ -2295,7 +2301,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                           </span>
                         </span>
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Size
@@ -2307,56 +2313,58 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="mb-2"
-                  >
                     <div
-                      class="items-center gap-2"
+                      class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                     >
-                      <span
-                        aria-label="Current price: £15.00"
-                        aria-live="polite"
-                        class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                      <div
+                        class="flex flex-col-reverse items-end gap-0 text-right"
                       >
-                        £15.00
-                      </span>
+                        <h5
+                          aria-label="Current price: £15.00"
+                          aria-live="polite"
+                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £15.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          Current price: £15.00
+                        </span>
+                         
+                        <h5
+                          aria-label="List price: £20.00"
+                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £20.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          List price: £20.00
+                        </span>
+                      </div>
                       <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
+                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        data-slot="badge"
                       >
-                        Product Name
-                        Current price: £15.00
-                      </span>
-                       
-                      <span
-                        aria-label="List price: £20.00"
-                        class="font-medium text-left text-muted-foreground line-through text-sm"
-                      >
-                        £20.00
-                      </span>
-                      <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
-                      >
-                        Product Name
-                        List price: £20.00
+                        Saved £5.00
                       </span>
                     </div>
-                    <span
-                      class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                      data-slot="badge"
-                    >
-                      Saved £5.00
-                    </span>
                   </div>
                   <div
-                    class="mb-2 flex items-center gap-2"
+                    class="mb-2 flex w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -2867,7 +2875,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                   class="flex-1 min-w-0 flex flex-col"
                 >
                   <div
-                    class="flex items-start justify-between gap-2 mb-1"
+                    class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                   >
                     <div
                       class="min-w-0"
@@ -2877,7 +2885,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                         >
                           This is a very long product name that should be truncated to prevent layout issues
                         </h3>
@@ -2886,7 +2894,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Color
@@ -2897,7 +2905,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                           </span>
                         </span>
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Size
@@ -2909,56 +2917,58 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="mb-2"
-                  >
                     <div
-                      class="items-center gap-2"
+                      class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                     >
-                      <span
-                        aria-label="Current price: £15.00"
-                        aria-live="polite"
-                        class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                      <div
+                        class="flex flex-col-reverse items-end gap-0 text-right"
                       >
-                        £15.00
-                      </span>
+                        <h5
+                          aria-label="Current price: £15.00"
+                          aria-live="polite"
+                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £15.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          This is a very long product name that should be truncated to prevent layout issues
+                           
+                          Current price: £15.00
+                        </span>
+                         
+                        <h5
+                          aria-label="List price: £20.00"
+                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £20.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          This is a very long product name that should be truncated to prevent layout issues
+                           
+                          List price: £20.00
+                        </span>
+                      </div>
                       <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
+                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        data-slot="badge"
                       >
-                        This is a very long product name that should be truncated to prevent layout issues
-                        Current price: £15.00
-                      </span>
-                       
-                      <span
-                        aria-label="List price: £20.00"
-                        class="font-medium text-left text-muted-foreground line-through text-sm"
-                      >
-                        £20.00
-                      </span>
-                      <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
-                      >
-                        This is a very long product name that should be truncated to prevent layout issues
-                        List price: £20.00
+                        Saved £5.00
                       </span>
                     </div>
-                    <span
-                      class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                      data-slot="badge"
-                    >
-                      Saved £5.00
-                    </span>
                   </div>
                   <div
-                    class="mb-2 flex items-center gap-2"
+                    class="mb-2 flex w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -3469,7 +3479,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                   class="flex-1 min-w-0 flex flex-col"
                 >
                   <div
-                    class="flex items-start justify-between gap-2 mb-1"
+                    class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                   >
                     <div
                       class="min-w-0"
@@ -3479,7 +3489,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -3488,7 +3498,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Color
@@ -3500,56 +3510,58 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="mb-2"
-                  >
                     <div
-                      class="items-center gap-2"
+                      class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                     >
-                      <span
-                        aria-label="Current price: £15.00"
-                        aria-live="polite"
-                        class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                      <div
+                        class="flex flex-col-reverse items-end gap-0 text-right"
                       >
-                        £15.00
-                      </span>
+                        <h5
+                          aria-label="Current price: £15.00"
+                          aria-live="polite"
+                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £15.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          Current price: £15.00
+                        </span>
+                         
+                        <h5
+                          aria-label="List price: £20.00"
+                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £20.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          List price: £20.00
+                        </span>
+                      </div>
                       <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
+                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        data-slot="badge"
                       >
-                        Product Name
-                        Current price: £15.00
-                      </span>
-                       
-                      <span
-                        aria-label="List price: £20.00"
-                        class="font-medium text-left text-muted-foreground line-through text-sm"
-                      >
-                        £20.00
-                      </span>
-                      <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
-                      >
-                        Product Name
-                        List price: £20.00
+                        Saved £5.00
                       </span>
                     </div>
-                    <span
-                      class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                      data-slot="badge"
-                    >
-                      Saved £5.00
-                    </span>
                   </div>
                   <div
-                    class="mb-2 flex items-center gap-2"
+                    class="mb-2 flex w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -4060,7 +4072,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                   class="flex-1 min-w-0 flex flex-col"
                 >
                   <div
-                    class="flex items-start justify-between gap-2 mb-1"
+                    class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                   >
                     <div
                       class="min-w-0"
@@ -4070,7 +4082,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -4079,7 +4091,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Size
@@ -4091,56 +4103,58 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="mb-2"
-                  >
                     <div
-                      class="items-center gap-2"
+                      class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                     >
-                      <span
-                        aria-label="Current price: £15.00"
-                        aria-live="polite"
-                        class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                      <div
+                        class="flex flex-col-reverse items-end gap-0 text-right"
                       >
-                        £15.00
-                      </span>
+                        <h5
+                          aria-label="Current price: £15.00"
+                          aria-live="polite"
+                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £15.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          Current price: £15.00
+                        </span>
+                         
+                        <h5
+                          aria-label="List price: £20.00"
+                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £20.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          List price: £20.00
+                        </span>
+                      </div>
                       <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
+                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        data-slot="badge"
                       >
-                        Product Name
-                        Current price: £15.00
-                      </span>
-                       
-                      <span
-                        aria-label="List price: £20.00"
-                        class="font-medium text-left text-muted-foreground line-through text-sm"
-                      >
-                        £20.00
-                      </span>
-                      <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
-                      >
-                        Product Name
-                        List price: £20.00
+                        Saved £5.00
                       </span>
                     </div>
-                    <span
-                      class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                      data-slot="badge"
-                    >
-                      Saved £5.00
-                    </span>
                   </div>
                   <div
-                    class="mb-2 flex items-center gap-2"
+                    class="mb-2 flex w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -4691,7 +4705,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                     class="flex-1 min-w-0 flex flex-col"
                   >
                     <div
-                      class="flex items-start justify-between gap-2 mb-1"
+                      class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                     >
                       <div
                         class="min-w-0"
@@ -4701,7 +4715,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           href="/RefArchGlobal/en-GB/product/prod-1"
                         >
                           <h3
-                            class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                            class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                           >
                             Product Name
                           </h3>
@@ -4710,7 +4724,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           class="mt-1 space-y-0.5"
                         >
                           <span
-                            class="text-left text-xs text-muted-foreground inline-block w-full"
+                            class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                           >
                             <span>
                               Color
@@ -4721,7 +4735,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                             </span>
                           </span>
                           <span
-                            class="text-left text-xs text-muted-foreground inline-block w-full"
+                            class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                           >
                             <span>
                               Size
@@ -4733,56 +4747,58 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           </span>
                         </div>
                       </div>
-                    </div>
-                    <div
-                      class="mb-2"
-                    >
                       <div
-                        class="items-center gap-2"
+                        class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                       >
-                        <span
-                          aria-label="Current price: £15.00"
-                          aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                        <div
+                          class="flex flex-col-reverse items-end gap-0 text-right"
                         >
-                          £15.00
-                        </span>
+                          <h5
+                            aria-label="Current price: £15.00"
+                            aria-live="polite"
+                            class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          >
+                            £15.00
+                          </h5>
+                          <span
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="sr-only"
+                          >
+                            Product Name
+                             
+                            Current price: £15.00
+                          </span>
+                           
+                          <h5
+                            aria-label="List price: £20.00"
+                            class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          >
+                            £20.00
+                          </h5>
+                          <span
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="sr-only"
+                          >
+                            Product Name
+                             
+                            List price: £20.00
+                          </span>
+                        </div>
                         <span
-                          aria-atomic="true"
-                          aria-live="polite"
-                          class="sr-only"
+                          class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                          data-slot="badge"
                         >
-                          Product Name
-                          Current price: £15.00
-                        </span>
-                         
-                        <span
-                          aria-label="List price: £20.00"
-                          class="font-medium text-left text-muted-foreground line-through text-sm"
-                        >
-                          £20.00
-                        </span>
-                        <span
-                          aria-atomic="true"
-                          aria-live="polite"
-                          class="sr-only"
-                        >
-                          Product Name
-                          List price: £20.00
+                          Saved £5.00
                         </span>
                       </div>
-                      <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                        data-slot="badge"
-                      >
-                        Saved £5.00
-                      </span>
                     </div>
                     <div
-                      class="mb-2 flex items-center gap-2"
+                      class="mb-2 flex w-full flex-col items-start gap-1"
                     >
                       <label
-                        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                         data-slot="label"
                         for="quantity-1"
                       >
@@ -5330,7 +5346,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                     class="flex-1 min-w-0 flex flex-col"
                   >
                     <div
-                      class="flex items-start justify-between gap-2 mb-1"
+                      class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                     >
                       <div
                         class="min-w-0"
@@ -5340,7 +5356,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           href="/RefArchGlobal/en-GB/product/prod-1"
                         >
                           <h3
-                            class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                            class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                           >
                             Product Name
                           </h3>
@@ -5349,7 +5365,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           class="mt-1 space-y-0.5"
                         >
                           <span
-                            class="text-left text-xs text-muted-foreground inline-block w-full"
+                            class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                           >
                             <span>
                               Color
@@ -5360,7 +5376,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                             </span>
                           </span>
                           <span
-                            class="text-left text-xs text-muted-foreground inline-block w-full"
+                            class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                           >
                             <span>
                               Size
@@ -5372,56 +5388,58 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           </span>
                         </div>
                       </div>
-                    </div>
-                    <div
-                      class="mb-2"
-                    >
                       <div
-                        class="items-center gap-2"
+                        class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                       >
-                        <span
-                          aria-label="Current price: £15.00"
-                          aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                        <div
+                          class="flex flex-col-reverse items-end gap-0 text-right"
                         >
-                          £15.00
-                        </span>
+                          <h5
+                            aria-label="Current price: £15.00"
+                            aria-live="polite"
+                            class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          >
+                            £15.00
+                          </h5>
+                          <span
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="sr-only"
+                          >
+                            Product Name
+                             
+                            Current price: £15.00
+                          </span>
+                           
+                          <h5
+                            aria-label="List price: £20.00"
+                            class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          >
+                            £20.00
+                          </h5>
+                          <span
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="sr-only"
+                          >
+                            Product Name
+                             
+                            List price: £20.00
+                          </span>
+                        </div>
                         <span
-                          aria-atomic="true"
-                          aria-live="polite"
-                          class="sr-only"
+                          class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                          data-slot="badge"
                         >
-                          Product Name
-                          Current price: £15.00
-                        </span>
-                         
-                        <span
-                          aria-label="List price: £20.00"
-                          class="font-medium text-left text-muted-foreground line-through text-sm"
-                        >
-                          £20.00
-                        </span>
-                        <span
-                          aria-atomic="true"
-                          aria-live="polite"
-                          class="sr-only"
-                        >
-                          Product Name
-                          List price: £20.00
+                          Saved £5.00
                         </span>
                       </div>
-                      <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                        data-slot="badge"
-                      >
-                        Saved £5.00
-                      </span>
                     </div>
                     <div
-                      class="mb-2 flex items-center gap-2"
+                      class="mb-2 flex w-full flex-col items-start gap-1"
                     >
                       <label
-                        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                         data-slot="label"
                         for="quantity-1"
                       >
@@ -5933,7 +5951,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                   class="flex-1 min-w-0 flex flex-col"
                 >
                   <div
-                    class="flex items-start justify-between gap-2 mb-1"
+                    class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                   >
                     <div
                       class="min-w-0"
@@ -5943,7 +5961,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -5952,7 +5970,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Color
@@ -5963,7 +5981,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                           </span>
                         </span>
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Size
@@ -5975,56 +5993,58 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="mb-2"
-                  >
                     <div
-                      class="items-center gap-2"
+                      class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                     >
-                      <span
-                        aria-label="Current price: £15.00"
-                        aria-live="polite"
-                        class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                      <div
+                        class="flex flex-col-reverse items-end gap-0 text-right"
                       >
-                        £15.00
-                      </span>
+                        <h5
+                          aria-label="Current price: £15.00"
+                          aria-live="polite"
+                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £15.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          Current price: £15.00
+                        </span>
+                         
+                        <h5
+                          aria-label="List price: £20.00"
+                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £20.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          List price: £20.00
+                        </span>
+                      </div>
                       <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
+                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        data-slot="badge"
                       >
-                        Product Name
-                        Current price: £15.00
-                      </span>
-                       
-                      <span
-                        aria-label="List price: £20.00"
-                        class="font-medium text-left text-muted-foreground line-through text-sm"
-                      >
-                        £20.00
-                      </span>
-                      <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
-                      >
-                        Product Name
-                        List price: £20.00
+                        Saved £5.00
                       </span>
                     </div>
-                    <span
-                      class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                      data-slot="badge"
-                    >
-                      Saved £5.00
-                    </span>
                   </div>
                   <div
-                    class="mb-2 flex items-center gap-2"
+                    class="mb-2 flex w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -6530,7 +6550,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                   class="flex-1 min-w-0 flex flex-col"
                 >
                   <div
-                    class="flex items-start justify-between gap-2 mb-1"
+                    class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                   >
                     <div
                       class="min-w-0"
@@ -6540,7 +6560,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -6549,7 +6569,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Color
@@ -6560,7 +6580,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                           </span>
                         </span>
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Size
@@ -6572,56 +6592,58 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="mb-2"
-                  >
                     <div
-                      class="items-center gap-2"
+                      class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                     >
-                      <span
-                        aria-label="Current price: £15.00"
-                        aria-live="polite"
-                        class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                      <div
+                        class="flex flex-col-reverse items-end gap-0 text-right"
                       >
-                        £15.00
-                      </span>
+                        <h5
+                          aria-label="Current price: £15.00"
+                          aria-live="polite"
+                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £15.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          Current price: £15.00
+                        </span>
+                         
+                        <h5
+                          aria-label="List price: £20.00"
+                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £20.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          List price: £20.00
+                        </span>
+                      </div>
                       <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
+                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        data-slot="badge"
                       >
-                        Product Name
-                        Current price: £15.00
-                      </span>
-                       
-                      <span
-                        aria-label="List price: £20.00"
-                        class="font-medium text-left text-muted-foreground line-through text-sm"
-                      >
-                        £20.00
-                      </span>
-                      <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
-                      >
-                        Product Name
-                        List price: £20.00
+                        Saved £5.00
                       </span>
                     </div>
-                    <span
-                      class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
-                      data-slot="badge"
-                    >
-                      Saved £5.00
-                    </span>
                   </div>
                   <div
-                    class="mb-2 flex items-center gap-2"
+                    class="mb-2 flex w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -7078,7 +7100,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                   class="flex-1 min-w-0 flex flex-col"
                 >
                   <div
-                    class="flex items-start justify-between gap-2 mb-1"
+                    class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2"
                   >
                     <div
                       class="min-w-0"
@@ -7088,7 +7110,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="text-sm font-medium leading-none text-left text-foreground line-clamp-2"
+                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -7097,7 +7119,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Color
@@ -7108,7 +7130,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                           </span>
                         </span>
                         <span
-                          class="text-left text-xs text-muted-foreground inline-block w-full"
+                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
                         >
                           <span>
                             Size
@@ -7120,36 +7142,37 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="mb-2"
-                  >
                     <div
-                      class="items-center gap-2"
+                      class="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right"
                     >
-                      <span
-                        aria-label="Current price: £15.00"
-                        aria-live="polite"
-                        class="[&:not(:first-child)]:mt-6 text-left font-semibold text-sm text-foreground"
+                      <div
+                        class="flex flex-col-reverse items-end gap-0 text-right"
                       >
-                        £15.00
-                      </span>
-                      <span
-                        aria-atomic="true"
-                        aria-live="polite"
-                        class="sr-only"
-                      >
-                        Product Name
-                        Current price: £15.00
-                      </span>
-                       
+                        <h5
+                          aria-label="Current price: £15.00"
+                          aria-live="polite"
+                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                        >
+                          £15.00
+                        </h5>
+                        <span
+                          aria-atomic="true"
+                          aria-live="polite"
+                          class="sr-only"
+                        >
+                          Product Name
+                           
+                          Current price: £15.00
+                        </span>
+                         
+                      </div>
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex items-center gap-2"
+                    class="mb-2 flex w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-normal text-muted-foreground shrink-0"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >

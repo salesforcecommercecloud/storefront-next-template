@@ -36,6 +36,7 @@ exports[`ChildProductCard stories snapshot > Controlled story renders and matche
             class="sr-only"
           >
             Turquoise and Gold Bracelet
+             
             Current price: £38.00
           </span>
            
@@ -178,6 +179,7 @@ exports[`ChildProductCard stories snapshot > Default story renders and matches s
             class="sr-only"
           >
             Turquoise and Gold Bracelet
+             
             Current price: £38.00
           </span>
            

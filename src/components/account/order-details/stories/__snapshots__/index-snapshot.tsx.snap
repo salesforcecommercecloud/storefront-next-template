@@ -219,6 +219,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                               class="sr-only"
                             >
                               First Product
+                               
                               Current price: £61.99
                             </span>
                              
@@ -604,6 +605,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                               class="sr-only"
                             >
                               First Product
+                               
                               Current price: £61.99
                             </span>
                              
@@ -987,6 +989,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                               class="sr-only"
                             >
                               Product for Alice
+                               
                               Current price: £0.00
                             </span>
                              
@@ -1144,6 +1147,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                               class="sr-only"
                             >
                               Product for Bob
+                               
                               Current price: £0.00
                             </span>
                              
@@ -1515,6 +1519,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                               class="sr-only"
                             >
                               First Product
+                               
                               Current price: £61.99
                             </span>
                              
@@ -1900,6 +1905,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                               class="sr-only"
                             >
                               First Product
+                               
                               Current price: £61.99
                             </span>
                              
@@ -2319,6 +2325,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                               class="sr-only"
                             >
                               First Product
+                               
                               Current price: £61.99
                             </span>
                              

@@ -183,17 +183,22 @@ export default function MiniCartItem({
 
             {/* Product details */}
             <div className="flex-1 min-w-0 flex flex-col">
-                {/* Product name + Delivery badge */}
-                <div className="flex items-start justify-between gap-2 mb-1">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-2 mb-2">
                     <div className="min-w-0">
                         {productUrl ? (
                             <Link to={productUrl} className="hover:underline">
-                                <Typography as="h3" variant="small" className="text-foreground line-clamp-2">
+                                <Typography
+                                    as="h3"
+                                    variant="h5"
+                                    className="text-base leading-normal tracking-normal text-card-foreground line-clamp-2">
                                     {product.productName}
                                 </Typography>
                             </Link>
                         ) : (
-                            <Typography as="h3" variant="small" className="text-foreground line-clamp-2">
+                            <Typography
+                                as="h3"
+                                variant="h5"
+                                className="text-base leading-normal tracking-normal text-card-foreground line-clamp-2">
                                 {product.productName}
                             </Typography>
                         )}
@@ -204,7 +209,7 @@ export default function MiniCartItem({
                                         key={name}
                                         as="span"
                                         variant="muted"
-                                        className="text-xs text-muted-foreground inline-block w-full">
+                                        className="inline-block w-full text-sm leading-normal font-normal text-muted-foreground">
                                         <span>{name}: </span>
                                         <span>{value}</span>
                                     </Typography>
@@ -212,37 +217,42 @@ export default function MiniCartItem({
                             </div>
                         )}
                     </div>
-                </div>
 
-                {/* Price + Savings */}
-                <div className="mb-2">
-                    <ProductPrice
-                        product={product}
-                        currency={currency}
-                        quantity={1}
-                        type="unit"
-                        labelForA11y={product.productName || productAltFallback}
-                        currentPriceProps={{
-                            className: 'text-sm text-foreground',
-                        }}
-                        listPriceProps={{
-                            className: 'text-sm',
-                        }}
-                        promoCalloutProps={{
-                            className:
-                                'bg-muted text-foreground border-0 text-xs font-medium rounded-none inline-block mt-1 mx-0',
-                        }}
-                    />
-                    <UITarget targetId="sfcc.miniCart.shipping.deliveryEstimate" />
-                    <UITarget targetId="sfcc.miniCart.tax.lineItemMessage" />
-                    <ProductItemPromotions productItem={product} />
+                    <div className="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right">
+                        <ProductPrice
+                            product={product}
+                            currency={currency}
+                            quantity={1}
+                            type="unit"
+                            labelForA11y={product.productName || productAltFallback}
+                            className="flex flex-col-reverse items-end gap-0 text-right"
+                            currentPriceProps={{
+                                as: 'h5',
+                                className:
+                                    'text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0',
+                            }}
+                            listPriceProps={{
+                                as: 'h5',
+                                className:
+                                    'text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0',
+                            }}
+                            promoCalloutProps={{
+                                className:
+                                    'mt-1 inline-flex w-fit rounded-none border-0 bg-muted px-2 py-0.5 text-xs font-medium text-foreground',
+                            }}
+                        />
+                        <UITarget targetId="sfcc.miniCart.shipping.deliveryEstimate" />
+                        <UITarget targetId="sfcc.miniCart.tax.lineItemMessage" />
+                        <ProductItemPromotions
+                            productItem={product}
+                            className="mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        />
+                    </div>
                 </div>
 
                 {/* Quantity Picker */}
-                <div className="mb-2 flex items-center gap-2">
-                    <Label
-                        htmlFor={`quantity-${product.itemId}`}
-                        className="text-xs font-normal text-muted-foreground shrink-0">
+                <div className="mb-2 flex w-full flex-col items-start gap-1">
+                    <Label htmlFor={`quantity-${product.itemId}`} className="text-xs font-bold text-foreground">
                         {tMiniCart('quantityLabel')}
                     </Label>
                     <QuantityPicker

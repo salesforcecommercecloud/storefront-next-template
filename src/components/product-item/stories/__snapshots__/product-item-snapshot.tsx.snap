@@ -447,6 +447,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                             class="sr-only"
                           >
                             Men's Classic Deer Gloves
+                             
                             Current price: £99.99
                           </span>
                            
@@ -582,6 +583,7 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
             class="sr-only"
           >
             Men's Classic Deer Gloves
+             
             Current price: £99.99
           </span>
            
@@ -700,6 +702,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                             class="sr-only"
                           >
                             Men's Classic Deer Gloves
+                             
                             Current price: £99.99
                           </span>
                            

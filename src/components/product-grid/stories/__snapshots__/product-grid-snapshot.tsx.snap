@@ -264,6 +264,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Standard Product 1
+                 
                 Current price: £63.99
               </span>
                
@@ -279,6 +280,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Standard Product 1
+                 
                 List price: £67.99
               </span>
             </div>
@@ -542,6 +544,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Master Product 1
+                 
                 Current price: £191.99
               </span>
                
@@ -557,6 +560,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Master Product 1
+                 
                 List price: £320.00
               </span>
             </div>
@@ -839,6 +843,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Master Multi 1
+                 
                 Current price: £18.55
               </span>
                
@@ -854,6 +859,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Master Multi 1
+                 
                 List price: £31.36
               </span>
             </div>
@@ -1146,6 +1152,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Master Product 2
+                 
                 Price range from £143.99 to £191.99
               </span>
                
@@ -1404,6 +1411,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Product Set 1
+                 
                 Price range from £40.16 to £71.03
               </span>
             </div>
@@ -1666,6 +1674,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Standard Product 2
+                 
                 Current price: £63.99
               </span>
                
@@ -1681,6 +1690,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Standard Product 2
+                 
                 List price: £67.99
               </span>
             </div>
@@ -1963,6 +1973,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Master Multi 2
+                 
                 Current price: £18.55
               </span>
                
@@ -1978,6 +1989,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Master Multi 2
+                 
                 List price: £31.36
               </span>
             </div>
@@ -2270,6 +2282,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 class="sr-only"
               >
                 Master Product 3
+                 
                 Price range from £143.99 to £191.99
               </span>
                
@@ -2555,6 +2568,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Standard Product 1
+                 
                 Current price: £63.99
               </span>
                
@@ -2570,6 +2584,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Standard Product 1
+                 
                 List price: £67.99
               </span>
             </div>
@@ -2833,6 +2848,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Master Product 1
+                 
                 Current price: £191.99
               </span>
                
@@ -2848,6 +2864,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Master Product 1
+                 
                 List price: £320.00
               </span>
             </div>
@@ -3130,6 +3147,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Master Multi 1
+                 
                 Current price: £18.55
               </span>
                
@@ -3145,6 +3163,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Master Multi 1
+                 
                 List price: £31.36
               </span>
             </div>
@@ -3437,6 +3456,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Master Product 2
+                 
                 Price range from £143.99 to £191.99
               </span>
                
@@ -3695,6 +3715,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Product Set 1
+                 
                 Price range from £40.16 to £71.03
               </span>
             </div>
@@ -3957,6 +3978,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Standard Product 2
+                 
                 Current price: £63.99
               </span>
                
@@ -3972,6 +3994,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Standard Product 2
+                 
                 List price: £67.99
               </span>
             </div>
@@ -4254,6 +4277,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Master Multi 2
+                 
                 Current price: £18.55
               </span>
                
@@ -4269,6 +4293,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Master Multi 2
+                 
                 List price: £31.36
               </span>
             </div>
@@ -4561,6 +4586,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 class="sr-only"
               >
                 Master Product 3
+                 
                 Price range from £143.99 to £191.99
               </span>
                
@@ -4868,6 +4894,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 1
+                 
                 Current price: £63.99
               </span>
                
@@ -4883,6 +4910,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 1
+                 
                 List price: £67.99
               </span>
             </div>
@@ -5145,6 +5173,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 2
+                 
                 Current price: £66.99
               </span>
                
@@ -5160,6 +5189,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 2
+                 
                 List price: £67.99
               </span>
             </div>
@@ -5422,6 +5452,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 3
+                 
                 Current price: £69.99
               </span>
                
@@ -5685,6 +5716,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 4
+                 
                 Current price: £72.99
               </span>
                
@@ -5948,6 +5980,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 5
+                 
                 Current price: £75.99
               </span>
                
@@ -6211,6 +6244,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 6
+                 
                 Current price: £63.99
               </span>
                
@@ -6226,6 +6260,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 6
+                 
                 List price: £67.99
               </span>
             </div>
@@ -6488,6 +6523,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 7
+                 
                 Current price: £66.99
               </span>
                
@@ -6503,6 +6539,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 7
+                 
                 List price: £67.99
               </span>
             </div>
@@ -6765,6 +6802,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 8
+                 
                 Current price: £69.99
               </span>
                
@@ -7028,6 +7066,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 9
+                 
                 Current price: £72.99
               </span>
                
@@ -7291,6 +7330,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 10
+                 
                 Current price: £75.99
               </span>
                
@@ -7554,6 +7594,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 11
+                 
                 Current price: £63.99
               </span>
                
@@ -7569,6 +7610,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 11
+                 
                 List price: £67.99
               </span>
             </div>
@@ -7831,6 +7873,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 12
+                 
                 Current price: £66.99
               </span>
                
@@ -7846,6 +7889,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 12
+                 
                 List price: £67.99
               </span>
             </div>
@@ -8108,6 +8152,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 13
+                 
                 Current price: £69.99
               </span>
                
@@ -8371,6 +8416,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 14
+                 
                 Current price: £72.99
               </span>
                
@@ -8634,6 +8680,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 15
+                 
                 Current price: £75.99
               </span>
                
@@ -8897,6 +8944,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 16
+                 
                 Current price: £63.99
               </span>
                
@@ -8912,6 +8960,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 16
+                 
                 List price: £67.99
               </span>
             </div>
@@ -9174,6 +9223,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 17
+                 
                 Current price: £66.99
               </span>
                
@@ -9189,6 +9239,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 17
+                 
                 List price: £67.99
               </span>
             </div>
@@ -9451,6 +9502,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 18
+                 
                 Current price: £69.99
               </span>
                
@@ -9714,6 +9766,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 19
+                 
                 Current price: £72.99
               </span>
                
@@ -9977,6 +10030,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 20
+                 
                 Current price: £75.99
               </span>
                
@@ -10240,6 +10294,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 21
+                 
                 Current price: £63.99
               </span>
                
@@ -10255,6 +10310,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 21
+                 
                 List price: £67.99
               </span>
             </div>
@@ -10517,6 +10573,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 22
+                 
                 Current price: £66.99
               </span>
                
@@ -10532,6 +10589,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 22
+                 
                 List price: £67.99
               </span>
             </div>
@@ -10794,6 +10852,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 23
+                 
                 Current price: £69.99
               </span>
                
@@ -11057,6 +11116,7 @@ exports[`ProductGrid stories snapshot > ManyProducts story renders and matches s
                 class="sr-only"
               >
                 Standard Product 24
+                 
                 Current price: £72.99
               </span>
                
@@ -11333,6 +11393,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Standard Product 1
+                 
                 Current price: £63.99
               </span>
                
@@ -11348,6 +11409,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Standard Product 1
+                 
                 List price: £67.99
               </span>
             </div>
@@ -11611,6 +11673,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Master Product 1
+                 
                 Current price: £191.99
               </span>
                
@@ -11626,6 +11689,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Master Product 1
+                 
                 List price: £320.00
               </span>
             </div>
@@ -11908,6 +11972,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Master Multi 1
+                 
                 Current price: £18.55
               </span>
                
@@ -11923,6 +11988,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Master Multi 1
+                 
                 List price: £31.36
               </span>
             </div>
@@ -12215,6 +12281,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Master Product 2
+                 
                 Price range from £143.99 to £191.99
               </span>
                
@@ -12473,6 +12540,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Product Set 1
+                 
                 Price range from £40.16 to £71.03
               </span>
             </div>
@@ -12735,6 +12803,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Standard Product 2
+                 
                 Current price: £63.99
               </span>
                
@@ -12750,6 +12819,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Standard Product 2
+                 
                 List price: £67.99
               </span>
             </div>
@@ -13032,6 +13102,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Master Multi 2
+                 
                 Current price: £18.55
               </span>
                
@@ -13047,6 +13118,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Master Multi 2
+                 
                 List price: £31.36
               </span>
             </div>
@@ -13339,6 +13411,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 class="sr-only"
               >
                 Master Product 3
+                 
                 Price range from £143.99 to £191.99
               </span>
                
@@ -13624,6 +13697,7 @@ exports[`ProductGrid stories snapshot > SingleProductCritical story renders and 
                 class="sr-only"
               >
                 Standard Only
+                 
                 Current price: £63.99
               </span>
                
@@ -13639,6 +13713,7 @@ exports[`ProductGrid stories snapshot > SingleProductCritical story renders and 
                 class="sr-only"
               >
                 Standard Only
+                 
                 List price: £67.99
               </span>
             </div>
@@ -13914,6 +13989,7 @@ exports[`ProductGrid stories snapshot > SingleProductNonCritical story renders a
                 class="sr-only"
               >
                 Standard Only
+                 
                 Current price: £63.99
               </span>
                
@@ -13929,6 +14005,7 @@ exports[`ProductGrid stories snapshot > SingleProductNonCritical story renders a
                 class="sr-only"
               >
                 Standard Only
+                 
                 List price: £67.99
               </span>
             </div>
