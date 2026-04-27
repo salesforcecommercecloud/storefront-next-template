@@ -8,7 +8,7 @@ This reference provides detailed documentation for all configuration options ava
 - [runtime](#runtime) - Runtime deployment settings for MRT
 - [app](#app) - Application-specific configuration
   - [pages](#pages) - Page-specific settings
-  - [commerce](#commerce) - Commerce Cloud API details
+  - [commerce](#commerce) - B2C Commerce API details
   - [siteAliasMap](#sitealiasmap) - Site alias mapping configuration
   - [hybrid](#hybrid) - Hybrid mode configuration
   - [auth](#auth) - Authentication configuration shared across all auth features
@@ -133,7 +133,7 @@ The category ID to use as the root of the navigation menu tree. This determines 
 
 This setting is particularly useful for:
 - **Multi-brand sites**: Different storefronts can use different category hierarchies
-- **Custom category structures**: Use a specific category as the navigation root instead of the Commerce Cloud default 'root' category
+- **Custom category structures**: Use a specific category as the navigation root instead of the B2C Commerce default 'root' category
 - **A/B testing**: Test different navigation structures by changing the root category
 
 Example:
@@ -196,7 +196,7 @@ Example:
 PUBLIC__app__pages__home__featuredProductsCount=16
 ```
 
-**Troubleshooting:** If you're seeing performance issues on the homepage, consider reducing this number. Ensure your Commerce Cloud API can handle the product request size.
+**Troubleshooting:** If you're seeing performance issues on the homepage, consider reducing this number. Ensure your B2C Commerce API can handle the product request size.
 
 ---
 
@@ -211,7 +211,7 @@ Example:
 PUBLIC__app__pages__cart__quantityUpdateDebounce=1000
 ```
 
-When a user changes the quantity of an item in their cart, the application waits this many milliseconds after the last interaction before sending the update request to the Commerce Cloud API.
+When a user changes the quantity of an item in their cart, the application waits this many milliseconds after the last interaction before sending the update request to the B2C Commerce API.
 
 ---
 
@@ -410,7 +410,7 @@ PUBLIC__app__pages__maintenancePage__forwardedHost="mystore.example.com"
 
 ## commerce
 
-Commerce Cloud API configuration.
+B2C Commerce API configuration.
 
 ### commerce.api.clientId
 
@@ -444,7 +444,7 @@ PUBLIC__app__commerce__api__organizationId="f_ecom_aaaa_001"
 
 Type: `string` Required | Default: `''`
 
-The unique identifier for your Commerce Cloud instance. This short code is part of your instance URL and API endpoints. See [Configuration Values](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#configuration-values) in the _B2C Commerce API Guide_.
+The unique identifier for your B2C Commerce instance. This short code is part of your instance URL and API endpoints. See [Configuration Values](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#configuration-values) in the _B2C Commerce API Guide_.
 
 Example:
 ```bash
@@ -1151,7 +1151,7 @@ Performance optimization configuration.
 
 Type: `number` | Default: `300`
 
-Time-to-live for API response caching in seconds. This determines how long Commerce Cloud API responses are cached.
+Time-to-live for API response caching in seconds. This determines how long B2C Commerce API responses are cached.
 
 Example:
 ```bash
@@ -1522,7 +1522,7 @@ PUBLIC__app__development__strictMode=false
 Minimum required configuration for a new site.
 
 ```bash
-# Commerce Cloud credentials (required)
+# B2C Commerce credentials (required)
 PUBLIC__app__commerce__api__clientId="your-client-id"
 PUBLIC__app__commerce__api__organizationId="your-org-id"
 PUBLIC__app__commerce__api__shortCode="your-short-code"
@@ -1656,7 +1656,7 @@ PUBLIC__app__global__productListing__enableQuickView=false
 
 **Possible Solutions:**
 1. Copy `.env.default` to `.env` if you haven't already.
-2. Set all required Commerce Cloud credentials.
+2. Set all required B2C Commerce credentials.
    ```bash
    PUBLIC__app__commerce__api__clientId=your-id
    PUBLIC__app__commerce__api__organizationId=your-org

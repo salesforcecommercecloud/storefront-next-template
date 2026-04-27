@@ -1,6 +1,6 @@
 # Storefront Next Template
 
-A production-ready React storefront template for Salesforce Commerce Cloud, built with React Router 7 and React 19.
+A production-ready React storefront template for Salesforce B2C Commerce, built with React Router 7 and React 19.
 
 > [!IMPORTANT]
 > Storefront Next is a pilot or beta service that is subject to the Beta Services Terms at [Agreements - Salesforce.com](https://www.salesforce.com/company/legal/agreements/) or a written Unified Pilot Agreement if executed by Customer, and applicable terms in the [Product Terms Directory](https://ptd.salesforce.com/). Use of this pilot or beta service is at the Customer's sole discretion.
@@ -21,7 +21,7 @@ cd my-storefront
 
 # 2. Set up environment
 cp .env.default .env
-# Edit .env with your Commerce Cloud credentials
+# Edit .env with your B2C Commerce credentials
 
 # 3. Install and run
 pnpm install
@@ -63,7 +63,7 @@ All settings are defined in `config.server.ts` and can be configured via environ
 
 ```bash
 cp .env.default .env
-# Edit .env with your Commerce Cloud credentials
+# Edit .env with your B2C Commerce credentials
 ```
 
 ### Required Variables
@@ -90,7 +90,7 @@ See [Configuration Guide](./docs/README-CONFIG.md) for complete documentation.
 
 ## Deployment
 
-Deploy your storefront to Salesforce Commerce Cloud's Managed Runtime:
+Deploy your storefront to Salesforce B2C Commerce's Managed Runtime:
 
 ```bash
 pnpm build

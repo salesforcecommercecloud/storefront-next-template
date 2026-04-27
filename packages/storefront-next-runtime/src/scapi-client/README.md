@@ -1,6 +1,6 @@
 # SCAPI Client
 
-A type-safe, operation-based API client for Salesforce Commerce Cloud Shopper APIs (SCAPI), built on top of `openapi-fetch` with custom operation mapping and TypeScript Proxy-based method routing.
+A type-safe, operation-based API client for Salesforce B2C Commerce Shopper APIs (SCAPI), built on top of `openapi-fetch` with custom operation mapping and TypeScript Proxy-based method routing.
 
 ## Table of Contents
 
@@ -27,7 +27,7 @@ A type-safe, operation-based API client for Salesforce Commerce Cloud Shopper AP
 
 ## Overview
 
-The SCAPI client provides a developer-friendly, type-safe interface for calling Salesforce Commerce Cloud Shopper APIs. Instead of using generic HTTP methods with path strings, developers can call operations by their semantic names with full TypeScript autocomplete and type checking.
+The SCAPI client provides a developer-friendly, type-safe interface for calling Salesforce B2C Commerce Shopper APIs. Instead of using generic HTTP methods with path strings, developers can call operations by their semantic names with full TypeScript autocomplete and type checking.
 
 ## Authentication
 
@@ -716,7 +716,7 @@ When Salesforce releases new versions of SCAPI specifications:
 
 ### Step 1: Download New Specifications
 
-Download the new OpenAPI specification files from Salesforce Commerce Cloud and place them in the `openapi-specs/` directory:
+Download the new OpenAPI specification files from Salesforce B2C Commerce and place them in the `openapi-specs/` directory:
 
 ```bash
 cd packages/storefront-next-runtime/openapi-specs/
@@ -813,7 +813,7 @@ Each operation method accepts a `FetchOptions` object with these properties:
 
 ### Query Parameter Serialization
 
-The SCAPI client includes a smart default query serializer that handles Commerce Cloud API requirements automatically.
+The SCAPI client includes a smart default query serializer that handles B2C Commerce API requirements automatically.
 
 #### Default Behavior
 
@@ -1154,4 +1154,4 @@ try {
 - [openapi-typescript Documentation](https://openapi-ts.dev/introduction) - Type generation from OpenAPI
 - [openapi-fetch Middleware Guide](https://openapi-ts.dev/openapi-fetch/middleware) - Request/response interception
 - [openapi-fetch API Options](https://openapi-ts.dev/openapi-fetch/api) - Request configuration options
-- [Salesforce Commerce Cloud API Documentation](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) - SCAPI reference
+- [Salesforce B2C Commerce API Documentation](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) - SCAPI reference

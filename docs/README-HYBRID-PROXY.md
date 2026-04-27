@@ -122,7 +122,7 @@ See [Writing Routing Rules](#writing-routing-rules) below for a full breakdown.
 
 #### `PUBLIC__app__defaultSiteId`
 
-Your Commerce Cloud site ID. Used to build the SFRA path prefix (`/s/{siteId}/{locale}/...`). This is already required for the storefront to work and is likely already set in your `.env`.
+Your B2C Commerce site ID. Used to build the SFRA path prefix (`/s/{siteId}/{locale}/...`). This is already required for the storefront to work and is likely already set in your `.env`.
 
 ```bash
 PUBLIC__app__defaultSiteId=RefArchGlobal
@@ -343,6 +343,6 @@ HYBRID_PROXY_LOCALE=en-GB
 # The inverse of PUBLIC__app__hybrid__legacyRoutes: these are the routes Storefront Next owns
 HYBRID_ROUTING_RULES='(http.request.uri.path matches "^/$" or http.request.uri.path matches "^/reset-password.*" or http.request.uri.path matches "^/signup.*" or http.request.uri.path matches "^/logout.*" or http.request.uri.path matches "^/login.*" or http.request.uri.path matches "^/category.*" or http.request.uri.path matches "^/product.*" or http.request.uri.path matches "^/search.*" or http.request.uri.path matches "^/account.*" or http.request.uri.path matches "^/social-callback.*" or http.request.uri.path matches "^/resource.*" or http.request.uri.path matches "^/action/.*")'
 
-# Commerce Cloud site ID (already required for the storefront — just make sure it's set)
+# B2C Commerce site ID (already required for the storefront — just make sure it's set)
 PUBLIC__app__defaultSiteId=RefArchGlobal
 ```

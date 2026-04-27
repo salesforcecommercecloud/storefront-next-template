@@ -946,7 +946,7 @@ function Grid({ component, componentData }) {
 
 ### Overview
 
-Page annotations allow you to define metadata for your route components that integrates with Salesforce Commerce Cloud's Page Designer. The `@PageType` decorator marks a route as a Page Designer-enabled page and specifies which aspect types it supports.
+Page annotations allow you to define metadata for your route components that integrates with Salesforce B2C Commerce's Page Designer. The `@PageType` decorator marks a route as a Page Designer-enabled page and specifies which aspect types it supports.
 
 ### The @PageType Decorator
 
@@ -1078,7 +1078,7 @@ export class SearchPageMetadata {}
 
 ### Overview
 
-When you use Page Designer in Salesforce Commerce Cloud Business Manager, several steps happen behind the scenes to connect your configured pages with your application's routes. Understanding this workflow helps you troubleshoot issues and design better page templates.
+When you use Page Designer in Salesforce B2C Commerce Business Manager, several steps happen behind the scenes to connect your configured pages with your application's routes. Understanding this workflow helps you troubleshoot issues and design better page templates.
 
 ### The Page Designer Workflow
 

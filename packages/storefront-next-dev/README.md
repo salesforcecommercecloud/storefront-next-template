@@ -11,9 +11,9 @@ Vite plugin and deployment tools for Storefront Next integration with React Rout
 
 - 🚀 **SSR** support with Vite v7
 - 🛣️ **React Router v7** integration with React Router as the framework
-- 🛒 **Commerce Cloud API** proxying for development
+- 🛒 **B2C Commerce API** proxying for development
 - 📦 **Built-in entry files** for SSR and browser environments
-- ☁️ **Managed Runtime Optimization** for Salesforce Commerce Cloud deployment environment
+- ☁️ **Managed Runtime Optimization** for Salesforce B2C Commerce deployment environment
 
 ### CLI & Deployment Tools
 
@@ -22,7 +22,7 @@ Vite plugin and deployment tools for Storefront Next integration with React Rout
 - **Bundle Creation**: Creates TAR archives from React Router build directories
 - **Deployment**: Pushes bundles to Managed Runtime
 - **Cartridge Generation**: Generate cartridge from decorated components, page types, aspects
-- **Cartridge Deployment**: Deploy cartridges to Commerce Cloud
+- **Cartridge Deployment**: Deploy cartridges to B2C Commerce
 - **Workspace Integration**: Seamlessly works within pnpm workspaces
 - **Automatic Configuration**: Intelligent file detection from build directory structure
 - **TypeScript**: Written in modern TypeScript with full type safety
@@ -111,7 +111,7 @@ Run these commands from your project directory (e.g., `template-retail-rsc-app`)
 # Generate cartridge metadata for your site
 pnpm sfnext generate-cartridge
 
-# Deploy generated metadata to Commerce Cloud (uses dw.json for all settings)
+# Deploy generated metadata to B2C Commerce (uses dw.json for all settings)
 pnpm sfnext deploy-cartridge
 ```
 
@@ -210,7 +210,7 @@ Response streaming is enabled by default for bundles pushed to MRT. To change th
 
 ### Deploy Cartridge Command Authentication
 
-For cartridge deployment to Commerce Cloud, configure B2C settings in `dw.json` (or pass flags directly):
+For cartridge deployment to B2C Commerce, configure B2C settings in `dw.json` (or pass flags directly):
 
 1. **dw.json file** (recommended):
 
@@ -227,7 +227,7 @@ For cartridge deployment to Commerce Cloud, configure B2C settings in `dw.json` 
 
 ### Cartridge Commands
 
-The cartridge commands are independent tools for working with Commerce Cloud metadata:
+The cartridge commands are independent tools for working with B2C Commerce metadata:
 
 **Generate Cartridge**: `generate-cartridge` scans your project for decorated components and creates metadata files
 
@@ -235,7 +235,7 @@ The cartridge commands are independent tools for working with Commerce Cloud met
 - Generates JSON metadata files in `cartridge/cartridge/experience/` directory
 - Creates separate files for components, page types, and aspects
 
-**Deploy Metadata**: `deploy-cartridge` uploads metadata directories to Commerce Cloud
+**Deploy Metadata**: `deploy-cartridge` uploads metadata directories to B2C Commerce
 
 - Uploads mapped cartridges through `@salesforce/b2c-tooling-sdk`
 - Uses the configured code version and credentials from resolved SDK config
@@ -263,7 +263,7 @@ export const GENERATE_AND_DEPLOY_CARTRIDGE_ON_MRT_PUSH = true; // Set to true to
 When enabled, before each `pnpm sfnext push` command:
 
 1. Cartridge metadata will be automatically generated from decorated components
-2. The cartridge will be automatically deployed to Commerce Cloud
+2. The cartridge will be automatically deployed to B2C Commerce
 3. The MRT push will proceed as normal
 
 If generation or deployment fails:
@@ -300,7 +300,7 @@ The tool creates bundles with the following structure:
 - **File Distribution**:
     - `ssr_only`: Files only on server (not CDN) - includes server-side code
     - `ssr_shared`: Files on both server and CDN - includes client assets
-- **Metadata**: Dependencies and Commerce Cloud overrides
+- **Metadata**: Dependencies and B2C Commerce overrides
 
 ## Subpath Exports
 

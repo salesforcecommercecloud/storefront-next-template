@@ -10,7 +10,7 @@ Ensure the storefront app is configured. From the project root:
 
 ```bash
 cp .env.default .env
-# Edit .env with your Commerce Cloud credentials
+# Edit .env with your B2C Commerce credentials
 ```
 
 ### Setup
@@ -44,7 +44,7 @@ Key variables in `.env`:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `BASE_URL` | `http://localhost:5173` | Storefront URL |
-| `SITE_ID` | `RefArchGlobal` | Commerce Cloud site ID |
+| `SITE_ID` | `RefArchGlobal` | B2C Commerce site ID |
 | `SITE_ALIAS` | _(empty)_ | URL prefix for multisite routing |
 | `LOCALE` | _(empty)_ | Locale prefix for multisite routing |
 | `HEADLESS` | `false` | Run browser headless |
@@ -165,7 +165,7 @@ pnpm e2e --ai --grep "@failing-test"
 
 **Local dev server won't start**
 
-Check that `.env` exists at the project root and has valid Commerce Cloud credentials.
+Check that `.env` exists at the project root and has valid B2C Commerce credentials.
 
 **Port 5173 already in use**
 ```bash

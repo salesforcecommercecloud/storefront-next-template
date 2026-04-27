@@ -1,6 +1,6 @@
 # Multi-Site & Locale URL Routing
 
-This project supports multiple Commerce Cloud sites and locales within a single storefront deployment. All URLs — including the homepage — use `/:siteId/:localeId/...` prefixes and are fully shareable. Requests to bare `/` are redirected server-side to the default site and locale prefix (e.g., `/global/en-GB/`).
+This project supports multiple B2C Commerce sites and locales within a single storefront deployment. All URLs — including the homepage — use `/:siteId/:localeId/...` prefixes and are fully shareable. Requests to bare `/` are redirected server-side to the default site and locale prefix (e.g., `/global/en-GB/`).
 
 ## Quick Start
 
@@ -285,7 +285,7 @@ To override detection config, pass `siteDetectionConfig` and/or `localeDetection
 
 ### Site Alias Map
 
-Maps Commerce Cloud site IDs to shorter URL-friendly aliases:
+Maps B2C Commerce site IDs to shorter URL-friendly aliases:
 
 ```typescript
 siteAliasMap: {
@@ -517,7 +517,7 @@ mediator.track(event, siteInfo);
 | **Einstein** | No (static) | Uses the `siteId` from config at initialization — ignores the `siteInfo` parameter at event time |
 | **Data Cloud** | N/A | Not yet implemented |
 
-Active Data automatically routes events to the correct Commerce Cloud site based on the shopper's current site context. Einstein currently sends all events to the single site configured in `config.server.ts` regardless of which site the shopper is browsing.
+Active Data automatically routes events to the correct B2C Commerce site based on the shopper's current site context. Einstein currently sends all events to the single site configured in `config.server.ts` regardless of which site the shopper is browsing.
 
 ### Configuration
 

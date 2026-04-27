@@ -1,6 +1,6 @@
 # Custom SCAPI Clients
 
-The storefront communicates with Salesforce Commerce Cloud through **SCAPI (Salesforce Commerce API)** clients. The SDK ships with 16 built-in clients (Shopper Products, Shopper Baskets, Shopper Search, etc.), but merchants often deploy their own custom APIs on Commerce Cloud — for example, a Loyalty API or a Store Inventory API.
+The storefront communicates with Salesforce B2C Commerce through **SCAPI (Salesforce Commerce API)** clients. The SDK ships with 16 built-in clients (Shopper Products, Shopper Baskets, Shopper Search, etc.), but merchants often deploy their own custom APIs on B2C Commerce — for example, a Loyalty API or a Store Inventory API.
 
 The `sfnext scapi` CLI generates type-safe TypeScript clients for these custom APIs and integrates them with the existing middleware stack (auth, correlation IDs, maintenance detection), so they behave identically to built-in clients.
 
@@ -14,7 +14,7 @@ sfnext scapi add --schema ./my-schemas/loyalty-api.yaml --name loyalty --base-pa
 
 This copies the schema into the project, generates TypeScript types and an operation map, and registers a new `loyalty` client.
 
-### Pull a custom API from Commerce Cloud
+### Pull a custom API from B2C Commerce
 
 ```bash
 sfnext scapi add custom loyalty v1
@@ -32,7 +32,7 @@ Add a custom SCAPI client.
 
 | Mode | Usage | When to use |
 |------|-------|-------------|
-| **Pull** | `sfnext scapi add <apiFamily> <apiName> <apiVersion>` | Fetch the schema from Commerce Cloud |
+| **Pull** | `sfnext scapi add <apiFamily> <apiName> <apiVersion>` | Fetch the schema from B2C Commerce |
 | **Local** | `sfnext scapi add --schema <path> --name <key>` | Use a local OpenAPI schema file |
 
 **Flags:**
