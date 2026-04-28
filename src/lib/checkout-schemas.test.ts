@@ -15,7 +15,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { createPaymentSchema, getPaymentDefaultValues, parsePaymentFromFormData } from './checkout-schemas';
-import { getTranslation } from './i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 

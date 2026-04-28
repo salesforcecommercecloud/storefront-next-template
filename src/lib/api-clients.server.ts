@@ -31,7 +31,7 @@ import { maintenanceContext } from '@/lib/maintenance';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getAppOrigin, getScapiBaseUrl, isAbsoluteURL } from '@/lib/utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { customClients, type AppClients } from '@/scapi/custom-clients';
 import { scapiMiddlewareContext } from '@/lib/scapi-middleware';
 

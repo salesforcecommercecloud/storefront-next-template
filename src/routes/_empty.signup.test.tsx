@@ -21,7 +21,7 @@ import Signup, { loader, action } from './_empty.signup';
 import { registerCustomer } from '@/lib/api/auth/register.server';
 import { isPasswordValid } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const { t } = getTranslation();

@@ -19,7 +19,7 @@ import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 function SignupFormStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);

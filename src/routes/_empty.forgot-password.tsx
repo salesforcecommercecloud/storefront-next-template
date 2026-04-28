@@ -25,7 +25,7 @@ import { Card } from '@/components/ui/card';
 import { ForgotPasswordForm } from '@/components/forgot-password-form';
 
 // Lib
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { buildUrlFromContext } from '@/lib/url.server';
 
 // Middleware

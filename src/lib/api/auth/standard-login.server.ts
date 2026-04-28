@@ -17,7 +17,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import type { CustomQueryParameters } from '@/lib/api/types';
 import { updateAuth, loginRegisteredUser as authLoginRegisteredUser } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getLogger } from '@/lib/logger.server';
 
 export const loginRegisteredUser = async (

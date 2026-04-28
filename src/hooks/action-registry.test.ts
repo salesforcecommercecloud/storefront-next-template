@@ -17,7 +17,7 @@
 import { describe, test, expect, vi } from 'vitest';
 import { actionRegistry, type ActionResponse } from './action-registry';
 
-vi.mock('@/lib/i18next', () => ({
+vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: () => ({ t: (key: string) => key }),
 }));
 

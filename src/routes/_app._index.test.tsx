@@ -18,7 +18,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperExperience, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import HomePage, { type HomePageData, loader } from './_app._index';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';

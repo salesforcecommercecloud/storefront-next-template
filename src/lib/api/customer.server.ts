@@ -20,7 +20,7 @@ import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, clearInvalidSessionAndRestoreGuest } from '@/middlewares/auth.server';
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login.server';
 import { extractResponseError } from '@/lib/utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { orderAddressToCustomerAddress } from '@/lib/address-utils';
 import { getLogger } from '@/lib/logger.server';
 

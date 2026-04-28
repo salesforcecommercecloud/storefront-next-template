@@ -15,7 +15,7 @@
  */
 
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 type ProductItem = Pick<ShopperBasketsV2.schemas['ProductItem'], 'productId' | 'quantity' | 'inventoryId'> & {
     storeId?: string | null;

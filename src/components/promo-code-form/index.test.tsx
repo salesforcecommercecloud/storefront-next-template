@@ -21,7 +21,7 @@ import { usePromoCodeActions } from '@/hooks/use-promo-code-actions';
 import { type PromoCodeFetcherData } from './types';
 import PromoCodeForm from './index';
 import { Toaster } from '@/components/toast';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 const mockApplyPromoCode = vi.fn();

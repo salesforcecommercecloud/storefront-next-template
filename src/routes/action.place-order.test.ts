@@ -17,7 +17,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { action } from './action.place-order';
 import { getBasket } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 import type { ActionFunctionArgs } from 'react-router';
 import {
@@ -41,7 +41,7 @@ vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(),
 }));
 
-vi.mock('@/lib/i18next', () => ({
+vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: vi.fn(),
 }));
 

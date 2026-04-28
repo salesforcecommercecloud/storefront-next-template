@@ -20,7 +20,7 @@ import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 import { useWishlist } from './use-wishlist';

@@ -28,7 +28,7 @@ import { SeoMeta } from '@/components/seo-meta';
 // utils
 import { isPasswordValid } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { useTranslation } from 'react-i18next';
 import { getLogger } from '@/lib/logger.server';
 

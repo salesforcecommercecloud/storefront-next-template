@@ -20,7 +20,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import ChildProducts from './child-products';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import userEvent from '@testing-library/user-event';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Mock hooks and components
 vi.mock('@/hooks/product/use-product-sets-bundles', () => ({

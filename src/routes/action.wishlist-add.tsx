@@ -18,7 +18,7 @@ import { type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { isRegisteredCustomer } from '@/lib/api/customer.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';

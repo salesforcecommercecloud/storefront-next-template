@@ -74,7 +74,7 @@ vi.mock('@/lib/address-utils', async (importOriginal) => {
     };
 });
 
-vi.mock('@/lib/i18next', () => ({
+vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: vi.fn(() => ({
         t: (key: string) => key,
     })),

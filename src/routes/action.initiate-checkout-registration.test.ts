@@ -20,7 +20,7 @@ import type { ActionFunctionArgs } from 'react-router';
 // Mock dependencies
 vi.mock('@/lib/api-clients.server');
 vi.mock('@/middlewares/auth.server');
-vi.mock('@/lib/i18next');
+vi.mock('@salesforce/storefront-next-runtime/i18n');
 vi.mock('@/middlewares/auth.utils');
 vi.mock('@/types/tracking-consent');
 vi.mock('@/middlewares/basket.server');
@@ -116,8 +116,9 @@ describe('action.initiate-checkout-registration', () => {
         const { getAuth } = await import('@/middlewares/auth.server');
         vi.mocked(getAuth).mockImplementation(mockGetAuth);
 
-        const { getTranslation } = await import('@/lib/i18next');
+        const { getTranslation, getLocale } = await import('@salesforce/storefront-next-runtime/i18n');
         vi.mocked(getTranslation).mockImplementation(mockGetTranslation);
+        vi.mocked(getLocale).mockReturnValue('en-US');
 
         const { isTrackingConsentEnabled } = await import('@/middlewares/auth.utils');
         vi.mocked(isTrackingConsentEnabled).mockImplementation(mockIsTrackingConsentEnabled);

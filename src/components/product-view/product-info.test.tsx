@@ -28,7 +28,7 @@ import { AllProvidersWrapper } from '@/test-utils/context-provider';
 // mock data
 import { masterProduct as mockProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 

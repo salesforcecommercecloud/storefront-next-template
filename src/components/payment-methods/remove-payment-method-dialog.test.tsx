@@ -19,7 +19,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi } from 'vitest';
 import { RemovePaymentMethodDialog } from './remove-payment-method-dialog';
 import type { PaymentMethod } from './payment-method-card';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 

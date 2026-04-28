@@ -22,7 +22,7 @@ import {
     sendMarketingCloudEmail,
     validateSlasCallbackToken,
 } from '@/lib/marketing-cloud.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getLogger } from '@/lib/logger.server';
 
 // Re-export for backwards compatibility with tests

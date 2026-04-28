@@ -17,7 +17,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isSelectedDeliveryOptionValid } from './product-actions';
 import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mocks__/basket';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { ToastType } from '@/components/toast';
 
 vi.mock('@/lib/api-clients.server', () => ({

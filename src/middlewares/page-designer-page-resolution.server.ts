@@ -33,7 +33,7 @@ import type { ShopperExperience, Middleware, Clients } from '@salesforce/storefr
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { scapiMiddlewareContext } from '@/lib/scapi-middleware';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getLogger } from '@/lib/logger.server';

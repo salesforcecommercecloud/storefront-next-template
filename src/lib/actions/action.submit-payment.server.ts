@@ -23,7 +23,7 @@ import {
     updateBillingAddressForBasket,
 } from '@/lib/api/basket.server';
 import { detectCardType, normalizeCardType } from '@/lib/payment-utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getAuth } from '@/middlewares/auth.server';
 import { getCustomerProfileForCheckout, saveBillingAddressToCustomer } from '@/lib/api/customer.server';
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';

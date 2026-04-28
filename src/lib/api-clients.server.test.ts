@@ -93,7 +93,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
     };
 });
 
-vi.mock('@/lib/i18next', () => ({
+vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: vi.fn(() => ({
         i18next: {
             language: 'en-US',

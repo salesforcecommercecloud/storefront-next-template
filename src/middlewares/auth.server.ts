@@ -52,7 +52,7 @@ import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/perfor
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { createCookie, getCookieConfig, getCookieNameWithSiteId, parseAllCookies } from '@/lib/cookie-utils.server';
-import { getTranslation, i18nextContext } from '@/lib/i18next';
+import { getTranslation, getLocale } from '@salesforce/storefront-next-runtime/i18n';
 import { TrackingConsent, trackingConsentToBoolean } from '@/types/tracking-consent';
 import { SHOPPER_CONTEXT_COOKIE_NAME_BASE, SOURCE_CODE_COOKIE_NAME_BASE } from '@/lib/shopper-context-constants';
 
@@ -231,9 +231,7 @@ export async function authorizePasswordless(
 
     const usid = session.usid;
 
-    // Get locale from i18next context for email/SMS template localization
-    const i18nextData = context.get(i18nextContext);
-    const locale = i18nextData?.getLocale();
+    const locale = getLocale(context);
 
     const logger = getLogger(context);
     logger.debug('Auth: authorizePasswordless starting', { mode });
@@ -280,9 +278,7 @@ export async function getPasswordResetToken(
 
     const mode = appConfig.features.resetPassword.mode;
 
-    // Get locale from i18next context for email/SMS template localization
-    const i18nextData = context.get(i18nextContext);
-    const locale = i18nextData?.getLocale();
+    const locale = getLocale(context);
 
     const logger = getLogger(context);
     logger.debug('Auth: getPasswordResetToken starting', { mode });

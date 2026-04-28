@@ -16,26 +16,21 @@
 import i18next, { type i18n } from 'i18next';
 import { createContext, type RouterContextProvider } from 'react-router';
 
-/**
- * Context to store i18next accessor functions from the i18next middleware.
- * These functions are bound to the context so they can be called without parameters.
- * (This allows server loaders to access locale and i18next instance synchronously
- * without importing server-only code)
- */
-export const i18nextContext = createContext<{
+type I18nContextValue = {
     getLocale: () => string;
     getI18nextInstance: () => i18n;
-} | null>(null);
+};
+
+// Internal context key — not exported. Use getTranslation() / getLocale() to read,
+// and mockI18nContext() in tests to write.
+export const i18nextContext = createContext<I18nContextValue | null>(null);
 
 /**
- * Gets the i18next instance and translation function for use in non-component code.
- * Use `useTranslation` hook for React components. Similar to `getConfig`/`useConfig` pattern.
- * @param context - Optional router context for server-side rendering
- * @returns Object containing i18next instance and `t` translation function
+ * Gets the i18next instance and translation function for non-component code.
+ * Use `useTranslation` hook for React components. Mirrors the `getConfig`/`useConfig` pattern.
  */
 export function getTranslation(context?: Readonly<RouterContextProvider>) {
     if (context && typeof window === 'undefined') {
-        // Get i18next accessor functions from context (stored by middleware)
         const i18nextData = context.get(i18nextContext);
         if (!i18nextData) {
             throw new Error('i18next data not found in context. Ensure i18next middleware runs before loaders.');
@@ -48,9 +43,31 @@ export function getTranslation(context?: Readonly<RouterContextProvider>) {
         };
     }
 
-    // Return these properties from the global i18next instance
     return {
         i18next,
         t: i18next.t,
     };
+}
+
+/**
+ * Gets the active locale string from server context.
+ * Returns undefined on the client (locale is on the document element or URL).
+ */
+export function getLocale(context: Readonly<RouterContextProvider>): string | undefined {
+    return context.get(i18nextContext)?.getLocale();
+}
+
+/**
+ * Sets up a mock i18n context on a RouterContextProvider for use in tests.
+ * Replaces the need to import the internal i18nextContext key directly.
+ */
+export function mockI18nContext(
+    contextProvider: RouterContextProvider,
+    options: { locale?: string; instance?: i18n } = {}
+): void {
+    const { locale = 'en-GB', instance = i18next } = options;
+    contextProvider.set(i18nextContext, {
+        getLocale: () => locale,
+        getI18nextInstance: () => instance,
+    });
 }

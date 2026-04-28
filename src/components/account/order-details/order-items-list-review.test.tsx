@@ -18,7 +18,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { OrderItemsList, type OrderItemsListProps } from './order-items-list';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import ProductContentProvider from '@/providers/product-content';

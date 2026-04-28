@@ -19,7 +19,7 @@ import type { ActionFunctionArgs } from 'react-router';
 
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/auth-error-handler');
-vi.mock('@/lib/i18next');
+vi.mock('@salesforce/storefront-next-runtime/i18n');
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({
         error: vi.fn(),

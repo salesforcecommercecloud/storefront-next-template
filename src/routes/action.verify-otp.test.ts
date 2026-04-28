@@ -22,14 +22,14 @@ import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 
 vi.mock('@/lib/api-clients.server');
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/api/basket.server');
 vi.mock('@/middlewares/basket.server');
-vi.mock('@/lib/i18next');
+vi.mock('@salesforce/storefront-next-runtime/i18n');
 vi.mock('@/middlewares/auth.utils');
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),

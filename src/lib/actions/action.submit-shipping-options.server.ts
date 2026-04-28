@@ -19,7 +19,7 @@ import { createShippingOptionsSchema, parseShippingOptionsFromFormData } from '@
 import { createApiClients } from '@/lib/api-clients.server';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { extractResponseError } from '@/lib/utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { handleMultiShipShippingOptions } from '@/extensions/multiship/lib/actions/checkout-submit-multi-options.server';
 import { getLogger } from '@/lib/logger.server';

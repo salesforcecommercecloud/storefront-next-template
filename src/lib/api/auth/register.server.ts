@@ -18,7 +18,7 @@ import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi
 import type { CustomQueryParameters } from '@/lib/api/types';
 import { createApiClients } from '@/lib/api-clients.server';
 import { loginRegisteredUser } from './standard-login.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Helper to extract custom parameters (keys starting with c_ with allowed value types)
 const extractCustomParameters = (parameters: {

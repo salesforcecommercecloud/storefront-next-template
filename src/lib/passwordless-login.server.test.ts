@@ -22,7 +22,7 @@ import {
     resetMarketingCloudTokenCache,
 } from './passwordless-login.server';
 import { getAppOrigin, getErrorMessage } from '@/lib/utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Hoist dependencies for use in vi.mock (avoids async imports which fail on Windows)
 const { createContext: reactCreateContext, actualReactRouter } = vi.hoisted(() => {

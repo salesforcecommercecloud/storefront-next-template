@@ -20,7 +20,6 @@ import { type AuthStorageData, AUTH_TOKEN_INVALID_ERROR, authStorageContext } fr
 import { performanceTimerContext } from '@/middlewares/performance-metrics';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { i18nextContext } from '@/lib/i18next';
 import { mockConfig } from '@/test-utils/config';
 import { TrackingConsent } from '@/types/tracking-consent';
 import authMiddleware, {
@@ -107,13 +106,12 @@ vi.mock('@/middlewares/performance-metrics', () => ({
     },
 }));
 
-// Mock i18next - create symbol inline to avoid initialization issues
-vi.mock('@/lib/i18next', () => ({
-    i18nextContext: Symbol('i18nextContext'),
+vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: vi.fn(() => ({
-        // Simple identity translator for tests
         t: (key: string) => key,
     })),
+    getLocale: vi.fn(() => 'en-US'),
+    mockI18nContext: vi.fn(),
 }));
 
 // Mock utils
@@ -126,11 +124,6 @@ vi.mock('@/lib/utils', () => ({
     isAbsoluteURL: vi.fn((url: string) => url.startsWith('http')),
     stringToBase64: vi.fn((str: string) => Buffer.from(str).toString('base64')),
 }));
-
-const mockI18next = {
-    getLocale: vi.fn(() => 'en-US'),
-    getI18nextInstance: vi.fn(),
-};
 
 function getMockTokenResponse(): ShopperLogin.schemas['TokenResponse'] {
     return {
@@ -191,9 +184,6 @@ function mockContext(
         }
         if (key === appConfigContext) {
             return appConfig;
-        }
-        if (key === i18nextContext) {
-            return mockI18next;
         }
         return storage;
     });

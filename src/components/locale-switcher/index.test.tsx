@@ -19,7 +19,7 @@ import userEvent from '@testing-library/user-event';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import i18next from 'i18next';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';

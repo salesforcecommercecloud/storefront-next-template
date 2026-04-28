@@ -26,7 +26,7 @@ import {
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { createTestContext } from '@/lib/test-utils';
 
 vi.mock('@/middlewares/auth.server');

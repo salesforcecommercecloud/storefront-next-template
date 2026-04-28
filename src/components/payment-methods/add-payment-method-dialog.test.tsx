@@ -19,7 +19,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi } from 'vitest';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { AddPaymentMethodDialog } from './add-payment-method-dialog';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 

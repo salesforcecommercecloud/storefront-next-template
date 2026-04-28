@@ -28,6 +28,7 @@ export default defineConfig([
             routing: 'src/routing/index.ts',
             'routing-app-wrapper': 'src/routing/app-wrapper.tsx',
             workspace: 'src/workspace/index.ts',
+            i18n: 'src/i18n/index.ts',
         },
         platform: 'neutral',
         target: 'node24',
@@ -39,6 +40,19 @@ export default defineConfig([
         alias: {
             '@/*': 'src/*',
         },
+        hash: false,
+    },
+    // i18n client entry (browser-only — includes i18next-browser-languagedetector)
+    {
+        entry: {
+            'i18n-client': 'src/i18n/client.ts',
+        },
+        platform: 'browser',
+        format: ['esm'],
+        dts: true,
+        outDir: 'dist',
+        clean: false,
+        external: [/node_modules/],
         hash: false,
     },
     // scapi module entry

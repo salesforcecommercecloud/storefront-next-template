@@ -5,18 +5,12 @@
   - Add `name`, `fragment`, `localized`, `visible` fields to Component schema
   - Regenerate TypeScript types for all SCAPI clients
   - Remove unused `@ts-expect-error` directives from page processor now that schema includes the missing fields
+- Add `/i18n` and `/i18n/client` subpath exports: `createI18nMiddleware`, `getTranslation`, `getLocale`, `mockI18nContext`, `initI18next`, and shared `defaultInterpolation`
 
 ## v0.4.0-dev (Apr 07, 2026)
 
-<<<<<<< HEAD
 - Add `CommerceAgentEngagementEvent` (`commerce_agent_engagement`) to the `AnalyticsEvent` union for agentic commerce usage tracking (`surface`: `header` | `search`)
-=======
-<<<<<<< HEAD
->>>>>>> 1c66a61b6 (added changelog)
 - Add login preferences middleware and context to data store (@W-22051487) ([#1453](https://github.com/commerce-emu/storefront-next/pull/1453))
-=======
-- Add `CommerceAgentEngagementEvent` (`commerce_agent_engagement`) to the `AnalyticsEvent` union for agentic commerce usage tracking (`surface`: `header` | `search`)
->>>>>>> 6ac94bf49 (added changelog)
 - Extend `SiteProvider` to accept `site`, `language`, `locale`, `currency` props and `useSite()` to return `SiteContextValue` (@W-21787278) ([#1384](https://github.com/commerce-emu/storefront-next/pull/1384))
 - Add support to MRT Data Layer access [#1215](https://github.com/commerce-emu/storefront-next/pull/1215)
 - Add currency detection to site-context middleware (@W-21787262) ([#1342](https://github.com/commerce-emu/storefront-next/pull/1342))

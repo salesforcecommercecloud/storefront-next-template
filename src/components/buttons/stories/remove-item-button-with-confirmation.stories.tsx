@@ -23,7 +23,7 @@ import { mockConfig } from '@/test-utils/config';
 
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const STORYBOOK_REMOVE_BASE = '/__storybook/remove';
 

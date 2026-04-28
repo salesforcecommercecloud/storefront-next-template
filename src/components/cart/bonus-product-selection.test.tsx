@@ -23,7 +23,7 @@ import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 
 import BonusProductSelection from './bonus-product-selection';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig, mockLocale } from '@/test-utils/config';
 

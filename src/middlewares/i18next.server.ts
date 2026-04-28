@@ -13,80 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { initReactI18next } from 'react-i18next';
-import { createI18nextMiddleware } from 'remix-i18next/middleware';
 import { type MiddlewareFunction } from 'react-router';
-import resources from '@/locales'; // Import translations from all of your locales - SERVER ONLY
-import 'i18next';
-import { i18nextContext } from '@/lib/i18next';
-import { requestToLocaleMap } from '@salesforce/storefront-next-runtime/site-context';
+import { createI18nMiddleware } from '@salesforce/storefront-next-runtime/i18n';
+import resources from '@/locales';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { getLogger } from '@/lib/logger.server';
 
-// Lazy-initialized on first request so we can read supported languages from config
-// rather than hard-coding them. Contains [middleware, getLocale, getInstance].
-let cached: ReturnType<typeof createI18nextMiddleware> | null = null;
+let middleware: MiddlewareFunction<Response> | null = null;
 
-const i18nextMiddleware: MiddlewareFunction<Response> = async (args, next) => {
-    const logger = getLogger(args.context);
-
-    if (!cached) {
+export const i18nextMiddleware: MiddlewareFunction<Response> = async (args, next) => {
+    if (!middleware) {
         const config = getConfig<AppConfig>(args.context);
-        const { supportedLngs: supportedLanguages, fallbackLng: fallbackLanguage } = config.i18n;
-
-        logger.debug('I18next: initializing middleware (first request)', {
-            supportedLanguages,
-            fallbackLanguage,
-        });
-
-        cached = createI18nextMiddleware({
-            detection: {
-                order: ['custom'],
-                // eslint-disable-next-line @typescript-eslint/require-await
-                findLocale: async (request: Request) => {
-                    const localeId = requestToLocaleMap.get(request);
-                    return localeId ?? null;
-                },
-                fallbackLanguage,
-                supportedLanguages,
-            },
-            i18next: {
-                resources,
-                interpolation: {
-                    escapeValue: false,
-                    format: (value, format) => {
-                        if (format === 'number' && typeof value === 'number') {
-                            return value.toLocaleString();
-                        }
-                        return value;
-                    },
-                },
-            },
-            plugins: [initReactI18next],
+        middleware = createI18nMiddleware({
+            resources,
+            supportedLanguages: config.i18n.supportedLngs,
+            fallbackLanguage: config.i18n.fallbackLng,
         });
     }
-
-    const [originalI18nextMiddleware, getLocale, getInstance] = cached;
-
-    // Store bound accessor functions in context (bound to args.context)
-    // These will be called AFTER originalI18nextMiddleware sets up i18next
-    args.context.set(i18nextContext, {
-        getLocale: () => getLocale(args.context),
-        getI18nextInstance: () => getInstance(args.context),
-    });
-
-    const localeId = requestToLocaleMap.get(args.request);
-    logger.debug('I18next: middleware starting', { locale: localeId ?? 'unknown' });
-
-    return originalI18nextMiddleware(args, next);
+    return middleware(args, next);
 };
 
-export { i18nextMiddleware };
-
-// This adds type-safety to the `t` function throughout the application
+// Type augmentation stays in template — references template's locale types for type-safe t()
 declare module 'i18next' {
     interface CustomTypeOptions {
-        resources: (typeof resources)['en-GB']; // Use `en-GB` as source of truth for the types
+        resources: (typeof resources)['en-GB'];
     }
 }

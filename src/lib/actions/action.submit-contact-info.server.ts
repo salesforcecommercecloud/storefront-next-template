@@ -22,7 +22,7 @@ import { createApiClients } from '@/lib/api-clients.server';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { createContactInfoSchema, parseContactInfoFromFormData } from '@/lib/checkout-schemas';
 import { updateBillingAddressForBasket } from '@/lib/api/basket.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { AppConfig } from '@/types/config';
 import { getLogger } from '@/lib/logger.server';
 

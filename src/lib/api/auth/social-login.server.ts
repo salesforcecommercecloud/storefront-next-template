@@ -22,7 +22,7 @@ import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { mergeBasket } from '@/lib/api/basket.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { getLogger } from '@/lib/logger.server';
 

@@ -295,15 +295,25 @@ navigate(href('/product/:id', { id: product.id }));
 
 ### i18n
 ```typescript
+// In React components
 import { useTranslation } from 'react-i18next';
 
 export default function MyComponent() {
     const { t } = useTranslation();
     return <h1>{t('myComponent.title')}</h1>;
 }
+
+// In loaders, actions, tests, utilities
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+
+export function loader(args: LoaderFunctionArgs) {
+    const { t } = getTranslation(args.context);
+    return { title: t('myComponent.title') };
+}
 ```
 
 Translation files in `src/locales/[locale]/translations.json`.
+i18n infrastructure (context, middleware factory, client init) lives in `@salesforce/storefront-next-runtime/i18n`.
 
 ### Forms
 ```typescript

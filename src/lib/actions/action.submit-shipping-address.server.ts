@@ -20,7 +20,7 @@ import { createApiClients } from '@/lib/api-clients.server';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { extractResponseError } from '@/lib/utils';
 import { createShippingAddressSchema, parseShippingAddressFromFormData } from '@/lib/checkout-schemas';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders.server';
 import { saveShippingAddressToCustomer, getCurrentCustomer } from '@/lib/api/customer.server';
 import { getAddressKey, isAddressEmpty, isAddressEqual, isOrderBillingAddressIncomplete } from '@/lib/address-utils';

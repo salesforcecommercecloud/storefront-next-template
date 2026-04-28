@@ -24,7 +24,7 @@ import {
     basketWithOneItem,
     inBasketProductDetails as dressProductDetails,
 } from '@/components/__mocks__/basket-with-dress';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig, mockLocale } from '@/test-utils/config';
 

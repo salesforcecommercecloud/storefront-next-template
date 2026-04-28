@@ -29,7 +29,7 @@ import {
     type PasswordUpdateFetcherData,
 } from '../index';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);

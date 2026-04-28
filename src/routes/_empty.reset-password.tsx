@@ -18,7 +18,7 @@ import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionAr
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { ResetPasswordForm } from '@/components/reset-password-form';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { isPasswordValid } from '@/lib/utils';

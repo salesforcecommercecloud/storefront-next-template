@@ -21,7 +21,7 @@ import { loader } from './_app.account.wishlist';
 import { fetchProductsForWishlist } from '@/lib/api/wishlist.server';
 import { createTestContext } from '@/lib/test-utils';
 import type { LoaderFunctionArgs } from 'react-router';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 

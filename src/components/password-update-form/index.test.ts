@@ -15,7 +15,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { createPasswordUpdateFormSchema } from './index';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 const passwordUpdateFormSchema = createPasswordUpdateFormSchema(t);

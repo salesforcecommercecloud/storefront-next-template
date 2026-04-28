@@ -27,7 +27,7 @@ import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
 import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { updateBasketResource } from '@/middlewares/basket.server';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';

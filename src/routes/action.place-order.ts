@@ -34,7 +34,7 @@ import {
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { createErrorResponse } from '@/lib/error-handler';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { buildUrlFromContext } from '@/lib/url.server';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket.server';

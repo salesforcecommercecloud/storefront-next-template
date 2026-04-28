@@ -33,7 +33,7 @@ const { createContext: reactCreateContext, actualReactRouter } = vi.hoisted(() =
 
 vi.mock('@/lib/api-clients.server');
 vi.mock('@salesforce/storefront-next-runtime/config');
-vi.mock('@/lib/i18next', () => ({
+vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: () => ({ t: (key: string) => key }),
 }));
 vi.mock('@/extensions/bopis/lib/basket-utils', () => ({

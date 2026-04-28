@@ -24,7 +24,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { AddressFormFields } from '../index';
 import { createShippingAddressSchema } from '@/lib/checkout-schemas';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 /**
  * The AddressFormFields component provides shared address form fields with Google Maps

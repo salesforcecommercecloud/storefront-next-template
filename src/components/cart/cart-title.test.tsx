@@ -15,7 +15,7 @@
  */
 import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 

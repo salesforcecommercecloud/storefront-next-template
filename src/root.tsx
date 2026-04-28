@@ -91,8 +91,8 @@ import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 
 // Lib/Utils
 import type { PublicSessionData } from '@/lib/api/types';
-import { i18nextContext } from '@/lib/i18next';
-import { initI18next } from '@/lib/i18next.client';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { initI18next } from '@salesforce/storefront-next-runtime/i18n/client';
 import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
 import { initializeRegistry } from '@/lib/static-registry';
 import { buildSeoMetaDescriptors } from '@/utils/seo';
@@ -163,7 +163,13 @@ export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyRes
 // (On the server side, it's initialized elsewhere in middlewares/i18next.ts file)
 // Read the language from the server-rendered HTML to avoid language detection issues
 const i18nextOnClient =
-    typeof window !== 'undefined' ? initI18next({ language: document.documentElement.lang || undefined }) : undefined;
+    typeof window !== 'undefined'
+        ? initI18next({
+              language: document.documentElement.lang || undefined,
+              // The import() must live here so Vite can resolve the path at build time
+              loadLocale: (language) => import(`@/locales/${language}/index.ts`),
+          })
+        : undefined;
 
 export const loader = ({
     context,
@@ -191,17 +197,9 @@ export const loader = ({
 
     const appConfig = getConfig<AppConfig>(context);
 
-    // Get i18next accessor functions from context (stored by middleware)
-    const i18nextData = context.get(i18nextContext);
-    if (!i18nextData) {
-        throw new Error('i18next data not found in context. Ensure i18next middleware runs before loaders.');
-    }
-
-    // Call the bound functions to get locale and i18next instance
-
     // On the server side, our middleware stores the translations in this i18next object
     // so we'll need to be careful not to accidentally serialize this object (to avoid bloating the html).
-    const i18next = i18nextData.getI18nextInstance();
+    const { i18next } = getTranslation(context);
 
     // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
     const selectedStoreInfo = context.get(selectedStoreContext) ?? null;

@@ -115,6 +115,18 @@
         "types": "./dist/workspace.d.ts",
         "default": "./dist/workspace.js"
       }
+    },
+    "./i18n": {
+      "import": {
+        "types": "./dist/i18n.d.ts",
+        "default": "./dist/i18n.js"
+      }
+    },
+    "./i18n/client": {
+      "import": {
+        "types": "./dist/i18n-client.d.ts",
+        "default": "./dist/i18n-client.js"
+      }
     }
   },
   "files": [
@@ -157,10 +169,14 @@
     "@vitejs/plugin-react": "5.0.3",
     "@vitest/coverage-v8": "4.0.18",
     "happy-dom": "20.0.10",
+    "i18next": "25.5.3",
+    "i18next-browser-languagedetector": "8.2.0",
     "openapi-typescript": "7.10.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-i18next": "16.0.0",
     "react-router": "7.12.0",
+    "remix-i18next": "7.4.2",
     "shx": "^0.4.0",
     "tsdown": "^0.15.4",
     "typescript": "^5.6.0",
@@ -169,9 +185,27 @@
   "peerDependencies": {
     "@react-router/dev": ">=7.0.0",
     "@react-router/fs-routes": ">=7.0.0",
+    "i18next": ">=25.0.0",
+    "i18next-browser-languagedetector": ">=8.0.0",
     "react": ">=19.0.0",
     "react-dom": ">=19.0.0",
-    "react-router": ">=7.0.0"
+    "react-i18next": ">=16.0.0",
+    "react-router": ">=7.0.0",
+    "remix-i18next": ">=7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "i18next": {
+      "optional": true
+    },
+    "i18next-browser-languagedetector": {
+      "optional": true
+    },
+    "react-i18next": {
+      "optional": true
+    },
+    "remix-i18next": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=24.0.0"

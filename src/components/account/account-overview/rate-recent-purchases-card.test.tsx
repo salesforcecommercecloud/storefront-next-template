@@ -18,7 +18,7 @@ import { describe, test, expect } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { RateRecentPurchasesCard } from './rate-recent-purchases-card';
 import type { Order } from '@/components/account/order-list';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 

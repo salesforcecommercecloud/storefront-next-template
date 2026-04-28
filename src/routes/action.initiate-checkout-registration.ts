@@ -16,7 +16,7 @@
 import type { ActionFunctionArgs } from 'react-router';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth } from '@/middlewares/auth.server';
-import { i18nextContext } from '@/lib/i18next';
+import { getLocale } from '@salesforce/storefront-next-runtime/i18n';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { getBasket } from '@/middlewares/basket.server';
@@ -36,7 +36,7 @@ import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/tur
  */
 export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const locale = context.get(i18nextContext)?.getLocale();
+    const locale = getLocale(context);
 
     logger.debug('InitiateCheckoutRegistration: starting');
 

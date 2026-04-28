@@ -18,7 +18,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { registerCustomer } from './register.server';
 import { loginRegisteredUser } from './standard-login.server';
 import { createApiClients } from '@/lib/api-clients.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 

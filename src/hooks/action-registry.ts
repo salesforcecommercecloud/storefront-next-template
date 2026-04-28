@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { useToast } from '@/components/toast';
 import type { ActionError } from '@/lib/error-codes';
 /**

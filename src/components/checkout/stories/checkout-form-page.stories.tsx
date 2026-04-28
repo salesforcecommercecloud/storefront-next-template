@@ -18,7 +18,7 @@ import { expect, userEvent, within } from 'storybook/test';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 import { checkoutWithOneItem, checkoutWithMultipleItems } from '@/components/__mocks__/checkout-data';
 import emptyBasket from '@/components/__mocks__/empty-basket';

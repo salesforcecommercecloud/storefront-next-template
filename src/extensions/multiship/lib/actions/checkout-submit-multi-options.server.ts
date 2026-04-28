@@ -17,7 +17,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { extractResponseError } from '@/lib/utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { updateBasketWithCustomerInfoFallback } from '@/extensions/multiship/lib/basket-utils.server';
 import { getLogger } from '@/lib/logger.server';
 

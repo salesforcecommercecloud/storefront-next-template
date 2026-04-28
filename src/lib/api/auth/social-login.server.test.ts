@@ -20,7 +20,7 @@ import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { mergeBasket } from '@/lib/api/basket.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { TrackingConsent } from '@/types/tracking-consent';
 
 const { t } = getTranslation();

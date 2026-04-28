@@ -93,6 +93,9 @@
       },
       "config": {
         "description": "Inspect and manage storefront configuration"
+      },
+      "locales": {
+        "description": "Manage locale and translation files"
       }
     }
   },

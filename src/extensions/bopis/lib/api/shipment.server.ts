@@ -19,7 +19,7 @@ import { PICKUP_SHIPMENT_ID, PICKUP_SHIPPING_METHOD_ID } from '@/extensions/bopi
 import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getPickupShippingMethodId } from '@/extensions/bopis/lib/pickup-shipping-method-utils';
 import { orderAddressFromStoreAddress } from '@/extensions/bopis/lib/store-utils';
 

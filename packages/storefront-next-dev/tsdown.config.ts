@@ -169,6 +169,8 @@ export default defineConfig([
             'commands/scapi/add': 'src/commands/scapi/add.ts',
             'commands/scapi/list': 'src/commands/scapi/list.ts',
             'commands/scapi/remove': 'src/commands/scapi/remove.ts',
+            // Locales commands
+            'commands/locales/aggregate-extensions': 'src/commands/locales/aggregate-extensions.ts',
             // oclif hooks
             'hooks/init': 'src/hooks/init.ts',
         },

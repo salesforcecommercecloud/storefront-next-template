@@ -18,7 +18,7 @@ import { describe, test, expect } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { OrderItemsList } from './order-items-list';
 import { getOrderLineReviewKey } from './order-line-review-key';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';

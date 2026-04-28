@@ -24,13 +24,13 @@ import {
     removePaymentInstrumentFromBasket,
     updateBillingAddressForBasket,
 } from '@/lib/api/basket.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getAuth } from '@/middlewares/auth.server';
 import { getCustomerProfileForCheckout } from '@/lib/api/customer.server';
 
 vi.mock('@/middlewares/basket.server');
 vi.mock('@/lib/api/basket.server');
-vi.mock('@/lib/i18next');
+vi.mock('@salesforce/storefront-next-runtime/i18n');
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/api/customer.server');
 vi.mock('@/lib/logger.server', () => ({

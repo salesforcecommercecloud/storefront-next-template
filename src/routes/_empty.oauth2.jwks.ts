@@ -24,7 +24,7 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getScapiBaseUrl } from '@/lib/utils';
 import { getLogger } from '@/lib/logger.server';
 

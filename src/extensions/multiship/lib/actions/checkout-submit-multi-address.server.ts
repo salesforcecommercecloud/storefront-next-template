@@ -21,7 +21,7 @@ import { updateShipmentAddress, createDeliveryShipment } from '@/extensions/mult
 import { updateBasketWithCustomerInfoFallback } from '@/extensions/multiship/lib/basket-utils.server';
 import { isRegisteredCustomer, getCurrentCustomer, saveCustomerAddress } from '@/lib/api/customer.server';
 import { getAddressKey, isAddressEqual, customerAddressToOrderAddress } from '@/lib/address-utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders.server';
 
 /**
