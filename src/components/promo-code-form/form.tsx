@@ -153,7 +153,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                 <AccordionItem value={PROMO_CODE_FORM_VAL}>
                     <AccordionTrigger
                         onClick={() => form.reset()}
-                        className="justify-start gap-2 py-1 [&>svg]:text-primary">
+                        className="justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary">
                         <span className="text-left text-sm font-medium text-primary">
                             {t('promoCode.accordionTitle')}
                         </span>

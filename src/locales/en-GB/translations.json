@@ -347,7 +347,7 @@
             "applying": "Applying...",
             "remove": "Remove",
             "removing": "Removing...",
-            "accordionTitle": "Do you have a promo code?",
+            "accordionTitle": "Enter a Promotion Code",
             "successMessage": "Promotion was applied.",
             "errorMessage": "Check the code and try again. The promotion can already be applied or it has expired.",
             "removeSuccessMessage": "Promotion was removed.",

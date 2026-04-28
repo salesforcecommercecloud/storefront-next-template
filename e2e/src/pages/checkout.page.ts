@@ -192,7 +192,7 @@ class CheckoutPage {
 
         // Promo code form (inside Order Summary accordion on checkout)
         promoCodeAccordionTrigger: locate('[data-testid="checkout-order-summary-sidebar"] button')
-            .withText('Do you have a promo code?')
+            .withText('Enter a Promotion Code')
             .as('Promo Code Accordion Trigger'),
         promoCodeForm: locate('[data-testid="checkout-order-summary-sidebar"] [data-testid="promo-code-form"]').as(
             'Promo Code Form'

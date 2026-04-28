@@ -595,7 +595,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                           <button
                             aria-controls="radix-_r_e_"
                             aria-expanded="true"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
@@ -606,7 +606,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                             <span
                               class="text-left text-sm font-medium text-primary"
                             >
-                              Do you have a promo code?
+                              Enter a Promotion Code
                             </span>
                             <svg
                               aria-hidden="true"
@@ -664,7 +664,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                     <input
                                       aria-describedby="_r_f_-form-item-description"
                                       aria-invalid="false"
-                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none focus-visible:ring-0"
                                       data-slot="form-control"
                                       id="_r_f_-form-item"
                                       name="code"
@@ -672,10 +672,10 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
-                                      data-variant="outline"
+                                      data-variant="secondary"
                                       type="submit"
                                     >
                                       Apply
@@ -2261,7 +2261,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                           <button
                             aria-controls="radix-_r_6c_"
                             aria-expanded="true"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
@@ -2272,7 +2272,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                             <span
                               class="text-left text-sm font-medium text-primary"
                             >
-                              Do you have a promo code?
+                              Enter a Promotion Code
                             </span>
                             <svg
                               aria-hidden="true"
@@ -2330,7 +2330,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     <input
                                       aria-describedby="_r_6d_-form-item-description"
                                       aria-invalid="false"
-                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none focus-visible:ring-0"
                                       data-slot="form-control"
                                       id="_r_6d_-form-item"
                                       name="code"
@@ -2338,10 +2338,10 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
-                                      data-variant="outline"
+                                      data-variant="secondary"
                                       type="submit"
                                     >
                                       Apply
@@ -3516,7 +3516,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                           <button
                             aria-controls="radix-_r_1b_"
                             aria-expanded="true"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
@@ -3527,7 +3527,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                             <span
                               class="text-left text-sm font-medium text-primary"
                             >
-                              Do you have a promo code?
+                              Enter a Promotion Code
                             </span>
                             <svg
                               aria-hidden="true"
@@ -3585,7 +3585,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     <input
                                       aria-describedby="_r_1c_-form-item-description"
                                       aria-invalid="false"
-                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none focus-visible:ring-0"
                                       data-slot="form-control"
                                       id="_r_1c_-form-item"
                                       name="code"
@@ -3593,10 +3593,10 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
-                                      data-variant="outline"
+                                      data-variant="secondary"
                                       type="submit"
                                     >
                                       Apply
@@ -4469,7 +4469,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                           <button
                             aria-controls="radix-_r_42_"
                             aria-expanded="true"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
@@ -4480,7 +4480,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                             <span
                               class="text-left text-sm font-medium text-primary"
                             >
-                              Do you have a promo code?
+                              Enter a Promotion Code
                             </span>
                             <svg
                               aria-hidden="true"
@@ -4538,7 +4538,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                     <input
                                       aria-describedby="_r_43_-form-item-description"
                                       aria-invalid="false"
-                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none focus-visible:ring-0"
                                       data-slot="form-control"
                                       id="_r_43_-form-item"
                                       name="code"
@@ -4546,10 +4546,10 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
-                                      data-variant="outline"
+                                      data-variant="secondary"
                                       type="submit"
                                     >
                                       Apply
@@ -6452,7 +6452,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                           <button
                             aria-controls="radix-_r_3i_"
                             aria-expanded="true"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
@@ -6463,7 +6463,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                             <span
                               class="text-left text-sm font-medium text-primary"
                             >
-                              Do you have a promo code?
+                              Enter a Promotion Code
                             </span>
                             <svg
                               aria-hidden="true"
@@ -6521,7 +6521,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     <input
                                       aria-describedby="_r_3j_-form-item-description"
                                       aria-invalid="false"
-                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none focus-visible:ring-0"
                                       data-slot="form-control"
                                       id="_r_3j_-form-item"
                                       name="code"
@@ -6529,10 +6529,10 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
-                                      data-variant="outline"
+                                      data-variant="secondary"
                                       type="submit"
                                     >
                                       Apply
@@ -7347,7 +7347,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                           <button
                             aria-controls="radix-_r_52_"
                             aria-expanded="true"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
@@ -7358,7 +7358,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                             <span
                               class="text-left text-sm font-medium text-primary"
                             >
-                              Do you have a promo code?
+                              Enter a Promotion Code
                             </span>
                             <svg
                               aria-hidden="true"
@@ -7416,7 +7416,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                     <input
                                       aria-describedby="_r_53_-form-item-description"
                                       aria-invalid="false"
-                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none focus-visible:ring-0"
                                       data-slot="form-control"
                                       id="_r_53_-form-item"
                                       name="code"
@@ -7424,10 +7424,10 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
-                                      data-variant="outline"
+                                      data-variant="secondary"
                                       type="submit"
                                     >
                                       Apply
@@ -8206,7 +8206,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                           <button
                             aria-controls="radix-_r_4i_"
                             aria-expanded="true"
-                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
+                            class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary"
                             data-orientation="vertical"
                             data-radix-collection-item=""
                             data-slot="accordion-trigger"
@@ -8217,7 +8217,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                             <span
                               class="text-left text-sm font-medium text-primary"
                             >
-                              Do you have a promo code?
+                              Enter a Promotion Code
                             </span>
                             <svg
                               aria-hidden="true"
@@ -8275,7 +8275,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                     <input
                                       aria-describedby="_r_4j_-form-item-description"
                                       aria-invalid="false"
-                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                      class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none focus-visible:ring-0"
                                       data-slot="form-control"
                                       id="_r_4j_-form-item"
                                       name="code"
@@ -8283,10 +8283,10 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                       value=""
                                     />
                                     <button
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                       data-size="default"
                                       data-slot="button"
-                                      data-variant="outline"
+                                      data-variant="secondary"
                                       type="submit"
                                     >
                                       Apply
@@ -8682,7 +8682,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                         <button
                           aria-controls="radix-_r_1e_"
                           aria-expanded="true"
-                          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 py-1 [&>svg]:text-primary"
+                          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary"
                           data-orientation="vertical"
                           data-radix-collection-item=""
                           data-slot="accordion-trigger"
@@ -8693,7 +8693,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                           <span
                             class="text-left text-sm font-medium text-primary"
                           >
-                            Do you have a promo code?
+                            Enter a Promotion Code
                           </span>
                           <svg
                             aria-hidden="true"
@@ -8751,7 +8751,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                   <input
                                     aria-describedby="_r_1f_-form-item-description"
                                     aria-invalid="false"
-                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                                    class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none focus-visible:ring-0"
                                     data-slot="form-control"
                                     id="_r_1f_-form-item"
                                     name="code"
@@ -8759,10 +8759,10 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                     value=""
                                   />
                                   <button
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
                                     data-size="default"
                                     data-slot="button"
-                                    data-variant="outline"
+                                    data-variant="secondary"
                                     type="submit"
                                   >
                                     Apply
