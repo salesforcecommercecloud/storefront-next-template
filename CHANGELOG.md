@@ -8,6 +8,7 @@
 - Remove manual `contentLinkUuid` type extensions in favor of SCAPI types (@W-21280780)
     - `ComponentType` now uses `contentLinkUuid`, `fragment`, `localized`, `visible` from Shopper Experience API v1.3.0
 - Document the use of dynamic images ([#1519](https://github.com/commerce-emu/storefront-next/pull/1519))
+- Standardize behaviors of API errors in Checkout (@W-22199926) ([#1521](https://github.com/commerce-emu/storefront-next/pull/1521))
 - Migrate i18n infrastructure to SDK: replace `src/lib/i18next.ts`, `src/lib/i18next.client.ts`, and `scripts/aggregate-extension-locales.js` with imports from `@salesforce/storefront-next-runtime/i18n` and `sfnext locales aggregate-extensions`
 
 ## v0.4.0-dev (Apr 15, 2026)

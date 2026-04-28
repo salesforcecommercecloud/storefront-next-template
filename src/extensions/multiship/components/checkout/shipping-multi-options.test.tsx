@@ -109,17 +109,6 @@ describe('ShippingMultiOptions', () => {
         expect(screen.getByLabelText(/express shipping/i)).toBeInTheDocument();
     });
 
-    test('displays error banner when actionData contains errors', () => {
-        const actionData = {
-            error: 'Shipping method is required',
-            step: 'shippingOptions',
-        };
-
-        render(<ShippingMultiOptions {...createDefaultProps({ actionData })} />, { wrapper });
-
-        expect(screen.getByText('Shipping method is required')).toBeInTheDocument();
-    });
-
     test('submits form with selected shipping methods', async () => {
         const user = userEvent.setup();
 

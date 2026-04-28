@@ -97,7 +97,7 @@ describe('action.place-order action', () => {
         expect(response.status).toBe(400);
         const body = await parsePlaceOrderResponse(response);
         expect(body.success).toBe(false);
-        expect(body.error).toBe('errors:checkout.noActiveBasket');
+        expect(body.error).toEqual(expect.objectContaining({ message: 'No active basket found' }));
         expect(body.step).toBe('placeOrder');
     });
 
@@ -121,7 +121,7 @@ describe('action.place-order action', () => {
         expect(response.status).toBe(400);
         const body = await parsePlaceOrderResponse(response);
         expect(body.success).toBe(false);
-        expect(body.error).toBe('checkout:contactInfo.emailRequired');
+        expect(body.error).toEqual(expect.objectContaining({ message: 'Customer email is required' }));
     });
 
     test('returns shippingMethodRequired when a non-empty shipment has no shipping method', async () => {
@@ -158,7 +158,7 @@ describe('action.place-order action', () => {
         const body = await parsePlaceOrderResponse(response);
         expect(body.success).toBe(false);
         expect(body.step).toBe('placeOrder');
-        expect(body.error).toBe('errors:checkout.shippingMethodRequired');
+        expect(body.error).toEqual(expect.objectContaining({ message: 'Shipping method is required' }));
     });
 
     test('returns shippingAddressRequired when a non-empty shipment has no shipping address', async () => {
@@ -188,7 +188,7 @@ describe('action.place-order action', () => {
         expect(response.status).toBe(400);
         const body = await parsePlaceOrderResponse(response);
         expect(body.success).toBe(false);
-        expect(body.error).toBe('errors:api.shippingAddressRequired');
+        expect(body.error).toEqual(expect.objectContaining({ message: 'Shipping address is required' }));
     });
 
     test('calls savePaymentMethodToCustomer when savePaymentToProfile is true and customer is logged in', async () => {

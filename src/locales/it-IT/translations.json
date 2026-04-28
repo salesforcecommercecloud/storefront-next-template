@@ -220,19 +220,14 @@
         "noCustomerFound": "Nessun cliente trovato nella sessione",
         "api": {
             "orderNotFound": "Ordine non trovato. Controlli il numero d'ordine e riprovi.",
-            "basketNotFound": "Carrello non trovato. Aggiorni la pagina e riprovi.",
+            "basketNotFound": "Non è stato possibile trovare un carrello attivo. Aggiorni la pagina e riprovi.",
             "basketQuotaExceeded": "Numero massimo di carrelli superato. Utilizzi il Suo carrello esistente.",
-            "paymentFailed": "Pagamento non riuscito. Controlli le Sue informazioni di pagamento e riprovi.",
-            "paymentInformationRequired": "Le informazioni di pagamento sono necessarie per completare l'ordine.",
             "unableToLoadCustomerProfile": "Impossibile caricare il Suo profilo. Aggiorni la pagina e riprovi.",
-            "inventoryUnavailable": "Alcuni articoli nel Suo carrello non sono più disponibili. Riveda il Suo carrello.",
             "invalidOrderData": "Dati dell'ordine non validi. Controlli le informazioni di checkout e riprovi.",
-            "shippingAddressRequired": "L'indirizzo di spedizione è necessario per continuare.",
-            "billingAddressRequired": "L'indirizzo di fatturazione è necessario per completare l'ordine.",
             "networkError": "Errore di rete. Controlli la Sua connessione e riprovi.",
-            "serverError": "Errore del server. Riprovi più tardi.",
-            "unauthorized": "La Sua sessione è scaduta. Acceda nuovamente.",
-            "badRequest": "Richiesta non valida. Controlli le Sue informazioni e riprovi.",
+            "serverError": "Qualcosa è andato storto. Riprovi più tardi.",
+            "unauthorized": "La sessione è scaduta. Acceda nuovamente.",
+            "badRequest": "Ha inserito informazioni non valide. Controlli le Sue informazioni e riprovi.",
             "forbidden": "Accesso negato. Non ha il permesso di eseguire questa azione.",
             "timeout": "Timeout della richiesta. Riprovi.",
             "unexpectedError": "Si è verificato un errore imprevisto"
@@ -249,15 +244,14 @@
             "invalidPostalCode": "Inserisca un codice postale valido."
         },
         "checkout": {
-            "noActiveBasket": "Nessun carrello attivo trovato. Aggiorni e riprovi.",
-            "basketCalculationFailed": "Impossibile calcolare il totale dell'ordine. Riprovi.",
-            "orderCreationFailed": "Impossibile creare l'ordine. Riprovi.",
-            "paymentProcessingFailed": "Il pagamento non è stato aggiornato. Riprovi o utilizzi un altro metodo di pagamento.",
+            "checkoutIncomplete": "Alcune informazioni obbligatorie mancano. Verifichi i dati e riprovi.",
+            "orderCreationFailed": "Non è stato possibile creare l'ordine. Riprovi.",
+            "paymentProcessingFailed": "Non è stato possibile elaborare il pagamento. Riprovi.",
             "shippingMethodNotAvailable": "Il metodo di spedizione selezionato non è disponibile. Scelga un'altra opzione.",
             "shippingMethodRequired": "Selezioni un metodo di spedizione per continuare.",
-            "addressValidationFailed": "Validazione dell'indirizzo non riuscita. Controlli il Suo indirizzo e riprovi.",
-            "promoCodeInvalid": "Codice promozionale non valido. Controlli e riprovi.",
-            "stockNotAvailable": "Stock insufficiente per uno o più articoli nel Suo carrello."
+            "contactInfoFailed": "Non è stato possibile salvare le informazioni di contatto. Riprovi.",
+            "addressValidationFailed": "Non è stato possibile verificare l'indirizzo. Controlli l'indirizzo e riprovi.",
+            "stockNotAvailable": "Non è stato possibile completare l'ordine. Stock insufficiente per uno o più articoli nel carrello."
         },
         "customer": {
             "addressIdRequired": "Il titolo dell'indirizzo è obbligatorio per l'indirizzo del cliente",

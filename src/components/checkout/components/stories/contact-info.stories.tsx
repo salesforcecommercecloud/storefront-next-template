@@ -595,35 +595,6 @@ export const CompletedState: Story = {
     },
 };
 
-export const WithFormError: Story = {
-    args: createArgs({
-        actionData: {
-            step: 'contactInfo',
-            formError: 'Failed to save contact information. Please try again.',
-        },
-    }),
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the form with a form-level error message displayed above the input field.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test contact info form interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        void expect(inputs.length).toBeGreaterThan(0);
-
-        // Test typing in contact fields
-        if (inputs.length > 0) {
-            await userEvent.type(inputs[0], 'test@example.com');
-        }
-    },
-};
-
 export const WithValidationError: Story = {
     args: createArgs({
         actionData: {
@@ -644,11 +615,9 @@ export const WithValidationError: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test contact info form interaction
         const inputs = canvas.queryAllByRole('textbox');
         void expect(inputs.length).toBeGreaterThan(0);
 
-        // Test typing in contact fields
         if (inputs.length > 0) {
             await userEvent.type(inputs[0], 'test@example.com');
         }

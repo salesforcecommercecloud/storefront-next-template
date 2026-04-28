@@ -198,7 +198,9 @@ describe('action.submit-payment.server', () => {
 
             expect(response.status).toBe(400);
             expect(data.success).toBe(false);
-            expect(data.error).toBe('errors:checkout.paymentProcessingFailed');
+            expect(data.error).toEqual(
+                expect.objectContaining({ code: expect.any(String), message: expect.any(String) })
+            );
             expect(data.step).toBe('payment');
             expect(mockRemovePaymentInstrumentFromBasket).toHaveBeenCalledTimes(1);
             expect(mockAddPaymentInstrumentToBasket).not.toHaveBeenCalled();
@@ -213,7 +215,9 @@ describe('action.submit-payment.server', () => {
 
             expect(response.status).toBe(400);
             expect(data.success).toBe(false);
-            expect(data.error).toBe('errors:checkout.paymentProcessingFailed');
+            expect(data.error).toEqual(
+                expect.objectContaining({ code: expect.any(String), message: expect.any(String) })
+            );
             expect(data.step).toBe('payment');
             expect(mockRemovePaymentInstrumentFromBasket).toHaveBeenCalledTimes(1);
             expect(mockAddPaymentInstrumentToBasket).toHaveBeenCalledTimes(1);

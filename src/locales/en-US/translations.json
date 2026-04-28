@@ -221,19 +221,14 @@
         "noCustomerFound": "No customer found in session",
         "api": {
             "orderNotFound": "Order not found. Check the order number and try again.",
-            "basketNotFound": "Shopping basket not found. Refresh the page and try again.",
+            "basketNotFound": "We couldn't find an active basket. Refresh the page and try again.",
             "basketQuotaExceeded": "Maximum number of baskets exceeded. Use your existing basket.",
-            "paymentFailed": "Payment failed. Check your payment information and try again.",
-            "paymentInformationRequired": "Payment information is required to complete your order.",
             "unableToLoadCustomerProfile": "Unable to load your profile. Please refresh the page and try again.",
-            "inventoryUnavailable": "Some items in your cart are no longer available. Review your cart.",
             "invalidOrderData": "Invalid order data. Verify your checkout information and try again.",
-            "shippingAddressRequired": "Shipping address is required to continue.",
-            "billingAddressRequired": "Billing address is required to complete your order.",
             "networkError": "Network error. Check your connection and try again.",
-            "serverError": "Server error. Try again later.",
-            "unauthorized": "Your session has expired. Log in again.",
-            "badRequest": "Invalid request. Check your information and try again.",
+            "serverError": "Something went wrong. Try again later.",
+            "unauthorized": "Your session expired. Log in again.",
+            "badRequest": "You entered invalid information. Check your information and try again.",
             "forbidden": "Access denied. You don't have permission to perform this action.",
             "timeout": "Request timeout. Try again.",
             "unexpectedError": "An unexpected error occurred."
@@ -250,15 +245,14 @@
             "invalidPostalCode": "Enter a valid postal code."
         },
         "checkout": {
-            "noActiveBasket": "No active basket found. Refresh the page and try again.",
-            "basketCalculationFailed": "Failed to calculate order total. Try again.",
-            "orderCreationFailed": "Failed to create order. Try again.",
-            "paymentProcessingFailed": "Payment processing failed. Try again.",
+            "checkoutIncomplete": "Some required information is missing. Review your details and try again.",
+            "orderCreationFailed": "We couldn't create the order. Try again.",
+            "paymentProcessingFailed": "We couldn't process your payment. Try again.",
             "shippingMethodNotAvailable": "The selected shipping method isn't available. Choose another option.",
             "shippingMethodRequired": "Please select a shipping method to continue.",
-            "addressValidationFailed": "Address validation failed. Check your address and try again.",
-            "promoCodeInvalid": "Invalid promo code. Check and try again.",
-            "stockNotAvailable": "Insufficient stock for one or more items in your cart."
+            "contactInfoFailed": "We couldn't save the contact information. Try again.",
+            "addressValidationFailed": "We couldn't validate your address. Check your address and try again.",
+            "stockNotAvailable": "We couldn't complete your order. There's insufficient stock for one or more items in your cart."
         },
         "customer": {
             "addressIdRequired": "Address title is required for customer address.",

@@ -20,8 +20,6 @@ import { getDefaultShippingMethod } from '@/lib/customer-profile-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { CheckoutActionData } from '../types';
-import { getCheckoutDisplayError } from './checkout-display-error';
-
 function useLatestRef<T>(value: T): MutableRefObject<T> {
     const ref = useRef(value);
     ref.current = value;
@@ -59,7 +57,6 @@ export interface UseShippingOptionsReturn {
     selectedMethod: SelectedMethod;
     summaryMethod: ShippingMethod | undefined;
     defaultShippingMethodId: string | undefined;
-    shippingOptionsError: string | undefined;
     isGuest: boolean;
     hideChangeForGuest: boolean;
     isUpcomingStep: boolean;
@@ -70,7 +67,7 @@ export interface UseShippingOptionsReturn {
 export function useShippingOptions({
     onSubmit,
     isLoading,
-    actionData,
+    actionData: _actionData,
     shippingMethods,
     isEditing,
 }: UseShippingOptionsParams): UseShippingOptionsReturn {
@@ -143,8 +140,6 @@ export function useShippingOptions({
         shippingMethods?.defaultShippingMethodId
     );
 
-    const shippingOptionsError = getCheckoutDisplayError(actionData, 'shippingOptions');
-
     const onSubmitRef = useLatestRef(onSubmit);
     const hasAutoSubmitted = useRef(false);
 
@@ -198,7 +193,6 @@ export function useShippingOptions({
         selectedMethod,
         summaryMethod,
         defaultShippingMethodId,
-        shippingOptionsError,
         isGuest,
         hideChangeForGuest,
         isUpcomingStep,

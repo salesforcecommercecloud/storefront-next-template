@@ -718,65 +718,6 @@ export const CompletedState: Story = {
     ],
 };
 
-export const WithFormError: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-options')();
-        },
-        onEdit: () => {
-            action('edit-shipping-options')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: {
-            step: 'shippingOptions',
-            formError: 'Failed to save shipping method. Please try again.',
-        },
-        shippingMethods: {
-            applicableShippingMethods: [
-                {
-                    id: 'standard',
-                    name: 'Standard Shipping',
-                    description: '5-7 business days',
-                    price: 9.99,
-                    estimatedArrival: '5-7 business days',
-                },
-            ],
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the form with a form-level error message displayed above the shipping options.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test form interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-    },
-    decorators: [
-        (Story: React.ComponentType) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
-};
-
 export const NoShippingMethods: Story = {
     args: {
         onSubmit: () => {

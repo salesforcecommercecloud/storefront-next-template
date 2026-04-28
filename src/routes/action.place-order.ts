@@ -33,16 +33,12 @@ import {
 } from '@/lib/api/customer.server';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
-import { createErrorResponse } from '@/lib/error-handler';
-import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { buildUrlFromContext } from '@/lib/url.server';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket.server';
 import { getLogger } from '@/lib/logger.server';
-
-function placeOrderErrorResponse(body: { success: false; error: string; step: string }) {
-    return Response.json(body, { status: 400 });
-}
 
 const normalizeAddressField = (value: string | undefined) => (value ?? '').trim().toLowerCase();
 
@@ -162,8 +158,6 @@ function orderPaymentMatchesSavedProfile(
  */
 export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
-
     try {
         // Parse form data to get create account preference and save-payment option
         const formData = await request.formData();
@@ -179,20 +173,32 @@ export async function action({ request, context }: ActionFunctionArgs) {
         logger.debug('PlaceOrder: starting', { basketId: basket?.basketId });
 
         if (!basket || !basket.basketId) {
-            return placeOrderErrorResponse({
-                success: false,
-                error: t('errors:checkout.noActiveBasket'),
-                step: 'placeOrder',
-            });
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.NOT_FOUND,
+                        message: 'No active basket found',
+                    }),
+                    step: 'placeOrder',
+                },
+                { status: 400 }
+            );
         }
 
         // Validate that basket has all required information
         if (!basket.customerInfo?.email) {
-            return placeOrderErrorResponse({
-                success: false,
-                error: t('checkout:contactInfo.emailRequired'),
-                step: 'placeOrder',
-            });
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'Customer email is required',
+                    }),
+                    step: 'placeOrder',
+                },
+                { status: 400 }
+            );
         }
 
         // Build a map of shipmentId -> item count for efficient lookups
@@ -214,19 +220,31 @@ export async function action({ request, context }: ActionFunctionArgs) {
         // Check that all non-empty shipments have shipping address and method
         for (const shipment of nonEmptyShipments) {
             if (!shipment.shippingAddress) {
-                return placeOrderErrorResponse({
-                    success: false,
-                    error: t('errors:api.shippingAddressRequired'),
-                    step: 'placeOrder',
-                });
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({
+                            code: ErrorCode.REQUIRED_FIELD,
+                            message: 'Shipping address is required',
+                        }),
+                        step: 'placeOrder',
+                    },
+                    { status: 400 }
+                );
             }
 
             if (!shipment.shippingMethod) {
-                return placeOrderErrorResponse({
-                    success: false,
-                    error: t('errors:checkout.shippingMethodRequired'),
-                    step: 'placeOrder',
-                });
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({
+                            code: ErrorCode.REQUIRED_FIELD,
+                            message: 'Shipping method is required',
+                        }),
+                        step: 'placeOrder',
+                    },
+                    { status: 400 }
+                );
             }
         }
 
@@ -239,11 +257,17 @@ export async function action({ request, context }: ActionFunctionArgs) {
                 try {
                     const customerProfile = await getCustomerProfileForCheckout(context, customerId);
                     if (!customerProfile) {
-                        return placeOrderErrorResponse({
-                            success: false,
-                            error: t('errors:api.unableToLoadCustomerProfile'),
-                            step: 'placeOrder',
-                        });
+                        return Response.json(
+                            {
+                                success: false,
+                                error: createActionError({
+                                    code: ErrorCode.NOT_FOUND,
+                                    message: 'Unable to load customer profile',
+                                }),
+                                step: 'placeOrder',
+                            },
+                            { status: 400 }
+                        );
                     }
                     const savedPaymentMethods = getPaymentMethodsFromCustomer(customerProfile);
 
@@ -290,32 +314,56 @@ export async function action({ request, context }: ActionFunctionArgs) {
                             };
                             updateBasketResource(context, preservedBasket);
                         } else {
-                            return placeOrderErrorResponse({
-                                success: false,
-                                error: t('errors:api.billingAddressRequired'),
-                                step: 'placeOrder',
-                            });
+                            return Response.json(
+                                {
+                                    success: false,
+                                    error: createActionError({
+                                        code: ErrorCode.REQUIRED_FIELD,
+                                        message: 'Billing address is required',
+                                    }),
+                                    step: 'placeOrder',
+                                },
+                                { status: 400 }
+                            );
                         }
                     } else {
-                        return placeOrderErrorResponse({
-                            success: false,
-                            error: t('errors:api.paymentInformationRequired'),
-                            step: 'placeOrder',
-                        });
+                        return Response.json(
+                            {
+                                success: false,
+                                error: createActionError({
+                                    code: ErrorCode.REQUIRED_FIELD,
+                                    message: 'Payment information is required',
+                                }),
+                                step: 'placeOrder',
+                            },
+                            { status: 400 }
+                        );
                     }
                 } catch {
-                    return placeOrderErrorResponse({
-                        success: false,
-                        error: t('errors:api.paymentInformationRequired'),
-                        step: 'placeOrder',
-                    });
+                    return Response.json(
+                        {
+                            success: false,
+                            error: createActionError({
+                                code: ErrorCode.OPERATION_FAILED,
+                                message: 'Failed to apply saved payment method',
+                            }),
+                            step: 'placeOrder',
+                        },
+                        { status: 400 }
+                    );
                 }
             } else {
-                return placeOrderErrorResponse({
-                    success: false,
-                    error: t('errors:api.paymentInformationRequired'),
-                    step: 'placeOrder',
-                });
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({
+                            code: ErrorCode.REQUIRED_FIELD,
+                            message: 'Payment information is required',
+                        }),
+                        step: 'placeOrder',
+                    },
+                    { status: 400 }
+                );
             }
         }
 
@@ -323,11 +371,17 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const updatedBasket = (await getBasket(context)).current;
 
         if (!updatedBasket?.billingAddress) {
-            return placeOrderErrorResponse({
-                success: false,
-                error: t('errors:api.billingAddressRequired'),
-                step: 'placeOrder',
-            });
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'Billing address is required',
+                    }),
+                    step: 'placeOrder',
+                },
+                { status: 400 }
+            );
         }
 
         // @sfdc-extension-line SFDC_EXT_MULTISHIP
@@ -336,11 +390,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const currency = getBasketCurrency(context, updatedBasket);
 
         if (!updatedBasket?.basketId) {
-            return placeOrderErrorResponse({
-                success: false,
-                error: t('errors:api.basketNotFound'),
-                step: 'placeOrder',
-            });
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'Basket not found' }),
+                    step: 'placeOrder',
+                },
+                { status: 400 }
+            );
         }
 
         const calculatedBasket = await calculateBasket(context, updatedBasket.basketId, currency);
@@ -360,7 +417,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
             return Response.json(
                 {
                     success: false,
-                    error: t('checkout:placeOrder.failed'),
+                    error: createActionError({
+                        code: ErrorCode.OPERATION_FAILED,
+                        message: 'Order creation returned empty result',
+                    }),
                     step: 'placeOrder',
                 },
                 { status: 500 }
@@ -527,7 +587,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         return redirect(orderConfirmationUrl);
     } catch (error) {
-        // Use the error handler to create a standardized response
-        return await createErrorResponse(error, 'placeOrder', 500);
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ error }),
+                step: 'placeOrder',
+            },
+            { status: 500 }
+        );
     }
 }

@@ -28,6 +28,8 @@ import { getAuth } from '@/middlewares/auth.server';
 import { getCustomerProfileForCheckout, saveBillingAddressToCustomer } from '@/lib/api/customer.server';
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { getLogger } from '@/lib/logger.server';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 
 const normalizeAddressField = (value: string | undefined) => (value ?? '').trim().toLowerCase();
 
@@ -160,7 +162,10 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
             return Response.json(
                 {
                     success: false,
-                    error: t('errors:checkout.paymentProcessingFailed'),
+                    error: createActionError({
+                        code: ErrorCode.NOT_FOUND,
+                        message: 'Saved payment method not found',
+                    }),
                     step: 'payment',
                 },
                 { status: 400 }
@@ -187,7 +192,10 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
             return Response.json(
                 {
                     success: false,
-                    error: 'Please fill in all required payment fields',
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'Incomplete card data',
+                    }),
                     step: 'payment',
                 },
                 { status: 400 }
@@ -219,7 +227,7 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
         return Response.json(
             {
                 success: false,
-                error: t('errors:api.basketNotFound'),
+                error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'Basket not found after payment prep' }),
                 step: 'payment',
             },
             { status: 400 }
@@ -259,7 +267,7 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
             return Response.json(
                 {
                     success: false,
-                    error: t('errors:checkout.paymentProcessingFailed'),
+                    error: createActionError({ error }),
                     step: 'payment',
                 },
                 { status: 400 }
@@ -276,19 +284,11 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
             basketId,
             error,
         });
-        const apiDetail =
-            error && typeof error === 'object' && 'body' in error
-                ? typeof (error as { body?: unknown }).body === 'object' &&
-                  (error as { body?: { detail?: string } }).body?.detail
-                    ? (error as { body: { detail?: string } }).body.detail
-                    : ''
-                : '';
         return Response.json(
             {
                 success: false,
-                error: t('errors:checkout.paymentProcessingFailed'),
+                error: createActionError({ error }),
                 step: 'payment',
-                ...(apiDetail && { apiError: apiDetail }),
             },
             { status: 400 }
         );
@@ -346,7 +346,7 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
         return Response.json(
             {
                 success: false,
-                error: t('errors:checkout.paymentProcessingFailed'),
+                error: createActionError({ error }),
                 step: 'payment',
             },
             { status: 500 }

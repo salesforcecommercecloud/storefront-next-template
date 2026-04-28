@@ -40,8 +40,6 @@ import { getDefaultShippingMethod } from '@/lib/customer-profile-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { CheckoutActionData } from '@/components/checkout/types';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import CheckoutErrorBanner from '@/components/checkout/components/checkout-error-banner';
-import { getCheckoutDisplayError } from '@/components/checkout/components/checkout-display-error';
 import { useTranslation } from 'react-i18next';
 import { formatAddress } from '@/lib/address-utils';
 
@@ -126,7 +124,7 @@ interface ShippingMultiOptionsProps {
 export default function ShippingMultiOptions({
     onSubmit,
     isLoading,
-    actionData,
+    actionData: _actionData,
     shipments = [],
     shippingMethodsMap = {},
     isCompleted: _isCompleted,
@@ -136,8 +134,6 @@ export default function ShippingMultiOptions({
     const customerProfile = useCustomerProfile();
     const { t } = useTranslation('checkout');
     const { t: tMultiship } = useTranslation('extMultiship');
-    const shippingOptionsError = getCheckoutDisplayError(actionData, 'shippingOptions');
-
     // Track if we've already auto-submitted to prevent infinite loops
     const hasAutoSubmitted = useRef(false);
 
@@ -255,8 +251,6 @@ export default function ShippingMultiOptions({
             isLoading={isLoading}>
             <ToggleCardEdit>
                 <form method="post" className="space-y-8" onSubmit={handleSubmit}>
-                    {shippingOptionsError && <CheckoutErrorBanner message={shippingOptionsError} />}
-
                     {shipmentsData.length === 0 ? (
                         <div className="flex items-center justify-center p-8 border-2 border-dashed border-muted rounded-none">
                             <div className="text-center space-y-2">

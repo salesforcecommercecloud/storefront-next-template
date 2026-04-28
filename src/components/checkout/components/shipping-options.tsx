@@ -19,7 +19,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Typography } from '@/components/typography';
 import type { CheckoutActionData } from '../types';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import CheckoutErrorBanner from './checkout-error-banner';
 import { useTranslation } from 'react-i18next';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { formatCurrency } from '@/lib/currency';
@@ -41,7 +40,7 @@ export default function ShippingOptions({
     isLoading,
     actionData,
     shippingMethods,
-    validationError,
+    validationError: _validationError,
     isCompleted: _isCompleted,
     isEditing,
     onEdit,
@@ -54,7 +53,6 @@ export default function ShippingOptions({
         selectedMethod,
         summaryMethod,
         defaultShippingMethodId,
-        shippingOptionsError,
         isGuest,
         hideChangeForGuest,
         isUpcomingStep,
@@ -79,13 +77,6 @@ export default function ShippingOptions({
             isLoading={isLoading}>
             <ToggleCardEdit>
                 <form method="post" className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                    {(shippingOptionsError || validationError) && (
-                        <CheckoutErrorBanner
-                            message={shippingOptionsError || validationError}
-                            className="text-sm font-medium"
-                        />
-                    )}
-
                     <div className="flex flex-col gap-4">
                         {availableShippingMethods.length > 0 ? (
                             <RadioGroup

@@ -31,8 +31,6 @@ import { getContactInfoFromCustomer } from '@/lib/customer-profile-utils';
 import { getCommonPhoneCountryCodes } from '@/lib/country-codes';
 import type { CheckoutActionData } from '../types';
 import type { AuthorizePasswordlessEmailResponse } from '@/routes/action.authorize-passwordless-email';
-import CheckoutErrorBanner from './checkout-error-banner';
-import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import {
@@ -72,7 +70,7 @@ interface ContactInfoProps {
 export default function ContactInfo({
     onSubmit,
     isLoading,
-    actionData,
+    actionData: _actionData,
     onRegisteredUserChoseGuest,
     onPasswordlessOtpVerified,
     suppressRegisteredEmailLoginHints = false,
@@ -91,8 +89,6 @@ export default function ContactInfo({
     const customerContactInfo = getContactInfoFromCustomer(customerProfile);
 
     const schema = useMemo(() => createContactInfoSchema(t), [t]);
-    const contactFormError = getCheckoutDisplayError(actionData, 'contactInfo');
-
     const authorizePasswordlessEmailPath = useResolvedPath('/action/authorize-passwordless-email').pathname;
     const revalidator = useRevalidator();
     const passwordlessEmailFetcher = useFetcher<AuthorizePasswordlessEmailResponse>({
@@ -403,8 +399,6 @@ export default function ContactInfo({
                             onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
                             className="flex flex-col gap-4 pt-2"
                             noValidate>
-                            {contactFormError && <CheckoutErrorBanner message={contactFormError} />}
-
                             <FormField
                                 control={form.control}
                                 name="email"

@@ -36,8 +36,6 @@ import SavedAddressesList from './saved-addresses-list';
 import AddressModal from './address-modal';
 import type { CheckoutActionData } from '../types';
 import { addressToFormData, findMatchingSavedAddressId, isAddressEmpty } from '@/lib/address-utils';
-import CheckoutErrorBanner from './checkout-error-banner';
-import { getCheckoutDisplayError } from './checkout-display-error';
 import ShippingAddressDisplay from './shipping-address-display';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
@@ -92,8 +90,6 @@ export default function ShippingAddress({
         customerShippingAddress.phone ||
         '') as string;
     const schema = useMemo(() => createShippingAddressSchema(t as unknown as TFunction), [t]);
-    const shippingFormError = getCheckoutDisplayError(actionData, 'shippingAddress');
-
     const form = useForm<ShippingAddressData>({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -290,14 +286,6 @@ export default function ShippingAddress({
             <ToggleCardEdit>
                 {hasSavedAddresses ? (
                     <div className="flex flex-col gap-4 pt-2">
-                        {shippingFormError && <CheckoutErrorBanner message={shippingFormError} />}
-                        {actionData?.fieldErrors && (
-                            <div className="space-y-2">
-                                {Object.entries(actionData.fieldErrors).map(([field, error]) => (
-                                    <CheckoutErrorBanner key={field} message={error} />
-                                ))}
-                            </div>
-                        )}
                         <SavedAddressesList
                             addresses={savedAddresses}
                             value={effectiveSelectedId}
@@ -317,14 +305,6 @@ export default function ShippingAddress({
                         <form
                             onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
                             className="flex flex-col gap-4 pt-2">
-                            {shippingFormError && <CheckoutErrorBanner message={shippingFormError} />}
-                            {actionData?.fieldErrors && (
-                                <div className="space-y-2">
-                                    {Object.entries(actionData.fieldErrors).map(([field, error]) => (
-                                        <CheckoutErrorBanner key={field} message={error} />
-                                    ))}
-                                </div>
-                            )}
                             <AddressFormFields
                                 form={form}
                                 showPhone={false}

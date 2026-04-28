@@ -26,7 +26,6 @@ import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
 import type { CheckoutActionData } from '../types';
-import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
 
 function useLatestRef<T>(value: T): MutableRefObject<T> {
@@ -103,8 +102,6 @@ export function usePayment({
 
     const { t } = useTranslation('checkout');
     const isUpcomingStep = disabled && !isEditing;
-
-    const paymentFormError = getCheckoutDisplayError(actionData, 'payment');
 
     const savedPaymentMethods = getPaymentMethodsFromCustomer(customerProfile);
     const savedAddresses = getAddressBookFromCustomer(customerProfile);
@@ -520,7 +517,6 @@ export function usePayment({
         hasSummaryExpiry,
         hasSummaryPaymentMethod,
         selectedSavedMethod,
-        paymentFormError,
         isUpcomingStep,
         handleFormSubmit,
     };

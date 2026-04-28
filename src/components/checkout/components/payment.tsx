@@ -29,7 +29,6 @@ import { AddressFormFields } from '@/components/address-form-fields';
 import { CreditCardInputFields } from '@/components/credit-card-input-fields';
 import type { PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
 import type { CheckoutActionData } from '../types';
-import CheckoutErrorBanner from './checkout-error-banner';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 import CreditCardOptionIcon from '@/components/icons/credit-card-option-icon';
@@ -90,7 +89,6 @@ export default function Payment({
         summaryExpiryYear,
         hasSummaryExpiry,
         hasSummaryPaymentMethod,
-        paymentFormError,
         isUpcomingStep,
         handleFormSubmit,
     } = usePayment({
@@ -121,8 +119,6 @@ export default function Payment({
                 <ToggleCardEdit>
                     <Form {...form}>
                         <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
-                            {paymentFormError && <CheckoutErrorBanner message={paymentFormError} />}
-
                             <div className="space-y-4">
                                 <UITarget targetId="sfcc.checkout.payment.paymentMethods.before" />
                                 <UITarget targetId="sfcc.checkout.payment.paymentMethods">

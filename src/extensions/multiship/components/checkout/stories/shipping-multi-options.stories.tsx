@@ -573,44 +573,6 @@ export const NoShippingMethods: Story = {
     },
 };
 
-export const WithFormError: Story = {
-    args: {
-        shipments: mockShipments,
-        shippingMethodsMap: mockShippingMethodsMap,
-        isEditing: true,
-        isCompleted: false,
-        isLoading: false,
-        actionData: {
-            step: 'shippingOptions',
-            formError: 'Please select a shipping method for all shipments',
-        },
-        onEdit: () => {
-            action('edit-shipping-multi-options')();
-        },
-        onSubmit: (formData: FormData) => {
-            action('submit-shipping-multi-options')(Object.fromEntries(formData));
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the component with a form validation error displayed.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await waitFor(
-            () => {
-                expect(canvas.getByText(/Please select a shipping method for all shipments/i)).toBeInTheDocument();
-            },
-            { timeout: 5000 }
-        );
-    },
-};
-
 export const FreeShipping: Story = {
     args: {
         shipments: mockSingleShipment,

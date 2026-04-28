@@ -417,44 +417,6 @@ describe('ContactInfo Integration Tests', () => {
         });
     });
 
-    describe('Error Display', () => {
-        test('displays form error from action data', async () => {
-            renderWithRouter(
-                <ContactInfo
-                    {...createDefaultProps({
-                        actionData: {
-                            success: false,
-                            step: 'contactInfo',
-                            formError: 'Email already in use',
-                        },
-                    })}
-                />
-            );
-
-            await waitFor(() => {
-                expect(screen.getByText('Email already in use')).toBeInTheDocument();
-            });
-        });
-
-        test('does not display error from other steps', async () => {
-            renderWithRouter(
-                <ContactInfo
-                    {...createDefaultProps({
-                        actionData: {
-                            success: false,
-                            step: 'shipping',
-                            formError: 'Shipping error',
-                        },
-                    })}
-                />
-            );
-
-            await waitFor(() => {
-                expect(screen.queryByText('Shipping error')).not.toBeInTheDocument();
-            });
-        });
-    });
-
     describe('Edit Mode', () => {
         test('calls onEdit when edit button is clicked', async () => {
             const user = userEvent.setup();

@@ -32,7 +32,7 @@ import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
 import { Spinner } from '@/components/spinner';
-import CheckoutErrorBanner from './components/checkout-error-banner';
+import { getCheckoutDisplayError } from './utils/checkout-display-error';
 import { CHECKOUT_STEPS, type CheckoutStep } from './utils/checkout-context-types';
 import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -198,6 +198,7 @@ export default function CheckoutFormPage({
 }: CheckoutFormPageProps) {
     const { t, i18n } = useTranslation('checkout');
     const { t: tErrors } = useTranslation('errors');
+    const tAny = t as (key: string) => string;
     const { currency } = useSite();
 
     const cart = useBasket();
@@ -344,7 +345,6 @@ export default function CheckoutFormPage({
 
     const isPlacingOrder = placeOrderFetcher.state === 'submitting';
     const [isPlaceOrderPending, setIsPlaceOrderPending] = useState(false);
-    const [placeOrderClientError, setPlaceOrderClientError] = useState<string | null>(null);
     const [shippingMethodValidationError, setShippingMethodValidationError] = useState<string | null>(null);
 
     // Form submission handlers - delegated to checkout actions hook
@@ -365,8 +365,6 @@ export default function CheckoutFormPage({
         if (editingStep !== null && editingStep !== STEPS.PAYMENT) {
             return;
         }
-
-        setPlaceOrderClientError(null);
 
         // Validate that all non-empty shipments have a shipping method selected.
         // Without this, the request goes through payment sync → server place-order round-trip
@@ -473,7 +471,7 @@ export default function CheckoutFormPage({
         disabled: !isRegisteredUser && step < STEPS.PAYMENT,
     };
 
-    // Focus place order error without scrolling (prevents CLS while maintaining accessibility)
+    // Surface blocking API errors as error toasts for immediate visibility.
     useEffect(() => {
         if (
             placeOrderFetcher.state === 'idle' &&
@@ -482,14 +480,44 @@ export default function CheckoutFormPage({
             placeOrderFetcher.data.error
         ) {
             setIsPlaceOrderPending(false);
-            // Find the error banner and focus it without scrolling
-            const errorElement = document.querySelector('[role="alert"]');
-            if (errorElement instanceof HTMLElement) {
-                errorElement.tabIndex = -1;
-                errorElement.focus({ preventScroll: true });
-            }
+            const error = getCheckoutDisplayError(placeOrderFetcher.data, undefined, tAny);
+            if (error) showToast?.(error, 'error');
         }
-    }, [placeOrderFetcher.state, placeOrderFetcher.data]);
+    }, [placeOrderFetcher.state, placeOrderFetcher.data, showToast, tAny]);
+
+    useEffect(() => {
+        if (contactFetcher.state !== 'idle' || !contactFetcher.data || contactFetcher.data.success) return;
+        const error = getCheckoutDisplayError(contactFetcher.data, 'contactInfo', tAny);
+        if (error) showToast?.(error, 'error');
+    }, [contactFetcher.state, contactFetcher.data, showToast, tAny]);
+
+    useEffect(() => {
+        if (
+            shippingAddressFetcher.state !== 'idle' ||
+            !shippingAddressFetcher.data ||
+            shippingAddressFetcher.data.success
+        )
+            return;
+        const error = getCheckoutDisplayError(shippingAddressFetcher.data, 'shippingAddress', tAny);
+        if (error) showToast?.(error, 'error');
+    }, [shippingAddressFetcher.state, shippingAddressFetcher.data, showToast, tAny]);
+
+    useEffect(() => {
+        if (
+            shippingOptionsFetcher.state !== 'idle' ||
+            !shippingOptionsFetcher.data ||
+            shippingOptionsFetcher.data.success
+        )
+            return;
+        const error = getCheckoutDisplayError(shippingOptionsFetcher.data, 'shippingOptions', tAny);
+        if (error) showToast?.(error, 'error');
+    }, [shippingOptionsFetcher.state, shippingOptionsFetcher.data, showToast, tAny]);
+
+    useEffect(() => {
+        if (paymentFetcher.state !== 'idle' || !paymentFetcher.data || paymentFetcher.data.success) return;
+        const error = getCheckoutDisplayError(paymentFetcher.data, 'payment', tAny);
+        if (error) showToast?.(error, 'error');
+    }, [paymentFetcher.state, paymentFetcher.data, showToast, tAny]);
 
     // Place the order once payment succeeds; reset ref on failure so we never place order without valid payment
     useEffect(() => {
@@ -780,20 +808,6 @@ export default function CheckoutFormPage({
                                         <UITarget targetId="sfcc.checkout.createAccount.after" />
                                     </div>
                                 )}
-                                {placeOrderClientError && (
-                                    <CheckoutErrorBanner
-                                        message={placeOrderClientError}
-                                        className="w-full text-sm font-medium"
-                                    />
-                                )}
-                                {placeOrderFetcher.data &&
-                                    !placeOrderFetcher.data.success &&
-                                    placeOrderFetcher.data.error && (
-                                        <CheckoutErrorBanner
-                                            message={placeOrderFetcher.data.error}
-                                            className="w-full"
-                                        />
-                                    )}
                                 <UITarget targetId="sfcc.checkout.placeOrder.before" />
                                 <UITarget targetId="sfcc.checkout.placeOrder">
                                     <form

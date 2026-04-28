@@ -17,8 +17,8 @@ import type { ActionFunctionArgs } from 'react-router';
 import { ensureBasketId, getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
-import { extractResponseError } from '@/lib/utils';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { createShippingAddressSchema, parseShippingAddressFromFormData } from '@/lib/checkout-schemas';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders.server';
@@ -44,7 +44,7 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
         return Response.json(
             {
                 success: false,
-                error: t('errors:checkout.noActiveBasket'),
+                error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No active basket found' }),
                 step: 'shippingAddress',
             },
             { status: 400 }
@@ -130,21 +130,10 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
         updatedBasket = data;
     } catch (error) {
         logger.error('SubmitShippingAddress: failed', { error });
-        let errorMessage = t('errors:checkout.addressValidationFailed');
-        if (error instanceof ApiError) {
-            try {
-                const { responseMessage } = await extractResponseError(error);
-                if (responseMessage) {
-                    errorMessage = responseMessage;
-                }
-            } catch {
-                // Use default error message if extraction fails
-            }
-        }
         return Response.json(
             {
                 success: false,
-                error: errorMessage,
+                error: createActionError({ error }),
                 step: 'shippingAddress',
             },
             { status: 500 }
@@ -154,8 +143,8 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
     // sfdc-extension-line SFDC_EXT_MULTISHIP
     try {
         updatedBasket = await assignProductsToDefaultShipment(updatedBasket, context);
-    } catch {
-        // Best-effort: keep basket with address update; multiship assignment can be retried on next load
+    } catch (error) {
+        logger.error('SubmitShippingAddress: failed to assign products to default shipment', { error });
     }
 
     // Update local basket state with API response
@@ -194,8 +183,8 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
             });
             updatedBasket = billingSyncedBasket;
             updateBasketResource(context, updatedBasket);
-        } catch {
-            // Non-blocking: payment step can still set billing
+        } catch (error) {
+            logger.error('SubmitShippingAddress: failed to sync billing address from shipping', { error });
         }
     }
 
@@ -210,8 +199,8 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
                 await saveShippingAddressToCustomer(context, auth.customerId, addressDataWithExtras);
             }
         }
-    } catch {
-        // Non-blocking: address was saved to basket; profile save can be retried later
+    } catch (error) {
+        logger.error('SubmitShippingAddress: failed to save address to customer profile', { error });
     }
 
     // Fetch shipping methods for the updated basket (now that we have an address). This prevents a
@@ -222,8 +211,8 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
     let shippingMethodsMap: Awaited<ReturnType<typeof fetchShippingMethodsMapForBasket>> = {};
     try {
         shippingMethodsMap = await fetchShippingMethodsMapForBasket(context, updatedBasket);
-    } catch {
-        // Non-fatal: return success with empty map; revalidation may still provide shipping methods
+    } catch (error) {
+        logger.error('SubmitShippingAddress: failed to prefetch shipping methods', { error });
     }
 
     logger.info('SubmitShippingAddress: succeeded', { basketId });

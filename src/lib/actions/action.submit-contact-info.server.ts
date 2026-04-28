@@ -17,9 +17,9 @@ import type { ActionFunctionArgs } from 'react-router';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 import { authorizePasswordless } from '@/middlewares/auth.server';
-import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients.server';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { createContactInfoSchema, parseContactInfoFromFormData } from '@/lib/checkout-schemas';
 import { updateBillingAddressForBasket } from '@/lib/api/basket.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
@@ -62,7 +62,7 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
         return Response.json(
             {
                 success: false,
-                error: t('errors:checkout.noActiveBasket'),
+                error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No active basket found' }),
                 step: 'contactInfo',
             },
             { status: 400 }
@@ -90,29 +90,10 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
         updateBasketResource(context, updatedBasket);
     } catch (error) {
         logger.error('SubmitContactInfo: failed to update customer email', { error });
-        let errorMessage: string = t('checkout.contactInfo.saveError');
-
-        if (error instanceof ApiError) {
-            try {
-                const { responseMessage } = await extractResponseError(error);
-                if (responseMessage) {
-                    errorMessage = responseMessage;
-
-                    // If the error is about invalid customer, clear the session and retry as guest
-                    if (responseMessage.toLowerCase().includes('customer is invalid')) {
-                        // TODO: Need to evaluate if we have to clear the auth session here
-                        errorMessage = t('checkout.contactInfo.sessionExpired');
-                    }
-                }
-            } catch {
-                // Use default error message if extraction fails
-            }
-        }
-
         return Response.json(
             {
                 success: false,
-                error: errorMessage,
+                error: createActionError({ error }),
                 step: 'contactInfo',
             },
             { status: 500 }
@@ -127,8 +108,8 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
             const billingBasket = await updateBillingAddressForBasket(context, basketId, billingWithPhone);
             updatedBasket = { ...updatedBasket, billingAddress: billingBasket.billingAddress };
             updateBasketResource(context, updatedBasket);
-        } catch {
-            // Non-blocking: phone on billing is supplemental
+        } catch (error) {
+            logger.error('SubmitContactInfo: failed to save phone to billing address', { error });
         }
     }
 
@@ -137,8 +118,8 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
     if (appConfig.features?.passwordlessLogin?.enabled && email?.trim()) {
         try {
             await authorizePasswordless(context, { userid: email.trim() });
-        } catch {
-            // Do not fail contact step if OTP send fails (e.g. SLAS error, config)
+        } catch (error) {
+            logger.error('SubmitContactInfo: failed to send passwordless OTP', { error });
         }
     }
     logger.info('SubmitContactInfo: succeeded', { basketId });

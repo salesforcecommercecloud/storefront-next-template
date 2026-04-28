@@ -494,40 +494,6 @@ describe('usePayment hook', () => {
         });
     });
 
-    describe('error handling', () => {
-        test('extracts payment form error from actionData', () => {
-            const { result } = renderHook(() =>
-                usePayment(
-                    createDefaultParams({
-                        actionData: {
-                            success: false,
-                            step: 'payment',
-                            error: 'Payment processing failed',
-                        },
-                    })
-                )
-            );
-
-            expect(result.current.paymentFormError).toBe('Payment processing failed');
-        });
-
-        test('ignores errors from other steps', () => {
-            const { result } = renderHook(() =>
-                usePayment(
-                    createDefaultParams({
-                        actionData: {
-                            success: false,
-                            step: 'shipping',
-                            error: 'Shipping error',
-                        },
-                    })
-                )
-            );
-
-            expect(result.current.paymentFormError).toBeUndefined();
-        });
-    });
-
     describe('form submission', () => {
         test('handleFormSubmit calls onSubmit with saved payment data including form fields', async () => {
             const onSubmit = vi.fn();

@@ -1437,27 +1437,5 @@ describe('ShippingMultiAddress', () => {
             // Verify onSubmit was not called because form should return early
             expect(mockOnSubmit).not.toHaveBeenCalled();
         });
-
-        test('displays field errors from actionData', () => {
-            const fieldErrors = {
-                shippingAddress: 'Shipping address is required',
-                city: 'City is invalid',
-            };
-
-            render(
-                <ShippingMultiAddress
-                    {...createDefaultProps({
-                        actionData: {
-                            fieldErrors,
-                        },
-                    })}
-                />,
-                { wrapper }
-            );
-
-            // Verify field errors are displayed
-            expect(screen.getByText('Shipping address is required')).toBeInTheDocument();
-            expect(screen.getByText('City is invalid')).toBeInTheDocument();
-        });
     });
 });

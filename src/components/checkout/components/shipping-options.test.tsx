@@ -445,13 +445,6 @@ describe('ShippingOptions Component', () => {
         unmount();
     });
 
-    test('renders error banner when actionData contains a shippingOptions error', () => {
-        const actionData = { error: 'Failed to save shipping method. Please try again.', step: 'shippingOptions' };
-        render(<ShippingOptions {...createDefaultProps({ actionData })} />);
-
-        expect(screen.getByRole('alert')).toHaveTextContent('Failed to save shipping method. Please try again.');
-    });
-
     test('uses description as primary label and name as secondary label', () => {
         render(<ShippingOptions {...createDefaultProps()} />);
 

@@ -370,27 +370,6 @@ describe('ShippingAddress Integration Tests', () => {
         });
     });
 
-    describe('Error Display', () => {
-        test('displays field errors from action data', () => {
-            render(
-                <ShippingAddress
-                    {...createDefaultProps({
-                        actionData: {
-                            success: false,
-                            fieldErrors: {
-                                firstName: 'First name is required',
-                                postalCode: 'Invalid postal code',
-                            },
-                        },
-                    })}
-                />
-            );
-
-            expect(screen.getByText('First name is required')).toBeInTheDocument();
-            expect(screen.getByText('Invalid postal code')).toBeInTheDocument();
-        });
-    });
-
     describe('Edit Address Flow', () => {
         const savedAddressProfile = {
             customer: { email: 'test@example.com' },

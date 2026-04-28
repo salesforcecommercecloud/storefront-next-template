@@ -222,10 +222,36 @@ const mockSubmitPayment = vi.fn();
 const mockSubmitPlaceOrder = vi.fn();
 const mockHandleCreateAccountPreferenceChange = vi.fn();
 let mockShouldCreateAccount = false;
+let mockContactFetcherState: 'idle' | 'submitting' = 'idle';
+let mockContactFetcherData: {
+    success?: boolean;
+    error?: string | { code: string; message: string };
+    step?: string;
+} | null = null;
+let mockShippingAddressFetcherState: 'idle' | 'submitting' = 'idle';
+let mockShippingAddressFetcherData: {
+    success?: boolean;
+    error?: string | { code: string; message: string };
+    step?: string;
+} | null = null;
+let mockShippingOptionsFetcherState: 'idle' | 'submitting' = 'idle';
+let mockShippingOptionsFetcherData: {
+    success?: boolean;
+    error?: string | { code: string; message: string };
+    step?: string;
+} | null = null;
 let mockPlaceOrderFetcherState: 'idle' | 'submitting' = 'idle';
-let mockPlaceOrderFetcherData: { success?: boolean; error?: string; step?: string } | null = null;
+let mockPlaceOrderFetcherData: {
+    success?: boolean;
+    error?: string | { code: string; message: string };
+    step?: string;
+} | null = null;
 let mockPaymentFetcherState: 'idle' | 'submitting' = 'idle';
-let mockPaymentFetcherData: { success?: boolean; error?: string } | null = null;
+let mockPaymentFetcherData: {
+    success?: boolean;
+    error?: string | { code: string; message: string };
+    step?: string;
+} | null = null;
 
 vi.mock('@/hooks/use-checkout-actions', () => ({
     useCheckoutActions: () => ({
@@ -234,9 +260,15 @@ vi.mock('@/hooks/use-checkout-actions', () => ({
         submitShippingOptions: mockSubmitShippingOptions,
         submitPayment: mockSubmitPayment,
         submitPlaceOrder: mockSubmitPlaceOrder,
-        contactFetcher: { data: null, state: 'idle' },
-        shippingAddressFetcher: { data: null, state: 'idle' },
-        shippingOptionsFetcher: { data: null, state: 'idle' },
+        get contactFetcher() {
+            return { data: mockContactFetcherData, state: mockContactFetcherState };
+        },
+        get shippingAddressFetcher() {
+            return { data: mockShippingAddressFetcherData, state: mockShippingAddressFetcherState };
+        },
+        get shippingOptionsFetcher() {
+            return { data: mockShippingOptionsFetcherData, state: mockShippingOptionsFetcherState };
+        },
         get paymentFetcher() {
             return { data: mockPaymentFetcherData, state: mockPaymentFetcherState };
         },
@@ -319,27 +351,6 @@ vi.mock('./components/register-customer-selection', () => ({
     default: () => <div data-testid="register-customer-checkbox">Create Account Checkbox</div>,
 }));
 
-// Mock CheckoutErrorBanner with proper ref support
-vi.mock('./components/checkout-error-banner', async () => {
-    const React = await vi.importActual('react');
-    const { forwardRef } = React;
-
-    // @ts-expect-error - forwardRef type is inferred from React import
-    const MockCheckoutErrorBanner = forwardRef<HTMLDivElement, { message: React.ReactNode; [key: string]: unknown }>(
-        (
-            { message, ...props }: { message: React.ReactNode; [key: string]: unknown },
-            ref: React.Ref<HTMLDivElement>
-        ) => (
-            <div ref={ref} data-testid="checkout-error-banner" {...props}>
-                {message}
-            </div>
-        )
-    );
-    MockCheckoutErrorBanner.displayName = 'MockCheckoutErrorBanner';
-
-    return { default: MockCheckoutErrorBanner };
-});
-
 vi.mock('./checkout-progress', () => ({
     CheckoutProgress: () => <div data-testid="checkout-progress">Checkout Progress</div>,
 }));
@@ -417,6 +428,12 @@ describe('CheckoutFormPage', () => {
             orderTotal: 99.99,
         });
         mockShouldCreateAccount = false;
+        mockContactFetcherState = 'idle';
+        mockContactFetcherData = null;
+        mockShippingAddressFetcherState = 'idle';
+        mockShippingAddressFetcherData = null;
+        mockShippingOptionsFetcherState = 'idle';
+        mockShippingOptionsFetcherData = null;
         mockPlaceOrderFetcherState = 'idle';
         mockPlaceOrderFetcherData = null;
         mockPaymentFetcherState = 'idle';
@@ -808,45 +825,6 @@ describe('CheckoutFormPage', () => {
             const button = screen.getByRole('button', { name: i18next.t('checkout:placeOrder.processing') });
             expect(button).toBeDisabled();
         });
-
-        test('displays error banner when place order fails', async () => {
-            // Mock scrollIntoView to prevent errors
-            const mockScrollIntoView = vi.fn();
-            Element.prototype.scrollIntoView = mockScrollIntoView;
-
-            mockUseCheckoutContext.mockReturnValue(
-                buildCheckoutContext({
-                    step: defaultSteps.PLACE_ORDER,
-                })
-            );
-            mockPlaceOrderFetcherData = {
-                success: false,
-                error: 'Order placement failed. Please try again.',
-            };
-
-            await renderCheckoutPage();
-
-            // Error banner should be rendered
-            await waitFor(() => {
-                expect(screen.getByTestId('checkout-error-banner')).toBeInTheDocument();
-                expect(screen.getByText('Order placement failed. Please try again.')).toBeInTheDocument();
-            });
-        });
-
-        test('does not display error banner when place order succeeds', async () => {
-            mockUseCheckoutContext.mockReturnValue(
-                buildCheckoutContext({
-                    step: defaultSteps.PLACE_ORDER,
-                })
-            );
-            mockPlaceOrderFetcherData = {
-                success: true,
-            };
-
-            await renderCheckoutPage();
-
-            expect(screen.queryByText(/Order placement failed/i)).not.toBeInTheDocument();
-        });
     });
 
     describe('Analytics tracking edge cases', () => {
@@ -947,32 +925,6 @@ describe('CheckoutFormPage', () => {
 
             await waitFor(() => {
                 expect(mockAnalytics.trackCheckoutStep).not.toHaveBeenCalled();
-            });
-        });
-    });
-
-    describe('Scroll behavior', () => {
-        test('renders error banner when place order fails', async () => {
-            // Mock scrollIntoView to prevent errors
-            const mockScrollIntoView = vi.fn();
-            Element.prototype.scrollIntoView = mockScrollIntoView;
-
-            mockUseCheckoutContext.mockReturnValue(
-                buildCheckoutContext({
-                    step: defaultSteps.PLACE_ORDER,
-                })
-            );
-            mockPlaceOrderFetcherData = {
-                success: false,
-                error: 'Test error message',
-            };
-
-            await renderCheckoutPage();
-
-            // Wait for error banner to render
-            await waitFor(() => {
-                expect(screen.getByTestId('checkout-error-banner')).toBeInTheDocument();
-                expect(screen.getByText('Test error message')).toBeInTheDocument();
             });
         });
     });
@@ -1250,6 +1202,124 @@ describe('CheckoutFormPage', () => {
             expect(screen.getByText('Shipping Address Form')).toBeInTheDocument();
             expect(screen.getByText('Shipping Options Form')).toBeInTheDocument();
             expect(screen.getByText('Payment Form')).toBeInTheDocument();
+        });
+    });
+
+    describe('Error toast notifications', () => {
+        test('fires error toast when contact info submission fails', async () => {
+            const mockShowToast = vi.fn();
+            mockContactFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Failed to update email' },
+                step: 'contactInfo',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith(
+                    "We couldn't save the contact information. Try again.",
+                    'error'
+                );
+            });
+        });
+
+        test('fires error toast when shipping address submission fails', async () => {
+            const mockShowToast = vi.fn();
+            mockShippingAddressFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Invalid shipping address' },
+                step: 'shippingAddress',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith(
+                    "We couldn't validate your address. Check your address and try again.",
+                    'error'
+                );
+            });
+        });
+
+        test('fires error toast when shipping options submission fails', async () => {
+            const mockShowToast = vi.fn();
+            mockShippingOptionsFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Shipping method unavailable' },
+                step: 'shippingOptions',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith(
+                    "The selected shipping method isn't available. Choose another option.",
+                    'error'
+                );
+            });
+        });
+
+        test('fires error toast when payment submission fails', async () => {
+            const mockShowToast = vi.fn();
+            mockPaymentFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Payment processing failed' },
+                step: 'payment',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith("We couldn't process your payment. Try again.", 'error');
+            });
+        });
+
+        test('fires error toast when place order fails', async () => {
+            const mockShowToast = vi.fn();
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockPlaceOrderFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Order placement failed' },
+                step: 'placeOrder',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith("We couldn't create the order. Try again.", 'error');
+            });
+        });
+
+        test('does not fire error toast when fetcher succeeds', async () => {
+            const mockShowToast = vi.fn();
+            mockContactFetcherData = { success: true, step: 'contactInfo' };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            expect(mockShowToast).not.toHaveBeenCalled();
+        });
+
+        test('does not fire error toast when fetcher has no data', async () => {
+            const mockShowToast = vi.fn();
+            mockContactFetcherData = null;
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            expect(mockShowToast).not.toHaveBeenCalled();
+        });
+
+        test('does not fire error toast for a different step', async () => {
+            const mockShowToast = vi.fn();
+            mockContactFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Some error' },
+                step: 'shippingAddress',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            expect(mockShowToast).not.toHaveBeenCalled();
         });
     });
 

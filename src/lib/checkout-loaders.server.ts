@@ -80,8 +80,14 @@ export function getServerCustomerProfileData(
         // Single dynamic import for server utils
         return import('@/lib/checkout-server-utils.server')
             .then(({ getServerCustomerProfile }) => getServerCustomerProfile(context, authSession))
-            .catch(() => null);
-    } catch {
+            .catch((error) => {
+                const logger = getLogger(context);
+                logger.error('Checkout: failed to load customer profile data', { error });
+                return null;
+            });
+    } catch (error) {
+        const logger = getLogger(context);
+        logger.error('Checkout: failed to import checkout-server-utils', { error });
         return Promise.resolve(null);
     }
 }
@@ -100,7 +106,7 @@ export async function getServerShippingMethodsMapData(
         return fetchShippingMethodsMapForBasket(context, basket);
     } catch (error) {
         const logger = getLogger(context);
-        logger.warn('Checkout: failed to fetch shipping methods map', { error });
+        logger.error('Checkout: failed to fetch shipping methods map', { error });
         return {};
     }
 }
@@ -133,7 +139,7 @@ export async function fetchShippingMethodsMapForBasket(
                 shippingMethodsMap[shipment.shipmentId] = methods;
             } catch (error) {
                 const logger = getLogger(context);
-                logger.warn('Checkout: failed to fetch shipping methods for shipment', {
+                logger.error('Checkout: failed to fetch shipping methods for shipment', {
                     shipmentId: shipment.shipmentId,
                     error,
                 });
@@ -302,7 +308,7 @@ async function fetchPromotionsForBasket(
             }
         } catch (error) {
             const logger = getLogger(context);
-            logger.warn('Checkout: failed to fetch promotions batch', { error });
+            logger.error('Checkout: failed to fetch promotions batch', { error });
         }
     }
 
@@ -467,7 +473,7 @@ export async function initializeBasketForReturningCustomer(
                 updatedBasket = data;
                 updateBasketResource(context, updatedBasket);
             } catch (error) {
-                logger.warn('Checkout: billing address prefill failed', { basketId, error });
+                logger.error('Checkout: billing address prefill failed', { basketId, error });
             }
         }
 
@@ -498,7 +504,7 @@ export async function initializeBasketForReturningCustomer(
                     updateBasketResource(context, updatedBasket);
                 }
             } catch (err) {
-                logger.warn('Checkout: could not set default shipping method on basket', {
+                logger.error('Checkout: could not set default shipping method on basket', {
                     basketId,
                     error: err,
                 });
@@ -540,13 +546,14 @@ export async function initializeBasketForReturningCustomer(
                         updateBasketResource(context, updatedBasket);
                     }
                 }
-            } catch {
-                // Payment instrument addition failed - continue without it
+            } catch (error) {
+                logger.error('Checkout: failed to prefill saved payment instrument', { basketId, error });
             }
         }
 
         return updatedBasket;
-    } catch {
+    } catch (error) {
+        logger.error('Checkout: returning customer basket initialization failed', { error });
         return null;
     }
 }
@@ -580,9 +587,9 @@ async function handleBasketPrefill(
 
         // No prefill needed - basket already has required data
         return currentBasket ?? null;
-    } catch {
-        // Basket prefill failed, return current basket and continue
-        // Better to show checkout without prefill than to fail completely
+    } catch (error) {
+        const logger = getLogger(context);
+        logger.error('Checkout: basket prefill failed, returning current basket', { error });
         return (await getBasket(context)).current ?? null;
     }
 }
@@ -628,7 +635,10 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
         if (userIsRegistered && session.customerId) {
-            const customerProfile = await getCustomerProfileForCheckout(context, session.customerId).catch(() => null);
+            const customerProfile = await getCustomerProfileForCheckout(context, session.customerId).catch((error) => {
+                logger.error('Checkout: failed to fetch customer profile', { error });
+                return null;
+            });
 
             if (customerProfile) {
                 // @sfdc-extension-block-start SFDC_EXT_BOPIS

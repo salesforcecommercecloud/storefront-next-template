@@ -62,9 +62,6 @@ import { generateAddressId } from '@/lib/address-id-utils';
 import { AddressModal } from '@/components/checkout/components/address-modal';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import type { CheckoutActionData } from '@/components/checkout/types';
-import CheckoutErrorBanner from '@/components/checkout/components/checkout-error-banner';
-import { getCheckoutDisplayError } from '@/components/checkout/components/checkout-display-error';
-
 /**
  * Props for the ShippingMultiAddress component.
  *
@@ -171,7 +168,7 @@ function showMultipleLocationsMessage(
 export default function ShippingMultiAddress({
     isLoading,
     isEditing,
-    actionData,
+    actionData: _actionData,
     productMap,
     isDeliveryProductItem,
     deliveryShipments,
@@ -187,8 +184,6 @@ export default function ShippingMultiAddress({
     const { t: tMultiship } = useTranslation('extMultiship');
     const customerProfile = useCustomerProfile();
     const { savedAddresses, setSavedAddresses, productItemAddresses, setProductItemAddresses } = useCheckoutContext();
-    const shippingFormError = getCheckoutDisplayError(actionData, 'shippingAddress');
-
     // Skip expensive computation when not editing
     const productItems = useMemo(() => {
         if (!isEditing) return [];
@@ -389,14 +384,6 @@ export default function ShippingMultiAddress({
                 onEditActionClick={handleToggleShippingAddressModeToSingleAddress}>
                 <ToggleCardEdit>
                     <form onSubmit={handleSubmitShippingMultiAddress} className="space-y-4">
-                        {shippingFormError && <CheckoutErrorBanner message={shippingFormError} />}
-                        {actionData?.fieldErrors && (
-                            <div className="space-y-2">
-                                {Object.entries(actionData.fieldErrors).map(([field, error]) => (
-                                    <CheckoutErrorBanner key={field} message={error} />
-                                ))}
-                            </div>
-                        )}
                         {itemsToDisplay.map((productItem, index) => {
                             const quantity = productItem.quantity ?? 1;
                             const displayVariationValues = getDisplayVariationValues(
