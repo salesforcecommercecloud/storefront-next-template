@@ -50,6 +50,7 @@ import type { AppConfig } from '@/types/config';
 import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
 
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
+const LoginModal = lazy(() => import('@/components/login/login-modal'));
 
 interface ContactInfoProps {
     onSubmit: (data: ContactInfoData) => void;
@@ -101,6 +102,7 @@ export default function ContactInfo({
     const otpSuccessRevalidatingRef = useRef(false);
     const [isOtpOpen, setIsOtpOpen] = useState(false);
     const [otpModalEmail, setOtpModalEmail] = useState('');
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const turnstileResetRef = useRef<(() => void) | null>(null);
@@ -278,6 +280,14 @@ export default function ContactInfo({
         // eslint-disable-next-line react-hooks/exhaustive-deps -- only open modal when state/data from last submit
     }, [passwordlessEmailFetcher.state, passwordlessEmailFetcher.data?.success, passwordlessEmailFetcher.data?.email]);
 
+    useEffect(() => {
+        const { state, data } = passwordlessEmailFetcher;
+        if (state === 'idle' && data?.requiresLogin === true) {
+            setIsLoginModalOpen(true);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to requiresLogin flag
+    }, [passwordlessEmailFetcher.state, passwordlessEmailFetcher.data?.requiresLogin]);
+
     const handleOtpSuccess = useCallback(
         () => {
             onPasswordlessOtpVerified?.();
@@ -288,6 +298,18 @@ export default function ContactInfo({
             setIsOtpOpen(false);
         },
         // Ref is stable; .current is mutated intentionally — omit from deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
+        [onPasswordlessOtpVerified, revalidator]
+    );
+
+    const handleLoginModalSuccess = useCallback(
+        () => {
+            onPasswordlessOtpVerified?.();
+            otpSuccessRevalidatingRef.current = true;
+            void revalidator.revalidate();
+            if (otpFlowActiveRef) otpFlowActiveRef.current = false;
+            setIsLoginModalOpen(false);
+        },
         // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
         [onPasswordlessOtpVerified, revalidator]
     );
@@ -350,16 +372,16 @@ export default function ContactInfo({
     const isSendingOtp =
         passwordlessEmailFetcher.state === 'submitting' || passwordlessEmailFetcher.state === 'loading';
 
-    // Keep parent ref in sync so checkout does not advance to shipping while OTP modal is open or authorize in flight
+    // Keep parent ref in sync so checkout does not advance to shipping while OTP/login modal is open or authorize in flight
     useEffect(
         () => {
             if (otpFlowActiveRef) {
-                otpFlowActiveRef.current = isSendingOtp || isOtpOpen;
+                otpFlowActiveRef.current = isSendingOtp || isOtpOpen || isLoginModalOpen;
             }
         },
         // Ref is stable; .current is mutated intentionally — omit from deps
         // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
-        [isSendingOtp, isOtpOpen]
+        [isSendingOtp, isOtpOpen, isLoginModalOpen]
     );
 
     const otpLength = (appConfig?.auth as { otpLength?: number } | undefined)?.otpLength ?? 6;
@@ -527,6 +549,36 @@ export default function ContactInfo({
                         onCheckoutAsGuest={onRegisteredUserChoseGuest ? handleCheckoutAsGuestFromOtp : undefined}
                         onResendCode={handleResendOtp}
                         otpLength={otpLength}
+                    />
+                </Suspense>
+            )}
+
+            {isLoginModalOpen && (
+                <Suspense fallback={null}>
+                    <LoginModal
+                        isOpen={isLoginModalOpen}
+                        onOpenChange={(open) => {
+                            setIsLoginModalOpen(open);
+                            if (!open) {
+                                lastEmailSentRef.current = null;
+                                if (otpFlowActiveRef) otpFlowActiveRef.current = false;
+                            }
+                        }}
+                        mode="password"
+                        isPasswordlessEnabled={false}
+                        returnUrl="/checkout"
+                        initialEmail={passwordlessEmailFetcher.data?.email || form.getValues('email')}
+                        onSuccess={handleLoginModalSuccess}
+                        onCheckoutAsGuest={
+                            onRegisteredUserChoseGuest
+                                ? () => {
+                                      setIsLoginModalOpen(false);
+                                      lastEmailSentRef.current = null;
+                                      if (otpFlowActiveRef) otpFlowActiveRef.current = false;
+                                      onRegisteredUserChoseGuest(true);
+                                  }
+                                : undefined
+                        }
                     />
                 </Suspense>
             )}

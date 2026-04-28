@@ -24,11 +24,13 @@ import type { AppConfig } from '@/types/config';
 import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
 import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile-constants';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 export type AuthorizePasswordlessEmailResponse = {
     success: boolean;
     error?: { code: string; message: string };
     email?: string;
+    requiresLogin?: boolean;
 };
 
 /**
@@ -49,44 +51,44 @@ export async function action({ request, context }: ActionFunctionArgs) {
         );
     }
 
+    const formData = await request.formData();
+    const email = formData.get('email')?.toString()?.trim();
+    const turnstileToken = formData.get('turnstileToken')?.toString();
+
+    if (!email) {
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
+            },
+            { status: 400 }
+        );
+    }
+
+    const appConfig = getConfig<AppConfig>(context);
+
+    const allowed = await enforceTurnstile({
+        request,
+        config: appConfig,
+        turnstileToken,
+        logger,
+        actionName: 'authorize-passwordless-email',
+        email,
+    });
+    if (!allowed) {
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.NOT_AUTHORIZED,
+                    message: 'Turnstile verification failed',
+                }),
+            },
+            { status: 403 }
+        );
+    }
+
     try {
-        const formData = await request.formData();
-        const email = formData.get('email')?.toString()?.trim();
-        const turnstileToken = formData.get('turnstileToken')?.toString();
-
-        if (!email) {
-            return Response.json(
-                {
-                    success: false,
-                    error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
-                },
-                { status: 400 }
-            );
-        }
-
-        const appConfig = getConfig<AppConfig>(context);
-
-        const allowed = await enforceTurnstile({
-            request,
-            config: appConfig,
-            turnstileToken,
-            logger,
-            actionName: 'authorize-passwordless-email',
-            email,
-        });
-        if (!allowed) {
-            return Response.json(
-                {
-                    success: false,
-                    error: createActionError({
-                        code: ErrorCode.NOT_AUTHORIZED,
-                        message: 'Turnstile verification failed',
-                    }),
-                },
-                { status: 403 }
-            );
-        }
-
         await authorizePasswordless(context, { userid: email });
 
         logger.info('AuthorizePasswordlessEmail: OTP sent');
@@ -100,6 +102,23 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         return Response.json({ success: true, email }, { headers: { 'Set-Cookie': setCookieHeader } });
     } catch (error) {
+        if (error instanceof ApiError && error.status === 400) {
+            const errorMessage = extractErrorMessage(error);
+            if (/email not verified/i.test(errorMessage)) {
+                logger.info('AuthorizePasswordlessEmail: email not verified, requires standard login', { email });
+                return Response.json({ success: false, requiresLogin: true, email });
+            }
+
+            logger.error('AuthorizePasswordlessEmail: bad request', { email, error: errorMessage });
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
+                },
+                { status: 400 }
+            );
+        }
+
         logger.error('AuthorizePasswordlessEmail: failed', { error });
         const errorMessage = extractErrorMessage(error);
         return Response.json(

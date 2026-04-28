@@ -41,6 +41,7 @@ type InitiateRegistrationResponse = {
     success: boolean;
     error?: { code: string; message: string };
     email?: string;
+    unavailable?: boolean;
 };
 
 export default function RegisterCustomerSelection({
@@ -147,6 +148,11 @@ export default function RegisterCustomerSelection({
 
             if (data.success) {
                 setIsOtpModalOpen(true);
+            } else if (data.unavailable) {
+                setShouldCreateAccount(false);
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.removeItem('registeredViaCheckout');
+                }
             } else {
                 const errorMsg = t('registration.initiationFailed');
                 setError(errorMsg);

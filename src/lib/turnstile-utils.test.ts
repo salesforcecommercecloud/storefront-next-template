@@ -272,9 +272,9 @@ describe('turnstile-utils', () => {
     });
 
     describe('isTurnstileEnabled', () => {
-        it('should return true by default', () => {
+        it('should return false by default', () => {
             const config: AppConfig = {} as unknown as AppConfig;
-            expect(isTurnstileEnabled(config)).toBe(true);
+            expect(isTurnstileEnabled(config)).toBe(false);
         });
 
         it('should return configured value', () => {

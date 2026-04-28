@@ -169,4 +169,94 @@ describe('action.authorize-passwordless-email', () => {
         expect(result.success).toBe(false);
         expect(result.error).toBeTruthy();
     });
+
+    it('returns requiresLogin when SLAS responds with 400 email not verified', async () => {
+        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const apiError = new ApiError({
+            status: 400,
+            statusText: 'Bad Request',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Bad Request', detail: 'Email not verified' },
+            rawBody: '{"message":"Email not verified"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        mockAuthorizePasswordless.mockRejectedValue(apiError);
+        const { extractErrorMessage } = await import('@/lib/auth-error-handler');
+        vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
+
+        expect(response.status).toBe(200);
+        expect(result.success).toBe(false);
+        expect(result.requiresLogin).toBe(true);
+        expect(result.email).toBe('user@example.com');
+        expect(result.error).toBeUndefined();
+    });
+
+    it('does not return requiresLogin for 400 with a different error message', async () => {
+        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const apiError = new ApiError({
+            status: 400,
+            statusText: 'Bad Request',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Bad Request', detail: 'Invalid request parameters' },
+            rawBody: '{"message":"Invalid request parameters"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        mockAuthorizePasswordless.mockRejectedValue(apiError);
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(result.success).toBe(false);
+        expect(result.requiresLogin).toBeUndefined();
+        expect(result.error).toBeTruthy();
+    });
+
+    it('does not return requiresLogin for non-400 ApiErrors', async () => {
+        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const apiError = new ApiError({
+            status: 500,
+            statusText: 'Internal Server Error',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Server Error', detail: 'Something went wrong' },
+            rawBody: '{"type":"error","title":"Server Error","detail":"Something went wrong"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        mockAuthorizePasswordless.mockRejectedValue(apiError);
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
+
+        expect(response.status).toBe(500);
+        expect(result.success).toBe(false);
+        expect(result.requiresLogin).toBeUndefined();
+        expect(result.error).toBeTruthy();
+    });
 });

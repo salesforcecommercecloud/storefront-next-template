@@ -181,6 +181,31 @@ describe('StandardLoginForm', () => {
         });
     });
 
+    describe('checkout as guest', () => {
+        test('renders Checkout as Guest button when onCheckoutAsGuest is provided', () => {
+            renderWithRouter(<StandardLoginForm {...defaultProps} onCheckoutAsGuest={vi.fn()} />);
+
+            const guestButton = screen.getByRole('button', { name: t('login:checkoutAsGuest') });
+            expect(guestButton).toBeInTheDocument();
+        });
+
+        test('does not render Checkout as Guest button when onCheckoutAsGuest is not provided', () => {
+            renderWithRouter(<StandardLoginForm {...defaultProps} />);
+
+            expect(screen.queryByRole('button', { name: t('login:checkoutAsGuest') })).not.toBeInTheDocument();
+        });
+
+        test('calls onCheckoutAsGuest when button is clicked', async () => {
+            const user = userEvent.setup();
+            const onCheckoutAsGuest = vi.fn();
+            renderWithRouter(<StandardLoginForm {...defaultProps} onCheckoutAsGuest={onCheckoutAsGuest} />);
+
+            await user.click(screen.getByRole('button', { name: t('login:checkoutAsGuest') }));
+
+            expect(onCheckoutAsGuest).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe('edge cases', () => {
         test('handles long error message', () => {
             const longError = 'A'.repeat(200);

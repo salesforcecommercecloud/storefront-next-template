@@ -462,7 +462,7 @@ export default defineConfig<Config>(
                             return {};
                         }
                     })(),
-                    enabled: process.env.PUBLIC__security__turnstile__enabled !== 'false',
+                    enabled: process.env.PUBLIC__security__turnstile__enabled === 'true',
                     mode:
                         (process.env.PUBLIC__security__turnstile__mode as
                             | 'managed'

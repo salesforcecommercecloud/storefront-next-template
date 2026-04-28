@@ -1599,6 +1599,12 @@ class CheckoutPage {
         I.waitForText('Resend in', timeout, locate('[data-testid="otp-modal"]'));
     }
 
+    async hasRegistrationError(): Promise<boolean> {
+        const registerSection = locate('[data-testid="register-customer-checkbox"]');
+        const count = await I.grabNumberOfVisibleElements(registerSection.find('.text-destructive'));
+        return count > 0;
+    }
+
     async isCreateAccountCheckboxChecked(): Promise<string | null> {
         return await I.grabAttributeFrom('#create-account-checkbox', 'checked');
     }
@@ -1893,23 +1899,140 @@ class CheckoutPage {
     // =========================================================================
 
     /**
-     * Mock the passwordless authorization API to return success
-     * This simulates the backend detecting a registered email
+     * Mock the passwordless authorization API to return success.
+     * This simulates the backend detecting a registered email and sending an OTP.
+     *
+     * React Router v7 fetchers POST to the `.data` endpoint which returns turbo-stream
+     * (`text/x-script`) format. We intercept that specific endpoint.
      */
     async mockPasswordlessAuthorizationSuccess(email: string): Promise<void> {
         await (I.usePlaywrightTo('mock passwordless API', async ({ browserContext }) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await browserContext.route('**/action/authorize-passwordless-email**', async (route: any) => {
+            await browserContext.route('**/action/authorize-passwordless-email.data**', async (route: any) => {
+                // Turbo-stream format: flattened index-referenced JSON
+                const body = JSON.stringify([{ _1: 2 }, 'data', { _3: 4, _5: 6 }, 'success', true, 'email', email]);
                 await route.fulfill({
                     status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify({
-                        success: true,
-                        email,
-                    }),
+                    contentType: 'text/x-script; charset=utf-8',
+                    body,
                 });
             });
         }) as unknown as Promise<void>);
+    }
+
+    /**
+     * Mock the registration API to return unavailable (SLAS "Email not verified" 400).
+     * The component should silently uncheck the checkbox with no toast or error.
+     */
+    async mockRegistrationUnavailable(): Promise<void> {
+        await (I.usePlaywrightTo('mock registration API with unavailable', async ({ browserContext }) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await browserContext.route('**/action/initiate-checkout-registration.data**', async (route: any) => {
+                const body = JSON.stringify([
+                    { _1: 2 },
+                    'data',
+                    { _3: 4, _5: 6 },
+                    'success',
+                    false,
+                    'unavailable',
+                    true,
+                ]);
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'text/x-script; charset=utf-8',
+                    body,
+                });
+            });
+        }) as unknown as Promise<void>);
+    }
+
+    async clickCreateAccountCheckboxAndWaitForUncheck(timeoutSeconds: number = 15): Promise<boolean> {
+        I.waitForElement('[data-testid="create-account-checkbox"]', 10);
+        I.scrollTo('[data-testid="create-account-checkbox"]');
+        I.click('#create-account-checkbox');
+
+        const deadline = Date.now() + timeoutSeconds * 1000;
+        while (Date.now() < deadline) {
+            const checked = await I.grabAttributeFrom('#create-account-checkbox', 'data-state');
+            if (checked === 'unchecked') return true;
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+        return false;
+    }
+
+    /**
+     * Mock the passwordless authorization API to return requiresLogin (400 scenario).
+     * Simulates SLAS responding with 400 when passwordless is not available for the email.
+     */
+    async mockPasswordlessAuthorizationRequiresLogin(email: string): Promise<void> {
+        await (I.usePlaywrightTo('mock passwordless API with requiresLogin', async ({ browserContext }) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await browserContext.route('**/action/authorize-passwordless-email.data**', async (route: any) => {
+                // Turbo-stream format: flattened index-referenced JSON
+                const body = JSON.stringify([
+                    { _1: 2 },
+                    'data',
+                    { _3: 4, _5: 6, _7: 8 },
+                    'success',
+                    false,
+                    'requiresLogin',
+                    true,
+                    'email',
+                    email,
+                ]);
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'text/x-script; charset=utf-8',
+                    body,
+                });
+            });
+        }) as unknown as Promise<void>);
+    }
+
+    /**
+     * Wait for login modal to appear (standard login form within a dialog)
+     */
+    waitForLoginModal(timeoutSeconds: number = 10): boolean {
+        try {
+            I.waitForElement('[role="dialog"] input[name="password"]', timeoutSeconds);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * Check if login modal is visible
+     */
+    async isLoginModalVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements('[role="dialog"] input[name="password"]');
+        return count > 0;
+    }
+
+    /**
+     * Fill email and password fields in the login modal
+     */
+    fillLoginModalCredentials(email: string, password: string): void {
+        I.waitForElement('[role="dialog"] input[name="password"]', 5);
+        const emailField = locate('[role="dialog"] input[type="email"], [role="dialog"] input[name="email"]');
+        I.fillField(emailField, email);
+        I.fillField(locate('[role="dialog"] input[name="password"]'), password);
+    }
+
+    /**
+     * Click "Checkout as Guest" button in the login modal (shown when launched from checkout)
+     */
+    clickLoginModalCheckoutAsGuest(): void {
+        const checkoutAsGuestButton = locate('[role="dialog"]').find('button').withText('Checkout as Guest');
+        I.waitForElement(checkoutAsGuestButton, 5);
+        I.click(checkoutAsGuestButton);
+    }
+
+    /**
+     * Wait for the login modal to close
+     */
+    waitForLoginModalClosed(timeoutSeconds: number = 10): void {
+        I.waitForInvisible('[role="dialog"] input[name="password"]', timeoutSeconds);
     }
 
     /**

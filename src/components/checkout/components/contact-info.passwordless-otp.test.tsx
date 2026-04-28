@@ -43,10 +43,41 @@ vi.mock('@/components/login/otp-modal', () => ({
         ) : null,
 }));
 
+vi.mock('@/components/login/login-modal', () => ({
+    default: ({
+        isOpen,
+        onSuccess,
+        onCheckoutAsGuest,
+    }: {
+        isOpen: boolean;
+        onSuccess: () => void;
+        onCheckoutAsGuest?: () => void;
+    }) =>
+        isOpen ? (
+            <div data-testid="login-modal-mock">
+                <button type="button" data-testid="login-modal-success" onClick={() => onSuccess()}>
+                    Log In
+                </button>
+                {onCheckoutAsGuest ? (
+                    <button
+                        type="button"
+                        data-testid="login-modal-checkout-as-guest"
+                        onClick={() => onCheckoutAsGuest()}>
+                        Checkout as Guest
+                    </button>
+                ) : null}
+            </div>
+        ) : null,
+}));
+
 const mockPasswordlessSubmit = vi.fn();
 const passwordlessFetcherState = {
     state: 'idle' as const,
-    data: { success: true, email: 'shopper@example.com' } as { success: boolean; email: string } | null,
+    data: { success: true, email: 'shopper@example.com' } as {
+        success: boolean;
+        email?: string;
+        requiresLogin?: boolean;
+    } | null,
     submit: mockPasswordlessSubmit,
 };
 
@@ -238,5 +269,98 @@ describe('ContactInfo passwordless OTP modal actions', () => {
         });
 
         expect(screen.queryByTestId('otp-checkout-as-guest')).not.toBeInTheDocument();
+    });
+
+    test('opens LoginModal when passwordless authorize returns requiresLogin', async () => {
+        passwordlessFetcherState.data = { success: false, requiresLogin: true, email: 'shopper@example.com' };
+
+        renderWithRouter(
+            <ContactInfo
+                onSubmit={vi.fn()}
+                isLoading={false}
+                isCompleted={false}
+                isEditing={true}
+                onEdit={vi.fn()}
+                onPasswordlessOtpVerified={vi.fn()}
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('login-modal-mock')).toBeInTheDocument();
+        });
+
+        expect(screen.queryByTestId('otp-modal-mock')).not.toBeInTheDocument();
+    });
+
+    test('calls onPasswordlessOtpVerified when login modal succeeds', async () => {
+        const user = userEvent.setup();
+        const onPasswordlessOtpVerified = vi.fn();
+        passwordlessFetcherState.data = { success: false, requiresLogin: true, email: 'shopper@example.com' };
+
+        renderWithRouter(
+            <ContactInfo
+                onSubmit={vi.fn()}
+                isLoading={false}
+                isCompleted={false}
+                isEditing={true}
+                onEdit={vi.fn()}
+                onPasswordlessOtpVerified={onPasswordlessOtpVerified}
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('login-modal-mock')).toBeInTheDocument();
+        });
+
+        await user.click(screen.getByTestId('login-modal-success'));
+
+        expect(onPasswordlessOtpVerified).toHaveBeenCalledTimes(1);
+    });
+
+    test('calls onRegisteredUserChoseGuest when Checkout as Guest is clicked in login modal', async () => {
+        const user = userEvent.setup();
+        const onRegisteredUserChoseGuest = vi.fn();
+        passwordlessFetcherState.data = { success: false, requiresLogin: true, email: 'shopper@example.com' };
+
+        renderWithRouter(
+            <ContactInfo
+                onSubmit={vi.fn()}
+                isLoading={false}
+                isCompleted={false}
+                isEditing={true}
+                onEdit={vi.fn()}
+                onRegisteredUserChoseGuest={onRegisteredUserChoseGuest}
+                onPasswordlessOtpVerified={vi.fn()}
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('login-modal-mock')).toBeInTheDocument();
+        });
+
+        await user.click(screen.getByTestId('login-modal-checkout-as-guest'));
+
+        expect(onRegisteredUserChoseGuest).toHaveBeenCalledWith(true);
+    });
+
+    test('does not show Checkout as Guest in login modal when onRegisteredUserChoseGuest is omitted', async () => {
+        passwordlessFetcherState.data = { success: false, requiresLogin: true, email: 'shopper@example.com' };
+
+        renderWithRouter(
+            <ContactInfo
+                onSubmit={vi.fn()}
+                isLoading={false}
+                isCompleted={false}
+                isEditing={true}
+                onEdit={vi.fn()}
+                onPasswordlessOtpVerified={vi.fn()}
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('login-modal-mock')).toBeInTheDocument();
+        });
+
+        expect(screen.queryByTestId('login-modal-checkout-as-guest')).not.toBeInTheDocument();
     });
 });

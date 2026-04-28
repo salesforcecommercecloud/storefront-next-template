@@ -73,7 +73,7 @@ export function getTurnstileSecretKey(siteKey: string): string | null {
 
 /** Check if Turnstile is enabled in config. */
 export function isTurnstileEnabled(config: AppConfig): boolean {
-    return config.security?.turnstile?.enabled ?? true;
+    return config.security?.turnstile?.enabled ?? false;
 }
 
 /** Get Turnstile mode from config. */

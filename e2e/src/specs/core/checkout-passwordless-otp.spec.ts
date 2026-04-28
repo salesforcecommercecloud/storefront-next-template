@@ -38,12 +38,7 @@ After(async (test: unknown) => {
     }
 });
 
-/**
- * SKIPPED: React Router v7's fetcher data transport cannot be reliably intercepted
- * via Playwright's network-level route mocking. Requires a different mocking strategy
- * (e.g., MSW or component-level mock).
- */
-Scenario.skip('Guest enters registered email, sees passwordless OTP modal, and continues as guest', async () => {
+Scenario('Guest enters registered email, sees passwordless OTP modal, and continues as guest', async () => {
     const registeredEmail = generateTestEmail('registered-passwordless');
 
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);

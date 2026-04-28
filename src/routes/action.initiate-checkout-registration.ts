@@ -23,6 +23,7 @@ import { getBasket } from '@/middlewares/basket.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { extractErrorMessage } from '@/lib/auth-error-handler';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
@@ -256,6 +257,23 @@ export async function action({ request, context }: ActionFunctionArgs) {
         }
         return Response.json(responseBody);
     } catch (error) {
+        if (error instanceof ApiError && error.status === 400) {
+            const errorMessage = extractErrorMessage(error);
+            if (/email not verified/i.test(errorMessage)) {
+                logger.info('InitiateCheckoutRegistration: email not verified, feature unavailable');
+                return Response.json({ success: false, unavailable: true });
+            }
+
+            logger.error('InitiateCheckoutRegistration: bad request', { error: errorMessage });
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
+                },
+                { status: 400 }
+            );
+        }
+
         logger.error('InitiateCheckoutRegistration: failed', { error });
         const errorMessage = extractErrorMessage(error);
         return Response.json(

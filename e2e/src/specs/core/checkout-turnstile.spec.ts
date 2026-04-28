@@ -56,12 +56,15 @@ import { expect } from 'chai';
 import { TEST_PRODUCT_CATEGORIES } from '../../test-data/checkout.data';
 import type { Route, Request, ConsoleMessage } from '@playwright/test';
 
-// The default config.server.ts only has a Turnstile site key for http://localhost:5173.
-// When E2E tests run against a remote MRT target the host won't match, so the widget
-// never renders and Cloudflare's CDN may also be unreachable. Skip those scenarios.
+// Turnstile is disabled by default (not production-ready). Tests only run when:
+// 1. Not in CI (turnstile requires Cloudflare CDN access and localhost site keys)
+// 2. PUBLIC__security__turnstile__enabled=true is set in the app's .env
+// 3. Target is localhost (site keys only configured for localhost)
 const baseUrl = process.env.BASE_URL || 'http://localhost:5173';
+const isCI = process.env.CI === 'true';
 const isLocalhost = new URL(baseUrl).hostname === 'localhost';
-const TurnstileScenario = isLocalhost ? Scenario : Scenario.skip;
+const turnstileEnabled = process.env.PUBLIC__security__turnstile__enabled === 'true';
+const TurnstileScenario = !isCI && isLocalhost && turnstileEnabled ? Scenario : Scenario.skip;
 
 TurnstileScenario('Turnstile script loads and widget renders in checkout', async () => {
     // Navigate to checkout with items
@@ -107,23 +110,34 @@ TurnstileScenario('Turnstile token is generated and included in passwordless log
     // Wait for Turnstile widget to be present
     await I.waitForElement('[data-testid="turnstile-widget"]', 10);
 
-    // Wait for Turnstile to initialize (script load + render + token generation)
-    // Invisible mode generates token automatically in background
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    // Wait for Turnstile to generate a token (invisible mode writes to a hidden input)
+    await I.waitForFunction(() => {
+        const input = document.querySelector('[data-testid="turnstile-widget"] input[name="cf-turnstile-response"]');
+        return input !== null && (input as HTMLInputElement).value.length > 0;
+    }, 15);
 
-    // Set up network interception BEFORE triggering passwordless login
+    // Set up network interception BEFORE triggering passwordless login.
     let requestData: any = null;
-    await I.usePlaywrightTo('intercept passwordless login request', async ({ page }) => {
-        await page.route('**/*authorize-passwordless-email*', async (route: Route, request: Request) => {
+    await I.usePlaywrightTo('intercept passwordless login request', async ({ browserContext }) => {
+        await browserContext.route('**/*authorize-passwordless-email*', async (route: Route, request: Request) => {
             if (request.method() === 'POST') {
                 const postData = request.postData();
                 if (postData) {
-                    // Parse FormData from POST body
+                    // Parse form data — may be url-encoded or multipart
                     const formData: Record<string, string> = {};
-                    const params = new URLSearchParams(postData);
-                    params.forEach((value, key) => {
-                        formData[key] = value;
-                    });
+                    if (postData.includes('------')) {
+                        // multipart: extract key=value from boundaries
+                        const parts = postData.split(/------[^\r\n]+/);
+                        for (const part of parts) {
+                            const nameMatch = part.match(/name="([^"]+)"\r?\n\r?\n([^\r\n]*)/);
+                            if (nameMatch) formData[nameMatch[1]] = nameMatch[2];
+                        }
+                    } else {
+                        const params = new URLSearchParams(postData);
+                        params.forEach((value, key) => {
+                            formData[key] = value;
+                        });
+                    }
                     requestData = formData;
                 }
             }
@@ -135,8 +149,11 @@ TurnstileScenario('Turnstile token is generated and included in passwordless log
     I.fillField(checkoutPage.locators.emailInput, 'test-turnstile@example.com');
     I.click(checkoutPage.locators.phoneInputContactInfo); // Blur email field
 
-    // Wait for request to be sent
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Wait for the intercepted request to be captured (poll with timeout)
+    const deadline = Date.now() + 15000;
+    while (!requestData && Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+    }
 
     // Check 4: Verify token was generated and included in FormData
     expect(requestData, 'Request should have been intercepted').to.not.be.null;
@@ -215,16 +232,24 @@ TurnstileScenario('Error handling - Challenge fails (2x00000000000000000000BB)',
 
     // Set up network interception
     let requestData: any = null;
-    await I.usePlaywrightTo('intercept passwordless login request', async ({ page }) => {
-        await page.route('**/*authorize-passwordless-email*', async (route: Route, request: Request) => {
+    await I.usePlaywrightTo('intercept passwordless login request', async ({ browserContext }) => {
+        await browserContext.route('**/*authorize-passwordless-email*', async (route: Route, request: Request) => {
             if (request.method() === 'POST') {
                 const postData = request.postData();
                 if (postData) {
                     const formData: Record<string, string> = {};
-                    const params = new URLSearchParams(postData);
-                    params.forEach((value, key) => {
-                        formData[key] = value;
-                    });
+                    if (postData.includes('------')) {
+                        const parts = postData.split(/------[^\r\n]+/);
+                        for (const part of parts) {
+                            const nameMatch = part.match(/name="([^"]+)"\r?\n\r?\n([^\r\n]*)/);
+                            if (nameMatch) formData[nameMatch[1]] = nameMatch[2];
+                        }
+                    } else {
+                        const params = new URLSearchParams(postData);
+                        params.forEach((value, key) => {
+                            formData[key] = value;
+                        });
+                    }
                     requestData = formData;
                 }
             }
@@ -245,9 +270,9 @@ TurnstileScenario('Error handling - Challenge fails (2x00000000000000000000BB)',
     I.click(checkoutPage.locators.phoneInputContactInfo);
 
     // Wait for request
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
-    // Check 1: Form should work even when Turnstile fails
+    // Check 1: Form should work even when Turnstile challenge fails (graceful degradation)
     expect(requestData, 'Request should be sent despite Turnstile failure').to.not.be.null;
     expect(requestData?.email, 'Email should be in request').to.equal('test-error@example.com');
 

@@ -17,6 +17,7 @@ import { type ReactElement, useMemo, useRef } from 'react';
 import { Form, useLocation } from 'react-router';
 import { Link } from '@/components/link';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
 import { useTranslation } from 'react-i18next';
 import { getLoginModeHref } from './get-login-mode-href';
@@ -27,6 +28,8 @@ interface StandardLoginFormProps {
     returnUrl?: string | null;
     action?: string | null;
     actionParams?: string | null;
+    onCheckoutAsGuest?: () => void;
+    initialEmail?: string;
 }
 
 export default function StandardLoginForm({
@@ -35,6 +38,8 @@ export default function StandardLoginForm({
     returnUrl,
     action,
     actionParams,
+    onCheckoutAsGuest,
+    initialEmail,
 }: StandardLoginFormProps): ReactElement {
     const formRef = useRef<HTMLFormElement>(null);
     const location = useLocation();
@@ -63,6 +68,7 @@ export default function StandardLoginForm({
                     required
                     className="mt-1"
                     placeholder={t('emailPlaceholder')}
+                    defaultValue={initialEmail}
                 />
             </div>
 
@@ -81,14 +87,16 @@ export default function StandardLoginForm({
                 />
             </div>
 
-            {/* Hidden input to track login mode */}
             <input type="hidden" name="loginMode" value="password" />
-
-            {/* Preserve returnUrl, action, and actionParams for redirect after login */}
-            {/* Always include these as hidden inputs if they exist in props - they come from URL query params */}
             {returnUrl ? <input type="hidden" name="returnUrl" value={returnUrl} /> : null}
             {action ? <input type="hidden" name="action" value={action} /> : null}
             {actionParams ? <input type="hidden" name="actionParams" value={actionParams} /> : null}
+
+            {onCheckoutAsGuest ? (
+                <Button type="button" variant="outline" className="w-full" onClick={onCheckoutAsGuest}>
+                    {t('checkoutAsGuest')}
+                </Button>
+            ) : null}
 
             <FormSubmitButton defaultText={t('signIn')} submittingText={t('signingIn')} />
             {isPasswordlessEnabled && (

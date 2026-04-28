@@ -24,6 +24,7 @@ vi.mock('@salesforce/storefront-next-runtime/i18n');
 vi.mock('@/middlewares/auth.utils');
 vi.mock('@/types/tracking-consent');
 vi.mock('@/middlewares/basket.server');
+vi.mock('@/lib/auth-error-handler');
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({
         error: vi.fn(),
@@ -67,6 +68,9 @@ describe('action.initiate-checkout-registration', () => {
 
     beforeEach(async () => {
         vi.clearAllMocks();
+
+        const { extractErrorMessage } = await import('@/lib/auth-error-handler');
+        vi.mocked(extractErrorMessage).mockReturnValue('error');
 
         const { enforceTurnstile } = await import('@/lib/turnstile-enforce.server');
         mockEnforceTurnstile = vi.mocked(enforceTurnstile);
@@ -273,6 +277,8 @@ describe('action.initiate-checkout-registration', () => {
             rawBody: JSON.stringify({ message: 'Email already registered' }),
         };
         mockPasswordlessAuthorize.mockRejectedValue(apiError);
+        const { extractErrorMessage } = await import('@/lib/auth-error-handler');
+        vi.mocked(extractErrorMessage).mockReturnValue('Email already registered');
 
         const formData = new FormData();
         formData.append('email', 'user@example.com');
@@ -388,5 +394,94 @@ describe('action.initiate-checkout-registration', () => {
 
         expect(mockPasswordlessAuthorize).not.toHaveBeenCalled();
         expect(mockGetBasket).not.toHaveBeenCalled();
+    });
+
+    it('should return unavailable when SLAS responds with 400 email not verified', async () => {
+        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const apiError = new ApiError({
+            status: 400,
+            statusText: 'Bad Request',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Bad Request', detail: 'Email not verified' },
+            rawBody: '{"message":"Email not verified"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        mockPasswordlessAuthorize.mockRejectedValue(apiError);
+        const { extractErrorMessage } = await import('@/lib/auth-error-handler');
+        vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
+
+        expect(response.status).toBe(200);
+        expect(result.success).toBe(false);
+        expect(result.unavailable).toBe(true);
+        expect(result.error).toBeUndefined();
+    });
+
+    it('should not return unavailable for 400 with a different error message', async () => {
+        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const apiError = new ApiError({
+            status: 400,
+            statusText: 'Bad Request',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Bad Request', detail: 'Invalid request parameters' },
+            rawBody: '{"message":"Invalid request parameters"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        mockPasswordlessAuthorize.mockRejectedValue(apiError);
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(result.success).toBe(false);
+        expect(result.unavailable).toBeUndefined();
+        expect(result.error).toBeTruthy();
+    });
+
+    it('should not return unavailable for non-400 ApiErrors', async () => {
+        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const apiError = new ApiError({
+            status: 500,
+            statusText: 'Internal Server Error',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Server Error', detail: 'Something went wrong' },
+            rawBody: '{"type":"error","title":"Server Error","detail":"Something went wrong"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        mockPasswordlessAuthorize.mockRejectedValue(apiError);
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+        const result = await response.json();
+
+        expect(response.status).toBe(500);
+        expect(result.success).toBe(false);
+        expect(result.unavailable).toBeUndefined();
+        expect(result.error).toBeTruthy();
     });
 });

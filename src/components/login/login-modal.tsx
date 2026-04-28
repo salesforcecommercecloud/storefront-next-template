@@ -53,6 +53,9 @@ interface LoginModalProps {
     otpLength?: number;
     /** Callback when login succeeds */
     onSuccess?: () => void;
+    /** Callback when user chooses to continue as guest (checkout context only) */
+    onCheckoutAsGuest?: () => void;
+    initialEmail?: string;
 }
 
 export default function LoginModal({
@@ -66,6 +69,8 @@ export default function LoginModal({
     actionParams,
     otpLength = 8,
     onSuccess,
+    onCheckoutAsGuest,
+    initialEmail,
 }: LoginModalProps): ReactElement {
     const { t } = useTranslation('login');
     const fetcher = useFetcher<LoginActionResponse>();
@@ -151,6 +156,8 @@ export default function LoginModal({
                 returnUrl={returnUrl}
                 action={pendingActionName}
                 actionParams={actionParams}
+                onCheckoutAsGuest={onCheckoutAsGuest}
+                initialEmail={initialEmail}
             />
         );
     };
