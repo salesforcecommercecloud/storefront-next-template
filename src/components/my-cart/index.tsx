@@ -204,7 +204,7 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
             <UITarget targetId="myCart.header.before" />
             <div
                 data-testid="my-cart-toggle"
-                className="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-[var(--cart-divider-extend,0px)]">
+                className="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-4 md:[&>*]:px-[var(--cart-divider-extend,0px)]">
                 {productItems}
             </div>
         </div>

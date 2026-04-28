@@ -1470,11 +1470,58 @@ class CheckoutPage {
     // =========================================================================
 
     async isOrderSummaryVisible(): Promise<boolean> {
-        const count = await I.grabNumberOfVisibleElements(this.locators.orderSummary);
-        return count > 0;
+        // The order summary can appear in two ways:
+        // 1. Desktop: Directly visible in sidebar
+        // 2. Mobile: Inside a collapsed accordion (still in DOM but hidden)
+
+        // Wait for the order summary to load, then check if it exists
+        let exists = false;
+        await I.usePlaywrightTo('wait for and check if order summary exists', async ({ page }) => {
+            try {
+                // Wait for the order summary element to appear in DOM (visible or hidden)
+                // Use attached state which works for both visible and hidden elements
+                await page.locator('[data-testid="sf-order-summary"]').waitFor({
+                    state: 'attached',
+                    timeout: 5_000,
+                });
+                exists = true;
+            } catch {
+                // Element didn't appear within timeout
+                exists = false;
+            }
+        });
+        return exists;
     }
 
     async getOrderSummaryText(): Promise<string> {
+        // First, ensure the order summary is loaded (wait for it to be attached to DOM)
+        await I.usePlaywrightTo('ensure order summary is loaded', async ({ page }) => {
+            await page.locator('[data-testid="sf-order-summary"]').waitFor({
+                state: 'attached',
+                timeout: 5_000,
+            });
+        });
+
+        // Check if order summary is already visible (desktop layout)
+        const visibleCount = await I.grabNumberOfVisibleElements(this.locators.orderSummary);
+        if (visibleCount > 0) {
+            return await I.grabTextFrom(this.locators.orderSummary);
+        }
+
+        // On mobile, the summary is in a collapsed accordion. Expand it.
+        await I.usePlaywrightTo('expand order summary accordion', async ({ page }) => {
+            // Find any accordion trigger button with data-state="closed"
+            const trigger = page.locator('button[data-state="closed"]').first();
+            const triggerExists = await trigger.count();
+
+            if (triggerExists > 0) {
+                // Click to expand the accordion
+                await trigger.click();
+                // Wait for the order summary to become visible
+                await page.locator('[data-testid="sf-order-summary"]').waitFor({ state: 'visible', timeout: 5000 });
+            }
+        });
+
         return await I.grabTextFrom(this.locators.orderSummary);
     }
 

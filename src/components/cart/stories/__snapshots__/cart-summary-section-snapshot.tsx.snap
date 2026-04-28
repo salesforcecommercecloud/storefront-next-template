@@ -19,7 +19,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
         >
           <h2
             class="tracking-tight text-left text-base font-semibold text-foreground"
-            id="order-summary-heading"
+            id="order-summary-heading-desktop"
           >
             Order Summary
           </h2>
@@ -27,7 +27,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
           <div
-            aria-labelledby="order-summary-heading"
+            aria-label="Order Summary"
             class="space-y-2"
             role="region"
           >

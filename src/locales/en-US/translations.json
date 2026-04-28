@@ -308,14 +308,15 @@
     "_NOTICE_product": "Product translations have been moved to product.json as a separate namespace. Use t('product:key') to access them.",
     "cart": {
         "title": "Cart",
+        "meta": {
+            "title": "Cart",
+            "description": "View and manage items in your shopping cart"
+        },
         "delivery": {
             "heading": "Delivery - {{deliveryCount}} out of {{totalCount}} items"
         },
-        "itemCount": {
-            "zero": "Cart (0 items)",
-            "one": "Cart (1 item)",
-            "other": "Cart ({{count}} items)"
-        },
+        "itemCount_one": "Cart (1 item)",
+        "itemCount_other": "Cart ({{count}} items)",
         "empty": {
             "title": "Your cart is empty.",
             "registeredMessage": "Continue shopping to add items to your cart.",
@@ -326,6 +327,8 @@
         "summary": {
             "orderSummary": "Order Summary",
             "showOrderSummary": "Show order summary",
+            "mobileHeading_one": "Estimated Total (1 item)",
+            "mobileHeading_other": "Estimated Total ({{count}} items)",
             "subtotal": "Subtotal",
             "shipping": "Shipping",
             "shippingPromotionApplied": "(Promotion applied)",
@@ -364,11 +367,9 @@
             }
         },
         "items": {
-            "itemsInCart": {
-                "zero": "0 items in cart",
-                "one": "1 item in cart",
-                "other": "{{count}} items in cart"
-            },
+            "itemsInCart_zero": "0 items in cart",
+            "itemsInCart_one": "1 item in cart",
+            "itemsInCart_other": "{{count}} items in cart",
             "editCart": "Edit cart"
         },
         "checkout": {

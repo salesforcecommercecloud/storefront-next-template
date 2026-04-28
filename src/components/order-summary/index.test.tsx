@@ -157,7 +157,7 @@ describe('OrderSummary', () => {
         renderWithProviders(<OrderSummary basket={mockBasket} productsByItemId={mockProductsByItemId} />);
 
         // Total items: 2 + 1 = 3 items
-        expect(screen.getByText(t('cart:items.itemsInCart.other', { count: 3 }))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:items.itemsInCart', { count: 3 }))).toBeInTheDocument();
 
         // Open the accordion to access the content
         const accordionTrigger = screen.getByRole('button');
@@ -171,7 +171,7 @@ describe('OrderSummary', () => {
         // Test zero items
         const emptyBasket = { ...mockBasket, productItems: [] };
         renderWithProviders(<OrderSummary basket={emptyBasket} />);
-        expect(screen.getByText(t('cart:items.itemsInCart.zero'))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:items.itemsInCart', { count: 0 }))).toBeInTheDocument();
 
         // Test one item
         const oneItemBasket = {
@@ -179,7 +179,7 @@ describe('OrderSummary', () => {
             productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1, price: 50.0 }],
         };
         renderWithProviders(<OrderSummary basket={oneItemBasket} />);
-        expect(screen.getByText(t('cart:items.itemsInCart.one'))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:items.itemsInCart', { count: 1 }))).toBeInTheDocument();
     });
 
     test('expands cart items accordion when itemsExpanded is true', () => {
@@ -415,10 +415,11 @@ describe('OrderSummary', () => {
 
         const orderSummaryRegion = screen.getByRole('region', { name: t('cart:summary.orderSummary') });
         expect(orderSummaryRegion).toBeInTheDocument();
+        expect(orderSummaryRegion).toHaveAttribute('aria-label', t('cart:summary.orderSummary'));
 
         const heading = screen.getByRole('heading', { name: t('cart:summary.orderSummary') });
         expect(heading).toBeInTheDocument();
-        expect(heading).toHaveAttribute('id', 'order-summary-heading');
+        expect(heading).toHaveAttribute('id', 'order-summary-heading-desktop');
     });
 
     test('handles cart items accordion interaction', async () => {

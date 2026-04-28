@@ -307,14 +307,15 @@
     "_NOTICE_product": "Le traduzioni dei prodotti sono state spostate in product.json come namespace separato. Usa t('product:key') per accedervi.",
     "cart": {
         "title": "Carrello",
+        "meta": {
+            "title": "Carrello",
+            "description": "Visualizza e gestisci gli articoli nel carrello"
+        },
         "delivery": {
             "heading": "Consegna - {{deliveryCount}} di {{totalCount}} articoli"
         },
-        "itemCount": {
-            "zero": "Il Mio Carrello (0 articoli)",
-            "one": "Il Mio Carrello (1 articolo)",
-            "other": "Il Mio Carrello ({{count}} articoli)"
-        },
+        "itemCount_one": "Carrello (1 articolo)",
+        "itemCount_other": "Carrello ({{count}} articoli)",
         "empty": {
             "title": "Il Suo carrello è vuoto.",
             "registeredMessage": "Continui lo shopping per aggiungere articoli al Suo carrello.",
@@ -325,6 +326,8 @@
         "summary": {
             "orderSummary": "Riepilogo ordine",
             "showOrderSummary": "Mostra riepilogo ordine",
+            "mobileHeading_one": "Totale stimato (1 articolo)",
+            "mobileHeading_other": "Totale stimato ({{count}} articoli)",
             "subtotal": "Subtotale",
             "shipping": "Spedizione",
             "shippingPromotionApplied": "(Promozione applicata)",
@@ -363,11 +366,9 @@
             }
         },
         "items": {
-            "itemsInCart": {
-                "zero": "0 articoli nel carrello",
-                "one": "1 articolo nel carrello",
-                "other": "{{count}} articoli nel carrello"
-            },
+            "itemsInCart_zero": "0 articoli nel carrello",
+            "itemsInCart_one": "1 articolo nel carrello",
+            "itemsInCart_other": "{{count}} articoli nel carrello",
             "editCart": "Modifica carrello"
         },
         "checkout": {

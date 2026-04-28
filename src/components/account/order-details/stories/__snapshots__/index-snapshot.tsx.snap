@@ -333,7 +333,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -719,7 +719,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -1229,7 +1229,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -1633,7 +1633,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -2019,7 +2019,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -2439,7 +2439,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >

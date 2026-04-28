@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, within, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { act, type ReactNode, type ComponentProps } from 'react';
 import i18next from 'i18next';
 import CheckoutFormPage from './checkout-form-page';
@@ -702,19 +702,46 @@ describe('CheckoutFormPage', () => {
         });
     });
 
-    describe('Mobile order summary accordion', () => {
-        test('renders accordion with order summary and cart content', async () => {
+    describe('Mobile order summary', () => {
+        test('renders order summary and cart content on mobile', async () => {
             await renderCheckoutPage();
 
-            const toggle = screen.getByText('Show Order Summary');
-            expect(toggle).toBeInTheDocument();
+            // Both mobile and md+ sections render OrderSummary and MyCart
+            const orderSummaries = screen.getAllByTestId('order-summary');
+            expect(orderSummaries.length).toBeGreaterThanOrEqual(1);
 
-            const accordion = toggle.closest('[data-slot="accordion"]');
-            expect(accordion).not.toBeNull();
+            const myCarts = screen.getAllByTestId('my-cart');
+            expect(myCarts.length).toBeGreaterThanOrEqual(1);
+        });
+    });
 
-            const scoped = within(accordion as HTMLElement);
-            expect(scoped.getByTestId('order-summary')).toBeInTheDocument();
-            expect(scoped.getByTestId('my-cart')).toBeInTheDocument();
+    describe('Responsive order summary layout', () => {
+        test('keeps sidebar before express checkout in DOM for md layout', async () => {
+            await renderCheckoutPage();
+
+            const sidebar = screen.getByTestId('checkout-order-summary-sidebar');
+            const expressPayments = screen.getByTestId('express-payments');
+
+            const relation = sidebar.compareDocumentPosition(expressPayments);
+            expect(relation & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        });
+
+        test('uses responsive order classes to move sidebar right on lg', async () => {
+            const { container } = await renderCheckoutPage();
+
+            const grid = container.querySelector('.grid.grid-cols-1.lg\\:grid-cols-3.gap-8');
+            expect(grid).toBeInTheDocument();
+
+            const sidebar = screen.getByTestId('checkout-order-summary-sidebar');
+            expect(sidebar.className).toContain('md:order-1');
+            expect(sidebar.className).toContain('lg:order-2');
+            expect(sidebar.className).toContain('lg:col-span-1');
+
+            const mainContent = screen.getByTestId('express-payments').closest('div.space-y-6');
+            expect(mainContent).toBeInTheDocument();
+            expect(mainContent?.className).toContain('order-2');
+            expect(mainContent?.className).toContain('lg:order-1');
+            expect(mainContent?.className).toContain('lg:col-span-2');
         });
     });
 

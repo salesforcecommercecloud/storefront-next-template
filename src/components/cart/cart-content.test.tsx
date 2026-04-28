@@ -114,8 +114,10 @@ describe('CartContent', () => {
         expect(screen.getByTestId('sf-cart-container')).toBeInTheDocument();
         expect(screen.queryByTestId('sf-cart-empty')).not.toBeInTheDocument();
 
-        // Verify breadcrumb navigation is rendered
-        expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
+        // Verify page heading with item count is rendered (h1)
+        const heading = screen.getByRole('heading', { level: 1 });
+        expect(heading).toBeInTheDocument();
+        expect(heading).toHaveTextContent(t('cart:itemCount', { count: 3 }));
 
         // Verify product items are rendered (they have individual test IDs)
         expect(screen.getByTestId('sf-product-item-product-1')).toBeInTheDocument();
@@ -148,6 +150,21 @@ describe('CartContent', () => {
 
         // Should render empty state
         expect(screen.getByTestId('sf-cart-empty')).toBeInTheDocument();
+    });
+
+    test('renders singular cart heading when total item count is one', () => {
+        const oneItemBasket = {
+            ...mockBasket,
+            productItems: [{ itemId: 'item-1', quantity: 1, productId: 'product-1' }],
+        };
+
+        renderCartContent({
+            basket: oneItemBasket,
+            productsByItemId: mockProductMap,
+            bonusProductsById: mockBonusProductsById,
+        });
+
+        expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(t('cart:itemCount', { count: 1 }));
     });
 
     describe('CartItemEditButton Integration', () => {

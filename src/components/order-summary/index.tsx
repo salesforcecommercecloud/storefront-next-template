@@ -21,7 +21,6 @@ import { Link } from '@/components/link';
 
 // Commerce SDK
 import type { ShopperBasketsV2, ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-
 /** Basket or Order – OrderSummary displays totals for both (e.g. cart and order details). */
 export type OrderSummaryBasket = ShopperBasketsV2.schemas['Basket'] | ShopperOrders.schemas['Order'];
 
@@ -58,6 +57,8 @@ import { UITarget } from '@/targets/ui-target';
  *   If not provided, the component will navigate to '/cart' using the default navigation behavior.
  *   This is useful for custom actions like closing a cart sheet before navigation.
  * @property {boolean} [showCheckoutAction] - Whether to display the checkout button and payment icons
+ * @property {() => void} [onSelectBonusProducts] - Optional callback for selecting bonus products from summary list
+ * @property {string} [className] - Additional className for the outermost Card wrapper
  *
  * Note : OrderSummary accepts both Basket and Order, make sure you pass other props accordingly.
  * Eg If you pass Order as basket, make sure you pass showPromoCodeForm, showCartItems as false etc.
@@ -73,7 +74,6 @@ interface OrderSummaryProps {
     onEditCart?: () => void;
     showCheckoutAction?: boolean;
     onSelectBonusProducts?: () => void;
-    /** Additional className for the outermost Card wrapper */
     className?: string;
 }
 
@@ -108,11 +108,7 @@ function CartItemsSummary({
     const { t } = useTranslation('cart');
     const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
 
-    const getItemCountText = (count: number): string => {
-        if (count === 0) return t('items.itemsInCart.zero');
-        if (count === 1) return t('items.itemsInCart.one');
-        return t('items.itemsInCart.other', { count });
-    };
+    const getItemCountText = (count: number): string => t('items.itemsInCart', { count });
 
     return (
         <Accordion type="single" collapsible className="w-full" defaultValue={itemsExpanded ? 'cart-items' : undefined}>
@@ -144,6 +140,153 @@ function CartItemsSummary({
                 </AccordionContent>
             </AccordionItem>
         </Accordion>
+    );
+}
+
+interface SummaryBodyContentProps {
+    basket: OrderSummaryBasket;
+    showCartItems: boolean;
+    productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
+    itemsExpanded: boolean;
+    onEditCart?: () => void;
+    onSelectBonusProducts?: () => void;
+    t: ReturnType<typeof useTranslation<'cart'>>['t'];
+    i18nLanguage: string;
+    currency: string;
+    hasShippingPromos: boolean;
+    shippingPromotionAdjustments: Array<{ priceAdjustmentId?: string; itemText?: string }>;
+    renderShippingInfo: () => ReactElement;
+    isEstimate: boolean;
+    showPromoCodeForm: boolean;
+}
+
+function SummaryBodyContent({
+    basket,
+    showCartItems,
+    productsByItemId,
+    itemsExpanded,
+    onEditCart,
+    onSelectBonusProducts,
+    t,
+    i18nLanguage,
+    currency,
+    hasShippingPromos,
+    shippingPromotionAdjustments,
+    renderShippingInfo,
+    isEstimate,
+    showPromoCodeForm,
+}: SummaryBodyContentProps): ReactElement {
+    return (
+        <>
+            {/* Cart Items Accordion */}
+            {showCartItems && (
+                <CartItemsSummary
+                    basket={basket as ShopperBasketsV2.schemas['Basket']}
+                    productsByItemId={productsByItemId}
+                    itemsExpanded={itemsExpanded}
+                    onEditCart={onEditCart}
+                    onSelectBonusProducts={onSelectBonusProducts}
+                />
+            )}
+
+            {/* Order Summary Details */}
+            <div className="space-y-2 text-sm">
+                {/* Subtotal */}
+                <UITarget targetId="orderSummary.subtotal.before" />
+                <UITarget targetId="orderSummary.subtotal">
+                    <div className="flex justify-between items-center">
+                        <span>{t('summary.subtotal')}</span>
+                        <span>{formatCurrency(basket?.productSubTotal ?? 0, i18nLanguage, currency)}</span>
+                    </div>
+                </UITarget>
+                <UITarget targetId="orderSummary.subtotal.after" />
+                <UITarget targetId="orderSummary.giftCards.applied" />
+
+                {/* Order Price Adjustments */}
+                <UITarget targetId="orderSummary.adjustments.before" />
+                <UITarget targetId="orderSummary.adjustments">
+                    {basket.orderPriceAdjustments?.map((adjustment) => (
+                        <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center">
+                            <span>{adjustment.itemText}</span>
+                            <span className="text-success text-xs font-semibold">
+                                {formatCurrency(adjustment.price ?? 0, i18nLanguage, currency)}
+                            </span>
+                        </div>
+                    ))}
+                </UITarget>
+                <UITarget targetId="orderSummary.adjustments.after" />
+
+                {/* Shipping */}
+                <UITarget targetId="orderSummary.shipping.before" />
+                <UITarget targetId="orderSummary.shipping">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                            <span>
+                                {t('summary.shipping')}
+                                {hasShippingPromos && (
+                                    <span className="ml-1 text-xs text-muted-foreground">
+                                        {t('summary.shippingPromotionApplied')}
+                                    </span>
+                                )}
+                            </span>
+                            {hasShippingPromos && (
+                                <PromoPopover className="ml-1">
+                                    {shippingPromotionAdjustments.map((adjustment) => (
+                                        <div key={adjustment.priceAdjustmentId} className="text-xs">
+                                            {adjustment.itemText}
+                                        </div>
+                                    ))}
+                                </PromoPopover>
+                            )}
+                        </div>
+                        {renderShippingInfo()}
+                    </div>
+                </UITarget>
+                <UITarget targetId="orderSummary.shipping.after" />
+
+                {/* Tax */}
+                <UITarget targetId="orderSummary.tax.before" />
+                <UITarget targetId="orderSummary.tax">
+                    <UITarget targetId="orderSummary.tax.line">
+                        <div className="flex justify-between items-center">
+                            <span>{t('summary.tax')}</span>
+                            {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
+                                <span>{formatCurrency(basket.taxTotal, i18nLanguage, currency)}</span>
+                            ) : (
+                                <span className="text-muted-foreground">{t('summary.taxTbd')}</span>
+                            )}
+                        </div>
+                    </UITarget>
+                </UITarget>
+                <UITarget targetId="orderSummary.tax.after" />
+
+                {/* Total */}
+                <UITarget targetId="orderSummary.total.before" />
+                <UITarget targetId="orderSummary.total">
+                    <div className="flex justify-between items-center">
+                        <span className="font-bold">
+                            {isEstimate ? t('summary.estimatedTotal') : t('summary.total')}
+                        </span>
+                        <span className="font-bold">
+                            {formatCurrency(basket?.orderTotal || basket?.productTotal || 0, i18nLanguage, currency)}
+                        </span>
+                    </div>
+                </UITarget>
+                <UITarget targetId="orderSummary.total.after" />
+            </div>
+
+            <UITarget targetId="sfcc.cart.loyalty.pointsEarned" />
+
+            {/* Promo Code Form */}
+            {showPromoCodeForm && <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />}
+            <UITarget targetId="orderSummary.promoCode.before" />
+            <UITarget targetId="orderSummary.promoCode">
+                {showPromoCodeForm ? <PromoCodeForm basket={basket} /> : null}
+            </UITarget>
+            <UITarget targetId="orderSummary.promoCode.after" />
+            <UITarget targetId="sfcc.cart.giftCards.apply" />
+            <UITarget targetId="sfcc.cart.identity.verification" />
+        </>
     );
 }
 
@@ -182,6 +325,8 @@ export default function OrderSummary({
 }: OrderSummaryProps): ReactElement {
     const { t, i18n } = useTranslation('cart');
     const { currency } = useSite();
+    const desktopHeadingId = 'order-summary-heading-desktop';
+    const summaryRegionAccessibilityProps = { 'aria-label': t('summary.orderSummary') };
 
     const hasBasketId = 'basketId' in basket && basket.basketId;
     const hasOrderNo = 'orderNo' in basket && basket.orderNo;
@@ -191,6 +336,10 @@ export default function OrderSummary({
 
     const shippingItem = basket.shippingItems?.[0];
     const hasShippingPromos = (shippingItem?.priceAdjustments?.length ?? 0) > 0;
+    const shippingPromotionAdjustments = (shippingItem?.priceAdjustments ?? []).map((adjustment) => ({
+        priceAdjustmentId: adjustment.priceAdjustmentId,
+        itemText: adjustment.itemText,
+    }));
 
     const renderShippingInfo = () => {
         if (basket.shippingTotal === 0) {
@@ -202,6 +351,44 @@ export default function OrderSummary({
         }
     };
 
+    // Summary content - shared between mobile accordion and desktop card
+    const summaryContent = (
+        <div className="space-y-2" role="region" {...summaryRegionAccessibilityProps}>
+            <SummaryBodyContent
+                basket={basket}
+                showCartItems={showCartItems}
+                productsByItemId={productsByItemId}
+                itemsExpanded={itemsExpanded}
+                onEditCart={onEditCart}
+                onSelectBonusProducts={onSelectBonusProducts}
+                t={t}
+                i18nLanguage={i18n.language}
+                currency={currency}
+                hasShippingPromos={hasShippingPromos}
+                shippingPromotionAdjustments={shippingPromotionAdjustments}
+                renderShippingInfo={renderShippingInfo}
+                isEstimate={isEstimate}
+                showPromoCodeForm={showPromoCodeForm}
+            />
+            {showCheckoutAction && (
+                <>
+                    <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />
+                    <Button asChild className="w-full text-sm mt-2">
+                        <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+                    </Button>
+                    <UITarget targetId="sfcc.cart.payments.expressCheckout" />
+
+                    <div className="flex justify-center">
+                        <VisaIcon width={40} height={32} className="mr-2" />
+                        <MastercardIcon width={40} height={32} className="mr-2" />
+                        <AmexIcon width={40} height={32} className="mr-2" />
+                        <DiscoverIcon width={40} height={32} className="mr-2" />
+                    </div>
+                </>
+            )}
+        </div>
+    );
+
     return (
         <Card className={cn('!py-4', className, 'rounded-none shadow-none')}>
             <CardContent className="px-[var(--cart-summary-px)]">
@@ -212,7 +399,7 @@ export default function OrderSummary({
                             <Typography
                                 variant="h2"
                                 as="h2"
-                                id="order-summary-heading"
+                                id={desktopHeadingId}
                                 className="text-base font-semibold text-foreground">
                                 {t('summary.orderSummary')}
                             </Typography>
@@ -220,140 +407,7 @@ export default function OrderSummary({
                         </>
                     )}
 
-                    <div className="space-y-2" role="region" aria-labelledby="order-summary-heading">
-                        {/* Cart Items Accordion */}
-                        {showCartItems && (
-                            <CartItemsSummary
-                                basket={basket}
-                                productsByItemId={productsByItemId}
-                                itemsExpanded={itemsExpanded}
-                                onEditCart={onEditCart}
-                                onSelectBonusProducts={onSelectBonusProducts}
-                            />
-                        )}
-
-                        {/* Order Summary Details */}
-                        <div className="space-y-2 text-sm">
-                            {/* Subtotal */}
-                            <UITarget targetId="orderSummary.subtotal.before" />
-                            <UITarget targetId="orderSummary.subtotal">
-                                <div className="flex justify-between items-center">
-                                    <span>{t('summary.subtotal')}</span>
-                                    <span>{formatCurrency(basket?.productSubTotal ?? 0, i18n.language, currency)}</span>
-                                </div>
-                            </UITarget>
-                            <UITarget targetId="orderSummary.subtotal.after" />
-                            <UITarget targetId="orderSummary.giftCards.applied" />
-
-                            {/* Order Price Adjustments */}
-                            <UITarget targetId="orderSummary.adjustments.before" />
-                            <UITarget targetId="orderSummary.adjustments">
-                                {basket.orderPriceAdjustments?.map((adjustment) => (
-                                    <div
-                                        key={adjustment.priceAdjustmentId}
-                                        className="flex justify-between items-center">
-                                        <span>{adjustment.itemText}</span>
-                                        <span className="text-success text-xs font-semibold">
-                                            {formatCurrency(adjustment.price ?? 0, i18n.language, currency)}
-                                        </span>
-                                    </div>
-                                ))}
-                            </UITarget>
-                            <UITarget targetId="orderSummary.adjustments.after" />
-
-                            {/* Shipping */}
-                            <UITarget targetId="orderSummary.shipping.before" />
-                            <UITarget targetId="orderSummary.shipping">
-                                <div className="flex justify-between items-center">
-                                    <div className="flex items-center">
-                                        <span>
-                                            {t('summary.shipping')}
-                                            {hasShippingPromos && (
-                                                <span className="ml-1 text-xs text-muted-foreground">
-                                                    {t('summary.shippingPromotionApplied')}
-                                                </span>
-                                            )}
-                                        </span>
-                                        {hasShippingPromos && (
-                                            <PromoPopover className="ml-1">
-                                                {shippingItem?.priceAdjustments?.map((adjustment) => (
-                                                    <div key={adjustment.priceAdjustmentId} className="text-xs">
-                                                        {adjustment.itemText}
-                                                    </div>
-                                                ))}
-                                            </PromoPopover>
-                                        )}
-                                    </div>
-                                    {renderShippingInfo()}
-                                </div>
-                            </UITarget>
-                            <UITarget targetId="orderSummary.shipping.after" />
-
-                            {/* Tax */}
-                            <UITarget targetId="orderSummary.tax.before" />
-                            <UITarget targetId="orderSummary.tax">
-                                <UITarget targetId="orderSummary.tax.line">
-                                    <div className="flex justify-between items-center">
-                                        <span>{t('summary.tax')}</span>
-                                        {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
-                                            <span>{formatCurrency(basket.taxTotal, i18n.language, currency)}</span>
-                                        ) : (
-                                            <span className="text-muted-foreground">{t('summary.taxTbd')}</span>
-                                        )}
-                                    </div>
-                                </UITarget>
-                            </UITarget>
-                            <UITarget targetId="orderSummary.tax.after" />
-
-                            {/* Total */}
-                            <UITarget targetId="orderSummary.total.before" />
-                            <UITarget targetId="orderSummary.total">
-                                <div className="flex justify-between items-center">
-                                    <span className="font-bold">
-                                        {isEstimate ? t('summary.estimatedTotal') : t('summary.total')}
-                                    </span>
-                                    <span className="font-bold">
-                                        {formatCurrency(
-                                            basket?.orderTotal || basket?.productTotal || 0,
-                                            i18n.language,
-                                            currency
-                                        )}
-                                    </span>
-                                </div>
-                            </UITarget>
-                            <UITarget targetId="orderSummary.total.after" />
-                        </div>
-
-                        <UITarget targetId="sfcc.cart.loyalty.pointsEarned" />
-
-                        {/* Promo Code Form */}
-                        {showPromoCodeForm && <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />}
-                        <UITarget targetId="orderSummary.promoCode.before" />
-                        <UITarget targetId="orderSummary.promoCode">
-                            {showPromoCodeForm ? <PromoCodeForm basket={basket} /> : null}
-                        </UITarget>
-                        <UITarget targetId="orderSummary.promoCode.after" />
-                        <UITarget targetId="sfcc.cart.giftCards.apply" />
-                        <UITarget targetId="sfcc.cart.identity.verification" />
-
-                        {/* Checkout Action */}
-                        {showCheckoutAction && (
-                            <>
-                                <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />
-                                <Button asChild className="w-full text-sm mt-2">
-                                    <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
-                                </Button>
-                                <UITarget targetId="sfcc.cart.payments.expressCheckout" />
-
-                                <div className="flex justify-center">
-                                    <VisaIcon width={40} height={32} className="mr-2" />
-                                    <MastercardIcon width={40} height={32} className="mr-2" />
-                                    <AmexIcon width={40} height={32} className="mr-2" />
-                                    <DiscoverIcon width={40} height={32} className="mr-2" />
-                                </div>
-                            </>
-                        )}
-                    </div>
+                    {summaryContent}
                 </div>
             </CardContent>
         </Card>

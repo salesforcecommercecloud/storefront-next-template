@@ -25,15 +25,10 @@ import { CartItemEditButton } from '@/components/cart/cart-item-edit-button';
 import CartEmpty from './cart-empty';
 import CartTitle from './cart-title';
 import OrderSummary from '@/components/order-summary';
+import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
 import { Link } from '@/components/link';
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Typography } from '@/components/typography';
 const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
 const LazyBonusProductModal = lazy(() =>
     import('@/components/bonus-product-modal').then((m) => ({ default: m.BonusProductModal }))
@@ -87,9 +82,12 @@ export default function CartContent({
     promotions,
 }: CartContentProps): ReactElement {
     const { t } = useTranslation('cart');
-    const { t: tHeader } = useTranslation('header');
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const { t: tBopis } = useTranslation('extBopis');
+
+    // Calculate total item count for page heading
+    const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
+    const pageHeading = t('itemCount', { count: totalItems });
 
     // TEMPORARY: State to facilitate bonus product modal development
     const [bonusModalOpen, setBonusModalOpen] = useState(false);
@@ -182,32 +180,34 @@ export default function CartContent({
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     return (
-        <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
+        <div className="flex-1 min-h-screen bg-background mb-10 md:mb-10 pb-32 md:pb-0" data-testid="sf-cart-container">
             <div className="section-container">
-                <Breadcrumb className="mb-6">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink asChild>
-                                <Link to="/">{tHeader('logoAlt')}</Link>
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>{t('title')}</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
+                <Typography variant="h1" as="h1" className="mb-6">
+                    {pageHeading}
+                </Typography>
 
                 {/* Mobile Order Summary - visible only on mobile */}
                 <div className="md:hidden mb-3">
-                    <OrderSummary
-                        basket={basket}
-                        showCartItems={false}
-                        isEstimate={true}
-                        productsByItemId={productsByItemId}
-                        showPromoCodeForm={true}
-                        showCheckoutAction={true}
-                    />
+                    <div className="bg-background border-t border-border shadow-none fixed bottom-0 left-0 right-0 z-50">
+                        <OrderSummaryMobileAccordion basket={basket} defaultExpanded={false}>
+                            <OrderSummary
+                                basket={basket}
+                                showCartItems={false}
+                                showHeading={false}
+                                isEstimate={true}
+                                productsByItemId={productsByItemId}
+                                showPromoCodeForm={true}
+                                showCheckoutAction={false}
+                                className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
+                            />
+                        </OrderSummaryMobileAccordion>
+                        <div className="px-[var(--cart-summary-px)] py-4">
+                            <Button asChild className="w-full text-sm">
+                                <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+                            </Button>
+                            <UITarget targetId="sfcc.cart.payments.expressCheckout" />
+                        </div>
+                    </div>
                     <UITarget targetId="sfcc.cart.bnpl.message" />
                 </div>
 

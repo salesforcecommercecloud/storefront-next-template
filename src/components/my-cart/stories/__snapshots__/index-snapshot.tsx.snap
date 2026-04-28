@@ -6,7 +6,7 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
     class="w-full"
   >
     <div
-      class="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-[var(--cart-divider-extend,0px)]"
+      class="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-4 md:[&>*]:px-[var(--cart-divider-extend,0px)]"
       data-testid="my-cart-toggle"
     >
       <div
@@ -249,7 +249,7 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
     class="w-full"
   >
     <div
-      class="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-[var(--cart-divider-extend,0px)]"
+      class="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-4 md:[&>*]:px-[var(--cart-divider-extend,0px)]"
       data-testid="my-cart-toggle"
     >
       <div
@@ -492,7 +492,7 @@ exports[`MyCart stories snapshot > SingleItem story renders and matches snapshot
     class="w-full"
   >
     <div
-      class="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-[var(--cart-divider-extend,0px)]"
+      class="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-4 md:[&>*]:px-[var(--cart-divider-extend,0px)]"
       data-testid="my-cart-toggle"
     >
       <div
