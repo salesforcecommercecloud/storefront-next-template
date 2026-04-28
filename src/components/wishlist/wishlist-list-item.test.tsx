@@ -170,6 +170,7 @@ describe('WishlistListItem', () => {
             handleAddToCart: mockHandleAddToCart,
             isAddingToOrUpdatingCart: false,
             canAddToCart: true, // Default to true for most tests
+            isOrderable: true, // Default to orderable (in stock)
         } as any);
     });
 
@@ -422,6 +423,7 @@ describe('WishlistListItem', () => {
                 handleAddToCart: mockHandleAddToCart,
                 isAddingToOrUpdatingCart: false,
                 canAddToCart: false, // Master without variant cannot add to cart
+                isOrderable: true, // Orderability irrelevant when no variant selected
             } as any);
 
             renderWithRouter(
@@ -500,6 +502,7 @@ describe('WishlistListItem', () => {
                 handleAddToCart: mockHandleAddToCart,
                 isAddingToOrUpdatingCart: true,
                 canAddToCart: true,
+                isOrderable: true,
             } as any);
 
             renderWithRouter(
@@ -510,34 +513,85 @@ describe('WishlistListItem', () => {
         });
     });
 
-    describe('select options button', () => {
-        test('renders "Select Options" link for master product without variant selection', () => {
+    describe('out of stock button', () => {
+        test('renders disabled "Out of stock" button for a specific variant that is not orderable', () => {
+            // Specific variant resolved but inventory reports not orderable → OOS button takes
+            // precedence over Add to Cart. Button is rendered but disabled (matches PDP behavior).
             vi.mocked(useProductActions).mockReturnValue({
                 handleAddToCart: mockHandleAddToCart,
                 isAddingToOrUpdatingCart: false,
-                canAddToCart: false, // Master without variant cannot add to cart
+                canAddToCart: false,
+                isOrderable: false,
             } as any);
 
             renderWithRouter(
-                <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
+                <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
             );
 
-            expect(screen.getByRole('link', { name: t('product:selectOptions') })).toBeInTheDocument();
+            const oosButton = screen.getByRole('button', { name: t('product:outOfStockLabel') });
+            expect(oosButton).toBeInTheDocument();
+            expect(oosButton).toBeDisabled();
+            // Add to Cart must not render when we're in the OOS state
+            expect(screen.queryByRole('button', { name: t('product:addToCart') })).not.toBeInTheDocument();
         });
 
-        test('"Select Options" link navigates to PDP', () => {
+        test('does not render "Out of stock" button when master product has no variant resolved', () => {
+            // Master without a resolved variant should fall through to "Select Options",
+            // not show OOS — we don't know orderability until a variant is chosen.
             vi.mocked(useProductActions).mockReturnValue({
                 handleAddToCart: mockHandleAddToCart,
                 isAddingToOrUpdatingCart: false,
-                canAddToCart: false, // Master without variant cannot add to cart
+                canAddToCart: false,
+                isOrderable: false,
             } as any);
 
             renderWithRouter(
                 <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
             );
 
-            const link = screen.getByRole('link', { name: t('product:selectOptions') });
-            expect(link).toHaveAttribute('href', expect.stringContaining('/product/'));
+            expect(screen.queryByRole('button', { name: t('product:outOfStockLabel') })).not.toBeInTheDocument();
+            expect(screen.getByRole('button', { name: t('product:selectOptions') })).toBeInTheDocument();
+        });
+    });
+
+    describe('select options button', () => {
+        test('renders "Select Options" button for master product without variant selection', () => {
+            vi.mocked(useProductActions).mockReturnValue({
+                handleAddToCart: mockHandleAddToCart,
+                isAddingToOrUpdatingCart: false,
+                canAddToCart: false, // Master without variant cannot add to cart
+                isOrderable: true, // Orderability irrelevant when no variant selected
+            } as any);
+
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
+            );
+
+            expect(screen.getByRole('button', { name: t('product:selectOptions') })).toBeInTheDocument();
+        });
+
+        test('"Select Options" button opens the variant-selection modal (not a PDP link)', () => {
+            // The button now triggers an in-page CartItemModal rather than navigating to the PDP.
+            // We only assert that clicking the button does not produce link-navigation semantics
+            // (no href) and that the button is enabled — the modal's internals are covered by
+            // CartItemModal's own tests.
+            vi.mocked(useProductActions).mockReturnValue({
+                handleAddToCart: mockHandleAddToCart,
+                isAddingToOrUpdatingCart: false,
+                canAddToCart: false,
+                isOrderable: true,
+            } as any);
+
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
+            );
+
+            const button = screen.getByRole('button', { name: t('product:selectOptions') });
+            expect(button).toBeEnabled();
+            expect(button).not.toHaveAttribute('href');
+            // Clicking should not throw and should keep the user on the wishlist page
+            fireEvent.click(button);
+            expect(button).toBeInTheDocument();
         });
 
         test('does not render "Select Options" button when specific variant is selected', () => {
@@ -545,7 +599,7 @@ describe('WishlistListItem', () => {
                 <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
             );
 
-            expect(screen.queryByRole('link', { name: t('product:selectOptions') })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: t('product:selectOptions') })).not.toBeInTheDocument();
         });
     });
 });

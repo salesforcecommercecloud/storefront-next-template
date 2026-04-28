@@ -237,6 +237,21 @@ export function useProductActions({
         currentVariant,
     ]);
 
+    /**
+     * Is the current selection orderable right now based purely on inventory/stock?
+     *
+     * Unlike `canAddToCart`, this signal is independent of variant selection, quantity
+     * validity, or other full-validation concerns — it only reflects whether the effective
+     * inventory (store or site, depending on delivery option) says the item can be ordered
+     * (either in stock and orderable, or backorderable).
+     *
+     * Intended for callers that want to render a dedicated "Out of stock" state
+     * (e.g., a disabled button on a wishlist row) separately from the full add-to-cart flow.
+     */
+    const isOrderable = useMemo(() => {
+        return Boolean(effectiveInventory?.orderable || effectiveInventory?.backorderable);
+    }, [effectiveInventory]);
+
     // Can add to cart validation - defaults to false, only true when explicitly allowed
     const canAddToCart = useMemo(() => {
         // Skip inventory/orderable validation if requested (for wishlist use case)
@@ -950,6 +965,12 @@ export function useProductActions({
         isInStock,
         /** Convenience boolean - opposite of isInStock */
         isOutOfStock,
+        /**
+         * Indicates if the current selection is orderable based purely on inventory
+         * (orderable or backorderable), independent of variant selection, quantity, etc.
+         * Use this to render an "Out of stock" state separately from `canAddToCart`.
+         */
+        isOrderable,
         /** Indicates if the current quantity selection cannot be fulfilled due to insufficient stock */
         unfulfillable,
         /** Indicates if the product is a master or variant product (has variation attributes like size, color, etc.) */
