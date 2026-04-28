@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Suspense } from 'react';
-import { Await } from 'react-router';
+import { Await, useAsyncError } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CarouselItem } from '@/components/ui/carousel';
@@ -22,6 +22,7 @@ import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { RegionDefinition } from '@/lib/decorators';
 import { useTranslation } from 'react-i18next';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 // eslint-disable-next-line react-refresh/only-export-components
 export { loader } from './loaders';
 import PopularCategory from '@/components/home/popular-category';
@@ -80,6 +81,22 @@ export class PopularCategoriesMetadata {
 /* v8 ignore stop */
 
 const itemClassName = 'w-[348px] md:w-[256px] 2xl:w-[288px] basis-auto py-1 flex';
+
+function CategoriesError() {
+    const error = useAsyncError() as NormalizedApiError;
+    const { t } = useTranslation('home');
+    return (
+        <div role="alert" className="py-8 text-center text-muted-foreground">
+            <p>{t('categoryGrid.loadFailed')}</p>
+            {import.meta.env.DEV && (
+                <div className="mt-2 text-xs font-mono text-muted-foreground/70">
+                    {error.status && <span>{error.status}</span>}
+                    {error.message && <p>{error.message}</p>}
+                </div>
+            )}
+        </div>
+    );
+}
 
 /**
  * Skeleton shown while categoriesPromise is resolving
@@ -181,7 +198,7 @@ function CategoryGridContent({
     if (categoriesPromise) {
         return (
             <Suspense fallback={<CategoryCardsSkeleton />}>
-                <Await resolve={categoriesPromise} errorElement={null}>
+                <Await resolve={categoriesPromise} errorElement={<CategoriesError />}>
                     {(categories) => (
                         <CarouselSection {...sectionProps}>
                             {categories.map((category: ShopperProducts.schemas['Category']) => (

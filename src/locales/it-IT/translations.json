@@ -1171,7 +1171,8 @@
         },
         "featuredProducts": {
             "title": "Prodotti in evidenza",
-            "shopAll": "Acquista tutto"
+            "shopAll": "Acquista tutto",
+            "loadFailed": "Impossibile caricare i prodotti in evidenza."
         },
         "newArrivals": {
             "title": "Nuovi arrivi",
@@ -1181,7 +1182,8 @@
         "categoryGrid": {
             "title": "Entri nell'eleganza",
             "description": "In Salesforce Foundations, crediamo che il design debba essere accessibile, innovativo e senza tempo. Le nostre collezioni sono create per l'individuo moderno che apprezza la qualità, la forma e la bellezza duratura.",
-            "shopNowButton": "Acquista ora"
+            "shopNowButton": "Acquista ora",
+            "loadFailed": "Impossibile caricare le categorie."
         },
         "featuredContent": {
             "women": {

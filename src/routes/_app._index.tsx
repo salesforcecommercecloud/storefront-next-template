@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type LoaderFunctionArgs, redirect } from 'react-router';
+import { Suspense } from 'react';
+import { Await, type LoaderFunctionArgs, redirect, useAsyncError } from 'react-router';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCarouselProducts } from '@/components/product-carousel/loaders';
 import { fetchCategories } from '@/lib/api/categories.server';
@@ -34,10 +35,12 @@ import hero02 from '/images/hero-02.webp';
 import hero03 from '/images/hero-03.webp';
 import hero04 from '/images/hero-04.webp';
 import HeroCarousel, { HeroCarouselSkeleton, type HeroSlide } from '@/components/hero-carousel';
-import { ProductCarouselSkeleton, ProductCarouselWithSuspense } from '@/components/product-carousel';
+import { ProductCarouselSkeleton } from '@/components/product-carousel';
+import { ProductCarouselWithData } from '@/components/product-carousel/carousel';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
 @PageType({
     name: 'Home Page',
@@ -59,6 +62,22 @@ import { useTranslation } from 'react-i18next';
     },
 ])
 export class HomePageMetadata {}
+
+function FeaturedProductsError() {
+    const error = useAsyncError() as NormalizedApiError;
+    const { t } = useTranslation('home');
+    return (
+        <div role="alert" className="py-8 text-center text-muted-foreground">
+            <p>{t('featuredProducts.loadFailed')}</p>
+            {import.meta.env.DEV && (
+                <div className="mt-2 text-xs font-mono text-muted-foreground/70">
+                    {error.status && <span>{error.status}</span>}
+                    {error.message && <p>{error.message}</p>}
+                </div>
+            )}
+        </div>
+    );
+}
 
 export type HomePageData = {
     page: ReturnType<typeof fetchPageWithComponentData>;
@@ -189,13 +208,19 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
                                 showDots={true}
                             />
 
-                            {/* Featured Products - ProductCarouselWithSuspense handles its own Suspense */}
-                            <ProductCarouselWithSuspense
-                                resolve={loaderData.searchResult}
-                                title={t('featuredProducts.title')}
-                                shopAllUrl="/category/root"
-                                shopAllText={t('featuredProducts.shopAll')}
-                            />
+                            {/* Featured Products */}
+                            <Suspense fallback={<ProductCarouselSkeleton title={t('featuredProducts.title')} />}>
+                                <Await resolve={loaderData.searchResult} errorElement={<FeaturedProductsError />}>
+                                    {(searchResult) => (
+                                        <ProductCarouselWithData
+                                            data={searchResult}
+                                            title={t('featuredProducts.title')}
+                                            shopAllUrl="/category/root"
+                                            shopAllText={t('featuredProducts.shopAll')}
+                                        />
+                                    )}
+                                </Await>
+                            </Suspense>
                         </>
                     }
                 />

@@ -1168,12 +1168,14 @@
         },
         "featuredProducts": {
             "title": "Featured Products",
-            "shopAll": "Shop all"
+            "shopAll": "Shop all",
+            "loadFailed": "Unable to load featured products."
         },
         "categoryGrid": {
             "title": "Style for Real Life",
             "description": "At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.",
-            "shopNowButton": "Shop Now"
+            "shopNowButton": "Shop Now",
+            "loadFailed": "Unable to load categories."
         },
         "featuredContent": {
             "women": {

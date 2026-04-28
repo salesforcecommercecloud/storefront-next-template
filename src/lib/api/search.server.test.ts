@@ -17,9 +17,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createApiClients } from '@/lib/api-clients.server';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchSearchProducts } from './search.server';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { NormalizedApiError } from './normalized-api-error';
 
 vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(),
+}));
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
 }));
 
 describe('', () => {
@@ -188,12 +199,55 @@ describe('', () => {
             });
         });
 
-        it('should propagate errors from productSearch', async () => {
+        it('should throw NormalizedApiError when productSearch fails with ApiError', async () => {
             const mockContext = createTestContext();
-            const err = new Error('boom');
-            mockProductSearch.mockRejectedValue(err);
+            const apiError = new ApiError({
+                status: 503,
+                statusText: 'Service Unavailable',
+                headers: new Headers(),
+                body: {
+                    type: 'https://api.example.com/errors/unavailable',
+                    title: 'Service Unavailable',
+                    detail: 'Search service is down',
+                },
+                rawBody: JSON.stringify({ detail: 'Search service is down' }),
+                url: 'https://api.example.com/search',
+                method: 'GET',
+            });
 
-            await expect(fetchSearchProducts(mockContext, { q: 'x' })).rejects.toThrow('boom');
+            mockProductSearch.mockRejectedValue(apiError);
+
+            await expect(fetchSearchProducts(mockContext, { q: 'x' })).rejects.toThrow(NormalizedApiError);
+            await expect(fetchSearchProducts(mockContext, { q: 'x' })).rejects.toThrow('Search service is down');
+        });
+
+        it('should throw NormalizedApiError when productSearch fails with non-API error', async () => {
+            const mockContext = createTestContext();
+            mockProductSearch.mockRejectedValue(new TypeError('Network failure'));
+
+            await expect(fetchSearchProducts(mockContext, { q: 'x' })).rejects.toThrow(NormalizedApiError);
+            await expect(fetchSearchProducts(mockContext, { q: 'x' })).rejects.toThrow('Network failure');
+        });
+
+        it('should log operation context when productSearch fails', async () => {
+            const mockContext = createTestContext();
+            const { getLogger } = await import('@/lib/logger.server');
+            const mockLogger = {
+                error: vi.fn(),
+                warn: vi.fn(),
+                info: vi.fn(),
+                debug: vi.fn(),
+            };
+            vi.mocked(getLogger).mockReturnValue(mockLogger);
+
+            mockProductSearch.mockRejectedValue(new Error('boom'));
+
+            await fetchSearchProducts(mockContext, { q: 'dress', refine: ['cgid=womens'] }).catch(() => {});
+
+            expect(mockLogger.error).toHaveBeenCalledWith(
+                'shopperSearch.productSearch failed',
+                expect.objectContaining({ q: 'dress' })
+            );
         });
 
         it('should not include orderable_only when config has orderableOnly=false', async () => {

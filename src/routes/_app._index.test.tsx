@@ -118,10 +118,18 @@ vi.mock('@/components/hero-carousel', () => ({
     HeroCarouselSkeleton: () => <div data-testid="hero-carousel-skeleton">Hero Carousel</div>,
 }));
 
-// Mock ProductCarousel component
+// Mock ProductCarousel components
 vi.mock('@/components/product-carousel', () => ({
-    ProductCarouselWithSuspense: () => <div data-testid="product-carousel">Product Carousel</div>,
     ProductCarouselSkeleton: () => <div data-testid="product-carousel-skeleton">Product Carousel</div>,
+}));
+
+vi.mock('@/components/product-carousel/carousel', () => ({
+    ProductCarouselWithData: ({ data, title }: any) => (
+        <div data-testid="product-carousel">
+            {title && <h2>{title}</h2>}
+            {data?.hits?.length ?? 0} products
+        </div>
+    ),
 }));
 
 // Mock the Button component
@@ -288,7 +296,7 @@ describe('HomePage', () => {
             expect(screen.getByText(t('home:featuredContent.women.title'))).toBeInTheDocument();
         });
 
-        test('renders header banner region when headerbanner region is provided', () => {
+        test('renders header banner region when headerbanner region is provided', async () => {
             const headerBannerRegion = {
                 id: 'headerbanner',
                 components: [
@@ -313,7 +321,9 @@ describe('HomePage', () => {
 
             // Region mock always renders the error element, so check for that fallback content
             expect(screen.getByTestId('hero-carousel')).toBeInTheDocument();
-            expect(screen.getByTestId('product-carousel')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(screen.getByTestId('product-carousel')).toBeInTheDocument();
+            });
             // Should still render other sections
             expect(screen.getByText(t('home:featuredContent.women.title'))).toBeInTheDocument();
         });

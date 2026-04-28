@@ -18,15 +18,18 @@ import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { getLogger } from '@/lib/logger.server';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
 type QueryParameters = Omit<Partial<ShopperSearch.operations['productSearch']['parameters']['query']>, 'refine'> & {
     refine?: ShopperSearch.operations['productSearch']['parameters']['query']['refine'] | string[];
 };
 
-export const fetchSearchProducts = (
+export const fetchSearchProducts = async (
     context: LoaderFunctionArgs['context'],
     parameters: QueryParameters
 ): Promise<ShopperSearch.schemas['ProductSearchResult']> => {
+    const logger = getLogger(context);
     /**
      * Please be very careful when modifying this array. The different expansion values have different, sometimes
      * significant, effects on the caching behavior of the resulting responses. The optional availability expansion
@@ -73,8 +76,8 @@ export const fetchSearchProducts = (
     }
 
     const clients = createApiClients(context);
-    return clients.shopperSearch
-        .productSearch({
+    try {
+        const { data } = await clients.shopperSearch.productSearch({
             params: {
                 query: {
                     ...(params as ShopperSearch.operations['productSearch']['parameters']['query']),
@@ -83,6 +86,13 @@ export const fetchSearchProducts = (
                     ...(refineSet.size > 0 && { refine: [...refineSet] as unknown as string }),
                 },
             },
-        })
-        .then(({ data }) => data);
+        });
+        return data;
+    } catch (error) {
+        logger.error('shopperSearch.productSearch failed', {
+            q: params.q,
+            ...(refineSet.size > 0 && { refine: [...refineSet] }),
+        });
+        throw new NormalizedApiError(error);
+    }
 };

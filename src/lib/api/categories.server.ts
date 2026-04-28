@@ -16,26 +16,29 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
+import { getLogger } from '@/lib/logger.server';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
-export const fetchCategory = (
+export const fetchCategory = async (
     context: LoaderFunctionArgs['context'],
     id: string,
     levels: ShopperProducts.operations['getCategory']['parameters']['query']['levels'] = 0
 ): Promise<ShopperProducts.schemas['Category']> => {
+    const logger = getLogger(context);
     const clients = createApiClients(context);
 
-    return clients.shopperProducts
-        .getCategory({
+    try {
+        const { data } = await clients.shopperProducts.getCategory({
             params: {
-                path: {
-                    id,
-                },
-                query: {
-                    levels,
-                },
+                path: { id },
+                query: { levels },
             },
-        })
-        .then(({ data }) => data);
+        });
+        return data;
+    } catch (error) {
+        logger.error('shopperProducts.getCategory failed', { categoryId: id, levels });
+        throw new NormalizedApiError(error);
+    }
 };
 
 export const fetchCategories = async (

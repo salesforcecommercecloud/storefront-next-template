@@ -1,10 +1,11 @@
 ## v0.4.0-dev (Apr 24, 2026)
 
+- Standardize SCAPI requests error handling - Homepage ([#1537](https://github.com/commerce-emu/storefront-next/pull/1537))
 - Add `LoginModal` component with support for password, passwordless, and social login modes ([#1501](https://github.com/commerce-emu/storefront-next/pull/1501))
 - Move locale chunking from `vite.config.ts` into SDK `i18nPlugin`; remove TODO comment
 - Add login preferences middleware and context for managing email verification preferences (@W-22051487) ([#1453](https://github.com/commerce-emu/storefront-next/pull/1453))
 - Remove manual `contentLinkUuid` type extensions in favor of SCAPI types (@W-21280780)
-  - `ComponentType` now uses `contentLinkUuid`, `fragment`, `localized`, `visible` from Shopper Experience API v1.3.0
+    - `ComponentType` now uses `contentLinkUuid`, `fragment`, `localized`, `visible` from Shopper Experience API v1.3.0
 - Document the use of dynamic images ([#1519](https://github.com/commerce-emu/storefront-next/pull/1519))
 
 ## v0.4.0-dev (Apr 15, 2026)
