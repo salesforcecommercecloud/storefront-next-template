@@ -41,13 +41,11 @@ vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => mockLogger),
 }));
 
-vi.mock('@/lib/api-clients.server', () => ({
-    createApiClients: vi.fn(() => ({
-        shopperExperience: {
-            resolveQualifiers: mockResolveQualifiers,
-        },
-    })),
-}));
+const mockClients = {
+    shopperExperience: {
+        resolveQualifiers: mockResolveQualifiers,
+    },
+} as any;
 
 vi.mock('@salesforce/storefront-next-runtime/data-store', async (importOriginal) => ({
     ...(await importOriginal()),
@@ -121,7 +119,7 @@ async function invokeMiddlewareAndGetHandler(context: ReturnType<typeof createTe
     const entry = scapiMiddlewares[0];
     expect(entry.clients).toEqual(['shopperExperience']);
 
-    const middleware = entry.factory(context);
+    const middleware = entry.factory(context, mockClients);
     if (!middleware) return null;
 
     return middleware.onRequest;

@@ -301,11 +301,13 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         applyToAllClients(maintenanceMiddleware);
     }
 
+    const appClients = { ...clients, ...customClientEntries, use: applyToAllClients } as AppClients;
+
     // Apply context-registered SCAPI middleware factories
     const scapiMiddlewares = context.get(scapiMiddlewareContext);
 
     for (const entry of scapiMiddlewares) {
-        const middleware = entry.factory(context);
+        const middleware = entry.factory(context, appClients);
         if (!middleware) continue;
 
         if (entry.clients) {
@@ -317,5 +319,5 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         }
     }
 
-    return { ...clients, ...customClientEntries, use: applyToAllClients } as AppClients;
+    return appClients;
 }

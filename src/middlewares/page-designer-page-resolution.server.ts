@@ -35,7 +35,6 @@ import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { scapiMiddlewareContext } from '@/lib/scapi-middleware';
-import { createApiClients } from '@/lib/api-clients.server';
 import { getLogger } from '@/lib/logger.server';
 import type { Logger } from '@/lib/logger';
 import { createInflate } from 'node:zlib';
@@ -118,7 +117,8 @@ export const pageDesignerResolutionMiddleware: MiddlewareFunction<Response> = as
  * or `null` if the Data Store is unavailable.
  */
 function createPageResolutionMiddleware(
-    context: RouterContextProvider | Readonly<RouterContextProvider>
+    context: RouterContextProvider | Readonly<RouterContextProvider>,
+    clients: Clients
 ): Middleware | null {
     const config = getConfig<AppConfig>(context);
     const siteCtx = context.get(siteContext);
@@ -128,7 +128,6 @@ function createPageResolutionMiddleware(
     const logger = getLogger(context);
     const onError = getErrorHandler(logger);
     const dataStorePromise = getDefaultDataStoreProvider();
-    const clients = createApiClients(context);
 
     return {
         async onRequest({ request }) {
@@ -280,7 +279,7 @@ async function resolveGetPageRequest({
     logger,
 }: {
     request: Request;
-    context: Parameters<typeof createApiClients>[0];
+    context: RouterContextProvider | Readonly<RouterContextProvider>;
     dataStore: DataStoreProvider;
     siteId: string;
     locale: string;
@@ -510,7 +509,7 @@ async function getAndUnpackDataStoreEntry(
 
         metrics[`${manifestType}ManifestUnpackStart`] = performance.now();
 
-        if (!entry.value) {
+        if (!entry.value?.compressedData && !entry.value?.data) {
             // This will get caught so the error message doesn't
             // really matter here.
             throw new Error('Data store entry is blank');

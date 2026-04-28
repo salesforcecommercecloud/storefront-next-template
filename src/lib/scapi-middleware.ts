@@ -36,7 +36,7 @@ export interface ScapiMiddlewareEntry {
      * run, so every context value is guaranteed to be available regardless of
      * middleware ordering.
      */
-    factory: (context: RouterContextProvider | Readonly<RouterContextProvider>) => Middleware | null;
+    factory: (context: RouterContextProvider | Readonly<RouterContextProvider>, clients: Clients) => Middleware | null;
     /**
      * Scope the middleware to specific SCAPI clients.
      * When omitted, the middleware is registered globally on all clients.
