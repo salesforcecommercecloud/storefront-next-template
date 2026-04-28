@@ -244,7 +244,7 @@ When a component's data promise rejects (e.g., API error, network failure), the 
 
 **Example Error Log:**
 ```
-[Page Designer] Failed to load data for component "hero-1" (odyssey_base.hero):
+[Page Designer] Failed to load data for component "hero-1" (Content.hero):
 Error: API Error 401: Unauthorized (GET /api/...)
 ```
 
@@ -1185,9 +1185,9 @@ npm run build
 ```
 cartridges/app_storefront_next/cartridge/experience/
 ├── components/
-│   ├── odyssey_base.hero.json          # Hero component metadata
-│   ├── odyssey_base.product_carousel.json
-│   ├── odyssey_base.grid.json
+│   ├── Content.hero.json          # Hero component metadata
+│   ├── Content.product_carousel.json
+│   ├── Content.grid.json
 │   └── ...
 └── pages/
     ├── pdp.json                         # Product detail page metadata
@@ -1200,7 +1200,7 @@ cartridges/app_storefront_next/cartridge/experience/
 
 ```json
 {
-  "id": "odyssey_base.hero",
+  "id": "Content.hero",
   "name": "Hero Banner",
   "description": "Large hero banner with image, title, and CTA",
   "group": "content",
@@ -1531,7 +1531,7 @@ ls cartridges/app_storefront_next/cartridge/experience/components/
 ls cartridges/app_storefront_next/cartridge/experience/pages/
 
 # View a specific component's metadata
-cat cartridges/app_storefront_next/cartridge/experience/components/odyssey_base.hero.json
+cat cartridges/app_storefront_next/cartridge/experience/components/Content.hero.json
 
 # View a page type's metadata
 cat cartridges/app_storefront_next/cartridge/experience/pages/pdp.json
@@ -1630,7 +1630,7 @@ export function loader(args: LoaderFunctionArgs) {
       "components": [
         {
           "id": "component-1",
-          "typeId": "odyssey_base.hero",
+          "typeId": "Content.hero",
           "data": {
             "title": "Summer Sale",
             "imageUrl": "/images/hero.jpg"
