@@ -201,10 +201,5 @@ export default defineConfig(({ mode }) => {
         optimizeDeps: {
             include: ['react-router', 'react-router/internal/react-server-client'],
         },
-        ssr: {
-            // Ensure Vite compiles the SDK for SSR so Node doesn't attempt to run its ESM as CJS
-            noExternal: ['@salesforce/storefront-next-runtime'],
-            target: 'node',
-        },
     };
 });
