@@ -4,4 +4,6 @@ exports[`CategoryNavigationMenuMega stories snapshot > Default story renders and
 
 exports[`CategoryNavigationMenuMega stories snapshot > Interactive story renders and matches snapshot 1`] = `null`;
 
+exports[`CategoryNavigationMenuMega stories snapshot > KeyboardAccessibility story renders and matches snapshot 1`] = `null`;
+
 exports[`CategoryNavigationMenuMega stories snapshot > WithBanners story renders and matches snapshot 1`] = `null`;

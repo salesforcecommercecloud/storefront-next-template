@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from '@/components/link';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { ChevronRight } from 'lucide-react';
@@ -25,14 +26,19 @@ export default function CategoryBreadcrumbs({
 }: {
     category: ShopperProducts.schemas['Category'];
 }): ReactElement {
+    const { t } = useTranslation('category');
     const items: PathRecord[] = category.parentCategoryTree ?? [{ id: category.id, name: category.name }];
     return (
-        <nav aria-label="Breadcrumb" className="mb-6">
+        <nav aria-label={t('breadcrumbs.label')} className="mb-6">
             <ol className="flex flex-wrap items-center text-sm">
-                {items.map((item, index) => (
+                <li key="home" className="flex items-center">
+                    <Link to="/" className="text-primary-600 hover:underline">
+                        {t('breadcrumbs.home')}
+                    </Link>
+                </li>
+                {items.map((item) => (
                     <li key={item.id} className="flex items-center">
-                        {index > 0 && <ChevronRight className="mx-1 size-3" />}
-
+                        <ChevronRight className="mx-1 size-3" />
                         <Link to={`/category/${item.id}`} className="text-primary-600 hover:underline">
                             {item.name}
                         </Link>

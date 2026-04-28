@@ -15,6 +15,7 @@
  */
 import { type JSX, useCallback, useMemo } from 'react';
 import { useLocation, useNavigation } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@/hooks/use-navigate';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ export default function CategoryPagination({
     const navigate = useNavigate();
     const location = useLocation();
     const navigation = useNavigation();
+    const { t } = useTranslation('category');
     const isPending = navigation.state !== 'idle';
 
     /**
@@ -67,22 +69,23 @@ export default function CategoryPagination({
     return (
         <div className="flex justify-center">
             <nav
-                className={`flex items-center space-x-1${isPending ? ' pointer-events-none opacity-50 transition-opacity' : ''}`}
-                aria-label="Pagination">
-                {/* Previous button */}
+                className={`flex items-center gap-1${isPending ? ' pointer-events-none opacity-50 transition-opacity' : ''}`}
+                aria-label={t('pagination.label')}>
                 <Button
-                    variant="outline"
-                    className="size-9 cursor-pointer"
+                    variant="ghost"
+                    className="h-9 cursor-pointer gap-1 px-2.5"
                     onClick={() => void navigatePage(current - 1)}
                     disabled={current <= 1}
-                    aria-label="Previous page">
-                    <ChevronLeft />
+                    aria-label={t('pagination.previousPage')}>
+                    <ChevronLeft className="size-4" />
+                    <span>{t('pagination.previous')}</span>
                 </Button>
 
-                {/* Page numbers */}
                 {pageNumbers.map((item) =>
                     typeof item === 'object' ? (
-                        <span key={`ellipsis-${item.key}`} className="px-4 py-2 text-foreground/80">
+                        <span
+                            key={`ellipsis-${item.key}`}
+                            className="flex size-9 items-center justify-center text-foreground/80">
                             ...
                         </span>
                     ) : (
@@ -90,23 +93,23 @@ export default function CategoryPagination({
                             key={item}
                             onClick={() => void navigatePage(item)}
                             disabled={current === item}
-                            variant="outline"
+                            variant={current === item ? 'outline' : 'ghost'}
                             className="size-9 cursor-pointer"
-                            aria-label={`Page ${String(item)}`}
+                            aria-label={t('pagination.page', { number: item })}
                             aria-current={current === item ? 'page' : undefined}>
                             {item}
                         </Button>
                     )
                 )}
 
-                {/* Next button */}
                 <Button
-                    variant="outline"
-                    className="size-9 cursor-pointer"
+                    variant="ghost"
+                    className="h-9 cursor-pointer gap-1 px-2.5"
                     onClick={() => void navigatePage(current + 1)}
                     disabled={current === totalPages}
-                    aria-label="Next page">
-                    <ChevronRight />
+                    aria-label={t('pagination.nextPage')}>
+                    <span>{t('pagination.next')}</span>
+                    <ChevronRight className="size-4" />
                 </Button>
             </nav>
         </div>

@@ -429,8 +429,8 @@ export const InteractionTest: Story = {
         const jewelryCategory = canvas.getByText('Jewelry');
         await userEvent.click(jewelryCategory);
 
-        // Verify category descriptions are present
-        await expect(canvas.getByText(/elegant jewelry pieces/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/stylish and comfortable/i)).toBeInTheDocument();
+        // Descriptions are hidden by default (showDescription defaults to false)
+        await expect(canvas.queryByText(/elegant jewelry pieces/i)).not.toBeInTheDocument();
+        await expect(canvas.queryByText(/stylish and comfortable/i)).not.toBeInTheDocument();
     },
 };

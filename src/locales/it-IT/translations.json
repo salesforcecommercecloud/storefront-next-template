@@ -1457,6 +1457,18 @@
             "counting": "Conteggio prodotti in corso...",
             "productsAvailable_one": "1 prodotto disponibile",
             "productsAvailable_other": "{{count}} prodotti disponibili"
+        },
+        "breadcrumbs": {
+            "label": "Briciole di pane",
+            "home": "Home"
+        },
+        "pagination": {
+            "label": "Impaginazione",
+            "previous": "Precedente",
+            "previousPage": "Pagina precedente",
+            "next": "Successivo",
+            "nextPage": "Pagina successiva",
+            "page": "Pagina {{number}}"
         }
     },
     "maintenancePage": {

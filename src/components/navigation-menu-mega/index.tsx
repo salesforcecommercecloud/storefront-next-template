@@ -13,8 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createContext, useContext, useState, type ComponentPropsWithoutRef, type ReactElement } from 'react';
+import {
+    createContext,
+    useContext,
+    useState,
+    useCallback,
+    type ComponentPropsWithoutRef,
+    type ReactElement,
+} from 'react';
 import { NavLink } from '@/components/link';
+import { useNavigate } from '@/hooks/use-navigate';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '@/components/navigation-menu';
 import { Button } from '@/components/ui/button';
@@ -207,11 +215,57 @@ export default function ResponsiveNavigationMenu({
 }: ComponentPropsWithoutRef<typeof WithCategoryNavigationMenu>): ReactElement {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { t } = useTranslation('header');
+    const navigate = useNavigate();
 
     const defaultListStyle = {
         width: '100%',
         maxWidth: '100%',
     };
+
+    // Handler for top-level category clicks
+    const handleTopLevelClick = useCallback(
+        (categoryId: string) => {
+            void navigate(`/category/${categoryId}`);
+        },
+        [navigate]
+    );
+
+    // Element props generator
+    const getElementProps = useCallback(
+        ({
+            level,
+            category,
+            isLeaf,
+        }: {
+            level: number;
+            category: ShopperProducts.schemas['Category'];
+            isLeaf?: boolean;
+        }) => {
+            const isSubcategory = level >= 1;
+            const isClickableParent = level === 0 && !isLeaf && category.id;
+
+            return {
+                className: cn(
+                    'text-sm font-medium',
+                    isSubcategory &&
+                        'hover:!bg-transparent focus:!bg-transparent hover:!text-header-menu-foreground/60 focus:!text-header-menu-foreground/60 transition-colors'
+                ),
+                ...(isClickableParent && {
+                    // Use onPointerDown instead of onClick for mouse-only navigation.
+                    // This preserves keyboard accessibility: Enter/Space on the trigger
+                    // expands the dropdown (Radix behavior), while mouse clicks navigate
+                    // to the category page. Without this guard, keyboard users would be
+                    // forced to navigate without being able to explore subcategories.
+                    onPointerDown: (e: React.PointerEvent) => {
+                        if (e.pointerType === 'mouse') {
+                            handleTopLevelClick(category.id);
+                        }
+                    },
+                }),
+            };
+        },
+        [handleTopLevelClick]
+    );
 
     return (
         <WithCategoryNavigationMenu resolve={resolve} defer={defer}>
@@ -250,6 +304,12 @@ export default function ResponsiveNavigationMenu({
                                         left: 0,
                                         width: '100vw',
                                         maxWidth: '100vw',
+                                        // Subtle elevation tint: overlay the foreground color at low alpha on top of
+                                        // the menu background. This creates a one-step-lighter surface on dark themes
+                                        // and one-step-darker surface on light themes — automatically adapting to any
+                                        // theme (e.g. green header → tinted-green dropdown) without new tokens.
+                                        backgroundImage:
+                                            'linear-gradient(color-mix(in oklab, var(--header-menu-foreground) 5%, transparent), color-mix(in oklab, var(--header-menu-foreground) 5%, transparent))',
                                     },
                                 })}
                                 propsContentContainer={() => ({
@@ -258,7 +318,7 @@ export default function ResponsiveNavigationMenu({
                                 })}
                                 propsContent={({ category }) => ({
                                     className: cn(
-                                        'section-container',
+                                        'section-container pb-6',
                                         hasBanner(category) &&
                                             (isVertical(category)
                                                 ? 'grid md:grid-cols-[1fr_.3fr] items-start'
@@ -270,7 +330,7 @@ export default function ResponsiveNavigationMenu({
                                         if (isVertical(parent)) {
                                             return {
                                                 style: defaultListStyle,
-                                                className: 'flex flex-col gap-0 p-0 -mx-2 -mt-2',
+                                                className: 'flex flex-col gap-0 p-0',
                                             };
                                         }
                                         return {
@@ -278,13 +338,11 @@ export default function ResponsiveNavigationMenu({
                                                 ...defaultListStyle,
                                                 gridTemplateColumns: `repeat(${subCategories.length}, minmax(0, 1fr))`,
                                             },
-                                            className: 'grid p-0 -mx-2 -mt-2',
+                                            className: 'grid p-0',
                                         };
                                     }
                                 }}
-                                propsElement={() => {
-                                    return { className: 'text-sm font-medium' };
-                                }}
+                                propsElement={getElementProps}
                                 renderSlotListAfter={({ level, parent }) => {
                                     if (level === 1 && hasBanner(parent)) {
                                         return (

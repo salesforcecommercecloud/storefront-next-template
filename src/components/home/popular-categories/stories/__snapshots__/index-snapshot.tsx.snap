@@ -105,11 +105,6 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
                             >
                               Jewelry
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Elegant jewelry pieces to complement any outfit
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -192,11 +187,6 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
                             >
                               Clothing
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Stylish and comfortable men's clothing for every occasion
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -279,11 +269,6 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
                             >
                               Electronics
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Latest electronics and tech gadgets
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -366,11 +351,6 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
                             >
                               Home & Living
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Transform your space with our home and living collection
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -805,11 +785,6 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                             >
                               Jewelry
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Elegant jewelry pieces to complement any outfit
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -892,11 +867,6 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                             >
                               Clothing
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Stylish and comfortable men's clothing for every occasion
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -979,11 +949,6 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                             >
                               Electronics
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Latest electronics and tech gadgets
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -1066,11 +1031,6 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                             >
                               Home & Living
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Transform your space with our home and living collection
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -1153,11 +1113,6 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                             >
                               Sports & Outdoors
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Gear up for your next adventure
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -1240,11 +1195,6 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                             >
                               Beauty & Health
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Beauty and wellness products
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -1453,11 +1403,6 @@ exports[`PopularCategories stories snapshot > WithCustomSubtitle story renders a
                             >
                               Jewelry
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Elegant jewelry pieces to complement any outfit
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -1540,11 +1485,6 @@ exports[`PopularCategories stories snapshot > WithCustomSubtitle story renders a
                             >
                               Clothing
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Stylish and comfortable men's clothing for every occasion
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -1627,11 +1567,6 @@ exports[`PopularCategories stories snapshot > WithCustomSubtitle story renders a
                             >
                               Electronics
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Latest electronics and tech gadgets
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -1714,11 +1649,6 @@ exports[`PopularCategories stories snapshot > WithCustomSubtitle story renders a
                             >
                               Home & Living
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Transform your space with our home and living collection
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -1915,11 +1845,6 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
                             >
                               Jewelry
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Elegant jewelry pieces to complement any outfit
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -2002,11 +1927,6 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
                             >
                               Clothing
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Stylish and comfortable men's clothing for every occasion
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -2089,11 +2009,6 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
                             >
                               Electronics
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Latest electronics and tech gadgets
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -2176,11 +2091,6 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
                             >
                               Home & Living
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Transform your space with our home and living collection
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -2377,11 +2287,6 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                             >
                               Category One
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Description for category one
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -2464,11 +2369,6 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                             >
                               Category Two
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Description for category two
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -2551,11 +2451,6 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                             >
                               Category Three
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Description for category three
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"
@@ -2638,11 +2533,6 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                             >
                               Category Four
                             </h3>
-                            <p
-                              class="text-sm text-white/90"
-                            >
-                              Description for category four
-                            </p>
                           </div>
                           <div
                             class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out group-hover:max-h-8 mt-1"

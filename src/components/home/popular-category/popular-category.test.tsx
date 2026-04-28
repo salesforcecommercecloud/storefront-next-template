@@ -99,7 +99,7 @@ describe('PopularCategory', () => {
         renderComponent(<PopularCategory data={mockCategory} />);
 
         expect(screen.getByText('New Arrivals')).toBeInTheDocument();
-        expect(screen.getByText('Shop all new arrivals including women and mens clothing')).toBeInTheDocument();
+        expect(screen.queryByText('Shop all new arrivals including women and mens clothing')).not.toBeInTheDocument();
         expect(screen.getByText('Shop Now')).toBeInTheDocument();
         expect(screen.getByRole('link', { name: /new arrivals/i })).toHaveAttribute(
             'href',
@@ -109,6 +109,13 @@ describe('PopularCategory', () => {
 
     test('renders category with category prop (programmatic use)', () => {
         renderComponent(<PopularCategory category={mockCategory} />);
+
+        expect(screen.getByText('New Arrivals')).toBeInTheDocument();
+        expect(screen.queryByText('Shop all new arrivals including women and mens clothing')).not.toBeInTheDocument();
+    });
+
+    test('shows description when showDescription is true', () => {
+        renderComponent(<PopularCategory data={mockCategory} showDescription />);
 
         expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         expect(screen.getByText('Shop all new arrivals including women and mens clothing')).toBeInTheDocument();
@@ -138,14 +145,14 @@ describe('PopularCategory', () => {
         expect(container.firstChild).toBeNull();
     });
 
-    test('uses pageDescription over description', () => {
+    test('uses pageDescription over description when showDescription is true', () => {
         const categoryWithBoth = {
             ...mockCategory,
             pageDescription: 'Page description',
             description: 'Regular description',
         };
 
-        renderComponent(<PopularCategory data={categoryWithBoth} />);
+        renderComponent(<PopularCategory data={categoryWithBoth} showDescription />);
 
         expect(screen.getByText('Page description')).toBeInTheDocument();
         expect(screen.queryByText('Regular description')).not.toBeInTheDocument();
@@ -158,7 +165,7 @@ describe('PopularCategory', () => {
             description: 'Regular description',
         };
 
-        renderComponent(<PopularCategory data={categoryWithoutPageDesc} />);
+        renderComponent(<PopularCategory data={categoryWithoutPageDesc} showDescription />);
 
         expect(screen.getByText('Regular description')).toBeInTheDocument();
     });

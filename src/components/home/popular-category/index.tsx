@@ -40,6 +40,8 @@ export { loader } from './loaders';
 interface PopularCategoryProps extends Omit<ComponentProps<typeof Link>, 'to'> {
     // Category data from Page Designer (via loader) or programmatic use
     category?: ShopperProducts.schemas['Category'];
+    // Whether to display the category description on the card
+    showDescription?: boolean;
     // Page Designer props (passed by Component wrapper, must be extracted to avoid passing to DOM)
     regionId?: string;
     page?: ShopperExperience.schemas['Page'];
@@ -79,6 +81,7 @@ export class PopularCategoryMetadata {
  */
 export default function PopularCategory({
     category,
+    showDescription = false,
     // Page Designer props - extracted to avoid passing to DOM
     regionId: _regionId,
     page: _page,
@@ -104,7 +107,7 @@ export default function PopularCategory({
 
     const finalCategoryId = categoryData.id || '';
     const finalName = categoryData.name || '';
-    const finalDescription = categoryData.pageDescription || categoryData.description || '';
+    const finalDescription = showDescription ? categoryData.pageDescription || categoryData.description || '' : '';
 
     // Determine image URL - priority: category image > category banner > hero fallback
     const categoryImageUrl =

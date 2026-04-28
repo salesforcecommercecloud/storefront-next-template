@@ -196,7 +196,7 @@ describe('PopularCategories', () => {
         expect(screen.getByText('Sports')).toBeInTheDocument();
     });
 
-    test('displays category descriptions', async () => {
+    test('hides category descriptions by default', async () => {
         const categoriesPromise = Promise.resolve(mockCategories);
 
         renderComponent(<PopularCategories categoriesPromise={categoriesPromise} />);
@@ -204,16 +204,16 @@ describe('PopularCategories', () => {
         // Wait for categories to load
         await waitFor(
             () => {
-                expect(screen.getByText('Latest electronics and gadgets')).toBeInTheDocument();
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
             },
             { timeout: 3000 }
         );
 
-        // Check descriptions are displayed
-        expect(screen.getByText('Latest electronics and gadgets')).toBeInTheDocument();
-        expect(screen.getByText('Fashion and apparel')).toBeInTheDocument();
-        expect(screen.getByText('Books and literature')).toBeInTheDocument();
-        expect(screen.getByText('Sports and fitness')).toBeInTheDocument();
+        // Descriptions are hidden by default (showDescription defaults to false)
+        expect(screen.queryByText('Latest electronics and gadgets')).not.toBeInTheDocument();
+        expect(screen.queryByText('Fashion and apparel')).not.toBeInTheDocument();
+        expect(screen.queryByText('Books and literature')).not.toBeInTheDocument();
+        expect(screen.queryByText('Sports and fitness')).not.toBeInTheDocument();
     });
 
     test('displays shop now buttons', async () => {

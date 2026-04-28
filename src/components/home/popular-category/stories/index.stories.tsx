@@ -153,18 +153,15 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify category name is displayed
         const title = await canvas.findByText('Mens', {}, { timeout: 3000 });
         await expect(title).toBeInTheDocument();
 
-        // Verify description is displayed
-        await expect(canvas.getByText(/men's range/i)).toBeInTheDocument();
+        // Description is hidden by default
+        await expect(canvas.queryByText(/men's range/i)).not.toBeInTheDocument();
 
-        // Verify shop now button is present
         const shopNowButton = await canvas.findByText(/shop now/i, {}, { timeout: 3000 });
         await expect(shopNowButton).toBeInTheDocument();
 
-        // Verify category link
         const link = canvas.getByRole('link', { name: /mens/i });
         await expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/mens`);
     },
@@ -189,7 +186,8 @@ export const WithCategoryProp: Story = {
         const canvas = within(canvasElement);
 
         await expect(canvas.getByText('Ties')).toBeInTheDocument();
-        await expect(canvas.getByText(/shop mens's ties/i)).toBeInTheDocument();
+        // Description hidden by default
+        await expect(canvas.queryByText(/shop mens's ties/i)).not.toBeInTheDocument();
         await expect(canvas.getByRole('link', { name: /ties/i })).toHaveAttribute(
             'href',
             `${SITE_PREFIX}/category/mens-accessories-ties`
@@ -278,9 +276,7 @@ export const InteractionTest: Story = {
             await userEvent.hover(cardElement);
         }
 
-        // Verify all elements are present
         await expect(canvas.getByText('Mens')).toBeInTheDocument();
-        await expect(canvas.getByText(/men's range/i)).toBeInTheDocument();
         await expect(canvas.getByRole('img')).toBeInTheDocument();
     },
 };

@@ -1494,6 +1494,18 @@
             "counting": "Counting products...",
             "productsAvailable_one": "1 product available",
             "productsAvailable_other": "{{count}} products available"
+        },
+        "breadcrumbs": {
+            "label": "Breadcrumb",
+            "home": "Home"
+        },
+        "pagination": {
+            "label": "Pagination",
+            "previous": "Previous",
+            "previousPage": "Previous page",
+            "next": "Next",
+            "nextPage": "Next page",
+            "page": "Page {{number}}"
         }
     },
     "maintenancePage": {

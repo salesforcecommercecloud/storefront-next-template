@@ -155,6 +155,10 @@ function CategoryPage({ categoryId }) {
                             path: '/category/*',
                             element: content,
                         },
+                        {
+                            path: '*',
+                            element: content,
+                        },
                     ],
                     {
                         initialEntries: ['/'],
@@ -183,9 +187,9 @@ const mockCategoryWithTree: ShopperProducts.schemas['Category'] = {
 };
 
 const mockCategorySingle: ShopperProducts.schemas['Category'] = {
-    id: 'root',
-    name: 'Home',
-    parentCategoryTree: [{ id: 'root', name: 'Home' }],
+    id: 'womens',
+    name: 'Womens',
+    parentCategoryTree: [{ id: 'womens', name: 'Womens' }],
 };
 
 export const Default: Story = {
@@ -263,10 +267,11 @@ CategoryBreadcrumbs with a single category (no parent tree):
         const nav = canvas.getByRole('navigation', { name: /breadcrumb/i });
         await expect(nav).toBeInTheDocument();
 
-        // Test single breadcrumb link is present
-        const link = canvas.getByRole('link');
-        await expect(link).toBeInTheDocument();
-        await expect(link).toHaveTextContent('Home');
+        // Home link + single category link
+        const links = canvas.getAllByRole('link');
+        await expect(links).toHaveLength(2);
+        await expect(links[0]).toHaveTextContent('Home');
+        await expect(links[1]).toHaveTextContent('Womens');
     },
 };
 
@@ -275,7 +280,6 @@ export const DeepHierarchy: Story = {
         category: {
             ...mockCategoryWithTree,
             parentCategoryTree: [
-                { id: 'root', name: 'Home' },
                 { id: 'mens', name: 'Mens' },
                 { id: 'mens-clothing', name: 'Clothing' },
                 { id: 'mens-clothing-tops', name: 'Tops' },
@@ -313,8 +317,8 @@ CategoryBreadcrumbs with a deep category hierarchy:
         const nav = canvas.getByRole('navigation', { name: /breadcrumb/i });
         await expect(nav).toBeInTheDocument();
 
-        // Test multiple breadcrumb links are present
+        // Home + 5 category items = 6 links
         const links = canvas.getAllByRole('link');
-        await expect(links.length).toBeGreaterThanOrEqual(5);
+        await expect(links.length).toBeGreaterThanOrEqual(6);
     },
 };
