@@ -170,6 +170,7 @@ interface CheckoutFormPageProps {
     productMapPromise: Promise<Record<string, ShopperProducts.schemas['Product']>>;
     promotionsPromise?: Promise<Record<string, ShopperPromotions.schemas['Promotion']>>;
     showToast?: (message: string, type: 'success' | 'error', options?: { duration?: number }) => void;
+    emailVerificationEnabled?: boolean;
 }
 
 /**
@@ -195,6 +196,7 @@ export default function CheckoutFormPage({
     productMapPromise,
     promotionsPromise,
     showToast,
+    emailVerificationEnabled,
 }: CheckoutFormPageProps) {
     const { t, i18n } = useTranslation('checkout');
     const { t: tErrors } = useTranslation('errors');
@@ -802,7 +804,10 @@ export default function CheckoutFormPage({
                                                     paymentSubmissionRef.current.options?.savePaymentToProfile
                                                 }
                                                 showToast={showToast}
-                                                hideCreateAccountOption={hideCreateAccountAfterSkippedPasswordlessOtp}
+                                                hideCreateAccountOption={
+                                                    hideCreateAccountAfterSkippedPasswordlessOtp ||
+                                                    emailVerificationEnabled === false
+                                                }
                                             />
                                         </UITarget>
                                         <UITarget targetId="sfcc.checkout.createAccount.after" />

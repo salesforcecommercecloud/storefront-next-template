@@ -70,41 +70,45 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const turnstileVerifiedViaCookie = (await tvCookie.parse(cookieHeader)) === '1';
 
         let shouldSetCookie = false;
+        const turnstileVerificationEnabled =
+            appConfig.security?.turnstile?.enabled && appConfig.security?.turnstile?.verification?.enabled;
 
-        if (turnstileToken) {
-            const allowed = await enforceTurnstile({
-                request,
-                config: appConfig,
-                turnstileToken,
-                logger,
-                actionName: 'initiate-checkout-registration',
-                email,
-            });
-            if (!allowed) {
+        if (turnstileVerificationEnabled) {
+            if (turnstileToken) {
+                const allowed = await enforceTurnstile({
+                    request,
+                    config: appConfig,
+                    turnstileToken,
+                    logger,
+                    actionName: 'initiate-checkout-registration',
+                    email,
+                });
+                if (!allowed) {
+                    return Response.json(
+                        {
+                            success: false,
+                            error: createActionError({
+                                code: ErrorCode.NOT_AUTHORIZED,
+                                message: 'Turnstile verification failed',
+                            }),
+                        },
+                        { status: 403 }
+                    );
+                }
+                shouldSetCookie = !turnstileVerifiedViaCookie;
+            } else if (!turnstileVerifiedViaCookie) {
+                logger.warn('InitiateCheckoutRegistration: no turnstile token or verification cookie');
                 return Response.json(
                     {
                         success: false,
                         error: createActionError({
                             code: ErrorCode.NOT_AUTHORIZED,
-                            message: 'Turnstile verification failed',
+                            message: 'Turnstile verification required',
                         }),
                     },
                     { status: 403 }
                 );
             }
-            shouldSetCookie = !turnstileVerifiedViaCookie;
-        } else if (!turnstileVerifiedViaCookie) {
-            logger.warn('InitiateCheckoutRegistration: no turnstile token or verification cookie');
-            return Response.json(
-                {
-                    success: false,
-                    error: createActionError({
-                        code: ErrorCode.NOT_AUTHORIZED,
-                        message: 'Turnstile verification required',
-                    }),
-                },
-                { status: 403 }
-            );
         }
 
         if (!email) {

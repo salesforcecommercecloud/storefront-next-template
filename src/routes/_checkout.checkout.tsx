@@ -66,6 +66,7 @@ function CheckoutView({
         shippingMethodsMap,
         productMap,
         promotions,
+        emailVerificationEnabled,
         shippingDefaultSet,
         // @sfdc-extension-line SFDC_EXT_BOPIS
         storesByStoreId,
@@ -101,6 +102,7 @@ function CheckoutView({
                     productMapPromise={productMap}
                     promotionsPromise={promotions}
                     showToast={addToast}
+                    emailVerificationEnabled={emailVerificationEnabled}
                 />
             </CheckoutProvider>
         </>

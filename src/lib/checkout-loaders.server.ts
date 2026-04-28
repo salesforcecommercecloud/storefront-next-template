@@ -38,6 +38,7 @@ import { getCustomerProfileForCheckout, isRegisteredCustomer } from '@/lib/api/c
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
+import { getLoginPreferences } from '@salesforce/storefront-next-runtime/data-store';
 import { getLogger } from '@/lib/logger.server';
 
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -58,6 +59,7 @@ export type CheckoutPageData = {
     productMap: Promise<Record<string, ShopperProducts.schemas['Product']>>;
     promotions?: Promise<Record<string, ShopperPromotions.schemas['Promotion']>>;
     isRegisteredCustomer?: boolean;
+    emailVerificationEnabled?: boolean;
     shippingDefaultSet?: Promise<undefined>;
     // @sfdc-extension-line SFDC_EXT_BOPIS
     storesByStoreId?: Map<string, ShopperStores.schemas['Store']>;
@@ -601,6 +603,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
         const logger = getLogger(context);
         const userIsRegistered = isRegisteredCustomer(context);
         const session = getAuth(context);
+        const { emailVerificationEnabled } = getLoginPreferences(context);
         logger.debug('Checkout: loader starting', { userIsRegistered, hasBasket: Boolean(session.customerId) });
 
         const basket = (await getBasket(context)).current ?? null;
@@ -654,6 +657,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
                     productMap: productMapPromise,
                     promotions: promotionsPromise,
                     isRegisteredCustomer: true,
+                    emailVerificationEnabled,
                     shippingDefaultSet,
                     // @sfdc-extension-line SFDC_EXT_BOPIS
                     ...(storesByStoreId && { storesByStoreId }),
@@ -669,6 +673,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<CheckoutPageData
             productMap: productMapPromise,
             promotions: promotionsPromise,
             isRegisteredCustomer: false,
+            emailVerificationEnabled,
             shippingDefaultSet,
             // @sfdc-extension-line SFDC_EXT_BOPIS
             ...(storesByStoreId && { storesByStoreId }),

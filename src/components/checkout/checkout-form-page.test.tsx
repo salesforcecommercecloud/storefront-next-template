@@ -1484,4 +1484,59 @@ describe('CheckoutFormPage', () => {
             expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
         });
     });
+
+    describe('emailVerificationEnabled hides create account checkbox', () => {
+        let originalSessionStorage: Storage;
+
+        beforeEach(() => {
+            originalSessionStorage = window.sessionStorage;
+            mockUseCustomerProfile.mockReturnValue(null);
+            mockUseBasket.mockReturnValue({
+                basketId: 'test-basket',
+                productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
+                customerInfo: null,
+            });
+            mockUseCheckoutContext.mockReturnValue(
+                buildCheckoutContext({
+                    step: defaultSteps.PAYMENT,
+                })
+            );
+            Object.defineProperty(window, 'sessionStorage', {
+                value: {
+                    getItem: vi.fn(() => null),
+                    setItem: vi.fn(),
+                    removeItem: vi.fn(),
+                    clear: vi.fn(),
+                },
+                writable: true,
+                configurable: true,
+            });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(window, 'sessionStorage', {
+                value: originalSessionStorage,
+                writable: true,
+                configurable: true,
+            });
+        });
+
+        test('hides create account checkbox when emailVerificationEnabled is false', async () => {
+            await renderCheckoutPage({ emailVerificationEnabled: false });
+
+            expect(screen.queryByTestId('register-customer-checkbox')).not.toBeInTheDocument();
+        });
+
+        test('shows create account checkbox when emailVerificationEnabled is true', async () => {
+            await renderCheckoutPage({ emailVerificationEnabled: true });
+
+            expect(screen.getByTestId('register-customer-checkbox')).toBeInTheDocument();
+        });
+
+        test('shows create account checkbox when emailVerificationEnabled is undefined', async () => {
+            await renderCheckoutPage({ emailVerificationEnabled: undefined });
+
+            expect(screen.getByTestId('register-customer-checkbox')).toBeInTheDocument();
+        });
+    });
 });
