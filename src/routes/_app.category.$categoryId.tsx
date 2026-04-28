@@ -393,7 +393,7 @@ export default function CategoryPage({
                         <h1 className="text-3xl font-bold text-foreground">
                             {category?.name || category.id} ({searchResultCritical.total})
                         </h1>
-                        <UITarget targetId="plp.search.summary" />
+                        <UITarget targetId="sfcc.plp.search.summary" />
                         {searchResultCritical?.sortingOptions && searchResultCritical.sortingOptions.length > 0 && (
                             <div className="flex-shrink-0">
                                 <CategorySorting result={searchResultCritical} />
@@ -435,8 +435,8 @@ export default function CategoryPage({
                             {/* plpTopContent */}
                             <Region className="mb-8" page={page} regionId="plpTopContent" />
 
-                            <UITarget targetId="plp.agent.categoryHelper" />
-                            <UITarget targetId="plp.search.results">
+                            <UITarget targetId="sfcc.plp.agent.categoryHelper" />
+                            <UITarget targetId="sfcc.plp.search.results">
                                 <ProductGrid
                                     key={productGridDataKey}
                                     critical={searchResultCritical.hits ?? []}

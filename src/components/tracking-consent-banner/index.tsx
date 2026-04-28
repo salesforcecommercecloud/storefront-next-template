@@ -137,7 +137,7 @@ export function TrackingConsentBanner({ onConsentChange }: TrackingConsentBanner
     };
 
     return (
-        <UITarget targetId="global.cookies.banner">
+        <UITarget targetId="sfcc.global.cookies.banner">
             <div
                 className={cn(
                     'fixed z-50 w-full md:max-w-md animate-in slide-in-from-bottom-5 duration-300',

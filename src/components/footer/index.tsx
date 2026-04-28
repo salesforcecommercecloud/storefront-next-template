@@ -92,7 +92,7 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
                         <div>
                             <h3 className="text-sm font-semibold mb-4">{t('sections.shop')}</h3>
                             <ul className="space-y-2">
-                                <UITarget targetId="footer.customersupport.start" />
+                                <UITarget targetId="sfcc.footer.customersupport.start" />
                                 {categories ? (
                                     <Suspense fallback={null}>
                                         <Await resolve={categories} errorElement={null}>
@@ -112,7 +112,7 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
                                         </Await>
                                     </Suspense>
                                 ) : null}
-                                <UITarget targetId="footer.customersupport.end" />
+                                <UITarget targetId="sfcc.footer.customersupport.end" />
                             </ul>
                         </div>
 
@@ -120,7 +120,7 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
                         <div>
                             <h3 className="text-sm font-semibold mb-4">{t('sections.help')}</h3>
                             <ul className="space-y-2">
-                                <UITarget targetId="footer.account.start" />
+                                <UITarget targetId="sfcc.footer.account.start" />
                                 <li>
                                     <Link
                                         to="/contact"
@@ -149,7 +149,7 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
                                         {t('links.signInOrCreateAccount')}
                                     </Link>
                                 </li>
-                                <UITarget targetId="footer.account.end" />
+                                <UITarget targetId="sfcc.footer.account.end" />
                             </ul>
                         </div>
 
@@ -157,7 +157,7 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
                         <div>
                             <h3 className="text-sm font-semibold mb-4">{t('sections.about')}</h3>
                             <ul className="space-y-2">
-                                <UITarget targetId="footer.ourcompany.start" />
+                                <UITarget targetId="sfcc.footer.ourcompany.start" />
                                 <li>
                                     <Link
                                         to="/about-us"
@@ -165,7 +165,7 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
                                         {t('links.aboutUs')}
                                     </Link>
                                 </li>
-                                <UITarget targetId="footer.ourcompany.end" />
+                                <UITarget targetId="sfcc.footer.ourcompany.end" />
                             </ul>
                         </div>
                     </div>

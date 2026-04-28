@@ -136,14 +136,6 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                   <li>
                     <a
                       class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      href="/store-locator"
-                    >
-                      Store Locator
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
                       href="/about-us"
                     >
                       About Us
@@ -466,14 +458,6 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
               <ul
                 class="space-y-2"
               >
-                <li>
-                  <a
-                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    href="/store-locator"
-                  >
-                    Store Locator
-                  </a>
-                </li>
                 <li>
                   <a
                     class="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -888,14 +872,6 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                   <li>
                     <a
                       class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      href="/store-locator"
-                    >
-                      Store Locator
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="text-sm text-muted-foreground hover:text-foreground transition-colors"
                       href="/about-us"
                     >
                       About Us
@@ -1218,14 +1194,6 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
               <ul
                 class="space-y-2"
               >
-                <li>
-                  <a
-                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    href="/store-locator"
-                  >
-                    Store Locator
-                  </a>
-                </li>
                 <li>
                   <a
                     class="text-sm text-muted-foreground hover:text-foreground transition-colors"

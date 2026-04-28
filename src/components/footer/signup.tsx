@@ -36,7 +36,7 @@ export default function Signup(): ReactElement {
     );
 
     return (
-        <UITarget targetId="emailSignUp.consent.marketing">
+        <UITarget targetId="sfcc.emailSignUp.consent.marketing">
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
                 <Input
                     ref={inputRef}
@@ -44,7 +44,7 @@ export default function Signup(): ReactElement {
                     placeholder={t('newsletter.emailPlaceholder')}
                     className="flex-1 h-10 bg-background text-foreground"
                 />
-                <UITarget targetId="emailSignUp.consent.tos" />
+                <UITarget targetId="sfcc.emailSignUp.consent.tos" />
                 <Button type="submit" variant="secondary" size="lg">
                     {t('newsletter.subscribeButton')}
                 </Button>

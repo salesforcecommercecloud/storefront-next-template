@@ -76,7 +76,7 @@ export default function WriteReviewButton(): ReactElement {
     );
 
     return (
-        <UITarget targetId="pdp.reviews.form">
+        <UITarget targetId="sfcc.pdp.reviews.form">
             <Button
                 type="button"
                 variant="default"

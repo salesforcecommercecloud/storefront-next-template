@@ -159,7 +159,7 @@ export default function CategoryRefinements({
     }
 
     return (
-        <UITarget targetId="plp.search.filters">
+        <UITarget targetId="sfcc.plp.search.filters">
             <div className={isPending ? 'pointer-events-none opacity-50 transition-opacity' : ''}>
                 {/*  @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                 <RefineInventory

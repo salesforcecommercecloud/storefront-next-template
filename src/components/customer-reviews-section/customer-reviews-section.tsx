@@ -138,7 +138,7 @@ export default function CustomerReviewsSection(): ReactElement {
             : t('reviewsForProductName', { count: aggregateRating.count, productName });
 
     return (
-        <UITarget targetId="pdp.reviews.summary">
+        <UITarget targetId="sfcc.pdp.reviews.summary">
             <div id="customer-reviews">
                 <Accordion type="multiple" className="w-full" value={accordionValue} onValueChange={setAccordionValue}>
                     <AccordionItem value={CUSTOMER_REVIEWS_ACCORDION_VALUE}>

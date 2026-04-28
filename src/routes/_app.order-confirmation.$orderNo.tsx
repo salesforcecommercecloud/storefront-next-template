@@ -355,7 +355,7 @@ function OrderConfirmationContent({
                                         {shippingMethodName}
                                     </p>
                                 </div>
-                                <UITarget targetId="orderConfirmation.shipping.tracking" />
+                                <UITarget targetId="sfcc.orderConfirmation.shipping.tracking" />
                             </CardContent>
                         </Card>
                     );
@@ -475,7 +475,7 @@ function OrderConfirmationContent({
                                     </div>
                                 );
                                 return row.key === 'tax' ? (
-                                    <UITarget key={row.key} targetId="orderConfirmation.tax.summary">
+                                    <UITarget key={row.key} targetId="sfcc.orderConfirmation.tax.summary">
                                         {rowEl}
                                     </UITarget>
                                 ) : (

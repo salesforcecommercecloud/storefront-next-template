@@ -95,7 +95,7 @@ export default function ImageGallery({
     const imageAltFallback = productName || tProduct('imageAlt') || 'Product Image';
 
     return (
-        <UITarget targetId="pdp.products.gallery">
+        <UITarget targetId="sfcc.pdp.products.gallery">
             <div className="space-y-4">
                 {/* Main Image */}
                 <div className="relative aspect-square overflow-hidden rounded-none bg-muted">

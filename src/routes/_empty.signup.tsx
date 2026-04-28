@@ -135,7 +135,7 @@ export default function Signup(): ReactElement {
                             </div>
                         </Form>
                     </Card>
-                    <UITarget targetId="userRegistration.address.validation" />
+                    <UITarget targetId="sfcc.userRegistration.address.validation" />
                 </div>
             </div>
         </>

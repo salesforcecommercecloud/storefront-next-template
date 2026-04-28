@@ -79,7 +79,7 @@ export default function ProductView({ product }: ProductViewProps): ReactElement
                         navigationArrowSize="lg"
                         productName={product.name}
                     />
-                    <UITarget targetId="pdp.agent.productHelper" />
+                    <UITarget targetId="sfcc.pdp.agent.productHelper" />
                     {product.longDescription && product.longDescription !== product.shortDescription && (
                         <CollapsibleHtmlSection
                             label={`${t('description')}:`}

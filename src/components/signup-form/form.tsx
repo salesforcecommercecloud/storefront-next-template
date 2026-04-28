@@ -126,11 +126,11 @@ export function SignupForm({ error }: SignupFormProps) {
                     )}
                 </div>
 
-                <UITarget targetId="userRegistration.consent.marketing" />
-                <UITarget targetId="userRegistration.consent.tos" />
-                <UITarget targetId="userRegistration.loyalty.enrollment" />
-                <UITarget targetId="userRegistration.identity.verification" />
-                <UITarget targetId="userRegistration.address.autocomplete" />
+                <UITarget targetId="sfcc.userRegistration.consent.marketing" />
+                <UITarget targetId="sfcc.userRegistration.consent.tos" />
+                <UITarget targetId="sfcc.userRegistration.loyalty.enrollment" />
+                <UITarget targetId="sfcc.userRegistration.identity.verification" />
+                <UITarget targetId="sfcc.userRegistration.address.autocomplete" />
 
                 <div>
                     <Button

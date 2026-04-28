@@ -410,7 +410,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             className="w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
                             handleProductClick={handleProductClick}
                         />
-                        <UITarget targetId="plp.shipping.deliveryEstimate" />
+                        <UITarget targetId="sfcc.plp.shipping.deliveryEstimate" />
 
                         {/* Clickable product link overlay */}
                         <Link
@@ -533,7 +533,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             ratingLinkClassName="text-xs text-muted-foreground"
                         />
                     </div>
-                    <UITarget targetId="productCard.reviews.rating" />
+                    <UITarget targetId="sfcc.productCard.reviews.rating" />
 
                     {/* Price */}
                     <div>
@@ -554,8 +554,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             className="text-sm"
                         />
                     </div>
-                    <UITarget targetId="productCard.loyalty.points" />
-                    <UITarget targetId="productCard.bnpl.message" />
+                    <UITarget targetId="sfcc.productCard.loyalty.points" />
+                    <UITarget targetId="sfcc.productCard.bnpl.message" />
                 </div>
             </Card>
         );

@@ -359,7 +359,7 @@ function ProductContent({ product, url }: { product: ShopperProducts.schemas['Pr
                         <Suspense fallback={null}>
                             <CustomerReviewsSection />
                         </Suspense>
-                        <UITarget targetId="pdp.reviews.qna" />
+                        <UITarget targetId="sfcc.pdp.reviews.qna" />
                     </div>
                 </ProductReviewsProvider>
             </ProductContentProvider>

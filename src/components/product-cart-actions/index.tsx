@@ -142,7 +142,7 @@ export default function ProductCartActions({
             {isMasterOrVariantProduct && !currentVariant && !isProductASet && !isProductABundle && (
                 <div className="text-destructive font-medium">{t('selectAllOptions')}</div>
             )}
-            <UITarget targetId="pdp.tax.productMessage" />
+            <UITarget targetId="sfcc.pdp.tax.productMessage" />
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-3">
@@ -156,7 +156,7 @@ export default function ProductCartActions({
                             size="lg">
                             {isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
                         </Button>
-                        <UITarget targetId="quickAdd.payments.expressCheckout">
+                        <UITarget targetId="sfcc.quickAdd.payments.expressCheckout">
                             <Button
                                 onClick={onBuyNow}
                                 disabled={!canAddToCart}
@@ -187,7 +187,7 @@ export default function ProductCartActions({
                     !isProductABundle &&
                     !isEditMode &&
                     shouldLoadExpressPayments && (
-                        <UITarget targetId="pdp.payments.expressCheckout">
+                        <UITarget targetId="sfcc.pdp.payments.expressCheckout">
                             <Suspense fallback={null}>
                                 <ExpressPayments
                                     layout="vertical"
@@ -199,12 +199,12 @@ export default function ProductCartActions({
                         </UITarget>
                     )}
 
-                <UITarget targetId="pdp.after.addToCart">
+                <UITarget targetId="sfcc.pdp.after.addToCart">
                     {!isCompactAddMode && !isEditMode && currentProductId && (
                         <BuyNowPayLater productId={String(currentProductId)} />
                     )}
                 </UITarget>
-                <UITarget targetId="pdp.bnpl.message" />
+                <UITarget targetId="sfcc.pdp.bnpl.message" />
             </div>
         </div>
     );

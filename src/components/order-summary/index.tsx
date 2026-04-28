@@ -192,19 +192,19 @@ function SummaryBodyContent({
             {/* Order Summary Details */}
             <div className="space-y-2 text-sm">
                 {/* Subtotal */}
-                <UITarget targetId="orderSummary.subtotal.before" />
-                <UITarget targetId="orderSummary.subtotal">
+                <UITarget targetId="sfcc.orderSummary.subtotal.before" />
+                <UITarget targetId="sfcc.orderSummary.subtotal">
                     <div className="flex justify-between items-center">
                         <span>{t('summary.subtotal')}</span>
                         <span>{formatCurrency(basket?.productSubTotal ?? 0, i18nLanguage, currency)}</span>
                     </div>
                 </UITarget>
-                <UITarget targetId="orderSummary.subtotal.after" />
-                <UITarget targetId="orderSummary.giftCards.applied" />
+                <UITarget targetId="sfcc.orderSummary.subtotal.after" />
+                <UITarget targetId="sfcc.orderSummary.giftCards.applied" />
 
                 {/* Order Price Adjustments */}
-                <UITarget targetId="orderSummary.adjustments.before" />
-                <UITarget targetId="orderSummary.adjustments">
+                <UITarget targetId="sfcc.orderSummary.adjustments.before" />
+                <UITarget targetId="sfcc.orderSummary.adjustments">
                     {basket.orderPriceAdjustments?.map((adjustment) => (
                         <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center">
                             <span>{adjustment.itemText}</span>
@@ -214,11 +214,11 @@ function SummaryBodyContent({
                         </div>
                     ))}
                 </UITarget>
-                <UITarget targetId="orderSummary.adjustments.after" />
+                <UITarget targetId="sfcc.orderSummary.adjustments.after" />
 
                 {/* Shipping */}
-                <UITarget targetId="orderSummary.shipping.before" />
-                <UITarget targetId="orderSummary.shipping">
+                <UITarget targetId="sfcc.orderSummary.shipping.before" />
+                <UITarget targetId="sfcc.orderSummary.shipping">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
                             <span>
@@ -242,12 +242,12 @@ function SummaryBodyContent({
                         {renderShippingInfo()}
                     </div>
                 </UITarget>
-                <UITarget targetId="orderSummary.shipping.after" />
+                <UITarget targetId="sfcc.orderSummary.shipping.after" />
 
                 {/* Tax */}
-                <UITarget targetId="orderSummary.tax.before" />
-                <UITarget targetId="orderSummary.tax">
-                    <UITarget targetId="orderSummary.tax.line">
+                <UITarget targetId="sfcc.orderSummary.tax.before" />
+                <UITarget targetId="sfcc.orderSummary.tax">
+                    <UITarget targetId="sfcc.orderSummary.tax.line">
                         <div className="flex justify-between items-center">
                             <span>{t('summary.tax')}</span>
                             {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
@@ -258,11 +258,11 @@ function SummaryBodyContent({
                         </div>
                     </UITarget>
                 </UITarget>
-                <UITarget targetId="orderSummary.tax.after" />
+                <UITarget targetId="sfcc.orderSummary.tax.after" />
 
                 {/* Total */}
-                <UITarget targetId="orderSummary.total.before" />
-                <UITarget targetId="orderSummary.total">
+                <UITarget targetId="sfcc.orderSummary.total.before" />
+                <UITarget targetId="sfcc.orderSummary.total">
                     <div className="flex justify-between items-center">
                         <span className="font-bold">
                             {isEstimate ? t('summary.estimatedTotal') : t('summary.total')}
@@ -272,18 +272,18 @@ function SummaryBodyContent({
                         </span>
                     </div>
                 </UITarget>
-                <UITarget targetId="orderSummary.total.after" />
+                <UITarget targetId="sfcc.orderSummary.total.after" />
             </div>
 
             <UITarget targetId="sfcc.cart.loyalty.pointsEarned" />
 
             {/* Promo Code Form */}
             {showPromoCodeForm && <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />}
-            <UITarget targetId="orderSummary.promoCode.before" />
-            <UITarget targetId="orderSummary.promoCode">
+            <UITarget targetId="sfcc.orderSummary.promoCode.before" />
+            <UITarget targetId="sfcc.orderSummary.promoCode">
                 {showPromoCodeForm ? <PromoCodeForm basket={basket} /> : null}
             </UITarget>
-            <UITarget targetId="orderSummary.promoCode.after" />
+            <UITarget targetId="sfcc.orderSummary.promoCode.after" />
             <UITarget targetId="sfcc.cart.giftCards.apply" />
             <UITarget targetId="sfcc.cart.identity.verification" />
         </>

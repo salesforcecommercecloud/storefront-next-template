@@ -175,7 +175,7 @@ export default function ReviewCardsSection({
     const to = Math.min(startIndex + REVIEWS_PER_PAGE, totalReviews);
 
     return (
-        <UITarget targetId="pdp.reviews.list">
+        <UITarget targetId="sfcc.pdp.reviews.list">
             <div ref={sectionRef} className="space-y-6" data-testid="review-cards-section">
                 {reviews.length === 0 ? (
                     <p className="text-muted-foreground">{t('noReviewsForProduct')}</p>

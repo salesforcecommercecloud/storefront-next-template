@@ -316,7 +316,7 @@ export default function ProductInfo({
             )}
             {/* Rating summary - visible on both mobile and desktop */}
             {!isCompactStyle && (
-                <UITarget targetId="pdp.reviews.rating">
+                <UITarget targetId="sfcc.pdp.reviews.rating">
                     <ProductRatingSummary interactive={!disableRatingInteraction} />
                 </UITarget>
             )}
@@ -342,7 +342,7 @@ export default function ProductInfo({
 
             {/* Inventory Status Message - hidden in compact/edit mode */}
             {!isCompactStyle && (
-                <UITarget targetId="pdp.shipping.deliveryEstimate">
+                <UITarget targetId="sfcc.pdp.shipping.deliveryEstimate">
                     <InventoryMessage
                         product={product}
                         currentVariant={currentVariant}
@@ -352,7 +352,7 @@ export default function ProductInfo({
                     />
                 </UITarget>
             )}
-            {!isCompactStyle && <UITarget targetId="pdp.loyalty.points" />}
+            {!isCompactStyle && <UITarget targetId="sfcc.pdp.loyalty.points" />}
 
             {/* Swatch Groups for Product Variations */}
             {sortedVariationAttributes.map(({ id, name, selectedValue, values }) => {
@@ -434,7 +434,7 @@ export default function ProductInfo({
                     </SwatchGroup>
                 );
             })}
-            {!isCompactStyle && <UITarget targetId="pdp.products.visualization" />}
+            {!isCompactStyle && <UITarget targetId="sfcc.pdp.products.visualization" />}
 
             {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
             {/* Delivery Options - For individual products */}

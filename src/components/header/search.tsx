@@ -172,7 +172,7 @@ export default function SearchBar(): ReactElement {
     }, [query, suggestions, shouldOpenPopover]);
 
     return (
-        <UITarget targetId="header.search.input">
+        <UITarget targetId="sfcc.header.search.input">
             <Popover open={showSuggestions}>
                 <form onSubmit={handleSubmit} className="relative z-10">
                     <div className="relative">

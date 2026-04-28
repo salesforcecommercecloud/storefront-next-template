@@ -121,7 +121,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
 
                     {/* Icons group - includes mobile hamburger */}
                     <div className="flex items-center">
-                        <UITarget targetId="header.before.cart" />
+                        <UITarget targetId="sfcc.header.before.cart" />
                         {showChat && (
                             <Button
                                 variant="ghost"
@@ -145,7 +145,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
                 <div className="pb-4 lg:hidden" data-testid="header-search-mobile">
                     <LocationKeyedSearch />
                 </div>
-                <UITarget targetId="header.bnpl.banner" />
+                <UITarget targetId="sfcc.header.bnpl.banner" />
             </div>
         </header>
     );
