@@ -16,7 +16,7 @@
 import { transformPage } from './transform';
 import { resolveComponentDataBindings } from './resolve-data-bindings';
 import { validateRule } from '../validate-rule';
-import type { QualifierContext, PageManifest } from '../types';
+import type { QualifierContext, PageManifest, VariationEntry, RegionInfo } from '../types';
 import type { ShopperExperience } from '@/scapi-client/types';
 
 /**
@@ -29,6 +29,10 @@ export interface PageProcessorContext {
     qualifiers: QualifierContext | null;
     /** Component visibility rule definitions extracted from the page layout. */
     componentInfo: PageManifest['componentInfo'];
+    /** Page-level region configuration (e.g. maxComponents limits) for top-level regions not nested under a component. */
+    pageInfo: {
+        regions: VariationEntry['regions'];
+    };
     /** The locale to use when resolving locale-specific component content (e.g. `"en_US"`). */
     locale: string;
     /**
@@ -95,11 +99,17 @@ export function processPage(
     page: ShopperExperience.schemas['Page'],
     processorContext: PageProcessorContext
 ): ShopperExperience.schemas['Page'] {
+    const { pruneInvisible = true } = processorContext;
+
     return transformPage(page, {
         visitRegion(ctx) {
-            const componentInfo = ctx.parentComponent ? processorContext.componentInfo[ctx.parentComponent.id] : null;
-            const regionInfo = componentInfo?.regions?.[ctx.node.id];
-            const pruneInvisible = processorContext.pruneInvisible ?? true;
+            let regionInfo: RegionInfo | undefined;
+
+            if (ctx.parent?.type === 'page') {
+                regionInfo = processorContext.pageInfo.regions[ctx.node.id];
+            } else if (ctx.parent?.type === 'component') {
+                regionInfo = processorContext.componentInfo[ctx.parent.node.id]?.regions?.[ctx.node.id];
+            }
 
             // Visit each component first — this runs visitComponent which
             // filters out components that fail their visibility rules.
@@ -138,7 +148,6 @@ export function processPage(
         visitComponent(ctx) {
             const componentInfo = processorContext.componentInfo[ctx.node.id];
             const visibilityRules = componentInfo?.visibilityRules ?? [];
-            const pruneInvisible = processorContext.pruneInvisible ?? true;
             let isVisible = true;
 
             // Visibility rules use OR logic: the component is visible

@@ -40,19 +40,21 @@ interface PageManifest {
       dataBinding?: ComponentDataBinding | null;
       /** Region-level configuration (e.g. maxComponents limits), keyed by region ID. */
       regions: {
-        [regionId: string]: {
-          /** The name of the region. */
-          name: string;
-          /** The component type exclusions for the region. */
-          componentTypeExclusions: string[] | null;
-          /** The component type inclusions for the region. */
-          componentTypeInclusions: string[] | null;
-          /** Maximum number of visible components to render in this region, or `null` for no limit. */
-          maxComponents: number | null;
-        };
+        [regionId: string]: RegionInfo;
       };
     };
   };
+}
+/** Region-level configuration extracted from the page manifest, including type filters and component limits. */
+interface RegionInfo {
+  /** The name of the region. */
+  name: string;
+  /** The component type exclusions for the region. */
+  componentTypeExclusions: string[] | null;
+  /** The component type inclusions for the region. */
+  componentTypeInclusions: string[] | null;
+  /** Maximum number of visible components to render in this region, or `null` for no limit. */
+  maxComponents: number | null;
 }
 /**
  * Site-wide manifest containing content assignments that map product and category
@@ -152,6 +154,10 @@ interface VariationEntry {
   visibilityRule?: VisibilityRuleDef;
   /** The full page data for this variation. */
   page: ShopperExperience.schemas['Page'];
+  /** Page-level region configuration for this variation, keyed by region ID. These are top-level regions owned by the page itself, not nested under a component. */
+  regions: {
+    [regionId: string]: RegionInfo;
+  };
 }
 /**
  * A visibility rule definition that controls when a page variation or component
@@ -219,6 +225,10 @@ interface PageProcessorContext {
   qualifiers: QualifierContext | null;
   /** Component visibility rule definitions extracted from the page layout. */
   componentInfo: PageManifest['componentInfo'];
+  /** Page-level region configuration (e.g. maxComponents limits) for top-level regions not nested under a component. */
+  pageInfo: {
+    regions: VariationEntry['regions'];
+  };
   /** The locale to use when resolving locale-specific component content (e.g. `"en_US"`). */
   locale: string;
   /**
@@ -305,6 +315,8 @@ declare class VisitorContext<TNode> {
     visitor: PageVisitor;
     /** The root page being traversed. */
     page?: ShopperExperience.schemas['Page'];
+    /** The parent visitor context, providing access to the node that contains the current one in the page tree. */
+    parent?: VisitorContext<ShopperExperience.schemas['Page'] | ShopperExperience.schemas['Region'] | ShopperExperience.schemas['Component']>;
     /** The parent region of the current node, if traversing within a region. */
     parentRegion?: ShopperExperience.schemas['Region'];
     /** The parent component of the current node, if traversing within a component's nested regions. */
@@ -319,6 +331,10 @@ declare class VisitorContext<TNode> {
    * The root page being traversed.
    */
   get page(): ShopperExperience.schemas['Page'] | undefined;
+  /**
+   * The parent visitor context, providing access to the node that contains the current one in the page tree.
+   */
+  get parent(): VisitorContext<ShopperExperience.schemas['Page'] | ShopperExperience.schemas['Region'] | ShopperExperience.schemas['Component']> | undefined;
   /**
    * The parent region of the current node, if traversing within a region.
    */
@@ -810,6 +826,7 @@ declare function resolveDynamicPageId<TIdentifier extends IdentifierType = Ident
  *             pageRequiresContext: false,
  *             visibilityRule: { activeLocales: ['en-US'], customerGroups: ['vip-customers'] },
  *             page: { id: 'homepage', typeId: 'storePage', regions: [] },
+ *             regions: {},
  *         },
  *         'holiday-homepage': {
  *             ruleRequiresContext: false,
@@ -822,11 +839,13 @@ declare function resolveDynamicPageId<TIdentifier extends IdentifierType = Ident
  *                 },
  *             },
  *             page: { id: 'homepage', typeId: 'storePage', regions: [] },
+ *             regions: {},
  *         },
  *         'default-homepage': {
  *             ruleRequiresContext: false,
  *             pageRequiresContext: false,
  *             page: { id: 'homepage', typeId: 'storePage', regions: [] },
+ *             regions: {},
  *         },
  *     },
  *     defaultVariation: 'default-homepage',
@@ -967,5 +986,5 @@ declare const ContentAssignmentResolvers: Map<string, ContentAssignmentResolver>
  */
 declare function validateRule(rule: VisibilityRuleDef, locale: string, context?: QualifierContext | null): boolean;
 //#endregion
-export { CampaignQualifier, ComponentDataBinding, ContentAssignmentResolvers, ContextResolver, DataBindingRequirement, IdentifierType, InferNodeFromType, ManifestStorage, PageManifest, PageManifestContext, type PageProcessorContext, type PageVisitor, QualifierContext, RequiredError, ResolvedDataBinding, SiteManifest, VariationEntry, VisibilityRuleDef, type VisitorContext, VisitorContextType, getPageFromManifest, parseExpression, processPage, resolveComponentDataBindings, resolveDynamicPageId, resolveExpression, resolvePage, transformComponent, transformPage, transformRegion, validateRule };
+export { CampaignQualifier, ComponentDataBinding, ContentAssignmentResolvers, ContextResolver, DataBindingRequirement, IdentifierType, InferNodeFromType, ManifestStorage, PageManifest, PageManifestContext, type PageProcessorContext, type PageVisitor, QualifierContext, RegionInfo, RequiredError, ResolvedDataBinding, SiteManifest, VariationEntry, VisibilityRuleDef, type VisitorContext, VisitorContextType, getPageFromManifest, parseExpression, processPage, resolveComponentDataBindings, resolveDynamicPageId, resolveExpression, resolvePage, transformComponent, transformPage, transformRegion, validateRule };
 //# sourceMappingURL=design-data.d.ts.map

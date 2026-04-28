@@ -53,19 +53,22 @@ export interface PageManifest {
             dataBinding?: ComponentDataBinding | null;
             /** Region-level configuration (e.g. maxComponents limits), keyed by region ID. */
             regions: {
-                [regionId: string]: {
-                    /** The name of the region. */
-                    name: string;
-                    /** The component type exclusions for the region. */
-                    componentTypeExclusions: string[] | null;
-                    /** The component type inclusions for the region. */
-                    componentTypeInclusions: string[] | null;
-                    /** Maximum number of visible components to render in this region, or `null` for no limit. */
-                    maxComponents: number | null;
-                };
+                [regionId: string]: RegionInfo;
             };
         };
     };
+}
+
+/** Region-level configuration extracted from the page manifest, including type filters and component limits. */
+export interface RegionInfo {
+    /** The name of the region. */
+    name: string;
+    /** The component type exclusions for the region. */
+    componentTypeExclusions: string[] | null;
+    /** The component type inclusions for the region. */
+    componentTypeInclusions: string[] | null;
+    /** Maximum number of visible components to render in this region, or `null` for no limit. */
+    maxComponents: number | null;
 }
 
 /**
@@ -171,6 +174,10 @@ export interface VariationEntry {
     visibilityRule?: VisibilityRuleDef;
     /** The full page data for this variation. */
     page: ShopperExperience.schemas['Page'];
+    /** Page-level region configuration for this variation, keyed by region ID. These are top-level regions owned by the page itself, not nested under a component. */
+    regions: {
+        [regionId: string]: RegionInfo;
+    };
 }
 
 /**

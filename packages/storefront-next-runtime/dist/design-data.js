@@ -42,6 +42,12 @@ var VisitorContext = class VisitorContext {
 		return this.context.page;
 	}
 	/**
+	* The parent visitor context, providing access to the node that contains the current one in the page tree.
+	*/
+	get parent() {
+		return this.context.parent;
+	}
+	/**
 	* The parent region of the current node, if traversing within a region.
 	*/
 	get parentRegion() {
@@ -158,6 +164,7 @@ var VisitorContext = class VisitorContext {
 			page,
 			parentComponent: void 0,
 			parentRegion: void 0,
+			parent: void 0,
 			node: page
 		});
 		if (this.context.visitor.visitPage) return this.context.visitor.visitPage(pageContext);
@@ -169,11 +176,13 @@ var VisitorContext = class VisitorContext {
 	}
 	toChildContext(type, node) {
 		VisitorContextError.assert(this.context.type, type);
+		const parent = this;
 		if (type === "region") return new VisitorContext({
 			type: "region",
 			visitor: this.context.visitor,
 			page: this.page,
 			node,
+			parent,
 			parentComponent: this.node,
 			parentRegion: this.parentRegion
 		});
@@ -182,6 +191,7 @@ var VisitorContext = class VisitorContext {
 			visitor: this.context.visitor,
 			page: this.page,
 			node,
+			parent,
 			parentComponent: this.parentComponent,
 			parentRegion: this.node
 		});
@@ -564,10 +574,12 @@ function validateRule(rule, locale, context) {
 * ```
 */
 function processPage(page, processorContext) {
+	const { pruneInvisible = true } = processorContext;
 	return transformPage(page, {
 		visitRegion(ctx) {
-			const regionInfo = (ctx.parentComponent ? processorContext.componentInfo[ctx.parentComponent.id] : null)?.regions?.[ctx.node.id];
-			const pruneInvisible = processorContext.pruneInvisible ?? true;
+			let regionInfo;
+			if (ctx.parent?.type === "page") regionInfo = processorContext.pageInfo.regions[ctx.node.id];
+			else if (ctx.parent?.type === "component") regionInfo = processorContext.componentInfo[ctx.parent.node.id]?.regions?.[ctx.node.id];
 			let components = ctx.visitComponents(ctx.node.components);
 			if (regionInfo?.maxComponents != null) if (pruneInvisible) components = components.slice(0, regionInfo.maxComponents);
 			else {
@@ -591,7 +603,6 @@ function processPage(page, processorContext) {
 		visitComponent(ctx) {
 			const componentInfo = processorContext.componentInfo[ctx.node.id];
 			const visibilityRules = componentInfo?.visibilityRules ?? [];
-			const pruneInvisible = processorContext.pruneInvisible ?? true;
 			let isVisible = true;
 			if (visibilityRules.length > 0) {
 				if (!visibilityRules.some((rule) => validateRule(rule, processorContext.locale, processorContext.qualifiers))) {
@@ -798,6 +809,7 @@ function resolveDynamicPageId({ id, identifierType, siteManifest, aspectType }) 
 *             pageRequiresContext: false,
 *             visibilityRule: { activeLocales: ['en-US'], customerGroups: ['vip-customers'] },
 *             page: { id: 'homepage', typeId: 'storePage', regions: [] },
+*             regions: {},
 *         },
 *         'holiday-homepage': {
 *             ruleRequiresContext: false,
@@ -810,11 +822,13 @@ function resolveDynamicPageId({ id, identifierType, siteManifest, aspectType }) 
 *                 },
 *             },
 *             page: { id: 'homepage', typeId: 'storePage', regions: [] },
+*             regions: {},
 *         },
 *         'default-homepage': {
 *             ruleRequiresContext: false,
 *             pageRequiresContext: false,
 *             page: { id: 'homepage', typeId: 'storePage', regions: [] },
+*             regions: {},
 *         },
 *     },
 *     defaultVariation: 'default-homepage',
@@ -945,6 +959,7 @@ async function resolvePage({ id, identifierType, aspectType, locale, manifestSto
 	return processPage(pageResults.entry.page, {
 		qualifiers: context,
 		componentInfo: pageManifest.componentInfo,
+		pageInfo: { regions: pageResults.entry.regions },
 		locale,
 		pruneInvisible
 	});

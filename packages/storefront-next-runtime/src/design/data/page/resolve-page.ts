@@ -135,6 +135,9 @@ export async function resolvePage({
     return processPage(pageResults.entry.page, {
         qualifiers: context,
         componentInfo: pageManifest.componentInfo,
+        pageInfo: {
+            regions: pageResults.entry.regions,
+        },
         locale,
         pruneInvisible,
     });

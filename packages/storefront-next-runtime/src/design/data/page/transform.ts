@@ -39,6 +39,12 @@ export class VisitorContext<TNode> {
             visitor: PageVisitor;
             /** The root page being traversed. */
             page?: ShopperExperience.schemas['Page'];
+            /** The parent visitor context, providing access to the node that contains the current one in the page tree. */
+            parent?: VisitorContext<
+                | ShopperExperience.schemas['Page']
+                | ShopperExperience.schemas['Region']
+                | ShopperExperience.schemas['Component']
+            >;
             /** The parent region of the current node, if traversing within a region. */
             parentRegion?: ShopperExperience.schemas['Region'];
             /** The parent component of the current node, if traversing within a component's nested regions. */
@@ -62,6 +68,19 @@ export class VisitorContext<TNode> {
      */
     get page(): ShopperExperience.schemas['Page'] | undefined {
         return this.context.page;
+    }
+
+    /**
+     * The parent visitor context, providing access to the node that contains the current one in the page tree.
+     */
+    get parent():
+        | VisitorContext<
+              | ShopperExperience.schemas['Page']
+              | ShopperExperience.schemas['Region']
+              | ShopperExperience.schemas['Component']
+          >
+        | undefined {
+        return this.context.parent;
     }
 
     /**
@@ -209,6 +228,7 @@ export class VisitorContext<TNode> {
             page,
             parentComponent: undefined,
             parentRegion: undefined,
+            parent: undefined,
             node: page,
         });
 
@@ -232,12 +252,19 @@ export class VisitorContext<TNode> {
     ): VisitorContext<InferNodeFromType<TType>> {
         VisitorContextError.assert(this.context.type, type);
 
+        const parent = this as VisitorContext<
+            | ShopperExperience.schemas['Region']
+            | ShopperExperience.schemas['Component']
+            | ShopperExperience.schemas['Page']
+        >;
+
         if (type === 'region') {
             return new VisitorContext({
                 type: 'region',
                 visitor: this.context.visitor,
                 page: this.page,
                 node,
+                parent,
                 parentComponent: this.node as ShopperExperience.schemas['Component'],
                 parentRegion: this.parentRegion,
             });
@@ -248,6 +275,7 @@ export class VisitorContext<TNode> {
             visitor: this.context.visitor,
             page: this.page,
             node,
+            parent,
             parentComponent: this.parentComponent,
             parentRegion: this.node as ShopperExperience.schemas['Region'],
         });

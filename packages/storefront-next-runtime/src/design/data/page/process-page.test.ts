@@ -52,6 +52,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -71,6 +72,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     'public-banner': {
                         visibilityRules: [],
@@ -93,6 +95,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: { customerGroups: { vip: true }, campaignQualifiers: {} },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     'vip-offer': {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
@@ -114,6 +117,7 @@ describe('processPage', () => {
                     campaignQualifiers: {},
                 },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     promo: {
                         visibilityRules: [
@@ -142,6 +146,7 @@ describe('processPage', () => {
                     campaignQualifiers: {},
                 },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     promo: {
                         visibilityRules: [
@@ -174,6 +179,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -216,6 +222,7 @@ describe('processPage', () => {
                     },
                 },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -250,6 +257,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     'nested-vip': {
                         visibilityRules: [{ activeLocales: ['en_US'], customerGroups: ['vip'] }],
@@ -276,6 +284,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -314,6 +323,7 @@ describe('processPage', () => {
                     },
                 },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -343,6 +353,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -370,6 +381,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -394,6 +406,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'fr_FR',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -423,6 +436,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'ja_JP',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -451,6 +465,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -470,6 +485,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'ja_JP',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -494,6 +510,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -532,6 +549,7 @@ describe('processPage', () => {
                     },
                 },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -563,6 +581,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -586,6 +605,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'ja_JP',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -609,6 +629,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
@@ -630,6 +651,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     banner: { visibilityRules: [], regions: {} },
                     promo: { visibilityRules: [], regions: {} },
@@ -654,6 +676,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: { visibilityRules: [], regions: {} },
                     child: { visibilityRules: [], regions: {} },
@@ -681,6 +704,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -705,6 +729,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -729,6 +754,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -760,6 +786,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -795,6 +822,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -819,6 +847,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -846,6 +875,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -875,6 +905,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -896,6 +927,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     public: { visibilityRules: [], regions: {} },
                     'vip-only': {
@@ -925,6 +957,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: null,
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -981,6 +1014,7 @@ describe('processPage', () => {
             const context: PageProcessorContext = {
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
@@ -1011,6 +1045,7 @@ describe('processPage', () => {
         const context: PageProcessorContext = {
             qualifiers: null,
             locale: 'en_US',
+            pageInfo: { regions: {} },
             componentInfo: {},
         };
 
@@ -1023,6 +1058,7 @@ describe('processPage', () => {
         const context: PageProcessorContext = {
             qualifiers: null,
             locale: 'en_US',
+            pageInfo: { regions: {} },
             componentInfo: {},
         };
 
@@ -1040,6 +1076,7 @@ describe('processPage', () => {
         const context: PageProcessorContext = {
             qualifiers: { customerGroups: {}, campaignQualifiers: {} },
             locale: 'en_US',
+            pageInfo: { regions: {} },
             componentInfo: {
                 container: {
                     visibilityRules: [],

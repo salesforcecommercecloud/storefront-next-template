@@ -45,6 +45,7 @@ import { validateRule } from '../validate-rule';
  *             pageRequiresContext: false,
  *             visibilityRule: { activeLocales: ['en-US'], customerGroups: ['vip-customers'] },
  *             page: { id: 'homepage', typeId: 'storePage', regions: [] },
+ *             regions: {},
  *         },
  *         'holiday-homepage': {
  *             ruleRequiresContext: false,
@@ -57,11 +58,13 @@ import { validateRule } from '../validate-rule';
  *                 },
  *             },
  *             page: { id: 'homepage', typeId: 'storePage', regions: [] },
+ *             regions: {},
  *         },
  *         'default-homepage': {
  *             ruleRequiresContext: false,
  *             pageRequiresContext: false,
  *             page: { id: 'homepage', typeId: 'storePage', regions: [] },
+ *             regions: {},
  *         },
  *     },
  *     defaultVariation: 'default-homepage',

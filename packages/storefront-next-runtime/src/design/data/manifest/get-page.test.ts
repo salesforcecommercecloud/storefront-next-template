@@ -23,6 +23,7 @@ const makeVariation = (overrides: Partial<VariationEntry> = {}): VariationEntry 
     ruleRequiresContext: false,
     pageRequiresContext: false,
     page: makePage(),
+    regions: {},
     ...overrides,
 });
 
