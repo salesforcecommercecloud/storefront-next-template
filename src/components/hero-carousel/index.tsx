@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import React, { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
+import { cn } from '@/lib/utils';
 import { Link } from '@/components/link';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ import withSuspense from '@/components/with-suspense';
 import HeroCarouselSkeleton from './skeleton';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import heroImage from '/images/hero-01.webp';
+import { normalizeOverlayPosition, normalizeOverlayAlignment, overlayPositionLayout } from '@/components/hero/utils';
 import type { ComponentType } from '@/components/region';
 
 const heroCarouselDefaults = {
@@ -113,6 +115,8 @@ export interface HeroSlide {
     imageAlt?: string;
     ctaText?: string;
     ctaLink?: string;
+    overlayPosition?: string;
+    overlayAlignment?: string;
 }
 
 interface HeroCarouselProps {
@@ -390,8 +394,26 @@ const NavigationButton = React.memo(
 
 NavigationButton.displayName = 'NavigationButton';
 
-const HeroSlideContent = React.memo(
-    ({ slide }: { slide: HeroSlide }): ReactElement => (
+const HeroSlideContent = React.memo(({ slide }: { slide: HeroSlide }): ReactElement => {
+    const position = normalizeOverlayPosition(slide.overlayPosition);
+    const alignment = normalizeOverlayAlignment(slide.overlayAlignment);
+    const { vertical, horizontal } = overlayPositionLayout(position);
+
+    const overlayRowClass = cn(
+        vertical === 'start' && 'items-start',
+        vertical === 'center' && 'items-center',
+        vertical === 'end' && 'items-end'
+    );
+    const overlayEdgePaddingClass = cn(
+        vertical === 'start' && 'pt-6 sm:pt-8 md:pt-10',
+        vertical === 'end' && 'pb-6 sm:pb-8 md:pb-10'
+    );
+    const contentBlockClass = cn('max-w-xl', horizontal === 'center' && 'mx-auto', horizontal === 'right' && 'ml-auto');
+    const textAlignClass = alignment === 'left' ? 'text-left' : alignment === 'right' ? 'text-right' : 'text-center';
+    const ctaJustifyClass =
+        alignment === 'left' ? 'justify-start' : alignment === 'right' ? 'justify-end' : 'justify-center';
+
+    return (
         <div className="relative w-full h-full overflow-hidden">
             <img
                 src={slide.imageUrl}
@@ -407,19 +429,23 @@ const HeroSlideContent = React.memo(
                 }}
             />
 
-            <div className="relative h-full flex items-center z-20 overflow-hidden">
+            <div className={cn('relative h-full flex z-20 overflow-hidden', overlayRowClass, overlayEdgePaddingClass)}>
                 <div className="section-container w-full">
-                    <div className="max-w-xl">
-                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight">
+                    <div className={cn(contentBlockClass, textAlignClass)}>
+                        <h1 className="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4">
                             {slide.title}
                         </h1>
 
                         {slide.subtitle && (
-                            <p className="text-base md:text-lg text-white/90 mb-8 font-normal">{slide.subtitle}</p>
+                            <p className="text-lg font-normal leading-[1.2] text-primary-foreground mb-8">
+                                {slide.subtitle}
+                            </p>
                         )}
 
-                        <div>
-                            <Button asChild className="h-auto px-8 py-4 text-base">
+                        <div className={cn('flex', ctaJustifyClass)}>
+                            <Button
+                                asChild
+                                className="h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground">
                                 <Link to={slide.ctaLink || '#'}>{slide.ctaText || 'Learn More'}</Link>
                             </Button>
                         </div>
@@ -427,8 +453,8 @@ const HeroSlideContent = React.memo(
                 </div>
             </div>
         </div>
-    )
-);
+    );
+});
 
 HeroSlideContent.displayName = 'HeroSlideContent';
 

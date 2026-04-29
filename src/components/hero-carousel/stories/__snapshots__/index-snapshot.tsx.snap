@@ -42,27 +42,29 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Discover amazing products
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -96,27 +98,29 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       New Collection
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Latest fashion trends
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -150,27 +154,29 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       Special Offers
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Limited time deals
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -328,27 +334,29 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Discover amazing products
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -382,27 +390,29 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       New Collection
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Latest fashion trends
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -436,27 +446,29 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       Special Offers
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Limited time deals
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -614,27 +626,29 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Discover amazing products
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -668,27 +682,29 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       New Collection
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Latest fashion trends
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -722,27 +738,29 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       Special Offers
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Limited time deals
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -873,27 +891,29 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Discover amazing products
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -927,27 +947,29 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       New Collection
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Latest fashion trends
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"
@@ -981,27 +1003,29 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                 style="background: linear-gradient(to top, color-mix(in oklch, var(--brand-black) 30%, transparent) 0%, transparent 100%), linear-gradient(to right, color-mix(in oklch, var(--brand-black) 60%, transparent) 0%, color-mix(in oklch, var(--brand-black) 30%, transparent) 50%, transparent 100%);"
               />
               <div
-                class="relative h-full flex items-center z-20 overflow-hidden"
+                class="relative h-full flex z-20 overflow-hidden items-center"
               >
                 <div
                   class="section-container w-full"
                 >
                   <div
-                    class="max-w-xl"
+                    class="max-w-xl mx-auto text-center"
                   >
                     <h1
-                      class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight"
+                      class="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4"
                     >
                       Special Offers
                     </h1>
                     <p
-                      class="text-base md:text-lg text-white/90 mb-8 font-normal"
+                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
                     >
                       Limited time deals
                     </p>
-                    <div>
+                    <div
+                      class="flex justify-center"
+                    >
                       <a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-base"
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 has-[>svg]:px-3 h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground"
                         data-size="default"
                         data-slot="button"
                         data-variant="default"

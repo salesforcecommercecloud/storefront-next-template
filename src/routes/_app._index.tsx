@@ -144,6 +144,8 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
             imageAlt: t('hero.slide1.imageAlt'),
             ctaText: t('hero.slide1.ctaText'),
             ctaLink: '/category/root',
+            overlayPosition: 'Middle Center',
+            overlayAlignment: 'center',
         },
         {
             id: 'slide-2',
@@ -153,6 +155,8 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
             imageAlt: t('hero.slide2.imageAlt'),
             ctaText: t('hero.slide2.ctaText'),
             ctaLink: '/category/root',
+            overlayPosition: 'Middle Center',
+            overlayAlignment: 'center',
         },
         {
             id: 'slide-3',
@@ -162,6 +166,8 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
             imageAlt: t('hero.slide3.imageAlt'),
             ctaText: t('hero.slide3.ctaText'),
             ctaLink: '/category/root',
+            overlayPosition: 'Middle Center',
+            overlayAlignment: 'center',
         },
         {
             id: 'slide-4',
@@ -171,6 +177,8 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
             imageAlt: t('hero.slide4.imageAlt'),
             ctaText: t('hero.slide4.ctaText'),
             ctaLink: '/category/root',
+            overlayPosition: 'Middle Center',
+            overlayAlignment: 'center',
         },
     ];
 

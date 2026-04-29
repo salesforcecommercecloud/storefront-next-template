@@ -161,7 +161,7 @@ describe('Hero Component', () => {
             renderHero({ title: 'T', titleColor: 'not-a-color' });
             const heading = screen.getByRole('heading', { level: 1 });
             expect(heading).not.toHaveStyle({ color: 'not-a-color' });
-            expect(heading).toHaveClass('text-foreground');
+            expect(heading).toHaveClass('text-primary-foreground');
         });
 
         test('maps buttonStyle Secondary to data-variant secondary', () => {

@@ -22,23 +22,7 @@ import { RegionDefinition } from '@/lib/decorators';
 import { type Image } from '@/types';
 import { cn } from '@/lib/utils';
 import { type VariantProps } from 'class-variance-authority';
-
-const OVERLAY_POSITION_VALUES = [
-    'Top Left',
-    'Top Center',
-    'Top Right',
-    'Middle Left',
-    'Middle Center',
-    'Middle Right',
-    'Bottom Left',
-    'Bottom Center',
-    'Bottom Right',
-] as const;
-
-type OverlayPosition = (typeof OVERLAY_POSITION_VALUES)[number];
-
-const OVERLAY_ALIGNMENT_VALUES = ['left', 'center', 'right'] as const;
-type OverlayAlignment = (typeof OVERLAY_ALIGNMENT_VALUES)[number];
+import { normalizeOverlayPosition, normalizeOverlayAlignment, overlayPositionLayout } from './utils';
 
 const HERO_TYPOGRAPHY_VALUES = [
     'Default',
@@ -75,7 +59,7 @@ const BUTTON_STYLE_TO_VARIANT: Record<ButtonStyle, NonNullable<VariantProps<type
 };
 
 const TITLE_TYPOGRAPHY_CLASS: Record<HeroTypography, string> = {
-    Default: 'text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-none tracking-tight',
+    Default: 'text-6xl font-bold leading-none [letter-spacing:-1.5px]',
     Paragraph: 'text-base sm:text-lg md:text-xl font-normal leading-7',
     'Heading 1': 'text-4xl font-bold tracking-tight',
     'Heading 2': 'text-3xl font-semibold tracking-tight',
@@ -86,7 +70,7 @@ const TITLE_TYPOGRAPHY_CLASS: Record<HeroTypography, string> = {
 };
 
 const SUBTITLE_TYPOGRAPHY_CLASS: Record<HeroTypography, string> = {
-    Default: 'text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-none tracking-wide',
+    Default: 'text-lg font-normal leading-[1.2]',
     Paragraph: 'text-base font-normal leading-7',
     'Heading 1': 'text-4xl font-bold tracking-tight',
     'Heading 2': 'text-3xl font-semibold tracking-tight',
@@ -135,44 +119,6 @@ function getCtaLabel(ctaText: string | undefined, ctaLink: string): string {
         return decodeURIComponent(last).replace(/[-_]+/g, ' ');
     }
     return 'Learn more';
-}
-
-function normalizeOverlayPosition(value: string | undefined): OverlayPosition {
-    if (value && (OVERLAY_POSITION_VALUES as readonly string[]).includes(value)) {
-        return value as OverlayPosition;
-    }
-    // Legacy horizontal-only values from earlier hero metadata
-    if (value === 'left') return 'Middle Left';
-    if (value === 'right') return 'Middle Right';
-    if (value === 'center') return 'Middle Center';
-    return 'Middle Center';
-}
-
-function normalizeOverlayAlignment(value: string | undefined): OverlayAlignment {
-    if (value && (OVERLAY_ALIGNMENT_VALUES as readonly string[]).includes(value)) {
-        return value as OverlayAlignment;
-    }
-    return 'center';
-}
-
-type OverlayLayout = {
-    vertical: 'start' | 'center' | 'end';
-    horizontal: 'left' | 'center' | 'right';
-};
-
-function overlayPositionLayout(position: OverlayPosition): OverlayLayout {
-    const map: Record<OverlayPosition, OverlayLayout> = {
-        'Top Left': { vertical: 'start', horizontal: 'left' },
-        'Top Center': { vertical: 'start', horizontal: 'center' },
-        'Top Right': { vertical: 'start', horizontal: 'right' },
-        'Middle Left': { vertical: 'center', horizontal: 'left' },
-        'Middle Center': { vertical: 'center', horizontal: 'center' },
-        'Middle Right': { vertical: 'center', horizontal: 'right' },
-        'Bottom Left': { vertical: 'end', horizontal: 'left' },
-        'Bottom Center': { vertical: 'end', horizontal: 'center' },
-        'Bottom Right': { vertical: 'end', horizontal: 'right' },
-    };
-    return map[position];
 }
 
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
@@ -426,7 +372,7 @@ export default function Hero({
                                     className={cn(
                                         TITLE_TYPOGRAPHY_CLASS[titleTypo],
                                         'mb-3 sm:mb-4 md:mb-6',
-                                        !titleHex && 'text-foreground'
+                                        !titleHex && 'text-primary-foreground'
                                     )}
                                     style={titleStyle}>
                                     {title}
@@ -438,7 +384,7 @@ export default function Hero({
                                     className={cn(
                                         SUBTITLE_TYPOGRAPHY_CLASS[subtitleTypo],
                                         'mb-4 sm:mb-6 md:mb-8',
-                                        !subtitleHex && 'text-muted-foreground'
+                                        !subtitleHex && 'text-primary-foreground'
                                     )}
                                     style={subtitleStyle}>
                                     {subtitle}
@@ -450,7 +396,7 @@ export default function Hero({
                                     <Button
                                         asChild
                                         variant={buttonVariant}
-                                        className="text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6">
+                                        className="text-sm font-medium leading-5 text-primary-foreground p-3 sm:p-4 md:p-5 lg:p-6">
                                         <Link to={ctaHref}>{getCtaLabel(ctaText, ctaHref)}</Link>
                                     </Button>
                                 </div>

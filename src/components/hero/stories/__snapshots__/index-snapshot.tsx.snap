@@ -24,12 +24,12 @@ exports[`Hero stories snapshot > Default story renders and matches snapshot 1`] 
           class="max-w-2xl mx-auto text-center"
         >
           <h1
-            class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-none tracking-tight mb-3 sm:mb-4 md:mb-6 text-foreground"
+            class="text-6xl font-bold leading-none [letter-spacing:-1.5px] mb-3 sm:mb-4 md:mb-6 text-primary-foreground"
           >
             Welcome to Our Store
           </h1>
           <p
-            class="text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-none tracking-wide mb-4 sm:mb-6 md:mb-8 text-muted-foreground"
+            class="text-lg font-normal leading-[1.2] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
           >
             Discover amazing products for your everyday needs
           </p>
@@ -37,7 +37,7 @@ exports[`Hero stories snapshot > Default story renders and matches snapshot 1`] 
             class="flex justify-center"
           >
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm font-medium leading-5 text-primary-foreground p-3 sm:p-4 md:p-5 lg:p-6"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -91,7 +91,7 @@ exports[`Hero stories snapshot > PageDesignerStyling story renders and matches s
             class="flex justify-center"
           >
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 has-[>svg]:px-3 text-sm font-medium leading-5 text-primary-foreground p-3 sm:p-4 md:p-5 lg:p-6"
               data-size="default"
               data-slot="button"
               data-variant="outline"
@@ -130,12 +130,12 @@ exports[`Hero stories snapshot > RightBlockCenteredText story renders and matche
           class="max-w-2xl ml-auto text-center"
         >
           <h1
-            class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-none tracking-tight mb-3 sm:mb-4 md:mb-6 text-foreground"
+            class="text-6xl font-bold leading-none [letter-spacing:-1.5px] mb-3 sm:mb-4 md:mb-6 text-primary-foreground"
           >
             Right-aligned column
           </h1>
           <p
-            class="text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-none tracking-wide mb-4 sm:mb-6 md:mb-8 text-muted-foreground"
+            class="text-lg font-normal leading-[1.2] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
           >
             Text stays centered inside the content block
           </p>
@@ -143,7 +143,7 @@ exports[`Hero stories snapshot > RightBlockCenteredText story renders and matche
             class="flex justify-center"
           >
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm font-medium leading-5 text-primary-foreground p-3 sm:p-4 md:p-5 lg:p-6"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -187,12 +187,12 @@ exports[`Hero stories snapshot > StyleOverrideRoundedCornersAndCTAZoom story ren
           class="max-w-2xl mx-auto text-center"
         >
           <h1
-            class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-none tracking-tight mb-3 sm:mb-4 md:mb-6 text-foreground"
+            class="text-6xl font-bold leading-none [letter-spacing:-1.5px] mb-3 sm:mb-4 md:mb-6 text-primary-foreground"
           >
             Brand Experience Override
           </h1>
           <p
-            class="text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-none tracking-wide mb-4 sm:mb-6 md:mb-8 text-muted-foreground"
+            class="text-lg font-normal leading-[1.2] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
           >
             Rounded corners on the root element, zoom on CTA hover — both driven by a CSS fragment in styleOverride
           </p>
@@ -200,7 +200,7 @@ exports[`Hero stories snapshot > StyleOverrideRoundedCornersAndCTAZoom story ren
             class="flex justify-center"
           >
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm font-medium leading-5 text-primary-foreground p-3 sm:p-4 md:p-5 lg:p-6"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -244,13 +244,13 @@ exports[`Hero stories snapshot > StyleOverrideWithDesignTokens story renders and
           class="max-w-2xl mx-auto text-center"
         >
           <h1
-            class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-none tracking-tight mb-3 sm:mb-4 md:mb-6"
+            class="text-6xl font-bold leading-none [letter-spacing:-1.5px] mb-3 sm:mb-4 md:mb-6"
             style="color: rgb(248, 250, 252);"
           >
             Design Token Override
           </h1>
           <p
-            class="text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-none tracking-wide mb-4 sm:mb-6 md:mb-8"
+            class="text-lg font-normal leading-[1.2] mb-4 sm:mb-6 md:mb-8"
             style="color: rgb(226, 232, 240);"
           >
             Ghost button using var(--primary-foreground) — inverts to solid on hover using var(--primary). White inset frame via var(--ring).
@@ -259,7 +259,7 @@ exports[`Hero stories snapshot > StyleOverrideWithDesignTokens story renders and
             class="flex justify-center"
           >
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm font-medium leading-5 text-primary-foreground p-3 sm:p-4 md:p-5 lg:p-6"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -299,12 +299,12 @@ exports[`Hero stories snapshot > WithImageTitle story renders and matches snapsh
           class="max-w-2xl mx-auto text-center"
         >
           <h1
-            class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-none tracking-tight mb-3 sm:mb-4 md:mb-6 text-foreground"
+            class="text-6xl font-bold leading-none [letter-spacing:-1.5px] mb-3 sm:mb-4 md:mb-6 text-primary-foreground"
           >
             Featured Collection
           </h1>
           <p
-            class="text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-none tracking-wide mb-4 sm:mb-6 md:mb-8 text-muted-foreground"
+            class="text-lg font-normal leading-[1.2] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
           >
             Hover over the image to see the tooltip
           </p>
@@ -312,7 +312,7 @@ exports[`Hero stories snapshot > WithImageTitle story renders and matches snapsh
             class="flex justify-center"
           >
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm font-medium leading-5 text-primary-foreground p-3 sm:p-4 md:p-5 lg:p-6"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -351,7 +351,7 @@ exports[`Hero stories snapshot > WithoutSubtitle story renders and matches snaps
           class="max-w-2xl mx-auto text-center"
         >
           <h1
-            class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-none tracking-tight mb-3 sm:mb-4 md:mb-6 text-foreground"
+            class="text-6xl font-bold leading-none [letter-spacing:-1.5px] mb-3 sm:mb-4 md:mb-6 text-primary-foreground"
           >
             Simple Hero
           </h1>
@@ -359,7 +359,7 @@ exports[`Hero stories snapshot > WithoutSubtitle story renders and matches snaps
             class="flex justify-center"
           >
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm sm:text-base md:text-lg lg:text-xl p-3 sm:p-4 md:p-5 lg:p-6"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 has-[>svg]:px-3 text-sm font-medium leading-5 text-primary-foreground p-3 sm:p-4 md:p-5 lg:p-6"
               data-size="default"
               data-slot="button"
               data-variant="default"
