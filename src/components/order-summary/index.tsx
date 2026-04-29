@@ -205,7 +205,10 @@ function SummaryBodyContent({
                 {/* Order Price Adjustments */}
                 <UITarget targetId="sfcc.orderSummary.adjustments.before" />
                 <UITarget targetId="sfcc.orderSummary.adjustments">
-                    {basket.orderPriceAdjustments?.map((adjustment) => (
+                    {[
+                        ...(basket.orderPriceAdjustments ?? []),
+                        ...(basket.productItems ?? []).flatMap((item) => item.priceAdjustments ?? []),
+                    ].map((adjustment) => (
                         <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center">
                             <span>{adjustment.itemText}</span>
                             <span className="text-success text-xs font-semibold">

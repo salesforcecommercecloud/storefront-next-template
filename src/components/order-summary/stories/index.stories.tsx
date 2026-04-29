@@ -196,6 +196,24 @@ const mockBasketWithPromos = {
     ],
 } as ShopperBasketsV2.schemas['Basket'];
 
+const mockBasketWithItemPromos = {
+    ...basketWithMultipleItems,
+    productItems: [
+        {
+            ...basketWithMultipleItems.productItems[0],
+            priceAdjustments: [{ priceAdjustmentId: 'item-adj-1', itemText: '$10 Off Ties', price: -10.0 }],
+            priceAfterItemDiscount: 28.38,
+        },
+        {
+            ...basketWithMultipleItems.productItems[1],
+            priceAdjustments: [{ priceAdjustmentId: 'item-adj-2', itemText: '15% Off Tops', price: -5.28 }],
+            priceAfterItemDiscount: 29.91,
+        },
+    ],
+    productSubTotal: 58.29,
+    productTotal: 58.29,
+} as ShopperBasketsV2.schemas['Basket'];
+
 const mockProductMap: Record<string, ShopperProducts.schemas['Product']> = {};
 
 if (inBasketProductDetails?.data && basketWithMultipleItems?.productItems) {
@@ -285,6 +303,29 @@ export const WithAppliedPromotions: Story = {
             // If elements not found, verify component still renders
             void expect(canvasElement).toBeInTheDocument();
         }
+    },
+};
+
+export const WithItemLevelPromotions: Story = {
+    args: {
+        basket: mockBasketWithItemPromos,
+        showPromoCodeForm: false,
+        showCartItems: false,
+        showHeading: true,
+        itemsExpanded: false,
+        isEstimate: false,
+        productsByItemId: mockProductMap,
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const tiePromo = Array.from(canvasElement.querySelectorAll('span, div')).find((el) =>
+            el.textContent?.includes('$10 Off Ties')
+        );
+        void expect(tiePromo).toBeInTheDocument();
+        const topPromo = Array.from(canvasElement.querySelectorAll('span, div')).find((el) =>
+            el.textContent?.includes('15% Off Tops')
+        );
+        void expect(topPromo).toBeInTheDocument();
     },
 };
 

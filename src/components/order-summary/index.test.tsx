@@ -333,6 +333,136 @@ describe('OrderSummary', () => {
         expect(screen.queryByText(t('cart:summary.taxTbd'))).not.toBeInTheDocument();
     });
 
+    test('displays item-level price adjustments from productItems', () => {
+        const basketWithItemPromos = {
+            ...mockBasket,
+            productItems: [
+                {
+                    itemId: 'item1',
+                    productId: 'product1',
+                    quantity: 1,
+                    price: 19.19,
+                    priceAdjustments: [
+                        {
+                            priceAdjustmentId: 'pa1',
+                            itemText: '$10 Off Ties',
+                            price: -14.6,
+                        },
+                    ],
+                },
+            ],
+        };
+
+        renderWithProviders(<OrderSummary basket={basketWithItemPromos} />);
+
+        expect(screen.getByText('$10 Off Ties')).toBeInTheDocument();
+        expect(screen.getByText('$-14.60')).toBeInTheDocument();
+    });
+
+    test('displays both order-level and item-level price adjustments together', () => {
+        const basketWithBothPromos = {
+            ...mockBasket,
+            orderPriceAdjustments: [
+                {
+                    priceAdjustmentId: 'opa1',
+                    itemText: '10% Off Entire Order',
+                    price: -5.0,
+                },
+            ],
+            productItems: [
+                {
+                    itemId: 'item1',
+                    productId: 'product1',
+                    quantity: 1,
+                    price: 50.0,
+                    priceAdjustments: [
+                        {
+                            priceAdjustmentId: 'pa1',
+                            itemText: '$10 Off Ties',
+                            price: -10.0,
+                        },
+                    ],
+                },
+                {
+                    itemId: 'item2',
+                    productId: 'product2',
+                    quantity: 1,
+                    price: 30.0,
+                    priceAdjustments: [
+                        {
+                            priceAdjustmentId: 'pa2',
+                            itemText: 'Buy 1 Get 50% Off',
+                            price: -15.0,
+                        },
+                    ],
+                },
+            ],
+        };
+
+        renderWithProviders(<OrderSummary basket={basketWithBothPromos} />);
+
+        expect(screen.getByText('10% Off Entire Order')).toBeInTheDocument();
+        expect(screen.getByText('$-5.00')).toBeInTheDocument();
+        expect(screen.getByText('$10 Off Ties')).toBeInTheDocument();
+        expect(screen.getByText('$-10.00')).toBeInTheDocument();
+        expect(screen.getByText('Buy 1 Get 50% Off')).toBeInTheDocument();
+        expect(screen.getByText('$-15.00')).toBeInTheDocument();
+    });
+
+    test('shows no adjustments when neither order-level nor item-level promos exist', () => {
+        const basketWithNoPromos = {
+            ...mockBasket,
+            orderPriceAdjustments: undefined,
+            productItems: [
+                {
+                    itemId: 'item1',
+                    productId: 'product1',
+                    quantity: 1,
+                    price: 50.0,
+                },
+            ],
+        };
+
+        renderWithProviders(<OrderSummary basket={basketWithNoPromos} />);
+
+        expect(screen.getByText(t('cart:summary.subtotal'))).toBeInTheDocument();
+        const adjustmentElements = screen.queryAllByText(/Off|Promotion|Discount/i);
+        expect(adjustmentElements).toHaveLength(0);
+    });
+
+    test('displays item-level adjustments when items have empty priceAdjustments arrays', () => {
+        const basketWithMixedItems = {
+            ...mockBasket,
+            productItems: [
+                {
+                    itemId: 'item1',
+                    productId: 'product1',
+                    quantity: 1,
+                    price: 50.0,
+                    priceAdjustments: [],
+                },
+                {
+                    itemId: 'item2',
+                    productId: 'product2',
+                    quantity: 1,
+                    price: 30.0,
+                    priceAdjustments: [
+                        {
+                            priceAdjustmentId: 'pa1',
+                            itemText: 'Summer Sale',
+                            price: -5.0,
+                        },
+                    ],
+                },
+            ],
+        };
+
+        renderWithProviders(<OrderSummary basket={basketWithMixedItems} />);
+
+        expect(screen.getByText('Summer Sale')).toBeInTheDocument();
+        expect(screen.getByText('$-5.00')).toBeInTheDocument();
+    });
+
     test('displays applied coupon items with remove buttons', () => {
         const basketWithCoupons = {
             ...mockBasket,

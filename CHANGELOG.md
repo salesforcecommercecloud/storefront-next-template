@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 24, 2026)
 
+- Fix promotions always showing as 0 in order summary and order confirmation when only item-level discounts are applied — now includes `productItems[].priceAdjustments` alongside `orderPriceAdjustments` ([#1557](https://github.com/commerce-emu/storefront-next/pull/1557))
 - Remove dead `ssr.noExternal` / `ssr.target` block from `vite.config.ts` — production SSR inlining is handled by the SDK's `managedRuntimeBundlePlugin`, and dev works with Vite's default ESM externalization ([#1540](https://github.com/commerce-emu/storefront-next/pull/1540))
 - Standardize SCAPI requests error handling - Homepage ([#1537](https://github.com/commerce-emu/storefront-next/pull/1537))
 - Add `LoginModal` component with support for password, passwordless, and social login modes ([#1501](https://github.com/commerce-emu/storefront-next/pull/1501))

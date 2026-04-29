@@ -204,12 +204,11 @@ function OrderConfirmationContent({
         { label: t('confirmation.helpLinks.contact'), href: '#' },
         { label: t('confirmation.helpLinks.returns'), href: '#' },
     ];
-
     const productItems = order.productItems ?? [];
-    const promotionsTotal = (order.orderPriceAdjustments ?? []).reduce(
-        (sum, adjustment) => sum + (adjustment.price ?? 0),
-        0
-    );
+    const promotionsTotal = [
+        ...(order.orderPriceAdjustments ?? []),
+        ...(order.productItems ?? []).flatMap((item) => item.priceAdjustments ?? []),
+    ].reduce((sum, adjustment) => sum + (adjustment.price ?? 0), 0);
     const totals = {
         subtotal: order.productTotal ?? order.productSubTotal ?? 0,
         promotions: promotionsTotal,
