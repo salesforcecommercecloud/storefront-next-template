@@ -41,6 +41,8 @@ interface QuantityPickerProps {
     productName?: string;
     /** Whether the picker is disabled */
     disabled?: boolean;
+    /** Additional class names for the container */
+    className?: string;
 }
 
 /**
@@ -62,6 +64,7 @@ export default function QuantityPicker({
     max,
     productName,
     disabled = false,
+    className,
 }: QuantityPickerProps): ReactElement {
     const { t: tQuantity } = useTranslation('quantitySelector');
     const { t: tCommon } = useTranslation('common');
@@ -86,7 +89,7 @@ export default function QuantityPicker({
     });
 
     return (
-        <div className="inline-flex items-center border border-input rounded-none">
+        <div className={cn('inline-flex items-center border border-input rounded-none', className)}>
             {/* Decrement Button */}
             <button
                 onClick={handleDecrement}

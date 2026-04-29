@@ -261,6 +261,7 @@ export default function MiniCartItem({
                         min={1}
                         max={stockMax}
                         productName={product.productName}
+                        className="flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
                     />
                     {stockValidationError && (
                         <Typography variant="small" className="text-destructive mt-1" role="alert" aria-live="polite">
