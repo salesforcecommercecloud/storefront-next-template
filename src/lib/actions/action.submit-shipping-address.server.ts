@@ -29,6 +29,7 @@ import { handleMultiShipShippingAddress } from '@/extensions/multiship/lib/actio
 import { assignProductsToDefaultShipment } from '@/extensions/multiship/lib/api/basket.server';
 // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
 import { getLogger } from '@/lib/logger.server';
+import { ACTION_HOOK_IDS, runHookSafe } from '@/targets/action-hook.server';
 
 /**
  * Server action for submitting checkout shipping address information.
@@ -147,6 +148,15 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
         logger.error('SubmitShippingAddress: failed to assign products to default shipment', { error });
     }
 
+    // Extension hook: address verification after shipping address is saved
+    const addressHookResult = await runHookSafe({
+        hookId: ACTION_HOOK_IDS.CHECKOUT_ADDRESS_VERIFICATION_AFTER_SUBMIT_SHIPPING_ADDRESS,
+        context: { data: { basket: updatedBasket, address: addressDataWithExtras }, actionContext: context },
+        logger,
+        fallbackStep: 'shippingAddress',
+    });
+    if (addressHookResult.errorResponse) return addressHookResult.errorResponse;
+
     // Update local basket state with API response
     updateBasketResource(context, updatedBasket);
 
@@ -213,6 +223,19 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
         shippingMethodsMap = await fetchShippingMethodsMapForBasket(context, updatedBasket);
     } catch (error) {
         logger.error('SubmitShippingAddress: failed to prefetch shipping methods', { error });
+    }
+
+    // Extension hook: enrich or filter shipping methods after fetch
+    const methodsHookResult = await runHookSafe({
+        hookId: ACTION_HOOK_IDS.CHECKOUT_SHIPPING_AFTER_METHODS_FETCH,
+        context: { data: { basket: updatedBasket, shippingMethodsMap }, actionContext: context },
+        logger,
+        fallbackStep: 'shippingAddress',
+    });
+    if (methodsHookResult.errorResponse) return methodsHookResult.errorResponse;
+    if (methodsHookResult.result) {
+        shippingMethodsMap = (methodsHookResult.result.data as { shippingMethodsMap: typeof shippingMethodsMap })
+            .shippingMethodsMap;
     }
 
     logger.info('SubmitShippingAddress: succeeded', { basketId });

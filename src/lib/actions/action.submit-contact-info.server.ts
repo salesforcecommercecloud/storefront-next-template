@@ -25,6 +25,7 @@ import { updateBillingAddressForBasket } from '@/lib/api/basket.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { AppConfig } from '@/types/config';
 import { getLogger } from '@/lib/logger.server';
+import { ACTION_HOOK_IDS, runHookSafe } from '@/targets/action-hook.server';
 
 /**
  * Server action for submitting checkout contact information.
@@ -122,6 +123,15 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
             logger.error('SubmitContactInfo: failed to send passwordless OTP', { error });
         }
     }
+    // Extension hook: fraud/identity checks after contact info is saved
+    const hookResult = await runHookSafe({
+        hookId: ACTION_HOOK_IDS.CHECKOUT_FRAUD_AFTER_SUBMIT_CONTACT_INFO,
+        context: { data: { basket: updatedBasket, email, phone: fullPhone }, actionContext: context },
+        logger,
+        fallbackStep: 'contactInfo',
+    });
+    if (hookResult.errorResponse) return hookResult.errorResponse;
+
     logger.info('SubmitContactInfo: succeeded', { basketId });
 
     return Response.json({

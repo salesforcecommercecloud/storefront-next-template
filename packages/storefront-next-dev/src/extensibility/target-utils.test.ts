@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { join } from 'path';
 import fs from 'fs-extra';
 import { buildTargetRegistry, transformTargets } from './target-utils';
+import { logger } from '../utils/logger';
 
 describe('target-utils', () => {
     describe('transformTargetComponent', () => {
@@ -410,6 +411,140 @@ describe('target-utils', () => {
             });
             expect(componentRegistry['footer.ourcompany.start']).toBeUndefined();
             expect(contextProviders).toHaveLength(0);
+        });
+
+        it('should build actionHookRegistry from extensions', () => {
+            const extensionConfig = fs.readJsonSync(extensionConfigPath);
+            extensionConfig.actionHooks = [
+                {
+                    hookId: 'sfcc.checkout.shipping.afterMethodsFetch',
+                    handler: 'extensions/store-locator/hooks/enrich-shipping.server.ts',
+                    order: 0,
+                },
+                {
+                    hookId: 'sfcc.checkout.addressVerification.afterSubmitShippingAddress',
+                    handler: 'extensions/store-locator/hooks/validate-address.server.ts',
+                    order: 1,
+                },
+            ];
+            fs.writeJsonSync(extensionConfigPath, extensionConfig);
+
+            const { actionHookRegistry } = buildTargetRegistry(join(extensionsRoot, 'src'));
+
+            expect(actionHookRegistry['sfcc.checkout.shipping.afterMethodsFetch']).toHaveLength(1);
+            expect(actionHookRegistry['sfcc.checkout.shipping.afterMethodsFetch'][0].hookId).toBe(
+                'sfcc.checkout.shipping.afterMethodsFetch'
+            );
+            expect(actionHookRegistry['sfcc.checkout.shipping.afterMethodsFetch'][0].path).toBe(
+                'extensions/store-locator/hooks/enrich-shipping.server.ts'
+            );
+            expect(actionHookRegistry['sfcc.checkout.shipping.afterMethodsFetch'][0].handlerName).toMatch(
+                /StoreLocator_EnrichShippingServer/
+            );
+
+            expect(actionHookRegistry['sfcc.checkout.addressVerification.afterSubmitShippingAddress']).toHaveLength(1);
+        });
+
+        it('should sort action hooks by order', () => {
+            const extensionConfig = fs.readJsonSync(extensionConfigPath);
+            extensionConfig.actionHooks = [
+                {
+                    hookId: 'sfcc.checkout.fraud.afterSubmitContactInfo',
+                    handler: 'extensions/store-locator/hooks/fraud-check-b.server.ts',
+                    order: 10,
+                },
+                {
+                    hookId: 'sfcc.checkout.fraud.afterSubmitContactInfo',
+                    handler: 'extensions/store-locator/hooks/fraud-check-a.server.ts',
+                    order: 0,
+                },
+            ];
+            fs.writeJsonSync(extensionConfigPath, extensionConfig);
+
+            const { actionHookRegistry } = buildTargetRegistry(join(extensionsRoot, 'src'));
+
+            const handlers = actionHookRegistry['sfcc.checkout.fraud.afterSubmitContactInfo'];
+            expect(handlers).toHaveLength(2);
+            expect(handlers[0].order).toBe(0);
+            expect(handlers[1].order).toBe(10);
+            expect(handlers[0].path).toContain('fraud-check-a');
+            expect(handlers[1].path).toContain('fraud-check-b');
+        });
+
+        it('should return empty actionHookRegistry when none configured', () => {
+            const { actionHookRegistry } = buildTargetRegistry(join(extensionsRoot, 'src'));
+
+            expect(Object.keys(actionHookRegistry)).toHaveLength(0);
+        });
+
+        it('should exclude action hooks from devOnly extensions in production', () => {
+            const extensionConfig = fs.readJsonSync(extensionConfigPath);
+            extensionConfig.devOnly = true;
+            extensionConfig.actionHooks = [
+                {
+                    hookId: 'sfcc.checkout.shipping.afterMethodsFetch',
+                    handler: 'extensions/store-locator/hooks/enrich-shipping.server.ts',
+                    order: 0,
+                },
+            ];
+            fs.writeJsonSync(extensionConfigPath, extensionConfig);
+
+            const { actionHookRegistry } = buildTargetRegistry(join(extensionsRoot, 'src'), {
+                isProduction: true,
+            });
+
+            expect(Object.keys(actionHookRegistry)).toHaveLength(0);
+        });
+
+        it('should warn when UITarget components share the same targetId and order', () => {
+            const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
+            const extensionConfig = fs.readJsonSync(extensionConfigPath);
+            // The existing config already has two components targeting 'footer.ourcompany.start'
+            // with orders 0 and 1 — change the second to 0 to trigger the warning
+            extensionConfig.components[1].order = 0;
+            fs.writeJsonSync(extensionConfigPath, extensionConfig);
+
+            buildTargetRegistry(join(extensionsRoot, 'src'));
+
+            expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('UITarget "footer.ourcompany.start"'));
+            expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('same order (0)'));
+            warnSpy.mockRestore();
+        });
+
+        it('should warn when action hooks share the same hookId and order', () => {
+            const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
+            const extensionConfig = fs.readJsonSync(extensionConfigPath);
+            extensionConfig.actionHooks = [
+                {
+                    hookId: 'sfcc.checkout.fraud.afterSubmitContactInfo',
+                    handler: 'extensions/store-locator/hooks/fraud-a.server.ts',
+                    order: 0,
+                },
+                {
+                    hookId: 'sfcc.checkout.fraud.afterSubmitContactInfo',
+                    handler: 'extensions/store-locator/hooks/fraud-b.server.ts',
+                    order: 0,
+                },
+            ];
+            fs.writeJsonSync(extensionConfigPath, extensionConfig);
+
+            buildTargetRegistry(join(extensionsRoot, 'src'));
+
+            expect(warnSpy).toHaveBeenCalledWith(
+                expect.stringContaining('Action hook "sfcc.checkout.fraud.afterSubmitContactInfo"')
+            );
+            expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('same order (0)'));
+            warnSpy.mockRestore();
+        });
+
+        it('should not warn when order values are distinct', () => {
+            const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
+
+            // Default config has orders 0, 1, 2 — all distinct
+            buildTargetRegistry(join(extensionsRoot, 'src'));
+
+            expect(warnSpy).not.toHaveBeenCalled();
+            warnSpy.mockRestore();
         });
     });
 

@@ -19,6 +19,9 @@ export { storefrontNextTargets as default, type StorefrontNextTargetsConfig } fr
 // Named export: Transform target placeholder components (UITarget & UITargetProviders)
 export { transformTargetPlaceholderPlugin } from './plugins/transformTargets';
 
+// Named export: Action hooks virtual module plugin (server action extension points)
+export { actionHooksPlugin } from './plugins/actionHooks';
+
 // Named export: Target dev mode plugin for visual debugging of UITargets (dev only)
 export { uiTargetDevModePlugin, type UITargetDevModeConfig } from './plugins/uiTargetDevMode';
 

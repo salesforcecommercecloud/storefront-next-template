@@ -39,6 +39,7 @@ import { buildUrlFromContext } from '@/lib/url.server';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket.server';
 import { getLogger } from '@/lib/logger.server';
+import { ACTION_HOOK_IDS, runHookSafe } from '@/targets/action-hook.server';
 
 const normalizeAddressField = (value: string | undefined) => (value ?? '').trim().toLowerCase();
 
@@ -405,6 +406,26 @@ export async function action({ request, context }: ActionFunctionArgs) {
         // Update local basket state with calculated totals
         updateBasketResource(context, calculatedBasket);
 
+        // Extension hook: fraud check before placing the order (blocking — unexpected errors fail the action)
+        const fraudHookResult = await runHookSafe({
+            hookId: ACTION_HOOK_IDS.CHECKOUT_FRAUD_BEFORE_PLACE,
+            context: { data: { basket: calculatedBasket }, actionContext: context },
+            logger,
+            fallbackStep: 'placeOrder',
+            blocking: true,
+        });
+        if (fraudHookResult.errorResponse) return fraudHookResult.errorResponse;
+
+        // Extension hook: payment processing before order creation (blocking — e.g. authorization)
+        const paymentHookResult = await runHookSafe({
+            hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_BEFORE_PLACE_ORDER,
+            context: { data: { basket: calculatedBasket }, actionContext: context },
+            logger,
+            fallbackStep: 'placeOrder',
+            blocking: true,
+        });
+        if (paymentHookResult.errorResponse) return paymentHookResult.errorResponse;
+
         const clients = createApiClients(context);
 
         const { data: order } = await clients.shopperOrders.createOrder({
@@ -428,6 +449,23 @@ export async function action({ request, context }: ActionFunctionArgs) {
         }
 
         logger.info('PlaceOrder: order created', { orderNo: order.orderNo, basketId: calculatedBasket.basketId });
+
+        // Extension hook: post-processing after order creation (e.g. capture, fulfillment triggers).
+        // Order is already placed — never abort the action. Log at warn level with order
+        // details so post-order failures (e.g. failed capture) are surfaced in monitoring.
+        const afterPlaceResult = await runHookSafe({
+            hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
+            context: { data: { order, basket: calculatedBasket }, actionContext: context },
+            logger,
+            fallbackStep: 'placeOrder',
+        });
+        if (afterPlaceResult.errorResponse) {
+            logger.warn('PlaceOrder: afterPlaceOrder hook failed — order already placed, requires manual review', {
+                hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
+                orderNo: order.orderNo,
+                basketId: calculatedBasket.basketId,
+            });
+        }
 
         // Registration-at-checkout: requires both create-account intent AND active registration session (client flag).
         // Stale sessionStorage.shouldCreateAccount alone must not trigger duplicate profile saves for returning shoppers.

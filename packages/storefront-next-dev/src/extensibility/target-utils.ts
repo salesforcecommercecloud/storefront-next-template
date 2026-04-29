@@ -38,6 +38,7 @@ import { generate } from '@babel/generator';
 import path from 'path';
 
 import traverseModule, { type NodePath } from '@babel/traverse';
+import { logger } from '../utils/logger';
 
 export interface TargetComponentConfig {
     targetId: string;
@@ -56,7 +57,16 @@ export interface TargetContextProviderConfig {
     order: number;
 }
 
+export interface ActionHookConfig {
+    hookId: string;
+    path: string;
+    namespace: string;
+    handlerName: string;
+    order: number;
+}
+
 export type TargetComponentRegistry = Record<string, TargetComponentConfig[]>;
+export type ActionHookRegistry = Record<string, ActionHookConfig[]>;
 
 const traverse = (traverseModule as unknown as { default: typeof traverseModule }).default || traverseModule;
 
@@ -329,9 +339,11 @@ export function buildTargetRegistry(
 ): {
     componentRegistry: TargetComponentRegistry;
     contextProviders: TargetContextProviderConfig[];
+    actionHookRegistry: ActionHookRegistry;
 } {
     const componentRegistry: TargetComponentRegistry = {};
     const contextProviders: TargetContextProviderConfig[] = [];
+    const actionHookRegistry: ActionHookRegistry = {};
     const extensionDirPath = path.join(rootDir, 'extensions');
     const extensionDirs = fs.readdirSync(extensionDirPath, { withFileTypes: true });
 
@@ -340,9 +352,12 @@ export function buildTargetRegistry(
             .split('-')
             .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
             .join('');
-        const fileName = filePath.split('/').pop()?.replace('.tsx', '');
+        const fileName = filePath
+            .split('/')
+            .pop()
+            ?.replace(/\.(tsx|ts|jsx|js)$/, '');
         const baseComponentName = fileName
-            ?.split('-')
+            ?.split(/[-.]/)
             .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
             .join('');
         const componentName = `${namespace}_${baseComponentName}`;
@@ -386,6 +401,27 @@ export function buildTargetRegistry(
                         }
                     }
                 }
+                if (extensionConfig && extensionConfig.actionHooks) {
+                    for (const hook of extensionConfig.actionHooks) {
+                        const { hookId, handler, order = 0 } = hook;
+                        if (hookId && handler) {
+                            if (!actionHookRegistry[hookId]) {
+                                actionHookRegistry[hookId] = [];
+                            }
+                            const { namespace, componentName: handlerName } = getNamespaceAndComponentName(
+                                dir,
+                                handler
+                            );
+                            actionHookRegistry[hookId].push({
+                                hookId,
+                                path: handler,
+                                order,
+                                namespace,
+                                handlerName,
+                            });
+                        }
+                    }
+                }
             }
         }
     }
@@ -394,5 +430,37 @@ export function buildTargetRegistry(
         componentRegistry[targetId].sort((a, b) => a.order - b.order);
     }
     contextProviders.sort((a, b) => a.order - b.order);
-    return { componentRegistry, contextProviders };
+    for (const hookId in actionHookRegistry) {
+        actionHookRegistry[hookId].sort((a, b) => a.order - b.order);
+    }
+
+    // Warn about duplicate order values — execution order is non-deterministic
+    for (const targetId in componentRegistry) {
+        const entries = componentRegistry[targetId];
+        const seen = new Map<number, string>();
+        for (const entry of entries) {
+            const existing = seen.get(entry.order);
+            if (existing) {
+                logger.warn(
+                    `[storefront-next] UITarget "${targetId}": components "${existing}" and "${entry.componentName}" have the same order (${entry.order}). Execution order between them is non-deterministic. Assign distinct order values.`
+                );
+            }
+            seen.set(entry.order, entry.componentName);
+        }
+    }
+    for (const hookId in actionHookRegistry) {
+        const entries = actionHookRegistry[hookId];
+        const seen = new Map<number, string>();
+        for (const entry of entries) {
+            const existing = seen.get(entry.order);
+            if (existing) {
+                logger.warn(
+                    `[storefront-next] Action hook "${hookId}": handlers "${existing}" and "${entry.handlerName}" have the same order (${entry.order}). Execution order between them is non-deterministic. Assign distinct order values.`
+                );
+            }
+            seen.set(entry.order, entry.handlerName);
+        }
+    }
+
+    return { componentRegistry, contextProviders, actionHookRegistry };
 }

@@ -15,6 +15,7 @@
 - Document the use of dynamic images ([#1519](https://github.com/commerce-emu/storefront-next/pull/1519))
 - Standardize behaviors of API errors in Checkout (@W-22199926) ([#1521](https://github.com/commerce-emu/storefront-next/pull/1521))
 - Migrate i18n infrastructure to SDK: replace `src/lib/i18next.ts`, `src/lib/i18next.client.ts`, and `scripts/aggregate-extension-locales.js` with imports from `@salesforce/storefront-next-runtime/i18n` and `sfnext locales aggregate-extensions`
+- Add server action hooks extension system: extensions can register handlers that run at specific points in checkout server actions (fraud checks, address verification, payment tokenization, shipping method filtering) via `target-config.json`
 
 ## v0.4.0-dev (Apr 15, 2026)
 

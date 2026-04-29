@@ -2,6 +2,8 @@
 
 - Extract i18n locale chunking into SDK Vite plugin (`i18nPlugin`): splits translation files into per-language chunks automatically
 - Add `sfnext locales aggregate-extensions` CLI command: generates per-locale barrel files aggregating extension translations under `extPascalCase` namespaces
+- Add action hooks Vite plugin: generates `virtual:action-hooks` module from extension `target-config.json` registrations, enabling server-side extension points in checkout actions
+- Warn at build time when multiple UITarget components or action hook handlers share the same target ID and order value (non-deterministic execution order)
 
 ## v0.4.0-dev (Apr 10, 2026)
 

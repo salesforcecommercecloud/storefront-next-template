@@ -19,6 +19,7 @@ import { readableChunkFileNamesPlugin } from './plugins/readableChunkFileNames';
 import { managedRuntimeBundlePlugin } from './plugins/managedRuntimeBundle';
 import { patchReactRouterPlugin } from './plugins/patchReactRouter';
 import { transformTargetPlaceholderPlugin } from './plugins/transformTargets';
+import { actionHooksPlugin } from './plugins/actionHooks';
 import { watchConfigFilesPlugin } from './plugins/watchConfigFiles';
 import { staticRegistryPlugin, type StaticRegistryPluginConfig } from './plugins/staticRegistry';
 import {
@@ -123,6 +124,7 @@ export function storefrontNextTargets(config: StorefrontNextTargetsConfig = {}):
         patchReactRouterPlugin(),
         platformEntryPlugin(),
         transformTargetPlaceholderPlugin(),
+        actionHooksPlugin(),
         watchConfigFilesPlugin(),
         buildMiddlewareRegistryPlugin(),
         ssrSourcemapFixPlugin(),

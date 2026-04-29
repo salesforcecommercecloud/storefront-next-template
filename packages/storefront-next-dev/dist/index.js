@@ -580,13 +580,14 @@ function transformTargets(code, targetRegistry, contextProviders) {
 function buildTargetRegistry(rootDir, options = {}) {
 	const componentRegistry = {};
 	const contextProviders = [];
+	const actionHookRegistry = {};
 	const extensionDirPath = path$1.join(rootDir, "extensions");
 	const extensionDirs = fs.readdirSync(extensionDirPath, { withFileTypes: true });
 	const getNamespaceAndComponentName = (dir, filePath) => {
 		const namespace = dir.name.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join("");
 		return {
 			namespace,
-			componentName: `${namespace}_${(filePath.split("/").pop()?.replace(".tsx", ""))?.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join("")}`
+			componentName: `${namespace}_${(filePath.split("/").pop()?.replace(/\.(tsx|ts|jsx|js)$/, ""))?.split(/[-.]/).map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join("")}`
 		};
 	};
 	const TARGET_CONFIG_FILENAME = "target-config.json";
@@ -621,13 +622,47 @@ function buildTargetRegistry(rootDir, options = {}) {
 					});
 				}
 			}
+			if (extensionConfig && extensionConfig.actionHooks) for (const hook of extensionConfig.actionHooks) {
+				const { hookId, handler, order = 0 } = hook;
+				if (hookId && handler) {
+					if (!actionHookRegistry[hookId]) actionHookRegistry[hookId] = [];
+					const { namespace, componentName: handlerName } = getNamespaceAndComponentName(dir, handler);
+					actionHookRegistry[hookId].push({
+						hookId,
+						path: handler,
+						order,
+						namespace,
+						handlerName
+					});
+				}
+			}
 		}
 	}
 	for (const targetId in componentRegistry) componentRegistry[targetId].sort((a, b) => a.order - b.order);
 	contextProviders.sort((a, b) => a.order - b.order);
+	for (const hookId in actionHookRegistry) actionHookRegistry[hookId].sort((a, b) => a.order - b.order);
+	for (const targetId in componentRegistry) {
+		const entries = componentRegistry[targetId];
+		const seen = /* @__PURE__ */ new Map();
+		for (const entry of entries) {
+			const existing = seen.get(entry.order);
+			if (existing) logger.warn(`[storefront-next] UITarget "${targetId}": components "${existing}" and "${entry.componentName}" have the same order (${entry.order}). Execution order between them is non-deterministic. Assign distinct order values.`);
+			seen.set(entry.order, entry.componentName);
+		}
+	}
+	for (const hookId in actionHookRegistry) {
+		const entries = actionHookRegistry[hookId];
+		const seen = /* @__PURE__ */ new Map();
+		for (const entry of entries) {
+			const existing = seen.get(entry.order);
+			if (existing) logger.warn(`[storefront-next] Action hook "${hookId}": handlers "${existing}" and "${entry.handlerName}" have the same order (${entry.order}). Execution order between them is non-deterministic. Assign distinct order values.`);
+			seen.set(entry.order, entry.handlerName);
+		}
+	}
 	return {
 		componentRegistry,
-		contextProviders
+		contextProviders,
+		actionHookRegistry
 	};
 }
 
@@ -661,6 +696,96 @@ function transformTargetPlaceholderPlugin() {
 				logger.error(`UITarget replace ERROR in ${id}: ${err instanceof Error ? err.stack : String(err)}`);
 				throw err;
 			}
+		}
+	};
+}
+
+//#endregion
+//#region src/plugins/actionHooks.ts
+const ACTION_HOOKS_VIRTUAL_ID = "virtual:action-hooks";
+const ACTION_HOOKS_RESOLVED_ID = `\0${ACTION_HOOKS_VIRTUAL_ID}`;
+/**
+* Generate the virtual module code for the action hook registry.
+*
+* The generated module exports a `hookRegistry` map of hookId → handler[],
+* and a `runHook` function that executes registered handlers in order.
+*/
+function generateActionHooksModule(actionHookRegistry) {
+	const imports = [];
+	const registryEntries = [];
+	for (const [hookId, handlers] of Object.entries(actionHookRegistry)) {
+		const handlerNames = [];
+		for (const handler of handlers) {
+			const importPath = `@/${handler.path.replace(/\.(ts|tsx|js|jsx)$/, "")}`;
+			imports.push(`import ${handler.handlerName} from '${importPath}';`);
+			handlerNames.push(handler.handlerName);
+		}
+		registryEntries.push(`  '${hookId}': [${handlerNames.join(", ")}]`);
+	}
+	return `${imports.join("\n")}
+
+const HANDLER_TIMEOUT_MS = 5000;
+
+const hookRegistry = {
+${registryEntries.join(",\n")}
+};
+
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(\`Action hook handler timed out after \${ms}ms: \${label}\`)), ms)
+    ),
+  ]);
+}
+
+export async function runHook(hookId, context, options = {}) {
+  const handlers = hookRegistry[hookId];
+  if (!handlers || handlers.length === 0) {
+    return context;
+  }
+  let currentContext = context;
+  for (const handler of handlers) {
+    try {
+      const result = await withTimeout(handler(currentContext), HANDLER_TIMEOUT_MS, hookId);
+      currentContext = result ?? currentContext;
+    } catch (error) {
+      if (error && error.name === 'ActionHookError') {
+        throw error;
+      }
+      if (options.blocking) {
+        throw error;
+      }
+      console.error(\`[action-hooks] handler for "\${hookId}" failed, skipping to next handler\`, error);
+    }
+  }
+  return currentContext;
+}
+`;
+}
+/**
+* Vite plugin that resolves `virtual:action-hooks` to a generated module
+* mapping hookIds to their registered handlers.
+*/
+function actionHooksPlugin() {
+	let actionHookRegistry;
+	let sourceDir;
+	let isProduction = false;
+	return {
+		name: "storefront-next:action-hooks",
+		enforce: "pre",
+		configResolved(config) {
+			sourceDir = config.resolve.alias.find((alias) => alias.find === "@")?.replacement || path$1.resolve(__dirname, "./src");
+			isProduction = config.mode === "production";
+		},
+		buildStart() {
+			actionHookRegistry = buildTargetRegistry(sourceDir, { isProduction }).actionHookRegistry;
+		},
+		resolveId(id) {
+			if (id === ACTION_HOOKS_VIRTUAL_ID) return ACTION_HOOKS_RESOLVED_ID;
+		},
+		load(id) {
+			if (id === ACTION_HOOKS_RESOLVED_ID) return generateActionHooksModule(actionHookRegistry);
 		}
 	};
 }
@@ -1753,6 +1878,7 @@ function storefrontNextTargets(config = {}) {
 		patchReactRouterPlugin(),
 		platformEntryPlugin(),
 		transformTargetPlaceholderPlugin(),
+		actionHooksPlugin(),
 		watchConfigFilesPlugin(),
 		buildMiddlewareRegistryPlugin(),
 		ssrSourcemapFixPlugin()
@@ -3689,5 +3815,5 @@ async function generateMetadata(projectDirectory, metadataDirectory, options) {
 }
 
 //#endregion
-export { clearCache, createServer, storefrontNextTargets as default, extractPatterns, generateMetadata, hybridProxyPlugin, loadConfigFromEnv, loadProjectConfig, shouldRouteToNext, testPatterns, transformTargetPlaceholderPlugin, trimExtensions, uiTargetDevModePlugin };
+export { actionHooksPlugin, clearCache, createServer, storefrontNextTargets as default, extractPatterns, generateMetadata, hybridProxyPlugin, loadConfigFromEnv, loadProjectConfig, shouldRouteToNext, testPatterns, transformTargetPlaceholderPlugin, trimExtensions, uiTargetDevModePlugin };
 //# sourceMappingURL=index.js.map

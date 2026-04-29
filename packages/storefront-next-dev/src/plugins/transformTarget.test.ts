@@ -72,6 +72,7 @@ describe('transformTargetPlaceholderPlugin', () => {
         buildTargetRegistryMock = vi.mocked(buildTargetRegistry).mockImplementation(() => ({
             componentRegistry: mockComponentRegistry,
             contextProviders: mockContextProviders,
+            actionHookRegistry: {},
         }));
         transformTargetsMock = vi.mocked(transformTargets);
         vi.spyOn(process, 'cwd').mockReturnValue('/project');

@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig, mergeConfig, configDefaults, coverageConfigDefaults } from 'vitest/config';
 import viteConfig from './vite.config';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig((configEnv) =>
     mergeConfig(
         viteConfig(configEnv),
         defineConfig({
             test: {
+                alias: {
+                    'virtual:action-hooks': resolve(__dirname, 'src/test-utils/__mocks__/virtual-action-hooks.ts'),
+                },
                 globals: true,
                 environment: 'jsdom',
                 setupFiles: ['./vitest.setup.ts'],

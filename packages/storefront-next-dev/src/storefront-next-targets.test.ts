@@ -23,9 +23,9 @@ describe('storefrontNextTargets', () => {
     // - Testing presence/absence of specific plugins rather than exact counts
     // Base plugin count without SCAPI_PROXY_HOST (workspace plugin excluded):
     // i18n, managedRuntimeBundle, fixReactRouterManifestUrls, patchReactRouter,
-    // platformEntry, transformTargetPlaceholder, watchConfigFiles, buildMiddlewareRegistry,
-    // ssrSourcemapFix, eventInstrumentationValidator
-    const BASE_PLUGIN_COUNT = 10;
+    // platformEntry, transformTargetPlaceholder, actionHooks, watchConfigFiles,
+    // buildMiddlewareRegistry, ssrSourcemapFix, eventInstrumentationValidator
+    const BASE_PLUGIN_COUNT = 11;
 
     it('should return an array of targets with default config', () => {
         const targets = storefrontNextTargets();
@@ -83,11 +83,12 @@ describe('storefrontNextTargets', () => {
         expect(targetNames[3]).toBe('storefront-next:patch-react-router');
         expect(targetNames[4]).toBe('storefront-next:platform-entry');
         expect(targetNames[5]).toBe('storefront-next:transform-target-placeholder');
-        expect(targetNames[6]).toBe('storefront-next:watch-config-files');
-        expect(targetNames[7]).toBe('storefront-next:build-middleware-registry');
-        expect(targetNames[8]).toBe('storefront-next:ssr-sourcemap-fix');
-        expect(targetNames[9]).toBe('storefrontnext:event-instrumentation-validator');
-        expect(targetNames[10]).toBe('storefront-next:readable-chunk-file-names');
+        expect(targetNames[6]).toBe('storefront-next:action-hooks');
+        expect(targetNames[7]).toBe('storefront-next:watch-config-files');
+        expect(targetNames[8]).toBe('storefront-next:build-middleware-registry');
+        expect(targetNames[9]).toBe('storefront-next:ssr-sourcemap-fix');
+        expect(targetNames[10]).toBe('storefrontnext:event-instrumentation-validator');
+        expect(targetNames[11]).toBe('storefront-next:readable-chunk-file-names');
     });
 
     it('should accept StorefrontNextTargetsConfig type with readableChunkNames', () => {

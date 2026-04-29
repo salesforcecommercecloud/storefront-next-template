@@ -138,6 +138,14 @@ declare function transformTargetPlaceholderPlugin(): {
   } | null;
 };
 //#endregion
+//#region src/plugins/actionHooks.d.ts
+
+/**
+ * Vite plugin that resolves `virtual:action-hooks` to a generated module
+ * mapping hookIds to their registered handlers.
+ */
+declare function actionHooksPlugin(): Plugin;
+//#endregion
 //#region src/plugins/uiTargetDevMode.d.ts
 interface UITargetDevModeConfig {
   /**
@@ -461,5 +469,5 @@ interface GenerateMetadataResult {
 }
 declare function generateMetadata(projectDirectory: string, metadataDirectory: string, options?: GenerateMetadataOptions): Promise<GenerateMetadataResult>;
 //#endregion
-export { type GenerateMetadataOptions, type GenerateMetadataResult, type HybridProxyPluginOptions, type StorefrontNextTargetsConfig, type UITargetDevModeConfig, clearCache, createServer, storefrontNextTargets as default, extractPatterns, generateMetadata, hybridProxyPlugin, loadConfigFromEnv, loadProjectConfig, shouldRouteToNext, testPatterns, transformTargetPlaceholderPlugin, trimExtensions, uiTargetDevModePlugin };
+export { type GenerateMetadataOptions, type GenerateMetadataResult, type HybridProxyPluginOptions, type StorefrontNextTargetsConfig, type UITargetDevModeConfig, actionHooksPlugin, clearCache, createServer, storefrontNextTargets as default, extractPatterns, generateMetadata, hybridProxyPlugin, loadConfigFromEnv, loadProjectConfig, shouldRouteToNext, testPatterns, transformTargetPlaceholderPlugin, trimExtensions, uiTargetDevModePlugin };
 //# sourceMappingURL=index.d.ts.map

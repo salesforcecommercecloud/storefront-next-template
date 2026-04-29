@@ -23,6 +23,7 @@ import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { handleMultiShipShippingOptions } from '@/extensions/multiship/lib/actions/checkout-submit-multi-options.server';
 import { getLogger } from '@/lib/logger.server';
+import { ACTION_HOOK_IDS, runHookSafe } from '@/targets/action-hook.server';
 
 /**
  * Server action for submitting checkout shipping options.
@@ -136,6 +137,15 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
             { status: 500 }
         );
     }
+
+    // Extension hook: post-processing after shipping method selection
+    const hookResult = await runHookSafe({
+        hookId: ACTION_HOOK_IDS.CHECKOUT_SHIPPING_AFTER_METHOD_SELECT,
+        context: { data: { basket: finalBasket, shippingMethodId }, actionContext: context },
+        logger,
+        fallbackStep: 'shippingOptions',
+    });
+    if (hookResult.errorResponse) return hookResult.errorResponse;
 
     logger.info('SubmitShippingOptions: succeeded', { basketId: basket.basketId, shippingMethodId });
 

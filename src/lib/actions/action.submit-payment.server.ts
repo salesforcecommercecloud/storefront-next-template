@@ -30,6 +30,7 @@ import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib
 import { getLogger } from '@/lib/logger.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
+import { ACTION_HOOK_IDS, runHookSafe } from '@/targets/action-hook.server';
 
 const normalizeAddressField = (value: string | undefined) => (value ?? '').trim().toLowerCase();
 
@@ -374,6 +375,15 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
             });
         }
     }
+
+    // Extension hook: post-processing after payment submission (e.g. tokenization, 3DS)
+    const hookResult = await runHookSafe({
+        hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_SUBMIT_PAYMENT,
+        context: { data: { basket: finalUpdatedBasket, paymentInfo }, actionContext: context },
+        logger,
+        fallbackStep: 'payment',
+    });
+    if (hookResult.errorResponse) return hookResult.errorResponse;
 
     logger.info('SubmitPayment: succeeded', { basketId });
 
